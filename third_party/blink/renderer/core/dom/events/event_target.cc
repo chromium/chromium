@@ -718,7 +718,7 @@ void EventTarget::AddedEventListener(
   if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
                                          listener_type)) {
     if (ExecutionContext* context = GetExecutionContext()) {
-      if (RuntimeEnabledFeatures::MutationEventsEnabled() &&
+      if (RuntimeEnabledFeatures::MutationEventsEnabled(context) &&
           (!document || document->SupportsLegacyDOMMutations())) {
         String message_text = String::Format(
             "Listener added for a synchronous '%s' DOM Mutation Event. "

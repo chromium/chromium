@@ -40,7 +40,7 @@ using ::testing::ElementsAre;
 class RangeTest : public EditingTestBase {};
 
 TEST_F(RangeTest, extractContentsWithDOMMutationEvent) {
-  if (!RuntimeEnabledFeatures::MutationEventsEnabled()) {
+  if (!RuntimeEnabledFeatures::MutationEventsEnabledByRuntimeFlag()) {
     // TODO(crbug.com/1446498) Remove this test when MutationEvents are disabled
     // for good. This is just a test of `DOMSubtreeModified` and ranges.
     return;

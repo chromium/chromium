@@ -1149,11 +1149,7 @@ class CORE_EXPORT Document : public ContainerNode,
         kDOMCharacterDataModifiedListener,
   };
 
-  bool HasListenerType(ListenerType listener_type) const {
-    DCHECK(RuntimeEnabledFeatures::MutationEventsEnabled() ||
-           !(listener_types_ & kDOMMutationEventListener));
-    return (listener_types_ & listener_type);
-  }
+  bool HasListenerType(ListenerType listener_type) const;
   void AddListenerTypeIfNeeded(const AtomicString& event_type, EventTarget&);
 
   bool HasMutationObserversOfType(MutationType type) const {

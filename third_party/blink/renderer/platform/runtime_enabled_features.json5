@@ -2521,6 +2521,10 @@
     {
       name: "MutationEvents",
       status: "stable",
+      origin_trial_feature_name: "MutationEvents",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
+      origin_trial_allows_third_party: true,
     },
     {
       name: "NavigateEventCommitBehavior",
