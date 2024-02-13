@@ -77,6 +77,10 @@ class WebAppToolbarButtonContainer : public views::View,
     return extensions_container_;
   }
 
+  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
+    return extensions_toolbar_coordinator_.get();
+  }
+
   DownloadToolbarButtonView* download_button() {
     return download_button_.get();
   }

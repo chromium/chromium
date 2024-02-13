@@ -31,6 +31,26 @@ ExtensionsToolbarContainerViewController::
   permissions_manager_observation_.Reset();
 }
 
+void ExtensionsToolbarContainerViewController::
+    WindowControlsOverlayEnabledChanged(bool enabled) {
+  if (!extensions_container_->main_item()) {
+    return;
+  }
+
+  extensions_container_->UpdateContainerVisibility();
+  extensions_container_->main_item()->ClearProperty(views::kFlexBehaviorKey);
+
+  views::MinimumFlexSizeRule min_flex_rule =
+      enabled ? views::MinimumFlexSizeRule::kPreferred
+              : views::MinimumFlexSizeRule::kPreferredSnapToZero;
+  extensions_container_->main_item()->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(min_flex_rule,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(ExtensionsToolbarContainerViewController::
+                         kFlexOrderExtensionsButton));
+}
+
 void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
   // IPH is only shown for the kExtensionsMenuAccessControl feature.
   if (!base::FeatureList::IsEnabled(
