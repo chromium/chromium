@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -93,7 +93,7 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
 
 // Parses `json` as a value dictionary. A test calling this function will fail
 // if `json` is not appropriately formatted.
-base::Value::Dict JsonToDict(base::StringPiece json) {
+base::Value::Dict JsonToDict(std::string_view json) {
   std::optional<base::Value> parsed_json = base::JSONReader::Read(json);
   EXPECT_TRUE(parsed_json.has_value() && parsed_json->is_dict());
   return std::move(*parsed_json).TakeDict();
