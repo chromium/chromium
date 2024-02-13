@@ -4,7 +4,6 @@
 import '../polymer/polymer_bundled.min.js';
 import '../paper-ripple/paper-ripple.js';
 
-import {IronButtonStateImpl} from '../iron-behaviors/iron-button-state.js';
 import {dedupingMixin, dom} from '../polymer/polymer_bundled.min.js';
 
 /**
@@ -12,9 +11,6 @@ import {dedupingMixin, dom} from '../polymer/polymer_bundled.min.js';
  *
  * `PaperRippleMixin` dynamically implements a ripple when the element has
  * focus via pointer or keyboard.
- *
- * NOTE: This behavior is intended to be used in conjunction with and after
- * `IronButtonState` and `IronControlState`.
  */
 
 export const PaperRippleMixin = dedupingMixin(superClass => {
@@ -36,26 +32,6 @@ export const PaperRippleMixin = dedupingMixin(superClass => {
       };
     }
 
-    /**
-     * Ensures a `<paper-ripple>` element is available when the element is
-     * focused.
-     */
-    _buttonStateChanged() {
-      if (this.focused) {
-        this.ensureRipple();
-      }
-    }
-
-    /**
-     * In addition to the functionality provided in `IronButtonState`, ensures
-     * a ripple effect is created when the element is in a `pressed` state.
-     */
-    _downHandler(event) {
-      IronButtonStateImpl._downHandler.call(this, event);
-      if (this.pressed) {
-        this.ensureRipple(event);
-      }
-    }
 
     /**
      * Ensures this element contains a ripple effect. For startup efficiency
