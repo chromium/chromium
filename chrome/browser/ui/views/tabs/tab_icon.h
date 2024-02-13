@@ -187,13 +187,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   bool was_discard_indicator_shown_ = false;
 
-  performance_manager::features::DiscardTabTreatmentOptions
-      discard_tab_treatment_option_ =
-          performance_manager::features::DiscardTabTreatmentOptions::kNone;
-
-  // Favicon opacity after the discard animation completes
-  double discard_tab_icon_final_opacity_ = 1.0;
-
   // Crash animation (in place of favicon). Lazily created since most of the
   // time it will be unneeded.
   std::unique_ptr<CrashAnimation> crash_animation_;

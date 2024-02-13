@@ -3166,55 +3166,6 @@ const FeatureEntry::FeatureVariation kMemorySaverMultistateModeVariations[] = {
      std::size(kMemorySaverMultistateModeShowRecommendedBadge), nullptr},
 };
 
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing30Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "0.3"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing40Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "0.4"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing50Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "0.5"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing75Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "0.75"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing90Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "0.9"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing100Opacity[] = {
-    {"discard_tab_treatment_option", "2"},
-    {"discard_tab_treatment_opacity", "1.0"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithoutRing30Opacity[] =
-    {{"discard_tab_treatment_option", "1"},
-     {"discard_tab_treatment_opacity", "0.3"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithoutRing40Opacity[] =
-    {{"discard_tab_treatment_option", "1"},
-     {"discard_tab_treatment_opacity", "0.4"}};
-const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithoutRing50Opacity[] =
-    {{"discard_tab_treatment_option", "1"},
-     {"discard_tab_treatment_opacity", "0.5"}};
-
-const FeatureEntry::FeatureVariation kDiscardedTabTreatmentVariations[] = {
-    {"With Ring and 30% Opacity", kDiscardedTabTreatmentWithRing30Opacity,
-     std::size(kDiscardedTabTreatmentWithRing30Opacity), nullptr},
-    {"With Ring and 40% Opacity", kDiscardedTabTreatmentWithRing40Opacity,
-     std::size(kDiscardedTabTreatmentWithRing40Opacity), nullptr},
-    {"With Ring and 50% Opacity", kDiscardedTabTreatmentWithRing50Opacity,
-     std::size(kDiscardedTabTreatmentWithRing50Opacity), nullptr},
-    {"With Ring and 75% Opacity", kDiscardedTabTreatmentWithRing75Opacity,
-     std::size(kDiscardedTabTreatmentWithRing75Opacity), nullptr},
-    {"With Ring and 90% Opacity", kDiscardedTabTreatmentWithRing90Opacity,
-     std::size(kDiscardedTabTreatmentWithRing90Opacity), nullptr},
-    {"With Ring and 100% Opacity", kDiscardedTabTreatmentWithRing100Opacity,
-     std::size(kDiscardedTabTreatmentWithRing100Opacity), nullptr},
-    {"Without Ring and 30% Opacity", kDiscardedTabTreatmentWithoutRing30Opacity,
-     std::size(kDiscardedTabTreatmentWithoutRing30Opacity), nullptr},
-    {"Without Ring and 40% Opacity", kDiscardedTabTreatmentWithoutRing40Opacity,
-     std::size(kDiscardedTabTreatmentWithoutRing40Opacity), nullptr},
-    {"Without Ring and 50% Opacity", kDiscardedTabTreatmentWithoutRing50Opacity,
-     std::size(kDiscardedTabTreatmentWithoutRing50Opacity), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kMemoryUsageInHovercardsUpdateTriggerVariations[] = {
         {"memory_update_trigger", "navigation"},
@@ -9842,15 +9793,6 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kMemorySaverMultistateMode,
          kMemorySaverMultistateModeVariations,
          "HighEfficiencyMultistateMode")},
-
-    {"memory-saver-discarded-tab-treatment",
-     flag_descriptions::kMemorySaverDiscardedTabTreatmentName,
-     flag_descriptions::kMemorySaverDiscardedTabTreatmentDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kDiscardedTabTreatment,
-         kDiscardedTabTreatmentVariations,
-         "DiscardedTabTreatment")},
 
     {"memory-saver-memory-usage-in-hovercards",
      flag_descriptions::kMemorySaverMemoryUsageInHovercardsName,

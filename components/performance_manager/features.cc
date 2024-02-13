@@ -63,9 +63,6 @@ BASE_FEATURE(kMemorySaverMultistateMode,
 const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge{
     &kMemorySaverMultistateMode, "show_recommended_badge", false};
 
-BASE_FEATURE(kDiscardedTabTreatment,
-             "DiscardedTabTreatment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMemoryUsageInHovercards,
              "MemoryUsageInHovercards",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -103,13 +100,6 @@ const base::FeatureParam<int> kMemorySaverChartPmf75PercentileBytes{
 const base::FeatureParam<int> kMemorySaverChartPmf99PercentileBytes{
     &kMemorySavingsReportingImprovements,
     "high_efficiency_chart_pmf_99_percentile_bytes", 800 * 1024 * 1024};
-
-const base::FeatureParam<double> kDiscardedTabTreatmentOpacity{
-    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.8};
-
-const base::FeatureParam<int> kDiscardedTabTreatmentOption{
-    &kDiscardedTabTreatment, "discard_tab_treatment_option",
-    static_cast<int>(DiscardTabTreatmentOptions::kFadeSmallFaviconWithRing)};
 
 const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,

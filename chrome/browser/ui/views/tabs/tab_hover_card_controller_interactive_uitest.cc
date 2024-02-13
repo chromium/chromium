@@ -82,11 +82,9 @@ std::vector<TabHoverCardTestFeatureConfig> GetTabHoverCardTestFeatureConfig() {
   return {
       {{{features::kChromeRefresh2023, {}},
         {features::kTabHoverCardImages, {}}},
-       {performance_manager::features::kDiscardedTabTreatment,
-        performance_manager::features::kMemoryUsageInHovercards}},
+       {performance_manager::features::kMemoryUsageInHovercards}},
       {{{features::kTabHoverCardImages, {}}},
        {features::kChromeRefresh2023,
-        performance_manager::features::kDiscardedTabTreatment,
         performance_manager::features::kMemoryUsageInHovercards}},
   };
 }
@@ -94,14 +92,13 @@ std::vector<TabHoverCardTestFeatureConfig> GetTabHoverCardTestFeatureConfig() {
 std::vector<TabHoverCardTestFeatureConfig>
 GetTabHoverCardFooterTestFeatureConfig() {
   return {
-      {{{performance_manager::features::kDiscardedTabTreatment, {}},
-        {performance_manager::features::kMemoryUsageInHovercards,
-         {{"memory_update_trigger", "background"}}},
+      {{{performance_manager::features::kMemoryUsageInHovercards,
+         {{"memory_update_trigger", "navigation"}}},
         {features::kTabHoverCardImages, {}},
         {features::kChromeRefresh2023, {}}},
        {}},
-      {{{performance_manager::features::kDiscardedTabTreatment, {}},
-        {performance_manager::features::kMemoryUsageInHovercards, {}},
+      {{{performance_manager::features::kMemoryUsageInHovercards,
+         {{"memory_update_trigger", "navigation"}}},
         {features::kTabHoverCardImages, {}}},
        {features::kChromeRefresh2023}},
   };
@@ -382,10 +379,13 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  tab_strip->SetTabData(1, MakeTabRendererData());
+  TabRendererData tab_data = TabRendererData();
+  tab_data.title = kTabTitle;
+  tab_data.last_committed_url = GURL(kTabUrl);
+  tab_strip->SetTabData(1, tab_data);
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
-  EXPECT_EQ(hover_card->footer_view_, nullptr);
+  EXPECT_FALSE(hover_card->footer_view_->GetVisible());
 }
 
 using TabHoverCardBubbleViewMetricsTest = TabHoverCardInteractiveUiTest;

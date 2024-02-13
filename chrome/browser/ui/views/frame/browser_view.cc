@@ -3634,9 +3634,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
   }
 
   const TabRendererData& tab_data = tabstrip_->tab_at(index)->data();
-  if (tab_data.should_show_discard_status &&
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardedTabTreatment)) {
+  if (tab_data.should_show_discard_status) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
     if (tab_data.discarded_memory_savings_in_bytes > 0) {
       title = l10n_util::GetStringFUTF16(

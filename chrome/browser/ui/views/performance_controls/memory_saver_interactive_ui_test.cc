@@ -526,27 +526,11 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)));
 }
 
-struct FaviconScreenShotTestConfig {
-  performance_manager::features::DiscardTabTreatmentOptions treatment_option;
-  std::string screenshot_name;
-  std::string cl_number;
-};
-
 class MemorySaverFaviconTreatmentTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest>,
-      public testing::WithParamInterface<FaviconScreenShotTestConfig> {
+    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   MemorySaverFaviconTreatmentTest() = default;
   ~MemorySaverFaviconTreatmentTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        performance_manager::features::kDiscardedTabTreatment,
-        {{"discard_tab_treatment_option", base::NumberToString(static_cast<int>(
-                                              GetParam().treatment_option))}});
-
-    MemorySaverInteractiveTestMixin<InteractiveBrowserTest>::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
@@ -559,12 +543,9 @@ class MemorySaverFaviconTreatmentTest
   TabIcon* GetTabIcon(int tab_index) {
     return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(MemorySaverFaviconTreatmentTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
                        FaviconTreatmentOnDiscard) {
   constexpr char kFirstTabFavicon[] = "first_tab_favicon";
 
@@ -581,22 +562,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverFaviconTreatmentTest,
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
       WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
-      Screenshot(kFirstTabFavicon, GetParam().screenshot_name,
-                 GetParam().cl_number));
+      Screenshot(kFirstTabFavicon, "FadeSmallFaviconOnDiscard", "4786929"));
 }
-
-std::vector<FaviconScreenShotTestConfig> MemorySaverTestConfig() {
-  return {{performance_manager::features::DiscardTabTreatmentOptions::
-               kFadeFullsizedFavicon,
-           "FadeFullSizedFaviconOnDiscard", "4786929"},
-          {performance_manager::features::DiscardTabTreatmentOptions::
-               kFadeSmallFaviconWithRing,
-           "FadeSmallFaviconOnDiscard", "4786929"}};
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         MemorySaverFaviconTreatmentTest,
-                         testing::ValuesIn(MemorySaverTestConfig()));
 
 // Tests the new memory savings reporting improvements on the memory saver
 // dialog.

@@ -76,19 +76,6 @@ constexpr auto kAlertMargins =
     gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
 constexpr auto kTextAreaRefreshMargins = gfx::Insets::VH(12, 12);
 
-std::unique_ptr<views::Label> CreateAlertView(const TabAlertState& state) {
-  const int text_style = features::IsChromeRefresh2023()
-                             ? views::style::STYLE_BODY_4
-                             : views::style::STYLE_PRIMARY;
-  auto alert_state_label = std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
-  alert_state_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  alert_state_label->SetMultiLine(true);
-  alert_state_label->SetVisible(true);
-  alert_state_label->SetText(chrome::GetTabAlertStateText(state));
-  return alert_state_label;
-}
-
 // Calculates an appropriate size to display a preview image in the hover card.
 // For the vast majority of images, the |preferred_size| is used, but extremely
 // tall or wide images use the image size instead, centering in the available
@@ -367,8 +354,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
       tab_style_(TabStyle::Get()),
-      discard_tab_treatment_enabled_(base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardedTabTreatment)),
       memory_usage_in_hovercards_enabled_(base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -412,14 +397,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     thumbnail_view_->SetRoundedCorners(true, corner_radius_);
   }
 
-  if (discard_tab_treatment_enabled_ || memory_usage_in_hovercards_enabled_) {
     footer_view_ = AddChildView(std::make_unique<FooterView>());
     footer_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
             footer_view_->flex_layout()->GetDefaultFlexRule())
             .WithWeight(0));
-  }
 
   // Set up layout.
 
@@ -504,7 +487,6 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
 
   std::u16string title;
-  std::optional<TabAlertState> old_alert_state = alert_state_;
   const TabRendererData& tab_data = tab->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
@@ -557,33 +539,22 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   title_label_->SetData({title, is_filename});
   domain_label_->SetData({domain, false});
 
-  bool show_footer = alert_state_.has_value();
-  if (discard_tab_treatment_enabled_ || memory_usage_in_hovercards_enabled_) {
-    const bool show_discard_status =
-        tab_data.should_show_discard_status && discard_tab_treatment_enabled_;
-    const uint64_t tab_memory_usage_in_bytes =
-        tab_data.tab_resource_usage
-            ? tab_data.tab_resource_usage->memory_usage_in_bytes()
-            : 0;
-    const bool is_high_memory_usage =
-        tab_data.tab_resource_usage
-            ? tab_data.tab_resource_usage->is_high_memory_usage()
-            : false;
-    show_footer =
-        show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
-    footer_view_->SetAlertData({alert_state_, show_discard_status,
-                                tab_data.discarded_memory_savings_in_bytes});
+  const bool show_discard_status = tab_data.should_show_discard_status;
+  const uint64_t tab_memory_usage_in_bytes =
+      tab_data.tab_resource_usage
+          ? tab_data.tab_resource_usage->memory_usage_in_bytes()
+          : 0;
+  const bool is_high_memory_usage =
+      tab_data.tab_resource_usage
+          ? tab_data.tab_resource_usage->is_high_memory_usage()
+          : false;
+  bool show_footer = alert_state_.has_value() || show_discard_status ||
+                     tab_memory_usage_in_bytes > 0;
+  footer_view_->SetAlertData({alert_state_, show_discard_status,
+                              tab_data.discarded_memory_savings_in_bytes});
 
-    footer_view_->SetPerformanceData(
-        {is_high_memory_usage, tab_memory_usage_in_bytes});
-
-  } else {
-    if (alert_state_ != old_alert_state) {
-      std::unique_ptr<views::Label> alert_label =
-          alert_state_.has_value() ? CreateAlertView(*alert_state_) : nullptr;
-      GetBubbleFrameView()->SetFootnoteView(std::move(alert_label));
-    }
-  }
+  footer_view_->SetPerformanceData(
+      {is_high_memory_usage, tab_memory_usage_in_bytes});
 
   if (thumbnail_view_) {
     // We only clip the corners of the fade image when there isn't a footer.
