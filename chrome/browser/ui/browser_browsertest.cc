@@ -99,6 +99,8 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -3068,6 +3070,42 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(back_observer.has_committed());
   EXPECT_FALSE(back_observer.was_same_document());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Tests that an extension that disables omnibox URL elision sets a pref and
+// unelides URLs appropriately. This is temporary migration code along the way
+// to deprecating this special extension.
+// TODO(crbug/324934130): remove after ~M125 or so.
+IN_PROC_BROWSER_TEST_F(BrowserTest, URLElisionExtensionSetsPref) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/empty.html"));
+
+  // Smoke test: by default, the URL elision pref should be false, and when
+  // navigating to a URL, the URL should be elided.
+  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      omnibox::kPreventUrlElisionsInOmnibox));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_EQ(base::ASCIIToUTF16(url.host() + ":" + url.port() + "/empty.html"),
+            browser()->location_bar_model()->GetURLForDisplay());
+
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("app/")));
+  const Extension* extension_app = GetExtension();
+  browser()->SetURLElisionExtensionIDForTesting(extension_app->id().c_str());
+
+  // After setting the test extension ID, a newly created browser should set the
+  // relevant pref to prevent URL elision.
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  EXPECT_TRUE(new_browser->profile()->GetPrefs()->GetBoolean(
+      omnibox::kPreventUrlElisionsInOmnibox));
+
+  // When navigating to a URL, the URL should not be elided.
+  chrome::NewTab(new_browser);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, url));
+  EXPECT_EQ(base::ASCIIToUTF16(url.spec()),
+            new_browser->location_bar_model()->GetURLForDisplay());
+}
+#endif  // !
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {

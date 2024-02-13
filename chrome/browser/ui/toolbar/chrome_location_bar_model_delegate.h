@@ -31,14 +31,12 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   // Returns active WebContents.
   virtual content::WebContents* GetActiveWebContents() const = 0;
 
-  // Prevents URL elision depending on whether a specified extension installed.
-  bool ShouldPreventElision() override;
-
   // LocationBarModelDelegate:
   std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
       const std::u16string& formatted_url) const override;
   bool GetURL(GURL* url) const override;
+  bool ShouldPreventElision() override;
   bool ShouldDisplayURL() const override;
   bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
@@ -65,21 +63,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   content::NavigationEntry* GetNavigationEntry() const;
 
  private:
-  // The state of URL elision in the omnibox.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum ElisionConfig {
-    // Use default behavior - do not prevent elisions.
-    ELISION_CONFIG_DEFAULT,
-    // URL elisions were prevented by enabled pref.
-    ELISION_CONFIG_TURNED_OFF_BY_PREF,
-    // URL elisions were prevented by Chrome extension.
-    ELISION_CONFIG_TURNED_OFF_BY_EXTENSION,
-
-    ELISION_CONFIG_MAX  // Bounding value needed for UMA histogram macro.
-  };
-
   // Returns the navigation controller used to retrieve the navigation entry
   // from which the states are retrieved. If this returns null, default values
   // are used.
@@ -87,9 +70,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
 
   // Helper method to extract the profile from the navigation controller.
   Profile* GetProfile() const;
-
-  // Helper method that returns the state of URL elision in the omnibox.
-  ElisionConfig GetElisionConfig() const;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_CHROME_LOCATION_BAR_MODEL_DELEGATE_H_

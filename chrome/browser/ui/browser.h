@@ -845,6 +845,9 @@ class Browser : public TabStripModelObserver,
   FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessTest,
                            TabEntersPresentationModeFromWindowed);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastGuest);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  FRIEND_TEST_ALL_PREFIXES(BrowserTest, URLElisionExtensionSetsPref);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Used to describe why a tab is being detached. This is used by
   // TabDetachedAtImpl.
@@ -1229,6 +1232,8 @@ class Browser : public TabStripModelObserver,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
+  void SetURLElisionExtensionIDForTesting(const char* extension_id);
+
   // Data members /////////////////////////////////////////////////////////////
 
   PrefChangeRegistrar profile_pref_registrar_;
@@ -1401,6 +1406,14 @@ class Browser : public TabStripModelObserver,
 #endif
 
   int force_show_bookmark_bar_flags_ = ForceShowBookmarkBarFlag::kNone;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // ID of an extension that historically was used to prevent URL elision in the
+  // omnibox, and now is being deprecated by migration to a pref. Only set by
+  // tests.
+  // TODO(crbug/324934130): remove after ~M125 or so.
+  static const char* url_elision_extension_id_;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};
