@@ -1576,7 +1576,7 @@
 <translation id="4154277373259957087">Теперь Chrome будет заполнять платежные данные только после подтверждения личности. Чтобы изменить это, перейдите в <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159149286839604525">Это значит, что большинство функций сайта должно работать, но вы будете менее защищены.</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4169535189173047238">Запретить</translation>
 <translation id="4171400957073367226">Подтверждающая подпись недействительна</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1652,7 +1652,7 @@
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="4277937682389409325">Местный адрес</translation>
-<translation id="4278390842282768270">Разрешено</translation>
+<translation id="4278390842282768270">Разрешены</translation>
 <translation id="4281998142035485137">{0,plural, =1{Открыть конфиденциальный файл?}one{Открыть конфиденциальные файлы?}few{Открыть конфиденциальные файлы?}many{Открыть конфиденциальные файлы?}other{Открыть конфиденциальные файлы?}}</translation>
 <translation id="4282346679996504092">Оповещения об этом товаре отключены, а закладка удалена.</translation>
 <translation id="4285498937028063278">Открепить</translation>
@@ -2338,7 +2338,7 @@
 <translation id="5666606186680807225">Пляжи и острова</translation>
 <translation id="5667827081946850877">Аудиокниги</translation>
 <translation id="5675650730144413517">Страница недоступна</translation>
-<translation id="5677928146339483299">Заблокировано</translation>
+<translation id="5677928146339483299">Заблокированы</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="568292603005599551">Положение изображения по оси X</translation>
 <translation id="5684277895745049190">Список</translation>
@@ -3997,7 +3997,7 @@
 <translation id="8954252855949068147">Одежда и аксессуары</translation>
 <translation id="8957210676456822347">Авторизация через адаптивный портал</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
-<translation id="8963117664422609631">Перейти в настройки сайтов</translation>
+<translation id="8963117664422609631">Перейти в настройки сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Что делать?<ph name="MARKUP_2" />Убедитесь, что вы подключены к Интернету.<ph name="MARKUP_3" />Через некоторое время обновите страницу.<ph name="MARKUP_4" />Проверьте, правильно ли указан веб-адрес.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
