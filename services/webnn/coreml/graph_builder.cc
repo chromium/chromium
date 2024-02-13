@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
 
 namespace webnn::coreml {
@@ -82,6 +83,11 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
   neural_network_->set_arrayinputshapemapping(
       ::CoreML::Specification::NeuralNetworkMultiArrayShapeMapping::
           EXACT_ARRAY_MAPPING);
+
+  // Add constants.
+  for (auto& [key, buffer] : graph_info.constant_id_to_buffer_map) {
+    RETURN_IF_ERROR(CreateConstantLayer(id_to_operand_map, buffer, key));
+  }
 
   // Add operations.
   for (auto& operation : graph_info.operations) {
@@ -170,6 +176,48 @@ base::expected<void, std::string> GraphBuilder::CreateOperatorNodeForBinary(
       return base::unexpected("Unimplemented Binary Operator");
   }
   AddOutputToNeuralNetworkLayer(id_to_operand_map, operation.output_operand,
+                                neural_network_layer);
+  return base::ok();
+}
+
+base::expected<void, std::string> GraphBuilder::CreateConstantLayer(
+    const IdToOperandMap& id_to_operand_map,
+    const mojo_base::BigBuffer& buffer,
+    uint64_t constant_id) {
+  auto* neural_network_layer = neural_network_->add_layers();
+  neural_network_layer->mutable_name()->assign(
+      base::NumberToString(layer_count_++));
+  auto* constant_tensor = neural_network_layer->mutable_loadconstantnd();
+
+  auto& operand = id_to_operand_map.at(constant_id);
+  switch (operand->data_type) {
+    case Operand::DataType::kFloat32: {
+      const auto* data = reinterpret_cast<const float*>(buffer.data());
+      std::copy(data, data + buffer.size() / sizeof(*data),
+                google::protobuf::RepeatedFieldBackInserter(
+                    constant_tensor->mutable_data()->mutable_floatvalue()));
+      break;
+    }
+    case Operand::DataType::kFloat16: {
+      // float16value has type of bytes (std::string)
+      constant_tensor->mutable_data()->mutable_float16value()->assign(
+          buffer.data(), buffer.data() + buffer.size());
+      break;
+    }
+    // TODO: support quantized values.
+    case Operand::DataType::kInt64:
+    case Operand::DataType::kInt32:
+    case Operand::DataType::kInt8:
+    case Operand::DataType::kUint64:
+    case Operand::DataType::kUint32:
+    case Operand::DataType::kUint8:
+      return base::unexpected("Unsupported constant datatype");
+  }
+
+  for (int dimension : operand->dimensions) {
+    constant_tensor->mutable_shape()->Add(dimension);
+  }
+  AddOutputToNeuralNetworkLayer(id_to_operand_map, constant_id,
                                 neural_network_layer);
   return base::ok();
 }

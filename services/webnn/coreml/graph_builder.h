@@ -12,6 +12,10 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace webnn::coreml {
 
 // Get name identifiers used in CoreML model files for input/output operands.
@@ -74,6 +78,10 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, std::string> CreateOutputNode(
       const IdToOperandMap& id_to_operand_map,
       uint64_t output_id);
+  [[nodiscard]] base::expected<void, std::string> CreateConstantLayer(
+      const IdToOperandMap& id_to_operand_map,
+      const mojo_base::BigBuffer& buffer,
+      uint64_t constant_id);
 
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
