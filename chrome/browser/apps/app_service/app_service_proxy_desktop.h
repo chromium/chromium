@@ -40,10 +40,6 @@ class AppServiceProxy : public AppServiceProxyBase {
                  UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
 
-  // Used for setting Run on OS Login modes.
-  void SetRunOnOsLoginMode(const std::string& app_id,
-                           apps::RunOnOsLoginMode run_on_os_login_mode);
-
   base::WeakPtr<AppServiceProxy> GetWeakPtr();
 
  private:

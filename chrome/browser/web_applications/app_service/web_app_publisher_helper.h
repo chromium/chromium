@@ -112,9 +112,6 @@ void UninstallImpl(WebAppProvider* provider,
                    apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window);
 
-RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-    apps::RunOnOsLoginMode login_mode);
-
 class WebAppPublisherHelper : public WebAppRegistrarObserver,
                               public WebAppInstallManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -242,9 +239,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void UpdateAppSize(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id, apps::WindowMode window_mode);
-
-  void SetRunOnOsLoginMode(const std::string& app_id,
-                           apps::RunOnOsLoginMode run_on_os_login_mode);
 
   // Converts |display_mode| to a |window_mode|.
   apps::WindowMode ConvertDisplayModeToWindowMode(

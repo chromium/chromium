@@ -450,23 +450,6 @@ void UninstallImpl(WebAppProvider* provider,
   }
 }
 
-RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-    apps::RunOnOsLoginMode login_mode) {
-  RunOnOsLoginMode web_app_constant_login_mode = RunOnOsLoginMode::kMinValue;
-  switch (login_mode) {
-    case apps::RunOnOsLoginMode::kWindowed:
-      web_app_constant_login_mode = RunOnOsLoginMode::kWindowed;
-      break;
-    case apps::RunOnOsLoginMode::kNotRun:
-      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
-      break;
-    case apps::RunOnOsLoginMode::kUnknown:
-      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
-      break;
-  }
-  return web_app_constant_login_mode;
-}
-
 WebAppPublisherHelper::Delegate::Delegate() = default;
 
 WebAppPublisherHelper::Delegate::~Delegate() = default;
@@ -1224,14 +1207,6 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
           },
           app_id, std::move(user_display_mode)),
       /*on_complete=*/base::DoNothing());
-}
-
-void WebAppPublisherHelper::SetRunOnOsLoginMode(
-    const std::string& app_id,
-    apps::RunOnOsLoginMode run_on_os_login_mode) {
-  provider_->scheduler().SetRunOnOsLoginMode(
-      app_id, ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
-      base::DoNothing());
 }
 
 apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(

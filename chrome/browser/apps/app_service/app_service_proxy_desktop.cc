@@ -38,20 +38,6 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   }
 }
 
-void AppServiceProxy::SetRunOnOsLoginMode(
-    const std::string& app_id,
-    apps::RunOnOsLoginMode run_on_os_login_mode) {
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  if (app_type == apps::AppType::kWeb) {
-    web_app::WebAppProvider* provider =
-        web_app::WebAppProvider::GetForWebApps(profile_);
-    provider->scheduler().SetRunOnOsLoginMode(
-        app_id,
-        web_app::ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
-        base::DoNothing());
-  }
-}
-
 base::WeakPtr<AppServiceProxy> AppServiceProxy::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
