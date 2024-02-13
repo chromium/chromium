@@ -557,11 +557,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_FALSE(bubble->GetAccepted());
   // Simulate dismissing the bubble by pressing the Escape key.
   SimulateEscapeKeyPress(bubble->GetBubbleWebContentsForTesting());
-  // Widget will close now.
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Widget and bubble will close now.
   closing_observer.Wait();
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
-  EXPECT_FALSE(bubble->GetAccepted());
   EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
 
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
