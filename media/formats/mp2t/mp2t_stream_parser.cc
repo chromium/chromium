@@ -37,14 +37,6 @@ namespace mp2t {
 
 namespace {
 
-constexpr int64_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
-constexpr int64_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
-// TODO(dougsteed). Consider adding support for the following:
-// const int64_t kSampleAESPrivateDataIndicatorAC3 = 0x61633364;
-// const int64_t kSampleAESPrivateDataIndicatorEAC3 = 0x65633364;
-
-}  // namespace
-
 enum StreamType {
   // ISO-13818.1 / ITU H.222 Table 2.34 "Stream type assignments"
   kStreamTypeMpeg1Audio = 0x3,
@@ -58,6 +50,57 @@ enum StreamType {
   //  kStreamTypeAC3WithSampleAES = 0xc1,
   //  kStreamTypeEAC3WithSampleAES = 0xc2,
 };
+
+constexpr int64_t kSampleAESPrivateDataIndicatorAVC = 0x7a617663;
+constexpr int64_t kSampleAESPrivateDataIndicatorAAC = 0x61616364;
+// TODO(dougsteed). Consider adding support for the following:
+// const int64_t kSampleAESPrivateDataIndicatorAC3 = 0x61633364;
+// const int64_t kSampleAESPrivateDataIndicatorEAC3 = 0x65633364;
+
+std::optional<base::flat_set<int>> MapAllowedStreamTypes(
+    std::optional<base::span<const std::string>> allowed_codecs) {
+  if (!allowed_codecs.has_value()) {
+    return std::nullopt;
+  }
+  base::flat_set<int> allowed_stream_types;
+  for (const std::string& codec_name : *allowed_codecs) {
+    switch (StringToVideoCodec(codec_name)) {
+      case VideoCodec::kH264:
+        allowed_stream_types.insert(kStreamTypeAVC);
+        allowed_stream_types.insert(kStreamTypeAVCWithSampleAES);
+        continue;
+      case VideoCodec::kUnknown:
+        // Probably audio.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported video codec " << codec_name;
+        continue;
+    }
+
+    switch (StringToAudioCodec(codec_name)) {
+      case AudioCodec::kAAC:
+        allowed_stream_types.insert(kStreamTypeAAC);
+        allowed_stream_types.insert(kStreamTypeAACWithSampleAES);
+        continue;
+      case AudioCodec::kMP3:
+        allowed_stream_types.insert(kStreamTypeMpeg1Audio);
+        allowed_stream_types.insert(kStreamTypeMpeg2Audio);
+        continue;
+      case AudioCodec::kUnknown:
+        // Neither audio, nor video.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported audio codec " << codec_name;
+        continue;
+    }
+
+    // Failed to parse as an audio or a video codec.
+    DLOG(WARNING) << "Unknown codec " << codec_name;
+  }
+  return allowed_stream_types;
+}
+
+}  // namespace
 
 class PidState {
  public:
@@ -186,48 +229,15 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(base::span<const std::string> allowed_codecs,
-                                   bool sbr_in_mimetype)
-    : sbr_in_mimetype_(sbr_in_mimetype),
+Mp2tStreamParser::Mp2tStreamParser(
+    std::optional<base::span<const std::string>> allowed_codecs,
+    bool sbr_in_mimetype)
+    : allowed_stream_types_(MapAllowedStreamTypes(allowed_codecs)),
+      sbr_in_mimetype_(sbr_in_mimetype),
       selected_audio_pid_(-1),
       selected_video_pid_(-1),
       is_initialized_(false),
-      segment_started_(false) {
-  for (const std::string& codec_name : allowed_codecs) {
-    switch (StringToVideoCodec(codec_name)) {
-      case VideoCodec::kH264:
-        allowed_stream_types_.insert(kStreamTypeAVC);
-        allowed_stream_types_.insert(kStreamTypeAVCWithSampleAES);
-        continue;
-      case VideoCodec::kUnknown:
-        // Probably audio.
-        break;
-      default:
-        DLOG(WARNING) << "Unsupported video codec " << codec_name;
-        continue;
-    }
-
-    switch (StringToAudioCodec(codec_name)) {
-      case AudioCodec::kAAC:
-        allowed_stream_types_.insert(kStreamTypeAAC);
-        allowed_stream_types_.insert(kStreamTypeAACWithSampleAES);
-        continue;
-      case AudioCodec::kMP3:
-        allowed_stream_types_.insert(kStreamTypeMpeg1Audio);
-        allowed_stream_types_.insert(kStreamTypeMpeg2Audio);
-        continue;
-      case AudioCodec::kUnknown:
-        // Neither audio, nor video.
-        break;
-      default:
-        DLOG(WARNING) << "Unsupported audio codec " << codec_name;
-        continue;
-    }
-
-    // Failed to parse as an audio or a video codec.
-    DLOG(WARNING) << "Unknown codec " << codec_name;
-  }
-}
+      segment_started_(false) {}
 
 Mp2tStreamParser::~Mp2tStreamParser() = default;
 
@@ -568,7 +578,8 @@ void Mp2tStreamParser::RegisterPes(int pes_pid,
   // See https://crbug.com/1169393.
   // TODO(https://crbug.com/535738): Remove this hack when MSE stream/mime type
   // checks have been relaxed.
-  if (allowed_stream_types_.find(stream_type) == allowed_stream_types_.end()) {
+  if (allowed_stream_types_.has_value() &&
+      !allowed_stream_types_->contains(stream_type)) {
     DVLOG(1) << "Stream type not allowed for this parser: " << stream_type;
     return;
   }

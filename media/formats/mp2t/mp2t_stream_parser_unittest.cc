@@ -172,9 +172,7 @@ class Mp2tStreamParserTest : public testing::Test {
         current_audio_config_(),
         current_video_config_(),
         capture_buffers(false) {
-    bool has_sbr = false;
-    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
-    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
+    CreateStrictParser();
   }
 
  protected:
@@ -198,6 +196,17 @@ class Mp2tStreamParserTest : public testing::Test {
   std::vector<scoped_refptr<StreamParserBuffer>> audio_buffer_capture_;
   std::vector<scoped_refptr<StreamParserBuffer>> video_buffer_capture_;
   bool capture_buffers;
+
+  void CreateNonStrictParser() {
+    bool has_sbr = false;
+    parser_ = std::make_unique<Mp2tStreamParser>(std::nullopt, has_sbr);
+  }
+
+  void CreateStrictParser() {
+    bool has_sbr = false;
+    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
+  }
 
   void ResetStats() {
     segment_count_ = 0;
@@ -403,6 +412,20 @@ class Mp2tStreamParserTest : public testing::Test {
     return true;
   }
 };
+
+TEST_F(Mp2tStreamParserTest, NonStrictCodecChecking) {
+  CreateNonStrictParser();
+  InitializeParser();
+  ParseMpeg2TsFile("bear-1280x720.ts", 17);
+  parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
+  EXPECT_EQ(video_frame_count_, 82);
+
+  // This stream has no mid-stream configuration change.
+  EXPECT_EQ(config_count_, 1);
+  EXPECT_EQ(segment_count_, 1);
+  CreateStrictParser();
+}
 
 TEST_F(Mp2tStreamParserTest, UnalignedAppend17) {
   // Test small, non-segment-aligned appends.
