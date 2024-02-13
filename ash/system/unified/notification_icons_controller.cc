@@ -147,10 +147,6 @@ const std::string& NotificationIconTrayItemView::GetNotificationId() const {
 
 void NotificationIconTrayItemView::HandleLocaleChange() {}
 
-const char* NotificationIconTrayItemView::GetClassName() const {
-  return "NotificationIconTrayItemView";
-}
-
 void NotificationIconTrayItemView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   controller_->UpdateNotificationIcons();

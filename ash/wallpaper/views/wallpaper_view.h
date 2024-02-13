@@ -46,7 +46,6 @@ class WallpaperView : public WallpaperBaseView,
 
  private:
   // views::View:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool AreDropTypesRequired() override;

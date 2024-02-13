@@ -262,10 +262,6 @@ bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
 }
 
-const char* LoginRemoveAccountDialog::GetClassName() const {
-  return "LoginRemoveAccountDialog";
-}
-
 void LoginRemoveAccountDialog::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;

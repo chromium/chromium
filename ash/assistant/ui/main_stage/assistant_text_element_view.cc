@@ -11,6 +11,7 @@
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_animator.h"
 #include "ash/style/ash_color_id.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -37,10 +38,6 @@ AssistantTextElementView::AssistantTextElementView(const std::string& text) {
 }
 
 AssistantTextElementView::~AssistantTextElementView() = default;
-
-const char* AssistantTextElementView::GetClassName() const {
-  return "AssistantTextElementView";
-}
 
 ui::Layer* AssistantTextElementView::GetLayerForAnimating() {
   if (!layer()) {
@@ -85,5 +82,8 @@ void AssistantTextElementView::OnThemeChanged() {
   label_->SetEnabledColor(
       GetColorProvider()->GetColor(kColorAshAssistantTextColorPrimary));
 }
+
+BEGIN_METADATA(AssistantTextElementView)
+END_METADATA
 
 }  // namespace ash

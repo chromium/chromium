@@ -91,7 +91,6 @@ class ASH_EXPORT LoginPinInputView : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
 
   base::WeakPtr<LoginPinInputView> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -146,10 +146,6 @@ void QuickActionItem::RequestFocus() {
   icon_button_->RequestFocus();
 }
 
-const char* QuickActionItem::GetClassName() const {
-  return "QuickActionItem";
-}
-
 BEGIN_METADATA(QuickActionItem)
 END_METADATA
 

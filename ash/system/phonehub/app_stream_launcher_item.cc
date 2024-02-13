@@ -127,10 +127,6 @@ void AppStreamLauncherItem::RequestFocus() {
   recent_app_button_->RequestFocus();
 }
 
-const char* AppStreamLauncherItem::GetClassName() const {
-  return "AppStreamLauncherItem";
-}
-
 views::LabelButton* AppStreamLauncherItem::GetLabelForTest() {
   return label_;
 }

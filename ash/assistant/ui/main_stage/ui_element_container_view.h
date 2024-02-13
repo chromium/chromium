@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   void OnOverflowIndicatorVisibilityChanged(bool is_visible);
 
   // AnimatedContainerView:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;

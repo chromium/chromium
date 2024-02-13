@@ -117,10 +117,6 @@ void PhoneConnectedView::ChildVisibilityChanged(View* child) {
   }
 }
 
-const char* PhoneConnectedView::GetClassName() const {
-  return "PhoneConnectedView";
-}
-
 phone_hub_metrics::Screen PhoneConnectedView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kPhoneConnected;
 }

@@ -398,10 +398,6 @@ views::View* PrivacyIndicatorsTrayItemView::GetTooltipHandlerForPoint(
   return GetLocalBounds().Contains(point) ? this : nullptr;
 }
 
-const char* PrivacyIndicatorsTrayItemView::GetClassName() const {
-  return "PrivacyIndicatorsTrayItemView";
-}
-
 void PrivacyIndicatorsTrayItemView::AnimationProgressed(
     const gfx::Animation* animation) {
   if (animation == expand_animation_.get()) {

@@ -168,10 +168,6 @@ void PageSwitcher::Layout(PassKey) {
   buttons_->SetBoundsRect(rect);
 }
 
-const char* PageSwitcher::GetClassName() const {
-  return "PageSwitcher";
-}
-
 void PageSwitcher::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (!buttons_)

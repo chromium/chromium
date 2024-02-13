@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   ~AssistantFooterView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
 

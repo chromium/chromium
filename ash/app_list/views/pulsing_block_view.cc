@@ -91,10 +91,6 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size,
 
 PulsingBlockView::~PulsingBlockView() {}
 
-const char* PulsingBlockView::GetClassName() const {
-  return "PulsingBlockView";
-}
-
 void PulsingBlockView::OnStartDelayTimer() {
   background_color_view_->SetPaintToLayer();
   background_color_view_->layer()->SetFillsBoundsOpaquely(false);

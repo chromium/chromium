@@ -27,7 +27,6 @@ class ASH_EXPORT SnoopingProtectionView
   ~SnoopingProtectionView() override;
 
   // views::TrayItemView:
-  const char* GetClassName() const override;
   void HandleLocaleChange() override;
   void UpdateLabelOrImageViewColor(bool active) override;
 

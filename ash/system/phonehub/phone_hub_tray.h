@@ -81,7 +81,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
-  const char* GetClassName() const override;
 
   // PhoneStatusView::Delegate:
   bool CanOpenConnectedDeviceSettings() override;

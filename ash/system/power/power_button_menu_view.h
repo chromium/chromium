@@ -71,9 +71,6 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // constructed. Adds/removes menu items as needed.
   void RecreateItems();
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   // views::View:
   void Layout(PassKey) override;

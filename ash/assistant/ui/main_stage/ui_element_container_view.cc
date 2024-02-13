@@ -94,10 +94,6 @@ UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
 
 UiElementContainerView::~UiElementContainerView() = default;
 
-const char* UiElementContainerView::GetClassName() const {
-  return "UiElementContainerView";
-}
-
 gfx::Size UiElementContainerView::CalculatePreferredSize() const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }

@@ -110,10 +110,6 @@ std::u16string ChannelIndicatorView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_;
 }
 
-const char* ChannelIndicatorView::GetClassName() const {
-  return "ChannelIndicatorView";
-}
-
 void ChannelIndicatorView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
 

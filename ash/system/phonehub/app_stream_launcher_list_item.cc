@@ -8,6 +8,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
@@ -70,8 +71,7 @@ std::u16string AppStreamLauncherListItem::GetAppAccessibleName(
   }
 }
 
-const char* AppStreamLauncherListItem::GetClassName() const {
-  return "AppStreamLauncherListItem";
-}
+BEGIN_METADATA(AppStreamLauncherListItem)
+END_METADATA
 
 }  // namespace ash

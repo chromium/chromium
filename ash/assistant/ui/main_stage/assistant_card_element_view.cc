@@ -15,6 +15,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
@@ -73,10 +74,6 @@ AssistantCardElementView::AssistantCardElementView(
 
 AssistantCardElementView::~AssistantCardElementView() {
   contents_view_->RemoveObserver(this);
-}
-
-const char* AssistantCardElementView::GetClassName() const {
-  return "AssistantCardElementView";
 }
 
 ui::Layer* AssistantCardElementView::GetLayerForAnimating() {
@@ -210,5 +207,8 @@ std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
   return std::make_unique<AssistantUiElementViewAnimator>(
       this, kAssistantCardElementHistogram);
 }
+
+BEGIN_METADATA(AssistantCardElementView)
+END_METADATA
 
 }  // namespace ash

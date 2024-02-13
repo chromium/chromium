@@ -157,10 +157,6 @@ void SwitchAccessMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kMenu;
 }
 
-const char* SwitchAccessMenuView::GetClassName() const {
-  return "SwitchAccessMenuView";
-}
-
 BEGIN_METADATA(SwitchAccessMenuView)
 END_METADATA
 

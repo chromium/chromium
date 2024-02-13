@@ -299,10 +299,6 @@ TrayBubbleView* UnifiedSystemTray::GetBubbleView() {
   return bubble_ ? bubble_->GetBubbleView() : nullptr;
 }
 
-const char* UnifiedSystemTray::GetClassName() const {
-  return "UnifiedSystemTray";
-}
-
 std::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
   return std::make_optional(AcceleratorAction::kToggleSystemTrayBubble);

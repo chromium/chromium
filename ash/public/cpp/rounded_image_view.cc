@@ -112,10 +112,6 @@ void RoundedImageView::OnPaint(gfx::Canvas* canvas) {
                           drawn_image_bounds.y(), path, flags);
 }
 
-const char* RoundedImageView::GetClassName() const {
-  return "RoundedImageView";
-}
-
 gfx::Size RoundedImageView::GetImageSize() const {
   return resized_image_.size();
 }

@@ -74,10 +74,6 @@ AssistantZeroStateView::~AssistantZeroStateView() {
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
 }
 
-const char* AssistantZeroStateView::GetClassName() const {
-  return "AssistantZeroStateView";
-}
-
 gfx::Size AssistantZeroStateView::CalculatePreferredSize() const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }

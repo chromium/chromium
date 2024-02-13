@@ -55,7 +55,6 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
 
   const gfx::ImageSkia& original_image() const { return original_image_; }
 

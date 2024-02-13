@@ -121,10 +121,6 @@ void SearchResultPageView::InitializeContainers(
   AddChildView(std::make_unique<SearchCardView>(std::move(search_view_ptr)));
 }
 
-const char* SearchResultPageView::GetClassName() const {
-  return "SearchResultPageView";
-}
-
 void SearchResultPageView::VisibilityChanged(View* starting_from,
                                              bool is_visible) {
   auto* notifier_controller = search_view_->search_notifier_controller();
@@ -436,5 +432,8 @@ gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
 
   return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
 }
+
+BEGIN_METADATA(SearchResultPageView)
+END_METADATA
 
 }  // namespace ash

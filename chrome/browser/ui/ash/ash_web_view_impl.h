@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace content {
@@ -30,6 +31,7 @@ class RoundedCornersF;
 class AshWebViewImpl : public ash::AshWebView,
                        public content::WebContentsDelegate,
                        public content::WebContentsObserver {
+  METADATA_HEADER(AshWebViewImpl, ash::AshWebView)
  public:
   explicit AshWebViewImpl(const InitParams& params);
   ~AshWebViewImpl() override;
@@ -38,7 +40,6 @@ class AshWebViewImpl : public ash::AshWebView,
   AshWebViewImpl& operator=(AshWebViewImpl&) = delete;
 
   // ash::AshWebView:
-  const char* GetClassName() const override;
   gfx::NativeView GetNativeView() override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void Layout(PassKey) override;

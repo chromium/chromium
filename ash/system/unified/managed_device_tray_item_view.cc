@@ -49,10 +49,6 @@ void ManagedDeviceTrayItemView::OnDeviceEnterpriseInfoChanged() {
 
 void ManagedDeviceTrayItemView::OnEnterpriseAccountDomainChanged() {}
 
-const char* ManagedDeviceTrayItemView::GetClassName() const {
-  return "ManagedDeviceTrayItemView";
-}
-
 void ManagedDeviceTrayItemView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   UpdateIcon();

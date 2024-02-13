@@ -70,8 +70,6 @@ class HeaderView : public views::Label {
   HeaderView(HeaderView&) = delete;
   HeaderView operator=(HeaderView&) = delete;
 
-  // views::View:
-  const char* GetClassName() const override { return "HeaderView"; }
 };
 
 BEGIN_METADATA(HeaderView)

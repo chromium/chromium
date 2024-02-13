@@ -37,7 +37,6 @@ class ASH_EXPORT LoginShelfButton : public PillButton, public ShelfObserver {
   int text_resource_id() const;
 
   // PillButton:
-  const char* GetClassName() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void OnFocus() override;
   void AddedToWidget() override;

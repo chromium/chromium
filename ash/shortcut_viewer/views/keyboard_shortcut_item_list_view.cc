@@ -40,9 +40,6 @@ class HorizontalSeparator : public views::View {
 
   ~HorizontalSeparator() override = default;
 
-  // views::View overrides:
-  const char* GetClassName() const override { return "HorizontalSeparator"; }
-
   gfx::Size CalculatePreferredSize() const override {
     constexpr int kSeparatorThickness = 1;
     return gfx::Size(preferred_width_, kSeparatorThickness);

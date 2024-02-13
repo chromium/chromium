@@ -8,6 +8,7 @@
 #include "ash/assistant/model/ui/assistant_error_element.h"
 #include "ash/assistant/ui/main_stage/assistant_text_element_view.h"
 #include "base/component_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -16,12 +17,10 @@ namespace ash {
 // logic as AssistantTextElementView.
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantErrorElementView
     : public AssistantTextElementView {
+  METADATA_HEADER(AssistantErrorElementView, AssistantTextElementView)
  public:
   explicit AssistantErrorElementView(
       const AssistantErrorElement* error_element);
-
-  // AssistantTextElementView:
-  const char* GetClassName() const override;
 };
 
 }  // namespace ash

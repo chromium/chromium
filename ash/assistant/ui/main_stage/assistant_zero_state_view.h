@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   ~AssistantZeroStateView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnBoundsChanged(const gfx::Rect& prev_bounds) override;

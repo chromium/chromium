@@ -42,7 +42,6 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // TrayItemView:

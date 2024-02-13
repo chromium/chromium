@@ -174,9 +174,6 @@ gfx::Rect TrayContainer::GetAnchorBoundsInScreen() const {
   return GetBoundsInScreen();
 }
 
-const char* TrayContainer::GetClassName() const {
-  return "TrayContainer";
-}
 
 TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
   return {shelf_->IsHorizontalAlignment(),

@@ -136,7 +136,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-  const char* GetClassName() const override;
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

@@ -109,9 +109,6 @@ class CustomizedLabelButton : public views::MdTextButton {
   CustomizedLabelButton& operator=(const CustomizedLabelButton&) = delete;
 
   ~CustomizedLabelButton() override = default;
-
-  // views::View:
-  const char* GetClassName() const override { return "CustomizedLabelButton"; }
 };
 
 BEGIN_METADATA(CustomizedLabelButton)

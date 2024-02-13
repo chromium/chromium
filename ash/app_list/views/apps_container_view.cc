@@ -990,10 +990,6 @@ bool AppsContainerView::OnKeyPressed(const ui::KeyEvent& event) {
     return app_list_folder_view_->OnKeyPressed(event);
 }
 
-const char* AppsContainerView::GetClassName() const {
-  return "AppsContainerView";
-}
-
 void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   const bool creating_initial_config = !app_list_config_;
 
@@ -1574,5 +1570,8 @@ views::View::DropCallback AppsContainerView::GetDropCallback(
   return apps_grid_view_->GetDropCallback(
       GetTranslatedDropTargetEvent(event, this, apps_grid_view_));
 }
+
+BEGIN_METADATA(AppsContainerView)
+END_METADATA
 
 }  // namespace ash

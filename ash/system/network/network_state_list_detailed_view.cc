@@ -213,10 +213,6 @@ void NetworkStateListDetailedView::ToggleInfoBubbleForTesting() {
   ToggleInfoBubble();
 }
 
-const char* NetworkStateListDetailedView::GetClassName() const {
-  return "NetworkStateListDetailedView";
-}
-
 void NetworkStateListDetailedView::Init() {
   CreateScrollableList();
   CreateTitleRow(GetStringIdForNetworkDetailedViewTitleRow(list_type_));

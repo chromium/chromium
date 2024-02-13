@@ -23,6 +23,7 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -52,6 +53,8 @@ class ASH_EXPORT AppsContainerView
       public AppListToastContainerView::Delegate,
       public views::FocusChangeListener,
       public AppListViewProvider {
+  METADATA_HEADER(AppsContainerView, AppListPage)
+
  public:
   explicit AppsContainerView(ContentsView* contents_view);
 
@@ -114,7 +117,6 @@ class ASH_EXPORT AppsContainerView
   // views::View overrides:
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
   void AddedToWidget() override;

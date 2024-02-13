@@ -49,9 +49,6 @@ class ASH_EXPORT NetworkStateListDetailedView
 
   void ToggleInfoBubbleForTesting();
 
-  // views::View:
-  const char* GetClassName() const override;
-
  protected:
   NetworkStateListDetailedView(DetailedViewDelegate* delegate,
                                NetworkDetailedViewListType list_type,

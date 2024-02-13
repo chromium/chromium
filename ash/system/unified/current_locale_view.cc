@@ -55,10 +55,6 @@ void CurrentLocaleView::OnLocaleListSet() {
   DeprecatedLayoutImmediately();
 }
 
-const char* CurrentLocaleView::GetClassName() const {
-  return "CurrentLocaleView";
-}
-
 void CurrentLocaleView::HandleLocaleChange() {
   // Nothing to do here, when this view is used, the locale will be updated
   // using locale_model.

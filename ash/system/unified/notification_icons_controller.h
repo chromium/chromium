@@ -62,7 +62,6 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void UpdateLabelOrImageViewColor(bool active) override;
   void ImmediatelyUpdateVisibility() override;

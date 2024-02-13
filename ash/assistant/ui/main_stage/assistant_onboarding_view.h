@@ -40,7 +40,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   ~AssistantOnboardingView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;

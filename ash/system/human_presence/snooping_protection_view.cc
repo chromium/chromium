@@ -51,10 +51,6 @@ SnoopingProtectionView::~SnoopingProtectionView() = default;
 
 void SnoopingProtectionView::HandleLocaleChange() {}
 
-const char* SnoopingProtectionView::GetClassName() const {
-  return "SnoopingProtectionView";
-}
-
 void SnoopingProtectionView::UpdateLabelOrImageViewColor(bool active) {
   if (!chromeos::features::IsJellyEnabled()) {
     return;

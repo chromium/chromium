@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -23,6 +24,8 @@ class ViewShadow;
 // RemoveQueryConfirmationDialog displays the confirmation dialog for removing
 // a recent query suggestion.
 class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
+  METADATA_HEADER(RemoveQueryConfirmationDialog, views::WidgetDelegateView)
+
  public:
   // Callback to notify user's confirmation for removing the zero state
   // suggestion query. Invoked with true if user confirms removing query
@@ -41,7 +44,6 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   ~RemoveQueryConfirmationDialog() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

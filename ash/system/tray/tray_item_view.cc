@@ -259,10 +259,6 @@ int TrayItemView::GetHeightForWidth(int width) const {
   return GetPreferredSize().height();
 }
 
-const char* TrayItemView::GetClassName() const {
-  return "TrayItemView";
-}
-
 void TrayItemView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }

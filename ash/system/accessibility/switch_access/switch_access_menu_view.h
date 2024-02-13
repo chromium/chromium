@@ -28,7 +28,6 @@ class SwitchAccessMenuView : public views::View {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
  private:
   friend class SwitchAccessMenuBubbleControllerTest;

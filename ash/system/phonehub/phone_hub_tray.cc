@@ -357,10 +357,6 @@ views::Widget* PhoneHubTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
-const char* PhoneHubTray::GetClassName() const {
-  return "PhoneHubTray";
-}
-
 bool PhoneHubTray::CanOpenConnectedDeviceSettings() {
   return TrayPopupUtils::CanOpenWebUISettings();
 }

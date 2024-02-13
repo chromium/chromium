@@ -14,6 +14,7 @@
 #include "base/time/tick_clock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
@@ -95,10 +96,6 @@ gfx::Size LogoutConfirmationDialog::CalculatePreferredSize() const {
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));
 }
 
-const char* LogoutConfirmationDialog::GetClassName() const {
-  return "LogoutConfirmationDialog";
-}
-
 void LogoutConfirmationDialog::UpdateLabel() {
   const base::TimeDelta time_remaining =
       logout_time_ - controller_->clock()->NowTicks();
@@ -120,5 +117,8 @@ void LogoutConfirmationDialog::OnDialogAccepted() {
   UpdateLabel();
   controller_->OnLogoutConfirmed();
 }
+
+BEGIN_METADATA(LogoutConfirmationDialog)
+END_METADATA
 
 }  // namespace ash

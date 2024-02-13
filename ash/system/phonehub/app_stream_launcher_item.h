@@ -36,7 +36,6 @@ class ASH_EXPORT AppStreamLauncherItem : public views::View {
   // views::View:
   bool HasFocus() const override;
   void RequestFocus() override;
-  const char* GetClassName() const override;
 
   views::LabelButton* GetLabelForTest();
   PhoneHubRecentAppButton* GetIconForTest();

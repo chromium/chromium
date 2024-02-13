@@ -71,9 +71,6 @@ class AssistantTextfield : public views::Textfield {
 
  public:
   AssistantTextfield() { SetID(AssistantViewID::kTextQueryField); }
-
-  // views::Textfield overrides:
-  const char* GetClassName() const override { return "AssistantTextfield"; }
 };
 
 BEGIN_METADATA(AssistantTextfield)

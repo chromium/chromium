@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -66,6 +67,7 @@ constexpr int kMarginBetweenButtons = 8;
 
 // The real error dialog with content.
 class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
+  METADATA_HEADER(ConnectionErrorDialogDelegateView, views::WidgetDelegateView)
  public:
   ConnectionErrorDialogDelegateView(
       StartTetheringCallback start_tethering_callback,
@@ -224,11 +226,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
   ~ConnectionErrorDialogDelegateView() override = default;
 
-  // views::View:
-  const char* GetClassName() const override {
-    return "ConnectionErrorDialogDelegateView";
-  }
-
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
   }
@@ -261,6 +258,9 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   raw_ptr<views::Button> cancel_button_ = nullptr;
   raw_ptr<views::Button> accept_button_ = nullptr;
 };
+
+BEGIN_METADATA(ConnectionErrorDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

@@ -34,7 +34,6 @@ class PulsingBlockView : public views::View {
   ~PulsingBlockView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // Returns true if the view has a layer animator attached and is currently

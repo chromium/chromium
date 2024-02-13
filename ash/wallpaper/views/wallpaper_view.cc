@@ -114,10 +114,6 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
   }
 }
 
-const char* WallpaperView::GetClassName() const {
-  return "WallpaperView";
-}
-
 bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }

@@ -144,9 +144,6 @@ class SimulatedAvatarButton : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedAvatarButton"; }
-
   View* icon() { return children()[0]; }
   const View* icon() const { return children()[0]; }
   View* label() { return children()[1]; }
@@ -296,11 +293,6 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override {
-    return "SimulatedExtensionsContainer";
-  }
-
   const View* main_button() const { return children()[children().size() - 1]; }
 
   std::set<raw_ptr<const View, SetExperimental>> visible_views_;
@@ -382,9 +374,6 @@ class SimulatedToolbar : public View {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedToolbar"; }
-
   raw_ptr<SimulatedExtensionsContainer> extensions_;
   raw_ptr<SimulatedAvatarButton> avatar_;
 };

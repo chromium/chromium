@@ -12,6 +12,8 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/layout/box_layout.h"
@@ -23,6 +25,7 @@ namespace {
 class UnifiedNotifierSettingsView
     : public TrayDetailedView,
       public message_center::MessageCenterObserver {
+  METADATA_HEADER(UnifiedNotifierSettingsView, TrayDetailedView)
  public:
   explicit UnifiedNotifierSettingsView(DetailedViewDelegate* delegate)
       : TrayDetailedView(delegate), settings_view_(new NotifierSettingsView()) {
@@ -46,13 +49,12 @@ class UnifiedNotifierSettingsView
     settings_view_->SetQuietModeState(in_quiet_mode);
   }
 
-  const char* GetClassName() const override {
-    return "UnifiedNotifierSettingsView";
-  }
-
  private:
   const raw_ptr<NotifierSettingsView> settings_view_;
 };
+
+BEGIN_METADATA(UnifiedNotifierSettingsView)
+END_METADATA
 
 }  // namespace
 

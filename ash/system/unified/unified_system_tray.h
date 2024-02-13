@@ -177,7 +177,6 @@ class ASH_EXPORT UnifiedSystemTray
   bool ShouldEnableExtraKeyboardAccessibility() override;
   views::Widget* GetBubbleWidget() const override;
   TrayBubbleView* GetBubbleView() override;
-  const char* GetClassName() const override;
   std::optional<AcceleratorAction> GetAcceleratorAction() const override;
 
   // ShelfConfig::Observer:

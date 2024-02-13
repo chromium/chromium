@@ -159,7 +159,6 @@ class EventHandlingView : public View {
   }
 
   // View:
-  const char* GetClassName() const override { return "EventHandlingView"; }
   void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
   void OnGestureEvent(ui::GestureEvent* event) override {
     // Record the handled gesture event.

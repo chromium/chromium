@@ -142,7 +142,6 @@ class ASH_EXPORT TrayItemView : public views::View,
   void SetVisible(bool visible) override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  const char* GetClassName() const override;
 
   void set_use_scale_in_animation(bool use_scale_in_animation) {
     use_scale_in_animation_ = use_scale_in_animation;

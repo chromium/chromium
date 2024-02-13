@@ -62,10 +62,6 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
 
 ScreenCaptureTrayItemView::~ScreenCaptureTrayItemView() = default;
 
-const char* ScreenCaptureTrayItemView::GetClassName() const {
-  return "ScreenCaptureTrayItemView";
-}
-
 views::View* ScreenCaptureTrayItemView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return HitTestPoint(point) ? this : nullptr;

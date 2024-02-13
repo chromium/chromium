@@ -137,10 +137,6 @@ void TriView::ViewHierarchyChanged(
   }
 }
 
-const char* TriView::GetClassName() const {
-  return "TriView";
-}
-
 gfx::Rect TriView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = View::GetAnchorBoundsInScreen();
 

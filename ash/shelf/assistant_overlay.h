@@ -39,7 +39,6 @@ class ASH_EXPORT AssistantOverlay : public views::View,
   bool IsHidden() const { return AnimationState::HIDDEN == animation_state_; }
 
   // views::View:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // ui::ImplicitAnimationObserver

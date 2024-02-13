@@ -61,7 +61,6 @@ class ASH_EXPORT QuickActionItem : public views::View {
   // views::View:
   bool HasFocus() const override;
   void RequestFocus() override;
-  const char* GetClassName() const override;
 
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 

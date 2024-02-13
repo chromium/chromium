@@ -6,6 +6,7 @@
 #define ASH_SHELF_WINDOW_PREVIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -27,6 +28,7 @@ class WindowPreviewView;
 // click events will activate the window and dismiss the bubble which holds this
 // view.
 class WindowPreview : public views::View {
+  METADATA_HEADER(WindowPreview, views::View)
  public:
   class Delegate {
    public:
@@ -54,7 +56,6 @@ class WindowPreview : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   const WindowPreviewView* preview_view() const { return preview_view_; }

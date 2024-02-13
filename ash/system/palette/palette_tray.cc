@@ -688,10 +688,6 @@ views::Widget* PaletteTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
-const char* PaletteTray::GetClassName() const {
-  return "PaletteTray";
-}
-
 void PaletteTray::InitializeWithLocalState() {
   DCHECK(!local_state_);
   local_state_ = Shell::Get()->local_state();

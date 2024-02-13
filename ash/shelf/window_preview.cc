@@ -10,6 +10,7 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -129,10 +130,6 @@ bool WindowPreview::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-const char* WindowPreview::GetClassName() const {
-  return "WindowPreview";
-}
-
 void WindowPreview::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
@@ -176,5 +173,8 @@ void WindowPreview::CloseButtonPressed() {
   // This will have the effect of deleting this view.
   delegate_->OnPreviewDismissed(this);
 }
+
+BEGIN_METADATA(WindowPreview)
+END_METADATA
 
 }  // namespace ash

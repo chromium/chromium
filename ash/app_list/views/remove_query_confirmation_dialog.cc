@@ -21,6 +21,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -166,10 +167,6 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
 
 RemoveQueryConfirmationDialog::~RemoveQueryConfirmationDialog() = default;
 
-const char* RemoveQueryConfirmationDialog::GetClassName() const {
-  return "RemoveQueryConfirmationDialog";
-}
-
 gfx::Size RemoveQueryConfirmationDialog::CalculatePreferredSize() const {
   const int default_width = kDialogWidth;
   return gfx::Size(default_width, GetHeightForWidth(default_width));
@@ -186,5 +183,8 @@ void RemoveQueryConfirmationDialog::GetAccessibleNodeData(
        l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS)},
       u", "));
 }
+
+BEGIN_METADATA(RemoveQueryConfirmationDialog)
+END_METADATA
 
 }  // namespace ash

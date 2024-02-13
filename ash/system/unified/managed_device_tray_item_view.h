@@ -37,7 +37,6 @@ class ManagedDeviceTrayItemView : public TrayItemView,
   void OnEnterpriseAccountDomainChanged() override;
 
   // views::TrayItemView:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void HandleLocaleChange() override;
   void UpdateLabelOrImageViewColor(bool active) override;
