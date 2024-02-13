@@ -38,6 +38,8 @@ namespace {
 constexpr float kCornerRadius = 8.0f;
 constexpr int kLabelSize = 32;
 
+constexpr ui::ColorId kPenIconColor = cros_tokens::kCrosSysOnPrimaryContainer;
+
 // Pulse animation specs.
 constexpr int kPulseTimes = 3;
 constexpr int kPulseExtraHalfSize = 32;
@@ -146,10 +148,10 @@ void EditLabel::SetLabelContent() {
 
   // Clear icon if it is a valid key for new action.
   SetImageModel(views::Button::STATE_NORMAL,
-                output_string.empty() ? ui::ImageModel::FromVectorIcon(
-                                            kGameControlsEditPenIcon,
-                                            cros_tokens::kCrosSysHighlightShape)
-                                      : ui::ImageModel());
+                output_string.empty()
+                    ? ui::ImageModel::FromVectorIcon(kGameControlsEditPenIcon,
+                                                     kPenIconColor)
+                    : ui::ImageModel());
   // Set text label by `output_string` even it is empty to clear the text label.
   SetTextLabel(output_string);
 }
@@ -229,10 +231,9 @@ void EditLabel::OnBlur() {
   }
 
   if (action_->is_new() && GetText().empty()) {
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kGameControlsEditPenIcon,
-                                       cros_tokens::kCrosSysHighlightShape));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(kGameControlsEditPenIcon,
+                                                 kPenIconColor));
   }
   SetToDefault();
   // Reset the error state if an reserved key was pressed.
