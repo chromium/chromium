@@ -26,9 +26,9 @@
 #include "components/webdata/common/webdata_constants.h"
 #include "content/public/common/content_constants.h"
 #include "sql/database.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "storage/browser/database/database_tracker.h"
-#include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_constants.h"
@@ -133,7 +133,7 @@ class SqliteIntegrityTest : public DiagnosticsTest {
       }
       if (!statement.is_valid()) {
         int error = database.GetErrorCode();
-        if (SQLITE_BUSY == error) {
+        if (static_cast<int>(sql::SqliteResultCode::kBusy) == error) {
           RecordFailure(DIAG_SQLITE_DB_LOCKED,
                         "Database locked by another process");
         } else {
