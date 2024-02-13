@@ -616,7 +616,27 @@ chromium-metrics-reviews@google.com.
     Records the web filter type for currently active Family Link user. Prior to
     M93, this metric was recorded at the beginning of first active session
     daily. In M93, this metric is now also recorded when web filter type policy
-    changed. Ignores the reports during OOBE and sign out.
+    changed. This metric is not emitted during OOBE and sign out.
+    FamilyUser.WebFilterType.PerRecord is emitted for every UMA record, in which
+    there is an active supervised user, from the current session.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.WebFilterType.PerRecord"
+    enum="FamilyLinkWebFilterType" expires_after="2024-06-30">
+  <owner>fernandex@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Categorizes the current user based on parental control web filter setting.
+    If there are multiple active supervised accounts on the device, records the
+    filter type if they all have the same filter type. If they have different
+    filter types, records the 'mixed' filter. Unsupervised users are ignored in
+    the process of deciding what to record. FamilyUser.WebFilterType.PerRecord
+    is emitted for every UMA record from the current session. In contrast,
+    FamilyUser.WebFilterType is recorded less frequently; see its histogram
+    description.
   </summary>
 </histogram>
 

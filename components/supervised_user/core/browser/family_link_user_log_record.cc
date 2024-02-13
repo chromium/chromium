@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 namespace supervised_user {
 namespace {
@@ -54,20 +55,43 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
   }
 }
 
+std::optional<WebFilterType> GetWebFilterType(
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+    SupervisedUserURLFilter* supervised_user_filter) {
+  if (!supervised_user_filter || !supervision_status.has_value() ||
+      supervision_status.value() ==
+          FamilyLinkUserLogRecord::Segment::kUnsupervised) {
+    return std::nullopt;
+  }
+  return supervised_user_filter->GetWebFilterType();
+}
+
 }  // namespace
 
 FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
-    signin::IdentityManager* identity_manager) {
-  return FamilyLinkUserLogRecord(GetSupervisionStatus(identity_manager));
+    signin::IdentityManager* identity_manager,
+    SupervisedUserURLFilter* supervised_user_filter) {
+  std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
+      GetSupervisionStatus(identity_manager);
+  return FamilyLinkUserLogRecord(
+      supervision_status,
+      GetWebFilterType(supervision_status, supervised_user_filter));
 }
 
 FamilyLinkUserLogRecord::FamilyLinkUserLogRecord(
-    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status)
-    : supervision_status_(supervision_status) {}
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
+    std::optional<WebFilterType> web_filter_type)
+    : supervision_status_(supervision_status),
+      web_filter_type_(web_filter_type) {}
 
 std::optional<FamilyLinkUserLogRecord::Segment>
 FamilyLinkUserLogRecord::GetSupervisionStatusForPrimaryAccount() const {
   return supervision_status_;
+}
+
+std::optional<WebFilterType>
+FamilyLinkUserLogRecord::GetWebFilterTypeForPrimaryAccount() const {
+  return web_filter_type_;
 }
 
 }  // namespace supervised_user

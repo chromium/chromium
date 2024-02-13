@@ -108,6 +108,9 @@ GURL KidsManagementClassifyURLRequestURL() {
 const char kFamilyLinkUserLogSegmentHistogramName[] =
     "FamilyLinkUser.LogSegment";
 
+const char kFamilyLinkUserLogSegmentWebFilterHistogramName[] =
+    "FamilyUser.WebFilterType.PerRecord";
+
 const char kSupervisedUserURLFilteringResultHistogramName[] =
     "ManagedUsers.FilteringResult";
 

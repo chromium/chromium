@@ -361,6 +361,8 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
       return "allow_certain_sites";
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
+    case WebFilterType::kMixed:
+      NOTREACHED_NORETURN();
   }
 }
 

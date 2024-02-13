@@ -4,16 +4,23 @@
 
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,10 +54,10 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     return &test_profile_manager_;
   }
 
-  void CreateTestingProfile(const std::string& test_email,
-                            const std::string& test_profile,
-                            bool is_subject_to_parental_controls,
-                            bool is_opted_in_to_parental_supervision) {
+  Profile* CreateTestingProfile(const std::string& test_email,
+                                const std::string& test_profile,
+                                bool is_subject_to_parental_controls,
+                                bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, IdentityTestEnvironmentProfileAdaptor::
                           GetIdentityTestEnvironmentFactories());
@@ -67,6 +74,22 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
+
+    if (is_subject_to_parental_controls) {
+      supervised_user::EnableParentalControls(*profile->GetPrefs());
+    }
+    return profile;
+  }
+
+  void RestrictAllSitesForSupervisedUser(Profile* profile) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForProfile(profile);
+    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
+        supervised_user::FilteringBehavior::kBlock);
+  }
+
+  void AllowUnsafeSitesForSupervisedUser(Profile* profile) {
+    profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 
  private:
@@ -144,8 +167,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
-       ProfilesWithMixedSupervisedUsersLoggedAsMixedProfile) {
+TEST_F(
+    FamilyLinkUserMetricsProviderTest,
+    ProfilesWithMixedSupervisedUsersLoggedAsMixedProfileWithDefaultWebFilter) {
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
@@ -161,10 +185,15 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
-       ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfile) {
+TEST_F(
+    FamilyLinkUserMetricsProviderTest,
+    ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfileWithDefaultWebFilter) {
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
@@ -186,6 +215,32 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       ProfilesWithMixedSupervisedFiltersLoggedAsMixed) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  AllowUnsafeSitesForSupervisedUser(profile1);
+
+  Profile* profile2 =
+      CreateTestingProfile(kTestEmail2, kTestProfile2,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  RestrictAllSitesForSupervisedUser(profile2);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kMixed,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest,

@@ -8,12 +8,14 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace signin {
 class IdentityManager;
 }
 
 namespace supervised_user {
+class SupervisedUserURLFilter;
 
 // Stores information required to log UMA record histograms for a FamilyLink
 // user account.
@@ -45,15 +47,22 @@ class FamilyLinkUserLogRecord {
 
   // Returns an immutable FamilyLinkUserLogRecord.
   static FamilyLinkUserLogRecord Create(
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      SupervisedUserURLFilter* supervised_user_filter);
 
   // Returns the supervision status of the primary account.
   std::optional<Segment> GetSupervisionStatusForPrimaryAccount() const;
 
+  // Returns the web filter applied to the account if it is supervised,
+  // otherwise returns nullopt.
+  std::optional<WebFilterType> GetWebFilterTypeForPrimaryAccount() const;
+
  private:
-  FamilyLinkUserLogRecord(std::optional<Segment> supervision_status);
+  FamilyLinkUserLogRecord(std::optional<Segment> supervision_status,
+                          std::optional<WebFilterType> web_filter_type);
 
   std::optional<Segment> supervision_status_;
+  std::optional<WebFilterType> web_filter_type_;
 };
 
 }  // namespace supervised_user

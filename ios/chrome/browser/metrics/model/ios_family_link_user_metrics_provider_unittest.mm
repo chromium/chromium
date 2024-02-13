@@ -8,13 +8,17 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -57,6 +61,10 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForBrowserState(browser_state), account);
+
+    if (is_subject_to_parental_controls) {
+      supervised_user::EnableParentalControls(*browser_state->GetPrefs());
+    }
   }
 
   // Signs the user into `email` as the primary Chrome account and sets the
@@ -75,6 +83,18 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     browser_state_manager_->AddBrowserState(std::move(browser_state), path);
   }
 
+  void RestrictAllSitesForSupervisedUser(ChromeBrowserState* browser_state) {
+    supervised_user::SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+    supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
+        supervised_user::FilteringBehavior::kBlock);
+  }
+
+  void AllowUnsafeSitesForSupervisedUser(ChromeBrowserState* browser_state) {
+    browser_state->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites,
+                                          false);
+  }
+
  private:
   std::unique_ptr<TestChromeBrowserState> BuildTestBrowserState() {
     TestChromeBrowserState::Builder builder;
@@ -85,7 +105,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     return builder.Build();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   IOSFamilyLinkUserMetricsProvider metrics_provider_;
@@ -104,6 +124,9 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectTotalCount(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      /*expected_count=*/0);
 }
 
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
@@ -120,6 +143,10 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::
           kSupervisionEnabledByPolicy,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/1);
 }
 
@@ -138,6 +165,10 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::FamilyLinkUserLogRecord::Segment::
           kSupervisionEnabledByUser,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
@@ -154,10 +185,14 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      /*expected_count=*/0);
 }
 
-TEST_F(IOSFamilyLinkUserMetricsProviderTest,
-       ProfilesWithMixedSupervisedUsersLoggedAsMixedProfile) {
+TEST_F(
+    IOSFamilyLinkUserMetricsProviderTest,
+    ProfilesWithMixedSupervisedUsersLoggedAsMixedProfileWithDefaultWebFilter) {
   // Profile with supervision set by user
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/true,
@@ -175,10 +210,15 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
 }
 
-TEST_F(IOSFamilyLinkUserMetricsProviderTest,
-       ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfile) {
+TEST_F(
+    IOSFamilyLinkUserMetricsProviderTest,
+    ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfileWithDefaultWebFilter) {
   // Adult profile
   SignIn(kTestEmail,
          /*is_subject_to_parental_controls=*/false,
@@ -204,6 +244,10 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(IOSFamilyLinkUserMetricsProviderTest, NotSignedInLoggedAsUnsupervised) {
@@ -213,5 +257,86 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest, NotSignedInLoggedAsUnsupervised) {
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      /*expected_count=*/0);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       ProfileWithSupervisedUserWithOnlyApprovedSites) {
+  // Profile with supervision set by user
+  SignIn(kTestEmail,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/true);
+  RestrictAllSitesForSupervisedUser(
+      browser_state_manager()->GetLastUsedBrowserState());
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByUser,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kCertainSites,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       ProfileWithSupervisedUserWithAllowAllSites) {
+  // Profile with supervision set by user
+  SignIn(kTestEmail,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/true);
+  AllowUnsafeSitesForSupervisedUser(
+      browser_state_manager()->GetLastUsedBrowserState());
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::FamilyLinkUserLogRecord::Segment::
+          kSupervisionEnabledByUser,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kAllowAllSites,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       ProfilesWithMixedSupervisedUsersLoggedAsMixedFilter) {
+  // Profile with supervision set by user
+  const base::FilePath profile_path = base::FilePath("fake/profile/default");
+  AddTestBrowserState(profile_path);
+  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/false);
+  AllowUnsafeSitesForSupervisedUser(
+      browser_state_manager()->GetBrowserState(profile_path));
+
+  // Profile with supervision set by policy
+  const base::FilePath profile_path2 = base::FilePath("fake/profile2/default");
+  AddTestBrowserState(profile_path2);
+  SignIn(browser_state_manager()->GetBrowserState(profile_path2), kTestEmail2,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/true);
+  RestrictAllSitesForSupervisedUser(
+      browser_state_manager()->GetBrowserState(profile_path2));
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      supervised_user::WebFilterType::kMixed,
       /*expected_bucket_count=*/1);
 }
