@@ -373,10 +373,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
 
   html_source->AddBoolean(
-      "enableExtendedSettingsDescriptions",
-      base::FeatureList::IsEnabled(features::kExtendedSettingsDescriptions));
-
-  html_source->AddBoolean(
       "enableFriendlierSafeBrowsingSettings",
       base::FeatureList::IsEnabled(
           safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
