@@ -5872,6 +5872,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE" desc="Title of the secondary button in the Docking Promo, which schedules the Docking Promo for display at a later time, i.e. Remind Me Later functionality.">
         Remind Me Later
       </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's close button.">
+        Dismiss expanded view
+      </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's password tab.">
+        Google Password Manager
+      </message>
+            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's payment method tab.">
+        Payment methods
+      </message>
+            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's address tab.">
+        Addresses and more
+      </message>
     </messages>
   </release>
 </grit>

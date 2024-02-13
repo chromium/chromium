@@ -8,4 +8,13 @@ namespace manual_fill {
 
 NSString* const kExpandedManualFillViewID = @"ExpandedManualFillViewID";
 
+NSString* const kExpandedManualFillHeaderViewID =
+    @"ExpandedManualFillHeaderViewID";
+
+NSString* const kExpandedManualFillHeaderTopViewID =
+    @"ExpandedManualFillHeaderTopViewID";
+
+NSString* const kExpandedManualFillChromeLogoID =
+    @"ExpandedManualFillChromeLogoID";
+
 }  // namespace manual_fill

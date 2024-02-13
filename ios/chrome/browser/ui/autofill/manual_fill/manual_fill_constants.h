@@ -12,6 +12,18 @@ namespace manual_fill {
 // Accessibility identifier for the expanded manual fill view.
 extern NSString* const kExpandedManualFillViewID;
 
+// Accessibility identifier for the header view of the expanded manual fill
+// view.
+extern NSString* const kExpandedManualFillHeaderViewID;
+
+// Accessibility identifier for the header top view of the expanded manual fill
+// view.
+extern NSString* const kExpandedManualFillHeaderTopViewID;
+
+// Accessibility identifier for the Chrome logo of the expanded manual fill
+// view.
+extern NSString* const kExpandedManualFillChromeLogoID;
+
 }  // namespace manual_fill
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CONSTANTS_H_

@@ -135,6 +135,7 @@ source_set("manual_fill_ui") {
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
@@ -253,11 +254,13 @@ source_set("eg2_tests") {
   sources = [
     "address_view_controller_egtest.mm",
     "card_view_controller_egtest.mm",
+    "expanded_manual_fill_egtest.mm",
     "fallback_coordinator_egtest.mm",
     "fallback_view_controller_egtest.mm",
     "password_view_controller_egtest.mm",
   ]
   deps = [
+    ":manual_fill_constants",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
@@ -265,6 +268,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
