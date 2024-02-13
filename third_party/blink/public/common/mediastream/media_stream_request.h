@@ -76,7 +76,6 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
   MediaStreamDevice& operator=(const MediaStreamDevice& other);
 
   bool IsSameDevice(const MediaStreamDevice& other_device) const;
-  bool operator==(const MediaStreamDevice& other_device) const;
 
   base::UnguessableToken session_id() const {
     return session_id_ ? *session_id_ : base::UnguessableToken();
