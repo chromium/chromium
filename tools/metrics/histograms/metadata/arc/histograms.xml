@@ -1536,6 +1536,26 @@ chromium-metrics-reviews@google.com.
   <summary>Records the style of an Arc notification when it's created.</summary>
 </histogram>
 
+<histogram
+    name="Arc.NotificationView.{ChildView}.{FadeType}.AnimationSmoothness"
+    units="%" expires_after="2024-06-01">
+  <owner>shuminghao@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Relative smoothness of the fade animation of {ChildView} inside a
+    notification view. 100% represents ideally smooth 60 frames per second.
+    Emitted when the fade in/out animation is completed.
+  </summary>
+  <token key="ChildView">
+    <variant name="CollapsedSummaryView"/>
+    <variant name="ContentView"/>
+  </token>
+  <token key="FadeType">
+    <variant name="FadeIn"/>
+    <variant name="FadeOut"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
     expires_after="2024-06-30">
   <owner>mhasank@google.com</owner>

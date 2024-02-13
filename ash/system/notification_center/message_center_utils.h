@@ -70,28 +70,30 @@ GetActiveNotificationViewControllerForNotificationView(
 // Gets the grouping controller for the provided notification view. Each display
 // has it's own `NotificationGroupingController` so we need to look up the
 // display for the provide view first.
-NotificationGroupingController* GetGroupingControllerForNotificationView(
-    views::View* notification_view);
+NotificationGroupingController* ASH_EXPORT
+GetGroupingControllerForNotificationView(views::View* notification_view);
 
 // Utils for animation within a notification view.
 
 // Initializes the layer for the specified `view` for animations.
-void InitLayerForAnimations(views::View* view);
+void ASH_EXPORT InitLayerForAnimations(views::View* view);
 
 // Fade in animation using AnimationBuilder.
-void FadeInView(views::View* view,
-                int delay_in_ms,
-                int duration_in_ms,
-                gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
-                const std::string& animation_histogram_name = std::string());
+void ASH_EXPORT
+FadeInView(views::View* view,
+           int delay_in_ms,
+           int duration_in_ms,
+           gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
+           const std::string& animation_histogram_name = std::string());
 
 // Fade out animation using AnimationBuilder.
-void FadeOutView(views::View* view,
-                 base::OnceClosure on_animation_ended,
-                 int delay_in_ms,
-                 int duration_in_ms,
-                 gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
-                 const std::string& animation_histogram_name = std::string());
+void ASH_EXPORT
+FadeOutView(views::View* view,
+            base::OnceClosure on_animation_ended,
+            int delay_in_ms,
+            int duration_in_ms,
+            gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
+            const std::string& animation_histogram_name = std::string());
 
 // Slide out animation using AnimationBuilder.
 void SlideOutView(views::View* view,

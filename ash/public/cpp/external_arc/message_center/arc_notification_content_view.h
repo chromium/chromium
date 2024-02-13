@@ -65,6 +65,8 @@ class ArcNotificationContentView
   void OnContainerAnimationStarted();
   void OnContainerAnimationEnded();
   void ActivateWidget(bool activate);
+  void EnsureSurfaceAttached();
+  void EnsureSurfaceDetached();
 
   bool slide_in_progress() const { return slide_in_progress_; }
 

@@ -425,10 +425,10 @@ void ArcNotificationContentView::MaybeCreateFloatingControlButtons() {
   // of the hosting widget's focus chain. It could only be created when both
   // are present. Further, if we are being destroyed (|item_| is null), don't
   // create the control buttons.
-  if (!surface_ || !GetWidget() || !item_)
+  if (!surface_ || !GetWidget() || !item_ || control_buttons_view_.parent()) {
     return;
+  }
 
-  DCHECK(!control_buttons_view_.parent());
   DCHECK(!floating_control_buttons_widget_);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
@@ -552,6 +552,23 @@ void ArcNotificationContentView::AttachSurface() {
   MaybeCreateFloatingControlButtons();
 
   UpdateMask(false /* force_update */);
+}
+
+void ArcNotificationContentView::EnsureSurfaceAttached() {
+  if (!surface_ || surface_->IsAttached()) {
+    return;
+  }
+  AttachSurface();
+}
+
+void ArcNotificationContentView::EnsureSurfaceDetached() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  if (surface_ && surface_->IsAttached()) {
+    surface_->Detach();
+  }
 }
 
 void ArcNotificationContentView::ShowCopiedSurface() {

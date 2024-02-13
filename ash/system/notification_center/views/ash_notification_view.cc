@@ -1858,7 +1858,17 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     if (needs_layout()) {
       DeprecatedLayoutImmediately();
     }
-    DCHECK(!needs_layout());
+    auto* notification =
+        message_center::MessageCenter::Get()->FindNotificationById(
+            notification_id());
+
+    // When the notification is ArcNotification and not group parent, the view
+    // is rendered in Android then attached to message center. Ash does not
+    // directly control the layout so we should not check `needs_layout()`.
+    if (message_center_utils::IsAshNotification(notification) &&
+        !notification->group_parent()) {
+      DCHECK(!needs_layout());
+    }
 
     expand_button_->AnimateExpandCollapse();
   }

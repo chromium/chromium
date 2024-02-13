@@ -93,6 +93,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//ui/aura:test_support",
     "//ui/base:test_support",
+    "//ui/compositor:test_support",
     "//ui/events:test_support",
     "//ui/message_center:test_support",
     "//ui/views:test_support",
