@@ -17840,6 +17840,27 @@
             ]
         }
     ],
+    "SharedStorageAPIEnableWALForDatabase": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWAL",
+                    "enable_features": [
+                        "SharedStorageAPIEnableWALForDatabase"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedStorageWorkletThreadImplementation": [
         {
             "platforms": [
