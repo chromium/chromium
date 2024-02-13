@@ -1019,8 +1019,11 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // libva) and a PlatformVideoFramePool.
   CHECK(allocator.has_value());
   CHECK(main_frame_pool_->AsPlatformVideoFramePool());
+  // The custom allocator creates frames backed by GPU memory buffers.
+  // TODO(nhebert): Change the storage type argument when |allocator| switches
+  // to create NativePixmap-backed frames.
   main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
-      *allocator);
+      *allocator, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 #elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
   // Linux w/ V4L2 should not use a custom allocator
   // Only tested with video_decode_accelerator_tests
@@ -1164,8 +1167,10 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
 
 #if BUILDFLAG(IS_LINUX)
+    // TODO(nhebert): Change the storage type argument when |allocator| switches
+    // to create NativePixmap-backed frames.
     auxiliary_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
-        *allocator);
+        *allocator, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 #endif
 
     CroStatus::Or<GpuBufferLayout> status_or_layout =

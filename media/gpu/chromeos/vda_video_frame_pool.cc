@@ -17,7 +17,9 @@ namespace media {
 VdaVideoFramePool::VdaVideoFramePool(
     base::WeakPtr<VdaDelegate> vda,
     scoped_refptr<base::SequencedTaskRunner> vda_task_runner)
-    : vda_(std::move(vda)), vda_task_runner_(std::move(vda_task_runner)) {
+    : vda_(std::move(vda)),
+      vda_task_runner_(std::move(vda_task_runner)),
+      vda_frame_storage_type_(vda_->GetFrameStorageType()) {
   DVLOGF(3);
   DETACH_FROM_SEQUENCE(parent_sequence_checker_);
 
@@ -161,6 +163,10 @@ scoped_refptr<VideoFrame> VdaVideoFramePool::GetFrame() {
       base::BindOnce(&VdaVideoFramePool::ImportFrameThunk, parent_task_runner_,
                      weak_this_, std::move(origin_frame)));
   return wrapped_frame;
+}
+
+VideoFrame::StorageType VdaVideoFramePool::GetFrameStorageType() const {
+  return vda_frame_storage_type_;
 }
 
 bool VdaVideoFramePool::IsExhausted() {

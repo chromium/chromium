@@ -20,6 +20,11 @@ namespace media {
 
 namespace {
 
+// This needs to be synchronized with the frame type from DefaultCreateFrame().
+// There is a runtime CHECK() to validate this.
+constexpr VideoFrame::StorageType kDefaultFrameStorageType =
+    VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+
 // The default method to create frames.
 CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
     VideoPixelFormat format,
@@ -56,7 +61,8 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
 }  // namespace
 
 PlatformVideoFramePool::PlatformVideoFramePool()
-    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)) {
+    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)),
+      frame_storage_type_(kDefaultFrameStorageType) {
   DVLOGF(4);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -125,6 +131,16 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
       return nullptr;
     }
 
+    CHECK(*new_frame);
+    // This passes because |frame_storage_type_| is set to match the StorageType
+    // of frames produced by |create_frame_cb_|. When |create_frame_cb_| is set
+    // to DefaultCreateFrame(), then |frame_storage_type_| is set to
+    // |kDefaultFrameStorageType|, which is hardcoded to match the storage type
+    // used by DefaultCreateFrame(). When |create_frame_cb_| has been set by
+    // SetCustomAllocator(), then |frame_storage_type_| is expected to be
+    // correctly // set by the caller.
+    CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
+
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
 
@@ -147,6 +163,11 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   DCHECK_EQ(wrapped_frame->metadata().hw_protected, use_protected_);
 
   return wrapped_frame;
+}
+
+VideoFrame::StorageType PlatformVideoFramePool::GetFrameStorageType() const {
+  base::AutoLock auto_lock(lock_);
+  return frame_storage_type_;
 }
 
 PlatformVideoFramePool* PlatformVideoFramePool::AsPlatformVideoFramePool() {
@@ -233,9 +254,11 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
 }
 
 void PlatformVideoFramePool::SetCustomFrameAllocator(
-    DmabufVideoFramePool::CreateFrameCB allocator) {
+    DmabufVideoFramePool::CreateFrameCB allocator,
+    VideoFrame::StorageType frame_storage_type) {
   base::AutoLock auto_lock(lock_);
   create_frame_cb_ = allocator;
+  frame_storage_type_ = frame_storage_type;
 }
 
 bool PlatformVideoFramePool::IsExhausted() {

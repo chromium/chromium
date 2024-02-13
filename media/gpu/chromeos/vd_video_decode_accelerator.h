@@ -87,6 +87,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
                      size_t max_num_frames,
                      NotifyLayoutChangedCb notify_layout_changed_cb,
                      ImportFrameCb import_frame_cb) override;
+  VideoFrame::StorageType GetFrameStorageType() const override;
 
  private:
   VdVideoDecodeAccelerator(

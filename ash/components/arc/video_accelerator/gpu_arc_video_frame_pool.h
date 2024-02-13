@@ -65,6 +65,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
                      size_t max_num_frames,
                      NotifyLayoutChangedCb notify_layout_changed_cb,
                      ImportFrameCb import_frame_cb) override;
+  media::VideoFrame::StorageType GetFrameStorageType() const override;
 
   // Get the id associated with the specified |video_frame|.
   std::optional<int32_t> GetVideoFrameId(const media::VideoFrame* video_frame);

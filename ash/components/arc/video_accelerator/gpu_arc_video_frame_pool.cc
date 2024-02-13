@@ -183,6 +183,10 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
     return;
   }
 
+  // This passes because GetFrameStorageType() is hard coded to match
+  // the storage type of frames produced by CreateVideoFrame().
+  CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
+
   const gfx::GpuMemoryBufferId buffer_id =
       origin_frame->GetGpuMemoryBuffer()->GetId();
   auto it = buffer_id_to_video_frame_id_.emplace(buffer_id, video_frame->id);
@@ -228,6 +232,13 @@ void GpuArcVideoFramePool::RequestFrames(
 
   // Let the owner of the video frame pool know new frames were requested.
   request_frames_cb_.Run();
+}
+
+media::VideoFrame::StorageType GpuArcVideoFramePool::GetFrameStorageType()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This is validated at runtime to be in sync with the frame storage type.
+  return media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
 }
 
 std::optional<int32_t> GpuArcVideoFramePool::GetVideoFrameId(

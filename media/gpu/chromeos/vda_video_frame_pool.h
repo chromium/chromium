@@ -55,6 +55,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                size_t max_num_frames,
                                NotifyLayoutChangedCb notify_layout_changed_cb,
                                ImportFrameCb import_frame_cb) = 0;
+    virtual VideoFrame::StorageType GetFrameStorageType() const = 0;
   };
 
   VdaVideoFramePool(base::WeakPtr<VdaDelegate> vda,
@@ -70,6 +71,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                             bool use_protected,
                                             bool use_linear_buffers) override;
   scoped_refptr<VideoFrame> GetFrame() override;
+  VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
@@ -103,6 +105,10 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   // Note: DmabufVideoFrame's public methods like Initialize() and GetFrame()
   // should be called on |parent_task_runner_|.
   scoped_refptr<base::SequencedTaskRunner> vda_task_runner_;
+
+  // The storage type of frames imported by |vda_|. This is set at
+  // construction time by calling |vda_->GetFrameStorageType()|.
+  const VideoFrame::StorageType vda_frame_storage_type_;
 
   // The callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_;

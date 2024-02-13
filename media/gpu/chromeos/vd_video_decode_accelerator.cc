@@ -473,6 +473,11 @@ void VdVideoDecodeAccelerator::RequestFrames(
       GL_TEXTURE_EXTERNAL_OES);
 }
 
+VideoFrame::StorageType VdVideoDecodeAccelerator::GetFrameStorageType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  return VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+}
+
 void VdVideoDecodeAccelerator::AssignPictureBuffers(
     const std::vector<PictureBuffer>& buffers) {
   VLOGF(2);
@@ -575,6 +580,11 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
           gfx::Rect(layout_->coded_size()), layout_->coded_size(),
           std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
           base::TimeDelta());
+
+  // This passes because GetFrameStorageType() is hard coded to match the
+  // storage type of frames produced by
+  // VideoFrame::WrapExternalGpuMemoryBuffer().
+  CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
 
   auto res = frame_id_to_picture_id_.emplace(
       origin_frame->GetGpuMemoryBuffer()->GetId(), picture_buffer_id);

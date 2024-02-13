@@ -55,6 +55,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
                                             bool use_protected,
                                             bool use_linear_buffers) override;
   scoped_refptr<VideoFrame> GetFrame() override;
+  VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
@@ -68,11 +69,12 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();
 
-  // Allows the client to specify how to allocate buffers. |allocator| is only
-  // run during a call to Initialize() or GetFrame(), so it's guaranteed to be
+  // Allows the client to specify how to allocate buffers. |allocator| only runs
+  // during a call to Initialize() or GetFrame(), so it's guaranteed to be
   // called in the same thread as those two methods. VaapiVideoDecoder uses this
   // on linux to delegate dmabuf allocation to the libva driver.
-  void SetCustomFrameAllocator(DmabufVideoFramePool::CreateFrameCB allocator);
+  void SetCustomFrameAllocator(DmabufVideoFramePool::CreateFrameCB allocator,
+                               VideoFrame::StorageType frame_storage_type);
 
  private:
   friend class PlatformVideoFramePoolTestBase;
@@ -103,10 +105,13 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // Lock to protect all data members.
   // Every public method and OnFrameReleased() acquire this lock.
-  base::Lock lock_;
+  mutable base::Lock lock_;
 
   // The function used to allocate new frames.
   CreateFrameCB create_frame_cb_ GUARDED_BY(lock_);
+
+  // The storage type that |create_frame_cb_| produces.
+  VideoFrame::StorageType frame_storage_type_ GUARDED_BY(lock_);
 
   // The arguments of current frame. We allocate new frames only if a pixel
   // format or size in |frame_layout_| is changed. When GetFrame() is

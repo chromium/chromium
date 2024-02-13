@@ -74,6 +74,9 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // pool is exhausted.
   virtual scoped_refptr<VideoFrame> GetFrame() = 0;
 
+  // Returns the storage type of frames that GetFrame() returns.
+  virtual VideoFrame::StorageType GetFrameStorageType() const = 0;
+
   // Checks whether the pool is exhausted. This happens when the pool reached
   // its maximum size and all frames are in use. Calling GetFrame() when the
   // pool is exhausted will return a nullptr.
