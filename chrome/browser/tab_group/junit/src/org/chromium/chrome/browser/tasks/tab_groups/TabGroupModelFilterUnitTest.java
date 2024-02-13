@@ -1374,4 +1374,19 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
     }
+
+    @Test
+    public void testRelatedTabsExistForRootId() {
+        assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
+        assertThat(mTab3.getRootId(), equalTo(TAB2_ROOT_ID));
+        assertThat(mTab6.getRootId(), equalTo(TAB5_ROOT_ID));
+
+        mTabGroupModelFilter.removeTab(mTab1);
+        mTabGroupModelFilter.removeTab(mTab3);
+        mTabGroupModelFilter.removeTab(mTab5);
+
+        assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
+        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
+    }
 }

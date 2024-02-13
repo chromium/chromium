@@ -3047,6 +3047,60 @@ public class TabListMediatorUnitTest {
         assertTrue(mMediator.specialItemExistsInModel(MessageService.MessageType.ALL));
     }
 
+    @Test
+    public void tabClosure_updatesTabGroup_inTabSwitcher() {
+        initAndAssertAllProperties();
+        TabListMediator.TabActionListener actionListenerBeforeUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+
+        // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB1_ID);
+
+        assertEquals(2, mModel.size());
+
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+
+        mMediatorTabModelObserver.willCloseTab(mTab1, false, true);
+
+        assertEquals(2, mModel.size());
+
+        TabListMediator.TabActionListener actionListenerAfterUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+        // The selection listener should be updated which indicates that corresponding property
+        // model is updated.
+        assertThat(actionListenerBeforeUpdate, not(actionListenerAfterUpdate));
+    }
+
+    @Test
+    public void tabClosure_ignoresUpdateForTabGroup_outsideTabSwitcher() {
+        initAndAssertAllProperties();
+        TabListMediator.TabActionListener actionListenerBeforeUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+
+        // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB1_ID);
+
+        assertEquals(2, mModel.size());
+
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
+
+        mMediatorTabModelObserver.willCloseTab(mTab1, false, true);
+
+        assertEquals(1, mModel.size());
+
+        TabListMediator.TabActionListener actionListenerAfterUpdate =
+                mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER);
+        // The selection listener should remain unchanged, since the property model of the tab group
+        // should not get updated when the closure is triggered from outside the tab switcher.
+        assertThat(actionListenerBeforeUpdate, equalTo(actionListenerAfterUpdate));
+    }
+
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
         if (isGroup) {
             doAnswer(

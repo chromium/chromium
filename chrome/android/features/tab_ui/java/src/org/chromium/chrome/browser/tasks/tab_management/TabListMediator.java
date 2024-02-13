@@ -928,6 +928,28 @@ class TabListMediator {
 
                     @Override
                     public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        // If the tab closed was part of a tab group and the closure was triggered
+                        // from the tab switcher, update the group to reflect the closure instead of
+                        // closing the tab.
+                        if (mActionsOnAllRelatedTabs
+                                && (mCurrentTabModelFilterSupplier.get()
+                                        instanceof TabGroupModelFilter groupFilter)
+                                && groupFilter.tabGroupExistsForRootId(tab.getRootId())) {
+                            int groupIndex = groupFilter.indexOf(tab);
+                            Tab groupTab = groupFilter.getTabAt(groupIndex);
+                            final int currentSelectedTabId =
+                                    TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
+                            boolean isSelected = currentSelectedTabId == groupTab.getId();
+                            updateTab(
+                                    groupIndex,
+                                    PseudoTab.fromTab(groupTab),
+                                    isSelected,
+                                    true,
+                                    false);
+
+                            return;
+                        }
+
                         if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
                         tab.removeObserver(mTabObserver);
                         mModel.removeAt(mModel.indexFromId(tab.getId()));

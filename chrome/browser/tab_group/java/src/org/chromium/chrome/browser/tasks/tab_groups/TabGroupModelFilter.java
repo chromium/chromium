@@ -954,4 +954,13 @@ public class TabGroupModelFilter extends TabModelFilter {
     int getGroupLastShownTabIdForTesting(int rootId) {
         return mRootIdToGroupMap.get(rootId).getLastShownTabId();
     }
+
+    /**
+     * @param rootId The root identifier of the tab group.
+     * @return Whether the given rootId has any tab group associated with it.
+     */
+    public boolean tabGroupExistsForRootId(int rootId) {
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        return group != null;
+    }
 }
