@@ -185,6 +185,19 @@ void RecordPinInteraction(const std::vector<const HoldingSpaceItem*>& items,
   }
 }
 
+// TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+// into the production metrics code path when cleaning up the experiment.
+void RecordUsedInteraction(const std::vector<const HoldingSpaceItem*>& items) {
+  using holding_space_wallpaper_nudge_metrics::Interaction;
+
+  for (const HoldingSpaceItem* item : items) {
+    holding_space_wallpaper_nudge_metrics::RecordInteraction(
+        item->type() == HoldingSpaceItem::Type::kPinnedFile
+            ? Interaction::kUsedPinnedItem
+            : Interaction::kUsedOtherItem);
+  }
+}
+
 // Highlight -------------------------------------------------------------------
 
 // A class which adds a highlight layer to the region above the associated
@@ -577,6 +590,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
       case ItemAction::kRemove:
       case ItemAction::kResume:
       case ItemAction::kShowInFolder:
+        RecordUsedInteraction(items);
+        break;
       case ItemAction::kUnpin:
         break;
     }

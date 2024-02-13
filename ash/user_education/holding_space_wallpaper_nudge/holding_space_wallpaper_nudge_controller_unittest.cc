@@ -5,6 +5,7 @@
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 
 #include <array>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -45,6 +46,7 @@
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -1587,44 +1589,116 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
   };
 
   // Set up `test_cases`.
-  const std::array<TestCase, 6u> test_cases = {
+  const std::array<TestCase, 15u> test_cases = {
+      TestCase{
+          .item_action = ItemAction::kCancel,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kCopy,
+          .event_source = EventSource::kHoldingSpaceItemContextMenu,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kDrag,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kLaunch,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kPause,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
       TestCase{
           .item_action = ItemAction::kPin,
           .event_source = EventSource::kHoldingSpaceItem,
           .expected_interactions = {Interaction::kPinnedFileFromAnySource,
-                                    Interaction::kPinnedFileFromPinButton}},
+                                    Interaction::kPinnedFileFromPinButton},
+      },
       TestCase{
           .item_action = ItemAction::kPin,
           .event_source = EventSource::kHoldingSpaceItemContextMenu,
           .expected_interactions = {Interaction::kPinnedFileFromAnySource,
-                                    Interaction::kPinnedFileFromContextMenu}},
-      TestCase{.item_action = ItemAction::kPin,
-               .event_source = EventSource::kHoldingSpaceTray,
-               .expected_interactions =
-                   {Interaction::kPinnedFileFromAnySource,
-                    Interaction::kPinnedFileFromHoldingSpaceDrop}},
-      TestCase{.item_action = ItemAction::kPin,
-               .event_source = EventSource::kFilesApp,
-               .expected_interactions = {Interaction::kPinnedFileFromAnySource,
-                                         Interaction::kPinnedFileFromFilesApp}},
+                                    Interaction::kPinnedFileFromContextMenu},
+      },
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kHoldingSpaceTray,
+          .expected_interactions =
+              {Interaction::kPinnedFileFromAnySource,
+               Interaction::kPinnedFileFromHoldingSpaceDrop},
+      },
+      TestCase{
+          .item_action = ItemAction::kPin,
+          .event_source = EventSource::kFilesApp,
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource,
+                                    Interaction::kPinnedFileFromFilesApp},
+      },
       TestCase{
           .item_action = ItemAction::kPin,
           .event_source = EventSource::kTest,
-          .expected_interactions = {Interaction::kPinnedFileFromAnySource}},
+          .expected_interactions = {Interaction::kPinnedFileFromAnySource},
+      },
       TestCase{
           .item_action = ItemAction::kPin,
           .event_source = EventSource::kWallpaper,
           .expected_interactions = {Interaction::kPinnedFileFromAnySource,
-                                    Interaction::kPinnedFileFromWallpaperDrop}},
+                                    Interaction::kPinnedFileFromWallpaperDrop},
+      },
+      TestCase{
+          .item_action = ItemAction::kRemove,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kResume,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kShowInFolder,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {Interaction::kUsedOtherItem,
+                                    Interaction::kUsedPinnedItem},
+      },
+      TestCase{
+          .item_action = ItemAction::kUnpin,
+          .event_source = EventSource::kHoldingSpaceItem,
+          .expected_interactions = {},
+      },
   };
 
-  // Set up holding space `items`.
-  const std::unique_ptr<HoldingSpaceItem> item_0 = CreateHoldingSpaceItem(
-      HoldingSpaceItem::Type::kDownload, base::FilePath("foo"));
-  const std::unique_ptr<HoldingSpaceItem> item_1 = CreateHoldingSpaceItem(
-      HoldingSpaceItem::Type::kDownload, base::FilePath("bar"));
-  const std::vector<const HoldingSpaceItem*> items = {item_0.get(),
-                                                      item_1.get()};
+  // Create holding space `items`.
+  const auto pinned_item = CreateHoldingSpaceItem(
+      HoldingSpaceItem::Type::kPinnedFile, base::FilePath("pinned"));
+  const auto unpinned_item = CreateHoldingSpaceItem(
+      HoldingSpaceItem::Type::kDownload, base::FilePath("unpinned"));
+  const std::vector<const HoldingSpaceItem*> items = {pinned_item.get(),
+                                                      unpinned_item.get()};
+
+  // Partition `pinned_items` from `unpinned_items`.
+  std::vector<const HoldingSpaceItem*> pinned_items;
+  std::vector<const HoldingSpaceItem*> unpinned_items;
+  base::ranges::partition_copy(
+      items, std::back_inserter(pinned_items),
+      std::back_inserter(unpinned_items),
+      [](HoldingSpaceItem::Type type) {
+        return type == HoldingSpaceItem::Type::kPinnedFile;
+      },
+      &HoldingSpaceItem::type);
 
   // Verify expectations for each `test_case`.
   for (const TestCase& test_case : test_cases) {
@@ -1645,7 +1719,20 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest,
                               std::vector<Bucket> buckets;
                               for (Interaction interaction :
                                    test_case.expected_interactions) {
-                                buckets.emplace_back(interaction, items.size());
+                                switch (interaction) {
+                                  case Interaction::kUsedOtherItem:
+                                    buckets.emplace_back(interaction,
+                                                         unpinned_items.size());
+                                    break;
+                                  case Interaction::kUsedPinnedItem:
+                                    buckets.emplace_back(interaction,
+                                                         pinned_items.size());
+                                    break;
+                                  default:
+                                    buckets.emplace_back(interaction,
+                                                         items.size());
+                                    break;
+                                }
                               }
                               return buckets;
                             })()),
