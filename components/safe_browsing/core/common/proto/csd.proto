@@ -2327,14 +2327,16 @@ message ExtensionTelemetryReportRequest {
         CREATE = 1;
         UPDATE = 2;
         REMOVE = 3;
+        CAPTURE_VISIBLE_TAB = 4;
       }
       message CallDetails {
         // The API method invoked.
         optional ApiMethod method = 1;
-        // The URL to navigate the tab to.
+        // The URL to navigate the tab to. This field is only valid when
+        // method is one of CREATE or UPDATE.
         optional string new_url = 2;
-        // The currently committed URL for the tab. This field is not applicable
-        // when method = CREATE.
+        // The currently committed URL for the tab. This field is only
+        // valid when method is one of UPDATE, REMOVE, or CAPTURE_VISIBLE_TAB.
         optional string current_url = 3;
         // Number of times this call was made.
         optional uint32 count = 4;
