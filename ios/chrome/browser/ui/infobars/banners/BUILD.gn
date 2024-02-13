@@ -17,6 +17,7 @@ source_set("banners") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
