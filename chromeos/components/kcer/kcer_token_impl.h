@@ -163,6 +163,30 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                         PublicKey kcer_public_key,
                         uint32_t result_code);
 
+  struct ImportCertFromBytesTask {
+    ImportCertFromBytesTask(CertDer in_cert_der,
+                            Kcer::StatusCallback in_callback);
+    ImportCertFromBytesTask(ImportCertFromBytesTask&& other);
+    ~ImportCertFromBytesTask();
+
+    const CertDer cert_der;
+    Kcer::StatusCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void ImportCertFromBytesImpl(ImportCertFromBytesTask task);
+  void ImportCertFromBytesWithExistingCerts(
+      ImportCertFromBytesTask task,
+      std::vector<ObjectHandle> existing_certs,
+      uint32_t result_code);
+  void ImportCertFromBytesWithKeyHandle(ImportCertFromBytesTask task,
+                                        Pkcs11Id pkcs11_id,
+                                        std::vector<ObjectHandle> key_handles,
+                                        uint32_t result_code);
+  void DidImportCertFromBytes(ImportCertFromBytesTask task,
+                              std::optional<Error> kcer_error,
+                              ObjectHandle cert_handle,
+                              uint32_t result_code);
+
   struct RemoveKeyAndCertsTask {
     RemoveKeyAndCertsTask(PrivateKeyHandle in_key,
                           Kcer::StatusCallback in_callback);

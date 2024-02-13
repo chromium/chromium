@@ -189,6 +189,78 @@ void KcerTokenUtils::FindPrivateKey(
 
 //==============================================================================
 
+void KcerTokenUtils::ImportCert(
+    bssl::UniquePtr<X509> cert,
+    Pkcs11Id pkcs11_id,
+    std::string nickname,
+    CertDer cert_der,
+    base::OnceCallback<void(std::optional<Error> kcer_error,
+                            ObjectHandle cert_handle,
+                            uint32_t result_code)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  Pkcs12Reader reader;
+
+  base::span<const uint8_t> issuer_name_der;
+  Pkcs12ReaderStatusCode status =
+      reader.GetIssuerNameDer(cert.get(), issuer_name_der);
+  if (status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(callback).Run(Error::kFailedToGetIssuerName,
+                                   ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR);
+  }
+
+  base::span<const uint8_t> subject_name_der;
+  status = reader.GetSubjectNameDer(cert.get(), subject_name_der);
+  if (status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(callback).Run(Error::kFailedToGetSubjectName,
+                                   ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR);
+  }
+
+  bssl::UniquePtr<uint8_t> serial_number_der;
+  int serial_number_der_size = 0;
+  status = reader.GetSerialNumberDer(cert.get(), serial_number_der,
+                                     serial_number_der_size);
+  if (status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(callback).Run(Error::kFailedToGetSerialNumber,
+                                   ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR);
+  }
+
+  if (issuer_name_der.empty() || subject_name_der.empty() ||
+      !serial_number_der || (serial_number_der_size <= 0)) {
+    return std::move(callback).Run(Error::kInvalidCertificate, ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR);
+  }
+
+  chromeos::PKCS11_CK_OBJECT_CLASS cert_class =
+      chromeos::PKCS11_CKO_CERTIFICATE;
+  chromeos::PKCS11_CK_CERTIFICATE_TYPE cert_type = chromeos::PKCS11_CKC_X_509;
+  chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+
+  chaps::AttributeList cert_attrs;
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_CLASS, MakeSpan(&cert_class));
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_CERTIFICATE_TYPE,
+               MakeSpan(&cert_type));
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_ID, pkcs11_id.value());
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_LABEL,
+               base::as_byte_span(nickname));
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_VALUE, cert_der.value());
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_ISSUER, issuer_name_der);
+  AddAttribute(cert_attrs, chromeos::PKCS11_CKA_SUBJECT, subject_name_der);
+  AddAttribute(
+      cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
+      base::make_span(serial_number_der.get(), size_t(serial_number_der_size)));
+
+  chaps_client_->CreateObject(
+      pkcs_11_slot_id_, cert_attrs,
+      base::BindOnce(std::move(callback), /*kcer_error*/ std::nullopt));
+}
+
+//==============================================================================
+
 KcerTokenUtils::ImportKeyTask::ImportKeyTask(
     KeyData in_key_data,
     Kcer::GenerateKeyCallback in_callback)

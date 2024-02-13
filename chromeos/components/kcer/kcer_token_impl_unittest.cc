@@ -1342,6 +1342,304 @@ TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePubKey) {
   EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that ImportCertFromBytes can successfully import a cert.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Simulate that a key for the cert exists.
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get().has_value());
+
+  chromeos::PKCS11_CK_OBJECT_CLASS cert_class =
+      chromeos::PKCS11_CKO_CERTIFICATE;
+  chromeos::PKCS11_CK_CERTIFICATE_TYPE cert_type = chromeos::PKCS11_CKC_X_509;
+  chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+  std::string expected_label = "";
+
+  // Contains "CN=B CA".
+  std::vector<uint8_t> issuer_name_der =
+      base::Base64Decode("MA8xDTALBgNVBAMMBEIgQ0E=").value();
+  // Contains "CN=Client Cert A".
+  std::vector<uint8_t> subject_name_der =
+      base::Base64Decode("MBgxFjAUBgNVBAMMDUNsaWVudCBDZXJ0IEE=").value();
+  // Contains 4096.
+  std::vector<uint8_t> serial_number_der =
+      base::Base64Decode("AgIQAA==").value();
+
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&cert_class)));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_CERTIFICATE_TYPE,
+                            MakeSpan(&cert_type)));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_LABEL,
+                            base::as_byte_span(expected_label)));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_VALUE, cert.value()));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_ISSUER, issuer_name_der));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_SUBJECT,
+                            subject_name_der));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
+                            serial_number_der));
+}
+
+// Test that ImportCertFromBytes correctly fails when the key for the cert is
+// not present.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesKeyNotFound) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Return empty list of found keys.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that ImportCertFromBytes returns success without importing a cert when
+// it already exists.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesAlreadyExists) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Return some handles to simulate that an existing cert was found.
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
+// Test that ImportCertFromBytes correctly fails when the cert is invalid.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesBadCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+  // Corrupt the data.
+  cert.value().pop_back();
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kInvalidCertificate);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to fetch search
+// for the existing cert.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to fetch search
+// for the existing key.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Return some handles to simulate that an existing cert was found.
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Return an error when searching for the key.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to create a cert
+// object.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToCreate) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Simulate that a key for the cert exists.
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToImportCertificate);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// search for the cert with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// search for the key with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Alternates between replying with OK and SESSION_CLOSED to handle
+  // alternating calls for existing certs and keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_cert = true;
+    bool is_cert = std::exchange(next_is_cert, /*new_value=*/!next_is_cert);
+    if (is_cert) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_SESSION_CLOSED);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// create a new cert with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToCreateCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Alternates between replying with empty and non-empty handles to process
+  // alternating calls for existing certs and keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_cert = true;
+    bool is_cert = std::exchange(next_is_cert, /*new_value=*/!next_is_cert);
+    if (is_cert) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                     chromeos::PKCS11_CKR_OK);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
 // PKCS#11 id.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {

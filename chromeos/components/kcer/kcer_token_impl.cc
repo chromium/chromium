@@ -23,6 +23,7 @@
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/cert_database.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -41,6 +42,11 @@ BSSL_NAMESPACE_END
 
 namespace kcer::internal {
 namespace {
+
+std::string_view AsString(base::span<const uint8_t> bytes) {
+  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                          bytes.size());
+}
 
 const chaps::Attribute* GetAttribute(const chaps::AttributeList& attr_list,
                                      AttributeId attribute_id) {
@@ -794,9 +800,149 @@ void KcerTokenImpl::ImportKey(Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
 
 //==============================================================================
 
+KcerTokenImpl::ImportCertFromBytesTask::ImportCertFromBytesTask(
+    CertDer in_cert_der,
+    Kcer::StatusCallback in_callback)
+    : cert_der(std::move(in_cert_der)), callback(std::move(in_callback)) {}
+KcerTokenImpl::ImportCertFromBytesTask::ImportCertFromBytesTask(
+    ImportCertFromBytesTask&& other) = default;
+KcerTokenImpl::ImportCertFromBytesTask::~ImportCertFromBytesTask() = default;
+
 void KcerTokenImpl::ImportCertFromBytes(CertDer cert_der,
                                         Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::ImportCertFromBytes, weak_factory_.GetWeakPtr(),
+        std::move(cert_der), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  ImportCertFromBytesImpl(ImportCertFromBytesTask(
+      std::move(cert_der), std::move(unblocking_callback)));
+}
+
+void KcerTokenImpl::ImportCertFromBytesImpl(ImportCertFromBytesTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_VALUE, task.cert_der.value());
+
+  // Check whether the cert is already imported.
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::ImportCertFromBytesWithExistingCerts,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Checks whether the private key for the cert exists.
+void KcerTokenImpl::ImportCertFromBytesWithExistingCerts(
+    ImportCertFromBytesTask task,
+    std::vector<ObjectHandle> existing_certs,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  if (!existing_certs.empty()) {
+    // The cert already exists, no need to import, return success.
+    return std::move(task.callback).Run({});
+  }
+
+  std::string_view spki_string_piece;
+  if (!net::asn1::ExtractSPKIFromDERCert(AsString(task.cert_der.value()),
+                                         &spki_string_piece)) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+  PublicKeySpki spki(std::vector<uint8_t>(
+      spki_string_piece.data(),
+      spki_string_piece.data() + spki_string_piece.size()));
+
+  Pkcs11Id key_id = GetPkcs11IdFromSpki(spki);
+  if (key_id->empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+
+  Pkcs11Id key_id_copy = key_id;
+  kcer_utils_.FindPrivateKey(
+      std::move(key_id),
+      base::BindOnce(&KcerTokenImpl::ImportCertFromBytesWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(key_id_copy)));
+}
+
+// Parses and imports the cert into Chaps.
+void KcerTokenImpl::ImportCertFromBytesWithKeyHandle(
+    ImportCertFromBytesTask task,
+    Pkcs11Id pkcs11_id,
+    std::vector<ObjectHandle> key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  if (key_handles.empty()) {
+    return std::move(task.callback).Run(base::unexpected(Error::kKeyNotFound));
+  }
+
+  Pkcs12Reader reader;
+  bssl::UniquePtr<X509> cert;
+  Pkcs12ReaderStatusCode status = reader.GetCertFromDerData(
+      task.cert_der.value().data(), task.cert_der.value().size(), cert);
+  if (status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+
+  // TODO(b/244409232): Assign the correct nickname.
+  std::string label = "";
+  CertDer cert_der = task.cert_der;
+  auto import_callback =
+      base::BindOnce(&KcerTokenImpl::DidImportCertFromBytes,
+                     weak_factory_.GetWeakPtr(), std::move(task));
+  kcer_utils_.ImportCert(std::move(cert), std::move(pkcs11_id),
+                         std::move(label), std::move(cert_der),
+                         std::move(import_callback));
+}
+
+void KcerTokenImpl::DidImportCertFromBytes(ImportCertFromBytesTask task,
+                                           std::optional<Error> kcer_error,
+                                           ObjectHandle cert_handle,
+                                           uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (kcer_error.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
+  }
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToImportCertificate));
+  }
+  return std::move(task.callback).Run({});
 }
 
 //==============================================================================

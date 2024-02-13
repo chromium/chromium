@@ -72,6 +72,17 @@ class KcerTokenUtils {
                       base::OnceCallback<void(std::vector<ObjectHandle>,
                                               uint32_t result_code)> callback);
 
+  // Creates a certificate object in Chaps. Does not check whether such an
+  // object already exists. If `kcer_error` is not empty - import failed without
+  // talking with Chaps. Otherwise returns the result from Chaps.
+  void ImportCert(bssl::UniquePtr<X509> cert,
+                  Pkcs11Id pkcs11_id,
+                  std::string nickname,
+                  CertDer cert_der,
+                  base::OnceCallback<void(std::optional<Error> kcer_error,
+                                          ObjectHandle cert_handle,
+                                          uint32_t result_code)> callback);
+
   // Imports an EVP_KEY into Chaps as a pair of public and private objects.
   // Skips the actual import if the key already exists.
   struct ImportKeyTask {
@@ -83,7 +94,6 @@ class KcerTokenUtils {
     Kcer::GenerateKeyCallback callback;
     int attemps_left = 5;
   };
-
   void ImportKey(ImportKeyTask task);
 
  private:

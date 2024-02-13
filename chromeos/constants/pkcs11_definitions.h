@@ -21,6 +21,7 @@ using PKCS11_CK_ULONG = unsigned long int;
 using PKCS11_CK_OBJECT_CLASS = PKCS11_CK_ULONG;
 using PKCS11_CK_KEY_TYPE = PKCS11_CK_ULONG;
 using PKCS11_CK_ATTRIBUTE_TYPE = PKCS11_CK_ULONG;
+using PKCS11_CK_CERTIFICATE_TYPE = PKCS11_CK_ULONG;
 // PKCS #11 v2.20 section 9.5 page 52.
 using PKCS11_CK_MECHANISM_TYPE = PKCS11_CK_ULONG;
 // PKCS #11 v2.20 section 12.1.6 page 198.
@@ -56,6 +57,9 @@ inline constexpr uint32_t PKCS11_CKO_PRIVATE_KEY = 0x00000003;
 // PKCS #11 v2.20 section A Manifest constants page 375.
 inline constexpr uint32_t PKCS11_CKK_RSA = 0x00000000;
 inline constexpr uint32_t PKCS11_CKK_EC = 0x00000003;
+
+// PKCS #11 v2.20 section A Manifest constants page 376.
+inline constexpr uint32_t PKCS11_CKC_X_509 = 0x00000000;
 
 // PKCS #11 v2.20 section A Manifest constants pages 376-377.
 inline constexpr uint32_t PKCS11_CKA_CLASS = 0x00000000;
