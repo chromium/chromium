@@ -39,7 +39,7 @@ import * as openImageMediaAppTests from './file_manager/open_image_media_app.js'
 import * as openSniffedFilesTests from './file_manager/open_sniffed_files.js';
 import * as openVideoMediaAppTests from './file_manager/open_video_media_app.js';
 // import * as providersTests from './file_manager/providers.js';
-// import * as quickViewTests from './file_manager/quick_view.js';
+import * as quickViewTests from './file_manager/quick_view.js';
 // import * as recentsTests from './file_manager/recents.js';
 // import * as restorePrefsTests from './file_manager/restore_prefs.js';
 // import * as searchTests from './file_manager/search.js';
@@ -97,7 +97,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...openSniffedFilesTests,
   ...openVideoMediaAppTests,
   // ...providersTests,
-  // ...quickViewTests,
+  ...quickViewTests,
   // ...recentsTests,
   // ...restorePrefsTests,
   // ...searchTests,
