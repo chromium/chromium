@@ -19,7 +19,6 @@ from chrome.test.variations.drivers import DriverFactory
 from chrome.test.variations.test_utils import SRC_DIR
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.chrome import service
 
 # The module chromite is under third_party and imported relative to its root.
 sys.path.append(os.path.join(SRC_DIR, 'third_party'))
@@ -98,7 +97,9 @@ class CrOSDriverFactory(DriverFactory):
   board: str = attr.attrib()
   server_port: int = attr.attrib()
 
+  #override
   def __attrs_post_init__(self):
+    super().__attrs_post_init__()
     # We use this to check whether we have started the VM before we attempt to
     # shut it down.
     self._vm_started = False
@@ -203,10 +204,8 @@ class CrOSDriverFactory(DriverFactory):
     options.debugger_address=f'localhost:{debugging_port}'
 
     with self.tunnel_context(debugging_port, self.server_port):
-      driver = webdriver.Chrome(
-        service=service.Service(self.chromedriver_path,
-                                service_args=['--disable-build-check']),
-        options=options)
+      driver = webdriver.Chrome(service=self.get_driver_service(),
+                                options=options)
       # VM may not be fully ready before it returns, wait for window handle
       # to double confirm.
       self.wait_for_window(driver)

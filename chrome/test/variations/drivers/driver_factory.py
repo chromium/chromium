@@ -4,6 +4,7 @@
 
 import functools
 import logging
+import os
 import subprocess
 import time
 
@@ -15,7 +16,8 @@ import attr
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-
+from selenium.webdriver.common import service
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 DEFAULT_WAIT_TIMEOUT = 10     # 10 seconds timeout
 DEFAULT_WAIT_INTERVAL = 0.3   # 0.3 seconds wait intervals
@@ -25,12 +27,23 @@ class DriverFactory:
   """The factory to create webdriver for the pre-defined environment"""
 
   chromedriver_path: str = attr.attrib()
+  artifacts_path: str = attr.attrib()
+
+  def __attrs_post_init__(self):
+    # The counter that counts each new webdriver session. This counter gets
+    # updated each time #get_driver_service is called, and this should
+    # only gets called in #create_driver
+    self._driver_session_counter = 0
 
   @functools.cached_property
   def driver_version(self) -> packaging.version.Version:
     # Sample version output: ChromeDriver 117.0.5938.0 (branch_name)
     version_str = str(subprocess.check_output([self.chromedriver_path, '-v']))
     return packaging.version.parse(version_str.split(' ')[1])
+
+  @property
+  def driver_session_counter(self) -> int:
+    return self._driver_session_counter
 
   @property
   def supports_startup_timeout(self) -> bool:
@@ -49,6 +62,26 @@ class DriverFactory:
       # the test time. Chrome should start in 10 seconds.
       options.add_experimental_option('browserStartupTimeout', 10000)
     return options
+
+  def get_driver_session_folder(self, session_counter: int) -> str:
+    folder = os.path.join(self.artifacts_path, f'session-{session_counter}')
+    if not os.path.exists(folder):
+      os.mkdir(folder)
+    return folder
+
+  def get_driver_service(self) -> service.Service:
+    """The Service to start Chrome."""
+    self._driver_session_counter += 1
+    driver_log = os.path.join(
+      self.get_driver_session_folder(self.driver_session_counter),
+      'driver.log')
+    service_args=[
+      # Skipping Chrome version check, this allows chromdriver to communicate
+      # with Chrome of more than two versions older.
+      '--disable-build-check',
+      '--enable-chrome-logs',
+      f'--log-path={driver_log}']
+    return ChromeService(self.chromedriver_path, service_args=service_args)
 
   def wait_for_window(self,
                       driver: webdriver.Remote,

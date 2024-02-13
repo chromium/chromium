@@ -14,7 +14,6 @@ from chrome.test.variations.drivers import DriverFactory
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
 
 @attr.attrs()
 class DesktopDriverFactory(DriverFactory):
@@ -44,9 +43,8 @@ class DesktopDriverFactory(DriverFactory):
     try:
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
-      service = Service(self.chromedriver_path,
-                        service_args=['--disable-build-check'])
-      driver = webdriver.Chrome(service=service, options=options)
+      driver = webdriver.Chrome(service=self.get_driver_service(),
+                                options=options)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.

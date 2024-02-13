@@ -136,7 +136,6 @@ def _report_test_result(result: pytest.TestReport,
     failure_reason = None
     artifacts = {}
   artifacts.update(_extract_artifacts_from_properties(item.user_properties))
-
   if sink_client := item.session.sink_client:
     tags = _extract_tags_from_properties(item.user_properties)
     sink_client.Post(result.nodeid, _RESULT_TYPES[result.outcome],
@@ -149,5 +148,6 @@ def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):
   outcome = yield
   result: pytest.TestReport = outcome.get_result()
 
-  if result.when == 'call':
+  # Some tags and artifacts will be added after 'call' and before 'teardown'
+  if result.when == 'teardown':
     _report_test_result(result, item, call)

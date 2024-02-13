@@ -5,10 +5,6 @@
 import os
 import logging
 import posixpath
-import re
-import subprocess
-import sys
-import time
 
 from contextlib import contextmanager
 from typing import List, Optional
@@ -19,7 +15,6 @@ from chrome.test.variations.drivers import DriverFactory
 # This import also adds `devil` and `build/android` to `sys.path`.
 from chrome.test.variations.test_utils import android
 from selenium import webdriver
-from selenium.webdriver.chrome import service
 
 from devil.android import device_temp_file
 from devil.android import device_utils
@@ -33,7 +28,9 @@ class AndroidDriverFactory(DriverFactory):
   enabled_emulator_window: bool = attr.attrib()
   ports: List[int] = attr.attrib()
 
+  #override
   def __attrs_post_init__(self):
+    super().__attrs_post_init__()
     self._instance = android.launch_emulator(
       avd_config=self.avd_config,
       emulator_window=self.enabled_emulator_window,
@@ -104,10 +101,8 @@ class AndroidDriverFactory(DriverFactory):
 
     driver = None
     try:
-      yield (driver := webdriver.Chrome(
-        service=service.Service(self.chromedriver_path,
-                                service_args=['--disable-build-check']),
-        options=options))
+      yield (driver := webdriver.Chrome(service=self.get_driver_service(),
+                                        options=options))
     finally:
       if driver:
         driver.quit()

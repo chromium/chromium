@@ -13,6 +13,7 @@ import pytest
 from chrome.test.variations import test_utils
 from chrome.test.variations.drivers import DriverFactory
 from chrome.test.variations.fixtures.test_options import TestOptions
+from chrome.test.variations.fixtures.result_sink import AddArtifact
 
 
 _PLATFORM_TO_RELEASE_OS = {
@@ -137,6 +138,19 @@ def chromedriver_path(pytestconfig, test_options: TestOptions) -> Optional[str]:
   return chromedriver_path
 
 
+@pytest.fixture(autouse=True)
+def driver_logs(driver_factory: DriverFactory, add_artifact: AddArtifact):
+  # the driver factor increases the counter before the session is created.
+  session_start = driver_factory.driver_session_counter + 1
+  yield
+  session_end = driver_factory.driver_session_counter + 1
+  for session_count in range(session_start, session_end):
+    session_folder = driver_factory.get_driver_session_folder(session_count)
+    for filename in os.listdir(session_folder):
+      add_artifact(f'Session-{session_count}-Files {filename}',
+                   os.path.join(session_folder, filename))
+
+
 @pytest.fixture(scope='session')
 def driver_factory(
   pytestconfig,
@@ -147,12 +161,13 @@ def driver_factory(
   """Returns a factory that creates a webdriver."""
   factory: Optional[DriverFactory] = None
   target_platform = pytestconfig.getoption('target_platform')
-  factory = None
+  artifacts_path = tmp_path_factory.mktemp('artifacts')
   if target_platform in ('linux', 'win', 'mac'):
     from chrome.test.variations.drivers import desktop
     factory = desktop.DesktopDriverFactory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
+      artifacts_path=str(artifacts_path),
       chromedriver_path=chromedriver_path)
   elif target_platform in ('android', 'webview', 'android_webview'):
     assert test_utils.get_hosted_platform() == 'linux', (
@@ -170,6 +185,7 @@ def driver_factory(
       channel=pytestconfig.getoption('channel'),
       avd_config=pytestconfig.getoption('avd_config'),
       enabled_emulator_window=pytestconfig.getoption('emulator_window'),
+      artifacts_path=str(artifacts_path),
       chromedriver_path=chromedriver_path,
       ports=[local_http_server.server_port]
     )
@@ -178,6 +194,7 @@ def driver_factory(
     factory = chromeos.CrOSDriverFactory(
       channel=pytestconfig.getoption('channel'),
       board=pytestconfig.getoption('board'),
+      artifacts_path=str(artifacts_path),
       chromedriver_path=chromedriver_path,
       server_port=local_http_server.server_port
       )
