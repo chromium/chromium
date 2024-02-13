@@ -154,6 +154,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator_unittest") {
     ":virtual_card_enrollment_bottom_sheet_coordinator",
     ":virtual_card_enrollment_bottom_sheet_delegate",
     "//base/test:test_support",
+    "//components/autofill/core/browser:browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -207,11 +208,13 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator_unittest") {
   deps = [
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_mediator",
+    "//base/test:test_support",
     "//components/autofill/core/browser:browser",  # This tests depends on
                                                    # autofill::VirtualCardEnrollUiModel.
     "//components/autofill/core/browser:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/gfx:test_support",
   ]
 }
 

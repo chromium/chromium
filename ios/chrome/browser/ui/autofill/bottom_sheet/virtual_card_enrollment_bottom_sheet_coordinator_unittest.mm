@@ -7,6 +7,9 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
@@ -64,6 +67,8 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
     [window_ addSubview:window_.rootViewController.view];
     UIView.animationsEnabled = NO;
 
+    model_.enrollment_fields.virtual_card_enrollment_source =
+        autofill::VirtualCardEnrollmentSource::kDownstream;
     coordinator_ = [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
            initWithUIModel:model_
         baseViewController:window_.rootViewController
@@ -76,6 +81,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
 
   int times_accept_virtual_card_called_ = 0;
   int times_decline_virtual_card_called_ = 0;
+  base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -101,6 +107,21 @@ TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, AcceptButtonPushed) {
   task_environment_.RunUntilIdle();
 }
 
+// Test that the result metric is logged when the prompt is accepted.
+TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, LogsAcceptedMetric) {
+  [coordinator_ start];
+
+  [coordinator_ didAccept];
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.Result.Downstream.FirstShow",
+      autofill::VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+      /*expected_count=*/1);
+
+  [coordinator_ stop];
+  task_environment_.RunUntilIdle();
+}
+
 // Test that using the primary button logs the correct exit reason.
 TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, CancelButtonPushed) {
   [coordinator_ start];
@@ -108,6 +129,21 @@ TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, CancelButtonPushed) {
   [coordinator_ didCancel];
   EXPECT_EQ(times_accept_virtual_card_called_, 0);
   EXPECT_EQ(times_decline_virtual_card_called_, 1);
+
+  [coordinator_ stop];
+  task_environment_.RunUntilIdle();
+}
+
+// Test that the result metric is logged when the prompt is cancelled.
+TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, LogsCancelledMetric) {
+  [coordinator_ start];
+
+  [coordinator_ didCancel];
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.Result.Downstream.FirstShow",
+      autofill::VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
+      /*expected_count=*/1);
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();

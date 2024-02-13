@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
+#import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
@@ -82,6 +84,8 @@
                        "set and called only once.";
   callbacks_->OnAccepted();
   callbacks_.reset();
+  [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
+                            VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED];
   [self stop];
 }
 
@@ -90,6 +94,8 @@
                        "set and called only once.";
   callbacks_->OnDeclined();
   callbacks_.reset();
+  [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
+                            VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED];
   [self stop];
 }
 
@@ -99,6 +105,15 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+}
+
+#pragma mark - Private
+
+// Logs the result metric attaching additional parameters from the model.
+- (void)logResultMetric:(autofill::VirtualCardEnrollmentBubbleResult)result {
+  autofill::VirtualCardEnrollMetricsLogger::OnDismissed(
+      result, model_.enrollment_fields.virtual_card_enrollment_source,
+      /*is_reshow=*/false, model_.enrollment_fields.previously_declined);
 }
 
 @end
