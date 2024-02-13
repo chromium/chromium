@@ -103,6 +103,7 @@ void FencedFrame::Navigate(
       bad_message::ReceivedBadMessage(
           owner_render_frame_host_->GetProcess(),
           bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
+      return;
     }
   }
 
