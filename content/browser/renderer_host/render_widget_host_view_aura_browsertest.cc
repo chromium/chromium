@@ -33,6 +33,9 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
@@ -302,6 +305,127 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Page should stay focused after the tap.
   EXPECT_TRUE(IsRenderWidgetHostFocused(GetRenderViewHost()->GetWidget()));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
+                       UpdatesCaretBoundsAfterFrameScroll) {
+  GURL page(
+      "data:text/html;charset=utf-8,"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<body>"
+      "<style>"
+      "  %23scrollableDiv {"
+      "  height: 10000px;"
+      "  }"
+      "  %23textfield {"
+      "  margin-top: 100px;"
+      "  }"
+      "</style>"
+      "<div id=\"scrollableDiv\">"
+      "  <input id=\"textfield\" type=\"text\" value=\"Some editable text\">"
+      "</div>"
+      "<script type=\"text/javascript\">"
+      "  function focusTextfield() {"
+      "    document.getElementById('textfield').focus({'preventScroll': true});"
+      "  }"
+      "</script>"
+      "</body>"
+      "</html>");
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+  GetRenderWidgetHostView()->SetSize(gfx::Size(600, 500));
+
+  // Focus the textfield and wait for initial caret bounds.
+  auto* web_contents = shell()->web_contents();
+  {
+    // The caret bounds can have briefly have an invalid zero size value when
+    // the textfield initially focuses, so wait for non-zero caret size rather
+    // than waiting for the first caret bounds update.
+    NonZeroCaretSizeWaiter initial_caret_bounds_waiter(web_contents);
+    ASSERT_TRUE(ExecJs(web_contents, "focusTextfield();"));
+    initial_caret_bounds_waiter.Wait();
+  }
+
+  const gfx::Rect initial_caret_bounds =
+      GetRenderWidgetHostView()->GetCaretBounds();
+  EXPECT_NE(initial_caret_bounds, gfx::Rect());
+
+  // Scroll and wait for caret bounds to update.
+  {
+    CaretBoundsUpdateWaiter caret_bounds_update_waiter(web_contents);
+    ASSERT_TRUE(ExecJs(web_contents, "window.scrollBy(0, 50);"));
+    caret_bounds_update_waiter.Wait();
+  }
+
+  EXPECT_EQ(GetRenderWidgetHostView()->GetCaretBounds().x(),
+            initial_caret_bounds.x());
+  EXPECT_LT(GetRenderWidgetHostView()->GetCaretBounds().y(),
+            initial_caret_bounds.y());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
+                       UpdatesCaretBoundsAfterOverflowScroll) {
+  GURL page(
+      "data:text/html;charset=utf-8,"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<body>"
+      "<style>"
+      "  %23container {"
+      "  height: 200px;"
+      "  overflow: scroll;"
+      "  }"
+      "  %23scrollableDiv {"
+      "  height: 1000px;"
+      "  }"
+      "  %23textfield {"
+      "  margin-top: 100px;"
+      "  }"
+      "</style>"
+      "<div id=\"container\">"
+      "  <div id=\"scrollableDiv\">"
+      "    <input id=\"textfield\" type=\"text\" value=\"Some editable text\">"
+      "  </div>"
+      "</div>"
+      "<script type=\"text/javascript\">"
+      "  function focusTextfield() {"
+      "    document.getElementById('textfield').focus({'preventScroll': true});"
+      "  }"
+      "  function scrollContainerTopBy(dy) {"
+      "    document.getElementById('container').scrollTop += dy;"
+      "  }"
+      "</script>"
+      "</body>"
+      "</html>");
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+  GetRenderWidgetHostView()->SetSize(gfx::Size(600, 500));
+
+  // Focus the textfield and wait for initial caret bounds.
+  auto* web_contents = shell()->web_contents();
+  {
+    // The caret bounds can have briefly have an invalid zero size value when
+    // the textfield initially focuses, so wait for non-zero caret size rather
+    // than waiting for the first caret bounds update.
+    NonZeroCaretSizeWaiter initial_caret_bounds_waiter(web_contents);
+    ASSERT_TRUE(ExecJs(web_contents, "focusTextfield();"));
+    initial_caret_bounds_waiter.Wait();
+  }
+
+  const gfx::Rect initial_caret_bounds =
+      GetRenderWidgetHostView()->GetCaretBounds();
+  EXPECT_NE(initial_caret_bounds, gfx::Rect());
+
+  // Scroll and wait for caret bounds to update.
+  {
+    CaretBoundsUpdateWaiter caret_bounds_update_waiter(web_contents);
+    ASSERT_TRUE(ExecJs(web_contents, "scrollContainerTopBy(50);"));
+    caret_bounds_update_waiter.Wait();
+  }
+
+  EXPECT_EQ(GetRenderWidgetHostView()->GetCaretBounds().x(),
+            initial_caret_bounds.x());
+  EXPECT_LT(GetRenderWidgetHostView()->GetCaretBounds().y(),
+            initial_caret_bounds.y());
 }
 
 class RenderWidgetHostViewAuraDevtoolsBrowserTest

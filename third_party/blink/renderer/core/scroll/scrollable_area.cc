@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -711,6 +712,9 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   if (offset_changed && GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
     GetLayoutBox()->GetFrameView()->GetLayoutShiftTracker().NotifyScroll(
         scroll_type, delta);
+    // FrameSelection caches visual selection information which needs to be
+    // invalidated after scrolling.
+    GetLayoutBox()->GetFrameView()->GetFrame().Selection().MarkCacheDirty();
   }
 
   GetScrollAnimator().SetCurrentOffset(offset);
