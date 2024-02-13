@@ -867,6 +867,11 @@ class EventRewriterTest : public EventRewriterTestBase,
     EventRewriterTestBase::SetUp();
   }
 
+  void TearDown() override {
+    EventRewriterTestBase::TearDown();
+    fix_feature_list_.Reset();
+  }
+
  private:
   base::test::ScopedFeatureList fix_feature_list_;
 };
@@ -887,100 +892,6 @@ TEST_P(EventRewriterTest, TestKeyRewriteLatency) {
       "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency", 2);
 }
 
-TEST_P(EventRewriterTest, TestRewriteCommandToControl) {
-  // This test is not useful once device settings split is launched.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kInputDeviceSettingsSplit);
-
-  // First, test non Apple keyboards, they should all behave the same.
-  for (const auto& keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // VKEY_A, Alt modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_A, Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // VKEY_A, Alt+Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-
-  // Simulate the default initialization of the Apple Command key remap pref to
-  // Ctrl.
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  {
-    SCOPED_TRACE(kExternalAppleKeyboard.name);
-    SetUpKeyboard(kExternalAppleKeyboard);
-
-    // VKEY_A, Alt modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_A, Win modifier.
-    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // VKEY_A, Alt+Win modifier.
-    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(),
-                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN));
-
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-
-  // Now simulate the user remapped the Command key back to Search.
-  IntegerPrefMember command;
-  InitModifierKeyPref(&command, ::prefs::kLanguageRemapExternalCommandKeyTo,
-                      ui::mojom::ModifierKey::kMeta,
-                      ui::mojom::ModifierKey::kMeta);
-  {
-    SCOPED_TRACE(kExternalAppleKeyboard.name);
-    SetUpKeyboard(kExternalAppleKeyboard);
-
-    // VKEY_A, Alt modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_A, Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // VKEY_A, Alt+Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-}
-
 TEST_P(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
   // Remap Control -> Alt.
   Preferences::RegisterProfilePrefs(prefs()->registry());
@@ -998,141 +909,6 @@ TEST_P(EventRewriterTest, ModifiersNotRemappedWhenSuppressed) {
   delegate_->SuppressModifierKeyRewrites(true);
   EXPECT_EQ(KeyB::Typed(ui::EF_CONTROL_DOWN),
             RunRewriter(KeyB::Typed(), ui::EF_CONTROL_DOWN));
-}
-
-TEST_P(EventRewriterTest, TestRewriteExternalMetaKey) {
-  // This test is irrelevant once input device settings split launches.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kInputDeviceSettingsSplit);
-
-  // Simulate the default initialization of the Meta key on external keyboards
-  // remap pref to Search.
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-
-  // By default, the Meta key on all keyboards, internal, external Chrome OS
-  // branded keyboards, and Generic keyboards should produce Search.
-  for (const auto& keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // VKEY_A, Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // VKEY_A, Alt+Win modifier.
-    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-
-  // Both preferences for Search on Chrome keyboards, and external Meta on
-  // generic external keyboards are independent, even if one or both are
-  // modified.
-
-  // Remap Chrome OS Search to Ctrl.
-  IntegerPrefMember internal_search;
-  InitModifierKeyPref(&internal_search, ::prefs::kLanguageRemapSearchKeyTo,
-                      ui::mojom::ModifierKey::kMeta,
-                      ui::mojom::ModifierKey::kControl);
-
-  // Remap external Meta to Alt.
-  IntegerPrefMember meta;
-  InitModifierKeyPref(&meta, ::prefs::kLanguageRemapExternalMetaKeyTo,
-                      ui::mojom::ModifierKey::kMeta,
-                      ui::mojom::ModifierKey::kAlt);
-  for (const auto& keyboard : kChromeKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // VKEY_A, Win modifier.
-    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // VKEY_A, Alt+Win modifier.
-    EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyUnidentifiedA::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-
-  SetUpKeyboard(kExternalGenericKeyboard);
-
-  // VKEY_A, Win modifier.
-  EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN),
-            RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
-
-  // VKEY_A, Alt+Win modifier.
-  EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN),
-            RunRewriter(KeyUnidentifiedA::Typed(),
-                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-  if (ash::features::IsKeyboardRewriterFixEnabled()) {
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    EXPECT_EQ(KeyLAlt::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRAlt::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  } else {
-    // VKEY_LWIN (left Windows key), Alt modifier.
-    // Older implementation has an issue that release event is not dispatched.
-    EXPECT_EQ(std::vector({KeyLAlt::Pressed()}),
-              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-    // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(KeyRAlt::Typed(),
-              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
-  }
-}
-
-// For crbug.com/133896.
-TEST_P(EventRewriterTest, TestRewriteCommandToControlWithControlRemapped) {
-  // This test is irrelevant once input device settings split launches.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kInputDeviceSettingsSplit);
-
-  // Remap Control to Alt.
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  IntegerPrefMember control;
-  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
-                      ui::mojom::ModifierKey::kControl,
-                      ui::mojom::ModifierKey::kAlt);
-
-  for (const auto& keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    EXPECT_EQ(KeyLAlt::Typed(), RunRewriter(KeyLControl::Typed()));
-  }
-
-  // Now verify that remapping does not affect Apple keyboard.
-  SetUpKeyboard(kExternalAppleKeyboard);
-
-  // VKEY_LWIN (left Command key) with  Alt modifier. The remapped Command
-  // key should never be re-remapped to Alt.
-  EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
-            RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
-
-  // VKEY_RWIN (right Command key) with  Alt modifier. The remapped Command
-  // key should never be re-remapped to Alt.
-  EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
-            RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
 }
 
 TEST_P(EventRewriterTest, TestRewriteNumPadKeys) {
@@ -3952,6 +3728,244 @@ TEST_P(EventRewriterTest, RemapHangulOnCros1p) {
   }
 }
 #endif
+
+class EventRewriterInputSettingsSplitDisabledTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    settings_split_disable_feature_list_.InitAndDisableFeature(
+        features::kInputDeviceSettingsSplit);
+    EventRewriterTest::SetUp();
+  }
+
+  void TearDown() override {
+    EventRewriterTest::TearDown();
+    settings_split_disable_feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList settings_split_disable_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EventRewriterInputSettingsSplitDisabledTest,
+                         testing::Bool());
+
+TEST_P(EventRewriterInputSettingsSplitDisabledTest,
+       TestRewriteCommandToControl) {
+  // First, test non Apple keyboards, they should all behave the same.
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // VKEY_A, Alt modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(),
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
+
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+
+  // Simulate the default initialization of the Apple Command key remap pref to
+  // Ctrl.
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  {
+    SCOPED_TRACE(kExternalAppleKeyboard.name);
+    SetUpKeyboard(kExternalAppleKeyboard);
+
+    // VKEY_A, Alt modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(),
+                          ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN));
+
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+
+  // Now simulate the user remapped the Command key back to Search.
+  IntegerPrefMember command;
+  InitModifierKeyPref(&command, ::prefs::kLanguageRemapExternalCommandKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
+                      ui::mojom::ModifierKey::kMeta);
+  {
+    SCOPED_TRACE(kExternalAppleKeyboard.name);
+    SetUpKeyboard(kExternalAppleKeyboard);
+
+    // VKEY_A, Alt modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(),
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
+
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+}
+
+TEST_P(EventRewriterInputSettingsSplitDisabledTest,
+       TestRewriteExternalMetaKey) {
+  // Simulate the default initialization of the Meta key on external keyboards
+  // remap pref to Search.
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  // By default, the Meta key on all keyboards, internal, external Chrome OS
+  // branded keyboards, and Generic keyboards should produce Search.
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(KeyUnidentifiedA::Typed(ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(),
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
+
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRMeta::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+
+  // Both preferences for Search on Chrome keyboards, and external Meta on
+  // generic external keyboards are independent, even if one or both are
+  // modified.
+
+  // Remap Chrome OS Search to Ctrl.
+  IntegerPrefMember internal_search;
+  InitModifierKeyPref(&internal_search, ::prefs::kLanguageRemapSearchKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
+                      ui::mojom::ModifierKey::kControl);
+
+  // Remap external Meta to Alt.
+  IntegerPrefMember meta;
+  InitModifierKeyPref(&meta, ::prefs::kLanguageRemapExternalMetaKeyTo,
+                      ui::mojom::ModifierKey::kMeta,
+                      ui::mojom::ModifierKey::kAlt);
+  for (const auto& keyboard : kChromeKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    // VKEY_A, Win modifier.
+    EXPECT_EQ(KeyA::Typed(ui::EF_CONTROL_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+    // VKEY_A, Alt+Win modifier.
+    EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
+              RunRewriter(KeyUnidentifiedA::Typed(),
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
+
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+
+  SetUpKeyboard(kExternalGenericKeyboard);
+
+  // VKEY_A, Win modifier.
+  EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN),
+            RunRewriter(KeyUnidentifiedA::Typed(), ui::EF_COMMAND_DOWN));
+
+  // VKEY_A, Alt+Win modifier.
+  EXPECT_EQ(KeyA::Typed(ui::EF_ALT_DOWN),
+            RunRewriter(KeyUnidentifiedA::Typed(),
+                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
+
+  if (ash::features::IsKeyboardRewriterFixEnabled()) {
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    EXPECT_EQ(KeyLAlt::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRAlt::Typed(ui::EF_ALT_DOWN),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  } else {
+    // VKEY_LWIN (left Windows key), Alt modifier.
+    // Older implementation has an issue that release event is not dispatched.
+    EXPECT_EQ(std::vector({KeyLAlt::Pressed()}),
+              RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+    // VKEY_RWIN (right Windows key), Alt modifier.
+    EXPECT_EQ(KeyRAlt::Typed(),
+              RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+  }
+}
+
+// For crbug.com/133896.
+TEST_P(EventRewriterInputSettingsSplitDisabledTest,
+       TestRewriteCommandToControlWithControlRemapped) {
+  // Remap Control to Alt.
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
+                      ui::mojom::ModifierKey::kAlt);
+
+  for (const auto& keyboard : kNonAppleKeyboardVariants) {
+    SCOPED_TRACE(keyboard.name);
+    SetUpKeyboard(keyboard);
+
+    EXPECT_EQ(KeyLAlt::Typed(), RunRewriter(KeyLControl::Typed()));
+  }
+
+  // Now verify that remapping does not affect Apple keyboard.
+  SetUpKeyboard(kExternalAppleKeyboard);
+
+  // VKEY_LWIN (left Command key) with  Alt modifier. The remapped Command
+  // key should never be re-remapped to Alt.
+  EXPECT_EQ(KeyLControl::Typed(ui::EF_ALT_DOWN),
+            RunRewriter(KeyLMeta::Typed(), ui::EF_ALT_DOWN));
+
+  // VKEY_RWIN (right Command key) with  Alt modifier. The remapped Command
+  // key should never be re-remapped to Alt.
+  EXPECT_EQ(KeyRControl::Typed(ui::EF_ALT_DOWN),
+            RunRewriter(KeyRMeta::Typed(), ui::EF_ALT_DOWN));
+}
 
 class StickyKeysOverlayTest : public EventRewriterTestBase,
                               public testing::WithParamInterface<bool> {
