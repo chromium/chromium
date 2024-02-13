@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           /* screenshot_height */ 330);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_Textarea DISABLED_Textarea
 #else
 #define MAYBE_Textarea Textarea
