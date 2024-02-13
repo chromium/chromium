@@ -414,7 +414,6 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       (resource_request_.destination ==
            network::mojom::RequestDestination::kWorker &&
        base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))) {
-    // TODO(crbug.com/324456508): client_id would be set for sharedworker.
     client_uuid = worker_parent_client_uuid_;
   } else if (frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
     client_uuid = GetContainerHostClientId(frame_tree_node_id_);
