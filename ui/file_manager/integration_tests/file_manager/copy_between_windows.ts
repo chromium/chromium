@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -15,12 +14,12 @@ const USB_VOLUME_TYPE = 'removable';
 
 /**
  * Opens two window of given root paths.
- * @param {string} rootPath1 Root path of the first window.
- * @param {string} rootPath2 Root path of the second window.
- * @return {Promise<[string, string]>} Promise fulfilled with an array
- *     containing two window IDs.
+ * @param rootPath1 Root path of the first window.
+ * @param rootPath2 Root path of the second window.
+ * @return Promise fulfilled with an array containing two window IDs.
  */
-async function openTwoWindows(rootPath1, rootPath2) {
+async function openTwoWindows(
+    rootPath1: string, rootPath2: string): Promise<[string, string]> {
   const windowIds =
       await Promise.all([openNewWindow(rootPath1), openNewWindow(rootPath2)]);
 
@@ -33,15 +32,15 @@ async function openTwoWindows(rootPath1, rootPath2) {
 
 /**
  * Copies a file between two windows.
- * @param {string} window1 ID of the source window.
- * @param {string} window2 ID of the destination window.
- * @param {TestEntryInfo} file Test entry info to be copied.
- * @param {?TestEntryInfo} alreadyPresentFile Test entry info for file that
- *     should already exist.
- * @return {Promise<void>} Promise fulfilled on success.
+ * @param window1 ID of the source window.
+ * @param window2 ID of the destination window.
+ * @param file Test entry info to be copied.
+ * @param alreadyPresentFile Test entry info for file that should already exist.
+ * @return Promise fulfilled on success.
  */
 async function copyBetweenWindows(
-    window1, window2, file, alreadyPresentFile = null) {
+    window1: string, window2: string, file: TestEntryInfo,
+    alreadyPresentFile: null|TestEntryInfo = null): Promise<void> {
   if (!file || !file.nameText) {
     chrome.test.assertTrue(false, 'copyBetweenWindows invalid file name');
   }
@@ -61,20 +60,13 @@ async function copyBetweenWindows(
   if (alreadyPresentFile) {
     expectedFiles.push(alreadyPresentFile.getExpectedRow());
   }
-  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-  // boolean; }' is not assignable to parameter of type '{ orderCheck: boolean |
-  // null | undefined; ignoreFileSize: boolean | null | undefined;
-  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(window2, expectedFiles, flag);
 }
 
 /**
  * Tests file copy+paste from Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsDriveToLocal' comes
-// from an index signature, so it must be accessed with
-// ['copyBetweenWindowsDriveToLocal'].
-testcase.copyBetweenWindowsDriveToLocal = async () => {
+export async function copyBetweenWindowsDriveToLocal() {
   // Open two Files app windows.
   const [window1, window2] =
       await openTwoWindows(RootPath.DOWNLOADS, RootPath.DRIVE);
@@ -90,15 +82,12 @@ testcase.copyBetweenWindowsDriveToLocal = async () => {
 
   // Copy Drive hello file to Downloads.
   await copyBetweenWindows(window2, window1, ENTRIES.hello, ENTRIES.photos);
-};
+}
 
 /**
  * Tests file copy+paste from Downloads to Drive.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsLocalToDrive' comes
-// from an index signature, so it must be accessed with
-// ['copyBetweenWindowsLocalToDrive'].
-testcase.copyBetweenWindowsLocalToDrive = async () => {
+export async function copyBetweenWindowsLocalToDrive() {
   // Open two Files app windows.
   const [window1, window2] =
       await openTwoWindows(RootPath.DOWNLOADS, RootPath.DRIVE);
@@ -114,15 +103,12 @@ testcase.copyBetweenWindowsLocalToDrive = async () => {
 
   // Copy Downloads hello file to Drive.
   await copyBetweenWindows(window1, window2, ENTRIES.hello, ENTRIES.photos);
-};
+}
 
 /**
  * Tests file copy+paste from Drive to USB.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsDriveToUsb' comes from
-// an index signature, so it must be accessed with
-// ['copyBetweenWindowsDriveToUsb'].
-testcase.copyBetweenWindowsDriveToUsb = async () => {
+export async function copyBetweenWindowsDriveToUsb() {
   // Add photos to Downloads.
   await addEntries(['local'], [ENTRIES.photos]);
 
@@ -155,15 +141,12 @@ testcase.copyBetweenWindowsDriveToUsb = async () => {
 
   // Check Drive hello file, copy it to USB.
   await copyBetweenWindows(window2, window1, ENTRIES.hello);
-};
+}
 
 /**
  * Tests file copy+paste from Downloads to USB.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsLocalToUsb' comes from
-// an index signature, so it must be accessed with
-// ['copyBetweenWindowsLocalToUsb'].
-testcase.copyBetweenWindowsLocalToUsb = async () => {
+export async function copyBetweenWindowsLocalToUsb() {
   // Add photos to Drive.
   await addEntries(['drive'], [ENTRIES.photos]);
 
@@ -196,15 +179,12 @@ testcase.copyBetweenWindowsLocalToUsb = async () => {
 
   // Check Downloads hello file, copy it to USB.
   await copyBetweenWindows(window2, window1, ENTRIES.hello);
-};
+}
 
 /**
  * Tests file copy+paste from USB to Drive.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsUsbToDrive' comes from
-// an index signature, so it must be accessed with
-// ['copyBetweenWindowsUsbToDrive'].
-testcase.copyBetweenWindowsUsbToDrive = async () => {
+export async function copyBetweenWindowsUsbToDrive() {
   // Add photos to Downloads.
   await addEntries(['local'], [ENTRIES.photos]);
 
@@ -236,15 +216,12 @@ testcase.copyBetweenWindowsUsbToDrive = async () => {
 
   // Check USB hello file, copy it to Drive.
   await copyBetweenWindows(window1, window2, ENTRIES.hello);
-};
+}
 
 /**
  * Tests file copy+paste from USB to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'copyBetweenWindowsUsbToLocal' comes from
-// an index signature, so it must be accessed with
-// ['copyBetweenWindowsUsbToLocal'].
-testcase.copyBetweenWindowsUsbToLocal = async () => {
+export async function copyBetweenWindowsUsbToLocal() {
   // Add photos to Drive.
   await addEntries(['drive'], [ENTRIES.photos]);
 
@@ -277,4 +254,4 @@ testcase.copyBetweenWindowsUsbToLocal = async () => {
 
   // Check USB hello file, copy it to Downloads.
   await copyBetweenWindows(window1, window2, ENTRIES.hello);
-};
+}
