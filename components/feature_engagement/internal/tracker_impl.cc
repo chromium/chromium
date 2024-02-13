@@ -57,13 +57,28 @@ namespace {
 const char kEventDBName[] = "EventDB";
 const char kAvailabilityDBName[] = "AvailabilityDB";
 
-// Creates a TrackerImpl that is usable for a demo mode.
-std::unique_ptr<Tracker> CreateDemoModeTracker() {
-  // GetFieldTrialParamValueByFeature returns an empty string if the param is
-  // not set.
-  std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
-      kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
+#if !BUILDFLAG(IS_ANDROID)
 
+// Reads event data from `config` and - if valid - places it into `result` along
+// with the event count in the appropriate window.
+void MaybeGetEventData(Tracker::EventList& result,
+                       const EventConfig& config,
+                       const EventModel& event_model,
+                       uint32_t current_day) {
+  if (config.name.empty()) {
+    return;
+  }
+  result.emplace_back(std::make_pair(
+      config,
+      event_model.GetEventCount(config.name, current_day, config.window)));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
+
+std::unique_ptr<Tracker> CreateDemoModeTracker(
+    std::string chosen_feature_name) {
   DVLOG(2) << "Enabling demo mode. Chosen feature: " << chosen_feature_name;
 
   std::unique_ptr<EditableConfiguration> configuration =
@@ -97,26 +112,6 @@ std::unique_ptr<Tracker> CreateDemoModeTracker() {
       std::make_unique<SystemTimeProvider>(), nullptr);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
-// Reads event data from `config` and - if valid - places it into `result` along
-// with the event count in the appropriate window.
-void MaybeGetEventData(Tracker::EventList& result,
-                       const EventConfig& config,
-                       const EventModel& event_model,
-                       uint32_t current_day) {
-  if (config.name.empty()) {
-    return;
-  }
-  result.emplace_back(std::make_pair(
-      config,
-      event_model.GetEventCount(config.name, current_day, config.window)));
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
 // This method is declared in //components/feature_engagement/public/
 //     feature_engagement.h
 // and should be linked in to any binary using Tracker::Create.
@@ -128,8 +123,13 @@ Tracker* Tracker::Create(
     base::WeakPtr<TrackerEventExporter> event_exporter,
     const ConfigurationProviderList& configuration_providers) {
   DVLOG(2) << "Creating Tracker";
-  if (base::FeatureList::IsEnabled(kIPHDemoMode))
-    return CreateDemoModeTracker().release();
+  if (base::FeatureList::IsEnabled(kIPHDemoMode)) {
+    // GetFieldTrialParamValueByFeature returns an empty string if the param is
+    // not set.
+    std::string chosen_feature_name = base::GetFieldTrialParamValueByFeature(
+        kIPHDemoMode, kIPHDemoModeFeatureChoiceParam);
+    return CreateDemoModeTracker(chosen_feature_name).release();
+  }
 
   base::FilePath event_storage_dir =
       storage_dir.AppendASCII(std::string(kEventDBName));

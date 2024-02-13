@@ -341,6 +341,7 @@ source_set("eg2_tests") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server:http_server",

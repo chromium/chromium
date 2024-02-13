@@ -50,6 +50,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -774,10 +775,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       [self
           isRunningTest:@selector
           (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)]) {
+    config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
     config.additional_args.push_back(base::StringPrintf(
-        "--enable-features=%s:chosen_feature/"
-        "IPH_iOSPromoPasswordManagerWidget,%s",
-        feature_engagement::kIPHDemoMode.name,
+        "--enable-features=%s",
         password_manager::features::kIOSPasswordAuthOnEntryV2.name));
   }
 

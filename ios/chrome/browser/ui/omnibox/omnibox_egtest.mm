@@ -30,6 +30,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
@@ -570,12 +571,10 @@ void FocusFakebox() {
 
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
 
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggersenable)
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
-                         feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -610,12 +609,10 @@ void FocusFakebox() {
 // Tests that copying in the omnibox will trigger the share button IPH to be
 // displayed, if certain conditions are met, when omnibox is at the top.
 - (void)testCopyInOmniboxTriggersShareButtonIPHWithTopOmnibox {
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
-                         feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -790,14 +787,10 @@ void FocusFakebox() {
 
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
 
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature",
-                         feature_engagement::kIPHDemoMode.name) +
-      "," + std::string(kIPHForSafariSwitcher.name));
-
+  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -831,12 +824,10 @@ void FocusFakebox() {
 // button IPH to be displayed, if certain conditions are met, with the omnibox
 // at the top.
 - (void)testCopyLocationBarTriggersShareButtonIPHWithTopOmnibox {
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
-                         feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -875,12 +866,10 @@ void FocusFakebox() {
 // share button IPH to be displayed, if the share button is disabled because the
 // url is not sharable.
 - (void)testCopyLocationBarNotTriggersShareButtonIPHWhenButtonDisabled {
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
-                         feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");

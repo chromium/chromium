@@ -9,6 +9,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter_factory.h"
@@ -26,6 +27,12 @@ namespace feature_engagement {
 
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
     web::BrowserState* context) {
+  std::optional<std::string> fetDemoModeOverride =
+      tests_hook::FETDemoModeOverride();
+  if (fetDemoModeOverride.has_value()) {
+    return CreateDemoModeTracker(fetDemoModeOverride.value());
+  }
+
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 

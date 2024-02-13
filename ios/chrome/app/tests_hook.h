@@ -6,6 +6,7 @@
 #define IOS_CHROME_APP_TESTS_HOOK_H_
 
 #include <memory>
+#import <optional>
 
 class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
@@ -128,6 +129,12 @@ base::TimeDelta PasswordCheckMinimumDuration();
 // Returns a Drive service instance that should be used in EG tests. The real
 // instance will be used if this hook returns a nullptr.
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
+
+// Override the Feature Engagement Tracker used in tests with a demo version.
+// Returning std::nullopt will not do any override. Returning any string will
+// override with a demo tracker that only enables that feature (use empty string
+// for a demo tracker that enables all features).
+std::optional<std::string> FETDemoModeOverride();
 
 }  // namespace tests_hook
 

@@ -17,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -94,11 +95,8 @@ void RequestDesktopVersion() {
 @implementation FeatureEngagementTestCase
 
 - (void)enableDemoModeForFeature:(std::string)feature {
-  std::string enable_features = base::StringPrintf(
-      "%s:chosen_feature/%s", feature_engagement::kIPHDemoMode.name,
-      feature.c_str());
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back("--enable-features=" + enable_features);
+  config.iph_feature_enabled = feature;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

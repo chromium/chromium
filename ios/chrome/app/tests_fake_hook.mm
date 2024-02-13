@@ -76,4 +76,8 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
 }
 
+std::optional<std::string> FETDemoModeOverride() {
+  return std::nullopt;
+}
+
 }  // namespace tests_hook

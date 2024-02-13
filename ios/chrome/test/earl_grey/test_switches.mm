@@ -19,4 +19,7 @@ const char kSignInAtStartup[] = "sign-in-at-startup";
 // Status of the Google Family fetch API call for the user.
 const char kFamilyStatus[] = "family-status";
 
+// Enables the provided IPH.
+const char kEnableIPH[] = "enable-iph";
+
 }  // namespace test_switches

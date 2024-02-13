@@ -37,6 +37,10 @@ class ProtoDatabaseProvider;
 namespace feature_engagement {
 
 class Configuration;
+class Tracker;
+
+// Creates a Tracker that is usable for a demo mode.
+std::unique_ptr<Tracker> CreateDemoModeTracker(std::string chosen_feature_name);
 
 // A handle for the display lock. While this is unreleased, no in-product help
 // can be displayed.

@@ -4,6 +4,7 @@
 
 #import "ios/testing/earl_grey/app_launch_argument_generator.h"
 
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 
 NSArray<NSString*>* ArgumentsFromConfiguration(
@@ -31,6 +32,12 @@ NSArray<NSString*>* ArgumentsFromConfiguration(
   }
 
   NSMutableArray<NSString*>* arguments = [[NSMutableArray alloc] init];
+
+  if (configuration.iph_feature_enabled.has_value()) {
+    std::string iph_enable_argument = base::StringPrintf(
+        "--enable-iph=%s", configuration.iph_feature_enabled.value().c_str());
+    [arguments addObject:base::SysUTF8ToNSString(iph_enable_argument)];
+  }
 
   std::string enableKey = "--enable-features=";
   std::string disableKey = "--disable-features=";

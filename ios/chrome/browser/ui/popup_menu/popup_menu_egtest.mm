@@ -12,6 +12,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -192,12 +193,10 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
   }
 
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag for this test
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=%s:chosen_feature/"
-      "IPH_iOSHistoryOnOverflowMenuFeature,IPHForSafariSwitcher",
-      feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
@@ -235,12 +234,10 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
   }
 
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  // Enable the IPH flag to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=%s:chosen_feature/"
-      "IPH_iOSHistoryOnOverflowMenuFeature,IPHForSafariSwitcher",
-      feature_engagement::kIPHDemoMode.name));
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");

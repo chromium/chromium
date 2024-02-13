@@ -11,6 +11,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -37,13 +38,10 @@ void ExpectThatGestureIPHAppears() {
 
 // Relaunch the app as a Safari switcher with IPH demo mode for `feature`.
 - (void)relaunchWithIPHFeatureForSafariSwitcher:(NSString*)feature {
-  // Enable the IPH Demo Mode feature to ensure the IPH triggers.
+  // Enable the flag to ensure the IPH triggers.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=%s:chosen_feature/"
-                         "%s,IPHForSafariSwitcher",
-                         feature_engagement::kIPHDemoMode.name,
-                         base::SysNSStringToUTF8(feature).c_str()));
+  config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
   config.additional_args.push_back("SyncedAndFirstDevice");
