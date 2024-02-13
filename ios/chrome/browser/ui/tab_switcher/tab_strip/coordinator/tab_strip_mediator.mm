@@ -242,7 +242,15 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 }
 
 - (void)closeAllItemsExcept:(TabSwitcherItem*)item {
-  // TODO.
+  if (!self.webStateList) {
+    return;
+  }
+  auto indexToKeepSearchCriteria = WebStateSearchCriteria(item.identifier);
+  // Closes all non-pinned items except for `item`.
+  CloseOtherWebStates(
+      self.webStateList,
+      GetWebStateIndex(self.webStateList, indexToKeepSearchCriteria),
+      WebStateList::CLOSE_USER_ACTION);
 }
 
 #pragma mark - CRWWebStateObserver

@@ -66,4 +66,9 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
 // Returns whether `items` has items with the same identifier.
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items);
 
+// Closes all non-pinned WebStates whose index is not `index_to_keep`.
+void CloseOtherWebStates(WebStateList* web_state_list,
+                         int index_to_keep,
+                         int close_flags);
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_UTILS_H_

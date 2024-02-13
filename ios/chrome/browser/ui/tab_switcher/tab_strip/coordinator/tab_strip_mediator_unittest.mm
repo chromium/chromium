@@ -93,7 +93,7 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_.browser = browser_.get();
   }
 
-  void AddWebState() {
+  void AddWebState(bool pinned = false) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
     favicon::WebFaviconDriver::CreateForWebState(
@@ -103,7 +103,7 @@ class TabStripMediatorTest : public PlatformTest {
 
     web_state_list_->InsertWebState(
         std::move(web_state),
-        WebStateList::InsertionParams::Automatic().Activate());
+        WebStateList::InsertionParams::Automatic().Activate().Pinned(pinned));
   }
 
  protected:
@@ -301,5 +301,101 @@ TEST_F(TabStripMediatorTest, CloseTab) {
   EXPECT_EQ(1, web_state_list_->count());
 
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+}
+
+// Tests that closing all non-pinned tabs except a pinned tab works.
+TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
+  AddWebState(/* pinned= */ true);  // 0
+  AddWebState(/* pinned= */ true);  // 1, will be kept
+  const auto web_state_to_keep_identifier =
+      web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier();
+  AddWebState();  // 2
+  AddWebState();  // 3
+  AddWebState();  // 4
+  AddWebState();  // 5
+
+  InitializeMediator();
+
+  ASSERT_EQ(5, web_state_list_->active_index());
+  ASSERT_EQ(6, web_state_list_->count());
+
+  TabSwitcherItem* item = [[TabSwitcherItem alloc]
+      initWithIdentifier:web_state_list_->GetWebStateAt(1)
+                             ->GetUniqueIdentifier()];
+  [mediator_ closeAllItemsExcept:item];
+
+  EXPECT_EQ(1, web_state_list_->active_index());
+  EXPECT_EQ(2, web_state_list_->count());
+
+  // Check that the WebState at index 1 is the one that should have been kept.
+  EXPECT_EQ(web_state_to_keep_identifier,
+            web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier());
+  // Check that the currently selected item is the WebState at index 1.
+  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+}
+
+// Tests that closing all non-pinned tabs except a non-active tab works.
+TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
+  AddWebState(/* pinned= */ true);  // 0
+  AddWebState(/* pinned= */ true);  // 1
+  AddWebState();                    // 2
+  AddWebState();                    // 3, will be kept
+  const auto web_state_to_keep_identifier =
+      web_state_list_->GetWebStateAt(3)->GetUniqueIdentifier();
+  AddWebState();  // 4
+  AddWebState();  // 5
+
+  InitializeMediator();
+
+  ASSERT_EQ(5, web_state_list_->active_index());
+  ASSERT_EQ(6, web_state_list_->count());
+
+  TabSwitcherItem* item = [[TabSwitcherItem alloc]
+      initWithIdentifier:web_state_list_->GetWebStateAt(3)
+                             ->GetUniqueIdentifier()];
+  [mediator_ closeAllItemsExcept:item];
+
+  EXPECT_EQ(2, web_state_list_->active_index());
+  EXPECT_EQ(3, web_state_list_->count());
+
+  // Check that the WebState at index 2 is the one that should have been kept.
+  EXPECT_EQ(web_state_to_keep_identifier,
+            web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier());
+  // Check that the currently selected item is the WebState at index 2.
+  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+}
+
+// Tests that closing all non-pinned tabs except an active tab works.
+TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
+  AddWebState(/* pinned= */ true);  // 0
+  AddWebState(/* pinned= */ true);  // 1
+  AddWebState();                    // 2
+  AddWebState();                    // 3
+  AddWebState();                    // 4
+  AddWebState();                    // 5, will be kept
+  const auto web_state_to_keep_identifier =
+      web_state_list_->GetWebStateAt(5)->GetUniqueIdentifier();
+
+  InitializeMediator();
+
+  ASSERT_EQ(5, web_state_list_->active_index());
+  ASSERT_EQ(6, web_state_list_->count());
+
+  TabSwitcherItem* item = [[TabSwitcherItem alloc]
+      initWithIdentifier:web_state_list_->GetWebStateAt(5)
+                             ->GetUniqueIdentifier()];
+  [mediator_ closeAllItemsExcept:item];
+
+  EXPECT_EQ(2, web_state_list_->active_index());
+  EXPECT_EQ(3, web_state_list_->count());
+
+  // Check that the WebState at index 2 is the one that should have been kept.
+  EXPECT_EQ(web_state_to_keep_identifier,
+            web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier());
+  // Check that the currently selected item is the WebState at index 2.
+  EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
             consumer_.selectedItem.identifier);
 }
