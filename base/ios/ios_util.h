@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
+#include "build/ios_buildflags.h"
 
 namespace base {
 namespace ios {
@@ -55,10 +56,12 @@ BASE_EXPORT void OverridePathOfEmbeddedICU(const char* path);
 // returns invalid FilePath.
 BASE_EXPORT FilePath FilePathOfEmbeddedICU();
 
+#if !BUILDFLAG(IS_IOS_APP_EXTENSION)
 // Returns true iff multiple windows can be opened, i.e. when the multiwindow
 // build flag is on, the device is running on iOS 13+ and it's a compatible
 // iPad.
 BASE_EXPORT bool IsMultipleScenesSupported();
+#endif
 
 // iOS 15 introduced pre-warming, which launches and then pauses the app, to
 // speed up actual launch time.
