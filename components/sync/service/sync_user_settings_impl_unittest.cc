@@ -633,7 +633,7 @@ TEST_F(SyncUserSettingsImplTest,
   EXPECT_EQ("token", sync_user_settings->GetEncryptionBootstrapToken());
   EXPECT_EQ(sync_user_settings->GetEncryptionBootstrapToken(),
             sync_prefs_->GetEncryptionBootstrapToken());
-  sync_prefs_->ClearEncryptionBootstrapToken();
+  sync_prefs_->ClearAllEncryptionBootstrapTokens();
   EXPECT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
 }
 

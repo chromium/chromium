@@ -56,7 +56,7 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenForSyncingUser) {
   ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
   sync_prefs_->SetEncryptionBootstrapToken("token");
   EXPECT_EQ("token", sync_prefs_->GetEncryptionBootstrapToken());
-  sync_prefs_->ClearEncryptionBootstrapToken();
+  sync_prefs_->ClearAllEncryptionBootstrapTokens();
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
 }
 

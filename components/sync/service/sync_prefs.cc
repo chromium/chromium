@@ -578,7 +578,7 @@ void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
                            token);
 }
 
-void SyncPrefs::ClearEncryptionBootstrapToken() {
+void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);
   if (IsInitialSyncFeatureSetupComplete()) {

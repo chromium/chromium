@@ -2239,7 +2239,7 @@ void SyncServiceImpl::StopAndClear() {
   // will need to reenter it if sync gets re-enabled. Note: the gaia-keyed
   // passphrase pref should be cleared before clearing
   // InitialSyncFeatureSetupComplete().
-  sync_prefs_.ClearEncryptionBootstrapToken();
+  sync_prefs_.ClearAllEncryptionBootstrapTokens();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   sync_prefs_.ClearInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
