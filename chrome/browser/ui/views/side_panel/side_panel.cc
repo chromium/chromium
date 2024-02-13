@@ -278,8 +278,7 @@ bool SidePanel::IsRightAligned() {
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
-  const int min_side_panel_contents_width =
-      features::GetSidePanelMinimumWidth();
+  const int min_side_panel_contents_width = 360;
   const int min_height = 0;
   return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
                    min_height);
