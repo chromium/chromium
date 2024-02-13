@@ -10,7 +10,7 @@ import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.
 import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
 import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
-import type {HandlerInterface, ObserverInterface, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
+import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 import type {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -191,13 +191,11 @@ function renderDL<T>(td: HTMLElement, row: T, cols: Iterable<Column<T>>): void {
   td.append(dl);
 }
 
-function renderUrl(
-    td: HTMLElement, url: string,
-    renderAnchor: RenderFunc<string> = (td, v) => td.innerText = v): void {
+function renderUrl(td: HTMLElement, url: string): void {
   const a = td.ownerDocument.createElement('a');
   a.target = '_blank';
   a.href = url;
-  renderAnchor(a, url);
+  a.innerText = url;
   td.append(a);
 }
 
@@ -206,28 +204,9 @@ const asUrl: Valuable<string> = {
   render: renderUrl,
 };
 
-const debugPathPattern: RegExp =
-    /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
-
-const reportUrlColumn: Column<Report> =
-    ValueColumn.of('Report URL', 'reportUrl', {
-      compare: compareDefault,
-      render: (td: HTMLElement, url: string) => renderUrl(
-          td, url,
-          (a, url) => {
-            const [pre, post] = url.split(debugPathPattern, 2);
-            if (pre === undefined || post === undefined) {
-              a.innerText = url;
-              return;
-            }
-
-            const span = a.ownerDocument.createElement('span');
-            span.classList.add('debug-url');
-            span.innerText = 'debug';
-
-            a.append(pre, span, post);
-          }),
-    });
+function isAttributionSuccessDebugReport(url: string): boolean {
+  return url.includes('/.well-known/attribution-reporting/debug/');
+}
 
 class Selectable {
   readonly input: HTMLInputElement;
@@ -528,30 +507,34 @@ class Report extends Selectable {
       this.input.disabled = true;
     }
 
-    this.sendFailed = false;
+    [this.status, this.sendFailed] =
+        Report.statusToString(mojo.status, 'Sent: ');
+  }
 
-    if (mojo.status.sent !== undefined) {
-      this.status = `Sent: HTTP ${mojo.status.sent}`;
-      this.sendFailed = isHttpError(mojo.status.sent);
-    } else if (mojo.status.pending !== undefined) {
-      this.status = 'Pending';
-    } else if (mojo.status.replacedByHigherPriorityReport !== undefined) {
-      this.status = `Replaced by higher-priority report: ${
-          mojo.status.replacedByHigherPriorityReport}`;
-    } else if (mojo.status.prohibitedByBrowserPolicy !== undefined) {
-      this.status = 'Prohibited by browser policy';
-    } else if (mojo.status.networkError !== undefined) {
-      this.status = `Network error: ${mojo.status.networkError}`;
-      this.sendFailed = true;
-    } else if (mojo.status.failedToAssemble !== undefined) {
-      this.status = 'Dropped due to assembly failure';
+  static statusToString(status: ReportStatus, sentPrefix: string):
+      [status: string, sendFailed: boolean] {
+    if (status.sent !== undefined) {
+      return [
+        `${sentPrefix}HTTP ${status.sent}`,
+        isHttpError(status.sent),
+      ];
+    } else if (status.pending !== undefined) {
+      return ['Pending', false];
+    } else if (status.replacedByHigherPriorityReport !== undefined) {
+      return [
+        `Replaced by higher-priority report: ${
+            status.replacedByHigherPriorityReport}`,
+        false,
+      ];
+    } else if (status.prohibitedByBrowserPolicy !== undefined) {
+      return ['Prohibited by browser policy', false];
+    } else if (status.networkError !== undefined) {
+      return [`Network error: ${status.networkError}`, true];
+    } else if (status.failedToAssemble !== undefined) {
+      return ['Dropped due to assembly failure', false];
     } else {
       throw new Error('invalid ReportStatus union');
     }
-  }
-
-  isDebug(): boolean {
-    return debugPathPattern.test(this.reportUrl);
   }
 }
 
@@ -592,12 +575,9 @@ class AggregatableAttributionReport extends Report {
 
 class ReportTableModel<T extends Report> extends TableModel<T> {
   private readonly sendReportsButton: HTMLButtonElement;
-  private readonly showDebugReportsCheckbox: HTMLInputElement;
-  private readonly hiddenDebugReportsSpan: HTMLSpanElement;
 
   private sentOrDroppedReports: T[] = [];
   private storedReports: T[] = [];
-  private debugReports: T[] = [];
 
   constructor(
       container: HTMLElement, private readonly handler: HandlerInterface,
@@ -605,7 +585,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     super(
         [
           ValueColumn.of('Status', 'status', asStringOrBool),
-          reportUrlColumn,
+          ValueColumn.of('Report URL', 'reportUrl', asUrl),
           ValueColumn.of('Trigger Time', 'triggerTime', asDate),
           ValueColumn.of('Report Time', 'reportTime', asDate),
           ...cols,
@@ -621,35 +601,20 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
 
     this.sendReportsButton = container.querySelector('button')!;
 
-    this.showDebugReportsCheckbox =
-        container.querySelector('input[type="checkbox"]')!;
-
-    this.hiddenDebugReportsSpan = container.querySelector('span')!;
-
-    this.showDebugReportsCheckbox.addEventListener(
-        'input', () => this.notifyRowsChanged());
-
     this.sendReportsButton.addEventListener('click', () => this.sendReports_());
     selectionColumn.selectionChangedListeners.add((anySelected: boolean) => {
       this.sendReportsButton.disabled = !anySelected;
     });
-
-    this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan_());
   }
 
   override styleRow = styleReportRow;
 
   override rowCount(): number {
-    return this.sentOrDroppedReports.length + this.storedReports.length +
-        (this.showDebugReportsCheckbox.checked ? this.debugReports.length : 0);
+    return this.sentOrDroppedReports.length + this.storedReports.length;
   }
 
   override getRows(): T[] {
-    let rows = this.sentOrDroppedReports.concat(this.storedReports);
-    if (this.showDebugReportsCheckbox.checked) {
-      rows = rows.concat(this.debugReports);
-    }
-    return rows;
+    return this.sentOrDroppedReports.concat(this.storedReports);
   }
 
   setStoredReports(storedReports: T[]): void {
@@ -660,32 +625,18 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
   addSentOrDroppedReport(report: T): void {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
-    if (this.sentOrDroppedReports.length + this.debugReports.length >= 1000) {
+    if (this.sentOrDroppedReports.length >= 1000) {
       this.sentOrDroppedReports = [];
-      this.debugReports = [];
     }
 
-    if (report.isDebug()) {
-      this.debugReports.push(report);
-    } else {
-      this.sentOrDroppedReports.push(report);
-    }
-
+    this.sentOrDroppedReports.push(report);
     this.notifyRowsChanged();
   }
 
   clear(): void {
     this.storedReports = [];
     this.sentOrDroppedReports = [];
-    this.debugReports = [];
     this.notifyRowsChanged();
-  }
-
-  private updateHiddenDebugReportsSpan_(): void {
-    this.hiddenDebugReportsSpan.innerText =
-        this.showDebugReportsCheckbox.checked ?
-        '' :
-        ` (${this.debugReports.length} hidden)`;
   }
 
   /**
@@ -775,28 +726,46 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
   }
 }
 
-class DebugReport {
+interface DebugReport {
   body: string;
   url: string;
   time: Date;
   status: string;
   sendFailed: boolean;
+}
 
-  constructor(mojo: WebUIDebugReport) {
-    this.body = mojo.body;
-    this.url = mojo.url.url;
-    this.time = new Date(mojo.time);
+function verboseDebugReport(mojo: WebUIDebugReport): DebugReport {
+  const report: DebugReport = {
+    body: mojo.body,
+    url: mojo.url.url,
+    time: new Date(mojo.time),
+    status: '',
+    sendFailed: false,
+  };
 
-    if (mojo.status.httpResponseCode !== undefined) {
-      this.status = `HTTP ${mojo.status.httpResponseCode}`;
-      this.sendFailed = isHttpError(mojo.status.httpResponseCode);
-    } else if (mojo.status.networkError !== undefined) {
-      this.status = `Network error: ${mojo.status.networkError}`;
-      this.sendFailed = true;
-    } else {
-      throw new Error('invalid DebugReportStatus union');
-    }
+  if (mojo.status.httpResponseCode !== undefined) {
+    report.status = `HTTP ${mojo.status.httpResponseCode}`;
+    report.sendFailed = isHttpError(mojo.status.httpResponseCode);
+  } else if (mojo.status.networkError !== undefined) {
+    report.status = `Network error: ${mojo.status.networkError}`;
+    report.sendFailed = true;
+  } else {
+    throw new Error('invalid DebugReportStatus union');
   }
+
+  return report;
+}
+
+function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
+  const [status, sendFailed] =
+      Report.statusToString(mojo.status, /*sentPrefix=*/ '');
+  return {
+    body: mojo.reportBody,
+    url: mojo.reportUrl.url,
+    time: new Date(mojo.reportTime),
+    status,
+    sendFailed,
+  };
 }
 
 class DebugReportTableModel extends ArrayTableModel<DebugReport> {
@@ -1056,7 +1025,7 @@ class AttributionInternals implements ObserverInterface {
   }
 
   onDebugReportSent(mojo: WebUIDebugReport): void {
-    this.debugReports.addRow(new DebugReport(mojo));
+    this.debugReports.addRow(verboseDebugReport(mojo));
   }
 
   onReportDropped(mojo: WebUIReport): void {
@@ -1076,7 +1045,9 @@ class AttributionInternals implements ObserverInterface {
   }
 
   private addSentOrDroppedReport(mojo: WebUIReport): void {
-    if (mojo.data.eventLevelData !== undefined) {
+    if (isAttributionSuccessDebugReport(mojo.reportUrl.url)) {
+      this.debugReports.addRow(attributionSuccessDebugReport(mojo));
+    } else if (mojo.data.eventLevelData !== undefined) {
       this.eventLevelReports.addSentOrDroppedReport(new EventLevelReport(mojo));
     } else {
       this.aggregatableReports.addSentOrDroppedReport(
