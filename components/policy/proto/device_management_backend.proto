@@ -272,9 +272,9 @@ message DeviceRegisterRequest {
     // Device state downloaded from the server indicated that initial enrollment
     // is mandatory and should be token-based.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
-    // Device state downloaded from the server indicated that initial token-based
-    // enrollment is mandatory, but it failed and we are doing fallback to
-    // manual enrollment.
+    // Device state downloaded from the server indicated that initial
+    // token-based enrollment is mandatory, but it failed and we are doing
+    // fallback to manual enrollment.
     FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
   }
 
