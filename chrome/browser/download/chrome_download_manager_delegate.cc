@@ -611,6 +611,17 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
   DownloadPathReservationTracker::FilenameConflictAction action =
       kDefaultPlatformConflictAction;
 #if BUILDFLAG(IS_ANDROID)
+  if (download->IsTransient() && download_path.empty() &&
+      download->GetMimeType() == kPDFMimeType && !download->IsMustDownload()) {
+    base::FilePath generated_filename = net::GenerateFileName(
+        download->GetURL(), download->GetContentDisposition(),
+        profile_->GetPrefs()->GetString(prefs::kDefaultCharset),
+        download->GetSuggestedFilename(), download->GetMimeType(),
+        l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
+    base::FilePath cache_dir;
+    base::android::GetCacheDirectory(&cache_dir);
+    download_path = cache_dir.Append(generated_filename);
+  }
   if (!download_path.empty())
     action = DownloadPathReservationTracker::UNIQUIFY;
 #endif
