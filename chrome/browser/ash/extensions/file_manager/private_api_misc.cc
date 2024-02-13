@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -262,6 +263,8 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.office_file_moved_google_drive =
       prefs->GetTime(prefs::kOfficeFileMovedToGoogleDrive)
           .InMillisecondsFSinceUnixEpoch();
+  result.local_user_files_enabled =
+      policy::local_user_files::LocalUserFilesAllowed();
 
   return RespondNow(WithArguments(result.ToValue()));
 }

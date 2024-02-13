@@ -852,6 +852,7 @@ dictionary Preferences {
   double officeFileMovedGoogleDrive;
   boolean driveFsBulkPinningAvailable;
   boolean driveFsBulkPinningEnabled;
+  boolean localUserFilesEnabled;
 };
 
 dictionary PreferencesChange {

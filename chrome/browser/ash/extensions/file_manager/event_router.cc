@@ -735,6 +735,7 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive, cb);
+    pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
   }
 
   {
