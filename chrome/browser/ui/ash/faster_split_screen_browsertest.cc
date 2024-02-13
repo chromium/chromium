@@ -65,8 +65,9 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  // Snap the window to start partial overview.
+  // Create two browser windows and snap `window` to start partial overview.
   aura::Window* window = browser()->window()->GetNativeWindow();
+  CreateBrowser(browser()->profile());
   ash::WindowState* window_state = ash::WindowState::Get(window);
   const ash::WindowSnapWMEvent primary_snap_event(
       ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
@@ -108,13 +109,15 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
 // restore'd, partial overview auto-snaps the window. See b/314816288.
 IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
                        AutoSnapWhileInSessionRestore) {
-  // Snap the window to start partial overview.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  ash::WindowState* window_state = ash::WindowState::Get(window);
+  // Create two browser windows and snap `window1` to start partial overview.
+  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window1);
+  CreateBrowser(browser()->profile());
+
   const ash::WindowSnapWMEvent primary_snap_event(
       ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
   window_state->OnWMEvent(&primary_snap_event);
-  ash::WaitForOverviewEnterAnimation();
+  ash::WaitForOverviewEntered();
   ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
 
   // Open a new browser window. Test it gets auto-snapped.

@@ -386,6 +386,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsSaveDeskAsTemplateButtonVisible() const;
   bool IsSaveDeskForLaterButtonVisible() const;
 
+  // Called by `OverviewSession` when tablet mode changes to update necessary UI
+  // if needed.
+  void OnTabletModeChanged();
+
   // This is different from `item_list_.size()` which contains the drop target
   // if it exists, and if two windows are in a snap group, they are a single
   // item.

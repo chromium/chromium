@@ -2249,6 +2249,13 @@ bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
          container->save_desk_for_later_button()->GetVisible();
 }
 
+void OverviewGrid::OnTabletModeChanged() {
+  // We may not show virtual desk bar in clamshell mode such as in faster split
+  // screen setup session, and the desk bar will be created in tablet mode
+  // either. In this case, we may need to init the virtual desk bar.
+  MaybeInitDesksWidget();
+}
+
 size_t OverviewGrid::GetNumWindows() const {
   size_t size = 0u;
   for (const std::unique_ptr<OverviewItemBase>& item : item_list_) {
@@ -2311,8 +2318,7 @@ void OverviewGrid::OnSplitViewStateChanged(
   if (state == SplitViewController::State::kBothSnapped ||
       unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
-       overview_session_->IsEmpty() &&
-       !window_util::IsInFasterSplitScreenSetupSession(root_window_))) {
+       overview_session_->IsEmpty())) {
     overview_session_->RestoreWindowActivation(false);
     overview_controller->EndOverview(
         state == SplitViewController::State::kBothSnapped

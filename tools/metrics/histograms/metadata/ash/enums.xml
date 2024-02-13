@@ -1819,6 +1819,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Session exit due to window destruction"/>
   <int value="3" label="Session exit due to shutdown"/>
   <int value="4" label="Session exit due to unspecified reasons"/>
+  <int value="5" label="Session exit due to converting to tablet mode"/>
 </enum>
 
 <enum name="SplitViewSwapWindowsSource">

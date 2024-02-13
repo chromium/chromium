@@ -231,21 +231,20 @@ bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
   // state of the opposite snapped window.
   gfx::Rect union_bounds;
   for (aura::Window* top_window : windows) {
-    if (top_window->GetRootWindow() != window->GetRootWindow()) {
-      // Skip any windows that aren't on the same root as `window`.
-      continue;
-    }
-
     const auto* top_window_state = WindowState::Get(top_window);
     // The `top_window` should be excluded for occlusion check under the
     // following conditions:
     // 1. When it is the `window` itself;
-    // 2. When it is not visible or minimized;
+    // 2. When `top_window` is not on the same root window of the given
+    // `window`;
     // 3. When it is the transient child of the `window`, for example the window
     // layout menu or other bubble widget;
-    // 4. When it is a float or pip window.
+    // 4. When it is not visible or minimized;
+    // 5. When it is a float or pip window.
     const bool should_be_excluded_for_occlusion_check =
-        top_window == window || wm::GetTransientRoot(top_window) == window ||
+        top_window == window ||
+        top_window->GetRootWindow() != window->GetRootWindow() ||
+        wm::GetTransientRoot(top_window) == window ||
         !top_window->IsVisible() || top_window_state->IsMinimized() ||
         top_window_state->IsFloated() || top_window_state->IsPip();
 
@@ -272,6 +271,20 @@ bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
   }
 
   return false;
+}
+
+// Returns true if there is no window in partial overview (excluding the given
+// `window`).
+bool IsPartialOverviewEmptyForActiveDesk(aura::Window* window) {
+  for (auto win :
+       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    if (win != window && wm::GetTransientRoot(win) != window &&
+        win->GetRootWindow() == window->GetRootWindow()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -888,7 +901,8 @@ bool ShouldConsiderWindowForFasterSplitView(
     return false;
   }
 
-  if (!OverviewController::Get()->CanEnterOverview()) {
+  if (!OverviewController::Get()->CanEnterOverview() ||
+      IsPartialOverviewEmptyForActiveDesk(window)) {
     return false;
   }
 

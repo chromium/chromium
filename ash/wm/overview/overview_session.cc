@@ -1592,6 +1592,10 @@ void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
 }
 
 void OverviewSession::OnTabletModeChanged() {
+  for (auto& overview_grid : grid_list_) {
+    overview_grid->OnTabletModeChanged();
+  }
+
   DCHECK(saved_desk_util::ShouldShowSavedDesksButtons());
   DCHECK(saved_desk_presenter_);
   saved_desk_presenter_->UpdateUIForSavedDeskLibrary();

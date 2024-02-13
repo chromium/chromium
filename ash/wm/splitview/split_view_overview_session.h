@@ -34,14 +34,15 @@ enum class SplitViewOverviewSetupType {
 
 // Enumeration of the exit point of the `SplitViewOverviewSession`.
 // Please keep in sync with "OverviewEndAction" in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class SplitViewOverviewSessionExitPoint {
   kCompleteByActivating,
   kSkip,
   kWindowDestroy,
   kShutdown,
   kUnspecified,
-  kMaxValue = kUnspecified,
+  kTabletConversion,
+  kMaxValue = kTabletConversion,
 };
 
 // Encapsulates the split view state with a single snapped window and

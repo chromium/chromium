@@ -24,6 +24,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -156,7 +157,7 @@ void SnapOneTestWindow(
 SplitViewOverviewSession* VerifySplitViewOverviewSession(
     aura::Window* window,
     bool faster_split_screen_setup = true) {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(
       overview_controller->overview_session()->IsWindowInOverview(window));
@@ -352,11 +353,29 @@ TEST_F(FasterSplitScreenTest, Basic) {
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(w3.get())->GetStateType());
 
-  // Enter overview normally. Test no widget.
+  // Enter overview normally. Test that no windows widget will not show.
   ToggleOverview();
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   EXPECT_FALSE(overview_grid->no_windows_widget());
   EXPECT_FALSE(overview_grid->faster_splitview_widget());
+}
+
+// Tests that on one window snapped, `SnapGroupController` starts
+// `SplitViewOverviewSession` (snap group creation session).
+TEST_F(FasterSplitScreenTest, CloseSnappedWindowEndsSplitViewOverviewSession) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  // Snap `w1` to the left. Test that we are in split view overview, excluding
+  // `w1` and taking half the screen.
+  SnapOneTestWindow(w1.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Close `w1`. Test that we end overview.
+  w1.reset();
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 // Tests that faster split screen can only start with certain snap action
@@ -412,6 +431,7 @@ TEST_F(FasterSplitScreenTest, CycleSnap) {
 
 TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped,
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
@@ -444,6 +464,7 @@ TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
 TEST_F(FasterSplitScreenTest, ResizeSplitViewOverviewAndWindow) {
   UpdateDisplay("900x600");
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
@@ -476,7 +497,8 @@ TEST_F(FasterSplitScreenTest, ResizeSplitViewOverviewAndWindow) {
 }
 
 TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   const gfx::Rect initial_bounds(w1->GetBoundsInScreen());
@@ -497,11 +519,11 @@ TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
   expected_grid_bounds.Subtract(w1->GetBoundsInScreen());
   EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
 
-  // Select a window to auto snap. Test it snaps to the correct ratio.
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  // Create a window and test that it auto snaps.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
   EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
-            WindowState::Get(w2.get())->GetStateType());
-  EXPECT_EQ(expected_grid_bounds, w2->GetBoundsInScreen());
+            WindowState::Get(w3.get())->GetStateType());
+  EXPECT_EQ(expected_grid_bounds, w3->GetBoundsInScreen());
 }
 
 TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
@@ -775,6 +797,41 @@ TEST_F(FasterSplitScreenTest, DontStartPartialOverviewForFloatedWindow) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+// Tests that partial overview will not be triggered if the window to be snapped
+// is only one window for the active desk and on the current display.
+TEST_F(FasterSplitScreenTest, DontStartPartiOverviewIfThereIsOnlyOneWindow) {
+  UpdateDisplay("900x600, 901+0-900x600");
+  ASSERT_EQ(Shell::GetAllRootWindows().size(), 2u);
+
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(10, 20, 200, 100)));
+
+  // Create the 2nd window and move it to another desk.
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(100, 20, 200, 100)));
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk0);
+  desks_controller->MoveWindowFromActiveDeskTo(
+      w2.get(), desk1, w2->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kShortcut);
+  ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk1);
+
+  // Create the 3rd window on the 2nd display.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(1000, 20, 200, 100)));
+
+  // Verify that snapping `w1` won't trigger partial overview.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  EXPECT_FALSE(IsInOverviewSession());
+}
+
 // Tests that only when there is a non-occluded window snapped on the opposite
 // side should we skip showing partial overview on window snapped. This test
 // focuses on the window layout setup **with** intersections.
@@ -904,18 +961,21 @@ TEST_F(FasterSplitScreenTest, NoCrashOnDisplayChange) {
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
   // Snap `window` on the second display. Test its bounds are updated.
-  std::unique_ptr<aura::Window> window(
+  std::unique_ptr<aura::Window> window1(
       CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
-  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(1000, 0, 100, 100)));
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
-  ASSERT_EQ(
-      display_manager_test.GetSecondaryDisplay().id(),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id());
+  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
+            display::Screen::GetScreen()
+                ->GetDisplayNearestWindow(window1.get())
+                .id());
   const gfx::Rect work_area(
       display_manager_test.GetSecondaryDisplay().work_area());
   EXPECT_EQ(gfx::Rect(800, 0, work_area.width() / 2, work_area.height()),
-            window->GetBoundsInScreen());
-  VerifySplitViewOverviewSession(window.get());
+            window1->GetBoundsInScreen());
+  VerifySplitViewOverviewSession(window1.get());
 
   // Disconnect the second display. Test no crash.
   UpdateDisplay("800x600");
@@ -983,13 +1043,15 @@ TEST_F(FasterSplitScreenTest, SnapWindowWithMinimumSize) {
 // Tests we start partial overview if there's an opposite snapped window on
 // another display.
 TEST_F(FasterSplitScreenTest, OppositeSnappedWindowOnOtherDisplay) {
-  UpdateDisplay("800x600,1000x600");
+  UpdateDisplay("800x600,801+0-800x600");
 
   // Create 3 test windows, with `w3` on display 2.
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   std::unique_ptr<aura::Window> w3(
       CreateAppWindow(gfx::Rect(900, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w4(
+      CreateAppWindow(gfx::Rect(1000, 0, 100, 100)));
 
   // Snap `w1` to primary on display 1.
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
@@ -1024,26 +1086,27 @@ TEST_F(FasterSplitScreenTest, OppositeSnappedWindowOnOtherDisplay) {
 // preserve the snap ratio.
 TEST_F(FasterSplitScreenTest, WindowBoundsRefreshedOnDisplayChanges) {
   UpdateDisplay("900x600");
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
-  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  VerifySplitViewOverviewSession(window.get());
-  ASSERT_EQ(WindowState::Get(window.get())->snap_ratio(),
+  VerifySplitViewOverviewSession(window1.get());
+  ASSERT_EQ(WindowState::Get(window1.get())->snap_ratio(),
             chromeos::kTwoThirdSnapRatio);
   const auto work_area_bounds_1 = work_area_bounds();
   ASSERT_EQ(
-      window->GetBoundsInScreen(),
+      window1->GetBoundsInScreen(),
       gfx::Rect(0, 0, work_area_bounds_1.width() * chromeos::kTwoThirdSnapRatio,
                 work_area_bounds_1.height()));
 
   UpdateDisplay("1200x600");
-  VerifySplitViewOverviewSession(window.get());
-  EXPECT_EQ(WindowState::Get(window.get())->snap_ratio(),
+  VerifySplitViewOverviewSession(window1.get());
+  EXPECT_EQ(WindowState::Get(window1.get())->snap_ratio(),
             chromeos::kTwoThirdSnapRatio);
   const auto work_area_bounds_2 = work_area_bounds();
   EXPECT_EQ(
-      window->GetBoundsInScreen(),
+      window1->GetBoundsInScreen(),
       gfx::Rect(0, 0, work_area_bounds_2.width() * chromeos::kTwoThirdSnapRatio,
                 work_area_bounds_2.height()));
 }
@@ -1051,16 +1114,17 @@ TEST_F(FasterSplitScreenTest, WindowBoundsRefreshedOnDisplayChanges) {
 // Test to verify that there will be no crash when dragging the snapped window
 // out without resizing the window see crash in b/321111182.
 TEST_F(FasterSplitScreenTest, NoCrashWhenDraggingTheSnappedWindow) {
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
-  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  VerifySplitViewOverviewSession(window.get());
+  VerifySplitViewOverviewSession(window1.get());
 
   std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
+      window1.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
   resizer->Drag(gfx::PointF(500, 100), /*event_flags=*/0);
-  WindowState* window_state = WindowState::Get(window.get());
+  WindowState* window_state = WindowState::Get(window1.get());
   EXPECT_TRUE(window_state->is_dragged());
   resizer->CompleteDrag();
   EXPECT_FALSE(window_state->IsSnapped());
@@ -1122,7 +1186,8 @@ TEST_F(FasterSplitScreenTest, EnterOverviewSnappingWindow) {
 // Verifies that there will be no crash when transitioning the
 // `SplitViewOverviewSession` between clamshell and tablet mode.
 TEST_F(FasterSplitScreenTest, ClamshellTabletTransitionOneSnappedWindow) {
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
@@ -1498,10 +1563,11 @@ TEST_F(FasterSplitScreenTest, OverviewStartActionHistogramTest) {
       kOverviewStartActionHistogram,
       OverviewStartAction::kFasterSplitScreenSetup,
       /*expected_count=*/0);
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
-  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
-  VerifySplitViewOverviewSession(window.get());
+  VerifySplitViewOverviewSession(window1.get());
   histogram_tester_.ExpectBucketCount(
       kOverviewStartActionHistogram,
       OverviewStartAction::kFasterSplitScreenSetup,
@@ -1512,10 +1578,11 @@ TEST_F(FasterSplitScreenTest, OverviewStartActionHistogramTest) {
 // setup session.
 TEST_F(FasterSplitScreenTest, A11yAlertOnEnteringFaterSplitScreenSetup) {
   TestAccessibilityControllerClient client;
-  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
   EXPECT_NE(AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP,
             client.last_a11y_alert());
-  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped,
+  SnapOneTestWindow(window1.get(), chromeos::WindowStateType::kPrimarySnapped,
                     chromeos::kDefaultSnapRatio);
   EXPECT_EQ(AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP,
             client.last_a11y_alert());
@@ -1780,32 +1847,6 @@ TEST_F(SnapGroupTest, ClamshellSplitViewBasicFunctionalities) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
-// Tests that on one window snapped, `SnapGroupController` starts
-// `SplitViewOverviewSession` (snap group creation session).
-TEST_F(SnapGroupTest, SnapOneTestWindowStartsOverview) {
-  std::unique_ptr<aura::Window> w(CreateAppWindow());
-  // Snap `w` to the left. Test that we are in split view overview, excluding
-  // `w` and taking half the screen.
-  SnapOneTestWindow(w.get(),
-                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
-  VerifySplitViewOverviewSession(w.get());
-
-  // Snap `w` to the left again. Test we are still in split view overview.
-  SnapOneTestWindow(w.get(),
-                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
-  VerifySplitViewOverviewSession(w.get());
-
-  // Snap `w` to the right. Test we are still in split view overview.
-  SnapOneTestWindow(
-      w.get(),
-      /*state_type=*/chromeos::WindowStateType::kSecondarySnapped);
-  VerifySplitViewOverviewSession(w.get());
-
-  // Close `w`. Test that we end overview.
-  w.reset();
-  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
-}
-
 // Tests that when there is one snapped window and overview open, creating a new
 // window, i.e. by clicking the shelf icon, will auto-snap it.
 // TODO(michelefan): Re-enable this test after the divider refactor work is
@@ -1896,24 +1937,27 @@ TEST_F(SnapGroupTest, DontAutoSnapNewWindowOutsideSplitViewOverview) {
 // Tests that removing a display during split view overview session doesn't
 // crash.
 TEST_F(SnapGroupTest, RemoveDisplay) {
-  UpdateDisplay("800x600,800x600");
+  UpdateDisplay("800x600,801+0-800x600");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
   // Snap `window` on the second display to start split view overview session.
-  std::unique_ptr<aura::Window> window(
+  std::unique_ptr<aura::Window> window1(
       CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
-  WindowState* window_state = WindowState::Get(window.get());
+  std::unique_ptr<aura::Window> window2(
+      CreateTestWindowInShellWithBounds(gfx::Rect(1000, 0, 100, 100)));
+  WindowState* window_state = WindowState::Get(window1.get());
   const WindowSnapWMEvent snap_type(
       WM_EVENT_SNAP_PRIMARY,
       /*snap_action_source=*/WindowSnapActionSource::kTest);
   window_state->OnWMEvent(&snap_type);
-  ASSERT_EQ(
-      display_manager_test.GetSecondaryDisplay().id(),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id());
+  ASSERT_EQ(display_manager_test.GetSecondaryDisplay().id(),
+            display::Screen::GetScreen()
+                ->GetDisplayNearestWindow(window1.get())
+                .id());
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_TRUE(RootWindowController::ForWindow(window.get())
+  EXPECT_TRUE(RootWindowController::ForWindow(window1.get())
                   ->split_view_overview_session());
 
   // Disconnect the second display. Test no crash.
@@ -3653,41 +3697,42 @@ using SnapGroupHistogramTest = SnapGroupTest;
 // snap action source with top-usage in clamshell.
 TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
   UpdateDisplay("800x600");
-  std::unique_ptr<aura::Window> window(CreateAppWindow(gfx::Rect(100, 100)));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(100, 100)));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 100)));
 
   // Drag a window to snap and verify the snap action source info.
   std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
+      window1.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
   resizer->Drag(gfx::PointF(0, 400), /*event_flags=*/0);
   resizer->CompleteDrag();
   resizer.reset();
   SplitViewOverviewSession* split_view_overview_session =
-      VerifySplitViewOverviewSession(window.get());
+      VerifySplitViewOverviewSession(window1.get());
   EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
-  MaximizeToClearTheSession(window.get());
+  MaximizeToClearTheSession(window1.get());
 
   // Mock snap from window layout menu and verify the snap action source info.
   chromeos::SnapController::Get()->CommitSnap(
-      window.get(), chromeos::SnapDirection::kSecondary,
+      window1.get(), chromeos::SnapDirection::kSecondary,
       chromeos::kDefaultSnapRatio,
       chromeos::SnapController::SnapRequestSource::kWindowLayoutMenu);
-  split_view_overview_session = VerifySplitViewOverviewSession(window.get());
+  split_view_overview_session = VerifySplitViewOverviewSession(window1.get());
   EXPECT_TRUE(split_view_overview_session);
   EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
             WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  MaximizeToClearTheSession(window.get());
+  MaximizeToClearTheSession(window1.get());
 
   // Mock snap from window snap button and verify the snap action source info.
   chromeos::SnapController::Get()->CommitSnap(
-      window.get(), chromeos::SnapDirection::kPrimary,
+      window1.get(), chromeos::SnapDirection::kPrimary,
       chromeos::kDefaultSnapRatio,
       chromeos::SnapController::SnapRequestSource::kSnapButton);
-  split_view_overview_session = VerifySplitViewOverviewSession(window.get());
+  split_view_overview_session = VerifySplitViewOverviewSession(window1.get());
   EXPECT_TRUE(split_view_overview_session);
   EXPECT_EQ(split_view_overview_session->snap_action_source_for_testing(),
             WindowSnapActionSource::kLongPressCaptionButtonToSnap);
-  MaximizeToClearTheSession(window.get());
+  MaximizeToClearTheSession(window1.get());
 }
 
 }  // namespace ash
