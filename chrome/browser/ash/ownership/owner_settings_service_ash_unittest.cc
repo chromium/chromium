@@ -45,6 +45,7 @@ const char kUserAllowlist[] = "*@allowlist-domain.com";
 const char kOther[] = "other";
 
 const char kListStr1[] = "abcdef1234";
+const char kListStr2[] = "xyz,.[];'";
 
 void OnPrefChanged(const std::string& /* setting */) {}
 
@@ -166,6 +167,11 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     const auto* settings = device_settings_service_->device_settings();
     CHECK_NE(nullptr, settings);
     return *settings;
+  }
+
+  void AddObserverForSetting(const std::string& setting) const {
+    service_->AddObserver(static_cast<DeviceSettingsProvider*>(
+        CrosSettings::Get()->GetProvider(setting)));
   }
 
  protected:
@@ -390,6 +396,7 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicyFailure) {
 // Testing list operations.
 
 TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
+  AddObserverForSetting(kFeatureFlags);
   EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
   EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
@@ -398,10 +405,76 @@ TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
 
 // Append 1 item to an empty list.
 TEST_F(OwnerSettingsServiceAshTest, AppendList) {
+  AddObserverForSetting(kFeatureFlags);
   EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
   auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to a list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append the same item two times.
+TEST_F(OwnerSettingsServiceAshTest, AppendSameItemTwiceToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Remove and append 1 item to an empty list.
+TEST_F(OwnerSettingsServiceAshTest, RemoveAndAppendList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append and remove the same item.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove1) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+}
+
+// Append and remove different items.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove2) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to and remove the first from the list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
