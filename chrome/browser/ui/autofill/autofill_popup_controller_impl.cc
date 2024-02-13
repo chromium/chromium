@@ -394,7 +394,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
                                                    base::TimeTicks event_time) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  if (time_view_shown_.value().is_null()) {
+  if (time_view_shown_.value().is_null() && !disable_threshold_for_testing_) {
     return;
   }
   CHECK(!event_time.is_null());
