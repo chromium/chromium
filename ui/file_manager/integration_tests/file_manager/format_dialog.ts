@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -11,9 +10,9 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Lanuches file manager and stubs out the formatVolume private api.
  *
- * @return {!Promise<string>} Files app window ID.
+ * @return Files app window ID.
  */
-async function setupFormatDialogTest() {
+async function setupFormatDialogTest(): Promise<string> {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.callRemoteTestUtil('overrideFormat', appId, []);
   return appId;
@@ -22,10 +21,10 @@ async function setupFormatDialogTest() {
 /**
  * Opens a format dialog for the USB with label |usbLabel|.
  *
- * @param {string} appId Files app window ID.
- * @param {string} usbLabel Label of usb to format.
+ * @param appId Files app window ID.
+ * @param usbLabel Label of usb to format.
  */
-async function openFormatDialog(appId, usbLabel) {
+async function openFormatDialog(appId: string, usbLabel: string) {
   if (await isSinglePartitionFormat(appId)) {
     await openFormatDialogWithSinglePartitionFormat(appId, usbLabel, 'FAKEUSB');
     return;
@@ -52,12 +51,12 @@ async function openFormatDialog(appId, usbLabel) {
  * Opens a format dialog for the USB with label |usbLabel| and device with
  * label |deviceLabel|.
  *
- * @param {string} appId Files app window ID.
- * @param {string} usbLabel Label of usb to format.
- * @param {string} deviceLabel Label of the parent device of usb.
+ * @param appId Files app window ID.
+ * @param usbLabel Label of usb to format.
+ * @param deviceLabel Label of the parent device of usb.
  */
 async function openFormatDialogWithSinglePartitionFormat(
-    appId, usbLabel, deviceLabel) {
+    appId: string, usbLabel: string, deviceLabel: string) {
   // Focus the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.focusTree();
@@ -81,9 +80,7 @@ async function openFormatDialogWithSinglePartitionFormat(
 /**
  * Tests the format dialog for a sample USB with files on it.
  */
-// @ts-ignore: error TS4111: Property 'formatDialog' comes from an index
-// signature, so it must be accessed with ['formatDialog'].
-testcase.formatDialog = async () => {
+export async function formatDialog() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -105,14 +102,12 @@ testcase.formatDialog = async () => {
   // Check the dialog is closed.
   await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog:not([open])']);
-};
+}
 
 /**
  * Tests the format dialog is a modal dialog.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogIsModal' comes from an index
-// signature, so it must be accessed with ['formatDialogIsModal'].
-testcase.formatDialogIsModal = async () => {
+export async function formatDialogIsModal() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -131,14 +126,12 @@ testcase.formatDialogIsModal = async () => {
   const selectedRows = await remoteCall.callRemoteTestUtil(
       'deepQueryAllElements', appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
-};
+}
 
 /**
  * Tests the format dialog for an empty USB.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogEmpty' comes from an index
-// signature, so it must be accessed with ['formatDialogEmpty'].
-testcase.formatDialogEmpty = async () => {
+export async function formatDialogEmpty() {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
   const appId = await setupFormatDialogTest();
 
@@ -157,14 +150,12 @@ testcase.formatDialogEmpty = async () => {
   // Check the dialog is closed.
   await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog:not([open])']);
-};
+}
 
 /**
  * Tests cancelling out of the format dialog.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogCancel' comes from an index
-// signature, so it must be accessed with ['formatDialogCancel'].
-testcase.formatDialogCancel = async () => {
+export async function formatDialogCancel() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -178,18 +169,19 @@ testcase.formatDialogCancel = async () => {
   // Check the dialog is closed.
   await remoteCall.waitForElement(
       appId, ['files-format-dialog', 'cr-dialog:not([open])']);
-};
+}
 
 /**
  * Checks that formatting gives error |errorMessage| when given |label| and
  * |format|.
  *
- * @param {string} appId Files app window ID.
- * @param {string} label New label of usb drive.
- * @param {string} format New filesystem of drive.
- * @param {string} errorMessage Expected error message to be displayed.
+ * @param appId Files app window ID.
+ * @param label New label of usb drive.
+ * @param format New filesystem of drive.
+ * @param errorMessage Expected error message to be displayed.
  */
-async function checkError(appId, label, format, errorMessage) {
+async function checkError(
+    appId: string, label: string, format: string, errorMessage: string) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
   await remoteCall.inputText(appId, driveNameQuery, label);
@@ -219,11 +211,11 @@ async function checkError(appId, label, format, errorMessage) {
 /**
  * Checks that formatting succeeds when given |label| and |format|.
  *
- * @param {string} appId Files app window ID.
- * @param {string} label New label of usb drive.
- * @param {string} format New filesystem of drive.
+ * @param appId Files app window ID.
+ * @param label New label of usb drive.
+ * @param format New filesystem of drive.
  */
-async function checkSuccess(appId, label, format) {
+async function checkSuccess(appId: string, label: string, format: string) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
   await remoteCall.inputText(appId, driveNameQuery, label);
@@ -250,9 +242,7 @@ async function checkSuccess(appId, label, format) {
 /**
  * Tests validations for drive name length.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogNameLength' comes from an
-// index signature, so it must be accessed with ['formatDialogNameLength'].
-testcase.formatDialogNameLength = async () => {
+export async function formatDialogNameLength() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -293,14 +283,12 @@ testcase.formatDialogNameLength = async () => {
 
   // Check that a 32 character name succeeds on ntfs.
   await checkSuccess(appId, 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF', 'ntfs');
-};
+}
 
 /**
  * Test validations for invalid characters.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogNameInvalid' comes from an
-// index signature, so it must be accessed with ['formatDialogNameInvalid'].
-testcase.formatDialogNameInvalid = async () => {
+export async function formatDialogNameInvalid() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -312,14 +300,12 @@ testcase.formatDialogNameInvalid = async () => {
 
   // Check that a name without invalid characters succeeds.
   await checkSuccess(appId, 'Nice name', 'vfat');
-};
+}
 
 /**
  * Tests opening the format dialog from the gear menu.
  */
-// @ts-ignore: error TS4111: Property 'formatDialogGearMenu' comes from an index
-// signature, so it must be accessed with ['formatDialogGearMenu'].
-testcase.formatDialogGearMenu = async () => {
+export async function formatDialogGearMenu() {
   await sendTestMessage({name: 'mountFakeUsb'});
   const appId = await setupFormatDialogTest();
 
@@ -390,4 +376,4 @@ testcase.formatDialogGearMenu = async () => {
 
   // Ensure the format menu item has disappeared.
   await remoteCall.waitForElement(appId, '#gear-menu-format[disabled][hidden]');
-};
+}

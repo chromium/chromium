@@ -26,7 +26,6 @@ js_files = [
   "file_manager/file_list.js",
   "file_manager/file_transfer_connector.js",
   "file_manager/folder_shortcuts.js",
-  "file_manager/format_dialog.js",
   "file_manager/gear_menu.js",
   "file_manager/grid_view.js",
   "file_manager/guest_os.js",
@@ -98,7 +97,7 @@ ts_files = [
 
   # "file_manager/folder_shortcuts.ts",
 
-  # "file_manager/format_dialog.ts",
+  "file_manager/format_dialog.ts",
 
   # "file_manager/gear_menu.ts",
 
