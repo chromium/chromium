@@ -133,16 +133,18 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // When this is true, the dialog should not be immediately auto-accepted.
   virtual void SetIsInterceptionEnabled(bool enabled);
 
-  // Shows and accounts selections for the given IDP. The |on_selected| callback
+  // Shows and accounts selections for the given IDP. The `on_selected` callback
   // is called with the selected account id or empty string otherwise.
-  // |sign_in_mode| represents whether this is an auto re-authn flow.
+  // `sign_in_mode` represents whether this is an auto re-authn flow.
+  // `new_account_idp` is the account that was just logged in, which should be
+  // prioritized in the UI.
   virtual void ShowAccountsDialog(
       const std::string& top_frame_for_display,
       const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox,
+      const std::optional<IdentityProviderData>& new_account_idp,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,

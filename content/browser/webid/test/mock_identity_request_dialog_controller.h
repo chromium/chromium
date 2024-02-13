@@ -29,7 +29,7 @@ class MockIdentityRequestDialogController
                      const std::vector<content::IdentityProviderData>&,
                      IdentityRequestAccount::SignInMode,
                      blink::mojom::RpMode rp_mode,
-                     bool,
+                     const std::optional<content::IdentityProviderData>&,
                      AccountSelectionCallback,
                      LoginToIdPCallback,
                      DismissCallback,

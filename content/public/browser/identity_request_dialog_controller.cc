@@ -61,7 +61,7 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    bool show_auto_reauthn_checkbox,
+    const std::optional<content::IdentityProviderData>& new_account_idp,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback,

@@ -678,7 +678,7 @@ class TestDialogController
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -3147,7 +3147,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      bool show_auto_reauthn_checkbox,
+      const std::optional<content::IdentityProviderData>& new_account_idp,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
@@ -3161,9 +3161,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
     TestDialogController::ShowAccountsDialog(
         top_frame_for_display, iframe_for_display,
         std::move(identity_provider_data), sign_in_mode, rp_mode,
-        show_auto_reauthn_checkbox, std::move(on_selected),
-        std::move(on_add_account), std::move(dismiss_callback),
-        std::move(accounts_displayed_callback));
+        new_account_idp, std::move(on_selected), std::move(on_add_account),
+        std::move(dismiss_callback), std::move(accounts_displayed_callback));
   }
 
  private:

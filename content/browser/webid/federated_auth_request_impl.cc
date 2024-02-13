@@ -1523,10 +1523,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
-  // trial. Should revisit based on the OT feedback.
-  bool show_auto_reauthn_checkbox = false;
-
   bool intercept = false;
   // In tests (content_shell or when --use-fake-ui-for-fedcm is used), the
   // dialog controller will immediately select an account. But if browser
@@ -1550,14 +1546,12 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
-  // TODO(crbug.com/41490360): pass `new_account_idp` so that the UI code may
-  // show the newly signed in account, if applicable.
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
       identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                             : SignInMode::kAuto,
-      rp_mode_, show_auto_reauthn_checkbox,
+      rp_mode_, new_account_idp,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
