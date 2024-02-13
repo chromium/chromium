@@ -46,7 +46,6 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnChromeTerminating() override;
 
   // SocsCookieFetcher::Consumer
   void OnCookieFetched(const std::string& socs_cookie) override;
@@ -68,10 +67,6 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // Cancel all active requests
   void CancelPendingRequests();
-
-  // Used to observe the change in session state.
-  base::ScopedObservation<ash::SessionController, ash::SessionObserver>
-      scoped_observation_{this};
 
   // Observer for EssentialSearch-related prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

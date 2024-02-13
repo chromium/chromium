@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 
+#include "base/check_is_test.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -47,8 +48,12 @@ EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
       retry_backoff_(&kFetchSocsCookieRetryBackoffPolicy) {
   DCHECK(primary_profile_);
   auto* session_controller = ash::SessionController::Get();
-  CHECK(session_controller);
-  scoped_observation_.Observe(session_controller);
+  if (!session_controller) {
+    CHECK_IS_TEST();
+  } else {
+    CHECK(session_controller);
+    session_controller->AddObserver(this);
+  }
 
   // Listen to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -60,21 +65,24 @@ EssentialSearchManager::EssentialSearchManager(Profile* primary_profile)
 
   // Handle the case where EssentialSearchManager is initialized after the
   // session was started.
-  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+  if (!session_manager::SessionManager::Get()) {
+    CHECK_IS_TEST();
+  } else if (session_manager::SessionManager::Get()->IsSessionStarted()) {
     MaybeFetchSocsCookie();
   }
 }
 
-EssentialSearchManager::~EssentialSearchManager() = default;
+EssentialSearchManager::~EssentialSearchManager() {
+  auto* session_controller = ash::SessionController::Get();
+  if (session_controller) {
+    session_controller->RemoveObserver(this);
+  }
+}
 
 // static
 std::unique_ptr<EssentialSearchManager> EssentialSearchManager::Create(
     Profile* primary_profile) {
   return std::make_unique<EssentialSearchManager>(primary_profile);
-}
-
-void EssentialSearchManager::OnChromeTerminating() {
-  scoped_observation_.Reset();
 }
 
 void EssentialSearchManager::OnSessionStateChanged(
