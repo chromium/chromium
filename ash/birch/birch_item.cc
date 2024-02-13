@@ -45,6 +45,32 @@ std::string BirchFileItem::ToString() const {
   return ss.str();
 }
 
+BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
+                                     const GURL& icon_url,
+                                     const base::Time& start_time,
+                                     const base::Time& end_time)
+    : BirchItem(title, ui::ImageModel()),
+      icon_url(icon_url),
+      start_time(start_time),
+      end_time(end_time) {}
+
+BirchCalendarItem::~BirchCalendarItem() = default;
+
+const char* BirchCalendarItem::GetItemType() const {
+  return kItemType;
+}
+
+std::string BirchCalendarItem::ToString() const {
+  std::stringstream ss;
+  using base::UTF16ToUTF8;
+  ss << "Calendar item: {title: " << UTF16ToUTF8(title)
+     << ", icon_url: " << icon_url.spec()
+     << ", start: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time))
+     << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
+     << "}";
+  return ss.str();
+}
+
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
                                    const std::u16string& temperature,
                                    ui::ImageModel icon)

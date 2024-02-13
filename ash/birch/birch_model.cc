@@ -34,6 +34,15 @@ BirchModel::BirchModel() {
 
 BirchModel::~BirchModel() = default;
 
+void BirchModel::SetCalendarItems(
+    std::vector<BirchCalendarItem> calendar_items) {
+  if (calendar_items != calendar_items_) {
+    calendar_items_ = std::move(calendar_items);
+  }
+  is_calendar_data_fresh_ = true;
+  MaybeRespondToDataFetchRequest();
+}
+
 void BirchModel::SetFileSuggestItems(
     std::vector<BirchFileItem> file_suggest_items) {
   if (file_suggest_items_ != file_suggest_items) {
@@ -75,6 +84,7 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
     return;
   }
 
+  is_calendar_data_fresh_ = false;
   is_files_data_fresh_ = false;
   is_tabs_data_fresh_ = false;
   is_weather_data_fresh_ = false;
@@ -92,6 +102,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
   std::vector<std::unique_ptr<BirchItem>> all_items;
 
   // TODO(b/305094126): Sort items by priority.
+  for (auto& event : calendar_items_) {
+    all_items.push_back(std::make_unique<BirchCalendarItem>(event));
+  }
   for (auto& tab : recent_tab_items_) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
   }
@@ -106,6 +119,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
 }
 
 bool BirchModel::IsDataFresh() {
+  // TODO(jamescook): Include calendar freshness.
   return (!birch_client_ || (is_files_data_fresh_ && is_tabs_data_fresh_)) &&
          (!weather_provider_ || is_weather_data_fresh_);
 }

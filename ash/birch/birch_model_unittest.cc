@@ -105,6 +105,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_TRUE(model);
 
   // Setting items in the model does not notify when no request has occurred.
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -122,6 +123,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetWeatherItems({});
+  model->SetCalendarItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -141,6 +143,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetWeatherItems({});
+  model->SetCalendarItems({});
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
@@ -170,6 +173,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   std::vector<BirchWeatherItem> weather_items;
   weather_items.emplace_back(u"desc", u"temp", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_items));
+  model->SetCalendarItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -197,9 +201,9 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 3u);
-  EXPECT_EQ(all_items[0]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_EQ(all_items[1]->GetItemType(), BirchFileItem::kItemType);
-  EXPECT_EQ(all_items[2]->GetItemType(), BirchWeatherItem::kItemType);
+  EXPECT_STREQ(all_items[0]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_STREQ(all_items[1]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_STREQ(all_items[2]->GetItemType(), BirchWeatherItem::kItemType);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -216,6 +220,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetCalendarItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -242,8 +247,8 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 2u);
-  EXPECT_EQ(all_items[0]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_EQ(all_items[1]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_STREQ(all_items[0]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_STREQ(all_items[1]->GetItemType(), BirchFileItem::kItemType);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -270,6 +275,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetWeatherItems({});
+  model->SetCalendarItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -357,10 +363,14 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
                              GURL("favicon"), "session");
   model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1", GURL(), base::Time(),
+                                  base::Time());
+  model->SetCalendarItems(std::move(calendar_item_list));
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 3u);
+  EXPECT_EQ(model->GetAllItems().size(), 4u);
 
   model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
@@ -373,6 +383,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetRecentTabItems({});
+  model->SetCalendarItems({});
 
   EXPECT_THAT(consumer.items_ready_responses(),
               testing::ElementsAre("0", "1", "2"));

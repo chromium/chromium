@@ -30,6 +30,31 @@ struct ASH_EXPORT BirchItem {
   virtual const char* GetItemType() const = 0;
 };
 
+// A birch item which contains calendar event information.
+struct ASH_EXPORT BirchCalendarItem : public BirchItem {
+  BirchCalendarItem(const std::u16string& title,
+                    const GURL& icon_url,
+                    const base::Time& start_time,
+                    const base::Time& end_time);
+  BirchCalendarItem(BirchCalendarItem&&) = default;
+  BirchCalendarItem(const BirchCalendarItem&) = default;
+  BirchCalendarItem& operator=(const BirchCalendarItem&) = delete;
+  bool operator==(const BirchCalendarItem& rhs) const = default;
+  ~BirchCalendarItem() override;
+
+  static constexpr char kItemType[] = "CalendarItem";
+
+  // BirchItem:
+  const char* GetItemType() const override;
+
+  // For debugging.
+  std::string ToString() const;
+
+  const GURL icon_url;
+  const base::Time start_time;
+  const base::Time end_time;
+};
+
 // A birch item which contains file path and time information.
 struct ASH_EXPORT BirchFileItem : public BirchItem {
   BirchFileItem(const base::FilePath& file_path,
