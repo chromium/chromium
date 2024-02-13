@@ -4564,6 +4564,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PlatformVideoDecoding.VideoCodecProfile"
+    enum="VideoCodecProfile" expires_after="2024-05-01">
+  <owner>mcasas@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    VideoCodecProfile used to Initialize() the platform VideoDecoder
+    implementation; this is emitted once per video (or per track, when using
+    MSE) initialization and after verifying that the codec profile is thought to
+    be supported.
+  </summary>
+</histogram>
+
 <histogram name="Media.RebuffersCount" units="rebuffers" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 

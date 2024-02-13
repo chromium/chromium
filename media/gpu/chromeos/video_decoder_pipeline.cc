@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -512,6 +513,10 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
+  constexpr auto kVideoCodecProfileCount = media::VIDEO_CODEC_PROFILE_MAX + 1;
+  base::UmaHistogramEnumeration(
+      "Media.PlatformVideoDecoding.VideoCodecProfile", config.profile(),
+      static_cast<VideoCodecProfile>(kVideoCodecProfileCount));
 
   needs_bitstream_conversion_ = (config.codec() == VideoCodec::kH264) ||
                                 (config.codec() == VideoCodec::kHEVC);
