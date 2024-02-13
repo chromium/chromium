@@ -26,7 +26,6 @@ js_files = [
   "file_manager/folder_shortcuts.js",
   "file_manager/gear_menu.js",
   "file_manager/grid_view.js",
-  "file_manager/guest_os.js",
   "file_manager/holding_space.js",
   "file_manager/install_linux_package_dialog.js",
   "file_manager/metrics.js",
@@ -94,7 +93,7 @@ ts_files = [
 
   # "file_manager/grid_view.ts",
 
-  # "file_manager/guest_os.ts",
+  "file_manager/guest_os.ts",
 
   # "file_manager/holding_space.ts",
 

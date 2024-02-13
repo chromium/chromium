@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -11,9 +10,7 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Tests that Guest OS entries show up in the sidebar at files app launch.
  */
-// @ts-ignore: error TS4111: Property 'fakesListed' comes from an index
-// signature, so it must be accessed with ['fakesListed'].
-testcase.fakesListed = async () => {
+export async function fakesListed() {
   // Prepopulate the list with a bunch of guests.
   const names = ['Electra', 'Etcetera', 'Jemima'];
   for (const name of names) {
@@ -30,16 +27,13 @@ testcase.fakesListed = async () => {
   for (const name of names) {
     await directoryTree.waitForItemByLabel(name);
   }
-};
+}
 
 /**
  * Tests that the list of guests is updated when new guests are added or
  * removed.
  */
-// @ts-ignore: error TS4111: Property 'listUpdatedWhenGuestsChanged' comes from
-// an index signature, so it must be accessed with
-// ['listUpdatedWhenGuestsChanged'].
-testcase.listUpdatedWhenGuestsChanged = async () => {
+export async function listUpdatedWhenGuestsChanged() {
   // Open the files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -77,16 +71,14 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
   }
   await directoryTree.waitForPlaceholderItemsCountByType(
       'android_files', names.length);
-};
+}
 
 /**
  * Tests that clicking on a Guest OS entry in the sidebar mounts the
  * corresponding volume, and that the UI is updated appropriately (volume in
  * sidebar and not fake, contents show up once done loading, etc).
  */
-// @ts-ignore: error TS4111: Property 'mountGuestSuccess' comes from an index
-// signature, so it must be accessed with ['mountGuestSuccess'].
-testcase.mountGuestSuccess = async () => {
+export async function mountGuestSuccess() {
   const guestName = 'JennyAnyDots';
   // Start off with one guest.
   const guestId = await sendTestMessage({
@@ -132,16 +124,14 @@ testcase.mountGuestSuccess = async () => {
 
   // And no more volume.
   await directoryTree.waitForItemLostByType('bruschetta');
-};
+}
 
 /**
  * Tests that clicking on a Guest OS Android entry in the sidebar mounts the
  * corresponding volume, and that the UI is update appropriately (volume in
  * sidebar and not fake, contents show up once done loading, etc).
  */
-// @ts-ignore: error TS4111: Property 'mountAndroidVolumeSuccess' comes from an
-// index signature, so it must be accessed with ['mountAndroidVolumeSuccess'].
-testcase.mountAndroidVolumeSuccess = async () => {
+export async function mountAndroidVolumeSuccess() {
   await sendTestMessage({name: 'unmountPlayFiles'});
   const guestName = 'Play files';
   // Start off with one guest.
@@ -188,4 +178,4 @@ testcase.mountAndroidVolumeSuccess = async () => {
 
   // And no more volume.
   await directoryTree.waitForItemLostByType('android_files');
-};
+}
