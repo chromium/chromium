@@ -4,9 +4,10 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
+import {EMOJI_PER_ROW} from './constants.js';
 import {CategoryEnum, Emoji, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
-const MAX_RECENTS = 10;
+const MAX_RECENTS = EMOJI_PER_ROW * 2;
 
 class Store<T> {
   data: T;
