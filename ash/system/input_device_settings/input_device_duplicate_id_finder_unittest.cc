@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 
+#include <memory>
+
 #include "ash/test/ash_test_base.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -21,6 +23,17 @@ const ui::InputDevice CreateInputDevice(int id,
                          base::FilePath(), vendor, product, 0);
 }
 
+class TestObserver : public InputDeviceDuplicateIdFinder::Observer {
+ public:
+  // InputDeviceDuplicateIdFinder::Observer:
+  void OnDuplicateDevicesUpdated() override { num_times_updated_++; }
+
+  int num_times_updated() { return num_times_updated_; }
+
+ private:
+  int num_times_updated_ = 0;
+};
+
 }  // namespace
 
 class InputDeviceDuplicateIdFinderTest : public AshTestBase {
@@ -37,15 +50,20 @@ class InputDeviceDuplicateIdFinderTest : public AshTestBase {
     AshTestBase::SetUp();
     // Duplicate ID finder should be created after the test base is setup.
     duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
+    observer_ = std::make_unique<TestObserver>();
+    duplicate_id_finder_->AddObserver(observer_.get());
   }
 
   void TearDown() override {
+    duplicate_id_finder_->RemoveObserver(observer_.get());
+    observer_.reset();
     duplicate_id_finder_.reset();
     AshTestBase::TearDown();
   }
 
  protected:
   std::unique_ptr<InputDeviceDuplicateIdFinder> duplicate_id_finder_;
+  std::unique_ptr<TestObserver> observer_;
 };
 
 TEST_F(InputDeviceDuplicateIdFinderTest, DuplicateIdFinding) {
@@ -63,13 +81,18 @@ TEST_F(InputDeviceDuplicateIdFinderTest, DuplicateIdFinding) {
 
   ui::DeviceDataManagerTestApi().SetMouseDevices(
       {duplicate_1_1, duplicate_2_1, duplicate_3_1});
+  EXPECT_EQ(1, observer_->num_times_updated());
   ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
       {duplicate_1_2, duplicate_2_2, duplicate_3_2});
+  EXPECT_EQ(2, observer_->num_times_updated());
   ui::DeviceDataManagerTestApi().SetUncategorizedDevices({duplicate_1_3});
+  EXPECT_EQ(3, observer_->num_times_updated());
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {ui::KeyboardDevice(duplicate_2_3)});
+  EXPECT_EQ(4, observer_->num_times_updated());
   ui::DeviceDataManagerTestApi().SetTouchpadDevices(
       {ui::TouchpadDevice(duplicate_3_3)});
+  EXPECT_EQ(5, observer_->num_times_updated());
 
   {
     auto* duplicate_group =

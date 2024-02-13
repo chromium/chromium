@@ -387,6 +387,14 @@ class FakeInputDeviceSettingsControllerObserver
     num_pen_buttons_pressed_++;
   }
 
+  void OnCustomizableMouseObservingStarted(const mojom::Mouse& mouse) override {
+    num_mouse_observing_started_++;
+  }
+
+  void OnCustomizableMouseObservingStopped() override {
+    num_mouse_observing_stopped_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
   uint32_t num_graphics_tablets_connected() {
     return num_graphics_tablets_connected_;
@@ -407,6 +415,12 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_mouse_buttons_pressed() { return num_mouse_buttons_pressed_; }
   uint32_t num_pen_buttons_pressed() { return num_pen_buttons_pressed_; }
   uint32_t num_tablet_buttons_pressed() { return num_tablet_buttons_pressed_; }
+  uint32_t num_mouse_observing_started() {
+    return num_mouse_observing_started_;
+  }
+  uint32_t num_mouse_observing_stopped() {
+    return num_mouse_observing_stopped_;
+  }
 
  private:
   uint32_t num_keyboards_connected_ = 0;
@@ -419,6 +433,8 @@ class FakeInputDeviceSettingsControllerObserver
   uint32_t num_mouse_buttons_pressed_ = 0;
   uint32_t num_tablet_buttons_pressed_ = 0;
   uint32_t num_pen_buttons_pressed_ = 0;
+  uint32_t num_mouse_observing_started_ = 0;
+  uint32_t num_mouse_observing_stopped_ = 0;
 };
 
 class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
@@ -1314,10 +1330,12 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
   controller_->StartObservingButtons(kSampleMouseUsb.id);
   ASSERT_EQ(1u, rewriter->mice_to_observe().size());
   EXPECT_TRUE(rewriter->mice_to_observe().contains(kSampleMouseUsb.id));
+  EXPECT_EQ(1u, observer_->num_mouse_observing_started());
 
   controller_->StopObservingButtons();
   ASSERT_EQ(0u, rewriter->mice_to_observe().size());
   ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+  EXPECT_EQ(1u, observer_->num_mouse_observing_stopped());
 
   controller_->StartObservingButtons(kSampleGraphicsTablet.id);
   ASSERT_EQ(1u, rewriter->graphics_tablets_to_observe().size());
