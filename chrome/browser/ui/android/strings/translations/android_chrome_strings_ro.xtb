@@ -169,7 +169,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1933845786846280168">Fila selectată</translation>
 <translation id="1943432128510653496">Parole salvate</translation>
 <translation id="1944535645109964458">Nu sunt disponibile chei de acces</translation>
-<translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
 <translation id="1959679933317802873">Se așteaptă conținutul</translation>
 <translation id="1960290143419248813">Actualizările Chrome nu mai sunt acceptate pentru această versiune de Android</translation>
 <translation id="1963976881984600709">Protecție standard</translation>
@@ -204,6 +203,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2132122640199389833">Elimină toate dispozitivele conectate</translation>
 <translation id="213279576345780926">Fila <ph name="TAB_TITLE" /> a fost închisă</translation>
 <translation id="2139186145475833000">Adaugă pe ecran pornire</translation>
+<translation id="2139414603196655536">Activitatea ta din Statistici despre pagini se salvează în Contul Google. <ph name="BEGIN_LINK" />Află cum să gestionezi această opțiune<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">În funcție de utilizare</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2155214902713132423">Această metodă de confirmare nu este disponibilă pentru dispozitiv. Alege altă opțiune pe alt dispozitiv.</translation>
@@ -1081,6 +1081,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="670498945988402717">A rulat ieri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="671481426037969117">Temporizatorul pentru <ph name="FQDN" /> s-a terminat. Va reîncepe mâine.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Marcajul s-a salvat în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}few{Marcajele s-au salvat în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}other{Marcajele s-au salvat în <ph name="FOLDER_NAME" />. Se salvează numai pe acest dispozitiv.}}</translation>
 <translation id="6715020873764921614">Vrei să descarci oricum <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Te conectezi cu codul QR?</translation>
 <translation id="6723740634201835758">În Contul Google</translation>
@@ -1401,6 +1402,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8237871086242677046">Foaia paginii Statistici din partea de jos</translation>
 <translation id="8243077599929149377">Adaugă-ți numele de utilizator</translation>
 <translation id="8250920743982581267">Documente</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Marcajul a fost salvat în <ph name="FOLDER_NAME" /> din contul <ph name="ACCOUNT_EMAIL" />.}few{Marcajele au fost salvate în <ph name="FOLDER_NAME" /> din contul <ph name="ACCOUNT_EMAIL" />.}other{Marcajele au fost salvate în <ph name="FOLDER_NAME" /> din contul <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
 <translation id="8259179246279078674">Întrucât paginile preîncărcate sunt criptate, Google nu va afla nimic despre conținutul paginii preîncărcate. Serverele Google vor afla ce site-uri sunt preîncărcate în mod privat. Aceste informații sunt folosite numai la preîncărcarea paginilor și nu sunt conectate cu alte informații din Contul Google.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>

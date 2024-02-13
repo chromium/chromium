@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
 <translation id="1943478190258551035">Menu → Ustawienia</translation>
 <translation id="194449685234099560">Tutaj znajdziesz wszystkie otwarte karty.</translation>
-<translation id="1952172573699511566">Gdy będzie to możliwe, tekst na stronach internetowych będzie się wyświetlać w Twoim preferowanym języku.</translation>
 <translation id="1956138802718275401">Otwieraj hasła z ekranu głównego</translation>
 <translation id="1959441496380398824">Naciśnij i przytrzymaj datę.</translation>
 <translation id="1959679933317802873">Czekam na treść</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">Selektor typu jednostki</translation>
 <translation id="2073572773299281212">Aktywność <ph name="DAYS" /> dni temu</translation>
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
+<translation id="2078437078822043850">Aby przeglądać treści w trybie incognito, możesz przewijać w prawo.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2080409463824088391">Otwórz w aplikacji…</translation>
 <translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
@@ -278,6 +278,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2421004566762153674">Blokowanie plików cookie innych firm</translation>
 <translation id="2421044535038393232">Edytuj dalej</translation>
 <translation id="2434405374328098816">Masz już zapisane hasło do strony <ph name="WEBSITE" /> powiązane z nazwą użytkownika „<ph name="USERNAME" />”</translation>
+<translation id="2434918313224755415">Aby przeglądać treści w trybie incognito, możesz przewijać w lewo.</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2459155039684421202">Na pasku adresu wpisz zadanie takie jak „Wyczyść moją historię” lub „Edytuj hasła”.</translation>
 <translation id="2461070143328828326">Ustawienia hasła</translation>
@@ -311,6 +312,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="260378315836159338">U góry ekranu kliknij +</translation>
 <translation id="2604176749896001318">Zaktualizuj przeglądarkę</translation>
 <translation id="2609008503159898744">Zamknąć wszystkie karty?</translation>
+<translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
 <translation id="2613747923081026172">Utwórz grupę</translation>
 <translation id="2617210333344098964">Przenieś adres na konto</translation>
 <translation id="261739049332372104">Aby otrzymywać powiadomienia o treściach, które są dla Ciebie ważne, włącz powiadomienia w ustawieniach iOS.</translation>
@@ -513,6 +515,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3603009562372709545">Kopiuj URL linku</translation>
 <translation id="3607167657931203000">Autouzupełnianie</translation>
 <translation id="3609785682760573515">Synchronizuję...</translation>
+<translation id="3625008969091706597">Aby wrócić, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="3630104167004786843">Nie otrzymuj powiadomień</translation>
 <translation id="3631443864840848029">Upewnij się, że zapisujesz bieżące hasło do witryny.</translation>
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
@@ -630,6 +633,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4267586310863245665">{COUNT,plural, =1{Odrzucono {COUNT} ostrzeżenie}few{Odrzucono {COUNT} ostrzeżenia}many{Odrzucono {COUNT} ostrzeżeń}other{Odrzucono {COUNT} ostrzeżenia}}</translation>
 <translation id="4272631900155121838">Aby zeskanować kod QR, włącz aparat w ustawieniach</translation>
 <translation id="4277990410970811858">Bezpieczne przeglądanie</translation>
+<translation id="4279431713294750185">Aby przejść dalej, możesz przesunąć palcem po krawędzi.</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Szukaj</translation>
@@ -1288,6 +1292,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Grupy kart</translation>
 <translation id="7607521702806708809">Usuń hasło</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło wielowyrazowe</translation>
 <translation id="7640669552036055091">Karty z Androida</translation>

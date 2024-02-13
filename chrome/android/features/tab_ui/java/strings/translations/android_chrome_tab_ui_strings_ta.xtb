@@ -3,10 +3,13 @@
 <translationbundle lang="ta">
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
 <translation id="1155815720264022949">பழைய பக்கங்களை மூட வேண்டுமா?</translation>
+<translation id="1197088940767939838">ஆரஞ்சு</translation>
 <translation id="1215127405478249895">பக்கங்களைப் பாருங்கள்</translation>
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
 <translation id="1326271443836399892">தற்போதைய ஒழுங்கமைவு அமைப்புகளைச் சரிபார்க்கலாம்.</translation>
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
+<translation id="1555130319947370107">நீலம்</translation>
+<translation id="161042844686301425">சியான்</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_ONE" /> பக்கத்தை புக்மார்க் செய்யும்}other{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_MANY" /> பக்கங்களை புக்மார்க் செய்யும்}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவாக்கு}other{பக்கங்களைக் குழுவாக்கு}}</translation>
 <translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
+<translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
 <translation id="427987768447457592">புதிய பக்கக் குழு</translation>
 <translation id="4648718555153979859">உங்கள் தாவல்கள் இங்கு குழுவாக்கப்பட்டுள்ளன</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ளது}other{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ளன}}</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
+<translation id="5400836586163650660">கிரே</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5545379293264651575">சரிபார்க்காமல் மூடு</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">விலைச் சரிவு குறித்து விழிப்பூட்டல்களைப் பெற வேண்டுமா?</translation>
 <translation id="58326064309361797">தாவல்களை இழுப்பதன் மூலம் அவற்றைக் குழுவாக்கலாம்</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> குழுவை மூடும்</translation>
+<translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5972844218283131174">அனைத்தையும் தேர்வுநீக்கு</translation>
+<translation id="6017514345406065928">பச்சை</translation>
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
 <translation id="6193448654517602979">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவாக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவாக்கும்}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை}other{ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்}}</translation>
 <translation id="7885132941432959125">தாவலை வலதுபுறம் நகர்த்து</translation>
+<translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7966321538264951561">பரிந்துரைகளை நிராகரிக்கும்.</translation>
 <translation id="8029301326595421733">இந்த ஸ்டோர் குறித்த தகவல்கள் முழுத் திரையில் காட்டப்பட்டுள்ளன</translation>
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">குழுவில் புதிய பக்கத்தைச் சேர்</translation>
 <translation id="955558140275419384">இந்த எடிட்டருக்குச் செல்வதன் மூலம், காப்பகப்படுத்திய அனைத்து பக்கங்களையும் சரிபார்த்து ஒழுங்கமைக்கலாம்.</translation>
 <translation id="959682366969460160">ஒருங்கமைப்புடன் இருக்கலாம்</translation>
+<translation id="992256792861109788">பிங்க்</translation>
 </translationbundle>

@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">ለመቅዳት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="1943478190258551035">ምናሌ → ቅንብሮች</translation>
 <translation id="194449685234099560">እዚህ ሁሉንም ክፍት ትሮችዎን ማግኘት ይችላሉ።</translation>
-<translation id="1952172573699511566">ሲቻል፣ ድር ጣቢያዎች በእርስዎ ተመራጭ ቋንቋ ጽሁፍ ይታያሉ።</translation>
 <translation id="1956138802718275401">ከመነሻ ማያ ገፅ ወደ የይለፍ ቃላት ይድረሱ</translation>
 <translation id="1959441496380398824">አንድን ቀን ይንኩ እና ይያዙ።</translation>
 <translation id="1959679933317802873">ይዘትን በመጠባበቅ ላይ</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">የክፍል ዓይነት መራጭ</translation>
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
+<translation id="2078437078822043850">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ቀኝ መሸብለል ይችላሉ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2080409463824088391">በመተግበሪያ ውስጥ ይክፈቱ…</translation>
 <translation id="2080769225927880590">ልክ በሆነ መለያ ይግቡ</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">የሶስተኛ ወገን ኩኪዎችን ማገድ</translation>
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
+<translation id="2434918313224755415">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ግራ ማሸብለል ይችላሉ።</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="2459155039684421202">በአድራሻ አሞሌው ውስጥ እንደ «የእኔን ታሪክ አጽዳ» ወይም «የይለፍ ቃላትን አርትዕ» ያለ ተግባር ያስገቡ።</translation>
 <translation id="2461070143328828326">የይለፍ ቃል ቅንብሮች</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">በማያ ገፅ አናት ላይ + ላይ መታ ያድርጉ</translation>
 <translation id="2604176749896001318">አሳሽዎን ያዘምኑ</translation>
 <translation id="2609008503159898744">ሁሉም ትሮች ይዘጉ?</translation>
+<translation id="261305050785128654">የሚናገሩትን ቋንቋዎች ድር ጣቢያዎች እንዲያውቁ ያድርጉ። በሚቻልበት ጊዜ በእነዚያ ቋንቋዎች ይዘትን ያሳያሉ።</translation>
 <translation id="2613747923081026172">ቡድን ይፍጠሩ</translation>
 <translation id="2617210333344098964">አድራሻን ወደ መለያ አንቀሳቅስ</translation>
 <translation id="261739049332372104">ለእርስዎ አስፈላጊ ስለሆኑ ይዘቶች ዝማኔዎችን ለማግኘት፣ በiOS ቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">የአገናኝ ዩአርኤል ገልብጥ</translation>
 <translation id="3607167657931203000">የራስ-ሙላ ውሂብ</translation>
 <translation id="3609785682760573515">በማመሳሰል ላይ...</translation>
+<translation id="3625008969091706597">ወደ ኋላ ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="3630104167004786843">ዝማኔዎችን አያግኙ</translation>
 <translation id="3631443864840848029">ለዚህ ጣቢያ የአሁኑን የይለፍ ቃልዎን ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="3638472932233958418">ድረ-ገጾችን አስቀድመው ይጫኑ</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{{COUNT} ማስጠንቀቂያ አሰናብተዋል}one{{COUNT} ማስጠንቀቂያ አሰናብተዋል}other{{COUNT} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
 <translation id="4272631900155121838">የQR ኮድን ለመቃኘት፣ ካሜራውን በቅንብሮች ውስጥ ያንቁ</translation>
 <translation id="4277990410970811858">የጥንቃቄ አሰሳ</translation>
+<translation id="4279431713294750185">ወደ ፊት ለመሄድ ጠርዙን ማንሸራተት ይችላሉ።</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="4286718549648564014">አድራሻው ወደ እርስዎ <ph name="USER_EMAIL" /> መለያ ተንቀሳቅሷል</translation>
 <translation id="4293080268407233932">ፈልግ</translation>
@@ -1288,6 +1292,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">የትር ቡድኖች</translation>
 <translation id="7607521702806708809">የይለፍ ቃልን ሰርዝ</translation>
 <translation id="7638584964844754484">ትክክል ያልሆነ የይለፍ ሐረግ</translation>
 <translation id="7640669552036055091">ከAndroid የመጡ ትሮች</translation>

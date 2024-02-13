@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">ही साइट HTTPS ला सपोर्ट करत नसल्यामुळे तुम्हाला ही चेतावणी दिसत आहे. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">सेल्फ-अ‍ढेसिव्ह फिल्म</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
+<translation id="1431021750861456539">ऑटोमॅटिक फुलस्क्रीन</translation>
 <translation id="1432187715652018471">पेजला सेवा हँडलर इंस्टॉल करायचा आहे.</translation>
 <translation id="1432581352905426595">शोध इंजीन व्यवस्थापित करा</translation>
 <translation id="1433225466058025572">तुमच्या फाइल हलवण्याचा पुन्हा प्रयत्न करा</translation>
@@ -1920,7 +1921,6 @@
 <translation id="4757022425116568383">तुमच्या Chrome प्रोफाइल मधील पासकी</translation>
 <translation id="4757993714154412917">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chromium तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
 <translation id="4758311279753947758">संपर्क माहिती जोडा</translation>
-<translation id="4761104368405085019">तुमचा मायक्रोफोन वापरा</translation>
 <translation id="4761326898079498987">अधिक तपशिलांसाठी पुनरावलोकन करा</translation>
 <translation id="4761869838909035636">Chrome सुरक्षितता तपासणी रन करा</translation>
 <translation id="4763196677855776703">अटी आणि नियम <ph name="URL" /> द्वारे पुरवले आहेत</translation>
@@ -2284,6 +2284,7 @@
     <ph name="LINE_BREAK" />
     सिस्टम ॲडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="549333378215107354">आकार ३</translation>
+<translation id="5501712702042287009">ऑटोमॅटिक फुलस्क्रीन</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">व्यवस्थापित केलेले बुकमार्क</translation>
@@ -4150,7 +4151,6 @@
 <translation id="9148507642005240123">&amp;संपादित करा पूर्ववत करा</translation>
 <translation id="9148599396704355100">किंमत कमी आहे</translation>
 <translation id="9150025764986957246">तुम्ही यासारख्या गोष्टी एंटर करू शकता:</translation>
-<translation id="9150045010208374699">तुमचा कॅमेरा वापरा</translation>
 <translation id="9150685862434908345">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chrome च्या बाहेरदेखील व्यवस्थापित केलेली असू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>
 <translation id="9155211586651734179">ऑडिओ उपकरणे कनेक्ट केली</translation>

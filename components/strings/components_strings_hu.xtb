@@ -246,6 +246,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1428729058023778569">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1429080515485835353">Öntapadós film</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
+<translation id="1431021750861456539">Automatikus teljes képernyő</translation>
 <translation id="1432187715652018471">Ez az oldal szolgáltatáskezelőt kíván telepíteni.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
@@ -1919,7 +1920,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4757022425116568383">Azonosítókulcs az Ön Chrome-profiljából</translation>
 <translation id="4757993714154412917">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chromium azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
 <translation id="4758311279753947758">Névjegyadatok hozzáadása</translation>
-<translation id="4761104368405085019">Mikrofon használata</translation>
 <translation id="4761326898079498987">További részleteket itt találhat</translation>
 <translation id="4761869838909035636">A Chrome biztonsági ellenőrzésének futtatása</translation>
 <translation id="4763196677855776703">Az általános szerződési feltételeket biztosította: <ph name="URL" /></translation>
@@ -2283,6 +2283,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     <ph name="LINE_BREAK" />
     Javasoljuk, hogy forduljon a rendszergazdához.</translation>
 <translation id="549333378215107354">Méret: 3</translation>
+<translation id="5501712702042287009">automatikus teljes képernyő</translation>
 <translation id="550365051221576010">Minden kitöltése</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kezelt könyvjelzők</translation>
@@ -4149,7 +4150,6 @@ További részletek:
 <translation id="9148507642005240123">&amp;Szerkesztés visszavonása</translation>
 <translation id="9148599396704355100">Alacsony ár</translation>
 <translation id="9150025764986957246">Például a következőket adhatja meg:</translation>
-<translation id="9150045010208374699">Kamera használata</translation>
 <translation id="9150685862434908345">A rendszergazda távolról módosítani tudja a böngészőbeállításokat. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="9154194610265714752">Frissítve</translation>
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>

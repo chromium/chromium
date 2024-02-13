@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Drücke eine andere Kombination. Wenn du den vorhandenen Befehl ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1049663189809099096">pastellgelb</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
 <translation id="2407209115954268704">SIM-Lock-Status</translation>
 <translation id="241419523391571119">Zum Testen das Gerät wieder aufklappen</translation>
+<translation id="2414660853550118611">Über den Hintergrund</translation>
 <translation id="2414886740292270097">Dunkel</translation>
 <translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6196607555925437199">Neu erstellen</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Bildschirmschoner aktivieren</translation>
 <translation id="6324916366299863871">Verknüpfung bearbeiten</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
+<translation id="6327262166342360252">Dieser Hintergrund wurde mit KI anhand des Prompts „<ph name="PROMPT" />“ erstellt.</translation>
 <translation id="6331191339300272798">Automatisches dunkles Design</translation>
 <translation id="6340526405444716530">Personalisierung</translation>
 <translation id="6348738456043757611">Nutzername und Passwort</translation>

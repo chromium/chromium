@@ -3,10 +3,13 @@
 <translationbundle lang="th">
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="1155815720264022949">ต้องการปิดแท็บเก่าใช่ไหม</translation>
+<translation id="1197088940767939838">สีส้ม</translation>
 <translation id="1215127405478249895">ตรวจสอบแท็บ</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1326271443836399892">ตรวจสอบการตั้งค่าการจัดระเบียบปัจจุบัน</translation>
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
+<translation id="1555130319947370107">สีน้ำเงิน</translation>
+<translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บ}other{จัดกลุ่มแท็บ}}</translation>
 <translation id="3996880007329611795">รับการแจ้งเตือน</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
+<translation id="4159784952369912983">ม่วง</translation>
 <translation id="4212246570487010370">ท่องเว็บต่อไป</translation>
 <translation id="427987768447457592">กลุ่มแท็บใหม่</translation>
 <translation id="4648718555153979859">แท็บของคุณมีการจัดกลุ่มเข้าด้วยกันที่นี่</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{คุณมี <ph name="TABS_COUNT_ONE" /> แท็บที่ไม่ได้ใช้เมื่อเร็วๆ นี้}other{คุณมี <ph name="TABS_COUNT_MANY" /> แท็บที่ไม่ได้ใช้เมื่อเร็วๆ นี้}}</translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
+<translation id="5400836586163650660">สีเทา</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5545379293264651575">ปิดโดยไม่ตรวจสอบ</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">รับการแจ้งเตือนการลดราคาไหม</translation>
 <translation id="58326064309361797">ลากแท็บเพื่อจัดกลุ่ม</translation>
 <translation id="5846292395804797011">เลือกกลุ่ม <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
+<translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5972844218283131174">ยกเลิกการเลือกทั้งหมด</translation>
+<translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> รีวิว}other{การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> รีวิว}}</translation>
 <translation id="7885132941432959125">ย้ายแท็บไปทางขวา</translation>
+<translation id="7942349550061667556">สีแดง</translation>
 <translation id="7966321538264951561">ปิดคำแนะนำ</translation>
 <translation id="8029301326595421733">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับเต็มความสูงของหน้าจอแล้ว</translation>
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="955558140275419384">ตรวจสอบแท็บที่เก็บไว้ทั้งหมดเพื่อจัดระเบียบโดยเข้าเครื่องมือแก้ไขนี้</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
+<translation id="992256792861109788">สีชมพู</translation>
 </translationbundle>

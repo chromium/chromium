@@ -100,6 +100,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vis alltid hyllen</translation>
 <translation id="132346741904777634">Kameraet er festet til øvre venstre hjørne. Konflikt med systemoverflaten.</translation>
+<translation id="132415371743256095">Lukk <ph name="DESK_NAME" /> og tilhørende vinduer</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er tilkoblet</translation>
 <translation id="1340378040547539434">Zoom ut på siden</translation>
 <translation id="1341651618736211726">Overflyt</translation>
@@ -331,6 +332,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2397416548179033562">Vis Chrome-menyen</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2402411679569069051">For å låse opp Chromebooken, bruk fingeravtrykket eller lås opp telefonen</translation>
+<translation id="240545663114741956">Trykk på <ph name="ACCELERATOR" /> to ganger for å logge av.</translation>
 <translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
@@ -352,7 +354,9 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2478076885740497414">Installér appen</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
+<translation id="2486214324139475545">Forhåndsvisning av <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
 <translation id="2487915095798731898">Bli med</translation>
+<translation id="250047928202119308">Meny for skrivebordsprofil</translation>
 <translation id="2501920221385095727">Trege taster</translation>
 <translation id="2504454902900101003">Lukk konfigurering av visning av nylige bilder, medier og varsler fra telefonen din</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
@@ -905,6 +909,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
 <translation id="4644727592819780893">Regionen er for liten – det er ikke plass til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" /> – appanbefaling</translation>
+<translation id="4654916960643280876">Det er merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="4657775630156561295">Dette forslaget blir fjernet permanent fra kontoens forslagslogg:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5111930673176965299">Uskarp bakgrunn</translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5121628974188116412">Gå til bunnen av siden</translation>
+<translation id="5122517996953421795">Forhåndsvisning av <ph name="DESK_NAME" />. Inaktivt skrivebord.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
 <translation id="5147567197700016471">Ulåst</translation>
 <translation id="5150070631291639005">Personverninnstillinger</translation>
@@ -1431,6 +1437,7 @@ Nylig installert</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6686023075541098243">Konfigurer visning av varsler fra telefonen din</translation>
 <translation id="6696025732084565524">Det avtakbare tastaturet trenger en kritisk oppdatering</translation>
+<translation id="6697913454192220372">Legg til nytt skrivebord</translation>
 <translation id="6700713906295497288">IME-menyknappen</translation>
 <translation id="6707693040195709527">Nedgraderingen til en tidligere versjon på enheten har forfalt</translation>
 <translation id="6710213216561001401">Forrige</translation>
@@ -1562,6 +1569,7 @@ Nylig installert</translation>
 <translation id="7262906531272962081">Opprett en påminnelse</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tilbaketast</translation>
 <translation id="7285232777292757180">Bruk skjermdumpverktøyet i hurtiginnstillingene for å ta skjermdumper</translation>
+<translation id="7301826272005790482">Lukk vindusforslag</translation>
 <translation id="7302889331339392448">Direkteteksting er av.</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8079538659226626406">Skjermdeling</translation>
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
+<translation id="8088141034189573826">Bruk Tab for å se flere alternativer. Bruk venstre- og høyrepilene til å finne alle skrivebord.</translation>
 <translation id="8091153018031979607">Starter kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiske oppdateringer</translation>
 <translation id="8092380135549145188">Rullekontroller</translation>
@@ -1965,6 +1974,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8936501819958976551">deaktivert</translation>
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>
 <translation id="8964525410783593407">1 t</translation>

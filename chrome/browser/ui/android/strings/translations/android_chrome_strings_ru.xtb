@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">Выбранная вкладка</translation>
 <translation id="1943432128510653496">Сохранение паролей</translation>
 <translation id="1944535645109964458">Ключи доступа не найдены</translation>
-<translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
 <translation id="1959679933317802873">Ожидается контент</translation>
 <translation id="1960290143419248813">Невозможно обновить Chrome в текущей версии Android.</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">Удалить все связанные устройства</translation>
 <translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта.</translation>
 <translation id="2139186145475833000">Добавить на гл. экран</translation>
+<translation id="2139414603196655536">Информация о ваших действиях в разделе "Полезные сведения о странице" сохраняется в аккаунте Google. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">На основе данных об использовании</translation>
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2155214902713132423">Этот способ подтверждения недоступен для этого устройства. Выберите другой вариант на другом устройстве.</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Закладка добавлена в папку "<ph name="FOLDER_NAME" />" и будет храниться только на этом устройстве.}one{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" и будут храниться только на этом устройстве.}few{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" и будут храниться только на этом устройстве.}many{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" и будут храниться только на этом устройстве.}other{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" и будут храниться только на этом устройстве.}}</translation>
 <translation id="6715020873764921614">Все равно скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Связать с помощью QR-кода?</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
@@ -1122,7 +1123,7 @@
 <translation id="6891726759199484455">Чтобы скопировать пароль, разблокируйте экран</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
-<translation id="6903907808598579934">Включить</translation>
+<translation id="6903907808598579934">Включить синхронизацию</translation>
 <translation id="6908998565271542516">Полностью развернутый нижний экран, с помощью которого можно одобрить или заблокировать сайт</translation>
 <translation id="6909589135458168665">Предзагрузка страниц</translation>
 <translation id="6910211073230771657">Удалено</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">Нижний экран статистики страницы</translation>
 <translation id="8243077599929149377">Добавьте свое имя пользователя</translation>
 <translation id="8250920743982581267">Документы</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Закладка добавлена в папку "<ph name="FOLDER_NAME" />" в вашем аккаунте (<ph name="ACCOUNT_EMAIL" />).}one{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" в вашем аккаунте (<ph name="ACCOUNT_EMAIL" />).}few{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" в вашем аккаунте (<ph name="ACCOUNT_EMAIL" />).}many{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" в вашем аккаунте (<ph name="ACCOUNT_EMAIL" />).}other{Закладки добавлены в папку "<ph name="FOLDER_NAME" />" в вашем аккаунте (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
 <translation id="8259179246279078674">Так как предзагруженные страницы зашифрованы, Google ничего не узнает об их содержимом. Серверы Google получат сведения о том, какие сайты анонимно предзагружены. Эта информация используется только для предварительной загрузки страниц и не связана с другими данными из вашего аккаунта Google.</translation>
 <translation id="8260126382462817229">Снова войдите в аккаунт</translation>

@@ -187,7 +187,7 @@
 <translation id="4149890623864272035">Вы действительно хотите удалить все локальные данные этого сайта, включая файлы cookie, и сбросить все его разрешения?</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4151930093518524179">Масштаб по умолчанию</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4169019654293892025">Скрыть модуль "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
@@ -195,7 +195,7 @@
 <translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> с устройства "<ph name="FROM_DEVICE" />"</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Разрешено</translation>
+<translation id="4278390842282768270">Разрешены</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4336566011000459927">Сегодня Chrome снова ограничит использование файлов cookie</translation>
@@ -274,7 +274,7 @@
 <translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
-<translation id="5677928146339483299">Заблокировано</translation>
+<translation id="5677928146339483299">Заблокированы</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> может использовать ваши данные при просмотре сайтов</translation>
@@ -402,6 +402,7 @@
 <translation id="7667547420449112975">Удивительный волшебник из страны Оз</translation>
 <translation id="7684642910516280563">Запретите сайту использовать сторонние файлы cookie.</translation>
 <translation id="7719367874908701697">Масштабирование страницы</translation>
+<translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продолжите просмотр этой вкладки}one{Продолжите просмотр этих вкладок}few{Продолжите просмотр этих вкладок}many{Продолжите просмотр этих вкладок}other{Продолжите просмотр этих вкладок}}</translation>

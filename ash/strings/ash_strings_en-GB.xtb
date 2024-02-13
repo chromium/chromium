@@ -100,6 +100,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Always show shelf</translation>
 <translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
+<translation id="132415371743256095">Close <ph name="DESK_NAME" /> and windows</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connected</translation>
 <translation id="1340378040547539434">Zoom out on page</translation>
 <translation id="1341651618736211726">Overflow</translation>
@@ -331,6 +332,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
 <translation id="240006516586367791">Media controls</translation>
 <translation id="2402411679569069051">To unlock your Chromebook, use your fingerprint or unlock your phone</translation>
+<translation id="240545663114741956">Press <ph name="ACCELERATOR" /> twice to sign out.</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
@@ -352,7 +354,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2478076885740497414">Install app</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> preview. Active desk.</translation>
 <translation id="2487915095798731898">Join</translation>
+<translation id="250047928202119308">Desk profile menu</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2504454902900101003">Dismiss setting up viewing your phone's recent photos, media and notifications</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
@@ -905,6 +909,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4644727592819780893">Region is too small to fit camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> tick box ticked.</translation>
 <translation id="4657775630156561295">The following suggestion will be permanently removed from your account’s suggestion history:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5111930673176965299">Background blur</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5121628974188116412">Go to bottom of page</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> preview. Inactive desk.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
@@ -1431,6 +1437,7 @@ New install</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">Set up viewing your phone's notifications</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
+<translation id="6697913454192220372">Add new desk</translation>
 <translation id="6700713906295497288">IME menu button</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
@@ -1562,6 +1569,7 @@ New install</translation>
 <translation id="7262906531272962081">Create reminder</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Use the screen capture tool in Quick Settings to take screenshots</translation>
+<translation id="7301826272005790482">Dismiss window suggestions</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>
+<translation id="8088141034189573826">Use Tab for more options. Use left and right arrows to access all desks.</translation>
 <translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatic updates</translation>
 <translation id="8092380135549145188">Scroll controls</translation>
@@ -1965,6 +1974,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8940956008527784070">Battery low (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> tick box not ticked.</translation>
 <translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8951539504029375108">Only approved Thunderbolt devices are compatible with your Chromebook</translation>
 <translation id="8964525410783593407">1 h</translation>

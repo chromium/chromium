@@ -3,10 +3,13 @@
 <translationbundle lang="ur">
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="1155815720264022949">پرانے ٹیبز کو بند کرنا چاہتے ہیں؟</translation>
+<translation id="1197088940767939838">نارنجی</translation>
 <translation id="1215127405478249895">ٹیبز کا جائزہ لیں</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
 <translation id="1326271443836399892">موجودہ ڈیکلٹر کی ترتیبات کا جائزہ لیں۔</translation>
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
+<translation id="1555130319947370107">نیلا</translation>
+<translation id="161042844686301425">سیان</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو بُک مارک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو بُک مارک کریں}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="3996880007329611795">اطلاع حاصل کریں</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
+<translation id="4159784952369912983">جامنی</translation>
 <translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="427987768447457592">نیا ٹیب گروپ</translation>
 <translation id="4648718555153979859">آپ کے ٹیبز کو ایک ساتھ یہاں گروپ بند کیا گیا ہے</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{آپ کے پاس <ph name="TABS_COUNT_ONE" /> ٹیب ہے جس کا آپ نے حال ہی میں استعمال نہیں کیا ہے}other{آپ کے پاس <ph name="TABS_COUNT_MANY" /> ٹیبز ہیں جن کا آپ نے حال ہی میں استعمال نہیں کیا ہے}}</translation>
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
+<translation id="5400836586163650660">خاکستری</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5545379293264651575">جائزہ لیے بغیر بند کر دیں</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">قیمتوں میں کمی کے لیے الرٹس حاصل کریں؟</translation>
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>
+<translation id="5901630391730855834">پیلا</translation>
 <translation id="5972844218283131174">سبھی کو غیر منتخب کریں</translation>
+<translation id="6017514345406065928">سبز</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />منتخب کردہ ٹیب کی گروپ بندی کریں}other{<ph name="TABS_COUNT_MANY" />منتخب کردہ ٹیبز کی گروپ بندی کریں}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_ONE" /> جائزہ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_MANY" /> جائزے}}</translation>
 <translation id="7885132941432959125">ٹیب کو دائیں منتقل کریں</translation>
+<translation id="7942349550061667556">سرخ</translation>
 <translation id="7966321538264951561">تجاویز مسترد کریں۔</translation>
 <translation id="8029301326595421733">اس اسٹور سے متعلق معلومات مکمل اونچائی پر کھلی ہے</translation>
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="955558140275419384">اس ایڈیٹر میں داخل ہو کر ڈیکلٹر کے لیے تمام محفوظ شدہ ٹیبز کا جائزہ لیں۔</translation>
 <translation id="959682366969460160">منظم رہیں</translation>
+<translation id="992256792861109788">گلابی</translation>
 </translationbundle>

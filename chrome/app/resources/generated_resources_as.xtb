@@ -2856,7 +2856,6 @@
 <translation id="3132277757485842847">আমি আপোনাৰ ফ’নটোৰ সৈতে সংযোগ বজাই ৰাখিব নোৱাৰিলোঁ। নিশ্চিত হৈ লওক যে আপোনাৰ ফ’নটো ওচৰত আছে, আনলক কৰা আছে আৰু ব্লুটুথ আৰু ৱাই-ফাই অন কৰা আছে।</translation>
 <translation id="3132896062549112541">নিয়ম</translation>
 <translation id="3132996321662585180">দৈনিক ৰিফ্ৰেশ্ব কৰক</translation>
-<translation id="3133184011320864289">টেবৰ গোটৰ পৰামৰ্শ দিবলৈ আৰু আপোনাৰ টেবসমূহ সংগঠিত কৰি ৰাখিবলৈ Chromeক অনুমতি দিবলৈ ছিংক অন কৰক</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পৰীক্ষণৰ বাবে পৰীক্ষণৰ স্থিতি বাছনি কৰক। পৰীক্ষণৰ বিৱৰণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ডিফ’ল্ট হালধীয়া অৱতাৰ</translation>
 <translation id="3141093262818886744">তথাপি খোলক</translation>
@@ -9113,7 +9112,6 @@
 <translation id="8052218774860457016">ব্ৰাউজাৰ ছিংক কৰাৰ সুবিধাটো পৰিচালনা কৰক</translation>
 <translation id="8053278772142718589">PKCS #12 ফাইল</translation>
 <translation id="8053390638574070785">এই পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
-<translation id="8053629544194355894">ছিংক অন কৰক যাতে Chromeএ টেবৰ গোটৰ পৰামৰ্শ দিব পাৰে</translation>
 <translation id="8054517699425078995">এনে ধৰণৰ ফাইলে আপোনাৰ কম্পিউটাৰৰ ক্ষতি সাধন কৰিব পাৰে। আপুনি যিকোনো প্ৰকাৰে <ph name="FILE_NAME" /> ৰাখিব খোজেনে?</translation>
 <translation id="8054563304616131773">অনুগ্ৰহ কৰি এক মান্য ইমেইল ঠিকনা দিয়ক</translation>
 <translation id="8054609631325628928">সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাকেইটা ব্যৱহাৰ কৰিব পৰা যায়</translation>
@@ -9428,7 +9426,6 @@
 <translation id="8293206222192510085">বুকমাৰ্ক যোগ কৰক</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8294476140219241086">টেবৰ সংগঠক</translation>
-<translation id="8294895455164415895">ছেটিং খোলক যাতে Chromeএ টেবৰ গোটৰ পৰামৰ্শ দিব পাৰে</translation>
 <translation id="8295449579927246485">লাইভ অনুবাদ</translation>
 <translation id="8295450130892483256">Microsoft 365 ইনষ্টল কৰক</translation>
 <translation id="8297292446125062288">HID ছেটিং</translation>
@@ -9581,7 +9578,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />ক আৰু <ph name="COUNT" /> টাক অনুমতি দিয়া হৈছে</translation>
-<translation id="8412682423093430245">টেবৰ গোটৰ পৰামৰ্শ দিবলৈ আৰু আপোনাৰ টেবসমূহ সংগঠিত কৰি ৰাখিবলৈ Chromeক অনুমতি দিবলৈ ছেটিঙত ইতিহাসৰ ছিংক অন কৰক</translation>
 <translation id="8413795581997394485">বিপজ্জনক হিচাপে জনাজাত ছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত কৰে। আপুনি কোনো ছাইটলৈ গ’লে, Chromeএ আপোনাৰ IP ঠিকনা লুকুৱাই ৰখা এটা গোপনীয়তা সম্পৰ্কীয় ছাৰ্ভাৰৰ জৰিয়তে Googleলৈ সেই URLটোৰ এটা অস্পষ্ট অংশ পঠিয়ায়। যদি কোনো ছাইটে কোনো সন্দেহজনক কাৰ্য কৰে, তেন্তে সম্পূৰ্ণ URL আৰু পৃষ্ঠাৰ কিছুমান সমলো পঠিওৱা হয়।</translation>
 <translation id="8413956290606243087">আপুনি ChromeOSৰ বাবে বিল্ট-ইন স্ক্ৰীন ৰীডাৰ, ChromeVox সক্ৰিয় কৰিবলৈ বিচাৰেনে?</translation>
 <translation id="8414249071344507766">মেম’ৰি দুদিনৰ বাবে লুকুওৱা হৈছে</translation>
@@ -9611,7 +9607,6 @@
 <translation id="8431190899827883166">টেপসমূহ দেখুৱাওক</translation>
 <translation id="8433186206711564395">নেটৱর্ক ছেটিংসমূহ</translation>
 <translation id="8434480141477525001">NaCl ডিবাগ পর্ট</translation>
-<translation id="8436054240208929121">টেবৰ গোটৰ পৰামৰ্শ দিবলৈ আৰু আপোনাৰ টেবসমূহ সংগঠিত কৰি ৰাখিবলৈ Chromeক অনুমতি দিবলৈ ছাইন ইন কৰি ছিংক অন কৰক</translation>
 <translation id="8437209419043462667">ইউএছ</translation>
 <translation id="8438566539970814960">সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক</translation>
 <translation id="8439506636278576865">এই ভাষাত পৃষ্ঠাসমূহ অনুবাদৰ সুবিধা দিয়ে</translation>
@@ -10089,7 +10084,6 @@
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">মেকুৰী</translation>
 <translation id="8809147117840417135">পাতল নীলা</translation>
-<translation id="881049307637003105">বুটাম যোগ দিবলৈ অথবা বুটামৰ স্থান নিৰ্ধাৰণ কৰিবলৈ আপোনাৰ <ph name="DEVICE_NAME" />ত অতিৰিক্ত বুটামত ক্লিক কৰক।</translation>
 <translation id="8811862054141704416">Crostiniৰ মাইক্র’ফ’নৰ এক্সেছ</translation>
 <translation id="8811923271770626905">এই এক্সটেনশ্বনটো পৃষ্ঠভূমিত চলি থাকিব পাৰে</translation>
 <translation id="8812593354822910461">লগতে ব্ৰাউজিঙৰ ডেটাও (<ph name="URL" />) মচক যিয়ে আপোনাক <ph name="DOMAIN" />ৰ পৰা ছাইন আউট কৰাব। <ph name="LEARN_MORE" /></translation>

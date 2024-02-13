@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">Выбраная ўкладка</translation>
 <translation id="1943432128510653496">Захоўваць паролі</translation>
 <translation id="1944535645109964458">Няма даступных ключоў доступу</translation>
-<translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
 <translation id="1960290143419248813">Абнаўленні Chrome больш не падтрымліваюцца для гэтай версіі Android.</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">Выдаліць усе звязаныя прылады</translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Дадаць на галоўны экран</translation>
+<translation id="2139414603196655536">Інфармацыя пра вашы дзеянні ў раздзеле "Статыстыка старонкі" захоўваецца ва Уліковым запісе Google. <ph name="BEGIN_LINK" />Даведацца, як кіраваць захоўваннем<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">На падставе выкарыстання</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
 <translation id="2155214902713132423">Дадзены спосаб спраўджання для гэтай прылады недаступны. Выберыце іншы варыянт на іншай прыладзе.</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Спрацаваў таймер праграмы "<ph name="FQDN" />". Заўтра ён зноў будзе запушчаны.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Закладка дададзена ў папку "<ph name="FOLDER_NAME" />" і захоўваецца толькі на гэтай прыладзе.}one{Закладкі дададзены ў папку "<ph name="FOLDER_NAME" />" і захоўваюцца толькі на гэтай прыладзе.}few{Закладкі дададзены ў папку "<ph name="FOLDER_NAME" />" і захоўваюцца толькі на гэтай прыладзе.}many{Закладкі дададзены ў папку "<ph name="FOLDER_NAME" />" і захоўваюцца толькі на гэтай прыладзе.}other{Закладкі дададзены ў папку "<ph name="FOLDER_NAME" />" і захоўваюцца толькі на гэтай прыладзе.}}</translation>
 <translation id="6715020873764921614">Усё роўна спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Падключацца з дапамогай QR-кода?</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">Ніжні аркуш статыстыкі старонкі</translation>
 <translation id="8243077599929149377">Дадайце сваё імя карыстальніка</translation>
 <translation id="8250920743982581267">Дакументы</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Закладка захавана ва ўліковым запісе <ph name="ACCOUNT_EMAIL" /> у папцы "<ph name="FOLDER_NAME" />".}one{Закладкі захаваны ва ўліковым запісе <ph name="ACCOUNT_EMAIL" /> у папцы "<ph name="FOLDER_NAME" />".}few{Закладкі захаваны ва ўліковым запісе <ph name="ACCOUNT_EMAIL" /> у папцы "<ph name="FOLDER_NAME" />".}many{Закладкі захаваны ва ўліковым запісе <ph name="ACCOUNT_EMAIL" /> у папцы "<ph name="FOLDER_NAME" />".}other{Закладкі захаваны ва ўліковым запісе <ph name="ACCOUNT_EMAIL" /> у папцы "<ph name="FOLDER_NAME" />".}}</translation>
 <translation id="8255617931166444521">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры толькі на сваіх старонках</translation>
 <translation id="8259179246279078674">Паколькі перадзагружаныя старонкі зашыфраваны, Google не будзе нічога ведаць пра іх змесціва. Серверы Google атрымаюць інфармацыю, якія сайты перадзагружаны ў прыватным рэжыме. Гэта інфармацыя выкарыстоўваецца толькі для перадзагрузкі старонак і не звязана з іншай інфармацыяй з вашага Уліковага запісу Google.</translation>
 <translation id="8260126382462817229">Увайдзіце яшчэ раз</translation>

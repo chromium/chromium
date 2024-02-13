@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
 <translation id="194449685234099560">You can find all your open tabs here.</translation>
-<translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1956138802718275401">Get to passwords from the home screen</translation>
 <translation id="1959441496380398824">Touch &amp; hold a date.</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">Unit type selector</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
+<translation id="2078437078822043850">You can scroll right to browse in Incognito.</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2080409463824088391">Open in app…</translation>
 <translation id="2080769225927880590">Sign in with a valid account</translation>
@@ -278,6 +278,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
+<translation id="2434918313224755415">You can scroll left to browse in Incognito.</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2459155039684421202">In the address bar, enter a task like 'clear my history' or 'edit passwords'.</translation>
 <translation id="2461070143328828326">Password settings</translation>
@@ -311,6 +312,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="260378315836159338">At the top of the screen, tap +</translation>
 <translation id="2604176749896001318">Update your browser</translation>
 <translation id="2609008503159898744">Close all tabs?</translation>
+<translation id="261305050785128654">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
 <translation id="2613747923081026172">Create group</translation>
 <translation id="2617210333344098964">Move address to account</translation>
 <translation id="261739049332372104">To get updates about content that matters to you, turn on notifications in your iOS settings.</translation>
@@ -513,6 +515,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
+<translation id="3625008969091706597">You can swipe the edge to go back.</translation>
 <translation id="3630104167004786843">Don't get updates</translation>
 <translation id="3631443864840848029">Make sure that you're saving your current password for this site.</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>
@@ -630,6 +633,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4267586310863245665">{COUNT,plural, =1{You dismissed {COUNT} warning}other{You dismissed {COUNT} warnings}}</translation>
 <translation id="4272631900155121838">To scan a QR code, enable the camera from settings</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
+<translation id="4279431713294750185">You can swipe the edge to go forward.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Search</translation>
@@ -1288,6 +1292,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Tab groups</translation>
 <translation id="7607521702806708809">Delete password</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7640669552036055091">Tabs from Android</translation>

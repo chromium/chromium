@@ -169,7 +169,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1933845786846280168">Tab a Ddewisir</translation>
 <translation id="1943432128510653496">Cadw cyfrineiriau</translation>
 <translation id="1944535645109964458">Dim codau pas ar gael</translation>
-<translation id="1952172573699511566">Bydd gwefannau yn dangos testun yn eich dewis iaith, pan fydd hynny'n bosib.</translation>
 <translation id="1959679933317802873">Wrthi'n aros am gynnwys</translation>
 <translation id="1960290143419248813">Nid yw diweddariadau Chrome bellach yn cael eu cefnogi ar gyfer y fersiwn hon o Android</translation>
 <translation id="1963976881984600709">Amddiffyniad safonol</translation>
@@ -204,6 +203,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2132122640199389833">Tynnu'r holl ddyfeisiau cysylltiedig</translation>
 <translation id="213279576345780926">Wedi cau <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ychwanegu at y sgrîn Hafan</translation>
+<translation id="2139414603196655536">Mae'ch gweithgarwch ym Mewnwelediadau Tudalen wedi'i gadw yn eich Cyfrif Google. <ph name="BEGIN_LINK" />Dysgu sut i reoli hyn<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Yn seiliedig ar eich defnydd</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
 <translation id="2155214902713132423">Nid yw'r dull dilysu hwn ar gael ar gyfer y ddyfais hon. Dewiswch opsiwn gwahanol ar eich dyfais arall.</translation>
@@ -1081,6 +1081,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="670498945988402717">Gwiriwyd ddoe</translation>
 <translation id="6710213216561001401">Blaenorol</translation>
 <translation id="671481426037969117">Mae'ch amserydd <ph name="FQDN" /> wedi dirwyn i ben. Bydd yn dechrau eto yfory.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Wedi cadw nod tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}zero{Wedi cadw nodau tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}two{Wedi cadw nodau tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}few{Wedi cadw nodau tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}many{Wedi cadw nodau tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}other{Wedi cadw nodau tudalen i <ph name="FOLDER_NAME" />. Dim ond i'r ddyfais hon y caiff ei gadw.}}</translation>
 <translation id="6715020873764921614">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) beth bynnag?</translation>
 <translation id="6719634564325948108">Cysylltu â Chod QR?</translation>
 <translation id="6723740634201835758">Yn eich Cyfrif Google</translation>
@@ -1401,6 +1402,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8237871086242677046">Dalen waelod mewnwelediadau tudalen</translation>
 <translation id="8243077599929149377">Ychwanegwch eich enw defnyddiwr</translation>
 <translation id="8250920743982581267">Dogfennau</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Wedi cadw'r nod tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}zero{Wedi cadw'r nodau tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}two{Wedi cadw'r nodau tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}few{Wedi cadw'r nodau tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}many{Wedi cadw'r nodau tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}other{Wedi cadw'r nodau tudalen i <ph name="FOLDER_NAME" /> yn eich cyfrif, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Dim ond i weld eich gweithgarwch pori ar eu gwefan eu hunain y gall gwefannau ddefnyddio'ch cwcis</translation>
 <translation id="8259179246279078674">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, ni fydd Google yn dysgu unrhyw beth am gynnwys y dudalen sydd wedi'i rhaglwytho. Bydd gweinyddion Google yn dysgu pa wefannau sy'n cael eu rhaglwytho'n breifat. Defnyddir y wybodaeth hon i raglwytho'r tudalennau yn unig, ac nid yw'n gysylltiedig â gwybodaeth arall o'ch Cyfrif Google.</translation>
 <translation id="8260126382462817229">Rhowch gynnig arall ar fewngofnodi</translation>

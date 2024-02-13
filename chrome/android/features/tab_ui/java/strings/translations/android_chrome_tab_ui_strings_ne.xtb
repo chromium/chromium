@@ -3,10 +3,13 @@
 <translationbundle lang="ne">
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="1155815720264022949">पुराना ट्याबहरू बन्द गर्न चाहनुहुन्छ?</translation>
+<translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="1215127405478249895">ट्याबहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="125153950246128346">अर्को ट्याब हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="1326271443836399892">अनावश्यक वस्तुहरू हटाउनेसम्बन्धी हालका सेटिङको समीक्षा गर्नुहोस्।</translation>
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
+<translation id="1555130319947370107">निलो</translation>
+<translation id="161042844686301425">सायन</translation>
 <translation id="1657719826150349398">ट्याब सारेर तल लैजानुहोस्</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब}other{<ph name="TABS_COUNT_MANY" /> ट्याबहरू}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब बुकमार्क गर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब बुकमार्क गर्नुहोस्}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ट्याब समूहबद्ध गर्नुहोस्}other{ट्याबहरू समूहबद्ध गर्नुहोस्}}</translation>
 <translation id="3996880007329611795">सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
+<translation id="4159784952369912983">बैजनी</translation>
 <translation id="4212246570487010370">ब्राउजिङ जारी राख्नुहोस्</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
 <translation id="4648718555153979859">तपाईंका ट्याबहरू यहाँ एकै ठाउँमा समूहबद्ध गरिएको छन्</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{तपाईंले हालसालै <ph name="TABS_COUNT_ONE" /> ट्याब प्रयोग गर्नुभएको छैन}other{तपाईंले हालसालै <ph name="TABS_COUNT_MANY" /> वटा ट्याब प्रयोग गर्नुभएको छैन}}</translation>
 <translation id="5339733443032484186">तपाईंको अन्तिम ट्याब</translation>
+<translation id="5400836586163650660">खरानी रङ्ग</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5545379293264651575">समीक्षा नगरिकनै बन्द गर्नुहोस्</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">मूल्य घटेको कुरासम्बन्धी अलर्ट प्राप्त गर्ने हो?</translation>
 <translation id="58326064309361797">ट्याबहरूलाई समूहबद्ध गर्न तिनीहरूलाई ड्र्याग गर्नुहोस्</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> समूह बन्द गर्नुहोस्</translation>
+<translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
+<translation id="6017514345406065928">हरियो</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब कुनै समूहमा थप्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू कुनै समूहमा थप्नुहोस्}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7885132941432959125">ट्याब सारेर दायाँतिर लैजानुहोस्</translation>
+<translation id="7942349550061667556">रातो</translation>
 <translation id="7966321538264951561">सिफारिसहरू खारेज गर्नुहोस्।</translation>
 <translation id="8029301326595421733">यो स्टोरसम्बन्धी जानकारी स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">नयाँ ट्याबलाई समूहमा थप्नुहोस्</translation>
 <translation id="955558140275419384">यो एडिटरमा गएर अनावश्यक वस्तुहरू हटाउन आफ्ना अभिलेखमा राखिएका सबै ट्याबहरूको समीक्षा गर्नुहोस्।</translation>
 <translation id="959682366969460160">व्यवस्थित गर्नुहोस्</translation>
+<translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

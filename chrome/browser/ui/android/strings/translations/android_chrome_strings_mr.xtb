@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">निवडलेला टॅब</translation>
 <translation id="1943432128510653496">पासवर्ड सेव्ह करा</translation>
 <translation id="1944535645109964458">कोणत्याही पासकी उपलब्ध नाहीत</translation>
-<translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
 <translation id="1960290143419248813">Android च्या या आवृत्तीसाठी Chrome अपडेटना सपोर्ट नाही</translation>
 <translation id="1963976881984600709">साधारण संरक्षण</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">सर्व लिंक केलेली डिव्हाइस काढून टाका</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद केले</translation>
 <translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
+<translation id="2139414603196655536">पेज इनसाइट मधील तुमची अ‍ॅक्टिव्हिटी Google खाते मध्ये सेव्ह केली आहे. <ph name="BEGIN_LINK" />हे कसे व्यवस्थापित करायचे ते जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">तुमच्या वापरावर आधारित</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2155214902713132423">ही पडताळणी पद्धत या डिव्हाइससाठी उपलब्ध नाही. तुमच्या इतर डिव्हाइसवर वेगळा पर्याय निवडा.</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">काल तपासले</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="671481426037969117">तुमचा <ph name="FQDN" /> टायमर झाला आहे. तो उद्या पुन्हा सुरू होईल.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{बुकमार्क <ph name="FOLDER_NAME" /> मध्ये सेव्ह केला आहे. तो फक्त या डिव्हाइसमध्ये सेव्ह केला आहे.}other{बुकमार्क <ph name="FOLDER_NAME" /> मध्ये सेव्ह केले आहेत. ते फक्त या डिव्हाइसमध्ये सेव्ह केले आहेत.}}</translation>
 <translation id="6715020873764921614">तुम्हाला तरीही <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) डाउनलोड करायची आहे का?</translation>
 <translation id="6719634564325948108">QR कोड सह कनेक्ट करायचे का?</translation>
 <translation id="6723740634201835758">तुमच्या Google खात्यामध्ये</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">तळाशी असलेल्या शीटमधील पेज इनसाइट</translation>
 <translation id="8243077599929149377">तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामधील <ph name="FOLDER_NAME" /> मध्ये बुकमार्क सेव्ह केला आहे.}other{तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामधील <ph name="FOLDER_NAME" /> मध्ये बुकमार्क सेव्ह केले आहेत.}}</translation>
 <translation id="8255617931166444521">साइट फक्त तुमच्या कुकीचा वापर फक्त त्यांच्या स्वतःच्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी करू शकतात</translation>
 <translation id="8259179246279078674">प्रीलोड केलेली पेज एंक्रिप्ट केलेली असल्यामुळे, प्रीलोड केलेल्या पेज आशयाबद्दल Google ला काहीही समजणार नाही. कोणत्या साइट खाजगीरीत्या प्रीलोड केलेल्या आहेत हे Google सर्व्हरना समजेल. ही माहिती फक्त पेज प्रीलोड करण्यासाठी वापरली जाते आणि तुमच्या Google खाते मधील इतर माहितीशी लिंक केलेली नाही.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>

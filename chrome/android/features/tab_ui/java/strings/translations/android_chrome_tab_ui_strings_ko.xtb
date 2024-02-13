@@ -3,10 +3,13 @@
 <translationbundle lang="ko">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
 <translation id="1155815720264022949">기존 탭을 닫으시겠습니까?</translation>
+<translation id="1197088940767939838">오렌지색</translation>
 <translation id="1215127405478249895">탭 검토하기</translation>
 <translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
 <translation id="1326271443836399892">현재의 불필요한 항목 제거 설정을 검토합니다.</translation>
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
+<translation id="1555130319947370107">파란색</translation>
+<translation id="161042844686301425">청록색</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 북마크}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 북마크}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{탭 그룹화}other{탭 그룹화}}</translation>
 <translation id="3996880007329611795">알림 받기</translation>
 <translation id="4133493477912226187">탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
+<translation id="4159784952369912983">보라색</translation>
 <translation id="4212246570487010370">계속 탐색</translation>
 <translation id="427987768447457592">새 탭 그룹</translation>
 <translation id="4648718555153979859">탭이 여기에서 그룹화됩니다.</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{최근에 사용하지 않은 탭이 <ph name="TABS_COUNT_ONE" />개 있습니다}other{최근에 사용하지 않은 탭이 <ph name="TABS_COUNT_MANY" />개 있습니다}}</translation>
 <translation id="5339733443032484186">마지막 탭</translation>
+<translation id="5400836586163650660">그레이</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5545379293264651575">검토하지 않고 닫기</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">가격 인하 알림을 받으시겠습니까?</translation>
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
 <translation id="5846292395804797011">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 그룹 닫기</translation>
+<translation id="5901630391730855834">노란색</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
+<translation id="6017514345406065928">녹색</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹화}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹화}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
+<translation id="7942349550061667556">빨간색</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
 <translation id="8029301326595421733">매장에 관한 정보가 전체 높이로 열림</translation>
 <translation id="8205266828577616993">탭을 위로 이동</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>
 <translation id="955558140275419384">이 편집기로 이동해 보관처리된 모든 탭을 검토하고 불필요한 탭을 정리합니다.</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
+<translation id="992256792861109788">분홍색</translation>
 </translationbundle>

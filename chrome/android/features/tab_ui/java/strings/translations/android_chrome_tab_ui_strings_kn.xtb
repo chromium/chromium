@@ -3,10 +3,13 @@
 <translationbundle lang="kn">
 <translation id="1075622780330595106">ನೀವು ಈ ನಡುವೆ ಬಳಸದ <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳಿವೆ. ಅವುಗಳನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="1155815720264022949">ಹಳೆಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲು ಬಯಸುತ್ತೀರಾ?</translation>
+<translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
 <translation id="1215127405478249895">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="125153950246128346">ಇನ್ನೊಂದು ಟ್ಯಾಬ್ ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1326271443836399892">ಪ್ರಸ್ತುತ ಡಿಕ್ಲಟರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="1499635324672558517">ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?</translation>
+<translation id="1555130319947370107">ನೀಲಿ</translation>
+<translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}}</translation>
 <translation id="3996880007329611795">ಸೂಚನೆ ಪಡೆಯಿರಿ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
+<translation id="4159784952369912983">ನೇರಳೆ</translation>
 <translation id="4212246570487010370">ಬ್ರೌಸಿಂಗ್ ಮುಂದುವರಿಸಿ</translation>
 <translation id="427987768447457592">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4648718555153979859">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಒಟ್ಟಿಗೆ ಗುಂಪುಗೂಡಿಸಲಾಗಿದೆ</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{ನೀವು ಇತ್ತೀಚೆಗೆ ಬಳಸದೇ ಇರುವ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ನೀವು ಹೊಂದಿದ್ದೀರಿ}one{ನೀವು ಇತ್ತೀಚೆಗೆ ಬಳಸದೇ ಇರುವ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}other{ನೀವು ಇತ್ತೀಚೆಗೆ ಬಳಸದೇ ಇರುವ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}}</translation>
 <translation id="5339733443032484186">ನಿಮ್ಮ ಕೊನೆಯ ಟ್ಯಾಬ್</translation>
+<translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="5490235265819901748">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="5545379293264651575">ಪರಿಶೀಲಿಸದೆ ಮುಚ್ಚಿರಿ</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">ಬೆಲೆ ಕುಸಿತಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಬೇಕೆ?</translation>
 <translation id="58326064309361797">ಟ್ಯಾಬ್‍‍ಗಳನ್ನು ಗುಂಪುಗೂಡಿಸಲು ಅವುಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ</translation>
+<translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5972844218283131174">ಎಲ್ಲಾ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
+<translation id="6017514345406065928">ಹಸಿರು</translation>
 <translation id="6054741997831917303">ಈ ಐಟಂನ ಬೆಲೆಯು ಇತ್ತೀಚೆಗೆ <ph name="PREVIOUS_PRICE" /> ದಿಂದ <ph name="NEW_PRICE" /> ಗೆ ಕುಸಿದಿದೆ</translation>
 <translation id="6193448654517602979">ಟ್ಯಾಬ್‌ ಆಯ್ಕೆ</translation>
 <translation id="6228793724645064692">(ಸ್ಟೋರ್ ರೇಟಿಂಗ್)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಿ}one{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}other{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}}</translation>
 <translation id="7885132941432959125">ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7966321538264951561">ಸಲಹೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿ.</translation>
 <translation id="8029301326595421733">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="8205266828577616993">ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">ಗುಂಪಿಗೆ ಹೊಸ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="955558140275419384">ಈ ಎಡಿಟರ್ ಮೂಲಕ ಡಿಕ್ಲಟರ್‌ಗಾಗಿ ಎಲ್ಲಾ ಆರ್ಕೈವ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="959682366969460160">ವ್ಯವಸ್ಥಿತರಾಗಿರಿ</translation>
+<translation id="992256792861109788">ಗುಲಾಬಿ ಬಣ್ಣ</translation>
 </translationbundle>

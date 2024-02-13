@@ -169,7 +169,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1933845786846280168">Onglet sélectionné</translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
 <translation id="1944535645109964458">Aucune clé d'accès disponible</translation>
-<translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
 <translation id="1959679933317802873">En attente de contenu</translation>
 <translation id="1960290143419248813">Les mises à jour de Chrome ne sont plus disponibles avec cette version d'Android</translation>
 <translation id="1963976881984600709">Protection standard</translation>
@@ -204,6 +203,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2132122640199389833">Supprimer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet "<ph name="TAB_TITLE" />" fermé</translation>
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
+<translation id="2139414603196655536">Votre activité dans Page Insights est enregistrée dans votre compte Google. <ph name="BEGIN_LINK" />Découvrez comment la gérer<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">D'après votre utilisation</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2155214902713132423">Cette méthode de validation n'est pas disponible pour cet appareil. Sélectionnez une autre option sur votre autre appareil.</translation>
@@ -1081,6 +1081,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="670498945988402717">Vérification effectuée hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuteur <ph name="FQDN" /> a expiré. Il redémarrera demain.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans <ph name="FOLDER_NAME" />. Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans <ph name="FOLDER_NAME" />. Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans <ph name="FOLDER_NAME" />. Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="6715020873764921614">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ?</translation>
 <translation id="6719634564325948108">Se connecter avec un code QR ?</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
@@ -1401,6 +1402,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8237871086242677046">Bottom sheet des insights sur la page</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans <ph name="FOLDER_NAME" /> sur votre compte <ph name="ACCOUNT_EMAIL" />}one{Favori enregistré dans <ph name="FOLDER_NAME" /> sur votre compte <ph name="ACCOUNT_EMAIL" />}other{Favoris enregistrés dans <ph name="FOLDER_NAME" /> sur votre compte <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="8255617931166444521">Les sites ne peuvent utiliser vos cookies que pour voir votre activité de navigation sur ces sites</translation>
 <translation id="8259179246279078674">Les pages préchargées étant chiffrées, Google n'analyse pas leur contenu. Les serveurs de Google voient quels sites sont préchargés en mode privé. Ces informations ne servent qu'à précharger les pages et ne sont liées à aucune autre information de votre compte Google.</translation>
 <translation id="8260126382462817229">Essayez de vous connecter de nouveau à votre compte.</translation>

@@ -586,6 +586,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2075497153347571252">Jūsu administrators ir vietnē <ph name="ORIGIN" /> bloķējis atļauju “<ph name="PERMISSION" />”</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2080021694978766903">Šajā politikā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> meklētājprogrammas.</translation>
+<translation id="2081482239432306393">Atlasīta opcija Mājas numurs</translation>
 <translation id="20817612488360358">Ir iestatīta datora starpniekserveru iestatījumu lietošana, bet ir norādīta arī atklāta starpniekservera konfigurācija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Atļaut katrā apmeklējuma reizē</translation>
@@ -1409,6 +1410,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3723663469265383848">Atjaunināšanas laikā (līdz 10 minūtēm) nevarēsiet izmantot ierīci.</translation>
 <translation id="372429172604983730">Šo kļūdu var izraisīt tādas lietojumprogrammas kā pretvīrusu, ugunsmūra, tīmekļa filtrēšanas vai starpniekservera programmatūra.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu Google prezentāciju pakalpojumā Prezentācijas, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="3727309136762649052">Nosaukumvieta</translation>
 <translation id="3727850735097852673">Lai izmantotu Google paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chrome un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="3733139489341305600">Autonomi transportlīdzekļi</translation>
 <translation id="3736520371357197498">Ja apzināties drošības risku, varat <ph name="BEGIN_LINK" />apmeklēt šo nedrošo vietni<ph name="END_LINK" />, pirms ir noņemtas bīstamās programmas.</translation>
@@ -1897,6 +1899,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4729147136006144950">Labdarība un filantropija</translation>
 <translation id="4730977633786878901">Lasīt atsauksmes</translation>
 <translation id="4731638775147756694">Šo lietojumprogrammu bloķēja jūsu administrators.</translation>
+<translation id="4732860731866514038">Notiek šādas valodas pakotnes lejupielāde: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu ierīces atrašanās vietu.</translation>
 <translation id="4736491186715342415">Autotransports</translation>
 <translation id="4736825316280949806">Restartējiet pārlūku Chromium</translation>
@@ -1918,7 +1921,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4757022425116568383">Piekļuves atslēga no Chrome profila</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
-<translation id="4761104368405085019">Izmantot jūsu mikrofonu</translation>
 <translation id="4761326898079498987">Skatiet plašāku informāciju</translation>
 <translation id="4761869838909035636">Veikt Chrome drošības pārbaudi</translation>
 <translation id="4763196677855776703">Pakalpojumu sniegšanas noteikumus nodrošina <ph name="URL" /></translation>
@@ -3201,6 +3203,7 @@ Papildu informācija:
 <translation id="733354035281974745">Ierīces lokālā konta ignorēšana</translation>
 <translation id="7334320624316649418">&amp;Atcelt pārkārtošanas atsaukšanu</translation>
 <translation id="7335157162773372339">Var pieprasīt atļauju izmantot jūsu kameru</translation>
+<translation id="7336636595549675416">Mājas numurs</translation>
 <translation id="7337248890521463931">Rādīt vairāk rindu</translation>
 <translation id="7337706099755338005">Nav pieejams jūsu platformā.</translation>
 <translation id="733923710415886693">Servera sertifikāts netika atklāts, izmantojot sertifikāta pārredzamību.</translation>
@@ -4147,7 +4150,6 @@ Papildu informācija:
 <translation id="9148507642005240123">&amp;Atsaukt labojumu</translation>
 <translation id="9148599396704355100">Cena ir zema</translation>
 <translation id="9150025764986957246">Varat ievadīt, piemēram:</translation>
-<translation id="9150045010208374699">Izmantot jūsu videokameru</translation>
 <translation id="9150685862434908345">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbību šajā ierīcē var pārvaldīt arī ārpus Chrome. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Atjaunināts</translation>
 <translation id="9155211586651734179">Pievienotās perifērās audio ierīces</translation>

@@ -2861,7 +2861,6 @@
 <translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Оновлювати щодня</translation>
-<translation id="3133184011320864289">Увімкніть синхронізацію, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
 <translation id="3141093262818886744">Усе одно відкрити</translation>
@@ -3924,6 +3923,7 @@
 <translation id="3957844511978444971">Натисніть "Прийняти", щоб підтвердити вибір цих налаштувань для сервісів Google.</translation>
 <translation id="3958088479270651626">Імпорт закладок і налаштувань</translation>
 <translation id="3958110062351175311">Дозволено показувати запити на панелі інструментів</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> уже встановлено</translation>
 <translation id="3959747296451923142">Підтвердити вилучення підписки</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Інші дії для номера "<ph name="IBAN_DESCRIPTION" />"</translation>
@@ -6551,6 +6551,7 @@
 <translation id="6065289257230303064">Атрибути каталогу суб'єкта сертифіката</translation>
 <translation id="6066794465984119824">Хеш зображення не налаштовано</translation>
 <translation id="6069464830445383022">Ваш обліковий запис Google використовується для входу на Chromebook</translation>
+<translation id="6069500411969514374">Робота</translation>
 <translation id="6071181508177083058">підтвердьте пароль</translation>
 <translation id="6071576563962215370">Системі не вдалося заблокувати атрибути часу встановлення на пристрої.</translation>
 <translation id="6071938745001252305">Заощаджено <ph name="MEMORY_VALUE" /> пам’яті</translation>
@@ -9119,7 +9120,6 @@
 <translation id="8052218774860457016">Керування синхронізацією веб-переглядача</translation>
 <translation id="8053278772142718589">Файли PKCS #12</translation>
 <translation id="8053390638574070785">Перезавантажити цю сторінку</translation>
-<translation id="8053629544194355894">Увімкнути синхронізацію, щоб дозволити Chrome пропонувати групи вкладок</translation>
 <translation id="8054517699425078995">Цей тип файлу може зашкодити вашому пристрою. Усе одно зберегти <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Введіть дійсну електронну адресу</translation>
 <translation id="8054609631325628928">За допомогою цих номерів можна активувати сервіс</translation>
@@ -9434,7 +9434,6 @@
 <translation id="8293206222192510085">Додати закладку</translation>
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8294476140219241086">Упорядкування вкладок</translation>
-<translation id="8294895455164415895">Відкрити налаштування, щоб дозволити Chrome пропонувати групи вкладок</translation>
 <translation id="8295449579927246485">Миттєвий переклад</translation>
 <translation id="8295450130892483256">Установіть Microsoft 365</translation>
 <translation id="8297292446125062288">Налаштування HID</translation>
@@ -9587,7 +9586,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">на весь екран</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Увімкніть синхронізацію історії в налаштуваннях, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="8413795581997394485">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Коли ви відвідуєте сайт, Chrome надсилає в Google обфусковану частину URL-адреси через сервер конфіденційності, який приховує вашу IP-адресу. Якщо на сайті виявлено підозрілу поведінку, Chrome також надсилає повні URL-адреси й уривки контенту сторінки.</translation>
 <translation id="8413956290606243087">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
 <translation id="8414249071344507766">Спогади приховано на два дні</translation>
@@ -9617,7 +9615,6 @@
 <translation id="8431190899827883166">Показувати дотики</translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8434480141477525001">Порт налагодження NaCl</translation>
-<translation id="8436054240208929121">Увійдіть в обліковий запис і ввімкніть синхронізацію, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8438566539970814960">Покращувати пошук і веб-перегляд</translation>
 <translation id="8439506636278576865">Пропонувати переклад сторінок цією мовою</translation>
@@ -10027,6 +10024,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> хоче під’єднатися до послідовного порту</translation>
 <translation id="8750346984209549530">Мобільна точка доступу</translation>
 <translation id="8750786237117206586">Керувати налаштуваннями звуку в ChromeOS Flex</translation>
+<translation id="8751034568832412184">Освіта</translation>
 <translation id="8752451679755290210">Автоматичне переміщення між елементами</translation>
 <translation id="8753948258138515839">Додаток Файли надає швидкий доступ до файлів, збережених на Google Диску, у зовнішньому сховищі або на пристрої з ОС Chrome Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Коли <ph name="PRODUCT_NAME" /> працює в підтримуваному середовищі настільного комп’ютера використовуються налаштування проксі-сервера системи.  Однак ваша система не підтримується або виникла проблема із запуском її конфігурації.&lt;/p&gt;
@@ -10096,7 +10094,6 @@
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Кіт</translation>
 <translation id="8809147117840417135">Світло-бірюзовий</translation>
-<translation id="881049307637003105">Щоб додати або знайти кнопки, натисніть додаткові кнопки на пристрої <ph name="DEVICE_NAME" />.</translation>
 <translation id="8811862054141704416">Доступ до мікрофона Crostini</translation>
 <translation id="8811923271770626905">Це розширення може працювати у фоновому режимі</translation>
 <translation id="8812593354822910461">Також видалити дані веб-перегляду (<ph name="URL" />), що може призвести до виходу з облікового запису на сайті <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

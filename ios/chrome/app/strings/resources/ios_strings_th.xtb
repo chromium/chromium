@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">แตะสองครั้งเพื่อคัดลอก</translation>
 <translation id="1943478190258551035">เมนู → การตั้งค่า</translation>
 <translation id="194449685234099560">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดได้ที่นี่</translation>
-<translation id="1952172573699511566">เมื่อเป็นไปได้ เว็บไซต์จะแสดงในภาษาที่คุณต้องการ</translation>
 <translation id="1956138802718275401">เข้าถึงรหัสผ่านจากหน้าจอหลัก</translation>
 <translation id="1959441496380398824">แตะวันที่ค้างไว้</translation>
 <translation id="1959679933317802873">กำลังรอเนื้อหา</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">ตัวเลือกประเภทหน่วย</translation>
 <translation id="2073572773299281212">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
+<translation id="2078437078822043850">คุณสามารถเลื่อนไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080409463824088391">เปิดในแอป…</translation>
 <translation id="2080769225927880590">ลงชื่อเข้าใช้ด้วยบัญชีที่ถูกต้อง</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">การบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2421044535038393232">แก้ไขต่อไป</translation>
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
+<translation id="2434918313224755415">คุณสามารถเลื่อนไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2459155039684421202">ในแถบที่อยู่ ให้ป้อนงาน เช่น "ล้างประวัติการเข้าชมของฉัน" หรือ "แก้ไขรหัสผ่าน"</translation>
 <translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">ที่ด้านบนของหน้าจอ ให้แตะ +</translation>
 <translation id="2604176749896001318">อัปเดตเบราว์เซอร์ของคุณ</translation>
 <translation id="2609008503159898744">ปิดแท็บทั้งหมดใช่ไหม</translation>
+<translation id="261305050785128654">แจ้งให้เว็บไซต์ทราบถึงภาษาที่คุณพูด แล้วเว็บไซต์จะแสดงเนื้อหาในภาษาเหล่านั้น หากเป็นไปได้</translation>
 <translation id="2613747923081026172">สร้างกลุ่ม</translation>
 <translation id="2617210333344098964">ย้ายที่อยู่ไปยังบัญชี</translation>
 <translation id="261739049332372104">หากต้องการรับข้อมูลอัปเดตเกี่ยวกับเนื้อหาที่คุณสนใจ ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">คัดลอก URL ของลิงก์</translation>
 <translation id="3607167657931203000">ป้อนข้อมูลอัตโนมัติ</translation>
 <translation id="3609785682760573515">กำลังซิงค์...</translation>
+<translation id="3625008969091706597">คุณสามารถปัดขอบเพื่อย้อนกลับได้</translation>
 <translation id="3630104167004786843">ไม่รับอัปเดต</translation>
 <translation id="3631443864840848029">ตรวจสอบว่าคุณกำลังบันทึกรหัสผ่านปัจจุบันสำหรับเว็บไซต์นี้</translation>
 <translation id="3638472932233958418">โหลดหน้าเว็บล่วงหน้า</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{คุณได้ปิดคำเตือน {COUNT} รายการ}other{คุณได้ปิดคําเตือน {COUNT} รายการ}}</translation>
 <translation id="4272631900155121838">หากต้องการสแกนโค้ด QR ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
 <translation id="4277990410970811858">Google Safe Browsing</translation>
+<translation id="4279431713294750185">คุณสามารถปัดขอบเพื่อไปข้างหน้าได้</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4286718549648564014">ย้ายที่อยู่ไปยังบัญชี <ph name="USER_EMAIL" /> แล้ว</translation>
 <translation id="4293080268407233932">ค้นหา</translation>
@@ -987,7 +991,7 @@
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6064824697233747382">องค์กรกำหนดให้คุณปิดการซิงค์</translation>
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
-<translation id="6067849159007176401">เพิ่มการปกป้องจากการท่องเว็บ</translation>
+<translation id="6067849159007176401">เพิ่มการปกป้องขณะท่องเว็บ</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
@@ -1257,7 +1261,7 @@
 <translation id="7436239899443308800">{count,plural, =1{1 แท็บ}other{{count} แท็บ}}</translation>
 <translation id="7438481509621345350">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="7451023311965289370">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
-<translation id="7454057999980797137">รัฐ</translation>
+<translation id="7454057999980797137">จังหวัด</translation>
 <translation id="745899714366929493">ตลอดวัน</translation>
 <translation id="7459628154744868585">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="7465351360025415755">รับเนื้อหาที่คุณสนใจ</translation>
@@ -1288,6 +1292,7 @@
 <translation id="7583004045319035904">ใช้ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> เพื่อปลดล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">ป๊อปอัปที่บล็อก (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">กลุ่มแท็บ</translation>
 <translation id="7607521702806708809">ลบรหัสผ่าน</translation>
 <translation id="7638584964844754484">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7640669552036055091">แท็บจาก Android</translation>
@@ -1450,7 +1455,7 @@
 <translation id="842017693807136194">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="8423121072346537366">เมื่อสักครู่</translation>
 <translation id="8425693829365242963">รหัสผ่านของคุณไม่ซ้ำกันเลย</translation>
-<translation id="8428045167754449968">เมือง</translation>
+<translation id="8428045167754449968">อำเภอ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
 <translation id="8430694217306051839">เลือกตำแหน่งที่จะบันทึก <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>

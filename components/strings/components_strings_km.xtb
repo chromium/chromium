@@ -172,6 +172,7 @@
 <translation id="1296930489679394997">ការ​លក់</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">ពិនិត្យ​ការកំណត់ DNS សុវត្ថិភាពរបស់អ្នក</translation>
+<translation id="1302418742166945866"><ph name="URL" /> ចង់គ្រប់គ្រង និង​សរសេរកម្មវិធី​ឧបករណ៍ MIDI របស់អ្នក​ឡើងវិញ</translation>
 <translation id="1307966114820526988">មុខងារ​ដែលបាន​បញ្ឈប់</translation>
 <translation id="1308113895091915999">មាន​ការផ្ដល់ជូន</translation>
 <translation id="1309375166585231290">មាតាបិតា​របស់អ្នក​មិនទាន់​និយាយ​ថាយល់ព្រមទេ</translation>
@@ -576,6 +577,7 @@
 <translation id="2056658168519009885">គេហទំព័រ​អាច​ស្នើសុំ​​ព័ត៌មានពី Chrome ​ដើម្បី​ជួយកំណត់​កា​រផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ឱ្យ​មានលក្ខណៈ​ផ្ទាល់ខ្លួន។</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
+<translation id="2062723461792528824">លក្ខខណ្ឌ​នានា​ត្រូវបាន​អនុវត្ត</translation>
 <translation id="2064568741209980952">ឥណទាន និង​កម្ចី</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{ការផ្តល់យោបល់ 1}other{ការផ្តល់យោបល់ #}}</translation>
 <translation id="2066915425250589881">ស្នើសុំ​ឱ្យលុប</translation>
@@ -1295,6 +1297,7 @@
 <translation id="3515972145999192222">ស្ថាប័នរបស់អ្នក​បានទប់ស្កាត់ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ដោយសារ​វា​បំពាន​គោលការណ៍។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">ការគ្រប់គ្រង​វត្ថុច្រើន</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
+<translation id="3525435918300186947">គ្រប់គ្រង និង​សរសេរ​កម្មវិធី​ឧបករណ៍ MIDI ឡើងវិញ​ឬ?</translation>
 <translation id="3528171143076753409">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេមិនត្រូវបានជឿជាក់ទេ។</translation>
 <translation id="3528485271872257980">ត្នោតចាស់</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{មានធាតុយ៉ាងហោចណាស់ 1 នៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម}=1{ធាតុ 1 (និងច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}other{ធាតុ # (និងច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}}</translation>
@@ -1926,7 +1929,6 @@
 <translation id="4757022425116568383">កូដសម្ងាត់​ពីកម្រងព័ត៌មាន Chrome របស់អ្នក</translation>
 <translation id="4757993714154412917">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ ដើម្បី​រក្សាសុវត្ថិភាព​គណនី​របស់អ្នក Chromium សូមណែនាំឱ្យ​ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក។</translation>
 <translation id="4758311279753947758">បន្ថែមព័ត៌មានទំនាក់ទំនង</translation>
-<translation id="4761104368405085019">ប្រើម៉ៃក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="4761326898079498987">ពិនិត្យមើល​ដើម្បីទទួលបាន​ព័ត៌មានលម្អិត​បន្ថែមទៀត</translation>
 <translation id="4761869838909035636">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព Chrome</translation>
 <translation id="4763196677855776703">លក្ខខណ្ឌ​ត្រូវបាន​ផ្ដល់ដោយ <ph name="URL" /></translation>
@@ -2408,6 +2410,7 @@
 <translation id="5720705177508910913">អ្នកប្រើបច្ចុប្បន្ន</translation>
 <translation id="572328651809341494">ផ្ទាំងថ្មីៗ</translation>
 <translation id="5723287205918986743">ឧស្សាហកម្ម​ការពារជាតិ</translation>
+<translation id="5723873695528696965">គ្រប់គ្រង និង​សរសេរកម្មវិធី​ឧបករណ៍ MIDI របស់អ្នក​ឡើងវិញ</translation>
 <translation id="5725297205162868298">ផ្លូវកាត់​មិនអាច​ចាប់ផ្ដើម​ដោយ​តួអក្សរ @ បានទេ៖ "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome ណែនាំឱ្យ​កំណត់​ពាក្យសម្ងាត់​របស់អ្នក​ឡើងវិញ ប្រសិនបើ​អ្នកបាន​ប្រើ​វា​ម្តងទៀត​នៅលើ​ទំព័រផ្សេង​។</translation>
 <translation id="5732392974455271431">មាតាបិតារបស់អ្នកអាចបានលុបការរារាំងទំព័រនេះសម្រាប់អ្នកបាន</translation>
@@ -2514,6 +2517,7 @@
 <translation id="5953516610448771166">មិនអាចប្រើអក្សររត់ក្នុងពេលជាក់ស្ដែងសម្រាប់មេឌៀនេះបានទេ។ ដើម្បីទទួលបានអក្សររត់ សូមទប់ស្កាត់ <ph name="CONTENT_SETTINGS" /> សម្រាប់គេហទំព័រនេះ។</translation>
 <translation id="5955063559762970069">សណ្ឋាគារ និង​កន្លែង​ស្នាក់នៅ</translation>
 <translation id="595873925609605681">ប្រសិនបើ​មុខងារ​គេហទំព័រ​មិនដំណើរការទេ សូម<ph name="BEGIN_LINK" />សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី​ជាបណ្ដោះអាសន្ន<ph name="END_LINK" />។</translation>
+<translation id="5960795367348889467">ការផ្ទៀងផ្ទាត់</translation>
 <translation id="5963413905009737549">ផ្នែក</translation>
 <translation id="5964247741333118902">ខ្លឹមសារ​ដែលបានបង្កប់</translation>
 <translation id="5967260682280773804">36 x 48 in</translation>
@@ -3468,6 +3472,7 @@
 <translation id="7755287808199759310">មាតាបិតារបស់អ្នកអាចលុបការរារាំងទំព័រនេះសម្រាប់អ្នកបាន</translation>
 <translation id="7755624218968747854">ដុំចម្បង</translation>
 <translation id="7758069387465995638">កម្មវិធីកំចាត់មេរោគ ឬ Firewall ប្រហែលជាបានរារាំងការតភ្ជាប់</translation>
+<translation id="7759147511335618829">ការគ្រប់គ្រង និងសរសេរកម្មវិធីឧបករណ៍ MIDI ឡើងវិញ</translation>
 <translation id="7759809451544302770">ស្រេចចិត្ត</translation>
 <translation id="7760497246331667482">តន្ត្រី​រ៉េហ្គេ និង​ការីប៊ីន</translation>
 <translation id="776110834126722255">បានបញ្ឈប់</translation>
@@ -3640,6 +3645,7 @@
 <translation id="8103161714697287722">វិធី​បង់ប្រាក់</translation>
 <translation id="8103643211515685474">មិនអីទេ បោះពុម្ពចុះ</translation>
 <translation id="8105368624971345109">បិទ</translation>
+<translation id="8107664017913103177">មាន​អត្ថប្រយោជន៍​កាត</translation>
 <translation id="810875025413331850">រក​មិនឃើញ​ឧបករណ៍​ដែលនៅជិត​ទេ។</translation>
 <translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="8118489163946903409">វិធីបង់ប្រាក់</translation>
@@ -4157,7 +4163,6 @@
 <translation id="9148507642005240123">បកក្រោយការកែប្រែ</translation>
 <translation id="9148599396704355100">តម្លៃទាប</translation>
 <translation id="9150025764986957246">អ្នកអាច​បញ្ចូលអ្វីៗ​ដូចជា៖</translation>
-<translation id="9150045010208374699">ប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="9150685862434908345">អ្នកគ្រប់គ្រង​របស់អ្នក​អាចប្ដូរ​ការរៀបចំ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​ពីចម្ងាយបាន។ សកម្មភាព​នៅលើឧបករណ៍នេះ​ក៏អាចត្រូវបាន​គ្រប់គ្រងក្រៅពី Chrome ផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">បានធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="9155211586651734179">បានភ្ជាប់ឧបករណ៍សំឡេងខាងក្រៅ</translation>

@@ -3,10 +3,13 @@
 <translationbundle lang="da">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="1155815720264022949">Vil du lukke gamle faner?</translation>
+<translation id="1197088940767939838">Orange</translation>
 <translation id="1215127405478249895">Gennemgå faner</translation>
 <translation id="125153950246128346">Tryk for at se en anden fane</translation>
 <translation id="1326271443836399892">Gennemgå de aktuelle indstillinger for oprydning.</translation>
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
+<translation id="1555130319947370107">Blå</translation>
+<translation id="161042844686301425">Cyan</translation>
 <translation id="1657719826150349398">Flyt fane ned</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Gem <ph name="TABS_COUNT_ONE" /> valgt fane som bogmærke}one{Gem <ph name="TABS_COUNT_MANY" /> valgt faner som bogmærke}other{Gem <ph name="TABS_COUNT_MANY" /> valgte faner som bogmærker}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Gruppér fane}one{Gruppér fane}other{Gruppér faner}}</translation>
 <translation id="3996880007329611795">Få besked</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
+<translation id="4159784952369912983">Lilla</translation>
 <translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4648718555153979859">Dine faner er grupperet sammen her</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> fane, du ikke har brugt for nylig}one{Du har <ph name="TABS_COUNT_MANY" /> fane, du ikke har brugt for nylig}other{Du har <ph name="TABS_COUNT_MANY" /> faner, du ikke har brugt for nylig}}</translation>
 <translation id="5339733443032484186">Din seneste fane</translation>
+<translation id="5400836586163650660">Grå</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5545379293264651575">Luk uden at gennemgå</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Vil du have underretninger om prisfald?</translation>
 <translation id="58326064309361797">Træk og slip faner for at gruppere dem</translation>
 <translation id="5846292395804797011">Luk gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> faner</translation>
+<translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
+<translation id="6017514345406065928">Grøn</translation>
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Gruppér <ph name="TABS_COUNT_ONE" /> valgt fane}one{Gruppér <ph name="TABS_COUNT_MANY" /> valgt fane}other{Gruppér de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_ONE" /> anmeldelse}one{Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_MANY" /> anmeldelse}other{Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_MANY" /> anmeldelser}}</translation>
 <translation id="7885132941432959125">Flyt fane til højre</translation>
+<translation id="7942349550061667556">Rød</translation>
 <translation id="7966321538264951561">Afvis forslagene.</translation>
 <translation id="8029301326595421733">Oplysningerne om denne butik er åbnet i fuld højde</translation>
 <translation id="8205266828577616993">Flyt fane op</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Føj en ny fane til gruppen</translation>
 <translation id="955558140275419384">Åbn dette redigeringsværktøj for at gennemgå dine arkiverede faner og rydde op.</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
+<translation id="992256792861109788">Lyserød</translation>
 </translationbundle>

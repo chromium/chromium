@@ -169,7 +169,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1933845786846280168">Onglet sélectionné</translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
 <translation id="1944535645109964458">Aucune clé d'accès accessible</translation>
-<translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1959679933317802873">En attente de contenu…</translation>
 <translation id="1960290143419248813">Les mises à jour Chrome ne sont plus prises en charge pour cette version d'Android</translation>
 <translation id="1963976881984600709">Protection standard</translation>
@@ -204,6 +203,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2132122640199389833">Retirer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet <ph name="TAB_TITLE" /> fermé</translation>
 <translation id="2139186145475833000">Ajouter à l'écran d'accueil</translation>
+<translation id="2139414603196655536">Votre activité dans les statistiques de la page est enregistrée dans votre compte Google. <ph name="BEGIN_LINK" />Découvrir comment gérer ce processus<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">En fonction de votre utilisation</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2155214902713132423">Cette méthode de vérification ne peut pas être utilisée pour cet appareil. Choisissez une option différente sur votre autre appareil.</translation>
@@ -1081,6 +1081,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="670498945988402717">Dernière vérification : hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuterie <ph name="FQDN" /> a expiré. Elle recommencera demain.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans <ph name="FOLDER_NAME" />. Il est uniquement enregistré sur cet appareil.}one{Favori enregistré dans <ph name="FOLDER_NAME" />. Il est uniquement enregistré sur cet appareil.}other{Favoris enregistrés dans <ph name="FOLDER_NAME" />. Ils sont uniquement enregistrés sur cet appareil.}}</translation>
 <translation id="6715020873764921614">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Se connecter au moyen d'un code QR?</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
@@ -1401,6 +1402,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8237871086242677046">Zone de contenu au bas de l'écran des statistiques de la page</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans <ph name="FOLDER_NAME" /> dans votre compte, <ph name="ACCOUNT_EMAIL" />.}one{Favori enregistré dans <ph name="FOLDER_NAME" /> dans votre compte, <ph name="ACCOUNT_EMAIL" />.}other{Favoris enregistrés dans <ph name="FOLDER_NAME" /> dans votre compte, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Les sites peuvent uniquement utiliser vos témoins pour connaître votre activité de navigation que sur leur propre site</translation>
 <translation id="8259179246279078674">Étant donné que les pages préchargées sont chiffrées, Google n'apprendra rien à propos du contenu des pages préchargées. Les serveurs de Google découvriront quels sites sont préchargés en privé. Cette information est uniquement utilisée pour précharger les pages et n'est pas associée à d'autres renseignements provenant de votre compte Google.</translation>
 <translation id="8260126382462817229">Essayez de vous reconnecter</translation>

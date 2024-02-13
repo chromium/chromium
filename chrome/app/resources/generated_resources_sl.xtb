@@ -2870,7 +2870,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3132277757485842847">Ni bilo mogoče ohraniti povezave s telefonom. Preverite, ali imate telefon v bližini, ali je vklopljen in ima vklopljeno povezavo Bluetooth in omrežje Wi-Fi.</translation>
 <translation id="3132896062549112541">Pravilo</translation>
 <translation id="3132996321662585180">Dnevno osveževanje</translation>
-<translation id="3133184011320864289">Vklopite sinhronizacijo, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>
 <translation id="3134393957315651797">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />. Opis preizkusa: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3139925690611372679">Privzeti rumeni avatar</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
@@ -9157,7 +9156,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8052218774860457016">Upravljanje sinhronizacije brskalnika</translation>
 <translation id="8053278772142718589">Datoteke PKCS #12</translation>
 <translation id="8053390638574070785">Znova naloži to stran</translation>
-<translation id="8053629544194355894">Vklopite sinhronizacijo, če želite, da Chrome predlaga skupine zavihkov</translation>
 <translation id="8054517699425078995">Ta vrsta datoteke lahko škoduje vaši napravi. Želite vseeno obdržati datoteko <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Vnesite veljaven e-poštni naslov</translation>
 <translation id="8054609631325628928">Ti številki je mogoče uporabiti pri aktiviranju storitve.</translation>
@@ -9473,7 +9471,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8293206222192510085">Dodaj zaznamek</translation>
 <translation id="8294431847097064396">Vir</translation>
 <translation id="8294476140219241086">Organizator zavihkov</translation>
-<translation id="8294895455164415895">Odprite nastavitve, če želite, da Chrome predlaga skupine zavihkov</translation>
 <translation id="8295449579927246485">Sprotni prevod</translation>
 <translation id="8295450130892483256">Namestitev Microsofta 365</translation>
 <translation id="8297292446125062288">Nastavitve vnosne naprave</translation>
@@ -9627,7 +9624,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">celozaslonski način</translation>
 <translation id="8412136526970428322">Dovoljeno: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">V nastavitvah vklopite sinhronizacijo zgodovine, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8413956290606243087">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za Chrome OS?</translation>
 <translation id="8414249071344507766">Spomini so skriti za dva dneva.</translation>
@@ -9657,7 +9653,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8431190899827883166">Prikaz dotikov</translation>
 <translation id="8433186206711564395">Omrežne nastavitve</translation>
 <translation id="8434480141477525001">Vrata za odpravljanje napak NaCl</translation>
-<translation id="8436054240208929121">Prijavite se in vklopite sinhronizacijo, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>
 <translation id="8437209419043462667">Združene države</translation>
 <translation id="8438566539970814960">Izboljšanje iskanja in brskanja</translation>
 <translation id="8439506636278576865">Ponudi prevajanje strani v tem jeziku</translation>
@@ -10139,7 +10134,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8808478386290700967">Spletna trgovina</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8809147117840417135">Svetlo zelenomodra</translation>
-<translation id="881049307637003105">Kliknite dodatne gumbe na napravi <ph name="DEVICE_NAME" />, če želite dodati ali poiskati gumbe.</translation>
 <translation id="8811862054141704416">Dostop do mikrofona v Crostiniju</translation>
 <translation id="8811923271770626905">Ta razširitev se morda izvaja v ozadju</translation>
 <translation id="8812593354822910461">Izbriši tudi podatke brskanja (<ph name="URL" />), s čimer boste odjavljeni iz domene <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

@@ -246,6 +246,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1428729058023778569">Je duke e parë këtë paralajmërim pasi kjo faqe nuk mbështet HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film me vetëngjitje</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1431021750861456539">Ekrani i plotë automatik</translation>
 <translation id="1432187715652018471">faqja kërkon të instalojë një përpunues të shërbimit.</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433225466058025572">Provo t'i zhvendosësh përsëri skedarët e tu</translation>
@@ -1921,7 +1922,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4757022425116568383">Çelësi i kalimit nga profili yt i Chrome</translation>
 <translation id="4757993714154412917">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chromium rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4758311279753947758">Shto informacionet e kontaktit</translation>
-<translation id="4761104368405085019">Përdor mikrofonin</translation>
 <translation id="4761326898079498987">Rishiko për detaje të mëtejshme</translation>
 <translation id="4761869838909035636">Ekzekuto "Kontrollin e sigurisë" të Chrome</translation>
 <translation id="4763196677855776703">Kushtet e përgjithshme të dhëna nga <ph name="URL" /></translation>
@@ -2285,6 +2285,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     <ph name="LINE_BREAK" />
     Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="549333378215107354">Madhësia 3</translation>
+<translation id="5501712702042287009">ekrani i plotë automatik</translation>
 <translation id="550365051221576010">Plotësoji të gjitha</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Faqeshënuesit e menaxhuar</translation>
@@ -4149,7 +4150,6 @@ Detaje shtesë:
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
 <translation id="9148599396704355100">Çmimi është i ulët</translation>
 <translation id="9150025764986957246">Mund të futësh gjëra të tilla si:</translation>
-<translation id="9150045010208374699">Përdor kamerën</translation>
 <translation id="9150685862434908345">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">I përditësuar</translation>
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>

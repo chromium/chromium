@@ -2854,7 +2854,6 @@
 <translation id="3132277757485842847">Бид таны утасны холболтыг хадгалж чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="3132896062549112541">Дүрэм</translation>
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
-<translation id="3133184011320864289">Chrome-д табын бүлгүүдийг санал болгож, таны табуудыг цэгцтэй байлгахыг зөвшөөрөхийн тулд синк хийхийг асаана уу</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу. Туршилтын тайлбар: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Өгөгдмөл шар аватар</translation>
 <translation id="3141093262818886744">Ямар ч байсан нээх</translation>
@@ -3916,6 +3915,7 @@
 <translation id="3957844511978444971">Google-н эдгээр үйлчилгээний тохиргооны сонголтоо баталгаажуулахын тулд “Зөвшөөрөх” гэснийг товшино уу.</translation>
 <translation id="3958088479270651626">Хайлтын жагсаалтууд болон тохиргоонуудыг импортолж авах</translation>
 <translation id="3958110062351175311">Хүсэлтүүдийг самбарт харуулахыг зөвшөөрсөн</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" />-г аль хэдийн суулгасан байна</translation>
 <translation id="3959747296451923142">Захиалга хасахыг баталгаажуулах</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-н бусад үйлдэл</translation>
@@ -6546,6 +6546,7 @@
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
 <translation id="6066794465984119824">Зургийн хэшийг тохируулаагүй байна</translation>
 <translation id="6069464830445383022">Та Google Бүртгэлээрээ Chromebook-тээ нэвтэрнэ</translation>
+<translation id="6069500411969514374">Ажил</translation>
 <translation id="6071181508177083058">нууц үгийг баталгаажуулах</translation>
 <translation id="6071576563962215370">Систем төхөөрөмжийг суулгах хугацааны атрибутын түгжээг үүсгэж чадсангүй.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" />-н санах ой хэмнэсэн</translation>
@@ -9105,7 +9106,6 @@
 <translation id="8052218774860457016">Хөтчийн синкийг удирдах</translation>
 <translation id="8053278772142718589">PKCS #12 файлууд</translation>
 <translation id="8053390638574070785">Энэ хуудсыг дахин ачаалла</translation>
-<translation id="8053629544194355894">Chrome-д табын бүлгүүд санал болгохыг зөвшөөрөхийн тулд синк хийхийг асаана уу</translation>
 <translation id="8054517699425078995">Ийм төрлийн файл нь таны төхөөрөмжийг гэмтээж болно. Та <ph name="FILE_NAME" />-ийг ямар ч байсан хадгалахыг хүсч байна уу?</translation>
 <translation id="8054563304616131773">Хүчинтэй имэйл хаягаа оруулна уу</translation>
 <translation id="8054609631325628928">Эдгээр дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглаж болно</translation>
@@ -9420,7 +9420,6 @@
 <translation id="8293206222192510085">Хадгалагдсан хуудас нэмэх</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
 <translation id="8294476140219241086">Таб цэгцлэгч</translation>
-<translation id="8294895455164415895">Chrome-д табын бүлгүүд санал болгохыг зөвшөөрөхийн тулд тохиргоог нээнэ үү</translation>
 <translation id="8295449579927246485">Шууд орчуулга</translation>
 <translation id="8295450130892483256">Microsoft 365-ыг суулгах</translation>
 <translation id="8297292446125062288">HID-н тохиргоо</translation>
@@ -9573,7 +9572,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">бүтэн дэлгэц</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> болон бусад <ph name="COUNT" />-г зөвшөөрсөн</translation>
-<translation id="8412682423093430245">Chrome-д табын бүлгүүд санал болгож, таны табуудыг цэгцтэй байлгахыг зөвшөөрөхийн тулд Тохиргоонд Түүхийг синк хийхийг асаана уу</translation>
 <translation id="8413795581997394485">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Таныг сайтад зочлох үед Chrome таны IP хаягийг нуудаг нууцлалын серверээр дамжуулан URL-н будлиулсан хэсгийг Google-д илгээнэ. Хэрэв сайт ямар нэг сэжигтэй зүйл хийвэл бүтэн URL болон хуудасны контентын багахан хэсгийг мөн илгээдэг.</translation>
 <translation id="8413956290606243087">Та ChromeOS-н бүрэлдэхүүн дэлгэц уншигч болох ChromeVox-г идэвхжүүлэхийг хүсэж байна уу?</translation>
 <translation id="8414249071344507766">Дурсамжийг хоёр өдрийн турш нуусан</translation>
@@ -9603,7 +9601,6 @@
 <translation id="8431190899827883166">Товшилтыг харуулах</translation>
 <translation id="8433186206711564395">Сүлжээний тохиргоо</translation>
 <translation id="8434480141477525001">NaCl гүйцэтгэл сайжруулах порт</translation>
-<translation id="8436054240208929121">Chrome-д табын бүлгүүдийг санал болгож, таны табуудыг цэгцтэй байлгахыг зөвшөөрөхийн тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="8437209419043462667">АНУ</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
 <translation id="8439506636278576865">Хуудаснуудыг энэ хэл рүү орчуулахыг санал болгох</translation>
@@ -10013,6 +10010,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> цуваа портод холбогдох хүсэлтэй байна</translation>
 <translation id="8750346984209549530">Үүрэн холбооны APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex-н аудионы тохиргоог удирдах</translation>
+<translation id="8751034568832412184">Сургууль</translation>
 <translation id="8752451679755290210">Зүйлс хооронд автоматаар шилжих</translation>
 <translation id="8753948258138515839">Files апп нь таны Google Драйв, гадаад хадгалах сан эсвэл ChromeOS Flex төхөөрөмж дээр хадгалсан файлуудад шуурхай хандалт олгоно.</translation>
 <translation id="8754200782896249056">&lt;p&gt; Дэмжлэг бүхий дэлгэцийн орчинд <ph name="PRODUCT_NAME" />-г ачаалж байх үед системийн proxy тохиргоог ашиглана. Гэхдээ таны систед аливаа дэмжлэг байхгүй эсвэл таны системийн тохиргоо нь алдаатай байж болох юм.&lt;/p&gt; &lt;p&gt;Та системын тохиргоог тушаалын мөрөөр дамжуулан хийх боломжтой. &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; -с туг болон орчны хувьсагчийн талаарх нэмэлт мэдээллийг авах боломжтой.&lt;/p&gt;</translation>
@@ -10077,7 +10075,6 @@
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Муур</translation>
 <translation id="8809147117840417135">Цайвар номин ногоон</translation>
-<translation id="881049307637003105">Товчлуурууд нэмэх эсвэл байршлыг нь тогтоохын тулд <ph name="DEVICE_NAME" />-н нэмэлт товчлууруудыг товшино уу.</translation>
 <translation id="8811862054141704416">Crostini-н микрофоны хандалт</translation>
 <translation id="8811923271770626905">Энэ өргөтгөл дэвсгэрт ажиллаж магадгүй</translation>
 <translation id="8812593354822910461">Мөн хайлтын өгөгдлийг (<ph name="URL" />) устгах. Ингэснээр та <ph name="DOMAIN" />-с гарах болно. <ph name="LEARN_MORE" /></translation>

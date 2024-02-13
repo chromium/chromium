@@ -169,7 +169,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1933845786846280168">Odabrana kartica</translation>
 <translation id="1943432128510653496">Spremanje zaporki</translation>
 <translation id="1944535645109964458">Nije dostupan nijedan pristupni ključ</translation>
-<translation id="1952172573699511566">Web-lokacije prikazivat će tekst na željenom jeziku kad god je to moguće.</translation>
 <translation id="1959679933317802873">Čekanje sadržaja</translation>
 <translation id="1960290143419248813">Chromeova ažuriranja više nisu podržana za ovu verziju Androida</translation>
 <translation id="1963976881984600709">Standardna zaštita</translation>
@@ -1120,6 +1119,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6869056123412990582">računalu</translation>
 <translation id="6882836635272038266">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasna.</translation>
 <translation id="6883204995689174413">Dijeli</translation>
+<translation id="688398477366397178">Neka web-lokacije znaju koje jezike govorite. Prikazivat će sadržaj na tim jezicima kad je to moguće.</translation>
 <translation id="688738109438487280">Dodavanje postojećih podataka na račun <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Otključajte za kopiranje zaporke</translation>
 <translation id="6896758677409633944">Kopiraj</translation>

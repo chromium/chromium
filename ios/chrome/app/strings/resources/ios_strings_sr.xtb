@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
 <translation id="1943478190258551035">Мени → Подешавања</translation>
 <translation id="194449685234099560">Овде можете да пронађете све отворене картице.</translation>
-<translation id="1952172573699511566">Веб-сајтови ће приказивати текст на жељеном језику када је то могуће.</translation>
 <translation id="1956138802718275401">Приступајте лозинкама са почетног екрана</translation>
 <translation id="1959441496380398824">Додирните и задржите датум.</translation>
 <translation id="1959679933317802873">Чека се садржај</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">Бирач типа јединице</translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
+<translation id="2078437078822043850">Можете да скролујете удесно да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2080409463824088391">Отвори у апликацији…</translation>
 <translation id="2080769225927880590">Пријавите се помоћу важећег налога</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">Блокира колачиће треће стране</translation>
 <translation id="2421044535038393232">Настави изменe</translation>
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
+<translation id="2434918313224755415">Можете да скролујете улево да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2459155039684421202">У траку за адресу унесите задатак, на пример, „обриши моју историју“ или „измени лозинке“.</translation>
 <translation id="2461070143328828326">Подешавања лозинке</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">У врху екрана додирните +</translation>
 <translation id="2604176749896001318">Ажурирајте прегледач</translation>
 <translation id="2609008503159898744">Желите да затворите све картице?</translation>
+<translation id="261305050785128654">Омогућите веб-сајтовима да знају које језике говорите. Приказиваће садржај на тим језицима када је то могуће.</translation>
 <translation id="2613747923081026172">Направи групу</translation>
 <translation id="2617210333344098964">Премести адресу на налог</translation>
 <translation id="261739049332372104">Да бисте добијали новости о садржају који вам је важан, укључите обавештења у подешавањима iOS-а.</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">Копирај URL адресу линка</translation>
 <translation id="3607167657931203000">Подаци аутоматског попуњавања</translation>
 <translation id="3609785682760573515">Синхронизовање...</translation>
+<translation id="3625008969091706597">Можете да превучете ивицу да бисте ишли назад.</translation>
 <translation id="3630104167004786843">Не шаљи ми новости</translation>
 <translation id="3631443864840848029">Уверите се да чувате актуелну лозинку за овај сајт.</translation>
 <translation id="3638472932233958418">Унап. учитај веб-странице</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{Одбацили сте {COUNT} упозорење}one{Одбацили сте {COUNT} упозорење}few{Одбацили сте {COUNT} упозорења}other{Одбацили сте {COUNT} упозорења}}</translation>
 <translation id="4272631900155121838">Да бисте скенирали QR кôд, омогућите камеру у подешавањима</translation>
 <translation id="4277990410970811858">Безбедно прегледање</translation>
+<translation id="4279431713294750185">Можете да превучете ивицу да бисте ишли напред.</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
 <translation id="4286718549648564014">Адреса је премештена на налог <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Претражи</translation>
@@ -1288,6 +1292,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Блокирани искачући прозори (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Групе картица</translation>
 <translation id="7607521702806708809">Избриши лозинку</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="7640669552036055091">Картице са Android-а</translation>

@@ -250,6 +250,7 @@
 <translation id="1428729058023778569">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Ինքնակպչուն թաղանթ</translation>
 <translation id="1430915738399379752">Տպում</translation>
+<translation id="1431021750861456539">Ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="1432187715652018471">Էջը ծառայության մշակիչ է ուզում տեղադրել։</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
 <translation id="1433225466058025572">Փորձեք նորից տեղափոխել ֆայլերը</translation>
@@ -1929,7 +1930,6 @@
 <translation id="4757022425116568383">Անցաբառ Chrome-ի ձեր պրոֆիլից</translation>
 <translation id="4757993714154412917">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Ձեր հաշիվների պաշտպանության նկատառումներով՝ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
 <translation id="4758311279753947758">Ավելացնել կոնտակտային տվյալներ</translation>
-<translation id="4761104368405085019">Օգտագործել խոսափողը</translation>
 <translation id="4761326898079498987">Բացեք՝ մանրամասները տեսնելու համար</translation>
 <translation id="4761869838909035636">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="4763196677855776703">Վաճառողի տրամադրած օգտագործման պայմաններ (<ph name="URL" />)</translation>
@@ -2296,6 +2296,7 @@
     <ph name="LINE_BREAK" />
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="549333378215107354">Չափ 3</translation>
+<translation id="5501712702042287009">ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Կառավարվող էջանիշներ</translation>
@@ -4161,7 +4162,6 @@
 <translation id="9148507642005240123">&amp;Հետարկել փոփոխումը</translation>
 <translation id="9148599396704355100">Գինը ցածր է</translation>
 <translation id="9150025764986957246">Կարող եք մուտքագրել, օրինակ՝</translation>
-<translation id="9150045010208374699">Օգտագործել տեսախցիկը</translation>
 <translation id="9150685862434908345">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Թարմացված է</translation>
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>

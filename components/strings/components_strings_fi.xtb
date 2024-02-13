@@ -246,6 +246,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1428729058023778569">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Kontaktimuovi</translation>
 <translation id="1430915738399379752">Tulosta</translation>
+<translation id="1431021750861456539">Automaattinen koko näyttö</translation>
 <translation id="1432187715652018471">sivu haluaa asentaa palvelukäsittelijän.</translation>
 <translation id="1432581352905426595">Hallinnoi hakukoneita</translation>
 <translation id="1433225466058025572">Kokeile siirtää tiedostot uudelleen</translation>
@@ -1922,7 +1923,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4757022425116568383">Avainkoodi Chrome-profiilistasi</translation>
 <translation id="4757993714154412917">Lisäsit juuri salasanasi petolliselle sivustolle. Chromium suosittelee tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="4758311279753947758">Lisää yhteystiedot</translation>
-<translation id="4761104368405085019">Käyttää mikrofonia</translation>
 <translation id="4761326898079498987">Katso lisätietoja</translation>
 <translation id="4761869838909035636">Tee Chromen turvatarkistus</translation>
 <translation id="4763196677855776703">Käyttöehtojen lähde: <ph name="URL" /></translation>
@@ -2286,6 +2286,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     <ph name="LINE_BREAK" />
     Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="549333378215107354">Koko 3</translation>
+<translation id="5501712702042287009">automaattinen koko näyttö</translation>
 <translation id="550365051221576010">Täytä kaikki</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallinnoidut kirjanmerkit</translation>
@@ -4152,7 +4153,6 @@ Lisätietoja:
 <translation id="9148507642005240123">K&amp;umoa muokkaus</translation>
 <translation id="9148599396704355100">Hinta on alhainen</translation>
 <translation id="9150025764986957246">Esimerkkejä asioista, joita voit kirjoittaa:</translation>
-<translation id="9150045010208374699">Käyttää kameraa</translation>
 <translation id="9150685862434908345">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromen ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Päivitetty</translation>
 <translation id="9155211586651734179">Yhdistetyt audiolisälaitteet</translation>

@@ -2859,7 +2859,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3132277757485842847">Vi kunne ikke bevare forbindelsen til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
-<translation id="3133184011320864289">Aktivér synkronisering for at få Chrome til at foreslå fanegrupper og holde dine faner organiseret</translation>
 <translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
 <translation id="3141093262818886744">Åbn alligevel</translation>
@@ -9118,7 +9117,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8052218774860457016">Administrer browsersynkronisering</translation>
 <translation id="8053278772142718589">PKCS #12-filer</translation>
 <translation id="8053390638574070785">Genindlæs denne side</translation>
-<translation id="8053629544194355894">Aktivér synkronisering, så Chrome kan foreslå fanegrupper</translation>
 <translation id="8054517699425078995">Denne type fil kan beskadige din enhed. Vil du beholde <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="8054563304616131773">Angiv en gyldig mailadresse</translation>
 <translation id="8054609631325628928">Disse numre kan bruges til at hjælpe med at aktivere tjenesten</translation>
@@ -9433,7 +9431,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8293206222192510085">Tilføj bogmærke</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8294476140219241086">Faneorganisering</translation>
-<translation id="8294895455164415895">Åbn indstillingerne, så Chrome kan foreslå fanegrupper</translation>
 <translation id="8295449579927246485">Liveoversættelse</translation>
 <translation id="8295450130892483256">Installer Microsoft 365</translation>
 <translation id="8297292446125062288">HID-indstillinger</translation>
@@ -9586,7 +9583,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">fuld skærm</translation>
 <translation id="8412136526970428322">Adgangen til <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere blev tilladt</translation>
-<translation id="8412682423093430245">Aktivér synkronisering af historik i Indstillinger, så Chrome kan foreslå fanegrupper og holde dine faner organiseret</translation>
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="8413956290606243087">Vil du aktivere ChromeVox, der er den indbyggede skærmlæser til ChromeOS?</translation>
 <translation id="8414249071344507766">Minder skjules i to dage</translation>
@@ -9616,7 +9612,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8431190899827883166">Vis tryk</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>
 <translation id="8434480141477525001">NaCl-fejlretningsport</translation>
-<translation id="8436054240208929121">Log ind, og aktivér synkronisering, så Chrome kan foreslå fanegrupper og holde dine faner organiseret</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439506636278576865">Tilbyd at oversætte sider på dette sprog</translation>
@@ -10095,7 +10090,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8808478386290700967">Webshop</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8809147117840417135">Lys turkis</translation>
-<translation id="881049307637003105">Klik på flere knapper på din <ph name="DEVICE_NAME" /> for at tilføje eller finde knapper.</translation>
 <translation id="8811862054141704416">Adgang til mikrofonen i Crostini</translation>
 <translation id="8811923271770626905">Denne udvidelse kan køre i baggrunden</translation>
 <translation id="8812593354822910461">Ryd også browserdata (<ph name="URL" />), hvilket muligvis logger dig ud af <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

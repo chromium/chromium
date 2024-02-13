@@ -100,6 +100,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1312604459020188865">Signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Kuva alati riiul</translation>
 <translation id="132346741904777634">Kaamera kinnitati vasakusse ülanurka. Konflikt süsteemi platvormiga.</translation>
+<translation id="132415371743256095">Töölaua <ph name="DESK_NAME" /> ja akende sulgemine</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> on ühendatud</translation>
 <translation id="1340378040547539434">Lehel väljasuumimine</translation>
 <translation id="1341651618736211726">Ületäide</translation>
@@ -331,6 +332,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2397416548179033562">Kuva Chrome'i menüü</translation>
 <translation id="240006516586367791">Meedia juhtnupud</translation>
 <translation id="2402411679569069051">Chromebooki avamiseks kasutage sõrmejälge või avage oma telefon</translation>
+<translation id="240545663114741956">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Ühendus puudub</translation>
 <translation id="2408955596600435184">Sisestage PIN-kood</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
@@ -352,7 +354,9 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2478076885740497414">Rakenduse installimine</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2484513351006226581">Klaviatuuripaigutuse muutmiseks vajutage klahvikombinatsiooni <ph name="KEYBOARD_SHORTCUT" />.</translation>
+<translation id="2486214324139475545">Töölaua <ph name="DESK_NAME" /> eelvaade. Aktiivne töölaud.</translation>
 <translation id="2487915095798731898">Liitu</translation>
+<translation id="250047928202119308">Töölaua profiilimenüü</translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
 <translation id="2504454902900101003">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamisest loobumine</translation>
 <translation id="2509468283778169019">SUURTÄHELUKK on sisse lülitatud</translation>
@@ -906,6 +910,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4644727592819780893">Ala on kaamera mahutamiseks liiga väike</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rakenduse soovitus</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, ruut on märgitud.</translation>
 <translation id="4657775630156561295">Järgmised soovitused eemaldatakse teie konto soovituste ajaloost jäädavalt.
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1037,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5111930673176965299">Taustahägustus</translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5121628974188116412">Lehe lõppu liikumine</translation>
+<translation id="5122517996953421795">Töölaua <ph name="DESK_NAME" /> eelvaade. Inaktiivne töölaud.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5147567197700016471">Avatud</translation>
 <translation id="5150070631291639005">Privaatsusseaded</translation>
@@ -1432,6 +1438,7 @@ Uus installimine</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>
 <translation id="6686023075541098243">Teie telefoni märguannete kuvamise seadistamine</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
+<translation id="6697913454192220372">Uue töölaua lisamine</translation>
 <translation id="6700713906295497288">IME menüünupp</translation>
 <translation id="6707693040195709527">Seadme operatsioonisüsteemi eelmisele versioonile ülemineku tähtaeg on möödunud</translation>
 <translation id="6710213216561001401">Eelmine</translation>
@@ -1563,6 +1570,7 @@ Uus installimine</translation>
 <translation id="7262906531272962081">Loo meeldetuletus</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tagasilüke</translation>
 <translation id="7285232777292757180">Ekraanipiltide tegemiseks kasutage kiirseadetes ekraani jäädvustamise tööriista</translation>
+<translation id="7301826272005790482">Aknasoovitustest loobumine</translation>
 <translation id="7302889331339392448">Reaalajas subtiitrid on välja lülitatud.</translation>
 <translation id="7303365578352795231">Vastamine muus seadmes.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1769,6 +1777,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8054466585765276473">Aku tööaja arvutamine.</translation>
 <translation id="8079538659226626406">Ekraani jagamine</translation>
 <translation id="8083540854303889870">Salvestatud hilisemaks</translation>
+<translation id="8088141034189573826">Lisavalikute nägemiseks kasutage vahelehte. Kõigile töölaudadele juurdepääsemiseks kasutage parem- ja vasaknoolt.</translation>
 <translation id="8091153018031979607">Algab kell <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automaatsed värskendused</translation>
 <translation id="8092380135549145188">Kerimise juhtelemendid</translation>
@@ -1966,6 +1975,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8936501819958976551">inaktiveeritud</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>
 <translation id="8940956008527784070">Aku tühjeneb (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, ruut ei ole märgitud.</translation>
 <translation id="8949925099261528566">Ühendatud, Interneti-ühendus puudub</translation>
 <translation id="8951539504029375108">Teie Chromebookiga ühilduvad ainult heakskiidetud Thunderbolti seadmed</translation>
 <translation id="8964525410783593407">1 h</translation>

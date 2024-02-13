@@ -246,6 +246,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1428729058023778569">Webgunea HTTPS protokoloarekin bateragarria ez delako erakutsi dizugu abisu hau. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film autoitsasgarria</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
+<translation id="1431021750861456539">Pantaila oso automatikoa</translation>
 <translation id="1432187715652018471">orriak zerbitzu-kudeatzaile bat instalatu nahi du.</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
 <translation id="1433225466058025572">Saiatu berriro fitxategiak mugitzen</translation>
@@ -1917,7 +1918,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4757022425116568383">Zure Chrome-ko profileko sarbide-gakoa</translation>
 <translation id="4757993714154412917">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chromium-ek.</translation>
 <translation id="4758311279753947758">Gehitu harremanetarako informazioa</translation>
-<translation id="4761104368405085019">Erabili mikrofonoa</translation>
 <translation id="4761326898079498987">Berrikusi xehetasun gehiago ikusteko</translation>
 <translation id="4761869838909035636">Egin Chrome-ren segurtasun-egiaztapena</translation>
 <translation id="4763196677855776703">Zehaztapen eta baldintzen hornitzailea: <ph name="URL" /></translation>
@@ -2281,6 +2281,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     <ph name="LINE_BREAK" />
     Jarri harremanetan sistemaren administratzailearekin.</translation>
 <translation id="549333378215107354">Tamaina: 3</translation>
+<translation id="5501712702042287009">pantaila oso automatikoa</translation>
 <translation id="550365051221576010">Bete dena</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kudeatutako laster-markak</translation>
@@ -4144,7 +4145,6 @@ Xehetasun gehiago:
 <translation id="9148507642005240123">&amp;Desegin editatzea</translation>
 <translation id="9148599396704355100">Prezioa baxua da</translation>
 <translation id="9150025764986957246">Honako hauek idatz ditzakezu:</translation>
-<translation id="9150045010208374699">Erabili zure kamera</translation>
 <translation id="9150685862434908345">Administratzaileak urrunetik alda dezake arakatzailearen konfigurazioa. Baliteke gailu honetako jarduera Chrome-tik kanpo ere kudeatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Eguneratuta</translation>
 <translation id="9155211586651734179">Erantsitako audio-gailu periferikoak</translation>

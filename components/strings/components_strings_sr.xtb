@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">Распродаја</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Проверите подешавања за безбедан DNS</translation>
+<translation id="1302418742166945866"><ph name="URL" /> жели да контролише и репрограмира MIDI уређаје</translation>
 <translation id="1307966114820526988">Застареле функције</translation>
 <translation id="1308113895091915999">Понуда је доступна</translation>
 <translation id="1309375166585231290">Родитељи још нису рекли да је у реду</translation>
@@ -574,6 +575,7 @@
 <translation id="2056658168519009885">Сајтови могу да затраже од Chrome-а информације да би персонализовали огласе који вам се приказују.</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2059202684901022309">22×34 in</translation>
+<translation id="2062723461792528824">важе услови</translation>
 <translation id="2064568741209980952">Кредити и позајмице</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предлог}one{# предлог}few{# предлога}other{# предлога}}</translation>
 <translation id="2066915425250589881">затражите брисање</translation>
@@ -1292,6 +1294,7 @@
 <translation id="3515972145999192222">Организација је блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> зато што крши смернице. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обрада више предмета</translation>
 <translation id="3525130752944427905">10×14 in</translation>
+<translation id="3525435918300186947">Жели да контролише и репрограмира MIDI уређаје?</translation>
 <translation id="3528171143076753409">Сертификат сервера није поуздан.</translation>
 <translation id="3528485271872257980">Тамнобраон</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Најмање 1 ставка на синхронизованим уређајима}=1{1 ставка (и још ставки на синхронизованим уређајима)}one{# ставка (и још ставки на синхронизованим уређајима)}few{# ставке (и још ставки на синхронизованим уређајима)}other{# ставки (и још ставки на синхронизованим уређајима)}}</translation>
@@ -1922,7 +1925,6 @@
 <translation id="4757022425116568383">Приступни кључ са вашег Chrome профила</translation>
 <translation id="4757993714154412917">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chromium препоручује да проверите сачуване лозинке.</translation>
 <translation id="4758311279753947758">Додај контакт информације</translation>
-<translation id="4761104368405085019">Коришћење микрофона</translation>
 <translation id="4761326898079498987">Више детаља потражите у прегледу</translation>
 <translation id="4761869838909035636">Покрените Chrome безбедносну проверу</translation>
 <translation id="4763196677855776703">Услове и одредбе пружа <ph name="URL" /></translation>
@@ -2404,6 +2406,7 @@
 <translation id="5720705177508910913">Тренутни корисник</translation>
 <translation id="572328651809341494">Недавно коришћене картице</translation>
 <translation id="5723287205918986743">Војна индустрија</translation>
+<translation id="5723873695528696965">контролише и репрограмира MIDI уређаје</translation>
 <translation id="5725297205162868298">Пречица не може да почиње знаком @: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="5730040223043577876">Chrome вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="5732392974455271431">Родитељи могу да га одблокирају за тебе</translation>
@@ -2510,6 +2513,7 @@
 <translation id="5953516610448771166">Титл уживо није доступан за овај медијски садржај. Да бисте омогућили титл, блокирајте <ph name="CONTENT_SETTINGS" /> за овај сајт.</translation>
 <translation id="5955063559762970069">Хотели и смештај</translation>
 <translation id="595873925609605681">Ако функције сајта не раде, <ph name="BEGIN_LINK" />пробајте да привремено дозволите колачиће треће стране<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Верификација</translation>
 <translation id="5963413905009737549">Одељак</translation>
 <translation id="5964247741333118902">Уграђен садржај</translation>
 <translation id="5967260682280773804">36×48 in</translation>
@@ -3462,6 +3466,7 @@
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7755624218968747854">Примарни котур</translation>
 <translation id="7758069387465995638">Можда је заштитни зид или антивирусни софтвер блокирао везу.</translation>
+<translation id="7759147511335618829">MIDI – Контрола и репрограмирање</translation>
 <translation id="7759809451544302770">Опционално</translation>
 <translation id="7760497246331667482">Реге и карипска музика</translation>
 <translation id="776110834126722255">Застарело</translation>
@@ -3633,6 +3638,7 @@
 <translation id="8103161714697287722">Начин плаћања</translation>
 <translation id="8103643211515685474">Ипак штампај</translation>
 <translation id="8105368624971345109">Искључи</translation>
+<translation id="8107664017913103177">Доступне су предности картица</translation>
 <translation id="810875025413331850">Није пронађен ниједан уређај у близини.</translation>
 <translation id="8116925261070264013">Звук је искључен</translation>
 <translation id="8118489163946903409">Начин плаћања</translation>
@@ -4152,7 +4158,6 @@
 <translation id="9148507642005240123">&amp;Опозови измену</translation>
 <translation id="9148599396704355100">Цена је ниска</translation>
 <translation id="9150025764986957246">Можете да уносите ствари попут следећих:</translation>
-<translation id="9150045010208374699">Коришћење камере</translation>
 <translation id="9150685862434908345">Администратор може даљински да промени подешавање прегледача. Активностима на овом уређају се можда управља и ван Chrome-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Ажурирано</translation>
 <translation id="9155211586651734179">Аудио периферни уређаји су прикључени</translation>

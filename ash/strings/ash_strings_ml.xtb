@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Play Store-ലും മറ്റ് ഗെയിമിംഗ് പ്ലാറ്റ്‌ഫോമുകളിലും ഉള്ള ഗെയിമുകൾ</translation>
 <translation id="3439896670700055005">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഉപയോഗിക്കാതെ നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">നിങ്ങളുടെ മൗസ് വ്യക്തിപരമാക്കുക</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
 <translation id="3454555520521576458">വലുപ്പം മാറ്റാവുന്നത്</translation>
@@ -1613,6 +1614,7 @@
 <translation id="7509246181739783082">ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="7512509370370076552">വലത്-ക്ലിക്ക് കുറുക്കുവഴി, 'Alt + ക്ലിക്ക്' എന്നതിൽ നിന്ന് '<ph name="LAUNCHER_KEY_NAME" /> കീ + ക്ലിക്ക്' എന്നതാക്കി അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, തിരഞ്ഞെടുത്തില്ല</translation>
+<translation id="7513057995673284840">നിങ്ങളുടെ <ph name="PERIPHERAL_NAME" /> എന്നതിനുള്ള ബട്ടൺ പ്രവർത്തനങ്ങൾ വ്യക്തിപരമാക്കാം</translation>
 <translation id="7513622367902644023">സ്ക്രീൻഷോട്ട് മോഡ് തിരഞ്ഞടുത്തു</translation>
 <translation id="7513922695575567867">കലണ്ടർ, <ph name="DATE" />-ലെ ആഴ്‌ച, നിലവിൽ <ph name="SELECTED_DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1669,6 +1671,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF സൃഷ്ടിക്കുന്നു</translation>
 <translation id="7714767791242455379">പുതിയ സെല്ലുലാർ നെറ്റ്‌വർക്ക് ചേർക്കുക</translation>
+<translation id="7716257086539630827">ടാബ്‌ലെറ്റ് ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> വരെ ഓണാണ്</translation>
 <translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7721132362314201794">ഡെസ്‌കിന്റെ പേര്</translation>
@@ -1694,6 +1697,7 @@
 <translation id="7807067443225230855">തിരയലും സഹായിയും</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />, <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ശക്തിയുള്ള സിഗ്നൽ</translation>
+<translation id="7830453190047749513">നിങ്ങളുടെ <ph name="PERIPHERAL_NAME" /> എന്നതിനുള്ള ബട്ടൺ പ്രവർത്തനങ്ങളും കഴ്‌സർ വേഗതയും മറ്റും നിങ്ങൾക്ക് വ്യക്തിപരമാക്കാം</translation>
 <translation id="7837740436429729974">സമയം കഴിഞ്ഞു</translation>
 <translation id="7842569679327885685">മുന്നറിയിപ്പ്: പരീക്ഷണാത്മക ഫീച്ചർ</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>

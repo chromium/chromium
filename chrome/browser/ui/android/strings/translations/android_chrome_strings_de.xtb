@@ -169,7 +169,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1933845786846280168">Ausgewählter Tab</translation>
 <translation id="1943432128510653496">Passwörter speichern</translation>
 <translation id="1944535645109964458">Keine Passkeys verfügbar</translation>
-<translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in deiner bevorzugten Sprache angezeigt.</translation>
 <translation id="1959679933317802873">Inhalte werden abgerufen</translation>
 <translation id="1960290143419248813">Chrome-Updates werden für diese Version von Android nicht mehr unterstützt</translation>
 <translation id="1963976881984600709">Standardschutz</translation>
@@ -204,6 +203,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2132122640199389833">Alle verknüpften Geräte entfernen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> geschlossen</translation>
 <translation id="2139186145475833000">Zum Startbildschirm hinzufügen</translation>
+<translation id="2139414603196655536">Deine Aktivitäten in den Seitenstatistiken werden in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK" />Informationen zum Verwalten von Aktivitäten<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Auf Grundlage deiner Nutzung</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2155214902713132423">Diese Bestätigungsmethode ist für dieses Gerät nicht verfügbar. Wähle auf deinem anderen Gerät eine andere Option aus.</translation>
@@ -1081,6 +1081,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="670498945988402717">Gestern geprüft</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="671481426037969117">Dein <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Lesezeichen in „<ph name="FOLDER_NAME" />“ gespeichert. Es wird nur auf diesem Gerät gespeichert.}other{Lesezeichen in „<ph name="FOLDER_NAME" />“ gespeichert. Sie werden nur auf diesem Gerät gespeichert.}}</translation>
 <translation id="6715020873764921614">Möchtest du <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) trotzdem herunterladen?</translation>
 <translation id="6719634564325948108">Über QR-Code verbinden?</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
@@ -1401,6 +1402,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8237871086242677046">Ansicht am unteren Rand mit den Seitenstatistiken</translation>
 <translation id="8243077599929149377">Nutzername hinzufügen</translation>
 <translation id="8250920743982581267">Dokumente</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Lesezeichen unter „<ph name="FOLDER_NAME" />“ in deinem Konto <ph name="ACCOUNT_EMAIL" /> gespeichert.}other{Lesezeichen unter „<ph name="FOLDER_NAME" />“ in deinem Konto <ph name="ACCOUNT_EMAIL" /> gespeichert.}}</translation>
 <translation id="8255617931166444521">Websites können deine Cookies nur verwenden, um deine Browseraktivitäten auf der eigenen Website zu sehen</translation>
 <translation id="8259179246279078674">Da die vorab geladenen Seiten verschlüsselt sind, erfährt Google nichts über den Inhalt der vorab geladenen Seiten. Bestimmte Google-Server wissen nur, welche Websites privat vorab geladen werden. Diese Informationen werden ausschließlich zum Vorabladen der Seiten verwendet und nicht mit anderen Daten aus deinem Google-Konto verknüpft.</translation>
 <translation id="8260126382462817229">Melde dich noch einmal an</translation>

@@ -169,7 +169,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1933845786846280168">Valitud vaheleht</translation>
 <translation id="1943432128510653496">Paroolide salvestamine</translation>
 <translation id="1944535645109964458">Saadaval pole ühtegi pääsuvõtit</translation>
-<translation id="1952172573699511566">Veebisaidid kuvavad teksti võimaluse korral teie eelistatud keeles.</translation>
 <translation id="1959679933317802873">Sisu ootel</translation>
 <translation id="1960290143419248813">Selles Androidi versioonis ei toetata enam Chrome'i värskendusi</translation>
 <translation id="1963976881984600709">Standardne kaitse</translation>
@@ -204,6 +203,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2132122640199389833">Eemalda kõik lingitud seadmed</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> suleti</translation>
 <translation id="2139186145475833000">Avaekraanile lisamine</translation>
+<translation id="2139414603196655536">Teie tegevus lehe statistikas on salvestatud teie Google'i kontole. <ph name="BEGIN_LINK" />Vaadake, kuidas seda hallata<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Kasutuse põhjal</translation>
 <translation id="2149973817440762519">Muuda järjehoidjat</translation>
 <translation id="2155214902713132423">See kinnitusmeetod pole selle seadme jaoks saadaval. Tehke oma teises seadmes muu valik.</translation>
@@ -1081,6 +1081,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="671481426037969117">Teie rakenduse <ph name="FQDN" /> taimeri aeg sai otsa. See alustab uuesti homme.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Järjehoidja on salvestatud kausta <ph name="FOLDER_NAME" />. See on salvestatud ainult sellesse seadmesse.}other{Järjehoidjad on salvestatud kausta <ph name="FOLDER_NAME" />. Need on salvestatud ainult sellesse seadmesse.}}</translation>
 <translation id="6715020873764921614">Kas soovite faili <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ikkagi alla laadida?</translation>
 <translation id="6719634564325948108">Kas ühendada QR-koodi kaudu?</translation>
 <translation id="6723740634201835758">Teie Google’i kontol</translation>
@@ -1401,6 +1402,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8237871086242677046">Lehe statistika alumine leht</translation>
 <translation id="8243077599929149377">Lisage oma kasutajanimi</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Järjehoidja on salvestatud kausta <ph name="FOLDER_NAME" /> teie kontol <ph name="ACCOUNT_EMAIL" />.}other{Järjehoidjad on salvestatud kausta <ph name="FOLDER_NAME" /> teie kontol <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Saidid võivad teie küpsisefaile kasutada vaid selleks, et vaadata teie sirvimistegevust ainult samal saidil</translation>
 <translation id="8259179246279078674">Kuna eellaaditud lehed on krüpteeritud, ei saa Google eellaaditud lehe sisu kohta teavet. Google'i serverid saavad teada, millised saidid eellaaditakse privaatselt. Seda teavet kasutatakse ainult lehtede eellaadimiseks ja seda ei seostata teie Google'i kontol oleva muu teabega.</translation>
 <translation id="8260126382462817229">Proovige uuesti sisse logida</translation>

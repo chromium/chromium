@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1020274983236703756">Sunt disponibile elemente <ph name="PRODUCT_NAME" /> exclusive</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Comanda rapidă este folosită pentru <ph name="CONFLICT_ACCEL_NAME" />. Introdu o nouă comandă rapidă. Pentru a înlocui comanda rapidă inițială, introdu din nou această comandă rapidă.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1049663189809099096">galben pastelat</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
 <translation id="2407209115954268704">Stare blocare card SIM</translation>
 <translation id="241419523391571119">Redeschide capacul pentru a testa</translation>
+<translation id="2414660853550118611">Despre imaginea de fundal</translation>
 <translation id="2414886740292270097">Întunecat</translation>
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2421798028054665193">Imaginea <ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
 <translation id="6196607555925437199">Creează din nou</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Activează screensaverul</translation>
 <translation id="6324916366299863871">Editează o comandă rapidă</translation>
 <translation id="6325525973963619867">Eșuat</translation>
+<translation id="6327262166342360252">Această imagine de fundal a fost creată cu AI folosind următorul text: <ph name="PROMPT" />.</translation>
 <translation id="6331191339300272798">Tema întunecată automată</translation>
 <translation id="6340526405444716530">Personalizare</translation>
 <translation id="6348738456043757611">Nume de utilizator și parolă</translation>

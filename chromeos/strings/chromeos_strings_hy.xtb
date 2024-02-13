@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1020274983236703756">Բացառիկ բովանդակություն <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="1022628058306505708">Հողահոսք</translation>
+<translation id="1026212596705997935">Դյուրանցումն օգտագործվում է «<ph name="CONFLICT_ACCEL_NAME" />» գործողության համար։ Սեղմեք նոր դյուրանցում։ Առկա դյուրանցումը փոխարինելու համար նորից սեղմեք այս դյուրանցումը։</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1049663189809099096">պաստելային դեղին</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
 <translation id="2407209115954268704">SIM քարտի կողպման կարգավիճակը</translation>
 <translation id="241419523391571119">Փորձարկելու համար կրկին բացեք կափարիչը</translation>
+<translation id="2414660853550118611">Պաստառի մասին</translation>
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2418150275289244458">Բացել կարգավորումներում</translation>
 <translation id="2421798028054665193">Պատկեր <ph name="CURRENT_PAGE" />՝ <ph name="TOTAL_PAGES" />-ից</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Ստեղծվել է՝ <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
 <translation id="6196607555925437199">Նորից ստեղծել</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Միացնել էկրանապահը</translation>
 <translation id="6324916366299863871">Փոփոխել դյուրանցումը</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
+<translation id="6327262166342360252">Այս պաստառը ստեղծվել է AI-ի միջոցով հետևյալ հարցման հիման վրա՝ «<ph name="PROMPT" />»։</translation>
 <translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="6348738456043757611">Օգտանուն և գաղտնաբառ</translation>

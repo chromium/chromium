@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">இந்தத் தளம் HTTPSஸை ஆதரிக்காததால் எச்சரிக்கை காட்டப்படுகிறது. <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">தானாக ஒட்டிக்கொள்ளும் ஃபிலிம்</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
+<translation id="1431021750861456539">தானியங்கு முழுத்திரை</translation>
 <translation id="1432187715652018471">சேவை ஹேண்ட்லரை இந்தப் பக்கம் நிறுவ விரும்புகிறது.</translation>
 <translation id="1432581352905426595">தேடல் இன்ஜின்களை நிர்வகி</translation>
 <translation id="1433225466058025572">ஃபைல்களை மீண்டும் நகர்த்த முயலவும்</translation>
@@ -1917,7 +1918,6 @@
 <translation id="4757022425116568383">உங்கள் Chrome சுயவிவரத்தில் உள்ள கடவுச்சாவி</translation>
 <translation id="4757993714154412917">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்குகளைப் பாதுகாக்க, நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்குமாறு Chromium பரிந்துரைக்கிறது.</translation>
 <translation id="4758311279753947758">தொடர்புத் தகவலைச் சேர்</translation>
-<translation id="4761104368405085019">உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தலாம்</translation>
 <translation id="4761326898079498987">மேலும் விவரங்களுக்குச் சரிபார்க்கவும்</translation>
 <translation id="4761869838909035636">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்கு</translation>
 <translation id="4763196677855776703">விதிமுறைகளையும் நிபந்தனைகளையும் வழங்குவது: <ph name="URL" /></translation>
@@ -2281,6 +2281,7 @@
     <ph name="LINE_BREAK" />
     உங்கள் சிஸ்டம் நிர்வாகியைத் தொடர்புகொள்ள முயலவும்.</translation>
 <translation id="549333378215107354">அளவு: 3</translation>
+<translation id="5501712702042287009">தானியங்கு முழுத்திரை</translation>
 <translation id="550365051221576010">அனைத்தையும் நிரப்பு</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">நிர்வகிக்கப்படும் புக்மார்க்குகள்</translation>
@@ -4146,7 +4147,6 @@
 <translation id="9148507642005240123">&amp;திருத்தலைச் செயல்தவிர்</translation>
 <translation id="9148599396704355100">விலை குறைந்துள்ளது</translation>
 <translation id="9150025764986957246">நீங்கள் இவை போன்றவற்றை டைப் செய்யலாம்:</translation>
-<translation id="9150045010208374699">உங்கள் கேமராவைப் பயன்படுத்தலாம்</translation>
 <translation id="9150685862434908345">உலாவியின் அமைவை உங்கள் நிர்வாகியால் தொலைநிலையிலிருந்தே மாற்ற முடியும். இந்தச் சாதனத்தின் செயல்பாடுகளை Chromeமுக்கு வெளியிலிருந்தும் நிர்வகிக்கலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">புதுப்பிக்கப்பட்டது</translation>
 <translation id="9155211586651734179">இணைக்கப்பட்டுள்ள ஆடியோ சாதனங்கள்</translation>

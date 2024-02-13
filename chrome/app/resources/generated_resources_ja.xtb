@@ -2837,7 +2837,6 @@
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132896062549112541">ルール</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
-<translation id="3133184011320864289">タブグループの提案機能を使ってタブを整理するには、同期をオンにしてください</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
 <translation id="3141093262818886744">開く</translation>
@@ -3899,6 +3898,7 @@
 <translation id="3957844511978444971">[同意する] をタップすると、この Google サービスの設定の選択内容を確認したことになります。</translation>
 <translation id="3958088479270651626">ブックマークと設定のインポート</translation>
 <translation id="3958110062351175311">ツールバーでのリクエストの表示を許可するウェブサイト</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> はすでにインストールされています</translation>
 <translation id="3959747296451923142">登録の削除を確認</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> に対するその他の操作</translation>
@@ -6525,6 +6525,7 @@
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
 <translation id="6066794465984119824">画像ハッシュが設定されていません</translation>
 <translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
+<translation id="6069500411969514374">仕事</translation>
 <translation id="6071181508177083058">パスワードの確認入力</translation>
 <translation id="6071576563962215370">デバイスの installation-time 属性のロックを確立できませんでした。</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> のメモリを節約しました</translation>
@@ -9084,7 +9085,6 @@
 <translation id="8052218774860457016">ブラウザの同期を管理</translation>
 <translation id="8053278772142718589">PKCS #12 ファイル</translation>
 <translation id="8053390638574070785">ページを再読み込み</translation>
-<translation id="8053629544194355894">同期をオンにして Chrome でタブグループの提案を表示</translation>
 <translation id="8054517699425078995">この種類のファイルはお使いのデバイスに悪影響を与える可能性があります。<ph name="FILE_NAME" />を保存しますか？</translation>
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
 <translation id="8054609631325628928">これらの番号を使用して、サービスを有効にできます</translation>
@@ -9399,7 +9399,6 @@
 <translation id="8293206222192510085">ブックマークの追加</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8294476140219241086">タブの整理機能</translation>
-<translation id="8294895455164415895">設定を開いて Chrome でタブグループの提案を表示</translation>
 <translation id="8295449579927246485">リアルタイム翻訳</translation>
 <translation id="8295450130892483256">Microsoft 365 をインストール</translation>
 <translation id="8297292446125062288">HID 設定</translation>
@@ -9552,7 +9551,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全画面表示</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を許可しました</translation>
-<translation id="8412682423093430245">タブグループの提案機能を使ってタブを整理するには、[設定] で履歴の同期をオンにしてください</translation>
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ　コンテンツの一部も送信されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は Chrome OS 用の組み込みのスクリーン リーダーです。</translation>
 <translation id="8414249071344507766">思い出を 2 日間非表示にします</translation>
@@ -9582,7 +9580,6 @@
 <translation id="8431190899827883166">タップを表示</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>
-<translation id="8436054240208929121">タブグループの提案機能を使ってタブを整理するには、ログインして同期をオンにしてください</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
@@ -9992,6 +9989,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> がシリアルポートへの接続を要求しています</translation>
 <translation id="8750346984209549530">モバイル APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex の音声設定を管理する</translation>
+<translation id="8751034568832412184">学校</translation>
 <translation id="8752451679755290210">アイテム間を自動的に移動する</translation>
 <translation id="8753948258138515839">ファイルアプリを使えば、Google ドライブ、外部ストレージ、ChromeOS Flex デバイスに保存したファイルにすぐにアクセスできます。</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;
@@ -10058,7 +10056,6 @@
 <translation id="8808478386290700967">ウェブストア</translation>
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8809147117840417135">明るい青緑</translation>
-<translation id="881049307637003105"><ph name="DEVICE_NAME" /> の追加ボタンをクリックすると、ボタンを追加したり見つけたりできます。</translation>
 <translation id="8811862054141704416">Crostini のマイクへのアクセス</translation>
 <translation id="8811923271770626905">この拡張機能はバックグラウンドで実行可能です</translation>
 <translation id="8812593354822910461">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、<ph name="DOMAIN" /> からログアウトします。<ph name="LEARN_MORE" /></translation>

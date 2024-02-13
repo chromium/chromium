@@ -2845,7 +2845,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3132277757485842847">Nepodarilo sa udržať pripojenie k vášmu telefónu. Uistite sa, že je telefón nablízku, odomknutý a má zapnuté rozhranie Bluetooth a pripojenie Wi‑Fi.</translation>
 <translation id="3132896062549112541">Pravidlo</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
-<translation id="3133184011320864289">Zapnite synchronizáciu, aby mohol Chrome navrhovať skupiny kariet a usporadúvať vaše karty</translation>
 <translation id="3134393957315651797">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />. Popis experimentu: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3139925690611372679">Predvolený žltý avatar</translation>
 <translation id="3141093262818886744">Otvoriť aj tak</translation>
@@ -9105,7 +9104,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8052218774860457016">Správa synchronizácie prehliadača</translation>
 <translation id="8053278772142718589">Súbory PKCS #12</translation>
 <translation id="8053390638574070785">Obnoviť túto stránku</translation>
-<translation id="8053629544194355894">Zapnite synchronizáciu, aby mohol Chrome navrhovať skupiny kariet</translation>
 <translation id="8054517699425078995">Tento typ súboru môže poškodiť vaše zariadenie. Chcete súbor <ph name="FILE_NAME" /> aj napriek tomu zachovať?</translation>
 <translation id="8054563304616131773">Zadajte platnú e-mailovú adresu</translation>
 <translation id="8054609631325628928">Pomocou týchto čísel je možné aktivovať službu</translation>
@@ -9420,7 +9418,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8293206222192510085">Pridať záložku</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8294476140219241086">Nástroj na usporiadanie kariet</translation>
-<translation id="8294895455164415895">Otvorte nastavenia a umožnite Chromu navrhovať skupiny kariet</translation>
 <translation id="8295449579927246485">Okamžitý preklad</translation>
 <translation id="8295450130892483256">Inštalácia súpravy Microsoft 365</translation>
 <translation id="8297292446125062288">Nastavenia zariadenia s ľudským rozhraním</translation>
@@ -9573,7 +9570,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">celá obrazovka</translation>
 <translation id="8412136526970428322">Je aktivované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
-<translation id="8412682423093430245">Zapnite v Nastaveniach synchronizáciu histórie, aby mohol Chrome navrhovať skupiny kariet a udržiavať karty usporiadané</translation>
 <translation id="8413795581997394485">Chráni pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami. Keď navštívite určitý web, Chrome odošle Googlu znejasnenú časť webovej adresy prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>
 <translation id="8413956290606243087">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS?</translation>
 <translation id="8414249071344507766">Spomienky skryté dva dni</translation>
@@ -9603,7 +9599,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8431190899827883166">Zobrazovanie klepnutí</translation>
 <translation id="8433186206711564395">Nastavenia siete</translation>
 <translation id="8434480141477525001">Port ladenia klienta NaCl</translation>
-<translation id="8436054240208929121">Prihláste sa a zapnite synchronizáciu, aby mohol Chrome navrhovať skupiny kariet a usporadúvať vaše karty</translation>
 <translation id="8437209419043462667">Americká klávesnica</translation>
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
 <translation id="8439506636278576865">Ponúkať preklad stránok v tomto jazyku</translation>
@@ -10082,7 +10077,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8809147117840417135">Svetlá modrozelená</translation>
-<translation id="881049307637003105">Kliknutím na ďalšie tlačidlá v zariadení <ph name="DEVICE_NAME" /> pridajte alebo vyhľadajte tlačidlá.</translation>
 <translation id="8811862054141704416">Prístup k mikrofónu v systéme Crostini</translation>
 <translation id="8811923271770626905">Toto rozšírenie môže byť spustené na pozadí</translation>
 <translation id="8812593354822910461">Vymazať tiež dáta prehliadania (<ph name="URL" />), po čom vás systém odhlási z domény <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

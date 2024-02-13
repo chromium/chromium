@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="132346741904777634">Окно предварительного просмотра камеры привязано к левому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
+<translation id="132415371743256095">Закрыть стол "<ph name="DESK_NAME" />" и окна в нем</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1340378040547539434">Уменьшить масштаб страницы</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
 <translation id="240006516586367791">Управление медиаконтентом</translation>
 <translation id="2402411679569069051">Чтобы разблокировать Chromebook, используйте отпечаток пальца или разблокируйте телефон.</translation>
+<translation id="240545663114741956">Чтобы выйти, нажмите дважды <ph name="ACCELERATOR" /></translation>
 <translation id="2405664212338326887">Не подключено</translation>
 <translation id="2408955596600435184">Введите PIN-код</translation>
 <translation id="2412593942846481727">Доступно обновление</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">Установить приложение</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
+<translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="2487915095798731898">Присоединиться</translation>
+<translation id="250047928202119308">Меню профиля рабочего стола</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2504454902900101003">Не настраивать просмотр недавних фотографий, медиафайлов и уведомлений с телефона</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
@@ -905,6 +909,7 @@
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
 <translation id="4644727592819780893">Область для изображения с камеры слишком маленькая.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок установлен.</translation>
 <translation id="4657775630156561295">Эта подсказка будет навсегда удалена из истории вашего аккаунта:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@
 <translation id="5111930673176965299">Размытие фона</translation>
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5121628974188116412">Перейти к нижней части экрана</translation>
+<translation id="5122517996953421795">Предпросмотр неактивного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>
 <translation id="5150070631291639005">Настройки конфиденциальности</translation>
@@ -1168,7 +1174,7 @@
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
 <translation id="5675363643668471212">Объект на панели запуска</translation>
-<translation id="5677928146339483299">Заблокировано</translation>
+<translation id="5677928146339483299">Заблокированы</translation>
 <translation id="5678564054339031017">Показать следующую неделю</translation>
 <translation id="5679050765726761783">Подключен маломощный адаптер питания</translation>
 <translation id="5682642926269496722">Google Ассистент недоступен в этом аккаунте.</translation>
@@ -1431,6 +1437,7 @@
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6686023075541098243">Настроить просмотр уведомлений с телефона</translation>
 <translation id="6696025732084565524">Необходимо обновить внешнюю клавиатуру</translation>
+<translation id="6697913454192220372">Добавить рабочий стол</translation>
 <translation id="6700713906295497288">Кнопка меню редактора методов ввода</translation>
 <translation id="6707693040195709527">Срок возврата к предыдущей версии ОС истек</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1562,6 +1569,7 @@
 <translation id="7262906531272962081">Создать напоминание</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">Чтобы сделать скриншот, воспользуйтесь инструментом записи экрана в быстрых настройках.</translation>
+<translation id="7301826272005790482">Закрыть рекомендации окон</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>
 <translation id="8079538659226626406">Демонстрация экрана</translation>
 <translation id="8083540854303889870">Сохранено</translation>
+<translation id="8088141034189573826">Чтобы посмотреть другие параметры, нажмите клавишу Tab. Для перемещения между рабочими столами используйте стрелки влево и вправо.</translation>
 <translation id="8091153018031979607">Начало: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматическое обновление</translation>
 <translation id="8092380135549145188">Элементы управления прокруткой</translation>
@@ -1965,6 +1974,7 @@
 <translation id="8936501819958976551">отключила</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок не установлен.</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>
 <translation id="8964525410783593407">1 час</translation>

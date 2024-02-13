@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Megszakítva</translation>
 <translation id="1020274983236703756">Exkluzív <ph name="PRODUCT_NAME" />-elemek váltak hozzáférhetővé</translation>
 <translation id="1022628058306505708">A Föld mozgása</translation>
+<translation id="1026212596705997935">A billentyűparancs már használatban van a következőhöz: „<ph name="CONFLICT_ACCEL_NAME" />”. Nyomjon meg egy új billentyűparancsot. A meglévő billentyűparancs lecseréléséhez nyomja meg újra ezt a billentyűparancsot.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1049663189809099096">pasztellsárga</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
 <translation id="2407209115954268704">SIM-zárolás állapota</translation>
 <translation id="241419523391571119">A teszteléshez nyissa fel újra a fedelet</translation>
+<translation id="2414660853550118611">A háttérképről</translation>
 <translation id="2414886740292270097">Sötét</translation>
 <translation id="2418150275289244458">Megnyitás a Beállításokban</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" />. oldalon lévő kép</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Létrehozás dátuma: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
 <translation id="6196607555925437199">Újbóli létrehozás</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Képernyővédő bekapcsolása</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
+<translation id="6327262166342360252">Ezt a háttérképet AI hozta létre a következő szöveg alapján: „<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatikus sötét téma</translation>
 <translation id="6340526405444716530">Személyre szabás</translation>
 <translation id="6348738456043757611">Felhasználónév és jelszó</translation>

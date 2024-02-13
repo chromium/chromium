@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">यह साइट एचटीटीपीएस पर काम नहीं करती, इसलिए आपको यह चेतावनी दिख रही है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">सेल्फ़-ऐधीसिव फ़िल्म</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
+<translation id="1431021750861456539">फ़ुलस्क्रीन अपने-आप चालू होने की सेटिंग</translation>
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1433225466058025572">अपनी फ़ाइलें फिर से मूव करने की कोशिश करें</translation>
@@ -1921,7 +1922,6 @@
 <translation id="4757022425116568383">आपकी Chrome प्रोफ़ाइल की पासकी</translation>
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
-<translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4761326898079498987">ज़्यादा जानकारी के लिए समीक्षा करें</translation>
 <translation id="4761869838909035636">Chrome की सुरक्षा जांच करें</translation>
 <translation id="4763196677855776703"><ph name="URL" /> के नियम और शर्तें</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     अपने सिस्टम एडमिन से संपर्क करने की कोशिश करें.</translation>
 <translation id="549333378215107354">आकार 3</translation>
+<translation id="5501712702042287009">फ़ुलस्क्रीन अपने-आप चालू होने की सेटिंग</translation>
 <translation id="550365051221576010">सभी जानकारी भरें</translation>
 <translation id="5509762909502811065">बी0</translation>
 <translation id="5509780412636533143">मैनेज किए गए बुकमार्क</translation>
@@ -4151,7 +4152,6 @@
 <translation id="9148507642005240123">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="9148599396704355100">कीमत कम है</translation>
 <translation id="9150025764986957246">इसमें इस तरह की चीज़ें डाली जा सकती हैं:</translation>
-<translation id="9150045010208374699">अपना कैमरा उपयोग करें</translation>
 <translation id="9150685862434908345">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेटअप बदल सकता है. इस डिवाइस की गतिविधि को Chrome के बाहर से भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">अपडेट किया गया</translation>
 <translation id="9155211586651734179">सहायक ऑडियो डिवाइस अटैच किए गए</translation>

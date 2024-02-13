@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
+<translation id="1026212596705997935">शॉर्टकट हा "<ph name="CONFLICT_ACCEL_NAME" />" साठी वापरला जात आहे. नवीन शॉर्टकट प्रेस करा. विद्यमान शॉर्टकट बदलण्यासाठी, हा शॉर्टकट पुन्हा प्रेस करा.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1049663189809099096">पेस्टल पिवळे</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2407209115954268704">सिम लॉक स्टेटस</translation>
 <translation id="241419523391571119">चाचणी करण्यासाठी लिड पुन्हा उघडा</translation>
+<translation id="2414660853550118611">वॉलपेपरबद्दल</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /> ची इमेज</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319"><ph name="DATE" /> रोजी तयार केला</translation>
 <translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
 <translation id="6196607555925437199">पुन्हा तयार करा</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="6324916366299863871">शॉर्टकट संपादित करा</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
+<translation id="6327262166342360252">हा वॉलपेपर AI सह खालील मजकूर वापरून तयार केला आहे: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ऑटोमॅटिक गडद थीम</translation>
 <translation id="6340526405444716530">पर्सनलायझेशन</translation>
 <translation id="6348738456043757611">वापरकर्ता नाव आणि पासवर्ड</translation>

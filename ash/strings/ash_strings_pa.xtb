@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ਹਮੇਸ਼ਾਂ ਸ਼ੈਲਫ਼ ਦਿਖਾਓ</translation>
 <translation id="132346741904777634">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="1340378040547539434">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="1341651618736211726">ਓਵਰਫ਼ਲੋ</translation>
@@ -328,9 +329,11 @@
 <translation id="2369165858548251131">ਚੀਨੀ ਭਾਸ਼ਾ ਵਿੱਚ "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</translation>
 <translation id="2382875860893882175">ਕਾਸਟ ਕਰਨਾ ਫ਼ਿਲਹਾਲ ਰੋਕਿਆ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2386292613071805067">ਪੰਨੇ 'ਤੇ ਸਭ ਕੁਝ ਚੁਣੋ</translation>
+<translation id="2392659840443812875">ਕੋਈ ਹੌਟਸਪੌਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਨਜ਼ਦੀਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="2397416548179033562">Chrome ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="240006516586367791">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
 <translation id="2402411679569069051">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="240545663114741956">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ <ph name="ACCELERATOR" /> ਨੂੰ ਦੋ ਵਾਰ ਦਬਾਓ।</translation>
 <translation id="2405664212338326887">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
@@ -352,7 +355,9 @@
 <translation id="2478076885740497414">ਐਪ ਇੰਸਟੌਲ ਕਰੋ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="2487915095798731898">ਸ਼ਾਮਲ ਹੋਵੋ</translation>
+<translation id="250047928202119308">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ</translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
 <translation id="2504454902900101003">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="2509468283778169019">CAPS LOCK ਔਨ ਹੈ</translation>
@@ -905,6 +910,7 @@
 <translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="4644727592819780893">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਫਿੱਟ ਆਉਣ ਲਈ ਇਲਾਕਾ ਬਹੁਤ ਛੋਟਾ ਹੈ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ਐਪ ਸਿਫ਼ਾਰਸ਼</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ਚੈੱਕ-ਬਾਕਸ 'ਤੇ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="4657775630156561295">ਅੱਗੇ ਦਿੱਤੇ ਸੁਝਾਅ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸੁਝਾਅ ਇਤਿਹਾਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1038,7 @@
 <translation id="5111930673176965299">ਧੁੰਦਲਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="5121628974188116412">ਪੰਨੇ ਦੇ ਹੇਠਾਂ ਜਾਓ</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਅਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5147567197700016471">Chromebook ਅਣਲਾਕ ਹੋ ਗਈ</translation>
 <translation id="5150070631291639005">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ</translation>
@@ -1079,6 +1086,7 @@
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5314219114274263156">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
 <translation id="5314489738835854379">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਪਿੱਛੇ ਜਾਓ</translation>
+<translation id="5315931444962548795">ਨਜ਼ਦੀਕੀ ਉਪਲਬਧ ਹੌਟਸਪੌਟਾਂ ਨੂੰ ਖੋਜਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5316716239522500219">ਮਿਰਰ ਮਾਨੀਟਰਸ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319712128756744240">ਨਵਾਂ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
@@ -1432,6 +1440,7 @@
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
 <translation id="6686023075541098243">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="6696025732084565524">ਤੁਹਾਡੇ ਵੱਖ ਹੋਣਯੋਗ ਕੀ-ਬੋਰਡ ਨੂੰ ਅਤਿ ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="6697913454192220372">ਨਵਾਂ ਡੈਸਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6700713906295497288">IME ਮੀਨੂ ਬਟਨ</translation>
 <translation id="6707693040195709527">ਡੀਵਾਈਸ ਦੀ ਪਿਛਲੇ ਵਰਜਨ ਵਿੱਚ ਤਬਦੀਲੀ ਦੀ ਮਿਆਦ ਲੰਘ ਗਈ ਹੈ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
@@ -1563,6 +1572,7 @@
 <translation id="7262906531272962081">ਯਾਦ-ਸੂਚਨਾ ਬਣਾਓ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਟੂਲ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
+<translation id="7301826272005790482">ਵਿੰਡੋ ਸੰਬੰਧੀ ਸੁਝਾਵਾਂ ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7302889331339392448">ਲਾਈਵ ਸੁਰਖੀਆਂ ਬੰਦ ਹਨ।</translation>
 <translation id="7303365578352795231">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਜਵਾਬ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1769,6 +1779,7 @@
 <translation id="8054466585765276473">ਬੈਟਰੀ ਸਮੇਂ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8079538659226626406">ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ</translation>
 <translation id="8083540854303889870">ਬਾਅਦ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8088141034189573826">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਟੈਬ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਸਾਰੇ ਡੈਸਕਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਖੱਬੇ ਅਤੇ ਸੱਜੇ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> ਵਜੇ ਸ਼ੁਰੂ ਹੋਵੇਗਾ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ</translation>
 <translation id="8092380135549145188">ਸਕ੍ਰੋਲ ਕੰਟਰੋਲ</translation>
@@ -1966,6 +1977,7 @@
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>
 <translation id="8940956008527784070">ਬੈਟਰੀ ਘੱਟ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ਚੈੱਕ-ਬਾਕਸ 'ਤੇ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="8949925099261528566">ਕਨੈਕਟ ਕੀਤਾ, ਕੋਈ ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
 <translation id="8951539504029375108">ਸਿਰਫ਼ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਥੰਡਰਬੋਲਟ ਡੀਵਾਈਸ ਹੀ ਤੁਹਾਡੀ Chromebook ਦੇ ਅਨੁਰੂਪ ਹਨ</translation>
 <translation id="8964525410783593407">1 ਘੰ.</translation>

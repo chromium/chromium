@@ -3,10 +3,13 @@
 <translationbundle lang="or">
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1155815720264022949">ପୁରୁଣା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି?</translation>
+<translation id="1197088940767939838">କମଳା</translation>
 <translation id="1215127405478249895">ଟାବଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1326271443836399892">ବର୍ତ୍ତମାନର ଡିକ୍ଲଟର ସେଟିଂସକୁ ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
+<translation id="1555130319947370107">ନୀଳ</translation>
+<translation id="161042844686301425">ସାୟାନ୍</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର}}</translation>
 <translation id="3996880007329611795">ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଲାଗୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
+<translation id="4159784952369912983">ବାଇଗଣୀ</translation>
 <translation id="4212246570487010370">ବ୍ରାଉଜ୍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="427987768447457592">ନୂଆ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4648718555153979859">ଆପଣଙ୍କର ଟାବ୍‌ଗୁଡ଼ିକ, ଏଠାରେ ଏକାଠି କରାଯାଇଛି</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">ଟାଇଟେଲ୍ ଆବଶ୍ୟକ</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{ଆପଣ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିନଥିବା <ph name="TABS_COUNT_ONE" /> ଟାବ ଆପଣଙ୍କ ପାଖରେ ଅଛି}other{ଆପଣ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିନଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ ଆପଣଙ୍କ ପାଖରେ ଅଛି}}</translation>
 <translation id="5339733443032484186">ଆପଣଙ୍କ ଗତ ଟାବ</translation>
+<translation id="5400836586163650660">ଧୂସର</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5545379293264651575">ସମୀକ୍ଷା ନକରି ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ଆଲର୍ଟ ପାଇବେ?</translation>
 <translation id="58326064309361797">ସେଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ ଟାବ୍‌ଗୁଡ଼ିକୁ ଟାଣନ୍ତୁ</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା <ph name="TITLE_OF_GROUP" /> ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5972844218283131174">ସମସ୍ତ ଅଚୟନ କରନ୍ତୁ</translation>
+<translation id="6017514345406065928">ସବୁଜ</translation>
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_ONE" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}other{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_MANY" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7885132941432959125">ଟାବ୍‍କୁ ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
+<translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7966321538264951561">ପ୍ରସ୍ତାବଗୁଡ଼ିକୁ ଖାରଜ କରନ୍ତୁ।</translation>
 <translation id="8029301326595421733">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">ଗୋଷ୍ଠୀରେ ନୂଆ ଟାବ୍‍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="955558140275419384">ଏହି ଏଡିଟରକୁ ଯାଇ ଡିକ୍ଲଟର ପାଇଁ ଥିବା ସମସ୍ତ ଆର୍କାଇଭ ଟାବର ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="959682366969460160">ସଂଗଠିତ କରନ୍ତୁ</translation>
+<translation id="992256792861109788">ଗୋଲାପି</translation>
 </translationbundle>

@@ -171,6 +171,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1296930489679394997">Sprzedaż</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Sprawdź ustawienia bezpiecznego DNS</translation>
+<translation id="1302418742166945866"><ph name="URL" /> chce sterować urządzeniami MIDI i je przeprogramowywać</translation>
 <translation id="1307966114820526988">Funkcje wycofane</translation>
 <translation id="1308113895091915999">Dostępna oferta</translation>
 <translation id="1309375166585231290">Twoi rodzice nie potwierdzili jeszcze, że wszystko w porządku</translation>
@@ -574,6 +575,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2056658168519009885">Witryny mogą prosić Chrome o informacje umożliwiające personalizację wyświetlanych Ci reklam.</translation>
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2059202684901022309">22 x 34 cale</translation>
+<translation id="2062723461792528824">obowiązują warunki</translation>
 <translation id="2064568741209980952">Kredyty i pożyczki</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}many{# podpowiedzi}other{# podpowiedzi}}</translation>
 <translation id="2066915425250589881">poprosić o ich usunięcie</translation>
@@ -1292,6 +1294,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3515972145999192222">Twoja organizacja zablokowała domenę <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ narusza ona zasady. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Obsługa wielu obiektów</translation>
 <translation id="3525130752944427905">10 x 14 cali</translation>
+<translation id="3525435918300186947">Sterować urządzeniami MIDI i je przeprogramowywać?</translation>
 <translation id="3528171143076753409">Certyfikat serwera nie jest zaufany.</translation>
 <translation id="3528485271872257980">Ciemnobrązowy</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Co najmniej 1 element na synchronizowanych urządzeniach}=1{1 element (i więcej na synchronizowanych urządzeniach)}few{# elementy (i więcej na synchronizowanych urządzeniach)}many{# elementów (i więcej na synchronizowanych urządzeniach)}other{# elementu (i więcej na synchronizowanych urządzeniach)}}</translation>
@@ -1576,7 +1579,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4089152113577680600">Taca 14</translation>
 <translation id="4092349052316400070">Uzupełnij adres</translation>
 <translation id="4096237801206588987">11 x 15 cali</translation>
-<translation id="4098306082496067348">Kliknij dane karty wirtualnej, aby dodać je do płatności.</translation>
+<translation id="4098306082496067348">Kliknij dane karty wirtualnej, aby dodać je podczas płatności.</translation>
 <translation id="4098354747657067197">Wchodzisz na stronę wprowadzającą w błąd</translation>
 <translation id="4099048595830172239">Zgodnie z zasadą administratora nie zaleca się udostępniania ekranu za pomocą aplikacji <ph name="APPLICATION_TITLE" />, gdy są widoczne treści poufne:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby dostosować rozmiary i kroje czcionek w Chrome, naciśnij Tab, a potem Enter</translation>
@@ -1922,7 +1925,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4757022425116568383">Klucz dostępu z profilu Chrome</translation>
 <translation id="4757993714154412917">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chromium zaleca sprawdzenie zapisanych haseł.</translation>
 <translation id="4758311279753947758">Dodaj dane kontaktowe</translation>
-<translation id="4761104368405085019">Korzystanie z Twojego mikrofonu</translation>
 <translation id="4761326898079498987">Sprawdź, aby uzyskać więcej informacji</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
 <translation id="4763196677855776703">Warunki korzystania z usługi udostępnione przez <ph name="URL" /></translation>
@@ -2404,6 +2406,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723287205918986743">Przemysł zbrojeniowy</translation>
+<translation id="5723873695528696965">Sterować urządzeniami MIDI i je przeprogramowywać</translation>
 <translation id="5725297205162868298">Skrót nie może zaczynać się od znaku @: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="5730040223043577876">Chrome zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
 <translation id="5732392974455271431">Mogą ją dla Ciebie odblokować Twoi rodzice</translation>
@@ -2510,6 +2513,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5953516610448771166">Dla tej treści multimedialnej napisy na żywo nie są dostępne. Aby wyświetlać napisy, zablokuj w tej witrynie <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5955063559762970069">Hotele i noclegi</translation>
 <translation id="595873925609605681">Jeśli funkcje w witrynie nie działają, <ph name="BEGIN_LINK" />tymczasowo zezwól na używanie plików cookie innych firm<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Weryfikacja</translation>
 <translation id="5963413905009737549">Sekcja</translation>
 <translation id="5964247741333118902">Umieszczona treść</translation>
 <translation id="5967260682280773804">36 x 48 cali</translation>
@@ -3463,6 +3467,7 @@ Dodatkowe informacje:
 <translation id="7755287808199759310">Może ją dla Ciebie odblokować Twój rodzic</translation>
 <translation id="7755624218968747854">Rolka główna</translation>
 <translation id="7758069387465995638">Połączenie mogło zostać zablokowane przez zaporę sieciową lub program antywirusowy.</translation>
+<translation id="7759147511335618829">Urządzenia MIDI: sterowanie/przeprogramowywanie</translation>
 <translation id="7759809451544302770">Opcjonalne</translation>
 <translation id="7760497246331667482">Muzyka karaibska i reggae</translation>
 <translation id="776110834126722255">Wycofane</translation>
@@ -3634,6 +3639,7 @@ Dodatkowe informacje:
 <translation id="8103161714697287722">Forma płatności</translation>
 <translation id="8103643211515685474">Drukuj mimo to</translation>
 <translation id="8105368624971345109">Wyłącz</translation>
+<translation id="8107664017913103177">Dostępne korzyści z karty</translation>
 <translation id="810875025413331850">Nie znaleziono żadnych urządzeń w pobliżu.</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8118489163946903409">Forma płatności</translation>
@@ -4151,7 +4157,6 @@ Dodatkowe informacje:
 <translation id="9148507642005240123">&amp;Cofnij edycję</translation>
 <translation id="9148599396704355100">Cena jest niska</translation>
 <translation id="9150025764986957246">Możesz na przykład wpisać:</translation>
-<translation id="9150045010208374699">Korzystanie z Twojej kamery</translation>
 <translation id="9150685862434908345">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>
 <translation id="9155211586651734179">Podłączone urządzenia peryferyjne audio</translation>

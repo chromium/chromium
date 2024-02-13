@@ -2840,7 +2840,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132896062549112541">Regla</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
-<translation id="3133184011320864289">Activa la sincronización para que Chrome te sugiera grupos de pestañas y las mantenga organizadas</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
@@ -3903,6 +3902,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3957844511978444971">Presiona "Aceptar" para confirmar la selección de esta configuración de los servicios de Google.</translation>
 <translation id="3958088479270651626">Importar favoritos y configuración</translation>
 <translation id="3958110062351175311">Puede mostrar solicitudes en la barra de herramientas</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> ya se instaló.</translation>
 <translation id="3959747296451923142">Confirmar la eliminación de la suscripción</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Más acciones para <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6532,6 +6532,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
 <translation id="6066794465984119824">No se estableció un hash de imagen</translation>
 <translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
+<translation id="6069500411969514374">Trabajo</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
 <translation id="6071576563962215370">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="6071938745001252305">Ahorro de memoria: <ph name="MEMORY_VALUE" /></translation>
@@ -9095,7 +9096,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8052218774860457016">Administra la sincronización del navegador</translation>
 <translation id="8053278772142718589">Archivos PKCS #12</translation>
 <translation id="8053390638574070785">Volver a cargar esta página</translation>
-<translation id="8053629544194355894">Activar la sincronización para permitir que Chrome sugiera grupos de pestañas</translation>
 <translation id="8054517699425078995">Este tipo de archivo puede dañar tu dispositivo. ¿Quieres descargar <ph name="FILE_NAME" /> de todas formas?</translation>
 <translation id="8054563304616131773">Ingresa una dirección de correo electrónico válida.</translation>
 <translation id="8054609631325628928">Estos números se pueden usar para activar el servicio</translation>
@@ -9410,7 +9410,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8293206222192510085">Agregar Marcador</translation>
 <translation id="8294431847097064396">Fuente</translation>
 <translation id="8294476140219241086">Organizador de pestañas</translation>
-<translation id="8294895455164415895">Abrir la configuración para permitir que Chrome sugiera grupos de pestañas</translation>
 <translation id="8295449579927246485">Traducción instantánea</translation>
 <translation id="8295450130892483256">Instalar Microsoft 365</translation>
 <translation id="8297292446125062288">Configuración de HID</translation>
@@ -9563,7 +9562,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Permisos habilitados: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
-<translation id="8412682423093430245">Activa la sincronización del Historial en Configuración para permitir que Chrome te sugiera grupos de pestañas y las mantenga organizadas</translation>
 <translation id="8413795581997394485">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>
 <translation id="8413956290606243087">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS?</translation>
 <translation id="8414249071344507766">Se ocultaron los recuerdos por dos días</translation>
@@ -9593,7 +9591,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8431190899827883166">Mostrar presiones</translation>
 <translation id="8433186206711564395">Opciones de red</translation>
 <translation id="8434480141477525001">Puerto de depuración NaCl</translation>
-<translation id="8436054240208929121">Accede y activa la sincronización para que Chrome te sugiera grupos de pestañas y las mantenga organizadas</translation>
 <translation id="8437209419043462667">Inglés (Estados Unidos)</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
 <translation id="8439506636278576865">Ofrecer la traducción de páginas en este idioma</translation>
@@ -10003,6 +10000,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quiere conectarse a un puerto en serie</translation>
 <translation id="8750346984209549530">APN de la red móvil</translation>
 <translation id="8750786237117206586">Administrar la configuración de audio de ChromeOS Flex</translation>
+<translation id="8751034568832412184">Institución educativa</translation>
 <translation id="8752451679755290210">Pasar de un elemento a otro de forma automática</translation>
 <translation id="8753948258138515839">La aplicación Archivos brinda acceso rápido a los archivos que hayas guardado en Google Drive, el almacenamiento externo o el dispositivo ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Al ejecutar <ph name="PRODUCT_NAME" /> en un entorno admitido de escritorio, se utiliza la configuración proxy del sistema. Sin embargo, o bien el sistema no es admitido, o hubo un problema al lanzar la configuración del sistema.&lt;/p&gt;
@@ -10069,7 +10067,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8808478386290700967">Tienda virtual</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8809147117840417135">Verde azulado claro</translation>
-<translation id="881049307637003105">Haz clic en los botones adicionales de tu <ph name="DEVICE_NAME" /> para agregar o ubicar botones.</translation>
 <translation id="8811862054141704416">Acceso al micrófono en Crostini</translation>
 <translation id="8811923271770626905">Es posible que esta extensión se ejecute en segundo plano</translation>
 <translation id="8812593354822910461">Borrar también los datos de navegación (<ph name="URL" />), lo que implicará salir de <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

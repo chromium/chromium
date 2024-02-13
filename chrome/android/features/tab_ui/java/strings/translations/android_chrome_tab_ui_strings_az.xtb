@@ -3,10 +3,13 @@
 <translationbundle lang="az">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
 <translation id="1155815720264022949">Köhnə tabları bağlamaq istəyirsiniz?</translation>
+<translation id="1197088940767939838">Narıncı</translation>
 <translation id="1215127405478249895">Tabları nəzərdən keçirin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1326271443836399892">Cari silmə ayarlarına baxın.</translation>
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
+<translation id="1555130319947370107">Mavi</translation>
+<translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> taba əlfəcin əlavə edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> taba əlfəcin əlavə edin}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tabı qruplaşdırın}other{Tabları qruplaşdırın}}</translation>
 <translation id="3996880007329611795">Bildiriş alın</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
+<translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
 <translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4648718555153979859">Tablar burada qruplaşdırılır</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_ONE" /> tab var}other{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
 <translation id="5339733443032484186">Son tab</translation>
+<translation id="5400836586163650660">Boz</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5545379293264651575">Nəzərdən keçirmədən bağlayın</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Qiymət endirimləri üçün xəbərdarlıq alınsın?</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın</translation>
+<translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
+<translation id="6017514345406065928">Yaşıl</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6228793724645064692">(mağaza reytinqi)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qruplaşdırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qruplaşdırın}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_ONE" /> rəy}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>
 <translation id="7885132941432959125">Tabı sağa daşıyın</translation>
+<translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7966321538264951561">Təkliflərdən imtina edin.</translation>
 <translation id="8029301326595421733">Bu mağaza haqqında məlumatlar tam hündürlükdə açılıb</translation>
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="955558140275419384">Bu redaktora daxil olmaqla silinməsi lazım olan arxivə atılmış tablara baxın.</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>
+<translation id="992256792861109788">Çəhrayı</translation>
 </translationbundle>

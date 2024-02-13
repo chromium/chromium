@@ -100,6 +100,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1312604459020188865">Jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Uvek prikazuj policu</translation>
 <translation id="132346741904777634">Kamera je uklopljena u gornji levi ugao Neusaglašenost sa površinom sistema.</translation>
+<translation id="132415371743256095">Zatvorite <ph name="DESK_NAME" /> i prozore</translation>
 <translation id="1333308631814936910">Povezanih: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Umanji stranicu</translation>
 <translation id="1341651618736211726">Prekoračenje</translation>
@@ -328,9 +329,11 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2369165858548251131">„Zdravo“ na kineskom</translation>
 <translation id="2382875860893882175">Prebacivanje je trenutno pauzirano. Možete da nastavite sa prebacivanjem ili da zaustavite prebacivanje u svakom trenutku.</translation>
 <translation id="2386292613071805067">Izaberi sve na stranici</translation>
+<translation id="2392659840443812875">Nema dostupnog hotspota. Uverite se da je uređaj u blizini i da je Bluetooth uključen.</translation>
 <translation id="2397416548179033562">Prikaz Chrome menija</translation>
 <translation id="240006516586367791">Kontrole medija</translation>
 <translation id="2402411679569069051">Da biste otključali Chromebook, koristite otisak prsta ili otključajte telefon</translation>
+<translation id="240545663114741956">Pritisnite <ph name="ACCELERATOR" /> dvaput da biste se odjavili.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
@@ -352,7 +355,9 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2478076885740497414">Instaliraj aplikaciju</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
+<translation id="2486214324139475545">Pregled radne površine <ph name="DESK_NAME" />. Aktivna radna površina.</translation>
 <translation id="2487915095798731898">Pridruži me</translation>
+<translation id="250047928202119308">Meni za profil na radnoj površini</translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
 <translation id="2504454902900101003">Odbacite podešavanje pregleda nedavnih slika, medija i obaveštenja na telefonu</translation>
 <translation id="2509468283778169019">CAPS LOCK je uključen</translation>
@@ -906,6 +911,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4644727592819780893">Region je premali da bi stala kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
+<translation id="4654916960643280876">Izbor je potvrđen u polju za potvrdu <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="4657775630156561295">Sledeći predlog će biti trajno uklonjen iz istorije predloga naloga:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1038,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5111930673176965299">Zamagljena pozadina</translation>
 <translation id="5117590920725113268">Prikaži sledeći mesec</translation>
 <translation id="5121628974188116412">Idite na dno stranice</translation>
+<translation id="5122517996953421795">Pregled radne površine <ph name="DESK_NAME" />. Neaktivna radna površina.</translation>
 <translation id="5136175204352732067">Neka druga tastatura je povezana</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Podešavanja privatnosti</translation>
@@ -1079,6 +1086,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5313326810920013265">Podešavanja Bluetooth-a</translation>
 <translation id="5314219114274263156">Ekran je snimljen</translation>
 <translation id="5314489738835854379">Kretanje kroz prozore unazad</translation>
+<translation id="5315931444962548795">Uključite Bluetooth da biste otkrili dostupne hotspotove u blizini</translation>
 <translation id="5316716239522500219">Preslikavanje monitora</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319712128756744240">Uparite novi uređaj</translation>
@@ -1432,6 +1440,7 @@ Novo instaliranje</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6686023075541098243">Podesite pregled obaveštenja na telefonu</translation>
 <translation id="6696025732084565524">Treba da instalirate važno ažuriranje za odvojivu tastaturu</translation>
+<translation id="6697913454192220372">Dodajte novu radnu površinu</translation>
 <translation id="6700713906295497288">Dugme IME menija</translation>
 <translation id="6707693040195709527">Rok za promenu verzije uređaja u prethodnu verziju je istekao</translation>
 <translation id="6710213216561001401">Prethodno</translation>
@@ -1564,6 +1573,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7262906531272962081">Napravi podsetnik</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Koristite alatku za snimanje ekrana u brzim podešavanjima da biste pravili snimke ekrana</translation>
+<translation id="7301826272005790482">Odbacite predloge prozora</translation>
 <translation id="7302889331339392448">Titl uživo je isključen.</translation>
 <translation id="7303365578352795231">Odgovor se daje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1770,6 +1780,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8054466585765276473">Izračunavanje vremena trajanja baterije.</translation>
 <translation id="8079538659226626406">Deljenje sadržaja ekrana</translation>
 <translation id="8083540854303889870">Sačuvano za kasnije</translation>
+<translation id="8088141034189573826">Koristite karticu za više opcija. Koristite strelice nalevo i nadesno da biste pristupali svim radnim površinama.</translation>
 <translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>
 <translation id="8092380135549145188">Kontrole za skrolovanje</translation>
@@ -1967,6 +1978,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Uređaj sa USB priključkom tipa C (zadnji desni port)</translation>
 <translation id="8940956008527784070">Baterija je skoro prazna (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">Izbor nije potvrđen u polju za potvrdu <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Veza je uspostavljena, nema interneta</translation>
 <translation id="8951539504029375108">Samo odobreni Thunderbolt uređaji su kompatibilni sa vašim Chromebook-om</translation>
 <translation id="8964525410783593407">1 s</translation>

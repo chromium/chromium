@@ -3,10 +3,13 @@
 <translationbundle lang="tr">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
 <translation id="1155815720264022949">Eski sekmeleri kapatmak ister misiniz?</translation>
+<translation id="1197088940767939838">Turuncu</translation>
 <translation id="1215127405478249895">Sekmeleri inceleyin</translation>
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
 <translation id="1326271443836399892">Mevcut dağınıklığı giderme ayarlarını inceleyin.</translation>
 <translation id="1499635324672558517">Tüm Gizli sekmeler kapatılsın mı?</translation>
+<translation id="1555130319947370107">Mavi</translation>
+<translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Sekmeyi grupla}other{Sekmeleri grupla}}</translation>
 <translation id="3996880007329611795">Haberdar olun</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
+<translation id="4159784952369912983">Mor</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_ONE" /> sekme var}other{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_MANY" /> sekme var}}</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
+<translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5545379293264651575">İncelemeden kapat</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Fiyat düşüşü uyarıları alınsın mı?</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat</translation>
+<translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
+<translation id="6017514345406065928">Yeşil</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruplandır}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruplandır}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_ONE" /> yorum}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan, <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7885132941432959125">Sekmeyi sağa taşı</translation>
+<translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7966321538264951561">Önerileri kapat.</translation>
 <translation id="8029301326595421733">Bu mağazayla ilgili bilgiler tam ekranda açıldı</translation>
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Gruba yeni sekme ekler</translation>
 <translation id="955558140275419384">Bu düzenleyiciye girerek arşivlenmiş tüm sekmeleri inceleyip dağınıklığı giderin.</translation>
 <translation id="959682366969460160">Organize çalışın</translation>
+<translation id="992256792861109788">Pembe</translation>
 </translationbundle>

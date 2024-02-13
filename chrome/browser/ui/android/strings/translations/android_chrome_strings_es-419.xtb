@@ -169,7 +169,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
-<translation id="1952172573699511566">Los sitios web mostrarán texto en tu idioma preferido, cuando sea posible.</translation>
 <translation id="1959679933317802873">En espera de contenido</translation>
 <translation id="1960290143419248813">Las actualizaciones de Chrome ya no son compatibles con esta versión de Android</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
@@ -204,6 +203,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2132122640199389833">Quitar todos los dispositivos vinculados</translation>
 <translation id="213279576345780926">Pestaña <ph name="TAB_TITLE" /> cerrada</translation>
 <translation id="2139186145475833000">Agregar a la pantalla principal</translation>
+<translation id="2139414603196655536">La actividad que realizas en las estadísticas de la página se guarda en tu Cuenta de Google. <ph name="BEGIN_LINK" />Más información para administrar estos datos<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Según tu uso</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">Este método de verificación no está disponible para este dispositivo. Elige una opción diferente en tu otro dispositivo.</translation>
@@ -1081,6 +1081,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Se agotó el temporizador de <ph name="FQDN" />. Volverá a empezar mañana.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Se guardó el favorito en <ph name="FOLDER_NAME" />. Solo se guarda en este dispositivo.}other{Se guardaron los favoritos en <ph name="FOLDER_NAME" />. Solo se guardan en este dispositivo.}}</translation>
 <translation id="6715020873764921614">¿Quieres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todos modos?</translation>
 <translation id="6719634564325948108">¿Quieres conectarte con un código QR?</translation>
 <translation id="6723740634201835758">En tu Cuenta de Google</translation>
@@ -1401,6 +1402,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8237871086242677046">Hoja inferior de las estadísticas de la página</translation>
 <translation id="8243077599929149377">Agrega tu nombre de usuario</translation>
 <translation id="8250920743982581267">Documentos</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Se guardó el favorito en <ph name="FOLDER_NAME" /> en tu cuenta, <ph name="ACCOUNT_EMAIL" />.}other{Se guardaron los favoritos en <ph name="FOLDER_NAME" /> en tu cuenta, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Los sitios solo pueden utilizar las cookies para ver tu actividad de navegación en su propio sitio.</translation>
 <translation id="8259179246279078674">Debido a que las páginas precargadas están encriptadas, Google no analizará el contenido de esas páginas. Los servidores de Google sabrán qué sitios se precargaron de forma privada. Esta información solo se usará para precargar las páginas y no se vincula a otra información de tu Cuenta de Google.</translation>
 <translation id="8260126382462817229">Intenta volver a acceder</translation>

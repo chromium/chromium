@@ -319,6 +319,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="123578888592755962">Disco cheo</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
 <translation id="1236009322878349843">Modificar teléfono</translation>
+<translation id="1238293488628890871">Queres cambiar de perfil?</translation>
 <translation id="1239594683407221485">Explora o contido do dispositivo na aplicación Ficheiros.</translation>
 <translation id="1239841552505950173">Iniciar aplicación</translation>
 <translation id="1240903469550363138">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />condicións de servizo<ph name="END_LINK2" /> deste sitio.</translation>
@@ -373,6 +374,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1277597051786235230">&amp;Buscar "<ph name="SEARCH_TERMS" />" en <ph name="SEARCH_ENGINE" /> nunha pestana nova</translation>
 <translation id="1278859221870828664">Revisar as aplicacións e os servizos de Google Play</translation>
 <translation id="127946606521051357">Dispositivo próximo compartindo contido</translation>
+<translation id="1280332775949918163">Axustar ventá</translation>
 <translation id="1280965841156951489">Editar ficheiros</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Non se pode abrir o ficheiro}other{Non se pode abrir o ficheiros}}</translation>
 <translation id="1282311502488501110">Non iniciar sesión</translation>
@@ -582,6 +584,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás aplicacións. Podes controlar os permisos correspondentes ás aplicacións para Android en <ph name="APPS_LINK_BEGIN" />Configuración das aplicacións<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
 <translation id="1449191289887455076">Preme de novo <ph name="CURRENTKEY" /> para confirmar a asignación e <ph name="RESPONSE" /></translation>
+<translation id="1450484535522155181">Abrir perfil de convidado</translation>
 <translation id="1451375123200651445">Páxina web (nun só ficheiro)</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />rexistros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">F&amp;acer captura de pantalla</translation>
@@ -606,6 +609,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1465827627707997754">Porción de pizza</translation>
 <translation id="1467005863208369884">Non se puido verificar o ficheiro porque a función Navegación segura está desactivada</translation>
 <translation id="1467432559032391204">Esquerda</translation>
+<translation id="1468368115497843240">Eliminaranse permanentemente deste dispositivo os datos de navegación e os escritorios gardados asociados a este perfil. Outras aplicacións do dispositivo (<ph name="DEVICE_TYPE" />) poden usar as Contas de Google deste perfil. Se queres quitar esas contas, vai a <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="1468571364034902819">Non se pode utilizar este perfil</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="1470350905258700113">Usar este dispositivo</translation>
@@ -782,6 +786,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1593926297800505364">Gardar o método de pago</translation>
 <translation id="1594703455918849716">Ir á páxina de revisión</translation>
 <translation id="1594781465361405478">Activar ou desactivar volume</translation>
+<translation id="1594963087419619323">Vista xeral da pantalla dividida</translation>
 <translation id="1595492813686795610">Estase actualizando Linux</translation>
 <translation id="1596286373007273895">Dispoñible</translation>
 <translation id="1596709061955594992">O Bluetooth está desactivado. Para ver os dispositivos dispoñibles, actívao.</translation>
@@ -921,6 +926,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="168991973552362966">Engadir unha impresora que estea cerca</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
+<translation id="1690068335127678634">Configuración da pantalla dividida</translation>
 <translation id="1692115862433274081">Utilizar outra conta</translation>
 <translation id="1692118695553449118">A sincronización está activada</translation>
 <translation id="1692210323591458290">Púrpura escuro</translation>
@@ -2836,7 +2842,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3132277757485842847">Non puidemos manter a conexión co teu teléfono. Asegúrate de que estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="3132896062549112541">Norma</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
-<translation id="3133184011320864289">Se activas a sincronización, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>
 <translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
@@ -3501,6 +3506,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3679126865530709868">Panel táctil integrado</translation>
 <translation id="368019053277764111">Abrir busca no panel lateral</translation>
 <translation id="3680683624079082902">Voz da conversión de texto a voz</translation>
+<translation id="3681017028939109078">Mostrar suxestións de ventás ao iniciar a pantalla dividida</translation>
 <translation id="3681311097828166361">Grazas polo teu comentario. Agora estás sen conexión, polo que o informe se enviará máis tarde.</translation>
 <translation id="3681548574519135185">Anel de enfoque</translation>
 <translation id="3683524264665795342">Solicitude para compartir a pantalla de <ph name="APP_NAME" /></translation>
@@ -3552,6 +3558,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3711931198657368127">Pegar e ir a <ph name="URL" /></translation>
 <translation id="3711945201266135623">Atopáronse <ph name="NUM_PRINTERS" /> impresoras no servidor de impresión</translation>
 <translation id="3712050472459130149">É necesario actualizar a conta</translation>
+<translation id="3712143870407382523">Escolle unha ventá para este lado</translation>
 <translation id="3712897371525859903">Gardar páxin&amp;a como...</translation>
 <translation id="371300529209814631">Atrás/Adiante</translation>
 <translation id="3713047097299026954">Esta chave de seguranza non ten datos de inicio de sesión</translation>
@@ -4359,6 +4366,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4333854382783149454">PKCS n.º 1 SHA-1 con cifrado RSA</translation>
 <translation id="4334768748331667190">Deixarás de ver <ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
+<translation id="4338363401382232853">Suxestións de ventás para a pantalla dividida</translation>
 <translation id="4339203724549370495">Desinstalar aplicación</translation>
 <translation id="4340125850502689798">O nome do usuario non é válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quere comunicarse coa aplicación "<ph name="EXTENSION_NAME" />"</translation>
@@ -5158,6 +5166,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
+<translation id="4964544790384916627">Fixar ventá</translation>
 <translation id="4965808351167763748">Seguro que queres configurar este dispositivo para que execute Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estás no modo de incógnito</translation>
 <translation id="4967227914555989138">Engadir unha nota</translation>
@@ -7610,6 +7619,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6914812290245989348">Non mostrar ningunha advertencia antes de acceder a un sitio pouco seguro</translation>
 <translation id="6916590542764765824">Xestionar extensións</translation>
 <translation id="6918677045355889289">É necesario actualizar Chrome OS</translation>
+<translation id="6918733588290914545">Configuración rápida cun teléfono Android</translation>
 <translation id="6919354101107095996">Tenta iniciar sesión no sitio. Despois descarga o ficheiro de novo</translation>
 <translation id="6919952941889172531">Tamén queres activar a función Navegación segura mellorada para este perfil de Chrome?</translation>
 <translation id="6920473853105515518">Asegúrate de que o teu dispositivo (<ph name="DEVICE_TYPE" />) estea conectado a Internet e téntao de novo Tamén podes acceder a play.google/play-terms desde outro dispositivo.</translation>
@@ -9086,7 +9096,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8052218774860457016">Xestionar a sincronización do navegador</translation>
 <translation id="8053278772142718589">Ficheiros PKCS n.º 12</translation>
 <translation id="8053390638574070785">Volver cargar esta páxina</translation>
-<translation id="8053629544194355894">Activar a sincronización para que Chrome poida suxerir grupos de pestanas</translation>
 <translation id="8054517699425078995">Este tipo de ficheiro pode danar o teu dispositivo. Queres manter <ph name="FILE_NAME" /> igualmente?</translation>
 <translation id="8054563304616131773">Insire un enderezo de correo electrónico válido</translation>
 <translation id="8054609631325628928">Estes números poden usarse para axudar a activar o servizo</translation>
@@ -9401,7 +9410,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8293206222192510085">Engadir marcador</translation>
 <translation id="8294431847097064396">Fonte</translation>
 <translation id="8294476140219241086">Organizador de pestanas</translation>
-<translation id="8294895455164415895">Abrir a configuración para que Chrome poida suxerir grupos de pestanas</translation>
 <translation id="8295449579927246485">Tradución en directo</translation>
 <translation id="8295450130892483256">Instalar Microsoft 365</translation>
 <translation id="8297292446125062288">Configuración de dispositivos de interface humana</translation>
@@ -9439,6 +9447,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8322814362483282060">Bloqueouse o acceso desta páxina ao teu micrófono.</translation>
 <translation id="8323167517179506834">Escribe o URL</translation>
 <translation id="8323317289166663449">Ler e cambiar todos os teus datos no teu ordenador e en todos os sitios web</translation>
+<translation id="8323518750352551353">Queres separar a navegación?</translation>
 <translation id="8324158725704657629">Non preguntar de novo</translation>
 <translation id="8324784016256120271">Os sitios poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios)</translation>
 <translation id="8325413836429495820">Sitios que non poden consultar o portapapeis</translation>
@@ -9553,7 +9562,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
-<translation id="8412682423093430245">Se activas a sincronización do historial na configuración, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>
 <translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="8413956290606243087">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS?</translation>
 <translation id="8414249071344507766">Ocultáronse as lembranzas durante dous días</translation>
@@ -9583,7 +9591,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="8433186206711564395">Configuración de rede</translation>
 <translation id="8434480141477525001">Porto de depuración NaCl</translation>
-<translation id="8436054240208929121">Se inicias sesión e activas a sincronización, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439506636278576865">Ofrecer a tradución de páxinas neste idioma</translation>
@@ -10060,7 +10067,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8809147117840417135">Verde azulado claro</translation>
-<translation id="881049307637003105">Fai clic nos botóns adicionais do teu dispositivo (<ph name="DEVICE_NAME" />) para engadir ou localizar botóns.</translation>
 <translation id="8811862054141704416">Acceso ao micrófono de Crostini</translation>
 <translation id="8811923271770626905">Esta extensión pode executarse en segundo plano</translation>
 <translation id="8812593354822910461">Borrar tamén os datos de navegación (<ph name="URL" />), o que pode provocar que peches sesión en <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
@@ -10595,6 +10601,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9203904171912129171">Seleccionar un dispositivo</translation>
 <translation id="920410963177453528">Fai clic no menú despregable para elixir outro panel</translation>
 <translation id="9206889157914079472">Tomar notas co lapis óptico desde a pantalla de inicio</translation>
+<translation id="9207669213427469593">Se axustas a ventá nun lado para usar a pantalla dividida, verás suxestións de ventás para o outro lado</translation>
 <translation id="9209563766569767417">Comprobando configuración do contedor de Linux</translation>
 <translation id="9214520840402538427">Esgotouse o tempo de inicio dos atributos de tempo de instalación. Ponte en contacto co representante do servizo de asistencia.</translation>
 <translation id="9214695392875603905">Cupcake</translation>

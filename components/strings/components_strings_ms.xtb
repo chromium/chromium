@@ -171,6 +171,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1296930489679394997">Jualan</translation>
 <translation id="1301227606947843452">Perundangan Tambahan</translation>
 <translation id="1301324364792935241">Semak tetapan DNS Selamat anda</translation>
+<translation id="1302418742166945866"><ph name="URL" /> mahu mengawal dan mengatur cara semula peranti MIDI anda</translation>
 <translation id="1307966114820526988">Ciri yang Ditamatkan</translation>
 <translation id="1308113895091915999">Tawaran tersedia</translation>
 <translation id="1309375166585231290">Ibu bapa anda belum mengatakan OK</translation>
@@ -574,6 +575,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2056658168519009885">Laman boleh meminta maklumat daripada Chrome untuk membantu laman memeribadikan iklan yang anda lihat.</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
+<translation id="2062723461792528824">syarat dikenakan</translation>
 <translation id="2064568741209980952">Kredit &amp; Pinjaman</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 cadangan}other{# cadangan}}</translation>
 <translation id="2066915425250589881">permintaan untuk dipadamkan</translation>
@@ -1292,6 +1294,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3515972145999192222">Organisasi anda telah menyekat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> atas sebab pelanggaran dasar. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Pengendalian berbilang objek</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
+<translation id="3525435918300186947">Kawal &amp; atur cara semula peranti MIDI?</translation>
 <translation id="3528171143076753409">Sijil pelayan tidak dipercayai.</translation>
 <translation id="3528485271872257980">Coklat Gelap</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Sekurang-kurangnya 1 item pada peranti yang disegerakkan}=1{1 item (dan beberapa lagi pada peranti yang disegerakkan)}other{# item (dan beberapa lagi pada peranti yang disegerakkan)}}</translation>
@@ -1923,7 +1926,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4757022425116568383">Kunci laluan daripada Profil Chrome anda</translation>
 <translation id="4757993714154412917">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chromium mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
 <translation id="4758311279753947758">Tambahkan maklumat hubungan</translation>
-<translation id="4761104368405085019">Gunakan mikrofon anda</translation>
 <translation id="4761326898079498987">Semak untuk mendapatkan butiran lanjut</translation>
 <translation id="4761869838909035636">Jalankan Semakan Keselamatan Chrome</translation>
 <translation id="4763196677855776703">Terma dan syarat disediakan oleh <ph name="URL" /></translation>
@@ -2405,6 +2407,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5720705177508910913">Pengguna semasa</translation>
 <translation id="572328651809341494">Tab terbaharu</translation>
 <translation id="5723287205918986743">Industri pertahanan</translation>
+<translation id="5723873695528696965">Kawal dan atur cara semula peranti MIDI anda</translation>
 <translation id="5725297205162868298">Pintasan tidak boleh dimulakan dengan aksara @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="5732392974455271431">Ibu bapa anda boleh menyahsekatnya untuk anda</translation>
@@ -2511,6 +2514,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5953516610448771166">Sari Kata Langsung tidak tersedia untuk media ini. Untuk mendapatkan sari kata, sekat <ph name="CONTENT_SETTINGS" /> untuk laman ini.</translation>
 <translation id="5955063559762970069">Hotel &amp; penginapan</translation>
 <translation id="595873925609605681">Jika ciri laman tidak berfungsi <ph name="BEGIN_LINK" />cuba membenarkan kuki pihak ketiga buat sementara waktu<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Pengesahan</translation>
 <translation id="5963413905009737549">Bahagian</translation>
 <translation id="5964247741333118902">Kandungan terbenam</translation>
 <translation id="5967260682280773804">36 x 48 in</translation>
@@ -3464,6 +3468,7 @@ Butiran tambahan:
 <translation id="7755287808199759310">Ibu bapa anda boleh menyahsekatnya untuk anda</translation>
 <translation id="7755624218968747854">Gulungan Utama</translation>
 <translation id="7758069387465995638">Tembok api atau perisian antivirus mungkin telah menyekat sambungan.</translation>
+<translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7760497246331667482">Muzik reggae &amp; caribbean</translation>
 <translation id="776110834126722255">Ditamatkan</translation>
@@ -3635,6 +3640,7 @@ Butiran tambahan:
 <translation id="8103161714697287722">Kaedah Pembayaran</translation>
 <translation id="8103643211515685474">Cetak juga</translation>
 <translation id="8105368624971345109">Matikan</translation>
+<translation id="8107664017913103177">Manfaat kad tersedia</translation>
 <translation id="810875025413331850">Tiada peranti berdekatan dijumpai.</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8118489163946903409">Kaedah pembayaran</translation>
@@ -4154,7 +4160,6 @@ Butiran tambahan:
 <translation id="9148507642005240123">&amp;Buat asal edit</translation>
 <translation id="9148599396704355100">Harga Rendah</translation>
 <translation id="9150025764986957246">Anda boleh memasukkan perkara seperti:</translation>
-<translation id="9150045010208374699">Gunakan kamera anda</translation>
 <translation id="9150685862434908345">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Dikemas kini</translation>
 <translation id="9155211586651734179">Persisian audio dilampirkan</translation>

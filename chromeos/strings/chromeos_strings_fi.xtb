@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1020274983236703756">Eksklusiivista sisältöä nyt saatavilla: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Pikanäppäintä käytetään tähän: "<ph name="CONFLICT_ACCEL_NAME" />". Paina uutta pikanäppäintä. Jos haluat korvata nykyisen pikanäppäimen, paina tätä pikanäppäintä uudelleen.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1049663189809099096">pastellinkeltainen</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Lähetä palauteraportti</translation>
 <translation id="2407209115954268704">SIM-lukituksen tila</translation>
 <translation id="241419523391571119">Avaa kansi uudelleen testaamista varten</translation>
+<translation id="2414660853550118611">Tietoja taustakuvasta</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2418150275289244458">Avaa asetuksissa</translation>
 <translation id="2421798028054665193">Kuva <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Luotu <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
 <translation id="6196607555925437199">Luo uudelleen</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Laita näytönsäästäjä päälle</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
+<translation id="6327262166342360252">Tämä taustakuva on luotu tekoälyllä seuraavalla tekstillä: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Automaattinen tumma teema</translation>
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="6348738456043757611">Käyttäjätunnus ja salasana</translation>

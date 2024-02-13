@@ -2840,7 +2840,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3132277757485842847">Die Verbindung zu deinem Smartphone konnte nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
-<translation id="3133184011320864289">Aktiviere die Synchronisierung, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
 <translation id="3134393957315651797">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
 <translation id="3141093262818886744">Trotzdem öffnen</translation>
@@ -3903,6 +3902,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3957844511978444971">Tippe auf "Annehmen", um die ausgewählten Einstellungen für diese Google-Dienste zu bestätigen.</translation>
 <translation id="3958088479270651626">Lesezeichen und Einstellungen importieren</translation>
 <translation id="3958110062351175311">Dürfen Anfragen in der Symbolleiste anzeigen</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> ist bereits installiert</translation>
 <translation id="3959747296451923142">Entfernen des Abos bestätigen</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Weitere Aktionen für „<ph name="IBAN_DESCRIPTION" />“</translation>
@@ -6529,6 +6529,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6065289257230303064">Verzeichnisattribute des Zertifikatsinhabers</translation>
 <translation id="6066794465984119824">Image-Hash ist nicht festgelegt</translation>
 <translation id="6069464830445383022">Verwende dein Google-Konto, um dich auf deinem Chromebook anzumelden</translation>
+<translation id="6069500411969514374">Arbeit</translation>
 <translation id="6071181508177083058">Passwort bestätigen</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> Arbeitsspeicher gespart</translation>
@@ -9092,7 +9093,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8052218774860457016">Browsersynchronisierung verwalten</translation>
 <translation id="8053278772142718589">PKCS #12-Dateien</translation>
 <translation id="8053390638574070785">Diese Seite neu laden</translation>
-<translation id="8053629544194355894">Synchronisierung aktivieren, damit Chrome Tabgruppen vorschlagen kann</translation>
 <translation id="8054517699425078995">Dateien dieses Typs können Schäden auf deinem Gerät verursachen. Möchtest du <ph name="FILE_NAME" /> dennoch behalten?</translation>
 <translation id="8054563304616131773">Gib eine gültige E-Mail-Adresse ein.</translation>
 <translation id="8054609631325628928">Diese Nummern können zur Aktivierung des Diensts verwendet werden</translation>
@@ -9407,7 +9407,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8293206222192510085">Lesezeichen hinzufügen</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8294476140219241086">Tabs organisieren</translation>
-<translation id="8294895455164415895">Einstellungen öffnen, damit Chrome Tabgruppen vorschlagen kann</translation>
 <translation id="8295449579927246485">Live-Übersetzung</translation>
 <translation id="8295450130892483256">Microsoft 365 installieren</translation>
 <translation id="8297292446125062288">HID-Einstellungen</translation>
@@ -9560,7 +9559,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">Vollbild</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere zugelassen</translation>
-<translation id="8412682423093430245">Aktiviere die Synchronisierung des Verlaufs in den Einstellungen, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
 <translation id="8413795581997394485">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="8413956290606243087">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren?</translation>
 <translation id="8414249071344507766">Erinnerungen werden zwei Tage lang ausgeblendet</translation>
@@ -9590,7 +9588,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8434480141477525001">NaCl-Debug-Port</translation>
-<translation id="8436054240208929121">Melde dich an und aktiviere die Synchronisierung, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439506636278576865">Übersetzung für Seiten in dieser Sprache anbieten</translation>
@@ -10000,6 +9997,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8750155211039279868"><ph name="ORIGIN" /> möchte eine Verbindung mit einem seriellen Port herstellen</translation>
 <translation id="8750346984209549530">Mobilfunk-APN</translation>
 <translation id="8750786237117206586">Audioeinstellungen für ChromeOS Flex verwalten</translation>
+<translation id="8751034568832412184">Schule</translation>
 <translation id="8752451679755290210">Automatisch zwischen Elementen wechseln</translation>
 <translation id="8753948258138515839">Mit der App „Dateien“ erhältst du schnellen Zugriff auf Dateien, die du in Google Drive, auf externen Speichermedien oder auf deinem Chrome OS Flex-Gerät gespeichert hast.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Bei der Ausführung von <ph name="PRODUCT_NAME" /> in einer unterstützten Desktop-Umgebung werden die Proxy-Einstellungen des Systems verwendet. Allerdings wird entweder dein System nicht unterstützt oder deine Systemkonfiguration konnte nicht gestartet werden.&lt;/p&gt;
@@ -10066,7 +10064,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Katze</translation>
 <translation id="8809147117840417135">Helles Blaugrün</translation>
-<translation id="881049307637003105">Klicke auf deinem <ph name="DEVICE_NAME" /> auf zusätzliche Tasten, um Tasten hinzuzufügen oder zu finden.</translation>
 <translation id="8811862054141704416">Crostini-Mikrofonzugriff</translation>
 <translation id="8811923271770626905">Diese Erweiterung kann im Hintergrund ausgeführt werden</translation>
 <translation id="8812593354822910461">Auch Browserdaten (<ph name="URL" />) löschen, wodurch du von <ph name="DOMAIN" /> abgemeldet wirst. <ph name="LEARN_MORE" /></translation>

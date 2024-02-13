@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">การขาย</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย</translation>
+<translation id="1302418742166945866"><ph name="URL" /> ต้องการควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="1307966114820526988">ฟีเจอร์ที่เลิกใช้งานแล้ว</translation>
 <translation id="1308113895091915999">มีข้อเสนอพิเศษ</translation>
 <translation id="1309375166585231290">ผู้ปกครองยังไม่อนุญาตให้เข้าชม</translation>
@@ -574,6 +575,7 @@
 <translation id="2056658168519009885">เว็บไซต์ต่างๆ สามารถขอข้อมูลจาก Chrome เพื่อใช้ในการปรับเปลี่ยนโฆษณาที่คุณเห็นให้เหมาะกับคุณ</translation>
 <translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2059202684901022309">22 x 34 นิ้ว</translation>
+<translation id="2062723461792528824">เป็นไปตามข้อกำหนด</translation>
 <translation id="2064568741209980952">สินเชื่อและการกู้ยืม</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 คำแนะนำ}other{# คำแนะนำ}}</translation>
 <translation id="2066915425250589881">ส่งคำขอให้ลบ</translation>
@@ -1291,6 +1293,7 @@
 <translation id="3515972145999192222">องค์กรของคุณได้บล็อก <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> เนื่องจากละเมิดนโยบาย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">การจัดการออบเจ็กต์หลายรายการ</translation>
 <translation id="3525130752944427905">10 x 14 นิ้ว</translation>
+<translation id="3525435918300186947">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
 <translation id="3528171143076753409">ใบรับรองของเซิร์ฟเวอร์ไม่น่าเชื่อถือ</translation>
 <translation id="3528485271872257980">น้ำตาลเข้ม</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{อย่างน้อย 1 รายการบนอุปกรณ์ที่ซิงค์}=1{1 รายการ (และมากกว่าบนอุปกรณ์ที่ซิงค์)}other{# รายการ (และมากกว่าบนอุปกรณ์ที่ซิงค์)}}</translation>
@@ -1921,7 +1924,6 @@
 <translation id="4757022425116568383">พาสคีย์จากโปรไฟล์ Chrome ของคุณ</translation>
 <translation id="4757993714154412917">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chromium ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="4758311279753947758">เพิ่มข้อมูลติดต่อ</translation>
-<translation id="4761104368405085019">ใช้ไมโครโฟนของคุณ</translation>
 <translation id="4761326898079498987">ตรวจสอบเพื่อดูรายละเอียดเพิ่มเติม</translation>
 <translation id="4761869838909035636">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
 <translation id="4763196677855776703">ข้อกำหนดและเงื่อนไขจาก <ph name="URL" /></translation>
@@ -2403,6 +2405,7 @@
 <translation id="5720705177508910913">ผู้ใช้ปัจจุบัน</translation>
 <translation id="572328651809341494">แท็บล่าสุด</translation>
 <translation id="5723287205918986743">อุตสาหกรรมด้านการป้องกันประเทศ</translation>
+<translation id="5723873695528696965">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="5725297205162868298">ทางลัดจะขึ้นต้นด้วยอักขระ @ ไม่ได้: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="5732392974455271431">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
@@ -2509,6 +2512,7 @@
 <translation id="5953516610448771166">คำบรรยายแทนเสียงแบบสดไม่พร้อมใช้งานกับสื่อนี้ หากต้องการรับคำบรรยายแทนเสียง ให้บล็อก<ph name="CONTENT_SETTINGS" />สำหรับเว็บไซต์นี้</translation>
 <translation id="5955063559762970069">โรงแรมและที่พัก</translation>
 <translation id="595873925609605681">หากฟีเจอร์ของเว็บไซต์ไม่ทำงาน ให้<ph name="BEGIN_LINK" />ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว<ph name="END_LINK" /></translation>
+<translation id="5960795367348889467">การยืนยัน</translation>
 <translation id="5963413905009737549">ส่วน</translation>
 <translation id="5964247741333118902">เนื้อหาที่ฝัง</translation>
 <translation id="5967260682280773804">36 x 48 นิ้ว</translation>
@@ -3462,6 +3466,7 @@
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
+<translation id="7759147511335618829">ระบบควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7760497246331667482">เพลงเรกเก้และแคริบเบียน</translation>
 <translation id="776110834126722255">เลิกใช้งาน</translation>
@@ -3633,6 +3638,7 @@
 <translation id="8103161714697287722">วิธีการชำระเงิน</translation>
 <translation id="8103643211515685474">พิมพ์เลย</translation>
 <translation id="8105368624971345109">ปิด</translation>
+<translation id="8107664017913103177">มีสิทธิประโยชน์ของบัตร</translation>
 <translation id="810875025413331850">ไม่พบอุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="8116925261070264013">ปิดเสียง</translation>
 <translation id="8118489163946903409">วิธีการชำระเงิน</translation>
@@ -4151,7 +4157,6 @@
 <translation id="9148507642005240123">&amp;เลิกทำการแก้ไข</translation>
 <translation id="9148599396704355100">ราคาต่ำ</translation>
 <translation id="9150025764986957246">คุณป้อนข้อมูลต่อไปนี้ได้</translation>
-<translation id="9150045010208374699">ใช้กล้องถ่ายรูปของคุณ</translation>
 <translation id="9150685862434908345">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
 <translation id="9155211586651734179">อุปกรณ์ต่อพ่วงเสียงที่ต่อเชื่อมไว้</translation>

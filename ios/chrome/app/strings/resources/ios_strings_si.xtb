@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">පිටපත් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1943478190258551035">මෙනුව → සැකසීම්</translation>
 <translation id="194449685234099560">ඔබට ඔබේ විවෘත පටිති සියල්ල මෙහි සොයා ගත හැක.</translation>
-<translation id="1952172573699511566">හැකි විට, වෙබ් අඩවි ඔබේ කැමතිම භාෂාවෙන් පෙළ පෙන්වනු ඇත.</translation>
 <translation id="1956138802718275401">මුල් තිරයෙන් මුරපද වෙත යන්න</translation>
 <translation id="1959441496380398824">දිනයක් ස්පර්ශ කර අල්ලා ගන්න.</translation>
 <translation id="1959679933317802873">අන්තර්ගතය සඳහා රැඳී සිටීම</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">ඒකක වර්ගය තෝරකය</translation>
 <translation id="2073572773299281212">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
+<translation id="2078437078822043850">ඔබට අප්‍රසිද්ධව බ්‍රවුස් කිරීමට දකුණට අනුචලන කළ හැක.</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2080409463824088391">යෙදුම තුළ විවෘත කරන්න…</translation>
 <translation id="2080769225927880590">වලංගු ගිණුමක් සමගින් පුරන්න</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">තෙවන පාර්ශ්ව කුකී අවහිර කිරීම</translation>
 <translation id="2421044535038393232">සංස්කරණ කර ගෙන යන්න</translation>
 <translation id="2434405374328098816">ඔබ දැනටමත් "<ph name="USERNAME" />" සඳහා මුරපදයක් <ph name="WEBSITE" /> හි සුරැක ඇත</translation>
+<translation id="2434918313224755415">අප්‍රසිද්ධව බ්‍රවුස් කිරීමට ඔබට වමට අනුචලන කළ හැක.</translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
 <translation id="2459155039684421202">ලිපින තීරුවේ, “මගේ ඉතිහාසය හිස් කරන්න” හෝ “මුරපද සංස්කරණ කරන්න” වැනි කාර්යයක් ඇතුළු කරන්න.</translation>
 <translation id="2461070143328828326">මුරපද සැකසීම්</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">තිරයෙහි ඉහළින්, + තට්ටු කරන්න</translation>
 <translation id="2604176749896001318">ඔබේ බ්‍රව්සරය යාවත්කාලීන කරන්න</translation>
 <translation id="2609008503159898744">සියලු පටිති වසන්න ද?</translation>
+<translation id="261305050785128654">ඔබ කතා කරන භාෂා වෙබ් අඩවිවලට දැන ගැනීමට සලස්වන්න. ඔවුන් හැකි විට, එම භාෂාවලින් අන්තර්ගත පෙන්වයි.</translation>
 <translation id="2613747923081026172">කණ්ඩායම සාදන්න</translation>
 <translation id="2617210333344098964">ලිපිනය ගිණුම වෙත ගෙන යන්න</translation>
 <translation id="261739049332372104">ඔබට වැදගත් වන අන්තර්ගතය පිළිබඳ යාවත්කාලීන ලබා ගැනීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම ක්‍රියාත්මක කරන්න.</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">සබැඳි URL පිටපත් කරන්න</translation>
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="3609785682760573515">සමමු වේ...</translation>
+<translation id="3625008969091706597">ඔබට ආපසු යාමට දාරය ස්වයිප් කළ හැක.</translation>
 <translation id="3630104167004786843">යාවත්කාලීන ලබා නොගන්න</translation>
 <translation id="3631443864840848029">මෙම වෙබ් අඩවිය සඳහා ඔබ ඔබගේ වර්තමාන මුරපදය සුරකින බව සහතික කර ගන්න.</translation>
 <translation id="3638472932233958418">පෙර පූරණ වෙබ් පිටු</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{ඔබ {COUNT} අනතුරු ඇඟවීමක් අස් කළා}one{ඔබ අනතුරු ඇඟවීම් {COUNT}ක් අස් කළා}other{ඔබ අනතුරු ඇඟවීම් {COUNT}ක් අස් කළා}}</translation>
 <translation id="4272631900155121838">QR කේතය ස්කෑන් කිරීමට සැකසීම් වෙතින් කැමරාව සබල කරන්න</translation>
 <translation id="4277990410970811858">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
+<translation id="4279431713294750185">ඉදිරියට යාමට ඔබට දාරය ස්වයිප් කළ හැක.</translation>
 <translation id="4281844954008187215">සේවා කොන්දේසි</translation>
 <translation id="4286718549648564014">ලිපිනය ඔබේ ගිණුමට <ph name="USER_EMAIL" /> ගෙන ගියා</translation>
 <translation id="4293080268407233932">සෙවීම</translation>
@@ -1288,6 +1292,7 @@
 <translation id="7583004045319035904">ඔබගේ අප්‍රකට ටැබ අගුලු හැරීමට <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> භාවිත කරන්න.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
+<translation id="7606639338662398635">පටිති සමූහ</translation>
 <translation id="7607521702806708809">මුරපදය මකන්න</translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
 <translation id="7640669552036055091">Android වෙතින් පටිති</translation>

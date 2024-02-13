@@ -2843,7 +2843,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3132277757485842847">Ezin izan dugu mantendu gailua telefonoarekin konektatuta. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetootha eta wifia aktibatuta dauzkala.</translation>
 <translation id="3132896062549112541">Araua</translation>
 <translation id="3132996321662585180">Freskatu egunero</translation>
-<translation id="3133184011320864289">Aktibatu sinkronizazioa Chrome-ri fitxa taldeak iradokitzeko eta fitxak antolatzeko baimena emateko</translation>
 <translation id="3134393957315651797">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera. Probaren azalpena: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Abatar hori lehenetsia</translation>
 <translation id="3141093262818886744">Ireki halere</translation>
@@ -3053,7 +3052,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
         Ezarpenak kudeatzeko, joan txartelaren menura edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
 <translation id="3308134619352333507">Ezkutatu botoia</translation>
 <translation id="3308852433423051161">Google-ren Laguntzailea kargatzen…</translation>
-<translation id="3309330461362844500">Ziurtagiriaren profilaren identifikatzailea</translation>
+<translation id="3309330461362844500">Ziurtagiriaren profil-identifikatzailea</translation>
 <translation id="3311445899360743395">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik.</translation>
 <translation id="3312470654018965389">Linux-en edukiontzia konfiguratzen</translation>
 <translation id="3312883087018430408">Bilaketak webgune zehatz batean edo Chrome-ren zati batean egiteko, idatzi atal horren lasterbidea helbide-barran eta, ondoren, sakatu erabili ohi duzun lasterbidea. Adibidez, emaitzak laster-marken atalean soilik bilatzeko, idatzi "@laster-markak", eta sakatu tabuladorea edo zuriune-barra.</translation>
@@ -3906,6 +3905,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3957844511978444971">Sakatu "Onartu" Google-ren zerbitzuen ezarpen hauek hautatu dituzula berresteko.</translation>
 <translation id="3958088479270651626">Inportatu laster-markak eta ezarpenak</translation>
 <translation id="3958110062351175311">Tresna-barran eskaerak erakusteko baimena du</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> instalatu da dagoeneko</translation>
 <translation id="3959747296451923142">Berretsi harpidetza kendu nahi duzula</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ordainketa-metodoarekin erlazionatutako ekintza gehiago</translation>
@@ -6532,6 +6532,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6065289257230303064">Ziurtagiria jasoko duen entitatearen direktorio-atributuak</translation>
 <translation id="6066794465984119824">Ez dago ezarrita irudiaren hash-a</translation>
 <translation id="6069464830445383022">Google-ko kontuarekin hasiko duzu saioa Chromebook-en</translation>
+<translation id="6069500411969514374">Lana</translation>
 <translation id="6071181508177083058">berretsi pasahitza</translation>
 <translation id="6071576563962215370">Sistemak ezin izan du ezarri gailuaren instalazio-denboraren atributuen blokeoa.</translation>
 <translation id="6071938745001252305">Memoriako <ph name="MEMORY_VALUE" /> aurreztu dira</translation>
@@ -9092,7 +9093,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8052218774860457016">Kudeatu arakatzailearen sinkronizazioa</translation>
 <translation id="8053278772142718589">PKCS #12 fitxategiak</translation>
 <translation id="8053390638574070785">Kargatu orria berriro</translation>
-<translation id="8053629544194355894">Aktibatu sinkronizazioa Chrome-ri fitxa taldeak iradokitzeko baimena emateko</translation>
 <translation id="8054517699425078995">Fitxategi mota honek gailuari kalte egin diezaioke. <ph name="FILE_NAME" /> mantendu nahi duzu halere?</translation>
 <translation id="8054563304616131773">Idatzi balio duen helbide elektroniko bat</translation>
 <translation id="8054609631325628928">Zerbitzua aktibatzeko erabil daitezke zenbakiok</translation>
@@ -9407,7 +9407,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8293206222192510085">Gehitu laster-marka</translation>
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8294476140219241086">Fitxa-antolatzailea</translation>
-<translation id="8294895455164415895">Ireki ezarpenak Chrome-ri fitxa taldeak iradokitzeko baimena emateko</translation>
 <translation id="8295449579927246485">Istanteko itzulpena</translation>
 <translation id="8295450130892483256">Instalatu Microsoft 365</translation>
 <translation id="8297292446125062288">Giza interfazeko gailuen ezarpenak</translation>
@@ -9560,7 +9559,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantaila osoa</translation>
 <translation id="8412136526970428322">Baimendutako <ph name="PERMISSION" /> eta beste <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Aktibatu historiaren sinkronizazioa ezarpenetan Chrome-ri fitxa taldeak iradokitzeko eta fitxak antolatzeko baimena emateko</translation>
 <translation id="8413795581997394485">Arriskutsuak direla dakigun webgune, deskarga eta luzapenen aurka babesten du. Webgune bat bisitatzen duzunean, Chrome-k URLaren zati nahasi bat bidaltzen dio Google-ri, zure IP helbidea ezkutatzen duen pribatutasun-zerbitzari baten bidez. Webgune batek susmagarria den zerbait egiten badu, URL osoak eta orriaren edukiaren zati batzuk ere bidaltzen dira.</translation>
 <translation id="8413956290606243087">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
 <translation id="8414249071344507766">Datozen bi egunetan ez da erakutsiko oroitzapenik</translation>
@@ -9590,7 +9588,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8431190899827883166">Erakutsi sakatutakoa</translation>
 <translation id="8433186206711564395">Sarearen ezarpenak</translation>
 <translation id="8434480141477525001">NaCl arazketa-ataka</translation>
-<translation id="8436054240208929121">Hasi saioa eta aktibatu sinkronizazioa Chrome-ri fitxa taldeak iradokitzeko eta fitxak antolatzeko baimena emateko</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439506636278576865">Eskaini hizkuntza honetako orriak itzultzea</translation>
@@ -10000,6 +9997,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8750155211039279868"><ph name="ORIGIN" /> webguneak serieko ataka batera konektatu nahi du</translation>
 <translation id="8750346984209549530">APN mugikorra</translation>
 <translation id="8750786237117206586">Kudeatu ChromeOS Flex-en audio-ezarpenak</translation>
+<translation id="8751034568832412184">Ikastetxea</translation>
 <translation id="8752451679755290210">Mugitu automatikoki elementu batetik bestera</translation>
 <translation id="8753948258138515839">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS Flex-eko gailuan gordeta dituzun fitxategiak.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Ordenagailu-ingurune bateragarri batean <ph name="PRODUCT_NAME" /> abiarazten duzunean, sistemaren proxy-ezarpenak erabiliko dira. Dena den, zure sistema ez da bateragarria edo arazo bat izan da sistemaren konfigurazioa kargatzean.&lt;/p&gt;
@@ -10066,7 +10064,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8809147117840417135">Anil argia</translation>
-<translation id="881049307637003105">Botoiak gehitzeko edo bilatzeko, sakatu <ph name="DEVICE_NAME" /> gailuko botoi gehigarriak.</translation>
 <translation id="8811862054141704416">Crostini-ren mikrofonorako sarbidea</translation>
 <translation id="8811923271770626905">Baliteke luzapena atzeko planoan exekutatzea</translation>
 <translation id="8812593354822910461">Garbitu arakatze-datuak ere (<ph name="URL" />); hala, <ph name="DOMAIN" /> webguneko saioa amaituko da. <ph name="LEARN_MORE" /></translation>

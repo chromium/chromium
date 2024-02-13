@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">પસંદ કરેલ ટૅબ</translation>
 <translation id="1943432128510653496">પાસવર્ડ સાચવો</translation>
 <translation id="1944535645109964458">કોઈ પાસકી ઉપલબ્ધ નથી</translation>
-<translation id="1952172573699511566">જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષામાં ટેક્સ્ટ બતાવશે.</translation>
 <translation id="1959679933317802873">તમારું કન્ટેન્ટ લોડ થવાની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="1960290143419248813">Androidના આ વર્ઝન માટે Chrome અપડેટ હવે સમર્થિત નથી</translation>
 <translation id="1963976881984600709">માનક સંરક્ષણ</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">લિંક કરેલા બધા ડિવાઇસ કાઢી નાખો</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> બંધ કર્યું છે</translation>
 <translation id="2139186145475833000">હોમસ્ક્રીન પર ઉમેરો</translation>
+<translation id="2139414603196655536">પેજની જાણકારીમાં તમારી પ્રવૃત્તિને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. <ph name="BEGIN_LINK" />આને મેનેજ કરવાની રીત જાણો<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">તમારા વપરાશ પર આધારિત</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2155214902713132423">આ ડિવાઇસ માટે ચકાસણીની આ પદ્ધતિ ઉપલબ્ધ નથી. તમારા અન્ય ડિવાઇસ પર કોઈ અલગ વિકલ્પ પસંદ કરો.</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">ગઈકાલે ચેક કર્યું</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="671481426037969117">તમારું <ph name="FQDN" /> ટાઇમર સમાપ્ત થયું. તે આવતી કાલે ફરી શરૂ થશે.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{<ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું. આ ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{<ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું. આ ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{<ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યા. આ ફક્ત આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
 <translation id="6715020873764921614">શું તમે તેમ છતાં <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="6719634564325948108">QR કોડ વડે કનેક્ટ કરીએ?</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">પેજ જાણકારીઓની બોટમ શીટ</translation>
 <translation id="8243077599929149377">તમારું વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં <ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું.}one{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં <ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું.}other{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં <ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યા.}}</translation>
 <translation id="8255617931166444521">અલગ-અલગ સાઇટ તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર તેમની પોતાની સાઇટ પર જ તમારી કુકીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="8259179246279078674">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી, પહેલેથી લોડ કરેલા પેજના કન્ટેન્ટ વિશે Googleને જાણ થશે નહીં. કઈ સાઇટ ખાનગી રીતે પહેલેથી લોડ કરવામાં આવી છે, તે Googleના સર્વરને જાણવા મળશે. આ માહિતીનો ઉપયોગ માત્ર પેજને પહેલેથી લોડ કરવા માટે થાય છે અને તમારા Google એકાઉન્ટમાંથી અન્ય માહિતી સાથે લિંક કરવામાં આવતી નથી.</translation>
 <translation id="8260126382462817229">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો</translation>

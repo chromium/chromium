@@ -821,7 +821,7 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6791471867139427246">键盘背光颜色</translation>
-<translation id="6796229976413584781">快捷方式已删除</translation>
+<translation id="6796229976413584781">快捷键已删除</translation>
 <translation id="6798678288485555829">文字导航</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
@@ -879,7 +879,7 @@
 <translation id="7212547870105584639">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部设备的固件更新</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
-<translation id="7233782086689993269">快捷方式已恢复</translation>
+<translation id="7233782086689993269">快捷键已恢复</translation>
 <translation id="725133483556299729">选择电子邮件地址</translation>
 <translation id="7271040990581020067">扫描仪正在使用中。请稍后再试。</translation>
 <translation id="7271932918253517778">使用顶行按键的快捷键必须包含<ph name="META_KEY" />键。</translation>

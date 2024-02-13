@@ -63,6 +63,7 @@
 <translation id="1295289763199166823">Personalizar menú</translation>
 <translation id="1296581780163690620">Queres descargar o ficheiro? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade.</translation>
+<translation id="1310362642333088424">Para descargar ficheiros, fotos e outros elementos, necesitas máis espazo de almacenamento.</translation>
 <translation id="1312721752506309252">A protección mellorada está activada</translation>
 <translation id="1321993286294231467">Produciuse un erro ao gardar a imaxe.</translation>
 <translation id="1322735045095424339">A túa organización esixe o uso do modo de incógnito</translation>
@@ -129,6 +130,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
+<translation id="164673457281113247">{count,plural, =1{Gardouse o marcador}other{Gardáronse os marcadores}}</translation>
 <translation id="165008673352427892">Nova función</translation>
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
@@ -182,7 +184,6 @@
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
 <translation id="1943478190258551035">Menú → Configuración</translation>
 <translation id="194449685234099560">Aquí podes atopar todas as pestanas que teñas abertas.</translation>
-<translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
 <translation id="1956138802718275401">Accede aos contrasinais desde a pantalla de inicio</translation>
 <translation id="1959441496380398824">Mantén premida unha data.</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
@@ -511,6 +512,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3603009562372709545">Copiar URL da ligazón</translation>
 <translation id="3607167657931203000">Datos de Autocompletar</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
+<translation id="3630104167004786843">Non recibir notificacións</translation>
 <translation id="3631443864840848029">Asegúrate de gardar o teu contrasinal actual deste sitio.</translation>
 <translation id="3638472932233958418">Precargar páxinas web</translation>
 <translation id="3643338347976071250">{count,plural, =1{Hai {count} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
@@ -637,6 +639,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
 <translation id="430967081421617822">Todo o período</translation>
 <translation id="4322394346347055525">Pechar outras pestanas</translation>
+<translation id="4323142320106872792">Tes o espazo de almacenamento cheo</translation>
 <translation id="4331177082088332784">Podes xestionalo en BEGIN_LINK Configuración de contido END_LINK</translation>
 <translation id="4334428914252001502">1 artigo non lido.</translation>
 <translation id="4338650699862464074">Envía a Google os URL das páxinas que visitas.</translation>
@@ -843,6 +846,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5345660046352249607">{COUNT,plural, =1{Queres facer un seguimento deste paquete?}other{Queres facer un seguimento de {COUNT} paquetes?}}</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
+<translation id="5379352933722332597">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse {count} marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="5386314158584363703">Os sitios que sigas mostraranse aquí</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5395707839134961196">Ocultar os detalles do buscador</translation>
@@ -870,6 +874,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5525269841082836315">Crear contrasinal</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5532545557415295622">Cadro de diálogo do tempo de espera de inactividade</translation>
+<translation id="5533967537771071082">Xestionar almacenamento</translation>
 <translation id="5542540507657872337">Pestanas atopadas (<ph name="COUNT" />)</translation>
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
@@ -1085,6 +1090,8 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6550891580932862748">Non te protexe contra sitios web, descargas nin extensións perigosos. A configuración de Navegación segura noutros produtos de Google non se verá afectada.</translation>
+<translation id="6552223548936340886">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse {count} marcadores en {title}}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse os marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="6561262006871132942">Achegar</translation>
 <translation id="6579867704846662339">Podes decidir abrir os URL entrantes desde outras aplicacións no modo de incógnito.</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a AutoFill Passwords (Autocompletar contrasinais).</translation>
@@ -1199,6 +1206,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
+<translation id="7138080855268384146">{count,plural, =1{Gardouse o marcador en {title}, na túa conta ({email})}other{Gardáronse {count} marcadores en {title}, na túa conta ({email})}}</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
 <translation id="7154343200458623869">Completa a tarefa.</translation>
 <translation id="7161230316646448869">Sincroniza os teus marcadores e o historial, entre outras cousas, en todos os dispositivos</translation>

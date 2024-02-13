@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">ሽያጭ</translation>
 <translation id="1301227606947843452">የህግ ተጨማሪ</translation>
 <translation id="1301324364792935241">ደህንነታቸው የተጠበቁ የዲኤንኤስ ቅንብሮችዎን ይፈትሹ።</translation>
+<translation id="1302418742166945866"><ph name="URL" /> የእርስዎን MIDI መሣሪያዎች መቆጣጠር እና ዳግም ፕሮግራም ማድረግ ይፈልጋል</translation>
 <translation id="1307966114820526988">የተቋረጡ ባህሪያት</translation>
 <translation id="1308113895091915999">ቅናሽ ይገኛል</translation>
 <translation id="1309375166585231290">የእርስዎ ወላጆች ገና ምንም ችግር የለውም አላሉም</translation>
@@ -574,6 +575,7 @@
 <translation id="2056658168519009885">ጣቢያዎች እርስዎ የሚያዩዋቸው ማስታወቂያዎች ግላዊነት እንዲላበሱ ለማገዝ Chromeን መረጃ ሊጠይቁ ይችላሉ።</translation>
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
 <translation id="2059202684901022309">22 x 34 ኢንች</translation>
+<translation id="2062723461792528824">ደንቦች ተፈጻሚ ናቸው</translation>
 <translation id="2064568741209980952">ክሬዲት እና ማበደር</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 የአስተያየት ጥቆማ}one{# የአስተያየት ጥቆማዎች}other{# የአስተያየት ጥቆማዎች}}</translation>
 <translation id="2066915425250589881">ለመሰረዝ መጠየቅ</translation>
@@ -1291,6 +1293,7 @@
 <translation id="3515972145999192222">መመሪያን የሚጥስ በመሆኑ ምክንያት ድርጅትዎ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ን አግዷል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">በርካታ ነገሮችን መያዝ</translation>
 <translation id="3525130752944427905">10 x 14 ኢንች</translation>
+<translation id="3525435918300186947">የMIDI መሳሪያዎችን ይቀጣጠሩ እና እንደገና ፕሮግራም ያድርጉ?</translation>
 <translation id="3528171143076753409">የአገልጋይ እውቅና ማረጋገጫ የታመነ አይደለም።</translation>
 <translation id="3528485271872257980">ደማቅ ቡናማ</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{በተሰመሩ መሣሪያዎች ላይ ቢያንስ 1 ንጥል}=1{1 ንጥል (እና ተጨማሪ የተሰመሩ መሣሪያዎች ላይ)}one{# ንጥሎች (እና ተጨማሪ የተሰመሩ መሣሪያዎች ላይ)}other{# ንጥሎች (እና ተጨማሪ የተሰመሩ መሣሪያዎች ላይ)}}</translation>
@@ -1921,7 +1924,6 @@
 <translation id="4757022425116568383">የይለፍ ቁልፍ ከChrome መገለጫዎ</translation>
 <translation id="4757993714154412917">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ Chromium የተቀመጡ ይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
 <translation id="4758311279753947758">የእውቂያ መረጃን ያክሉ</translation>
-<translation id="4761104368405085019">ማይክፎሮንዎን ይጠቀማል</translation>
 <translation id="4761326898079498987">ለተጨማሪ ዝርዝሮች ይገምግሙ</translation>
 <translation id="4761869838909035636">የChrome ደህንነት ፍተሻን ያሂዱ</translation>
 <translation id="4763196677855776703">በ<ph name="URL" /> የቀረበ የአግልግሎት ውል</translation>
@@ -2403,6 +2405,7 @@
 <translation id="5720705177508910913">የአሁኑ ተጠቃሚ</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
 <translation id="5723287205918986743">የመከላከያ ኢንዱስትሪ</translation>
+<translation id="5723873695528696965">የMIDI መሣሪያዎችዎን ይቆጣጠሩ እና ዳግም ፕሮግራም ያድርጉ</translation>
 <translation id="5725297205162868298">አቋራጭ በ@ ቁምፊ መጀመር አይችልም፦ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="5730040223043577876">Chrome የእርስዎን ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="5732392974455271431">የእርስዎ ወላጆች እገዳውን ሊያነሱልዎ ይችላሉ</translation>
@@ -2509,6 +2512,7 @@
 <translation id="5953516610448771166">የቀጥታ መግለጫ ጽሁፍ ለዚህ ሚዲያ አይገኝም። የጽሁፍ መግለጫዎችን ለማግኘት የዚህ ጣቢያ <ph name="CONTENT_SETTINGS" />ን ያግዱ።</translation>
 <translation id="5955063559762970069">ሆቴሎች እና ማረፊያዎች</translation>
 <translation id="595873925609605681">የጣቢያ ባህሪያት እየሠሩ ካልሆነ <ph name="BEGIN_LINK" />በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን መፍቀድ ይሞክሩ<ph name="END_LINK" />።</translation>
+<translation id="5960795367348889467">ማረጋገጫ</translation>
 <translation id="5963413905009737549">ክፍል</translation>
 <translation id="5964247741333118902">የተከተተ ይዘት</translation>
 <translation id="5967260682280773804">36 x 48 ኢንች</translation>
@@ -3462,6 +3466,7 @@
 <translation id="7755287808199759310">የእርስዎ ወላጅ እገዳውን ሊያነሱልዎ ይችላሉ</translation>
 <translation id="7755624218968747854">ዋና ጥቅልል</translation>
 <translation id="7758069387465995638">የኬላ ወይም የፀረ-ቫይረስ ሶፍትዌር ግንኙነቱን አግዶት ሊሆን ይችላል።</translation>
+<translation id="7759147511335618829">የMIDI መሣሪያ ቁጥጥር እና ዳግም ፕሮግራም</translation>
 <translation id="7759809451544302770">አስገዳጅ ያልሆነ</translation>
 <translation id="7760497246331667482">ሬጌ እና የካሪቢያን ሙዚቃ</translation>
 <translation id="776110834126722255">ተቋርጧል</translation>
@@ -3633,6 +3638,7 @@
 <translation id="8103161714697287722">የክፍያ ስልት</translation>
 <translation id="8103643211515685474">ለማንኛውም አትም</translation>
 <translation id="8105368624971345109">አጥፋ</translation>
+<translation id="8107664017913103177">የካርድ ጥቅማጥቅሞች ይገኛሉ</translation>
 <translation id="810875025413331850">በአቅራቢያ ያሉ ምንም መሣሪያዎች አልተገኙም።</translation>
 <translation id="8116925261070264013">ድምፀ ከል ተደርጓል</translation>
 <translation id="8118489163946903409">የመክፈያ ዘዴ</translation>
@@ -4152,7 +4158,6 @@
 <translation id="9148507642005240123">&amp;አርትዕን ቀልብስ</translation>
 <translation id="9148599396704355100">ዋጋ ዝቅተኛ ነው</translation>
 <translation id="9150025764986957246">እንደሚከተሉት ያሉ ነገሮችን ማስገባት ይችላሉ፦</translation>
-<translation id="9150045010208374699">ካሜራዎን ይጠቀማል</translation>
 <translation id="9150685862434908345">የእርስዎ አስተዳዳሪ በርቀት የአሳሽዎን ውቅረት መቀየር ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">የተዘመነ</translation>
 <translation id="9155211586651734179">የድምፅ መሳሪያዎች ተያይዘዋል</translation>

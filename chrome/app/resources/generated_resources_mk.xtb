@@ -2859,7 +2859,6 @@
 <translation id="3132277757485842847">Не можевме да ја одржиме врската со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Освежувај дневно</translation>
-<translation id="3133184011320864289">Вклучете синхронизација за да овозможите Chrome да предлага групи картички и да ги организира вашите картички</translation>
 <translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
 <translation id="3141093262818886744">Сепак отвори</translation>
@@ -9117,7 +9116,6 @@
 <translation id="8052218774860457016">Управување со синхронизацијата на прелистувачот</translation>
 <translation id="8053278772142718589">PKCS #12 датотеки</translation>
 <translation id="8053390638574070785">Пак вчитај страница</translation>
-<translation id="8053629544194355894">Вклучете синхронизација за да овозможите Chrome да предлага групи картички</translation>
 <translation id="8054517699425078995">Овој тип датотека може да му наштети на вашиот уред. Дали сепак сакате да ја задржите датотеката <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Внесете важечка адреса на е-пошта</translation>
 <translation id="8054609631325628928">Броевиве може да се користат за активирање услуга</translation>
@@ -9435,7 +9433,6 @@
 <translation id="8293206222192510085">Додај обележувач</translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8294476140219241086">Организатор на картички</translation>
-<translation id="8294895455164415895">Отворете ги поставките за да овозможите Chrome да предлага групи картички</translation>
 <translation id="8295449579927246485">Превод во живо</translation>
 <translation id="8295450130892483256">Инсталирање Microsoft 365</translation>
 <translation id="8297292446125062288">Поставки за HID</translation>
@@ -9588,7 +9585,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">на цел екран</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Вклучете „Синхронизација на историјата“ во „Поставки“ за да овозможите Chrome да предлага групи картички и да ги организира вашите картички</translation>
 <translation id="8413795581997394485">Штити од сајтови, преземања и екстензии за коишто се знае дека се опасни. Кога ќе отворите некој сајт, Chrome испраќа замаглен дел од URL-адресата во Google преку сервер за приватност што ја крие вашата IP-адреса. Ако конкретен сајт прави нешто сомнително, ќе се испратат целосните URL-адреси, како и делови од содржините на страницата.</translation>
 <translation id="8413956290606243087">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за Chrome OS?</translation>
 <translation id="8414249071344507766">Спомените ќе бидат скриени два дена</translation>
@@ -9618,7 +9614,6 @@
 <translation id="8431190899827883166">Прикажувај допири</translation>
 <translation id="8433186206711564395">Мрежни поставки</translation>
 <translation id="8434480141477525001">Порта за откривање грешки на NaCl</translation>
-<translation id="8436054240208929121">Најавете се и вклучете синхронизација за да овозможите Chrome да предлага групи картички и да ги организира вашите картички</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8439506636278576865">Нуди да ги преведува страниците на овој јазик</translation>
@@ -10096,7 +10091,6 @@
 <translation id="8808478386290700967">Веб-продавница</translation>
 <translation id="8808686172382650546">Мачка</translation>
 <translation id="8809147117840417135">Светла синозелена</translation>
-<translation id="881049307637003105">Кликнете дополнителни копчиња на вашиот <ph name="DEVICE_NAME" /> за да додадете или лоцирате копчиња.</translation>
 <translation id="8811862054141704416">Пристап до микрофонот на Crostini</translation>
 <translation id="8811923271770626905">Можно е екстензијава да се извршува во заднина</translation>
 <translation id="8812593354822910461">Избриши ги и податоците од прелистувањето (<ph name="URL" />). Тоа ќе ве одјави од <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>

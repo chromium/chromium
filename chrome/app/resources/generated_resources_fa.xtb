@@ -2855,7 +2855,6 @@
 <translation id="3132277757485842847">‏نتوانستیم اتصال با تلفنتان را حفظ کنیم. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
 <translation id="3132896062549112541">قانون</translation>
 <translation id="3132996321662585180">بازآوری روزانه</translation>
-<translation id="3133184011320864289">‏همگام‌سازی را روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد و برگه‌های شما را مرتب نگه دارد</translation>
 <translation id="3134393957315651797">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید. شرح آزمایش: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">چهرک پیش‌فرض زرد</translation>
 <translation id="3141093262818886744">درهرصورت باز شود</translation>
@@ -4438,7 +4437,7 @@
 <translation id="4379281552162875326">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="4380648069038809855">حالت تمام‌صفحه فعال شد</translation>
-<translation id="4381902252848068865">به سایت اجازه داده نشود داده‌ها را ذخیره کند</translation>
+<translation id="4381902252848068865">سایت اجازه ندارند داده ذخیره کنند</translation>
 <translation id="4383048856908088702">وقتی این برگه غیرفعال بود، «بهینه‌سازی حافظ» <ph name="MEMORY_VALUE" /> از حافظه را برای کارهای دیگر آزاد کرد. هرزمان بخواهید می‌توانید آن را در <ph name="SETTINGS_LINK" /> تغییر دهید.</translation>
 <translation id="4384312707950789900">افزودن به شبکه‌های برگزیده</translation>
 <translation id="4384652540891215547">فعال کردن افزونه</translation>
@@ -9114,7 +9113,6 @@
 <translation id="8052218774860457016">مدیریت همگام‌سازی مرورگر</translation>
 <translation id="8053278772142718589">‏فایل‌های PKCS #12</translation>
 <translation id="8053390638574070785">تازه سازی این صفحه</translation>
-<translation id="8053629544194355894">‏همگام‌سازی را روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد</translation>
 <translation id="8054517699425078995">این نوع فایل می‌تواند به دستگاه شما آسیب برساند. با این حال می‌خواهید <ph name="FILE_NAME" /> را نگه دارید؟</translation>
 <translation id="8054563304616131773">لطفاً یک نشانی ایمیل معتبر وارد کنید</translation>
 <translation id="8054609631325628928">می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد</translation>
@@ -9260,7 +9258,7 @@
 <translation id="8161293209665121583">«حالت خواننده» برای صفحه‌های وب</translation>
 <translation id="8161604891089629425">قلم برون‌خط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
-<translation id="8163152278172770963">به سایت‌ها اجازه داده نشود به‌طور خودکار به حالت تصویر در تصویر بروند</translation>
+<translation id="8163152278172770963">سایت‌ها اجازه ندارند به‌طور خودکار به حالت تصویردرتصویر بروند</translation>
 <translation id="8163708146810922598">قدیمی‌ترین</translation>
 <translation id="8165997195302308593">‏بازارسال درگاه Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{یک شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
@@ -9429,7 +9427,6 @@
 <translation id="8293206222192510085">افزودن نشانک</translation>
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8294476140219241086">سازمان‌دهنده برگه</translation>
-<translation id="8294895455164415895">‏تنظیمات را باز کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد</translation>
 <translation id="8295449579927246485">ترجمه زنده</translation>
 <translation id="8295450130892483256">‏نصب Microsoft 365</translation>
 <translation id="8297292446125062288">تنظیمات دستگاه میانای انسانی</translation>
@@ -9582,7 +9579,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">تمام‌صفحه</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> و <ph name="COUNT" /> اجازه دیگر مجاز شده‌اند</translation>
-<translation id="8412682423093430245">‏همگام‌سازی «سابقه» را در «تنظیمات» روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد و برگه‌های شما را مرتب نگه دارد</translation>
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حریم خصوصی‌ای که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8413956290606243087">‏مایلید ChromeVox (صفحه‌خوان داخلی ChromeOS) را فعال کنید؟</translation>
 <translation id="8414249071344507766">خاطرات برای دو روز پنهان شد</translation>
@@ -9612,7 +9608,6 @@
 <translation id="8431190899827883166">نمایش ضربه‌ها</translation>
 <translation id="8433186206711564395">تنظیمات شبکه</translation>
 <translation id="8434480141477525001">‏درگاه اشکال‌زدایی NaCl</translation>
-<translation id="8436054240208929121">‏به سیستم وارد شوید و همگام‌سازی را روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد و برگه‌های شما را مرتب نگه دارد</translation>
 <translation id="8437209419043462667">آمریکایی</translation>
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439506636278576865">ترجمه صفحات نوشته شده به این زبان پیشنهاد داده شود</translation>
@@ -10090,7 +10085,6 @@
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8809147117840417135">سبزآبی روشن</translation>
-<translation id="881049307637003105">برای افزودن یا جای‌گذاری دکمه‌ها، روی دیگر دکمه‌ها در <ph name="DEVICE_NAME" /> کلیک کنید.</translation>
 <translation id="8811862054141704416">‏دسترسی به میکروفون Crostini</translation>
 <translation id="8811923271770626905">این افزونه ممکن است در پس‌زمینه اجرا شود</translation>
 <translation id="8812593354822910461">داده‌های محصول مرور (<ph name="URL" />) را نیز پاک می‌کند که این کار شما را از سیستم <ph name="DOMAIN" /> خارج خواهد کرد. <ph name="LEARN_MORE" /></translation>

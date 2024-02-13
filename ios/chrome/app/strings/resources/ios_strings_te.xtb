@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">కాపీ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1943478190258551035">మెనూ → సెట్టింగ్‌లు</translation>
 <translation id="194449685234099560">మీరు ఇక్కడ మీరు తెరిచిన ట్యాబ్‌లన్నింటినీ కనుగొనవచ్చు.</translation>
-<translation id="1952172573699511566">వీలైనప్పుడు వెబ్‌సైట్‌లు, మీ ప్రాధాన్య భాషలో వచనాన్ని చూపుతాయి.</translation>
 <translation id="1956138802718275401">మొదటి స్క్రీన్ నుండి పాస్‌వర్డ్‌లను పొందండి</translation>
 <translation id="1959441496380398824">తేదీని తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">యూనిట్ రకం ఎంపిక సాధనం</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
+<translation id="2078437078822043850">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి కుడి వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2080409463824088391">యాప్‌లో తెరవండి…</translation>
 <translation id="2080769225927880590">చెల్లుబాటు అయ్యే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం</translation>
 <translation id="2421044535038393232">ఎడిట్‌ను కొనసాగించండి</translation>
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
+<translation id="2434918313224755415">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి ఎడమ వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2459155039684421202">అడ్రస్ బార్‌లో, “నా హిస్టరీని క్లియర్ చేయండి” లేదా “పాస్‌వర్డ్‌లను ఎడిట్ చేయండి” వంటి టాస్క్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="2461070143328828326">పాస్‌వర్డ్ సెట్టింగ్‌లు</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">స్క్రీన్‌కు ఎగువున ఉన్న, + చిహ్నాన్ని ట్యాప్ చేయండి</translation>
 <translation id="2604176749896001318">మీ బ్రౌజర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="2609008503159898744">అన్ని ట్యాబ్‌లను మూసివేయాలా?</translation>
+<translation id="261305050785128654">మీరు మాట్లాడే భాషలను వెబ్‌సైట్‌లకు తెలియజేయండి. వీలైనప్పుడు అవి ఆ భాషల్లో కంటెంట్‌ను చూపిస్తాయి.</translation>
 <translation id="2613747923081026172">గ్రూప్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2617210333344098964">అడ్రస్‌ను ఖాతాకు తరలించండి</translation>
 <translation id="261739049332372104">మీకు ముఖ్యమైన కంటెంట్ గురించిన అప్‌డేట్‌లను పొందడానికి, మీ iOS సెట్టింగ్‌లలో నోటిఫికేషన్‌ను ఆన్ చేయండి.</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">లింక్ URLను కాపీ చేయి</translation>
 <translation id="3607167657931203000">స్వీయపూర్తి డేటా</translation>
 <translation id="3609785682760573515">సింక్ చేస్తోంది...</translation>
+<translation id="3625008969091706597">మీరు వెనుకకు వెళ్లడానికి అంచును స్వైప్ చేయవచ్చు.</translation>
 <translation id="3630104167004786843">అప్‌డేట్‌లు వద్దు</translation>
 <translation id="3631443864840848029">మీరు ఈ సైట్‌లో మీ ప్రస్తుత పాస్‌వర్డ్‌ను సేవ్ చేస్తున్నారని నిర్ధారించుకోండి.</translation>
 <translation id="3638472932233958418">వెబ్‌పేజీలను ముందే లోడ్ చేయి</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{మీరు {COUNT} హెచ్చరికను విస్మరించారు}other{మీరు {COUNT} హెచ్చరికలను విస్మరించారు}}</translation>
 <translation id="4272631900155121838">QR కోడ్‌ను స్కాన్ చేయడానికి, సెట్టింగ్‌ల్లో కెమెరాను ప్రారంభించండి</translation>
 <translation id="4277990410970811858">సురక్షిత బ్రౌజింగ్</translation>
+<translation id="4279431713294750185">మీరు ముందుకు వెళ్లడానికి అంచును స్వైప్ చేయవచ్చు.</translation>
 <translation id="4281844954008187215">సర్వీస్ నియమాలు</translation>
 <translation id="4286718549648564014">అడ్రస్ మీ ఖాతా <ph name="USER_EMAIL" />‌కు తరలించబడింది</translation>
 <translation id="4293080268407233932">సెర్చ్ చేయండి</translation>
@@ -1288,6 +1292,7 @@
 <translation id="7583004045319035904">మీ అజ్ఞాత ట్యాబ్‌లను అన్‌లాక్ చేయడానికి <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ను ఉపయోగించండి.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7603852183842204213">పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="7607521702806708809">పాస్‌వర్డ్‌ను తొలగించండి</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7640669552036055091">Androidలో ట్యాబ్‌లు</translation>

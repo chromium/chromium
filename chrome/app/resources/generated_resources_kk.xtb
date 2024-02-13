@@ -2840,7 +2840,6 @@
 <translation id="3132277757485842847">Телефоныңызбен байланыс орнату мүмкін болмады. Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="3132896062549112541">Ереже</translation>
 <translation id="3132996321662585180">Күнделікті жаңарту</translation>
-<translation id="3133184011320864289">Chrome қойындылар топтарын ұсынып, қойындыларыңызды реттеп отыруы үшін, синхрондауды қосыңыз.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз. Эксперименттің сипаттамасы: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3139925690611372679">Әдепкі сары түсті аватар</translation>
 <translation id="3141093262818886744">Бәрібір ашу</translation>
@@ -9089,7 +9088,6 @@
 <translation id="8052218774860457016">Браузерді синхрондауды басқару</translation>
 <translation id="8053278772142718589">PKCS #12 файлдары</translation>
 <translation id="8053390638574070785">Бұл бетті қайта жүктеу</translation>
-<translation id="8053629544194355894">Chrome қойындылар топтарын ұсынуы үшін, синхрондау функциясын қосыңыз</translation>
 <translation id="8054517699425078995">Файлдың бұл түрі құрылғыңызға зиян келтіруі мүмкін. Бәрібір <ph name="FILE_NAME" /> сақтауды қалайсыз ба?</translation>
 <translation id="8054563304616131773">Жарамды электрондық пошта мекенжайын енгізіңіз</translation>
 <translation id="8054609631325628928">Қызметті белсендіруге көмектесу үшін осы нөмірлерді пайдалануға болады</translation>
@@ -9404,7 +9402,6 @@
 <translation id="8293206222192510085">Бетбелгі қосу</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8294476140219241086">Қойындыларды реттеу құралы</translation>
-<translation id="8294895455164415895">Chrome қойындылар топтарын ұсынуы үшін, параметрлерді ашыңыз</translation>
 <translation id="8295449579927246485">Жедел аударма</translation>
 <translation id="8295450130892483256">Microsoft 365 бағдарламасын орнату</translation>
 <translation id="8297292446125062288">HID параметрлері</translation>
@@ -9557,7 +9554,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">толық экран</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> және тағы <ph name="COUNT" /> рұқсат етілді.</translation>
-<translation id="8412682423093430245">Chrome қойындылар топтарын ұсынып, қойындыларыңыздың реттеуі үшін, параметрлерде "Тарихты синхрондау" функциясын қосыңыз.</translation>
 <translation id="8413795581997394485">Қауіпті деп танылған сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғайды. Сайтқа кірген кезіңізде, Chrome браузері URL мекенжайының бүркемеленген бөлігін IP мекенжайыңызды жасыратын жеке сервер арқылы Google-ға жібереді. Сайтта күдікті әрекеттер орындалса, толық URL мекенжайлары және беттегі контент бөліктері де жіберіледі.</translation>
 <translation id="8413956290606243087">ChromeOS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме?</translation>
 <translation id="8414249071344507766">Естеліктер екі күн көрсетілмейді.</translation>
@@ -9587,7 +9583,6 @@
 <translation id="8431190899827883166">Түрту қимылын көрсету</translation>
 <translation id="8433186206711564395">Желі параметрлері</translation>
 <translation id="8434480141477525001">NaCl түзету ұяшығы</translation>
-<translation id="8436054240208929121">Chrome қойындылар топтарын ұсынып, қойындыларыңызды реттеп отыруы үшін, аккаунтқа кіріп, синхрондауды қосыңыз.</translation>
 <translation id="8437209419043462667">АҚШ</translation>
 <translation id="8438566539970814960">Іздеу және сайттарды шолу жұмысын жақсарту</translation>
 <translation id="8439506636278576865">Беттерді осы тілге аудару ұсынысы</translation>
@@ -10063,7 +10058,6 @@
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Мысық</translation>
 <translation id="8809147117840417135">Ашық көкшіл жасыл</translation>
-<translation id="881049307637003105">Түймелер қосу немесе табу үшін <ph name="DEVICE_NAME" /> құрылғыңыздағы қосымша түймелерді басыңыз.</translation>
 <translation id="8811862054141704416">Crostini жүйесінде микрофон пайдалану</translation>
 <translation id="8811923271770626905">Бұл кеңейтім фондық режимде жұмыс істеуі мүмкін.</translation>
 <translation id="8812593354822910461">Браузерді пайдалану деректерін де (<ph name="URL" />) өшіріңіз (<ph name="DOMAIN" /> сайтында аккаунтыңыздан шығарыласыз). <ph name="LEARN_MORE" /></translation>

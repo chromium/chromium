@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">নির্বাচিত ট্যাবগুলি</translation>
 <translation id="1943432128510653496">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1944535645109964458">কোনও 'পাসকী' উপলভ্য নেই</translation>
-<translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
 <translation id="1959679933317802873">কন্টেন্টের জন্য অপেক্ষা করা হচ্ছে</translation>
 <translation id="1960290143419248813">Android-এর এই ভার্সনে Chrome আপডেট করা আর সম্ভব নয়</translation>
 <translation id="1963976881984600709">স্ট্যান্ডার্ড সুরক্ষা</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">লিঙ্ক করা সমস্ত ডিভাইস সরিয়ে দিন</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> বন্ধ করা হয়েছে</translation>
 <translation id="2139186145475833000">হোম স্ক্রীনে যোগ করুন</translation>
+<translation id="2139414603196655536">'পৃষ্ঠা ইনসাইট' হাবে করা আপনার অ্যাক্টিভিটি Google অ্যাকাউন্টে সেভ করা আছে। <ph name="BEGIN_LINK" />কীভাবে এটি ম্যানেজ করতে হবে তা জানুন<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">আপনার ব্যবহারের উপর ভিত্তি করে</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2155214902713132423">এই ডিভাইসের জন্য যাচাইকরণের এই পদ্ধতি উপলভ্য নেই। আপনার অন্য ডিভাইসে অন্য একটি বিকল্প বেছে নিন।</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">গতকাল চেক করা হয়েছে</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="671481426037969117">আপনার <ph name="FQDN" /> টাইমারের মেয়াদ পেরিয়ে গেছে। আগামীকাল আবার এটি শুরু হবে।</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{বুকমার্ক <ph name="FOLDER_NAME" />-এ সেভ করা হয়েছে। এটি শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে।}one{বুকমার্ক <ph name="FOLDER_NAME" />-এ সেভ করা হয়েছে। এটি শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে।}other{বুকমার্ক <ph name="FOLDER_NAME" />-এ সেভ করা হয়েছে। এটি শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে।}}</translation>
 <translation id="6715020873764921614">আপনি কি তবুও <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="6719634564325948108">QR Code-এ কানেক্ট করা আছে?</translation>
 <translation id="6723740634201835758">আপনার Google অ্যাকাউন্টে</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">পেজ ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="8243077599929149377">আপনার ইউজারনেম যোগ করুন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{আপনার অ্যাকাউন্টের <ph name="FOLDER_NAME" />-এ বুকমার্ক সেভ করা হয়েছে, <ph name="ACCOUNT_EMAIL" />।}one{আপনার অ্যাকাউন্টের <ph name="FOLDER_NAME" />-এ বুকমার্ক সেভ করা হয়েছে, <ph name="ACCOUNT_EMAIL" />।}other{আপনার অ্যাকাউন্টের <ph name="FOLDER_NAME" />-এ বুকমার্ক সেভ করা হয়েছে, <ph name="ACCOUNT_EMAIL" />।}}</translation>
 <translation id="8255617931166444521">সাইট শুধুমাত্র আপনার কুকি ব্যবহার করতে পারে, যাতে তার সাইটে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখা যায়</translation>
 <translation id="8259179246279078674">প্রিলোড করা পৃষ্ঠা এনক্রিপ্ট করা থাকে বলে সেটির কন্টেন্ট Google জানতে পারে না। কোন সাইট ব্যক্তিগতভাবে প্রিলোড করা হয়েছে সেটি Google সার্ভার জানতে পারে। এই তথ্য শুধু পৃষ্ঠা প্রিলোড করার জন্য ব্যবহার করা হয় এবং আপনার Google অ্যাকাউন্টের অন্য তথ্যের সাথে যুক্ত থাকে না।</translation>
 <translation id="8260126382462817229">আবার সাইন ইন করার চেষ্টা করুন</translation>

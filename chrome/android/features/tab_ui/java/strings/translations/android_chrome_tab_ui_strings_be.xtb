@@ -3,10 +3,13 @@
 <translationbundle lang="be">
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="1155815720264022949">Хочаце закрыць старыя ўкладкі?</translation>
+<translation id="1197088940767939838">Аранжавы</translation>
 <translation id="1215127405478249895">Прагляд укладак</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1326271443836399892">Праглядзець бягучыя налады ўпарадкоўвання.</translation>
 <translation id="1499635324672558517">Закрыць усе ўкладкі ў рэжыме інкогніта?</translation>
+<translation id="1555130319947370107">Сіні</translation>
+<translation id="161042844686301425">Блакітны</translation>
 <translation id="1657719826150349398">Перамясціць укладку ніжэй</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Дадаць у закладкі <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Дадаць укладку ў групу}one{Згрупаваць укладкі}few{Згрупаваць укладкі}many{Згрупаваць укладкі}other{Згрупаваць укладкі}}</translation>
 <translation id="3996880007329611795">Атрымліваць абвесткі</translation>
 <translation id="4133493477912226187">Здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
+<translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4212246570487010370">Працягвайце прагляд</translation>
 <translation id="427987768447457592">Новая група ўкладак</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_ONE" /> укладку}one{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладку}few{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}many{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладак}other{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
+<translation id="5400836586163650660">Шэры</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5545379293264651575">Закрыць без разгляду</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Атрымліваць абвесткі пра зніжэнні цэн?</translation>
 <translation id="58326064309361797">Каб згрупаваць укладкі, перацягвайце іх</translation>
 <translation id="5846292395804797011">Закрыць групу "<ph name="TITLE_OF_GROUP" />" з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="5901630391730855834">Жоўты</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
+<translation id="6017514345406065928">Зялёны</translation>
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> выбраных укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> выбранай укладкі ў групу}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> водгук}one{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгук}few{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукі}many{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукаў}other{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгуку}}</translation>
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
+<translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7966321538264951561">Адхіліць прапановы.</translation>
 <translation id="8029301326595421733">Інфармацыя пра гэту краму разгорнута на ўвесь экран</translation>
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Дадаць у групу новую ўкладку</translation>
 <translation id="955558140275419384">У гэтым рэдактары вы можаце праглядзець усе захаваныя ў архіве ўкладкі і закрыць непатрэбныя.</translation>
 <translation id="959682366969460160">Навядзіце парадак</translation>
+<translation id="992256792861109788">Ружовы</translation>
 </translationbundle>

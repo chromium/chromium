@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Operazione annullata</translation>
 <translation id="1020274983236703756">Asset esclusivi di <ph name="PRODUCT_NAME" /> ora disponibili</translation>
 <translation id="1022628058306505708">Flusso terrestre</translation>
+<translation id="1026212596705997935">Scorciatoia utilizzata per "<ph name="CONFLICT_ACCEL_NAME" />". Premi una nuova scorciatoia. Per sostituire la scorciatoia esistente, premi di nuovo questa scorciatoia.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1049663189809099096">giallo pastello</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2407209115954268704">Stato di blocco della SIM</translation>
 <translation id="241419523391571119">Riapri il coperchio per eseguire il test</translation>
+<translation id="2414660853550118611">Informazioni sullo sfondo</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Creato il giorno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
 <translation id="6196607555925437199">Ricrea</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Attiva salvaschermo</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
+<translation id="6327262166342360252">Questo sfondo è stato creato con l'IA utilizzando il seguente testo: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema scuro automatico</translation>
 <translation id="6340526405444716530">Personalizzazione</translation>
 <translation id="6348738456043757611">Nome utente e password</translation>

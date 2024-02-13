@@ -1922,7 +1922,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4757022425116568383">Chave de acesso do seu perfil do Chrome</translation>
 <translation id="4757993714154412917">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chromium recomenda conferir as senhas salvas.</translation>
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
-<translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4761326898079498987">Revise para conferir mais detalhes</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4763196677855776703">Termos e Condições fornecidos por <ph name="URL" /></translation>
@@ -4154,7 +4153,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9148507642005240123">&amp;Desfazer editar</translation>
 <translation id="9148599396704355100">Preço baixo</translation>
 <translation id="9150025764986957246">Você pode inserir informações como:</translation>
-<translation id="9150045010208374699">Usar câmera</translation>
 <translation id="9150685862434908345">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="9155211586651734179">Periféricos de áudio conectados</translation>

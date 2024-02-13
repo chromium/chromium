@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">แสดงชั้นวางเสมอ</translation>
 <translation id="132346741904777634">จัดกล้องพอดีกับมุมซ้ายบนแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
+<translation id="132415371743256095">ปิด <ph name="DESK_NAME" /> และหน้าต่าง</translation>
 <translation id="1333308631814936910">เชื่อมต่อ <ph name="DISPLAY_NAME" /> แล้ว</translation>
 <translation id="1340378040547539434">ซูมออกในหน้า</translation>
 <translation id="1341651618736211726">รายการเพิ่มเติม</translation>
@@ -328,9 +329,11 @@
 <translation id="2369165858548251131">"สวัสดี" ในภาษาจีน</translation>
 <translation id="2382875860893882175">การแคสต์หยุดอยู่ชั่วคราวในขณะนี้ คุณแคสต์ต่อหรือหยุดการแคสต์ได้ทุกเมื่อ</translation>
 <translation id="2386292613071805067">เลือกทุกอย่างในหน้า</translation>
+<translation id="2392659840443812875">ไม่มีฮอตสปอตที่ใช้ได้ ตรวจสอบว่าอุปกรณ์อยู่ใกล้ๆ และบลูทูธเปิดอยู่</translation>
 <translation id="2397416548179033562">แสดงเมนู Chrome</translation>
 <translation id="240006516586367791">การควบคุมสื่อ</translation>
 <translation id="2402411679569069051">ใช้ลายนิ้วมือหรือปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
+<translation id="240545663114741956">กด <ph name="ACCELERATOR" /> 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="2405664212338326887">ไม่เชื่อมต่อ</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2412593942846481727">มีเวอร์ชันอัปเดต</translation>
@@ -352,7 +355,9 @@
 <translation id="2478076885740497414">ติดตั้งแอป</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
+<translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
+<translation id="250047928202119308">เมนูโปรไฟล์เดสก์</translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2504454902900101003">ปิดการตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
@@ -583,6 +588,7 @@
 <translation id="3437677362970530951">เกมใน Play Store และแพลตฟอร์มเกมอื่นๆ</translation>
 <translation id="3439896670700055005">โหลดหน้าปัจจุบันซ้ำโดยไม่ใช้เนื้อหาที่แคชไว้</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">ปรับแต่งเมาส์</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3454555520521576458">ปรับขนาดได้</translation>
@@ -900,6 +906,7 @@
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4644727592819780893">พื้นที่เล็กเกินกว่าที่จะแสดงตัวอย่างกล้อง</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, แอปแนะนำ</translation>
+<translation id="4654916960643280876">เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> แล้ว</translation>
 <translation id="4657775630156561295">ระบบจะนำคำแนะนำต่อไปนี้ออกอย่างถาวรจากประวัติคำแนะนำของบัญชี
 
 <ph name="QUERY" /></translation>
@@ -1026,6 +1033,7 @@
 <translation id="5111930673176965299">การเบลอพื้นหลัง</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
+<translation id="5122517996953421795">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
 <translation id="5150070631291639005">การตั้งค่าความเป็นส่วนตัว</translation>
@@ -1073,6 +1081,7 @@
 <translation id="5313326810920013265">การตั้งค่าบลูทูธ</translation>
 <translation id="5314219114274263156">อัดหน้าจอแล้ว</translation>
 <translation id="5314489738835854379">สลับระหว่างหน้าต่าง (กลับหลัง)</translation>
+<translation id="5315931444962548795">เปิดบลูทูธเพื่อค้นหาฮอตสปอตที่ใช้ได้ในบริเวณใกล้เคียง</translation>
 <translation id="5316716239522500219">แสดงผลบนหน้าจอ</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319712128756744240">จับคู่อุปกรณ์ใหม่</translation>
@@ -1426,6 +1435,7 @@
 <translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6686023075541098243">ตั้งค่าการดูการแจ้งเตือนของโทรศัพท์</translation>
 <translation id="6696025732084565524">แป้มพิมพ์ที่ถอดได้ต้องได้รับอัปเดตที่สำคัญ</translation>
+<translation id="6697913454192220372">เพิ่มเดสก์ใหม่</translation>
 <translation id="6700713906295497288">ปุ่มเมนู IME</translation>
 <translation id="6707693040195709527">เกินกำหนดการเปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าแล้ว</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
@@ -1557,6 +1567,7 @@
 <translation id="7262906531272962081">สร้างการช่วยเตือน</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">ใช้เครื่องมือจับภาพหน้าจอในการตั้งค่าด่วนเพื่อถ่ายภาพหน้าจอ</translation>
+<translation id="7301826272005790482">ปิดคำแนะนำหน้าต่าง</translation>
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1607,6 +1618,7 @@
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7512509370370076552">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจาก Alt + คลิกเป็นแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกแล้ว</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> ไม่ได้เลือกอยู่</translation>
+<translation id="7513057995673284840">คุณปรับเปลี่ยนการทำงานของปุ่มบน <ph name="PERIPHERAL_NAME" /> ในแบบของคุณได้</translation>
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
@@ -1663,6 +1675,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">กำลังสร้าง GIF</translation>
 <translation id="7714767791242455379">เพิ่มเครือข่ายมือถือใหม่</translation>
+<translation id="7716257086539630827">ปรับแต่งแท็บเล็ต</translation>
 <translation id="7720400844887872976">เปิดจนถึง <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ลองอีกครั้ง</translation>
 <translation id="7721132362314201794">ชื่อเดสก์</translation>
@@ -1688,6 +1701,7 @@
 <translation id="7807067443225230855">การค้นหาและผู้ช่วย</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> กับ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">สัญญาณแรง</translation>
+<translation id="7830453190047749513">คุณปรับเปลี่ยนการทำงานของปุ่ม ความเร็วของเคอร์เซอร์ และอื่นๆ สำหรับ <ph name="PERIPHERAL_NAME" /> ในแบบของคุณได้</translation>
 <translation id="7837740436429729974">หมดเวลา</translation>
 <translation id="7842569679327885685">คำเตือน: ฟีเจอร์ทดลอง</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
@@ -1763,6 +1777,7 @@
 <translation id="8054466585765276473">กำลังคำนวณเวลาใช้งานแบตเตอรี่</translation>
 <translation id="8079538659226626406">การแชร์หน้าจอ</translation>
 <translation id="8083540854303889870">บันทึกไว้ใช้ภายหลัง</translation>
+<translation id="8088141034189573826">ใช้แท็บเพื่อดูตัวเลือกเพิ่มเติม ใช้ลูกศรซ้ายและขวาเพื่อเข้าถึงเดสก์ทั้งหมด</translation>
 <translation id="8091153018031979607">เริ่มเวลา <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">การอัปเดตอัตโนมัติ</translation>
 <translation id="8092380135549145188">การควบคุมการเลื่อน</translation>
@@ -1960,6 +1975,7 @@
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8940956008527784070">แบตเตอรี่ต่ำ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">ไม่ได้เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /></translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8951539504029375108">เฉพาะอุปกรณ์ Thunderbolt ที่ได้รับอนุมัติเท่านั้นที่เข้ากันได้กับ Chromebook ของคุณ</translation>
 <translation id="8964525410783593407">1 ชม.</translation>

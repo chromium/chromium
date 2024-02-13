@@ -3,10 +3,13 @@
 <translationbundle lang="sk">
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
 <translation id="1155815720264022949">Chcete zavrieť staré karty?</translation>
+<translation id="1197088940767939838">Oranžová</translation>
 <translation id="1215127405478249895">Kontrola kariet</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
 <translation id="1326271443836399892">Skontrolujte aktuálne nastavenia čistenia.</translation>
 <translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
+<translation id="1555130319947370107">Modrá</translation>
+<translation id="161042844686301425">Azúrová</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Uložiť <ph name="TABS_COUNT_ONE" /> vybranú kartu ako záložku}few{Uložiť <ph name="TABS_COUNT_MANY" /> vybrané karty ako záložky}many{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}other{Uložiť <ph name="TABS_COUNT_MANY" /> vybraných kariet ako záložky}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Zoskupiť kartu}few{Zoskupiť karty}many{Zoskupiť karty}other{Zoskupiť karty}}</translation>
 <translation id="3996880007329611795">Dostávať upozornenia</translation>
 <translation id="4133493477912226187">Zdá sa, že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
+<translation id="4159784952369912983">Purpurová</translation>
 <translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="427987768447457592">Nová skupina kariet</translation>
 <translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Musíte zadať názov</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{V poslednom čase ste nepoužili <ph name="TABS_COUNT_ONE" /> kartu}few{V poslednom čase ste nepoužili <ph name="TABS_COUNT_MANY" /> karty}many{You have <ph name="TABS_COUNT_MANY" /> tabs you haven't used recently}other{V poslednom čase ste nepoužili <ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="5339733443032484186">Vaša posledná karta</translation>
+<translation id="5400836586163650660">Sivá</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5545379293264651575">Zavrieť bez pozretia</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Chcete dostávať upozornenia na poklesy cien?</translation>
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
 <translation id="5846292395804797011">Zavrieť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami</translation>
+<translation id="5901630391730855834">Žltá</translation>
 <translation id="5972844218283131174">Zrušiť výber všetkého</translation>
+<translation id="6017514345406065928">Zelená</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Zoskupiť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zoskupiť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Group <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zoskupiť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzia}few{Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzie}many{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> reviews}other{Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzií}}</translation>
 <translation id="7885132941432959125">Presunúť kartu doprava</translation>
+<translation id="7942349550061667556">Červená</translation>
 <translation id="7966321538264951561">Zavrieť návrhy.</translation>
 <translation id="8029301326595421733">Informácie o tomto obchode sú otvorené na úplnú výšku</translation>
 <translation id="8205266828577616993">Presunúť kartu nahor</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Pridať novú kartu do skupiny</translation>
 <translation id="955558140275419384">Zadaním tohto editora môžete skontrolovať všetky archivované karty, či nepotrebujú vyčistiť.</translation>
 <translation id="959682366969460160">Usporiadanie položiek</translation>
+<translation id="992256792861109788">Ružová</translation>
 </translationbundle>

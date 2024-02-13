@@ -1922,7 +1922,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4757022425116568383">Chrome Profilinizden geçiş anahtarı</translation>
 <translation id="4757993714154412917">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="4758311279753947758">İletişim bilgilerinizi ekleyin</translation>
-<translation id="4761104368405085019">Mikrofonunuzu kullanma</translation>
 <translation id="4761326898079498987">Daha ayrıntılı bilgi için inceleyin</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
 <translation id="4763196677855776703">Hükümler ve Koşullar, <ph name="URL" /> tarafından sağlanmıştır</translation>
@@ -4152,7 +4151,6 @@ Ek ayrıntılar:
 <translation id="9148507642005240123">Düzenlemeyi &amp;geri al</translation>
 <translation id="9148599396704355100">Düşük Fiyatlı</translation>
 <translation id="9150025764986957246">Aşağıdaki gibi bilgileri girebilirsiniz:</translation>
-<translation id="9150045010208374699">Kameranızı kullanma</translation>
 <translation id="9150685862434908345">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Güncellendi</translation>
 <translation id="9155211586651734179">Takılı durumdaki ses çevre birimleri</translation>

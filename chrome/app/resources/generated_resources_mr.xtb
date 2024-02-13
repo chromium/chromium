@@ -2857,7 +2857,6 @@
 <translation id="3132277757485842847">आम्हाला तुमच्या फोनसह कनेक्शन सुरू ठेवता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">दररोज रिफ्रेश करा</translation>
-<translation id="3133184011320864289">Chrome ला टॅब गट सुचवू देण्यासाठी आणि तुमचे टॅब संगतवार ठेवू देण्यासाठी सिंक सुरू करा</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> प्रयोगासाठी प्रयोगाची स्थिती निवडा. प्रयोगाचे वर्णन: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डीफॉल्ट पिवळा अवतार</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
@@ -3920,6 +3919,7 @@
 <translation id="3957844511978444971">या Google सेवा सेटिंग्ज तुमच्या निवडीची खात्री करण्यासाठी "स्वीकारा" वर टॅप करा.</translation>
 <translation id="3958088479270651626">बुकमार्क आणि सेटिंग्ज इंपोर्ट करा</translation>
 <translation id="3958110062351175311">टूलबारमध्ये विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> आधीपासून इंस्टॉल केले आहे</translation>
 <translation id="3959747296451923142">सदस्यत्व काढून टाकणे कन्फर्म करा</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> साठी आणखी कृती</translation>
@@ -6549,6 +6549,7 @@
 <translation id="6065289257230303064">प्रमाणपत्र विषय डिरेक्टरी विशेषता</translation>
 <translation id="6066794465984119824">इमेज हॅश सेट केलेला नाही</translation>
 <translation id="6069464830445383022">तुमचे Google खाते हेच तुमचे Chromebook साइन इन आहे</translation>
+<translation id="6069500411969514374">ऑफिस</translation>
 <translation id="6071181508177083058">पासवर्ड कन्फर्म करा</translation>
 <translation id="6071576563962215370">सिस्टमला डिव्हाइस इंस्टॉलेशन वेळ विशेषता लॉक स्थापित करता आले नाही.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> मेमरी सेव्ह केली आहे</translation>
@@ -9110,7 +9111,6 @@
 <translation id="8052218774860457016">ब्राउझर सिंक व्यवस्थापित करा</translation>
 <translation id="8053278772142718589">PKCS #12 फाइल</translation>
 <translation id="8053390638574070785">हे पेज रीलोड करा</translation>
-<translation id="8053629544194355894">Chrome ला टॅब गट सुचवू देण्यासाठी सिंक सुरू करा</translation>
 <translation id="8054517699425078995">या प्रकारची फाईल आपल्‍या डिव्‍हाइसला हानी पोहचवू शकते. तुम्ही <ph name="FILE_NAME" /> तरीही ठेवू इच्‍छिता?</translation>
 <translation id="8054563304616131773">कृपया एक वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="8054609631325628928">हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात</translation>
@@ -9425,7 +9425,6 @@
 <translation id="8293206222192510085">बुकमार्क जोडा</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8294476140219241086">टॅब व्यवस्थापक</translation>
-<translation id="8294895455164415895">Chrome ला टॅब गट सुचवू देण्यासाठी सेटिंग्ज उघडा</translation>
 <translation id="8295449579927246485">लाइव्ह भाषांतर</translation>
 <translation id="8295450130892483256">Microsoft 365 इंस्टॉल करा</translation>
 <translation id="8297292446125062288">HID सेटिंग्ज</translation>
@@ -9578,7 +9577,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">फुलस्क्रीन</translation>
 <translation id="8412136526970428322">अनुमती असलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Chrome ला टॅब गट सुचवू देण्यासाठी आणि तुमचे टॅब संगतवार ठेवू देण्यासाठी सेटिंग्ज मध्ये इतिहास सिंक सुरू करा</translation>
 <translation id="8413795581997394485">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण करते. तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे Google ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="8413956290606243087">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
 <translation id="8414249071344507766">मेमरी दोन दिवसांसाठी लपवल्या गेल्या</translation>
@@ -9608,7 +9606,6 @@
 <translation id="8431190899827883166">टॅप दाखवा</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
-<translation id="8436054240208929121">Chrome ला टॅब गट सुचवू देण्यासाठी आणि तुमचे टॅब संगतवार ठेवू देण्यासाठी साइन इन करून सिंक सुरू करा</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439506636278576865">या भाषेमध्ये पेज भाषांतरीत करण्यासाठी ऑफर</translation>
@@ -10018,6 +10015,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ला सिरीअल पोर्टशी कनेक्ट करायचे आहे</translation>
 <translation id="8750346984209549530">मोबाइल APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>
+<translation id="8751034568832412184">शाळा</translation>
 <translation id="8752451679755290210">आयटमदरम्यान आपोआप नेव्हिगेट करा</translation>
 <translation id="8753948258138515839">Files अ‍ॅप हे तुम्ही Google Drive, बाह्य स्टोरेज किंवा तुमच्या ChromeOS Flex डिव्हाइसवर सेव्ह केलेल्या फाइलचा झटपट अ‍ॅक्सेस पुरवते.</translation>
 <translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालविताना, सिस्टम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टमला सपोर्ट नाही नसते किंवा तुमचे सिस्टम कॉंफिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;
@@ -10084,7 +10082,6 @@
 <translation id="8808478386290700967">वेब स्टोअर</translation>
 <translation id="8808686172382650546">मांजर</translation>
 <translation id="8809147117840417135">फिकट टील</translation>
-<translation id="881049307637003105">बटणे जोडण्यासाठी किंवा शोधण्यासाठी तुमच्या <ph name="DEVICE_NAME" /> वर अतिरिक्त बटणांवर क्लिक करा.</translation>
 <translation id="8811862054141704416">Crostini मायक्रोफोन अ‍ॅक्सेस</translation>
 <translation id="8811923271770626905">हे एक्स्टेंशन बॅकग्राउंडमध्ये सुरू करू शकतो</translation>
 <translation id="8812593354822910461">तसेच ब्राउझिंग डेटा (<ph name="URL" />) साफ करा ज्यामुळे तुम्ही <ph name="DOMAIN" /> वरून साइन आउट व्हाल. <ph name="LEARN_MORE" /></translation>

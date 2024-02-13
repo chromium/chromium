@@ -669,6 +669,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3702846122927433391">Poboación de Nixeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
+<translation id="3712143870407382523">Escolle unha ventá para este lado</translation>
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacións máis non están neste dispositivo.</translation>
@@ -1410,6 +1411,7 @@ Nova instalación</translation>
 <translation id="6613765291890844037">Almacenamento: <ph name="STORAGE_IN_USE_SIZE" /> en uso | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
 <translation id="6622679827379792051">Configurar a visualización das aplicacións do teu teléfono</translation>
+<translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a miróns</translation>
 <translation id="6627638273713273709">Buscar+Maiús+K</translation>
 <translation id="662830937908749204">Mover enfoque ao seguinte panel</translation>
@@ -1502,6 +1504,7 @@ Nova instalación</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
 <translation id="6984028004251196682">O dispositivo <ph name="DISPLAY_NAME" /> non admite unha resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Para conservar este cambio, fai clic en Confirmar. A configuración anterior restaurarase dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Fai unha visita rápida para familiarizarte co teu Chromebook. Comeza a usalo en 6 pasos.</translation>
+<translation id="7000027735917578303">Configuración de ventás e escritorios</translation>
 <translation id="7004910047186208204">Conéctate aos datos móbiles</translation>
 <translation id="7005239792648594238">Abre unha aplicación para comezar</translation>
 <translation id="7007983414944123363">Non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
@@ -1753,6 +1756,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8001755249288974029">Selecciona texto desde cursor ata o comezo da liña</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
+<translation id="802782383769312836">Escritorio anterior: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
 <translation id="8030169304546394654">Desconectado</translation>
@@ -1800,6 +1804,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8219451629189078428">Durante este tempo, o Chromebook ten que permanecer acendido e enchufado. Asegúrate de que os cables do adaptador ou do cargador estean ben inseridos tanto no Chromebook como no enchufe. Non apagues o Chromebook.</translation>
 <translation id="8230305195727960608">Modo de inversión da cor</translation>
 <translation id="8236042855478648955">É hora de que fagas unha pausa</translation>
+<translation id="8237964652943995219">Escritorio seguinte: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Activar escritorio da dereita</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicación</translation>
@@ -2026,6 +2031,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="92580429198593979">Premiches o atallo de teclado da inversión da cor. Queres activala?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato</translation>
+<translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
 <translation id="945383118875625837">Arrastra a ligazón á barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>

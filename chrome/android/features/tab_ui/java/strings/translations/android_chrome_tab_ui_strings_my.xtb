@@ -3,10 +3,13 @@
 <translationbundle lang="my">
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="1155815720264022949">တဘ်အဟောင်းများ ပိတ်လိုပါသလား။</translation>
+<translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="1215127405478249895">တဘ်များ ကြည့်ခြင်း</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1326271443836399892">မလိုသည်များ ဖယ်ရှားသော လက်ရှိဆက်တင်များကို စိစစ်ပါ။</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
+<translation id="1555130319947370107">အပြာရောင်</translation>
+<translation id="161042844686301425">Cyan</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖွဲ့ရန်}other{တဘ်များ အုပ်စုဖွဲ့ရန်}}</translation>
 <translation id="3996880007329611795">အကြောင်းကြားချက် ရယူရန်</translation>
 <translation id="4133493477912226187">တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
+<translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="427987768447457592">တဘ်အုပ်စုအသစ်</translation>
 <translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုရှိသည်}other{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုရှိသည်}}</translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
+<translation id="5400836586163650660">မီးခိုး</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5545379293264651575">သုံးသပ်ချက်မပေးဘဲ ပိတ်ရန်</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">ဈေးကျသွားသည်များအတွက် သတိပေးချက် ရယူမလား။</translation>
 <translation id="58326064309361797">တဘ်များကို အုပ်စုဖွဲ့ရန် ၎င်းတို့ကို ဖိဆွဲပါ</translation>
 <translation id="5846292395804797011">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် <ph name="TITLE_OF_GROUP" /> အုပ်စုကို ပိတ်ရန်</translation>
+<translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5972844218283131174">အားလုံးမရွေးပါနှင့်</translation>
+<translation id="6017514345406065928">အစိမ်းရောင်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ရန်}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်၊ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
+<translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7966321538264951561">အကြံပြုချက်များကို ပယ်ပါ။</translation>
 <translation id="8029301326595421733">ဤဆိုင် အပြည့်ဖွင့်သည့်အကြောင်း</translation>
 <translation id="8205266828577616993">တဘ်အပေါ်သို့ ရွှေ့ရန်</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="955558140275419384">ဤတည်းဖြတ်စနစ်သို့ ဝင်ခြင်းဖြင့် မလိုသည်များ ဖယ်ရှားရန် သိမ်းထားသောတဘ်အားလုံးကို စိစစ်ပါ။</translation>
 <translation id="959682366969460160">စုစုစည်းစည်းဖြစ်အောင် ပြုလုပ်ပါ</translation>
+<translation id="992256792861109788">ပန်းရောင်</translation>
 </translationbundle>

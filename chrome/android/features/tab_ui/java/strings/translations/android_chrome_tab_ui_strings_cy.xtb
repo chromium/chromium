@@ -3,10 +3,13 @@
 <translationbundle lang="cy">
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
 <translation id="1155815720264022949">Eisiau cau hen dabiau?</translation>
+<translation id="1197088940767939838">Oren</translation>
 <translation id="1215127405478249895">Adolygu tabiau</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
 <translation id="1326271443836399892">Adolygu'r gosodiadau glanhau'r anhrefn presennol.</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
+<translation id="1555130319947370107">Glas</translation>
+<translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Rhoi nod tudalen ar <ph name="TABS_COUNT_ONE" /> tab sydd wedi'i ddewis}zero{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> tab sydd wedi'u dewis}two{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> dab sydd wedi'u dewis}few{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> thab sydd wedi'u dewis}many{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> thab sydd wedi'u dewis}other{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> tab sydd wedi'u dewis}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grwpio tab}zero{Grwpio tabiau}two{Grwpio tabiau}few{Grwpio tabiau}many{Grwpio tabiau}other{Grwpio tabiau}}</translation>
 <translation id="3996880007329611795">Cael hysbysiadau</translation>
 <translation id="4133493477912226187">Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn gysylltiedig. Grwpio nhw?</translation>
+<translation id="4159784952369912983">Porffor</translation>
 <translation id="4212246570487010370">Parhau i bori</translation>
 <translation id="427987768447457592">Grŵp tabiau newydd</translation>
 <translation id="4648718555153979859">Mae'ch tabiau wedi'u grwpio gyda'i gilydd yma</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Mae teitl yn ofynnol</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Mae gennych <ph name="TABS_COUNT_ONE" /> tab nad ydych wedi'i ddefnyddio'n ddiweddar}zero{Mae gennych <ph name="TABS_COUNT_MANY" /> tabiau nad ydych wedi'u defnyddio'n ddiweddar}two{Mae gennych <ph name="TABS_COUNT_MANY" /> dab nad ydych wedi'u defnyddio'n ddiweddar}few{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}many{Mae gennych <ph name="TABS_COUNT_MANY" /> thab nad ydych wedi'u defnyddio'n ddiweddar}other{Mae gennych <ph name="TABS_COUNT_MANY" /> tab nad ydych wedi'u defnyddio'n ddiweddar}}</translation>
 <translation id="5339733443032484186">Eich tab diwethaf</translation>
+<translation id="5400836586163650660">Llwyd</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5545379293264651575">Cau heb adolygu</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Cael hysbysiadau am ostyngiadau prisiau?</translation>
 <translation id="58326064309361797">Llusgwch dabiau i'w grwpio</translation>
 <translation id="5846292395804797011">Cau'r grŵp <ph name="TITLE_OF_GROUP" /> sydd â <ph name="NUMBER_OF_TABS" /> o dabiau</translation>
+<translation id="5901630391730855834">Melyn</translation>
 <translation id="5972844218283131174">Dad-ddewis popeth</translation>
+<translation id="6017514345406065928">Gwyrdd</translation>
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grwpio <ph name="TABS_COUNT_ONE" /> tab a ddewisir}zero{Grwpio <ph name="TABS_COUNT_MANY" /> tab a ddewisir}two{Grwpio <ph name="TABS_COUNT_MANY" /> dab a ddewisir}few{Grwpio <ph name="TABS_COUNT_MANY" /> thab a ddewisir}many{Grwpio <ph name="TABS_COUNT_MANY" /> thab a ddewisir}other{Grwpio <ph name="TABS_COUNT_MANY" /> tab a ddewisir}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> adolygiad}zero{Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> adolygiad}two{Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> adolygiad}few{Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> adolygiad}many{Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> adolygiad}other{Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> adolygiad}}</translation>
 <translation id="7885132941432959125">Symud tab i'r dde</translation>
+<translation id="7942349550061667556">Coch</translation>
 <translation id="7966321538264951561">Diystyru'r awgrymiadau.</translation>
 <translation id="8029301326595421733">Gwybodaeth am y siop hon wedi'i hagor ar uchder llawn</translation>
 <translation id="8205266828577616993">Symud y tab i fyny</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Ychwanegu tab newydd at y grŵp</translation>
 <translation id="955558140275419384">Adolygwch yr holl dabiau archif ar gyfer glanhau'r anhrefn trwy fynd i mewn i'r golygydd hwn.</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>
+<translation id="992256792861109788">Pinc</translation>
 </translationbundle>

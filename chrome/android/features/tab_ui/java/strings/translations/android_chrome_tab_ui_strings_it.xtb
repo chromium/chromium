@@ -3,10 +3,13 @@
 <translationbundle lang="it">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="1155815720264022949">Vuoi chiudere le vecchie schede?</translation>
+<translation id="1197088940767939838">Arancione</translation>
 <translation id="1215127405478249895">Rivedi le schede</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
 <translation id="1326271443836399892">Rivedi le attuali impostazioni di pulizia.</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
+<translation id="1555130319947370107">Blu</translation>
+<translation id="161042844686301425">Ciano</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda selezionata ai preferiti}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede selezionate ai preferiti}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Raggruppa scheda}other{Raggruppa schede}}</translation>
 <translation id="3996880007329611795">Ricevi notifiche</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
+<translation id="4159784952369912983">Viola</translation>
 <translation id="4212246570487010370">Continua la navigazione</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
 <translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> scheda non utilizzata di recente}other{Hai <ph name="TABS_COUNT_MANY" /> schede non utilizzate di recente}}</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
+<translation id="5400836586163650660">Grigio</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5545379293264651575">Chiudi senza rivedere</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Vuoi ricevere avvisi sui cali di prezzo?</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
 <translation id="5846292395804797011">Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede</translation>
+<translation id="5901630391730855834">Giallo</translation>
 <translation id="5972844218283131174">Deseleziona tutte</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Raggruppa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Raggruppa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
+<translation id="7942349550061667556">Rosso</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="955558140275419384">Apri questo editor per esaminare tutte le schede archiviate ai fini della pulizia.</translation>
 <translation id="959682366969460160">Organizzazione</translation>
+<translation id="992256792861109788">Rosa</translation>
 </translationbundle>

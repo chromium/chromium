@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
 <translation id="194449685234099560">你可以在這裡找到所有開啟的分頁。</translation>
-<translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
 <translation id="1956138802718275401">從主畫面快速查詢密碼</translation>
 <translation id="1959441496380398824">按住所需日期。</translation>
 <translation id="1959679933317802873">正在等候內容</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">單位類型選取器</translation>
 <translation id="2073572773299281212">上次使用時間：<ph name="DAYS" /> 天前</translation>
 <translation id="2074131957428911366">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。</translation>
+<translation id="2078437078822043850">向右捲動即可使用無痕模式瀏覽。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080409463824088391">在應用程式中開啟…</translation>
 <translation id="2080769225927880590">使用有效帳戶登入</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
+<translation id="2434918313224755415">向左捲動即可使用無痕模式瀏覽。</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2459155039684421202">在網址列中輸入要執行的工作，例如「清除歷史記錄」或「編輯密碼」。</translation>
 <translation id="2461070143328828326">密碼設定</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">輕觸畫面頂端的「+」圖示</translation>
 <translation id="2604176749896001318">更新瀏覽器</translation>
 <translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
+<translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
 <translation id="2613747923081026172">建立群組</translation>
 <translation id="2617210333344098964">將地址資訊移到帳戶</translation>
 <translation id="261739049332372104">如要接收重要內容的最新資訊，請在 iOS 設定中開啟通知。</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中...</translation>
+<translation id="3625008969091706597">只要在邊緣滑動即可返回上一個畫面。</translation>
 <translation id="3630104167004786843">不要接收更新</translation>
 <translation id="3631443864840848029">請確認你儲存的是這個網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{你已忽略 {COUNT} 則警告}other{你已忽略 {COUNT} 則警告}}</translation>
 <translation id="4272631900155121838">如要掃描 QR 圖碼，請在設定中啟用相機</translation>
 <translation id="4277990410970811858">安全瀏覽</translation>
+<translation id="4279431713294750185">只要在邊緣滑動即可前往下一個畫面。</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">搜尋</translation>
@@ -1288,6 +1292,7 @@
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">分頁群組</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7640669552036055091">Android 裝置上的分頁</translation>

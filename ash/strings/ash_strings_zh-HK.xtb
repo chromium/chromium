@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">永遠顯示捷徑列</translation>
 <translation id="132346741904777634">攝錄機已經對齊左上角，同系統平台有衝突。</translation>
+<translation id="132415371743256095">關閉「<ph name="DESK_NAME" />」和視窗</translation>
 <translation id="1333308631814936910">已連接「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1340378040547539434">縮小頁面</translation>
 <translation id="1341651618736211726">展開</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
 <translation id="240006516586367791">媒體控制項</translation>
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
+<translation id="240545663114741956">按兩次 <ph name="ACCELERATOR" /> 即可登出。</translation>
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" /> 鍵可切換鍵盤配置。</translation>
+<translation id="2486214324139475545">「<ph name="DESK_NAME" />」預覽。使用中的桌面。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="250047928202119308">桌面設定檔選單</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2504454902900101003">取消設定睇手機最近的相、媒體同通知</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
@@ -905,6 +909,7 @@
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4644727592819780893">區域太小，無法顯示攝錄機預覽畫面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推薦應用程式</translation>
+<translation id="4654916960643280876">已勾選<ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 的核取方塊。</translation>
 <translation id="4657775630156561295">以下建議會從帳戶的建議記錄中永久移除：
 
 <ph name="QUERY" /></translation>
@@ -1030,6 +1035,7 @@
 <translation id="5111930673176965299">背景模糊效果</translation>
 <translation id="5117590920725113268">顯示下個月</translation>
 <translation id="5121628974188116412">前往頁面底部</translation>
+<translation id="5122517996953421795">「<ph name="DESK_NAME" />」預覽。非使用中的桌面。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">私隱設定</translation>
@@ -1429,6 +1435,7 @@
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6686023075541098243">設定睇手機嘅通知</translation>
 <translation id="6696025732084565524">您的拆除式鍵盤需執行重要更新</translation>
+<translation id="6697913454192220372">新增桌面</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
 <translation id="6707693040195709527">未在期限內將裝置回復為先前的版本</translation>
 <translation id="6710213216561001401">上一個</translation>
@@ -1560,6 +1567,7 @@
 <translation id="7262906531272962081">建立提醒</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵</translation>
 <translation id="7285232777292757180">使用快速設定中的螢幕截圖工具擷取螢幕截圖</translation>
+<translation id="7301826272005790482">關閉視窗建議</translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1766,6 +1774,7 @@
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8079538659226626406">分享螢幕畫面</translation>
 <translation id="8083540854303889870">已儲存以供日後使用</translation>
+<translation id="8088141034189573826">使用 Tab 鍵查看更多選項，使用向左鍵和向右鍵可存取所有桌面。</translation>
 <translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8092380135549145188">捲動控制項</translation>
@@ -1963,6 +1972,7 @@
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">未勾選<ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 的核取方塊。</translation>
 <translation id="8949925099261528566">已連線，但沒有互聯網</translation>
 <translation id="8951539504029375108">只有已核准的 Thunderbolt 裝置可與 Chromebook 兼容</translation>
 <translation id="8964525410783593407">1 小時</translation>

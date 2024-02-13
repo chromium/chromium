@@ -3,10 +3,13 @@
 <translationbundle lang="is">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
 <translation id="1155815720264022949">Viltu loka gömlum flipum?</translation>
+<translation id="1197088940767939838">Appelsínugulur</translation>
 <translation id="1215127405478249895">Yfirfara flipa</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
 <translation id="1326271443836399892">Skoða núverandi flokkunarstillingar.</translation>
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
+<translation id="1555130319947370107">Blár</translation>
+<translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1657719826150349398">Færa flipa niður</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bókamerkja <ph name="TABS_COUNT_ONE" /> valinn flipa}one{Bókamerkja <ph name="TABS_COUNT_MANY" /> valinn flipa}other{Bókamerkja <ph name="TABS_COUNT_MANY" /> valda flipa}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Sameina flipa}one{Sameina flipa}other{Sameina flipa}}</translation>
 <translation id="3996880007329611795">Fá tilkynningar</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
+<translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4212246570487010370">Halda áfram að fletta</translation>
 <translation id="427987768447457592">Nýr flipahópur</translation>
 <translation id="4648718555153979859">Fliparnir þínir eru flokkaðir saman hér</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Titil vantar</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Þú ert með <ph name="TABS_COUNT_ONE" /> flipa sem þú hefur ekki notað nýlega}one{Þú ert með <ph name="TABS_COUNT_MANY" /> flipa sem þú hefur ekki notað nýlega}other{Þú ert með <ph name="TABS_COUNT_MANY" /> flipa sem þú hefur ekki notað nýlega}}</translation>
 <translation id="5339733443032484186">Síðasti flipi</translation>
+<translation id="5400836586163650660">Grár</translation>
 <translation id="5490235265819901748">Flipahópur stækkaður</translation>
 <translation id="5494920125229734069">Velja allt</translation>
 <translation id="5545379293264651575">Loka án yfirferðar</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Fá tilkynningar um verðlækkanir?</translation>
 <translation id="58326064309361797">Dragðu flipa til að sameina þá</translation>
 <translation id="5846292395804797011">Loka <ph name="TITLE_OF_GROUP" />-hópi með <ph name="NUMBER_OF_TABS" /> flipum</translation>
+<translation id="5901630391730855834">Gulur</translation>
 <translation id="5972844218283131174">Afvelja allt</translation>
+<translation id="6017514345406065928">Grænn</translation>
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Setja <ph name="TABS_COUNT_ONE" /> valinn flipa í hóp}one{Setja <ph name="TABS_COUNT_MANY" /> valinn flipa í hóp}other{Setja <ph name="TABS_COUNT_MANY" /> valda flipa í hóp}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn, <ph name="REVIEWS_COUNT_ONE" /> umsögn}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn, <ph name="REVIEWS_COUNT_MANY" /> umsögn}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunnir, <ph name="REVIEWS_COUNT_MANY" /> umsagnir}}</translation>
 <translation id="7885132941432959125">Færa flipa til hægri</translation>
+<translation id="7942349550061667556">Rauður</translation>
 <translation id="7966321538264951561">Hunsa tillögurnar.</translation>
 <translation id="8029301326595421733">Upplýsingar um þessa verslun opnaðar á öllum skjánum</translation>
 <translation id="8205266828577616993">Færa flipa upp</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Bæta nýjum flipa við hóp</translation>
 <translation id="955558140275419384">Notaðu þennan ritil til að skoða og flokka flipa sem þú hefur sett í geymslu</translation>
 <translation id="959682366969460160">Skipulag</translation>
+<translation id="992256792861109788">Bleikur</translation>
 </translationbundle>

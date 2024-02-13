@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">સેલ્ફ-એડહેસિવ ફિલ્મ</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
+<translation id="1431021750861456539">ઑટોમૅટિક પૂર્ણસ્ક્રીન</translation>
 <translation id="1432187715652018471">પેજ સેવાનું હૅન્ડલર ઇન્સ્ટૉલ કરવા માગે છે.</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
 <translation id="1433225466058025572">તમારી ફાઇલોની ફરીથી ખસેડવાનો પ્રયાસ કરો</translation>
@@ -1921,7 +1922,6 @@
 <translation id="4757022425116568383">તમારી Chrome પ્રોફાઇલમાંથી પાસકી</translation>
 <translation id="4757993714154412917">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Chromium તમારા સાચવેલા પાસવર્ડ હમણાં જ ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="4758311279753947758">સંપર્ક માહિતી ઉમેરો</translation>
-<translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4761326898079498987">વધુ વિગતો માટે રિવ્યૂ કરો</translation>
 <translation id="4761869838909035636">Chromeની સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="4763196677855776703"><ph name="URL" /> દ્વારા પૂરા પાડવામાં આવેલા નિયમો અને શરતો</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="549333378215107354">કદ 3</translation>
+<translation id="5501712702042287009">ઑટોમૅટિક પૂર્ણસ્ક્રીન</translation>
 <translation id="550365051221576010">બધું ભરો</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">મેનેજ થયેલા બુકમાર્ક</translation>
@@ -4150,7 +4151,6 @@
 <translation id="9148507642005240123">&amp;છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9148599396704355100">કિંમત ઓછી છે</translation>
 <translation id="9150025764986957246">તમે આના જેવી વસ્તુઓ દાખલ કરી શકો છો:</translation>
-<translation id="9150045010208374699">તમારા કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="9150685862434908345">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝર સેટઅપને દૂરથી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહારથી પણ મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">અપડેટેડ</translation>
 <translation id="9155211586651734179">ઑડિયો પેરિફેરલ જોડેલા છે</translation>

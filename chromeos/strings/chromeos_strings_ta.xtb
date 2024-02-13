@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1020274983236703756">பிரத்தியேக <ph name="PRODUCT_NAME" /> அசெட்டுகள் தற்போது கிடைக்கின்றன</translation>
 <translation id="1022628058306505708">எர்த் ஃப்ளோ</translation>
+<translation id="1026212596705997935">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. புதிய ஷார்ட்கட்டை அழுத்தவும். ஏற்கெனவே இருக்கும் ஷார்ட்கட்டை மாற்றியமைக்க இந்த ஷார்ட்கட்டை மீண்டும் அழுத்தவும்.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1049663189809099096">பேஸ்ட்டல் மஞ்சள்</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2407209115954268704">சிம் நிலை</translation>
 <translation id="241419523391571119">சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்</translation>
+<translation id="2414660853550118611">வால்பேப்பர் பற்றி</translation>
 <translation id="2414886740292270097">அடர்</translation>
 <translation id="2418150275289244458">அமைப்புகளில் திற</translation>
 <translation id="2421798028054665193">படம்: <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">உருவாக்கப்பட்டது: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">உபயோகத்தால் பேட்டரியின் திறன் குறைகிறது</translation>
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
 <translation id="6196607555925437199">மீண்டும் உருவாக்கு</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="6324916366299863871">ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
+<translation id="6327262166342360252">இந்த ப்ராம்ப்ட்டுக்கு AI உருவாக்கிய வால்பேப்பர்: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">தானியங்கு டார்க் தீம்</translation>
 <translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6348738456043757611">பயனர்பெயர் &amp; கடவுச்சொல்</translation>

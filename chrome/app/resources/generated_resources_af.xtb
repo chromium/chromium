@@ -2858,7 +2858,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3132277757485842847">Ons kon nie 'n verbinding met jou foon behou nie. Maak seker dat jou foon in die omtrek is en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="3132896062549112541">Reël</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
-<translation id="3133184011320864289">Skakel sinkronisering aan om Chrome toe te laat om oortjiegroepe voor te stel en jou oortjies georganiseer te hou</translation>
 <translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
 <translation id="3141093262818886744">Maak nogtans oop</translation>
@@ -3921,6 +3920,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3957844511978444971">Tik op “Aanvaar” om jou keuse van hierdie Google-dienste-instellings te bevestig.</translation>
 <translation id="3958088479270651626">Voer boekmerke en instellings in</translation>
 <translation id="3958110062351175311">Toegelaat om versoeke in die nutsbalk te wys</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> is reeds geïnstalleer</translation>
 <translation id="3959747296451923142">Bevestig verwydering van intekening</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Meer handelinge vir <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6552,6 +6552,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6065289257230303064">Sertifikaatonderwerp se gidseienskappe</translation>
 <translation id="6066794465984119824">Prenthuts is nie gestel nie</translation>
 <translation id="6069464830445383022">Jou Google-rekening is jou Chromebook-aanmelding</translation>
+<translation id="6069500411969514374">Werk</translation>
 <translation id="6071181508177083058">bevestig wagwoord</translation>
 <translation id="6071576563962215370">Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> geheue bespaar</translation>
@@ -9113,7 +9114,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8052218774860457016">Bestuur blaaiersinkronisering</translation>
 <translation id="8053278772142718589">PKCS #12-lêers</translation>
 <translation id="8053390638574070785">Herlaai hierdie bladsy</translation>
-<translation id="8053629544194355894">Skakel sinkronisering aan om Chrome toe te laat om oortjiegroepe voor te stel</translation>
 <translation id="8054517699425078995">Hierdie tipe lêer kan jou toestel beskadig. Wil jy <ph name="FILE_NAME" /> nog hou?</translation>
 <translation id="8054563304616131773">Voer asseblief 'n geldige e-posadres in</translation>
 <translation id="8054609631325628928">Hierdie nommers kan gebruik word om diens te help aktiveer</translation>
@@ -9428,7 +9428,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8293206222192510085">Voeg boekmerk by</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8294476140219241086">Oortjie-organiseerder</translation>
-<translation id="8294895455164415895">Maak instellings oop sodat Chrome oortjiegroepe kan voorstel</translation>
 <translation id="8295449579927246485">Intyds Vertaal</translation>
 <translation id="8295450130892483256">Installeer Microsoft 365</translation>
 <translation id="8297292446125062288">MKT-instellings</translation>
@@ -9581,7 +9580,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">volskerm</translation>
 <translation id="8412136526970428322">Het <ph name="PERMISSION" /> en nog <ph name="COUNT" /> toegelaat</translation>
-<translation id="8412682423093430245">Skakel geskiedenissinkronisering in instellings aan om Chrome toe te laat om oortjiegroepe voor te stel en jou oortjies georganiseer te hou</translation>
 <translation id="8413795581997394485">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. Wanneer jy ’n werf besoek, stuur Chrome ’n verdoeselde gedeelte van die URL na Google deur ’n privaatheidbediener wat jou IP-adres versteek. As ’n webwerf iets verdag doen, word volledige URL’e en stukkies van die bladsyinhoud ook gestuur.</translation>
 <translation id="8413956290606243087">Wil jy ChromeVox, Chrome-bedryfstelsel se ingeboude skermleser, aktiveer?</translation>
 <translation id="8414249071344507766">Herinneringe word twee dae lank versteek</translation>
@@ -9611,7 +9609,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8431190899827883166">Wys tikke</translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8434480141477525001">NaCl-ontfoutpoort</translation>
-<translation id="8436054240208929121">Meld aan en skakel sinkronisering aan sodat Chrome oortjiegroepe kan voorstel en jou oortjies georganiseer kan hou</translation>
 <translation id="8437209419043462667">VSA</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439506636278576865">Bied aan om bladsye in hierdie taal te vertaal</translation>
@@ -10021,6 +10018,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8750155211039279868"><ph name="ORIGIN" /> wil aan 'n seriepoort koppel</translation>
 <translation id="8750346984209549530">Sellulêre APN</translation>
 <translation id="8750786237117206586">Bestuur ChromeOS Flex-oudio-instellings</translation>
+<translation id="8751034568832412184">Skool</translation>
 <translation id="8752451679755290210">Beweeg outomaties tussen items</translation>
 <translation id="8753948258138515839">Die Lêers-program bied vinnige toegang tot lêers wat jy op Google Drive, eksterne berging of jou Chrome OS Flex-toestel gestoor het.</translation>
 <translation id="8754200782896249056">&lt;p&gt;As <ph name="PRODUCT_NAME" /> in 'n gesteunde werkskermomgewing gebruik word, sal die stelsel se instaanbedienerinstellings gebruik word. Jou stelsel word egter óf nie gesteun nie, óf jou stelselopstelling kon nie begin word nie.&lt;/p&gt;
@@ -10087,7 +10085,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8808478386290700967">Webwinkel</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8809147117840417135">Liggroenblou</translation>
-<translation id="881049307637003105">Klik bykomende knoppies op jou <ph name="DEVICE_NAME" /> om knoppies by te voeg of op te spoor.</translation>
 <translation id="8811862054141704416">Crostini-mikrofoontoegang</translation>
 <translation id="8811923271770626905">Hierdie uitbreiding kan dalk in die agtergrond laat loop</translation>
 <translation id="8812593354822910461">Vee ook blaaierdata uit (<ph name="URL" />), wat jou by <ph name="DOMAIN" /> kan afmeld. <ph name="LEARN_MORE" /></translation>

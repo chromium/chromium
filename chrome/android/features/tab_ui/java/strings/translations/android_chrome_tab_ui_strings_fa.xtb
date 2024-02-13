@@ -3,10 +3,13 @@
 <translationbundle lang="fa">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="1155815720264022949">می‌خواهید برگه‌های قدیمی را ببندید؟</translation>
+<translation id="1197088940767939838">نارنجی</translation>
 <translation id="1215127405478249895">مرور برگه‌ها</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
 <translation id="1326271443836399892">تنظیمات فعلی مرتب کردن را مرور کنید.</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
+<translation id="1555130319947370107">آبی</translation>
+<translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{گروه‌بندی برگه}one{گروه‌بندی برگه}other{گروه‌بندی برگه‌ها}}</translation>
 <translation id="3996880007329611795">دریافت اعلان</translation>
 <translation id="4133493477912226187">به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
+<translation id="4159784952369912983">بنفش</translation>
 <translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="427987768447457592">گروه برگه جدید</translation>
 <translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه دارید که اخیراً از آن استفاده نکرده‌اید}one{<ph name="TABS_COUNT_MANY" /> برگه دارید که اخیراً از آن استفاده نکرده‌اید}other{<ph name="TABS_COUNT_MANY" /> برگه دارید که اخیراً از آن‌ها استفاده نکرده‌اید}}</translation>
 <translation id="5339733443032484186">آخرین برگه شما</translation>
+<translation id="5400836586163650660">خاکستری</translation>
 <translation id="5490235265819901748">گروه برگه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5545379293264651575">بستن بدون مرور</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">برای کاهش قیمت‌ها اعلان دریافت شود؟</translation>
 <translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
 <translation id="5846292395804797011">بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="NUMBER_OF_TABS" /> برگه</translation>
+<translation id="5901630391730855834">زرد</translation>
 <translation id="5972844218283131174">لغوانتخاب همه</translation>
+<translation id="6017514345406065928">سبز</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_ONE" /> مرور}one{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}other{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}}</translation>
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
+<translation id="7942349550061667556">قرمز</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
 <translation id="955558140275419384">با وارد کردن این ویرایشگر، همه برگه‌های بایگانی‌شده را برای مرتب کردن مرور کنید</translation>
 <translation id="959682366969460160">سازمان‌دهی شوید</translation>
+<translation id="992256792861109788">صورتی</translation>
 </translationbundle>

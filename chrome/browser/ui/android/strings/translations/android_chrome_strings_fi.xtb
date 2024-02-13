@@ -169,7 +169,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1933845786846280168">Valittu välilehti</translation>
 <translation id="1943432128510653496">Salasanojen tallentaminen</translation>
 <translation id="1944535645109964458">Avainkoodeja ei ole saatavilla</translation>
-<translation id="1952172573699511566">Verkkosivustot näyttävät tekstin valitsemallasi kielellä, kun se on mahdollista.</translation>
 <translation id="1959679933317802873">Odotetaan sisältöä</translation>
 <translation id="1960290143419248813">Chrome-päivityksiä ei enää tueta tässä Android-versiossa.</translation>
 <translation id="1963976881984600709">Perustason suojaus</translation>
@@ -204,6 +203,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2132122640199389833">Poista kaikki linkitetyt laitteet</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> suljettiin</translation>
 <translation id="2139186145475833000">Lisää aloitusnäyttöön</translation>
+<translation id="2139414603196655536">Toimintasi Sivun tiedot ‑kohdassa tallennetaan Google-tilillesi. <ph name="BEGIN_LINK" />Katso, miten voit hallinnoida tätä<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Perustuu käyttöösi</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2155214902713132423">Tämä vahvistustapa ei ole saatavilla tälle laitteelle. Valitse muu vaihtoehto toisella laitteellasi.</translation>
@@ -1081,6 +1081,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="670498945988402717">Tarkistettu eilen</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="671481426037969117">Ajastimesta (<ph name="FQDN" />) loppui aika. Se alkaa alusta huomenna.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Kirjanmerkki tallennettiin kansioon: <ph name="FOLDER_NAME" />. Kirjanmerkki tallennetaan vain tälle laitteelle.}other{Kirjanmerkit tallennettiin kansioon: <ph name="FOLDER_NAME" />. Kirjanmerkki tallennetaan vain tälle laitteelle.}}</translation>
 <translation id="6715020873764921614">Ladataanko <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="6719634564325948108">Yhdistetäänkö QR-koodilla?</translation>
 <translation id="6723740634201835758">Google-tililläsi</translation>
@@ -1401,6 +1402,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8237871086242677046">Sivun tietojen alapaneeli</translation>
 <translation id="8243077599929149377">Lisää käyttäjätunnuksesi</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Kirjanmerkki tallennettu tilillesi: <ph name="FOLDER_NAME" />, <ph name="ACCOUNT_EMAIL" />.}other{Kirjanmerkit tallennettu tilillesi: <ph name="FOLDER_NAME" />, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Sivustot voivat nähdä selaustoimintaasi evästeiden kautta vain omalla sivustollaan</translation>
 <translation id="8259179246279078674">Google ei saa mitään tietoja esiladattujen sivujen sisällöstä, sillä nämä sivut ovat salattuja. Googlen palvelimet saavat tietää, mitkä sivustot on esiladattu yksityisesti. Tietoja käytetään vain sivujen esilataamiseen, eikä niitä linkitetä muihin Google-tilisi tietoihin.</translation>
 <translation id="8260126382462817229">Yritä kirjautua uudelleen sisään.</translation>

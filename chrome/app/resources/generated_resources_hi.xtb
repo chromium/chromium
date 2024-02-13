@@ -2859,7 +2859,6 @@
 <translation id="3132277757485842847">डिवाइस आपके फ़ोन से बार-बार डिसकनेक्ट हो रहा है. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
-<translation id="3133184011320864289">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
@@ -3921,6 +3920,7 @@
 <translation id="3957844511978444971">"स्वीकार है" पर टैप करके पुष्टि करें कि आपने Google की सेवाओं की ये सेटिंग चुनी हैं.</translation>
 <translation id="3958088479270651626">बुकमार्क और सेटिंग इंपोर्ट करें</translation>
 <translation id="3958110062351175311">टूलबार में अनुरोध दिखाने की अनुमति है</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> को पहले ही इंस्टॉल कर दिया गया है</translation>
 <translation id="3959747296451923142">सदस्यता हटाने की पुष्टि करें</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> के लिए और कार्रवाइयां</translation>
@@ -6551,6 +6551,7 @@
 <translation id="6065289257230303064">प्रमाणपत्र विषय निर्देशिका विशेषताएं</translation>
 <translation id="6066794465984119824">इमेज हैश सेट नहीं किया गया है</translation>
 <translation id="6069464830445383022">आपको Chromebook में Google खाते से साइन इन करना होगा</translation>
+<translation id="6069500411969514374">ऑफ़िस</translation>
 <translation id="6071181508177083058">पासवर्ड की पुष्‍टि करें</translation>
 <translation id="6071576563962215370">सिस्टम, डिवाइस इंस्टॉलेशन-समय विशेषता लॉक को स्थापित नहीं कर सका.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> मेमोरी बचाई गई</translation>
@@ -9114,7 +9115,6 @@
 <translation id="8052218774860457016">ब्राउज़र से डेटा सिंक करने की सुविधा को मैनेज करें</translation>
 <translation id="8053278772142718589">PKCS #12 फ़ाइलें</translation>
 <translation id="8053390638574070785">यह पेज फिर से लोड करें</translation>
-<translation id="8053629544194355894">Chrome को टैब ग्रुप के सुझाव देने की अनुमति देने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="8054517699425078995">इस प्रकार की फ़ाइल आपके डिवाइस को हानि पहुंचा सकती है. क्‍या आप <ph name="FILE_NAME" /> को किसी भी तरह रखना चाहते हैं?</translation>
 <translation id="8054563304616131773">कृपया मान्य ईमेल पता डालें</translation>
 <translation id="8054609631325628928">सेवा चालू करने के लिए, इन नंबरों का इस्तेमाल किया जा सकता है</translation>
@@ -9429,7 +9429,6 @@
 <translation id="8293206222192510085">बुकमार्क जोड़ें</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8294476140219241086">टैब व्यवस्थित करने की सुविधा</translation>
-<translation id="8294895455164415895">Chrome को टैब ग्रुप के सुझाव देने की अनुमति देने के लिए सेटिंग खोलें</translation>
 <translation id="8295449579927246485">लाइव ट्रांसलेट</translation>
 <translation id="8295450130892483256">Microsoft 365 इंस्टॉल करें</translation>
 <translation id="8297292446125062288">एचआईडी की सेटिंग</translation>
@@ -9582,7 +9581,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">फ़ुलस्क्रीन पर देखने की सुविधा देने वाला बटन</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग की अनुमति दी गई</translation>
-<translation id="8412682423093430245">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, 'सेटिंग' में जाकर इतिहास को सिंक करने की सुविधा चालू करें</translation>
 <translation id="8413795581997394485">यह मोड, खतरनाक या नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से सुरक्षित रखता है. जब उपयोगकर्ता किसी साइट पर जाता है, तो Chrome निजी सर्वर के ज़रिए Google को उस साइट के यूआरएल का अस्पष्ट हिस्सा भेजता है. यह सर्वर, आपके आईपी पते को छिपा देता है. अगर साइट पर कुछ संदिग्ध गतिविधि मिलती है, तो साइट का पूरा यूआरएल और पेज का कुछ कॉन्टेंट भी भेजा जाता है.</translation>
 <translation id="8413956290606243087">क्या आपको ChromeOS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना है?</translation>
 <translation id="8414249071344507766">दो दिनों के लिए यादों को छिपा दिया गया है</translation>
@@ -9612,7 +9610,6 @@
 <translation id="8431190899827883166">टैप दिखाएं</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
-<translation id="8436054240208929121">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, साइन इन करें और सिंक करने की सुविधा चालू करें</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439506636278576865">इस भाषा में पृष्ठों का अनुवाद करने का ऑफ़र दें</translation>
@@ -10022,6 +10019,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> सीरियल पोर्ट से कनेक्ट करना चाहता है</translation>
 <translation id="8750346984209549530">सेल्युलर एपीएन</translation>
 <translation id="8750786237117206586">ChromeOS Flex की ऑडियो सेटिंग मैनेज करें</translation>
+<translation id="8751034568832412184">स्कूल</translation>
 <translation id="8752451679755290210">अलग-अलग आइटम पर अपने-आप जाने की सुविधा</translation>
 <translation id="8753948258138515839">Files ऐप्लिकेशन उन फ़ाइलों का क्विक ऐक्सेस देता है जिन्हें आपने Google Drive, बाहरी स्टोरेज या ChromeOS Flex वाले डिवाइस में सेव किया है.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> जिस 'डेस्कटॉप वातावरण' पर काम करता है, उस पर इसे चलाते समय, सिस्टम प्रॉक्सी सेटिंग का उपयोग किया जाएगा.  हालांकि, या तो आपके सिस्टम पर यह सुविधा नहीं है या आपके सिस्टम कॉन्फ़िगरेशन को लॉन्च करने में कोई समस्या थी.&lt;/p&gt;
@@ -10089,7 +10087,6 @@
 <translation id="8808478386290700967">वेब स्टोर</translation>
 <translation id="8808686172382650546">बिल्ली</translation>
 <translation id="8809147117840417135">हल्का नीला-हरा</translation>
-<translation id="881049307637003105">बटनों को जोड़ने या उनका पता लगाने के लिए, अपने <ph name="DEVICE_NAME" /> पर अतिरिक्त बटनों पर क्लिक करें.</translation>
 <translation id="8811862054141704416">Crostini में माइक्रोफ़ोन का ऐक्सेस</translation>
 <translation id="8811923271770626905">यह एक्सटेंशन बैकग्राउंड में चल सकता है</translation>
 <translation id="8812593354822910461">ब्राउज़िंग डेटा (<ph name="URL" />) भी मिटाएं, इससे आप <ph name="DOMAIN" /> से साइन आउट हो जाएंगे. <ph name="LEARN_MORE" /></translation>

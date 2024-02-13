@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">銷售</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">請檢查你的安全 DNS 設定</translation>
+<translation id="1302418742166945866"><ph name="URL" /> 想控制 MIDI 裝置及重設程式</translation>
 <translation id="1307966114820526988">已淘汰的功能</translation>
 <translation id="1308113895091915999">適用優惠</translation>
 <translation id="1309375166585231290">家長尚未核准</translation>
@@ -573,6 +574,7 @@
 <translation id="2056658168519009885">網站可以要求 Chrome 提供資訊，據此向你放送個人化廣告。</translation>
 <translation id="2059166748188874810">縣/市</translation>
 <translation id="2059202684901022309">22 x 34 吋</translation>
+<translation id="2062723461792528824">適用相關條款規定</translation>
 <translation id="2064568741209980952">信用與貸款</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議項目}other{# 個建議項目}}</translation>
 <translation id="2066915425250589881">要求刪除已儲存的資料</translation>
@@ -1290,6 +1292,7 @@
 <translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 違反政策規定，因此貴機構已封鎖這個網址。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">多個物件處理</translation>
 <translation id="3525130752944427905">10 x 14 吋</translation>
+<translation id="3525435918300186947">要允許控制 MIDI 裝置及重設程式嗎？</translation>
 <translation id="3528171143076753409">伺服器憑證授權不可靠。</translation>
 <translation id="3528485271872257980">深棕色</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{在已同步的裝置上至少有 1 個項目}=1{1 個項目 (在已同步的裝置上還有更多項目)}other{# 個項目 (在已同步的裝置上還有更多項目)}}</translation>
@@ -1920,7 +1923,6 @@
 <translation id="4757022425116568383">Chrome 設定檔的密碼金鑰</translation>
 <translation id="4757993714154412917">你剛才在詐騙網站上輸入了密碼。為確保帳戶安全，Chromium 建議你檢查已儲存的密碼。</translation>
 <translation id="4758311279753947758">新增聯絡資訊</translation>
-<translation id="4761104368405085019">使用你的麥克風</translation>
 <translation id="4761326898079498987">瞭解詳情</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4763196677855776703"><ph name="URL" /> 提供的條款及細則</translation>
@@ -2402,6 +2404,7 @@
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723287205918986743">國防工業</translation>
+<translation id="5723873695528696965">控制 MIDI 裝置及重設程式</translation>
 <translation id="5725297205162868298">快捷字詞的開頭不得為 @ 字元：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="5730040223043577876">如果你在其他網站上重複使用過你的密碼，Chrome 會建議你重設密碼。</translation>
 <translation id="5732392974455271431">你的家長可以為你解除封鎖這個網站</translation>
@@ -2508,6 +2511,7 @@
 <translation id="5953516610448771166">這個媒體無法使用即時字幕功能。如要取得字幕，請封鎖這個網站的 <ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="5955063559762970069">飯店與住宿</translation>
 <translation id="595873925609605681">如果網站功能無法正常運作，請<ph name="BEGIN_LINK" />嘗試暫時允許使用第三方 Cookie<ph name="END_LINK" />。</translation>
+<translation id="5960795367348889467">驗證</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5964247741333118902">嵌入的內容</translation>
 <translation id="5967260682280773804">36 x 48 吋</translation>
@@ -3461,6 +3465,7 @@
 <translation id="7755287808199759310">你的家長可以為你解除封鎖這個網站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火牆或防毒軟體可能封鎖了連線。</translation>
+<translation id="7759147511335618829">控制 MIDI 裝置及重設程式</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7760497246331667482">雷鬼樂與加勒比海音樂</translation>
 <translation id="776110834126722255">已淘汰</translation>
@@ -3632,6 +3637,7 @@
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8103643211515685474">一律列印</translation>
 <translation id="8105368624971345109">關閉</translation>
+<translation id="8107664017913103177">有可用的卡片福利</translation>
 <translation id="810875025413331850">找不到附近的裝置。</translation>
 <translation id="8116925261070264013">已設為靜音</translation>
 <translation id="8118489163946903409">付款方式</translation>
@@ -4149,7 +4155,6 @@
 <translation id="9148507642005240123">復原編輯(&amp;U)</translation>
 <translation id="9148599396704355100">價格較低</translation>
 <translation id="9150025764986957246">你可以輸入許多內容，例如：</translation>
-<translation id="9150045010208374699">使用你的相機</translation>
 <translation id="9150685862434908345">你的系統管理員可以遠端變更瀏覽器設定。這部裝置上的活動也可以透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="9155211586651734179">已連結的音訊周邊裝置</translation>

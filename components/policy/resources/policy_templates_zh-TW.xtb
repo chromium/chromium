@@ -1198,6 +1198,7 @@
       如果啟用「KerberosUseCustomPrefilledConfig」政策，這項政策的值就會用於建議設定，並顯示在 Kerberos 驗證對話方塊的「進階」部分中。如果將這項政策留空或未設定，系統將刪除建議的 <ph name="PRODUCT_OS_NAME" /> 設定。
 
       如果停用「KerberosUseCustomPrefilledConfig」政策，系統就不會使用這項政策的值。</translation>
+<translation id="1967820716244187368">允許使用 Chrome for Testing</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
           系統會以政策名稱 JSON 字典形式剖析這個值，以對應政策值。</translation>
@@ -2493,6 +2494,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="305106159605171619">使用者代理程式縮減功能已停用，且並未透過 Field-Trials 或 Origin-Trials 功能啟用。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">不允許使用 Chrome for Testing</translation>
 <translation id="3063302084011279315">停用螢幕側錄功能</translation>
 <translation id="3063307261083019730">禁止將含有 <ph name="CACHE_CONTROL_NO_STORE_NAME" /> 標頭的網頁儲存在往返快取中。</translation>
 <translation id="3064530882228745118">在 Kerberos 驗證期間使用 CNAME 查詢</translation>
@@ -2982,6 +2984,7 @@
 
 未通過這項檢查的連線會失敗，並發生 ERR_SSL_KEY_USAGE_INCOMPATIBLE 錯誤。如果網站發生這項錯誤，可能是因為憑證設定有誤。新版 ECDHE_RSA 加密套件使用「digitalSignature」金鑰用途選項，舊版 RSA 解密加密套件則使用「keyEncipherment」金鑰用途選項。如果無法確定，管理員應同時將這兩個選項加入 HTTPS 專用的 RSA 憑證中。</translation>
 <translation id="3459509316159669723">列印</translation>
+<translation id="3460485593332210712">允許使用 Chrome for Testing</translation>
 <translation id="3461279434465463233">回報電源狀態</translation>
 <translation id="3468115890799739909">這項政策可控管 Chrome 歷史記錄頁面是否依頁面群組顯示內容。
 
@@ -6155,6 +6158,11 @@
 <translation id="6254498834449523938">不允許使用者略過安全瀏覽警告</translation>
 <translation id="625580680776945310">系統將啟用高效率模式。</translation>
 <translation id="6258314216623064461">「幫我寫」設定</translation>
+<translation id="6258502079038650092">控管使用者能否使用 Chrome for Testing。
+
+      如果將這項政策設為啟用或未設定，使用者將可安裝並執行 Chrome for Testing。
+
+      如果將這項政策設為停用，使用者就無法執行 Chrome for Testing。雖然使用者仍可安裝 Chrome for Testing，但無法在這項政策設為停用的設定檔上執行。</translation>
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6264247808139384018">如果將這項政策設為啟用或不設定，使用密碼驗證的使用者可以鎖定螢幕。

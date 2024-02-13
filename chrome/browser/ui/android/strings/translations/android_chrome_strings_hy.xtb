@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">Ընտրված ներդիր</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
 <translation id="1944535645109964458">Հասանելի անցաբառեր չկան</translation>
-<translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">Հեռացնել բոլոր կապված սարքերը</translation>
 <translation id="213279576345780926">Փակված <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
+<translation id="2139414603196655536">«Էջի վիճակագրություն» բաժնում կատարված ձեր գործողությունները պահվում են ձեր Google հաշվում։ <ph name="BEGIN_LINK" />Իմանալ, թե ինչպես կառավարել սա<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Ձեր օգտագործման հիման վրա</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2155214902713132423">Հաստատման այս եղանակը հասանելի չէ այս սարքի համար։ Ընտրեք մեկ այլ տարբերակ ձեր մյուս սարքում։</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}one{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}other{Էջանիշները պահվեցին «<ph name="FOLDER_NAME" />» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="6715020873764921614">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="6719634564325948108">Կապե՞լ QR կոդի միջոցով</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">Էջի վիճակագրության ներքևի էկրան</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}one{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}other{Էջանիշները պահվեցին <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}}</translation>
 <translation id="8255617931166444521">Կայքերը կարող են օգտագործել քուքիներ՝ միայն իրենց էջերում ձեր գործողությունները հետագծելու համար։</translation>
 <translation id="8259179246279078674">Քանի որ նախապես բեռնված էջերը գաղտնագրված են, Google-ը ոչինչ չի իմանա դրանց բովանդակության մասին։ Google-ի սերվերները տեղեկություններ կստանան, թե որ կայքերն են անանուն կերպով նախաբեռնվել։ Այս տեղեկություններն օգտագործվում են միայն կայքերի նախաբեռնման համար և կապված չեն ձեր Google հաշվի մյուս տվյալների հետ։</translation>
 <translation id="8260126382462817229">Փորձեք նորից մուտք գործել</translation>

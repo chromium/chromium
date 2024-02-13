@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">ఎంచుకున్న ట్యాబ్</translation>
 <translation id="1943432128510653496">పాస్‌వర్డ్‌‌లను సేవ్ చేయండి</translation>
 <translation id="1944535645109964458">పాస్-కీలు ఏవీ అందుబాటులో లేవు</translation>
-<translation id="1952172573699511566">వీలైనప్పుడు వెబ్‌సైట్‌లు, మీ ప్రాధాన్య భాషలో వచనాన్ని చూపుతాయి.</translation>
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
 <translation id="1960290143419248813">Chrome అప్‌డేట్‌లకు ఈ Android వెర్షన్‌లో మద్దతు లేదు</translation>
 <translation id="1963976881984600709">స్టాండర్డ్ రక్షణ</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">అన్ని లింక్ చేయబడిన పరికరాలను తీసివేయండి</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> మూసివేయబడింది</translation>
 <translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించండి</translation>
+<translation id="2139414603196655536">పేజీ గణాంకాలలో మీ యాక్టివిటీ మీ Google ఖాతాలో సేవ్ చేయబడింది. <ph name="BEGIN_LINK" />దీన్ని ఎలా మేనేజ్ చేయాలో తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">మీ వినియోగం ఆధారంగా</translation>
 <translation id="2149973817440762519">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2155214902713132423">ఈ పరికరానికి ఈ వెరిఫికేషన్ పద్ధతి అందుబాటులో లేదు. మీ ఇతర పరికరంలో వేరొక ఆప్షన్‌ను ఎంచుకోండి.</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">నిన్న చెక్ చేసింది</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="671481426037969117">మీ <ph name="FQDN" /> టైమర్ పూర్తయింది. అది మళ్లీ రేపు ప్రారంభమవుతుంది.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{బుక్‌మార్క్ <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యింది. ఇది ఈ పరికరానికి మాత్రమే సేవ్ అయ్యింది.}other{బుక్‌మార్క్‌లు <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యాయి. ఇది ఈ పరికరానికి మాత్రమే సేవ్ అయ్యింది.}}</translation>
 <translation id="6715020873764921614">మీరు ఏదేమైనా <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6719634564325948108">QR కోడ్‌తో కనెక్ట్ చేయాలా?</translation>
 <translation id="6723740634201835758">మీ Google ఖాతాలో</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8237871086242677046">పేజీ గణాంకాలకు సంబంధించి దిగువున ఉన్న షీట్</translation>
 <translation id="8243077599929149377">మీ యూజర్‌నేమ్‌ను జోడించండి</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{బుక్‌మార్క్ మీ <ph name="ACCOUNT_EMAIL" />‌ ఖాతాలోని <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యింది.}other{బుక్‌మార్క్‌లు మీ <ph name="ACCOUNT_EMAIL" />‌ ఖాతాలోని <ph name="FOLDER_NAME" />‌కు సేవ్ అయ్యాయి.}}</translation>
 <translation id="8255617931166444521">సైట్‌లు, వాటి స్వంత సైట్‌లో మాత్రమే మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి మీ కుక్కీలను ఉపయోగించగలవు</translation>
 <translation id="8259179246279078674">ప్రీ - లోడ్ చేయబడిన పేజీలు ఎన్‌క్రిప్ట్ చేయబడినందున, ప్రీ - లోడ్ చేయబడిన పేజీ కంటెంట్ గురించి Google ఏమీ తెలుసుకోదు. ఏయే సైట్‌లు ప్రైవేట్‌గా ప్రీ - లోడ్ చేయబడ్డాయో Google సర్వర్‌లు తెలుసుకుంటాయి. ఈ సమాచారం, పేజీలను ప్రీ - లోడ్ చేయడానికి మాత్రమే ఉపయోగించబడుతుంది, అలాగే మీ Google ఖాతా నుండి ఇతర సమాచారానికి లింక్ చేయబడదు.</translation>
 <translation id="8260126382462817229">మళ్లీ సైన్ ఇన్ చేయడానికి ప్రయత్నించండి</translation>

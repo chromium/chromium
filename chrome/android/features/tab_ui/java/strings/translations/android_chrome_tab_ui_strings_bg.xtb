@@ -3,10 +3,13 @@
 <translationbundle lang="bg">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="1155815720264022949">Искате да затворите старите раздели?</translation>
+<translation id="1197088940767939838">оранжево</translation>
 <translation id="1215127405478249895">Преглед на разделите</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1326271443836399892">Прегледайте текущите настройки за премахване.</translation>
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
+<translation id="1555130319947370107">синьо</translation>
+<translation id="161042844686301425">синьозелено</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Запазване на отметка към <ph name="TABS_COUNT_ONE" /> избран раздел}other{Запазване на отметка към <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Добавяне на раздела в група}other{Групиране на разделите}}</translation>
 <translation id="3996880007329611795">Получаване на известия</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
+<translation id="4159784952369912983">лилаво</translation>
 <translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Изисква се заглавие</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> раздел, който не сте използвали наскоро}other{Имате <ph name="TABS_COUNT_MANY" /> раздела, които не сте използвали наскоро}}</translation>
 <translation id="5339733443032484186">Последният ви раздел</translation>
+<translation id="5400836586163650660">сиво</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5545379293264651575">Затваряне без преглед</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
 <translation id="5846292395804797011">Затваряне на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
+<translation id="5901630391730855834">жълто</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
+<translation id="6017514345406065928">зелено</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6228793724645064692">(оценка на магазина)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Добавяне на <ph name="TABS_COUNT_ONE" /> избран раздел към група}other{Добавяне на <ph name="TABS_COUNT_MANY" /> избрани раздела към група}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
+<translation id="7942349550061667556">червено</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
 <translation id="955558140275419384">Прегледайте всички архивирани раздели за премахване, като отворите този редактор.</translation>
 <translation id="959682366969460160">Организиране</translation>
+<translation id="992256792861109788">розово</translation>
 </translationbundle>

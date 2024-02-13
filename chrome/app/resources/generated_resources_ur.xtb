@@ -2845,7 +2845,6 @@
 <translation id="3132277757485842847">‏ہم آپ کے فون کے ساتھ کنکشن برقرار رکھنے سے قاصر تھے۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
 <translation id="3132896062549112541">اصول</translation>
 <translation id="3132996321662585180">روزانہ ریفریش کریں</translation>
-<translation id="3133184011320864289">‏Chrome کو ٹیب گروپس کی تجویز کرنے اور اپنے ٹیبز کو منظم رکھنے کی اجازت دینے کیلئے مطابقت پذیری کو آن کریں</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> تجربے کیلئے تجربے کی حالت منتخب کریں۔ تجربے کی تفصیل: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ڈیفالٹ زرد اوتار</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
@@ -9099,7 +9098,6 @@
 <translation id="8052218774860457016">براؤزر کی مطابقت پذیری کا نظم کریں</translation>
 <translation id="8053278772142718589">‏PKCS #12 فائلیں</translation>
 <translation id="8053390638574070785">یہ صفحہ دوبارہ لوڈ کریں</translation>
-<translation id="8053629544194355894">‏Chrome کو ٹیب گروپس کی تجویز کرنے کی اجازت دینے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="8054517699425078995">اس قسم کی فائل سے آپ کے آلہ کو نقصان پہنچ سکتا ہے۔ کیا آپ <ph name="FILE_NAME" /> کو بہر صورت رکھنا چاہتے ہیں؟</translation>
 <translation id="8054563304616131773">براہ کرم ایک درست ای میل پتہ درج کریں</translation>
 <translation id="8054609631325628928">سروس کو فعال کرنے میں مدد کے لیے ان نمبرز کا استعمال کیا جا سکتا ہے</translation>
@@ -9414,7 +9412,6 @@
 <translation id="8293206222192510085">بُک مارک شامل کریں</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8294476140219241086">ٹیب آرگنائزر</translation>
-<translation id="8294895455164415895">‏Chrome کو ٹیب گروپس کی تجویز کرنے کی اجازت دینے کے لیے ترتیبات کھولیں</translation>
 <translation id="8295449579927246485">لائیو ترجمہ</translation>
 <translation id="8295450130892483256">‏Microsoft 365 انسٹال کریں</translation>
 <translation id="8297292446125062288">‏HID کی ترتیبات</translation>
@@ -9567,7 +9564,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">مکمل اسکرین</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
-<translation id="8412682423093430245">‏Chrome کو ٹیب گروپس کی تجویز کرنے اور اپنے ٹیبز کو منظم رکھنے کی اجازت دینے کے لیے ترتیبات میں سرگزشت کی مطابقت پذیری کو آن کریں</translation>
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8413956290606243087">‏کیا آپ ChromeOS کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟</translation>
 <translation id="8414249071344507766">دو دنوں کے لیے مخفی میموریز</translation>
@@ -9597,7 +9593,6 @@
 <translation id="8431190899827883166">تھپتھپاہٹیں دکھائیں</translation>
 <translation id="8433186206711564395">نیٹ ورک کی ترتیبات</translation>
 <translation id="8434480141477525001">‏NaCl ڈیبگ پورٹ</translation>
-<translation id="8436054240208929121">‏Chrome کو ٹیب گروپس کی تجویز کرنے اور اپنے ٹیبز کو منظم رکھنے کی اجازت دینے کیلئے سائن ان کریں اور مطابقت پذیری کو آن کریں</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439506636278576865">اس زبان میں صفحات کا ترجمہ کرنے کی پیشکش کریں</translation>
@@ -10074,7 +10069,6 @@
 <translation id="8808478386290700967">ویب اسٹور</translation>
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8809147117840417135">ہلکا نیلگوں سبز</translation>
-<translation id="881049307637003105">بٹنز کو شامل کرنے یا ان کا پتہ لگانے کے لیے اپنے <ph name="DEVICE_NAME" /> پر اضافی بٹنز پر کلک کریں۔</translation>
 <translation id="8811862054141704416">‏Crostini کے مائیکرون کی رسائی</translation>
 <translation id="8811923271770626905">یہ ایکسٹینشن پس منظر میں چل سکتی ہے</translation>
 <translation id="8812593354822910461">براؤزنگ ڈیٹا (<ph name="URL" />) بھی صاف کریں جس سے آپ <ph name="DOMAIN" /> سے سائن آؤٹ ہو جائیں گے۔ <ph name="LEARN_MORE" /></translation>

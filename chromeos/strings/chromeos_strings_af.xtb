@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1020274983236703756">Eksklusiewe <ph name="PRODUCT_NAME" />-komponente is nou beskikbaar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Kortpad word gebruik vir “<ph name="CONFLICT_ACCEL_NAME" />”. Druk ’n nuwe kortpad. Druk hierdie kortpad weer om die oorspronklike kortpad te vervang.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> drade, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
 <translation id="2407209115954268704">SIM-slotstatus</translation>
 <translation id="241419523391571119">Maak die deksel weer oop om te toets</translation>
+<translation id="2414660853550118611">Meer oor muurpapier</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2418150275289244458">Maak in Instellings oop</translation>
 <translation id="2421798028054665193">Prent <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Geskep op <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterykapasiteit neem af met gebruik</translation>
 <translation id="6191293864534840972">Misvormige naambedieners</translation>
 <translation id="6196607555925437199">Skep weer</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Skakel sluimerskerm aan</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6325525973963619867">Misluk</translation>
+<translation id="6327262166342360252">Hierdie muurpapier is met AI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
 <translation id="6331191339300272798">Outomatiese donkertema</translation>
 <translation id="6340526405444716530">Personalisering</translation>
 <translation id="6348738456043757611">Gebruikernaam en wagwoord</translation>

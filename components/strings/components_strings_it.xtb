@@ -246,6 +246,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1428729058023778569">Questo avviso è stato visualizzato perché il sito non supporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Pellicola autoadesiva</translation>
 <translation id="1430915738399379752">Stampa</translation>
+<translation id="1431021750861456539">Schermo intero automatico</translation>
 <translation id="1432187715652018471">La pagina vuole installare un gestore di servizi.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
 <translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
@@ -1918,7 +1919,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4757022425116568383">Passkey del tuo profilo Chrome</translation>
 <translation id="4757993714154412917">Hai appena inserito la tua password su un sito ingannevole. Per proteggere i tuoi account, Chromium ti consiglia di controllare le password salvate.</translation>
 <translation id="4758311279753947758">Aggiungi informazioni di contatto</translation>
-<translation id="4761104368405085019">Utilizzare il microfono</translation>
 <translation id="4761326898079498987">Rivedi per ulteriori dettagli</translation>
 <translation id="4761869838909035636">Esegui il controllo di sicurezza di Chrome</translation>
 <translation id="4763196677855776703">Termini e condizioni forniti da <ph name="URL" /></translation>
@@ -2282,6 +2282,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     <ph name="LINE_BREAK" />
     Prova a contattare l'amministratore di sistema.</translation>
 <translation id="549333378215107354">Dimensione 3</translation>
+<translation id="5501712702042287009">schermo intero automatico</translation>
 <translation id="550365051221576010">Compila tutti i campi</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Preferiti gestiti</translation>
@@ -4147,7 +4148,6 @@ Ulteriori dettagli:
 <translation id="9148507642005240123">&amp;Annulla modifica</translation>
 <translation id="9148599396704355100">Prezzo basso</translation>
 <translation id="9150025764986957246">Puoi inserire:</translation>
-<translation id="9150045010208374699">Utilizzare la fotocamera</translation>
 <translation id="9150685862434908345">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Aggiornato</translation>
 <translation id="9155211586651734179">Periferiche audio collegate</translation>

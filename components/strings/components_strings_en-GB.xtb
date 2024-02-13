@@ -171,6 +171,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1296930489679394997">Sales</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Check your secure DNS settings</translation>
+<translation id="1302418742166945866"><ph name="URL" /> wants to control and reprogramme your MIDI devices</translation>
 <translation id="1307966114820526988">Deprecated features</translation>
 <translation id="1308113895091915999">Offer available</translation>
 <translation id="1309375166585231290">Your parents haven't said it's OK yet</translation>
@@ -574,6 +575,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2056658168519009885">Sites can ask Chrome for information to help personalise the ads that you see.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
+<translation id="2062723461792528824">terms apply</translation>
 <translation id="2064568741209980952">Credit and Lending</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2066915425250589881">request to be deleted</translation>
@@ -1292,6 +1294,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3515972145999192222">Your organisation has blocked <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> because it violates a policy. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Multiple objects handling</translation>
 <translation id="3525130752944427905">10 in x 14 in</translation>
+<translation id="3525435918300186947">Control and reprogramme MIDI devices?</translation>
 <translation id="3528171143076753409">Server's certificate is not trusted</translation>
 <translation id="3528485271872257980">Dark brown</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{At least 1 item on synced devices}=1{1 item (and more on synced devices)}other{# items (and more on synced devices)}}</translation>
@@ -1922,7 +1925,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4757022425116568383">Passkey from your Chrome profile</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
-<translation id="4761104368405085019">Use your microphone</translation>
 <translation id="4761326898079498987">Review for further details</translation>
 <translation id="4761869838909035636">Run Chrome Safety Check</translation>
 <translation id="4763196677855776703">Terms and conditions provided by <ph name="URL" /></translation>
@@ -2404,6 +2406,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5720705177508910913">Current user</translation>
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723287205918986743">Defense industry</translation>
+<translation id="5723873695528696965">Control and reprogramme your MIDI devices</translation>
 <translation id="5725297205162868298">Shortcut can't start with the @ character: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
 <translation id="5732392974455271431">Your parents can unblock it for you</translation>
@@ -2510,6 +2513,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5953516610448771166">Live Caption is not available for this media. To get captions, block <ph name="CONTENT_SETTINGS" /> for this site.</translation>
 <translation id="5955063559762970069">Hotels and accommodations</translation>
 <translation id="595873925609605681">If site features aren’t working <ph name="BEGIN_LINK" />try temporarily allowing third-party cookies<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Verification</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5964247741333118902">Embedded content</translation>
 <translation id="5967260682280773804">36 in x 48 in</translation>
@@ -2704,7 +2708,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="633770708279464947">The <ph name="SECURE_DNS_SALT" /> value is invalid and will not be used.</translation>
 <translation id="6340739886198108203">Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Tracking protection</translation>
+<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="634500758737709758">Directions</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
@@ -3463,6 +3467,7 @@ Additional details:
 <translation id="7755287808199759310">Your parent can unblock it for you</translation>
 <translation id="7755624218968747854">Primary roll</translation>
 <translation id="7758069387465995638">Firewall or antivirus software may have blocked the connection.</translation>
+<translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7760497246331667482">Reggae and Caribbean music</translation>
 <translation id="776110834126722255">Deprecated</translation>
@@ -3634,6 +3639,7 @@ Additional details:
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8103643211515685474">Print anyway</translation>
 <translation id="8105368624971345109">Turn Off</translation>
+<translation id="8107664017913103177">Card benefits available</translation>
 <translation id="810875025413331850">No nearby devices found.</translation>
 <translation id="8116925261070264013">Muted</translation>
 <translation id="8118489163946903409">Payment method</translation>
@@ -4152,7 +4158,6 @@ Additional details:
 <translation id="9148507642005240123">&amp;Undo edit</translation>
 <translation id="9148599396704355100">Price is low</translation>
 <translation id="9150025764986957246">You can enter things like:</translation>
-<translation id="9150045010208374699">Use your camera</translation>
 <translation id="9150685862434908345">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Updated</translation>
 <translation id="9155211586651734179">Audio peripherals attached</translation>

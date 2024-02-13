@@ -171,6 +171,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1296930489679394997">Müük</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Kontrollige turvalise DNS-i seadeid</translation>
+<translation id="1302418742166945866"><ph name="URL" /> soovib juhtida ja ümber programmeerida teie MIDI-seadmeid</translation>
 <translation id="1307966114820526988">Katkestatud toega funktsioonid</translation>
 <translation id="1308113895091915999">Pakkumine on saadaval</translation>
 <translation id="1309375166585231290">Sinu vanemad pole seda veel lubanud</translation>
@@ -246,6 +247,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1428729058023778569">Näete seda hoiatust, kuna see sait ei toeta HTTPS-i. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Isekleepuv kile</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1431021750861456539">Automaatne täisekraan</translation>
 <translation id="1432187715652018471">leht soovib installida teenusetöötleja.</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
 <translation id="1433225466058025572">Proovige oma failid uuesti teisaldada</translation>
@@ -573,6 +575,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2056658168519009885">Saidid võivad teile näidatavate reklaamide isikupärastamiseks Chrome'ilt teavet küsida.</translation>
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2059202684901022309">22 × 34 tolli</translation>
+<translation id="2062723461792528824">kehtivad tingimused</translation>
 <translation id="2064568741209980952">Krediit ja laenamine</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 soovitus}other{# soovitust}}</translation>
 <translation id="2066915425250589881">taotleda selle kustutamist</translation>
@@ -1291,6 +1294,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3515972145999192222">Teie organisatsioon on domeeni <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> blokeerinud, kuna see rikub eeskirju. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Mitme objekti käsitlemine</translation>
 <translation id="3525130752944427905">10 × 14 tolli</translation>
+<translation id="3525435918300186947">Kas soovite lubada MIDI-seadmete juhtimise ja ümberprogrammeerimise?</translation>
 <translation id="3528171143076753409">Serveri sertifikaat ei ole usaldusväärne.</translation>
 <translation id="3528485271872257980">Tumepruun</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Vähemalt 1 üksus sünkroonitud seadmetes}=1{1 üksus (ja rohkem sünkroonitud seadmetes)}other{# üksust (ja rohkem sünkroonitud seadmetes)}}</translation>
@@ -1921,7 +1925,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4757022425116568383">Pääsuvõti teie Chrome'i profiililt</translation>
 <translation id="4757993714154412917">Sisestasite äsja oma parooli kahtlasele saidile. Teie kontode turvalisuse tagamiseks soovitab Chromium teil salvestatud paroole kohe kontrollida.</translation>
 <translation id="4758311279753947758">Lisage kontaktteave</translation>
-<translation id="4761104368405085019">Mikrofoni kasutamine</translation>
 <translation id="4761326898079498987">Lisateabe saamiseks vaadake üle</translation>
 <translation id="4761869838909035636">Käita Chrome'i ohutuskontroll</translation>
 <translation id="4763196677855776703">Müüja <ph name="URL" /> esitatud nõuded ja tingimused</translation>
@@ -2285,6 +2288,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     <ph name="LINE_BREAK" />
     Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="549333378215107354">Suurus 3</translation>
+<translation id="5501712702042287009">automaatne täisekraan</translation>
 <translation id="550365051221576010">Sisestage kõik</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallatud järjehoidjad</translation>
@@ -2402,6 +2406,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5720705177508910913">Praegune kasutaja</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723287205918986743">Kaitsetööstus</translation>
+<translation id="5723873695528696965">juhtida ja ümber programmeerida teie MIDI-seadmeid</translation>
 <translation id="5725297205162868298">Otsetee ei saa alata tähemärgiga @: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="5730040223043577876">Chrome soovitab teil parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="5732392974455271431">Vanemad saavad blokeeringu teie eest tühistada</translation>
@@ -2508,6 +2513,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5953516610448771166">Reaalajas subtiitrid pole selle meedia puhul saadaval. Subtiitrite nägemiseks blokeerige selle saidi jaoks <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5955063559762970069">Hotellid ja majutus</translation>
 <translation id="595873925609605681">Kui saidi funktsioonid ei tööta, <ph name="BEGIN_LINK" />proovige kolmanda osapoole küpsisefailid ajutiselt lubada<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Kinnitamine</translation>
 <translation id="5963413905009737549">Jaotis</translation>
 <translation id="5964247741333118902">Manustatud sisu</translation>
 <translation id="5967260682280773804">36 × 48 tolli</translation>
@@ -3461,6 +3467,7 @@ Lisateave:
 <translation id="7755287808199759310">Vanem saab blokeeringu teie eest tühistada</translation>
 <translation id="7755624218968747854">Peamine rull</translation>
 <translation id="7758069387465995638">Tulemüür või viirusetõrjetarkvara võis ühenduse blokeerida.</translation>
+<translation id="7759147511335618829">MIDI-seadme juhtimine ja ümberprogrammeerimine</translation>
 <translation id="7759809451544302770">Valikuline</translation>
 <translation id="7760497246331667482">Reggae ja Kariibi muusika</translation>
 <translation id="776110834126722255">Tugi on katkestatud</translation>
@@ -3632,6 +3639,7 @@ Lisateave:
 <translation id="8103161714697287722">Makseviis</translation>
 <translation id="8103643211515685474">Print ikkagi</translation>
 <translation id="8105368624971345109">Lülita välja</translation>
+<translation id="8107664017913103177">Saadaval on kaardi hüved</translation>
 <translation id="810875025413331850">Läheduses olevaid seadmeid ei leitud.</translation>
 <translation id="8116925261070264013">Vaigistatud</translation>
 <translation id="8118489163946903409">Makseviis</translation>
@@ -4150,7 +4158,6 @@ Lisateave:
 <translation id="9148507642005240123">&amp;Võta muudatus tagasi</translation>
 <translation id="9148599396704355100">Hind on soodne</translation>
 <translation id="9150025764986957246">Saate sisestada näiteks järgmist:</translation>
-<translation id="9150045010208374699">Kaamera kasutamine</translation>
 <translation id="9150685862434908345">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Värskendatud</translation>
 <translation id="9155211586651734179">Välised heliseadmed on ühendatud</translation>

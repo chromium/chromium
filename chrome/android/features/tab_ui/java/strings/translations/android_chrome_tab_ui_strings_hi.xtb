@@ -3,10 +3,13 @@
 <translationbundle lang="hi">
 <translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
 <translation id="1155815720264022949">क्या आपको पुराने टैब बंद करने हैं?</translation>
+<translation id="1197088940767939838">नारंगी</translation>
 <translation id="1215127405478249895">टैब देखें</translation>
 <translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
 <translation id="1326271443836399892">ग़ैर-ज़रूरी चीज़ें हटाने की मौजूदा सेटिंग देखें.</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
+<translation id="1555130319947370107">नीला</translation>
+<translation id="161042844686301425">स्यान</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब को बुकमार्क करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{टैब को ग्रुप में शामिल करें}one{टैब को ग्रुप में शामिल करें}other{टैब को ग्रुप में शामिल करें}}</translation>
 <translation id="3996880007329611795">सूचनाएं पाएं</translation>
 <translation id="4133493477912226187">ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
+<translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4212246570487010370">लगातार ब्राउज़िंग</translation>
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
 <translation id="4648718555153979859">यहां पर आपके टैब एक ग्रुप में रखे जाते हैं</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{आपने <ph name="TABS_COUNT_ONE" /> टैब को हाल ही में इस्तेमाल नहीं किया है}one{आपने <ph name="TABS_COUNT_MANY" /> टैब को हाल ही में इस्तेमाल नहीं किया है}other{आपने <ph name="TABS_COUNT_MANY" /> टैब को हाल ही में इस्तेमाल नहीं किया है}}</translation>
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
+<translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5545379293264651575">समीक्षा किए बिना बंद करें</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">क्या आप कीमत में कमी होने पर सूचनाएं पाना चाहते हैं?</translation>
 <translation id="58326064309361797">टैब को समूह में जोड़ने के लिए उन्हें खींचें और छोड़ें</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> टैब वाला <ph name="TITLE_OF_GROUP" /> ग्रुप बंद करें</translation>
+<translation id="5901630391730855834">पीला</translation>
 <translation id="5972844218283131174">सभी टैब से चुने हुए का निशान हटाएं</translation>
+<translation id="6017514345406065928">हरा</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब का ग्रुप बनाएं}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7885132941432959125">टैब को दाईं ओर ले जाएं</translation>
+<translation id="7942349550061667556">लाल</translation>
 <translation id="7966321538264951561">सुझावों को खारिज करें.</translation>
 <translation id="8029301326595421733">इस स्टोर के बारे में जानकारी पूरी स्क्रीन पर खुली हुई है</translation>
 <translation id="8205266828577616993">टैब ऊपर भेजें</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
 <translation id="955558140275419384">इस एडिटर का इस्तेमाल करके, संग्रहित किए गए सभी टैब देखें और उनमें से गैर-ज़रूरी चीज़ें हटाएं.</translation>
 <translation id="959682366969460160">व्‍यवस्‍थित हों</translation>
+<translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

@@ -169,7 +169,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1933845786846280168">Hautatutako fitxa</translation>
 <translation id="1943432128510653496">Gorde pasahitzak</translation>
 <translation id="1944535645109964458">Ez dago sarbide-gakorik erabilgarri</translation>
-<translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
 <translation id="1959679933317802873">Edukiaren zain</translation>
 <translation id="1960290143419248813">Android-en bertsio honek ez ditu onartuko Chrome-ren eguneratzeak aurrerantzean</translation>
 <translation id="1963976881984600709">Babes estandarra</translation>
@@ -204,6 +203,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2132122640199389833">Kendu lotutako gailu guztiak</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> itxi da</translation>
 <translation id="2139186145475833000">Gehitu hasierako pantailan</translation>
+<translation id="2139414603196655536">Google-ko kontuan gordetzen dira Orriaren estatistikak atalean egin dituzun jarduerak. <ph name="BEGIN_LINK" />Lortu hori kudeatzeko argibideak<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Zure erabileran oinarrituta</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2155214902713132423">Ezin da erabili egiaztapen-metodoa gailu honetan. Hautatu beste aukera bat beste gailuan.</translation>
@@ -1081,6 +1081,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="670498945988402717">Atzo egiaztatu zuen</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="671481426037969117">Agortu da <ph name="FQDN" /> tenporizadorearen denbora. Bihar hasiko da berriro.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Gorde da laster-marka <ph name="FOLDER_NAME" /> karpetan. Gailu honetan soilik dago gordeta.}other{Gorde dira laster-markak <ph name="FOLDER_NAME" /> karpetan. Gailu honetan soilik daude gordeta.}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) deskargatu nahi duzu halere?</translation>
 <translation id="6719634564325948108">QR kodearen bidez konektatu nahi duzu?</translation>
 <translation id="6723740634201835758">Google kontukoak</translation>
@@ -1401,6 +1402,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8237871086242677046">Pantailaren behealdean ainguratutako orria, orriaren estatistikak dituena</translation>
 <translation id="8243077599929149377">Gehitu zure erabiltzaile-izena</translation>
 <translation id="8250920743982581267">Dokumentuak</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Gorde da laster-marka zure kontuaren (<ph name="ACCOUNT_EMAIL" />) <ph name="FOLDER_NAME" /> karpetan.}other{Gorde dira laster-markak zure kontuaren (<ph name="ACCOUNT_EMAIL" />) <ph name="FOLDER_NAME" /> karpetan.}}</translation>
 <translation id="8255617931166444521">Webguneek haietan egiten dituzun arakatze-jarduerak ikusteko soilik erabil ditzakete cookieak</translation>
 <translation id="8259179246279078674">Aurrez kargatutako orriak enkriptatuta daudenez, Google-k ez du atzituko orri horietako edukia. Modu pribatuan aurrez zein webgune kargatzen den ikasiko dute Google-ren zerbitzariek. Informazio hau orriak aurrez kargatzeko soilik erabiltzen da, eta ez dago Google-ko kontuko gainerako informazioarekin lotuta.</translation>
 <translation id="8260126382462817229">Hasi saioa berriro</translation>

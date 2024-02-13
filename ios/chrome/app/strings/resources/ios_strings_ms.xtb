@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Tetapan</translation>
 <translation id="194449685234099560">Anda boleh menemukan semua tab anda di sini.</translation>
-<translation id="1952172573699511566">Tapak web akan menunjukkan teks dalam bahasa pilihan anda, jika boleh.</translation>
 <translation id="1956138802718275401">Akses kata laluan daripada skrin utama</translation>
 <translation id="1959441496380398824">Sentuh &amp; tahan tarikh.</translation>
 <translation id="1959679933317802873">Menunggu kandungan</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">Pemilih jenis unit</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
+<translation id="2078437078822043850">Anda boleh menatal ke kanan untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2080409463824088391">Buka pada Apl…</translation>
 <translation id="2080769225927880590">Log masuk dengan Akaun yang Sah</translation>
@@ -278,6 +278,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2421004566762153674">Menyekat kuki pihak ketiga</translation>
 <translation id="2421044535038393232">Teruskan Mengedit</translation>
 <translation id="2434405374328098816">Anda telah pun menyimpan kata laluan untuk "<ph name="USERNAME" />" pada <ph name="WEBSITE" /></translation>
+<translation id="2434918313224755415">Anda boleh menatal ke kiri untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
 <translation id="2459155039684421202">Dalam bar alamat, masukkan tugasan seperti “kosongkan sejarah saya” atau “edit kata laluan”.</translation>
 <translation id="2461070143328828326">Tetapan Kata Laluan</translation>
@@ -311,6 +312,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="260378315836159338">Pada bahagian atas skrin, ketik +</translation>
 <translation id="2604176749896001318">Kemas Kinikan Penyemak Imbas Anda</translation>
 <translation id="2609008503159898744">Tutup Semua Tab?</translation>
+<translation id="261305050785128654">Benarkan laman web mengetahui bahasa tuturan anda. Laman web ini akan menunjukkan kandungan dalam bahasa tersebut, jika boleh.</translation>
 <translation id="2613747923081026172">Buat kumpulan</translation>
 <translation id="2617210333344098964">Alihkan Alamat kepada Akaun</translation>
 <translation id="261739049332372104">Untuk mendapatkan kemaskinian tentang kandungan yang penting bagi anda, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
@@ -513,6 +515,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3603009562372709545">Salin URL Paut</translation>
 <translation id="3607167657931203000">Autolengkap Data</translation>
 <translation id="3609785682760573515">Menyegerakkan...</translation>
+<translation id="3625008969091706597">Anda boleh meleret bahagian tepi untuk kembali.</translation>
 <translation id="3630104167004786843">Jangan dapatkan kemaskinian</translation>
 <translation id="3631443864840848029">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
@@ -630,6 +633,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4267586310863245665">{COUNT,plural, =1{Anda mengetepikan {COUNT} amaran}other{Anda mengetepikan {COUNT} amaran}}</translation>
 <translation id="4272631900155121838">Untuk mengimbas kod QR, dayakan kamera daripada tetapan</translation>
 <translation id="4277990410970811858">Penyemakan Imbas Selamat</translation>
+<translation id="4279431713294750185">Anda boleh meleret bahagian tepi untuk maju.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4286718549648564014">Alamat dialihkan ke akaun <ph name="USER_EMAIL" /> anda</translation>
 <translation id="4293080268407233932">Carian</translation>
@@ -1288,6 +1292,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop timbul disekat (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Kumpulan Tab</translation>
 <translation id="7607521702806708809">Padamkan Kata Laluan</translation>
 <translation id="7638584964844754484">Frasa laluan tidak betul</translation>
 <translation id="7640669552036055091">Tab daripada Android</translation>

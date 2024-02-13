@@ -184,7 +184,6 @@
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
 <translation id="1943478190258551035">Меню → Настройки</translation>
 <translation id="194449685234099560">Здесь можно посмотреть все ваши открытые вкладки.</translation>
-<translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
 <translation id="1956138802718275401">Доступ к паролям с главного экрана</translation>
 <translation id="1959441496380398824">Нажмите на дату и удерживайте ее.</translation>
 <translation id="1959679933317802873">Ожидается контент</translation>
@@ -213,6 +212,7 @@
 <translation id="20638360198452347">Список выбора типов единиц измерения</translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
+<translation id="2078437078822043850">Чтобы перейти в режим инкогнито, прокрутите экран вправо</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080409463824088391">Открыть в приложении…</translation>
 <translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
@@ -278,6 +278,7 @@
 <translation id="2421004566762153674">Блокировать сторонние файлы cookie</translation>
 <translation id="2421044535038393232">Продолжить редактирование</translation>
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
+<translation id="2434918313224755415">Чтобы перейти в режим инкогнито, прокрутите экран влево</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="2459155039684421202">Введите задачу в адресную строку, например "очистить историю" или "изменить пароли".</translation>
 <translation id="2461070143328828326">Настройки паролей</translation>
@@ -311,6 +312,7 @@
 <translation id="260378315836159338">В верхней части экрана нажмите на значок "+".</translation>
 <translation id="2604176749896001318">Обновите браузер</translation>
 <translation id="2609008503159898744">Закрыть все вкладки?</translation>
+<translation id="261305050785128654">Укажите для сайтов, какими языками вы владеете. Они будут по возможности показывать контент на выбранных языках.</translation>
 <translation id="2613747923081026172">Создать группу</translation>
 <translation id="2617210333344098964">Переместить адрес в аккаунт</translation>
 <translation id="261739049332372104">Чтобы получать уведомления о контенте, включите их в настройках iOS.</translation>
@@ -513,6 +515,7 @@
 <translation id="3603009562372709545">Копировать URL</translation>
 <translation id="3607167657931203000">Данные автозаполнения</translation>
 <translation id="3609785682760573515">Cинхронизация…</translation>
+<translation id="3625008969091706597">Чтобы перейти назад, проведите пальцем по краю экрана</translation>
 <translation id="3630104167004786843">Не получать уведомления</translation>
 <translation id="3631443864840848029">Убедитесь, что вы сохраняете текущий пароль для этого сайта.</translation>
 <translation id="3638472932233958418">Предварительная загрузка</translation>
@@ -630,6 +633,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{Вы закрыли {COUNT} предупреждение}one{Вы закрыли {COUNT} предупреждение}few{Вы закрыли {COUNT} предупреждения}many{Вы закрыли {COUNT} предупреждений}other{Вы закрыли {COUNT} предупреждения}}</translation>
 <translation id="4272631900155121838">Чтобы отсканировать QR-код, разрешите доступ к камере в настройках.</translation>
 <translation id="4277990410970811858">Безопасный просмотр</translation>
+<translation id="4279431713294750185">Чтобы перейти вперед, проведите пальцем по краю экрана</translation>
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4286718549648564014">Адрес перемещен в ваш аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="4293080268407233932">Поиск</translation>
@@ -1288,6 +1292,7 @@
 <translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
+<translation id="7606639338662398635">Группы вкладок</translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7640669552036055091">Вкладки из Android</translation>

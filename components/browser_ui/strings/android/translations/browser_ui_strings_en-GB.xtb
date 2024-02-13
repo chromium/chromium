@@ -323,7 +323,7 @@
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6304434827459067558"><ph name="SITE" /> is blocked from using your info on</translation>
 <translation id="6320088164292336938">Vibrate</translation>
-<translation id="6344622098450209924">Tracking protection</translation>
+<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="640163077447496506">Expires today</translation>
@@ -402,6 +402,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Don't allow a site to use third-party cookies</translation>
 <translation id="7719367874908701697">Page zoom</translation>
+<translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continue with this tab}other{Continue with these tabs}}</translation>

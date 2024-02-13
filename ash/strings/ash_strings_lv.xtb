@@ -669,6 +669,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Ierīces, ar kurām iepriekš tika izveidots savienojums</translation>
+<translation id="3712143870407382523">Izvēlieties logu šai pusei.</translation>
 <translation id="371370241367527062">Priekšējais mikrofons</translation>
 <translation id="3713734891607377840">Kad gatavs, atvērt</translation>
 <translation id="3726171378575546917">Šajā ierīcē nav lietotņu <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> un vēl <ph name="UNAVAILABLE_APPS_COUNT" /> lietotnes(-ņu).</translation>
@@ -1409,6 +1410,7 @@ Jauna instalācija</translation>
 <translation id="6613765291890844037">Izmantotais krātuves apjoms: <ph name="STORAGE_IN_USE_SIZE" /> | Kopā: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
 <translation id="6622679827379792051">Iestatīt tālruņa lietotņu skatīšanu</translation>
+<translation id="6624493541160101248">Pašreizējā darbvieta: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Lietotņu <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> un citu lietotņu paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="6627638273713273709">Meklēšana+Shift+K</translation>
 <translation id="662830937908749204">Izcelt nākamo rūti</translation>
@@ -1501,6 +1503,7 @@ Jauna instalācija</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
 <translation id="6984028004251196682">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Skatiet īsu ceļvedi par Chromebook datora lietošanu. Sāciet darbu, veicot 6 darbības.</translation>
+<translation id="7000027735917578303">Logu un darbvietu iestatījumi</translation>
 <translation id="7004910047186208204">Mobilo datu savienojuma izveide</translation>
 <translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>
 <translation id="7007983414944123363">Nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
@@ -1752,6 +1755,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8001755249288974029">Atlasīt tekstu no kursora līdz rindas sākumam</translation>
 <translation id="8004512796067398576">Palielināt</translation>
 <translation id="8026334261755873520">Notīrīt pārlūkošanas datus</translation>
+<translation id="802782383769312836">Iepriekšējā darbvieta: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Neizdevās izveidot savienojumu ar tīklāju.</translation>
 <translation id="8029629653277878342">Papildu drošībai ir nepieciešams PIN vai parole.</translation>
 <translation id="8030169304546394654">atvienots</translation>
@@ -1799,6 +1803,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8219451629189078428">Šajā laika periodā jūsu Chromebook datoram ir jābūt ieslēgtam un pievienotam strāvas avotam. Uzlādes ierīcei vai adaptera vadiem ir jābūt pilnībā pievienotiem gan Chromebook datoram, gan kontaktligzdai. Neizslēdziet Chromebook datoru.</translation>
 <translation id="8230305195727960608">Krāsu inversijas režīms</translation>
 <translation id="8236042855478648955">Laiks pārtraukumam</translation>
+<translation id="8237964652943995219">Nākamā darbvieta: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Aktivizēt darbvietu labajā pusē</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, lietotne</translation>
@@ -2025,6 +2030,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="92580429198593979">Jūs nospiedāt krāsu inversijas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="925832987464884575">Paslēpt priekšskatījumus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> pieprasa, lai jūs nekavējoties atjauninātu ierīci <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Pašreizējā darbvieta: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
 <translation id="945383118875625837">Vilkt saiti uz grāmatzīmju joslu</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>

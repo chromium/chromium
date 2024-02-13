@@ -169,7 +169,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1933845786846280168">Tanlangan sahifa</translation>
 <translation id="1943432128510653496">Parollarni saqlash</translation>
 <translation id="1944535645109964458">Hech qanday kod mavjud emas</translation>
-<translation id="1952172573699511566">Imkoni bo‘lishi bilan sayt matni siz tanlagan tilda ko‘rinadi.</translation>
 <translation id="1959679933317802873">Kontent kutilmoqda</translation>
 <translation id="1960290143419248813">Androidning bu versiyasida Chrome yangilanmaydi</translation>
 <translation id="1963976881984600709">Standart himoya</translation>
@@ -204,6 +203,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2132122640199389833">Ulangan barcha qurilmalarni olib tashlash</translation>
 <translation id="213279576345780926">Yopildi: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Bosh ekranga qo‘shish</translation>
+<translation id="2139414603196655536">Sahifa statistikasidagi faoliyatingiz Google hisobingizga saqlanadi. <ph name="BEGIN_LINK" />Buni boshqarish haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Sarfingiz asosida</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2155214902713132423">Bu qurilmada mazkur tekshiruv usuli ishlamaydi. Boshqa qurilma orqali variant tanlang.</translation>
@@ -1081,6 +1081,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="670498945988402717">Kecha tekshirilgan</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> taymeridagi vaqt tugadi. Ertaga qaytadan boshlanadi.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bukmark <ph name="FOLDER_NAME" /> jildiga saqlandi. U faqat shu qurilmada saqlanadi.}other{Bukmarklar <ph name="FOLDER_NAME" /> jildiga saqlandi. U faqat shu qurilmada saqlanadi.}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) fayli baribir yuklab olinsinmi?</translation>
 <translation id="6719634564325948108">QR kod orqali ulansinmi?</translation>
 <translation id="6723740634201835758">Google hisobingizda</translation>
@@ -1401,6 +1402,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8237871086242677046">Ekran quyidagi sahifa statistikasi</translation>
 <translation id="8243077599929149377">Foydalanuvchi nomini qoʻshish</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bukmark Google hisobingizdagi (<ph name="ACCOUNT_EMAIL" />) <ph name="FOLDER_NAME" /> jildiga saqlandi.}other{Bukmarklar Google hisobingizdagi (<ph name="ACCOUNT_EMAIL" />) <ph name="FOLDER_NAME" /> jildiga saqlandi.}}</translation>
 <translation id="8255617931166444521">Saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi</translation>
 <translation id="8259179246279078674">Oldindan yuklanadigan sahifalar shifrlanadi. Google bunday sahifalar tarkibi haqida hech narsani bila olmaydi. Google serverlari qaysi saytlar maxfiy tarzda oldindan yuklanganligini biladi. Bu maʼlumot faqat saytlarni oldindan yuklash uchun ishlatiladi va Google hisobingizdagi boshqa maʼlumotlarga ulanmaydi.</translation>
 <translation id="8260126382462817229">Qaytadan kirib ko‘ring</translation>

@@ -169,7 +169,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1933845786846280168">Thẻ được chọn</translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
 <translation id="1944535645109964458">Không có khoá đăng nhập nào</translation>
-<translation id="1952172573699511566">Các trang web sẽ hiển thị văn bản bằng ngôn ngữ ưu tiên của bạn khi có thể.</translation>
 <translation id="1959679933317802873">Đang chờ nội dung</translation>
 <translation id="1960290143419248813">Các bản cập nhật Chrome không còn được hỗ trợ cho phiên bản Android này</translation>
 <translation id="1963976881984600709">Bảo vệ tiêu chuẩn</translation>
@@ -204,6 +203,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2132122640199389833">Xoá mọi thiết bị đã liên kết</translation>
 <translation id="213279576345780926">Đã đóng <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Thêm vào Màn hình chính</translation>
+<translation id="2139414603196655536">Hoạt động của bạn trong Thông tin chi tiết về trang được lưu vào Tài khoản Google. <ph name="BEGIN_LINK" />Tìm hiểu cách quản lý quy trình này<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Dựa trên tùy chọn sử dụng của bạn</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2155214902713132423">Hiện không dùng được phương thức xác minh này trên thiết bị này. Hãy chọn một cách khác trên thiết bị còn lại.</translation>
@@ -1081,6 +1081,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="671481426037969117">Thời gian hẹn giờ của <ph name="FQDN" /> đã hết. Thời gian hẹn giờ sẽ bắt đầu lại vào ngày mai.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào <ph name="FOLDER_NAME" />. Dấu trang chỉ được lưu vào thiết bị này.}other{Đã lưu dấu trang vào <ph name="FOLDER_NAME" />. Dấu trang chỉ được lưu vào thiết bị này.}}</translation>
 <translation id="6715020873764921614">Bạn vẫn muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống?</translation>
 <translation id="6719634564325948108">Kết nối bằng mã QR?</translation>
 <translation id="6723740634201835758">Trong Tài khoản Google của bạn</translation>
@@ -1401,6 +1402,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8237871086242677046">Bảng thông tin chi tiết về trang ở dưới cùng</translation>
 <translation id="8243077599929149377">Thêm tên người dùng của bạn</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào <ph name="FOLDER_NAME" /> trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}other{Đã lưu dấu trang vào <ph name="FOLDER_NAME" /> trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>

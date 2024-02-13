@@ -246,6 +246,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1428729058023778569">Si ves esta advertencia, significa que este sitio no es compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Película autoadhesiva</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1431021750861456539">Pantalla completa automática</translation>
 <translation id="1432187715652018471">página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
 <translation id="1433225466058025572">Prueba a mover tus archivos de nuevo</translation>
@@ -806,7 +807,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Añade más información</translation>
-<translation id="2526280916094749336">Puedes usar direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
+<translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
 <translation id="253493526287553278">Ver detalles del código promocional</translation>
@@ -1921,7 +1922,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4757022425116568383">Llave de acceso de tu perfil de Chrome</translation>
 <translation id="4757993714154412917">Acabas de escribir tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium recomienda que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="4758311279753947758">Añadir información de contacto</translation>
-<translation id="4761104368405085019">Utilizar el micrófono</translation>
 <translation id="4761326898079498987">Consultar más información</translation>
 <translation id="4761869838909035636">Realizar comprobación de seguridad de Chrome</translation>
 <translation id="4763196677855776703">Términos y condiciones proporcionados por <ph name="URL" /></translation>
@@ -2285,6 +2285,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     <ph name="LINE_BREAK" />
     Ponte en contacto con el administrador del sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
+<translation id="5501712702042287009">pantalla completa automática</translation>
 <translation id="550365051221576010">Rellenar todo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores administrados</translation>
@@ -2565,7 +2566,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">Rellenando IBAN</translation>
-<translation id="6053584886670442526">Puedes usar direcciones guardadas en los productos de Google. Esta dirección se guarda en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
+<translation id="6053584886670442526">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guarda en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Consulta más información sobre cómo protege Google tus datos en nuestra Política de Privacidad.</translation>
 <translation id="6055888660316801977">Hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6055982527635883756">Sobre (archivo)</translation>
@@ -4150,7 +4151,6 @@ Más información:
 <translation id="9148507642005240123">&amp;Deshacer edición</translation>
 <translation id="9148599396704355100">Precio bajo</translation>
 <translation id="9150025764986957246">Puedes introducir cosas como:</translation>
-<translation id="9150045010208374699">Utilizar la cámara</translation>
 <translation id="9150685862434908345">El administrador puede modificar la configuración del navegador de manera remota. Es posible que también se administre la actividad de este dispositivo fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>

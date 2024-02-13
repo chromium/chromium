@@ -1922,7 +1922,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4757022425116568383">Clau d'accés del teu perfil de Chrome</translation>
 <translation id="4757993714154412917">Acabes d'introduir la contrasenya en un lloc web enganyós. Per protegir els teus comptes, Chromium et recomana que comprovis les contrasenyes desades.</translation>
 <translation id="4758311279753947758">Afegiu informació de contacte</translation>
-<translation id="4761104368405085019">Utilitzar el micròfon</translation>
 <translation id="4761326898079498987">Revisa per obtenir més informació</translation>
 <translation id="4761869838909035636">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="4763196677855776703">Termes i condicions proporcionats per <ph name="URL" /></translation>
@@ -4151,7 +4150,6 @@ Detalls addicionals:
 <translation id="9148507642005240123">&amp;Desfés la modificació</translation>
 <translation id="9148599396704355100">El preu és baix</translation>
 <translation id="9150025764986957246">Pots introduir coses com ara:</translation>
-<translation id="9150045010208374699">Utilitzar la càmera</translation>
 <translation id="9150685862434908345">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">S'ha actualitzat.</translation>
 <translation id="9155211586651734179">Els perifèrics d'àudio enllaçats</translation>

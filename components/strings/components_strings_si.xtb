@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">විකුණුම්</translation>
 <translation id="1301227606947843452">නීතිමය අමතර</translation>
 <translation id="1301324364792935241">ඔබේ සුරක්‍ෂිත DNS සැකසුම් පරීක්‍ෂා කරන්න</translation>
+<translation id="1302418742166945866"><ph name="URL" /> හට ඔබේ MIDI උපාංග පාලන කිරීමට සහ නැවත ක්‍රමලේඛන කිරීමට අවශ්‍යයි</translation>
 <translation id="1307966114820526988">අත් හරින ලද විශේෂාංග</translation>
 <translation id="1308113895091915999">දීමනාවක් තිබේ</translation>
 <translation id="1309375166585231290">ඔබේ මාපියන් තවමත් එය හොඳින් කියා නැත</translation>
@@ -246,6 +247,7 @@
 <translation id="1428729058023778569">මෙම අඩවිය HTTPS සඳහා සහය නොදක්වන බැවින් ‍ඔබ මෙම අනතුරු ඇඟවීම දකියි. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ස්වයං ආසක්ත චිත්‍රපටය</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
+<translation id="1431021750861456539">ස්වයංක්‍රීය පූර්ණ තිරය</translation>
 <translation id="1432187715652018471">පිටුවට සේවා හසුරුවන්නෙක් ස්ථාපනය කිරීමට අවශ්‍යයි.</translation>
 <translation id="1432581352905426595">සෙවීම් යාන්ත්‍රණ කළමණාකරණය කරන්න</translation>
 <translation id="1433225466058025572">ඔබේ ගොනු නැවත ගෙන යාමට උත්සාහ කරන්න</translation>
@@ -573,6 +575,7 @@
 <translation id="2056658168519009885">ඔබ දකින දැන්වීම් පෞද්ගලීකරණය කිරීමට උදවු කිරීමට අඩවිවලට තොරතුරු සඳහා Chrome වෙතින් විමසිය හැක.</translation>
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2059202684901022309">අඟ 22 x 34</translation>
+<translation id="2062723461792528824">නියම යෙදෙයි</translation>
 <translation id="2064568741209980952">හර සහ ණයට දීම</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{යෝජනා 1}one{යෝජනා #}other{යෝජනා #}}</translation>
 <translation id="2066915425250589881">මැකීමට ඉල්ලීම</translation>
@@ -1291,6 +1294,7 @@
 <translation id="3515972145999192222">එය ප්‍රතිපත්තියක් උල්ලංඝනය කරන නිසා ඔබේ සංවිධානය <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> අවහිර කර ඇත. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">බහුවිධ වස්තු පරිහරණය</translation>
 <translation id="3525130752944427905">අඟ 10 x 14</translation>
+<translation id="3525435918300186947">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන් කරන්න ද?</translation>
 <translation id="3528171143076753409">සේවාදායකයේ සහතිකය තහවුරු කළ නොහැක.</translation>
 <translation id="3528485271872257980">තද දුඹුරු</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{සමමුහුර්ත කරන ලද උපාංග මත අඩු තරමින් අයිතම 1ක්}=1{අයිතම 1ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}one{අයිතම #ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}other{අයිතම #ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}}</translation>
@@ -1921,7 +1925,6 @@
 <translation id="4757022425116568383">ඔබේ Chrome පැතිකඩෙන් මුරයතුර</translation>
 <translation id="4757993714154412917">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීමට Chromium නිර්දේශ කරයි.</translation>
 <translation id="4758311279753947758">සම්බන්ධතා තතු එක් කරන්න</translation>
-<translation id="4761104368405085019">මයික්‍රොෙෆෝනය භාවිතා කරන්න</translation>
 <translation id="4761326898079498987">වැඩිදුර විස්තර සඳහා සමාලෝචනය කරන්න</translation>
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="4763196677855776703"><ph name="URL" /> විසින් සපයනු ලබන නියමයන් සහ කොන්දේසි</translation>
@@ -2285,6 +2288,7 @@
     <ph name="LINE_BREAK" />
     ඔබේ පද්ධති පරිපාලක ඇමතීමට උත්සාහ කරන්න.</translation>
 <translation id="549333378215107354">ප්‍රමාණය 3</translation>
+<translation id="5501712702042287009">ස්වයංක්‍රීය පූර්ණ තිරය</translation>
 <translation id="550365051221576010">සියල්ල පුරවන්න</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">පාලිත පොත්සලකුණු</translation>
@@ -2402,6 +2406,7 @@
 <translation id="5720705177508910913">වත්මන් භාවිතකරු</translation>
 <translation id="572328651809341494">මෑතකාලීන පටිති</translation>
 <translation id="5723287205918986743">ආරක්ෂක කර්මාන්තය</translation>
+<translation id="5723873695528696965">ඔබේ MIDI උපාංග පාලන කර නැවත ක්‍රමලේඛන කරන්න</translation>
 <translation id="5725297205162868298">කෙටිමඟ @ අනුලකුණ සමග ආරම්භ කළ නොහැක: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome ඔබේ මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
 <translation id="5732392974455271431">ඔබේ දෙමව්පියන්ට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
@@ -2508,6 +2513,7 @@
 <translation id="5953516610448771166">සජීවී සිරස්තල මෙම මාධ්‍ය සඳහා ලබා ගත නොහැකිය. සිරස්තල ලබා ගැනීමට, මෙම අඩවිය සඳහා <ph name="CONTENT_SETTINGS" /> අවහිර කරන්න.</translation>
 <translation id="5955063559762970069">හෝටල් සහ නවාතැන්</translation>
 <translation id="595873925609605681">වෙබ් අඩවි විශේෂාංග ක්‍රියා නොකරන්නේ නම් <ph name="BEGIN_LINK" />තුන් වන පාර්ශ්ව කුකී සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">සත්‍යාපනය</translation>
 <translation id="5963413905009737549">කොටස</translation>
 <translation id="5964247741333118902">කාවද්දන ලද අන්තර්ගතය</translation>
 <translation id="5967260682280773804">අඟ 36 x 48</translation>
@@ -3461,6 +3467,7 @@
 <translation id="7755287808199759310">ඔබේ දෙමව්පියන්ගෙන් අයෙකුට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
 <translation id="7755624218968747854">Primary Roll</translation>
 <translation id="7758069387465995638">සුරැකුම් පවුර හෝ ප්‍රතිවයිරස මෘදුකාංග සබැඳුම අවහිර කර තිබෙනවා විය හැකිය.</translation>
+<translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
 <translation id="7760497246331667482">රෙගේ සහ කැරිබියානු සංගීතය</translation>
 <translation id="776110834126722255">අත් හැරියා</translation>
@@ -3632,6 +3639,7 @@
 <translation id="8103161714697287722">ගෙවීමේ ක්‍රමය</translation>
 <translation id="8103643211515685474">කෙසේ වෙතත් මුද්‍රණය කරන්න</translation>
 <translation id="8105368624971345109">ක්‍රියා විරහිත කරන්න</translation>
+<translation id="8107664017913103177">කාඩ්පත් ප්‍රතිලාභ ලබා ගත හැක</translation>
 <translation id="810875025413331850">කිසිඳු උපාංගයක් අවටින් හමු නොවිය.</translation>
 <translation id="8116925261070264013">නිහඬයි</translation>
 <translation id="8118489163946903409">ගෙවීම් ක්‍රමය</translation>
@@ -4150,7 +4158,6 @@
 <translation id="9148507642005240123">සංස්කරණය &amp;පසුගමනය කරන්න</translation>
 <translation id="9148599396704355100">මිල අඩුයි</translation>
 <translation id="9150025764986957246">ඔබට මෙවැනි දේවල් ඇතුළු කළ හැක:</translation>
-<translation id="9150045010208374699">ඔබගේ කැමරාව භාවිතා කරන්න</translation>
 <translation id="9150685862434908345">ඔබේ පරිපාලකට දුරස්ථව ඔබේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගයේ ක්‍රියාකාරකම් Chrome වලින් පිටත ද කළමනාකරණය කිරීමට ඇතැම් විට හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">යාවත්කාලීන කෙරිණි</translation>
 <translation id="9155211586651734179">ශ්‍රව්‍ය පර්යන්ත අමුණා ඇත</translation>

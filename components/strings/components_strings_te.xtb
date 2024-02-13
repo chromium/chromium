@@ -171,6 +171,7 @@
 <translation id="1296930489679394997">విక్రయాలు</translation>
 <translation id="1301227606947843452">చట్ట సంబంధితం అదనం</translation>
 <translation id="1301324364792935241">మీ సెక్యూర్ DNS సెట్టింగ్‌లను చెక్ చేయండి</translation>
+<translation id="1302418742166945866"><ph name="URL" /> మీ MIDI పరికరాలను కంట్రోల్ చేసి, రీప్రోగ్రామ్ చేయాలనుకుంటోంది</translation>
 <translation id="1307966114820526988">విస్మరించబడిన ఫీచర్‌లు</translation>
 <translation id="1308113895091915999">ఆఫర్ అందుబాటులో ఉంది</translation>
 <translation id="1309375166585231290">మీ తల్లిదండ్రులు ఈ సైట్‌ను యాక్సెస్ చేయడానికి ఇంకా అనుమతి ఇవ్వలేదు</translation>
@@ -241,6 +242,7 @@
 <translation id="1428729058023778569">ఈ సైట్ HTTPS‌కు సపోర్ట్ చేయనందున మీరు ఈ హెచ్చరికను చూస్తున్నారు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">సెల్ఫ్-ఆడ్హెసివ్ ఫిల్మ్</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
+<translation id="1431021750861456539">ఆటోమేటిక్ ఫుల్ స్క్రీన్</translation>
 <translation id="1432187715652018471">సర్వీస్ హ్యాండ్లర్‌ను ఇన్‌స్టాల్ చేయమని పేజీ కోరుతోంది.</translation>
 <translation id="1432581352905426595">సెర్చ్ ఇంజిన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1433225466058025572">మీ ఫైళ్లను మళ్లీ తరలించడానికి ట్రై చేయండి</translation>
@@ -568,6 +570,7 @@
 <translation id="2056658168519009885">మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడంలో సహాయపడే సమాచారాన్ని అందించాల్సిందిగా సైట్‌లు Chromeను అడగవచ్చు.</translation>
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2059202684901022309">22 x 34 అంగుళాలు</translation>
+<translation id="2062723461792528824">నియమాలు వర్తిస్తాయి</translation>
 <translation id="2064568741209980952">రుణాలు &amp; అప్పులు ఇవ్వడం</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 సూచన}other{# సూచనలు}}</translation>
 <translation id="2066915425250589881">తొలగించవలసిందిగా రిక్వెస్ట్ చేయవచ్చు</translation>
@@ -1286,6 +1289,7 @@
 <translation id="3515972145999192222">ఒక పాలసీని ఉల్లంఘిస్తున్న కారణంగా మీ సంస్థ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />‌ను బ్లాక్ చేసింది. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">అనేక వస్తువులను హ్యాండిల్ చేయడం</translation>
 <translation id="3525130752944427905">10 x 14 అంగుళాలు</translation>
+<translation id="3525435918300186947">MIDI పరికరాలను కంట్రోల్ చేసి, రీప్రోగ్రామ్ చేయాలా?</translation>
 <translation id="3528171143076753409">సర్వర్ ప్రమాణపత్రం విశ్వసనీయమైనది కాదు.</translation>
 <translation id="3528485271872257980">ముదురు గోధుమ రంగు</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{సింక్ చేసిన పరికరాల్లో కనీసం 1 అంశం}=1{1 అంశం (మరియు సింక్ చేసిన పరికరాల్లో మరిన్ని)}other{# అంశాలు (మరియు సింక్ చేసిన పరికరాల్లో మరిన్ని)}}</translation>
@@ -1916,7 +1920,6 @@
 <translation id="4757022425116568383">మీ Chrome ప్రొఫైల్ అందించిన పాస్‌కీ</translation>
 <translation id="4757993714154412917">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chromium మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
 <translation id="4758311279753947758">సంప్రదింపు సమాచారాన్ని జోడించండి</translation>
-<translation id="4761104368405085019">మీ మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4761326898079498987">మరిన్ని వివరాల కోసం రివ్యూ చేయండి</translation>
 <translation id="4761869838909035636">Chrome భద్రతా తనిఖీని రన్ చేయి</translation>
 <translation id="4763196677855776703"><ph name="URL" /> అందించిన నియమాలు, షరతులు</translation>
@@ -2280,6 +2283,7 @@
     <ph name="LINE_BREAK" />
     మీ సిస్టమ్ నిర్వాహకుడిని సంప్రదించడానికి ప్రయత్నించండి.</translation>
 <translation id="549333378215107354">సైజ్‌ 3</translation>
+<translation id="5501712702042287009">ఆటోమేటిక్ ఫుల్ స్క్రీన్</translation>
 <translation id="550365051221576010">అన్నింటినీ పూరించండి</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">నిర్వహించబడిన బుక్‌మార్క్‌లు</translation>
@@ -2397,6 +2401,7 @@
 <translation id="5720705177508910913">ప్రస్తుత వినియోగదారు</translation>
 <translation id="572328651809341494">ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="5723287205918986743">రక్షణ పరిశ్రమ</translation>
+<translation id="5723873695528696965">మీ MIDI పరికరాలను కంట్రోల్ చేయండి, రీప్రోగ్రామ్ చేయండి</translation>
 <translation id="5725297205162868298">షార్ట్‌కట్ @ అక్షరంతో ప్రారంభం కాదు: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">మీరు మీ పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="5732392974455271431">మీ తల్లిదండ్రులు దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
@@ -2503,6 +2508,7 @@
 <translation id="5953516610448771166">ఈ మీడియాకు లైవ్ క్యాప్షన్ అందుబాటులో లేదు. క్యాప్షన్‌లను పొందడానికి, ఈ సైట్ <ph name="CONTENT_SETTINGS" />ను బ్లాక్ చేయండి.</translation>
 <translation id="5955063559762970069">హోటళ్లు &amp; వసతులు</translation>
 <translation id="595873925609605681">సైట్ ఫీచర్‌లు పని చేయకపోతే, <ph name="BEGIN_LINK" />తాత్కాలికంగా థర్డ్-పార్టీ కుక్కీలను అనుమతించడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">వెరిఫికేషన్</translation>
 <translation id="5963413905009737549">విభాగం</translation>
 <translation id="5964247741333118902">పొందుపరచబడిన కంటెంట్</translation>
 <translation id="5967260682280773804">36 x 48 అంగుళాలు</translation>
@@ -3456,6 +3462,7 @@
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>
 <translation id="7758069387465995638">ఫైర్‌వాల్ లేదా యాంటీవైరస్ సాఫ్ట్‌వేర్ కనెక్షన్‌ను బ్లాక్ చేసి ఉండవచ్చు.</translation>
+<translation id="7759147511335618829">MIDI పరికర కంట్రోల్, రీప్రోగ్రాం</translation>
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
 <translation id="7760497246331667482">రెగ్గే &amp; కరీబియన్ మ్యూజిక్</translation>
 <translation id="776110834126722255">విస్మరించబడింది</translation>
@@ -3627,6 +3634,7 @@
 <translation id="8103161714697287722">పేమెంట్ ఆప్షన్‌</translation>
 <translation id="8103643211515685474">ఏదేమైనా ప్రింట్ చేయండి</translation>
 <translation id="8105368624971345109">ఆఫ్ చేయి</translation>
+<translation id="8107664017913103177">కార్డ్ ప్రయోజనాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="810875025413331850">సమీప పరికరాలు ఏవీ కనుగొనబడలేదు.</translation>
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
 <translation id="8118489163946903409">పేమెంట్ ఆప్షన్‌</translation>
@@ -4145,7 +4153,6 @@
 <translation id="9148507642005240123">&amp;సవరించడాన్ని రద్దు చేయండి</translation>
 <translation id="9148599396704355100">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="9150025764986957246">మీరు ఇటువంటి అంశాలను ఎంటర్ చేయవచ్చు:</translation>
-<translation id="9150045010208374699">మీ కెమెరాను ఉపయోగించండి</translation>
 <translation id="9150685862434908345">మీ అడ్మినిస్ట్రేట‌ర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">అప్‌డేట్ చేయబడింది</translation>
 <translation id="9155211586651734179">ఆడియో పెరిఫెరల్స్ జోడించబడ్డాయి</translation>

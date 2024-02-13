@@ -169,7 +169,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1933845786846280168">Scheda selezionata</translation>
 <translation id="1943432128510653496">Salva password</translation>
 <translation id="1944535645109964458">Nessuna passkey disponibile</translation>
-<translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
 <translation id="1959679933317802873">In attesa di contenuti</translation>
 <translation id="1960290143419248813">Gli aggiornamenti di Chrome non sono più supportati per questa versione di Android</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
@@ -204,6 +203,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2132122640199389833">Rimuovi tutti i dispositivi collegati</translation>
 <translation id="213279576345780926">La scheda <ph name="TAB_TITLE" /> è stata chiusa</translation>
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
+<translation id="2139414603196655536">La tua attività in Statistiche pagine viene salvata nell'Account Google. <ph name="BEGIN_LINK" />Scopri come gestire questa procedura<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2155214902713132423">Questo metodo di verifica non è disponibile per il dispositivo in uso. Scegli un'opzione diversa sull'altro dispositivo.</translation>
@@ -1081,6 +1081,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="670498945988402717">Eseguito ieri</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Preferito salvato nella cartella <ph name="FOLDER_NAME" />. Viene salvato solo su questo dispositivo.}other{Preferiti salvati nella cartella <ph name="FOLDER_NAME" />. Vengono salvati solo su questo dispositivo.}}</translation>
 <translation id="6715020873764921614">Vuoi comunque scaricare <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Vuoi eseguire la connessione con il codice QR?</translation>
 <translation id="6723740634201835758">Nell'Account Google</translation>
@@ -1401,6 +1402,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8237871086242677046">Riquadro inferiore Statistiche pagine</translation>
 <translation id="8243077599929149377">Aggiungi il tuo nome utente</translation>
 <translation id="8250920743982581267">Documenti</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Preferito salvato nella cartella <ph name="FOLDER_NAME" /> nel tuo account <ph name="ACCOUNT_EMAIL" />.}other{Preferiti salvati nella cartella <ph name="FOLDER_NAME" /> nel tuo account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">I siti possono utilizzare i cookie per vedere la tua attività di navigazione solo sul proprio sito</translation>
 <translation id="8259179246279078674">Poiché le pagine precaricate sono criptate, Google non accederà ai contenuti di tali pagine. I server di Google memorizzeranno quali siti vengono precaricati privatamente. Queste informazioni vengono utilizzate solo per precaricare le pagine e non sono collegate ad altri dati provenienti dal tuo Account Google.</translation>
 <translation id="8260126382462817229">Prova ad accedere nuovamente</translation>

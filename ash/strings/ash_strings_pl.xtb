@@ -100,6 +100,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1312604459020188865">Siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Zawsze pokazuj półkę</translation>
 <translation id="132346741904777634">Podgląd z kamery został przyciągnięty do lewego górnego rogu. Konflikt z obszarem systemowym.</translation>
+<translation id="132415371743256095">Zamknij <ph name="DESK_NAME" /> i okna</translation>
 <translation id="1333308631814936910">Połączono: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Pomniejsz na stronie</translation>
 <translation id="1341651618736211726">Rozwiń menu</translation>
@@ -331,6 +332,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="240006516586367791">Sterowanie multimediami</translation>
 <translation id="2402411679569069051">Aby odblokować Chromebooka, użyj odcisku palca lub odblokuj swój telefon</translation>
+<translation id="240545663114741956">Aby się wylogować, naciśnij dwukrotnie <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Brak połączenia</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
@@ -352,7 +354,9 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2478076885740497414">Zainstaluj aplikację</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> – podgląd. Biurko aktywne.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
+<translation id="250047928202119308">Menu profilu biurka</translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
 <translation id="2504454902900101003">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
 <translation id="2509468283778169019">CAPS LOCK jest włączony.</translation>
@@ -905,6 +909,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
+<translation id="4654916960643280876">Zaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="4657775630156561295">Ta sugestia zostanie trwale usunięta z historii sugestii na Twoim koncie:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5111930673176965299">Rozmycie tła</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> – podgląd. Biurko nieaktywne.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5150070631291639005">Ustawienia prywatności</translation>
@@ -1430,6 +1436,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6683022854667115063">Słuchawki</translation>
 <translation id="6686023075541098243">Skonfiguruj wyświetlanie powiadomień z telefonu</translation>
 <translation id="6696025732084565524">Odłączana klawiatura wymaga krytycznej aktualizacji</translation>
+<translation id="6697913454192220372">Dodaj nowe biurko</translation>
 <translation id="6700713906295497288">Przycisk menu IME</translation>
 <translation id="6707693040195709527">Minął termin przywrócenia na tym urządzeniu wcześniejszej wersji systemu operacyjnego</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
@@ -1561,6 +1568,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7262906531272962081">Utwórz przypomnienie</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="7285232777292757180">Aby zrobić zrzut ekranu, użyj narzędzia zrzutu ekranu w Szybkich ustawieniach</translation>
+<translation id="7301826272005790482">Zamknij sugestie dotyczące okien</translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1767,6 +1775,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
 <translation id="8079538659226626406">Udostępnianie ekranu</translation>
 <translation id="8083540854303889870">Zapisane na później</translation>
+<translation id="8088141034189573826">Aby wyświetlić więcej opcji, naciśnij Tab. Strzałki w lewo i w prawo umożliwiają dostęp do wszystkich biurek.</translation>
 <translation id="8091153018031979607">Rozpoczęcie o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatyczne aktualizacje</translation>
 <translation id="8092380135549145188">Elementy sterujące przewijaniem</translation>
@@ -1964,6 +1973,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">Niezaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Połączono, brak internetu</translation>
 <translation id="8951539504029375108">Chromebook obsługuje tylko zatwierdzone urządzenia Thunderbolt</translation>
 <translation id="8964525410783593407">1 godz.</translation>

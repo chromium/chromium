@@ -170,7 +170,6 @@
 <translation id="1933845786846280168">選択したタブ</translation>
 <translation id="1943432128510653496">パスワードの保存</translation>
 <translation id="1944535645109964458">利用可能なパスキーがありません</translation>
-<translation id="1952172573699511566">可能な場合、設定した言語でウェブサイトのテキストを表示します。</translation>
 <translation id="1959679933317802873">コンテンツの待機中</translation>
 <translation id="1960290143419248813">このバージョンの Android では Chrome の更新はサポートされなくなりました</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
@@ -205,6 +204,7 @@
 <translation id="2132122640199389833">リンクしたすべてのデバイスを削除</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> を閉じました</translation>
 <translation id="2139186145475833000">ホーム画面に追加</translation>
+<translation id="2139414603196655536">ページの関連情報のアクティビティは Google アカウントに保存されます。<ph name="BEGIN_LINK" />アクティビティの管理方法について<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">使用状況を基に決定</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
 <translation id="2155214902713132423">この認証方法は、このデバイスでは使用できません。他のデバイスで別の方法を選択してください。</translation>
@@ -1082,6 +1082,7 @@
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{ブックマークを <ph name="FOLDER_NAME" /> に保存しました。保存されるのはこのデバイスのみに限られます。}other{ブックマークを <ph name="FOLDER_NAME" /> に保存しました。保存されるのはこのデバイスのみに限られます。}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" />（<ph name="FILE_SIZE" />）のダウンロードを続行しますか？</translation>
 <translation id="6719634564325948108">QR コードを使用して接続しますか？</translation>
 <translation id="6723740634201835758">Google アカウント</translation>
@@ -1403,6 +1404,7 @@
 </translation>
 <translation id="8243077599929149377">ユーザー名を追加</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{ブックマークをアカウント（<ph name="ACCOUNT_EMAIL" />）の <ph name="FOLDER_NAME" /> に保存しました。}other{ブックマークをアカウント（<ph name="ACCOUNT_EMAIL" />）の <ph name="FOLDER_NAME" /> に保存しました。}}</translation>
 <translation id="8255617931166444521">サイトは、Cookie を使用して、そのサイトでのあなたの閲覧アクティビティのみを確認できます</translation>
 <translation id="8259179246279078674">プリロードされたページは暗号化されているため、Google はプリロードされたページのコンテンツを一切把握できません。Google サーバーは、どのサイトが非公開でプリロードされたかを把握します。この情報はページをプリロードするためにのみ使用され、Google アカウントから他の情報にリンクされることはありません。</translation>
 <translation id="8260126382462817229">もう一度ログインしてみてください</translation>
