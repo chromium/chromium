@@ -529,9 +529,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   TextOffsetMap offset_map;
   String transformed =
       layout_text->TransformAndSecureText(original, offset_map);
-  DCHECK_EQ(layout_text->TransformedText(), transformed);
+  CHECK_EQ(layout_text->TransformedText().length(), transformed.length());
   const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
+  CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
   AppendText(TransformedString(layout_text->TransformedText(),
                                {length_map.data(), length_map.size()}),
              *layout_text);

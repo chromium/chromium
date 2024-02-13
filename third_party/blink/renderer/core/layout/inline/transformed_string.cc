@@ -62,6 +62,9 @@ TransformedString TransformedString::Substring(unsigned start,
   if (length_map_.empty()) {
     return TransformedString(sub_view);
   }
+  CHECK_EQ(view_.length(), length_map_.size());
+  CHECK_LE(start, view_.length());
+  CHECK_LE(start + length, view_.length());
   return TransformedString(sub_view, length_map_.subspan(start, length));
 }
 
