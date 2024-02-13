@@ -27,6 +27,8 @@ function setSortAttrs(th: HTMLElement, sortDesc: boolean|null): void {
   button.title = `Sort by ${button.innerText} ${nextDir}`;
 }
 
+export type StyleRowFunc<T> = (tr: HTMLTableRowElement, row: T) => void;
+
 /**
  * Table abstracts the logic for rendering and sorting a table. The table's
  * columns are supplied by a TableModel. Each Column knows how to render the
@@ -40,10 +42,12 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
   private model_?: TableModel<T>;
   private sortDesc_: boolean = false;
+  private styleRow_: StyleRowFunc<T> = () => {};
 
-  setModel(model: TableModel<T>): void {
+  setModel(model: TableModel<T>, styleRow: StyleRowFunc<T> = () => {}): void {
     this.model_ = model;
     this.sortDesc_ = false;
+    this.styleRow_ = styleRow;
 
     const tr = this.$<HTMLElement>('thead > tr')!;
     model.cols.forEach((col, idx) => {
@@ -122,7 +126,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
         col.render(td, row);
         tr.append(td);
       }
-      this.model_!.styleRow(tr, row);
+      this.styleRow_(tr, row);
       tbody.append(tr);
     }
   }

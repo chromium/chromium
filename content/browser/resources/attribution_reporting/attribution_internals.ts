@@ -279,7 +279,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
   }
 }
 
-class Source {
+interface Source {
   sourceEventId: bigint;
   sourceOrigin: string;
   destinations: string[];
@@ -301,79 +301,74 @@ class Source {
   triggerDataMatching: string;
   eventLevelEpsilon: number;
   debugCookieSet: boolean;
-
-  constructor(mojo: WebUISource) {
-    this.sourceEventId = mojo.sourceEventId;
-    this.sourceOrigin = originToText(mojo.sourceOrigin);
-    this.destinations =
-        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin))
-            .sort(compareDefault);
-    this.reportingOrigin = originToText(mojo.reportingOrigin);
-    this.sourceTime = new Date(mojo.sourceTime);
-    this.expiryTime = new Date(mojo.expiryTime);
-    this.triggerSpecs = mojo.triggerSpecsJson;
-    this.aggregatableReportWindowTime =
-        new Date(mojo.aggregatableReportWindowTime);
-    this.maxEventLevelReports = mojo.maxEventLevelReports;
-    this.sourceType = sourceTypeText[mojo.sourceType];
-    this.priority = mojo.priority;
-    this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
-    this.aggregationKeys =
-        JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
-    this.debugKey =
-        typeof mojo.debugKey === 'bigint' ? mojo.debugKey : undefined;
-    this.dedupKeys = mojo.dedupKeys.sort(compareDefault);
-    this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
-    this.aggregatableDedupKeys =
-        mojo.aggregatableDedupKeys.sort(compareDefault);
-    this.triggerDataMatching =
-        triggerDataMatchingText[mojo.triggerDataMatching];
-    this.eventLevelEpsilon = mojo.eventLevelEpsilon;
-    this.status = attributabilityText[mojo.attributability];
-    this.debugCookieSet = mojo.debugCookieSet;
-  }
 }
 
-class SourceTableModel extends ArrayTableModel<Source> {
-  constructor() {
-    super(
-        [
-          ValueColumn.of('Source Event ID', 'sourceEventId', asNumber),
-          ValueColumn.of('Status', 'status', asStringOrBool),
-          ValueColumn.of('Source Origin', 'sourceOrigin', asUrl),
-          ValueColumn.of('Destinations', 'destinations', asList(asUrl)),
-          ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
-          ValueColumn.of('Registration Time', 'sourceTime', asDate),
-          ValueColumn.of('Expiry Time', 'expiryTime', asDate),
-          ValueColumn.of('Trigger Specs', 'triggerSpecs', asCode),
-          ValueColumn.of(
-              'Aggregatable Report Window Time', 'aggregatableReportWindowTime',
-              asDate),
-          ValueColumn.of(
-              'Max Event Level Reports', 'maxEventLevelReports', asNumber),
-          ValueColumn.of('Source Type', 'sourceType', asStringOrBool),
-          ValueColumn.of('Priority', 'priority', asNumber),
-          ValueColumn.of('Filter Data', 'filterData', asCode),
-          ValueColumn.of('Aggregation Keys', 'aggregationKeys', asCode),
-          ValueColumn.of(
-              'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
-          ValueColumn.of(
-              'Event-Level Epsilon', 'eventLevelEpsilon',
-              asCustomNumber((v: number) => v.toFixed(3))),
-          ValueColumn.of(
-              'Aggregatable Budget Consumed', 'aggregatableBudgetConsumed',
-              asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
-          ValueColumn.of('Debug Key', 'debugKey', allowingUndefined(asNumber)),
-          ValueColumn.of('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
-          ValueColumn.of('Dedup Keys', 'dedupKeys', asList(asNumber)),
-          ValueColumn.of(
-              'Aggregatable Dedup Keys', 'aggregatableDedupKeys',
-              asList(asNumber)),
-        ],
-        5,  // Sort by registration time by default.
-    );
-  }
+function newSource(mojo: WebUISource): Source {
+  return {
+    sourceEventId: mojo.sourceEventId,
+    sourceOrigin: originToText(mojo.sourceOrigin),
+    destinations:
+        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin))
+            .sort(compareDefault),
+    reportingOrigin: originToText(mojo.reportingOrigin),
+    sourceTime: new Date(mojo.sourceTime),
+    expiryTime: new Date(mojo.expiryTime),
+    triggerSpecs: mojo.triggerSpecsJson,
+    aggregatableReportWindowTime: new Date(mojo.aggregatableReportWindowTime),
+    maxEventLevelReports: mojo.maxEventLevelReports,
+    sourceType: sourceTypeText[mojo.sourceType],
+    priority: mojo.priority,
+    filterData: JSON.stringify(mojo.filterData.filterValues, null, ' '),
+    aggregationKeys: JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' '),
+    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
+    debugKey: typeof mojo.debugKey === 'bigint' ? mojo.debugKey : undefined,
+    dedupKeys: mojo.dedupKeys.sort(compareDefault),
+    aggregatableBudgetConsumed: mojo.aggregatableBudgetConsumed,
+    aggregatableDedupKeys: mojo.aggregatableDedupKeys.sort(compareDefault),
+    triggerDataMatching: triggerDataMatchingText[mojo.triggerDataMatching],
+    eventLevelEpsilon: mojo.eventLevelEpsilon,
+    status: attributabilityText[mojo.attributability],
+    debugCookieSet: mojo.debugCookieSet,
+  };
+}
+
+function newSourceTableModel(): ArrayTableModel<Source> {
+  return new ArrayTableModel(
+      [
+        ValueColumn.of('Source Event ID', 'sourceEventId', asNumber),
+        ValueColumn.of('Status', 'status', asStringOrBool),
+        ValueColumn.of('Source Origin', 'sourceOrigin', asUrl),
+        ValueColumn.of('Destinations', 'destinations', asList(asUrl)),
+        ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
+        ValueColumn.of('Registration Time', 'sourceTime', asDate),
+        ValueColumn.of('Expiry Time', 'expiryTime', asDate),
+        ValueColumn.of('Trigger Specs', 'triggerSpecs', asCode),
+        ValueColumn.of(
+            'Aggregatable Report Window Time', 'aggregatableReportWindowTime',
+            asDate),
+        ValueColumn.of(
+            'Max Event Level Reports', 'maxEventLevelReports', asNumber),
+        ValueColumn.of('Source Type', 'sourceType', asStringOrBool),
+        ValueColumn.of('Priority', 'priority', asNumber),
+        ValueColumn.of('Filter Data', 'filterData', asCode),
+        ValueColumn.of('Aggregation Keys', 'aggregationKeys', asCode),
+        ValueColumn.of(
+            'Trigger Data Matching', 'triggerDataMatching', asStringOrBool),
+        ValueColumn.of(
+            'Event-Level Epsilon', 'eventLevelEpsilon',
+            asCustomNumber((v: number) => v.toFixed(3))),
+        ValueColumn.of(
+            'Aggregatable Budget Consumed', 'aggregatableBudgetConsumed',
+            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        ValueColumn.of('Debug Key', 'debugKey', allowingUndefined(asNumber)),
+        ValueColumn.of('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
+        ValueColumn.of('Dedup Keys', 'dedupKeys', asList(asNumber)),
+        ValueColumn.of(
+            'Aggregatable Dedup Keys', 'aggregatableDedupKeys',
+            asList(asNumber)),
+      ],
+      5,  // Sort by registration time by default.
+  );
 }
 
 class Registration {
@@ -395,23 +390,21 @@ class Registration {
   }
 }
 
-class RegistrationTableModel<T extends Registration> extends
-    ArrayTableModel<T> {
-  constructor(contextOriginTitle: string, cols: Iterable<Column<T>>) {
-    super(
-        [
-          ValueColumn.of('Time', 'time', asDate),
-          ValueColumn.of(contextOriginTitle, 'contextOrigin', asUrl),
-          ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
-          ValueColumn.of('Registration JSON', 'registrationJson', asCode),
-          ValueColumn.of(
-              'Cleared Debug Key', 'clearedDebugKey',
-              allowingUndefined(asNumber)),
-          ...cols,
-        ],
-        0,  // Sort by time by default.
-    );
-  }
+function newRegistrationTableModel<T extends Registration>(
+    contextOriginTitle: string, cols: Iterable<Column<T>>): ArrayTableModel<T> {
+  return new ArrayTableModel(
+      [
+        ValueColumn.of('Time', 'time', asDate),
+        ValueColumn.of(contextOriginTitle, 'contextOrigin', asUrl),
+        ValueColumn.of('Reporting Origin', 'reportingOrigin', asUrl),
+        ValueColumn.of('Registration JSON', 'registrationJson', asCode),
+        ValueColumn.of(
+            'Cleared Debug Key', 'clearedDebugKey',
+            allowingUndefined(asNumber)),
+        ...cols,
+      ],
+      0,  // Sort by time by default.
+  );
 }
 
 class Trigger extends Registration {
@@ -432,27 +425,24 @@ const VERIFICATION_COLS: ReadonlyArray<Column<TriggerVerification>> = [
   ValueColumn.of('Report ID', 'aggregatableReportId', asStringOrBool),
 ];
 
-class ReportVerificationColumn implements Column<Trigger> {
+const reportVerificationColumn: Column<Trigger> = {
   renderHeader(th: HTMLElement): void {
     th.innerText = 'Report Verification';
-  }
+  },
 
   render(td: HTMLElement, row: Trigger): void {
     for (const verification of row.verifications) {
       renderDL(td, verification, VERIFICATION_COLS);
     }
-  }
-}
+  },
+};
 
-class TriggerTableModel extends RegistrationTableModel<Trigger> {
-  constructor() {
-    super('Destination', [
-      ValueColumn.of('Event-Level Result', 'eventLevelResult', asStringOrBool),
-      ValueColumn.of(
-          'Aggregatable Result', 'aggregatableResult', asStringOrBool),
-      new ReportVerificationColumn(),
-    ]);
-  }
+function newTriggerTableModel(): ArrayTableModel<Trigger> {
+  return newRegistrationTableModel('Destination', [
+    ValueColumn.of('Event-Level Result', 'eventLevelResult', asStringOrBool),
+    ValueColumn.of('Aggregatable Result', 'aggregatableResult', asStringOrBool),
+    reportVerificationColumn,
+  ]);
 }
 
 class SourceRegistration extends Registration {
@@ -466,14 +456,12 @@ class SourceRegistration extends Registration {
   }
 }
 
-class SourceRegistrationTableModel extends
-    RegistrationTableModel<SourceRegistration> {
-  constructor() {
-    super('Source Origin', [
-      ValueColumn.of('Type', 'type', asStringOrBool),
-      ValueColumn.of('Status', 'status', asStringOrBool),
-    ]);
-  }
+function newSourceRegistrationTableModel():
+    ArrayTableModel<SourceRegistration> {
+  return newRegistrationTableModel('Source Origin', [
+    ValueColumn.of('Type', 'type', asStringOrBool),
+    ValueColumn.of('Status', 'status', asStringOrBool),
+  ]);
 }
 
 function isHttpError(code: number): boolean {
@@ -607,8 +595,6 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     });
   }
 
-  override styleRow = styleReportRow;
-
   override rowCount(): number {
     return this.sentOrDroppedReports.length + this.storedReports.length;
   }
@@ -686,7 +672,7 @@ const osRegistrationResultText:
       [OsRegistrationResult.kRejectedByOs]: 'Rejected by OS',
     };
 
-class OsRegistration {
+interface OsRegistration {
   time: Date;
   registrationUrl: string;
   topLevelOrigin: string;
@@ -694,36 +680,33 @@ class OsRegistration {
   debugKeyAllowed: boolean;
   debugReporting: boolean;
   result: string;
-
-  constructor(mojo: WebUIOsRegistration) {
-    this.time = new Date(mojo.time);
-    this.registrationUrl = mojo.registrationUrl.url;
-    this.topLevelOrigin = originToText(mojo.topLevelOrigin);
-    this.debugKeyAllowed = mojo.isDebugKeyAllowed;
-    this.debugReporting = mojo.debugReporting;
-
-    this.registrationType = `OS ${registrationTypeText[mojo.type]}`;
-    this.result = osRegistrationResultText[mojo.result];
-  }
 }
 
-class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
-  constructor() {
-    super(
-        [
-          ValueColumn.of('Time', 'time', asDate),
-          ValueColumn.of(
-              'Registration Type', 'registrationType', asStringOrBool),
-          ValueColumn.of('Registration URL', 'registrationUrl', asUrl),
-          ValueColumn.of('Top-Level Origin', 'topLevelOrigin', asUrl),
-          ValueColumn.of(
-              'Debug Key Allowed', 'debugKeyAllowed', asStringOrBool),
-          ValueColumn.of('Debug Reporting', 'debugReporting', asStringOrBool),
-          ValueColumn.of('Result', 'result', asStringOrBool),
-        ],
-        0,
-    );
-  }
+function newOsRegistration(mojo: WebUIOsRegistration): OsRegistration {
+  return {
+    time: new Date(mojo.time),
+    registrationUrl: mojo.registrationUrl.url,
+    topLevelOrigin: originToText(mojo.topLevelOrigin),
+    debugKeyAllowed: mojo.isDebugKeyAllowed,
+    debugReporting: mojo.debugReporting,
+    registrationType: `OS ${registrationTypeText[mojo.type]}`,
+    result: osRegistrationResultText[mojo.result],
+  };
+}
+
+function newOsRegistrationTableModel(): ArrayTableModel<OsRegistration> {
+  return new ArrayTableModel(
+      [
+        ValueColumn.of('Time', 'time', asDate),
+        ValueColumn.of('Registration Type', 'registrationType', asStringOrBool),
+        ValueColumn.of('Registration URL', 'registrationUrl', asUrl),
+        ValueColumn.of('Top-Level Origin', 'topLevelOrigin', asUrl),
+        ValueColumn.of('Debug Key Allowed', 'debugKeyAllowed', asStringOrBool),
+        ValueColumn.of('Debug Reporting', 'debugReporting', asStringOrBool),
+        ValueColumn.of('Result', 'result', asStringOrBool),
+      ],
+      0,
+  );
 }
 
 interface DebugReport {
@@ -768,20 +751,16 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
   };
 }
 
-class DebugReportTableModel extends ArrayTableModel<DebugReport> {
-  constructor() {
-    super(
-        [
-          ValueColumn.of('Time', 'time', asDate),
-          ValueColumn.of('URL', 'url', asUrl),
-          ValueColumn.of('Status', 'status', asStringOrBool),
-          ValueColumn.of('Body', 'body', asCode),
-        ],
-        0,  // Sort by report time by default.
-    );
-  }
-
-  override styleRow = styleReportRow;
+function newDebugReportTableModel(): ArrayTableModel<DebugReport> {
+  return new ArrayTableModel(
+      [
+        ValueColumn.of('Time', 'time', asDate),
+        ValueColumn.of('URL', 'url', asUrl),
+        ValueColumn.of('Status', 'status', asStringOrBool),
+        ValueColumn.of('Body', 'body', asCode),
+      ],
+      0,  // Sort by report time by default.
+  );
 }
 
 /**
@@ -923,11 +902,11 @@ const attributionSupportText: Readonly<Record<AttributionSupport, string>> = {
 };
 
 class AttributionInternals implements ObserverInterface {
-  private readonly sources = new SourceTableModel();
-  private readonly sourceRegistrations = new SourceRegistrationTableModel();
-  private readonly triggers = new TriggerTableModel();
-  private readonly debugReports = new DebugReportTableModel();
-  private readonly osRegistrations = new OsRegistrationTableModel();
+  private readonly sources = newSourceTableModel();
+  private readonly sourceRegistrations = newSourceRegistrationTableModel();
+  private readonly triggers = newTriggerTableModel();
+  private readonly debugReports = newDebugReportTableModel();
+  private readonly osRegistrations = newOsRegistrationTableModel();
   private readonly eventLevelReports: ReportTableModel<EventLevelReport>;
   private readonly aggregatableReports:
       ReportTableModel<AggregatableAttributionReport>;
@@ -992,16 +971,17 @@ class AttributionInternals implements ObserverInterface {
 
     document
         .querySelector<AttributionInternalsTableElement<EventLevelReport>>(
-            '#reportTable')!.setModel(this.eventLevelReports);
+            '#reportTable')!.setModel(this.eventLevelReports, styleReportRow);
 
     document
         .querySelector<
             AttributionInternalsTableElement<AggregatableAttributionReport>>(
-            '#aggregatableReportTable')!.setModel(this.aggregatableReports);
+            '#aggregatableReportTable')!
+        .setModel(this.aggregatableReports, styleReportRow);
 
     document
         .querySelector<AttributionInternalsTableElement<DebugReport>>(
-            '#debugReportTable')!.setModel(this.debugReports);
+            '#debugReportTable')!.setModel(this.debugReports, styleReportRow);
 
     document
         .querySelector<AttributionInternalsTableElement<OsRegistration>>(
@@ -1041,7 +1021,7 @@ class AttributionInternals implements ObserverInterface {
   }
 
   onOsRegistration(mojo: WebUIOsRegistration): void {
-    this.osRegistrations.addRow(new OsRegistration(mojo));
+    this.osRegistrations.addRow(newOsRegistration(mojo));
   }
 
   private addSentOrDroppedReport(mojo: WebUIReport): void {
@@ -1102,7 +1082,7 @@ class AttributionInternals implements ObserverInterface {
 
   private updateSources(): void {
     this.handler.getActiveSources().then(({sources}) => {
-      this.sources.setRows(sources.map((mojo) => new Source(mojo)));
+      this.sources.setRows(sources.map(newSource));
     });
   }
 

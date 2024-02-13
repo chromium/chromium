@@ -15,8 +15,6 @@ export abstract class TableModel<T> {
 
   constructor(public readonly cols: Array<Column<T>>, public sortIdx: number) {}
 
-  styleRow(_tr: Element, _data: T): void {}
-
   abstract getRows(): T[];
 
   rowCount(): number {
