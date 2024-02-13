@@ -188,6 +188,10 @@ export class TabOrganizationNotStartedElement extends
         // Start a tab organization
         this.dispatchEvent(new CustomEvent(
             'organize-tabs-click', {bubbles: true, composed: true}));
+        chrome.metricsPrivate.recordBoolean(
+            'Tab.Organization.AllEntrypoints.Clicked', true);
+        chrome.metricsPrivate.recordBoolean(
+            'Tab.Organization.TabSearch.Clicked', true);
         break;
     }
   }

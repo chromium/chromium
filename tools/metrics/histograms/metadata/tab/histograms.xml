@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 <variants name="TabOrganizationEntryPoint">
   <variant name=".AllEntrypoints" summary="any of the entrypoints"/>
   <variant name=".Proactive"
-      summary="the 'Organize Tabs' button in the tab strip."/>
+      summary="the 'Organize Tabs' button in the tab strip"/>
   <variant name=".TabContextMenu" summary="the option in the tab context menu"/>
   <variant name=".TabSearch"
       summary="the start request button in the tab search ui"/>
@@ -376,7 +376,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when the user clicks {EntryPoint}. In cases where the entrypoint is
     proactively shown, logs false if the user did not interact with the
-    entrypoint.
+    entrypoint. All first run experience users will go through the tab search
+    entrypoint even if entering the tab search UI from a different entrypoint,
+    in which case both entrypoints will be logged.
   </summary>
   <token key="EntryPoint" variants="TabOrganizationEntryPoint"/>
 </histogram>
