@@ -27,7 +27,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (children-inline) PRE id='scroller'",
-      "bounds": [47, 615],
+      "bounds": [185, 615],
       "invalidations": [
         [0, 0, 47, 615]
       ],

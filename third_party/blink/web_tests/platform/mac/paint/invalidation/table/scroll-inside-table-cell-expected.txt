@@ -27,19 +27,9 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='relative red'",
+      "name": "LayoutTableCell (relative positioned) TD id='cellToScroll' class='relative'",
       "position": [2, 2],
-      "bounds": [450, 450],
-      "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "transform": 2
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
-      "position": [502, 2],
-      "bounds": [450, 450],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
+      "bounds": [950, 450],
       "transform": 2
     }
   ],

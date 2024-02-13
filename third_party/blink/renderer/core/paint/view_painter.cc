@@ -74,13 +74,21 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (layout_view_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 
-  bool has_hit_test_data =
-      ObjectPainter(layout_view_).ShouldRecordSpecialHitTestData(paint_info);
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
+  bool paints_hit_test_data =
+      (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
+       painting_background_in_contents_space) ||
+      ObjectPainter(layout_view_).ShouldRecordSpecialHitTestData(paint_info);
 
   Element* element = DynamicTo<Element>(layout_view_.GetNode());
-  bool has_region_capture_data = element && element->GetRegionCaptureCropId();
+  bool paints_region_capture_data =
+      element && element->GetRegionCaptureCropId() &&
+      // TODO(wangxianzhu): This is to avoid the side-effect of
+      // HitTestOpaqueness on region capture data. Verify if the side-effect
+      // really matters.
+      !(painting_background_in_contents_space &&
+        paint_info.ShouldSkipBackground());
   bool paints_scroll_hit_test =
       !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
@@ -91,8 +99,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     }
     return false;
   }();
-  if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
-      !paints_scroll_hit_test && !has_region_capture_data &&
+  if (!layout_view_.HasBoxDecorationBackground() && !paints_hit_test_data &&
+      !paints_scroll_hit_test && !paints_region_capture_data &&
       !is_represented_via_pseudo_elements) {
     return;
   }
@@ -194,13 +202,13 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                           *background_client, painted_separate_backdrop,
                           painted_separate_effect);
   }
-  if (has_hit_test_data) {
+  if (paints_hit_test_data) {
     ObjectPainter(layout_view_)
         .RecordHitTestData(paint_info, pixel_snapped_background_rect,
                            *background_client);
   }
 
-  if (has_region_capture_data) {
+  if (paints_region_capture_data) {
     BoxPainter(layout_view_)
         .RecordRegionCaptureData(paint_info,
                                  PhysicalRect(pixel_snapped_background_rect),

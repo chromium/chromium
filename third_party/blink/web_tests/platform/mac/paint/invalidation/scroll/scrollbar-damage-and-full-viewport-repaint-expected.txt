@@ -7,20 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [1000, 252]
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1000, 600]
     },
     {
       "name": "LayoutNGBlockFlow DIV id='container'",
       "position": [1, 1],
       "bounds": [185, 185],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='container'",
-      "position": [1, 1],
-      "bounds": [2000, 2000],
       "drawsContent": false,
       "transform": 1
     },
@@ -45,6 +38,13 @@
       "invalidations": [
         [0, 0, 15, 15]
       ],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='container'",
+      "position": [1, 1],
+      "bounds": [2000, 2000],
+      "drawsContent": false,
       "transform": 1
     }
   ],

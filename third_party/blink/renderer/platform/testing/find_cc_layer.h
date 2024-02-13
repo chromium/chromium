@@ -36,6 +36,10 @@ cc::Layer* CcLayerByCcElementId(cc::Layer* root, const CompositorElementId&);
 const cc::Layer* CcLayerByCcElementId(const cc::Layer* root,
                                       const CompositorElementId&);
 
+cc::Layer* CcLayerByOwnerNodeId(cc::Layer* root, DOMNodeId);
+
+const cc::Layer* CcLayerByOwnerNodeId(const cc::Layer* root, DOMNodeId);
+
 cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     cc::Layer* root,
     const CompositorElementId& scroll_element_id);
