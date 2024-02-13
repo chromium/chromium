@@ -19,24 +19,11 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_registry.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 using blink::WebInputEvent;
-
-namespace {
-// Id for extension that enables users to report sites to Safe Browsing.
-const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
-}  // namespace
 
 namespace safe_browsing {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
-
-// static
-const char* SafeBrowsingUserInteractionObserver::
-    suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
 
 SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     content::WebContents* web_contents,
@@ -234,18 +221,6 @@ void SafeBrowsingUserInteractionObserver::OnPasswordSaveOrAutofillDenied() {
 void SafeBrowsingUserInteractionObserver::OnDesktopCaptureRequest() {
   ShowInterstitial(DelayedWarningEvent::kWarningShownOnDesktopCaptureRequest);
   // DO NOT add code past this point. |this| is destroyed.
-}
-
-// static
-void SafeBrowsingUserInteractionObserver::
-    SetSuspiciousSiteReporterExtensionIdForTesting(const char* extension_id) {
-  suspicious_site_reporter_extension_id_ = extension_id;
-}
-
-// static
-void SafeBrowsingUserInteractionObserver::
-    ResetSuspiciousSiteReporterExtensionIdForTesting() {
-  suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
 }
 
 void SafeBrowsingUserInteractionObserver::SetClockForTesting(
