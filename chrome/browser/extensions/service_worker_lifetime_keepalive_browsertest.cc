@@ -88,6 +88,16 @@ GetKeepaliveMatcher(const WorkerId& worker_id, Activity::Type type) {
                      type));
 }
 
+// Returns the number of active external requests to the service worker of
+// the specified `extension` in the given `context`.
+size_t GetExternalRequestCountForWorker(content::BrowserContext& context,
+                                        const Extension& extension) {
+  const blink::StorageKey extension_key =
+      blink::StorageKey::CreateFirstParty(extension.origin());
+  return service_worker_test_utils::GetServiceWorkerContext(&context)
+      ->CountExternalRequestsForTest(extension_key);
+}
+
 }  // namespace
 
 // Observer for an extension service worker to start and stop.
@@ -872,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 // split incognito mode.
 // Regression test for https://crbug.com/1476316.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
-                       ShutdownWithActiveMessagePipe_BetweenExtensions) {
+                       ShutdownWithActiveMessagePipe_SplitModeExtension) {
   // A split-mode extension. This will have a separate process for the on- and
   // off-the-record profiles.
   static constexpr char kManifest[] =
@@ -1002,6 +1012,176 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       g_browser_process->profile_manager()->IsValidProfile(incognito_profile));
   // The test succeeds if there are no crashes. There's nothing left to verify
   // for keepalives, since the profile is gone.
+}
+
+// Tests that we can safely shut down a BrowserContext when an extension has an
+// active keepalive for a service worker that spans between the on- and off-
+// the-record profiles between two different extensions.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerLifetimeKeepaliveBrowsertest,
+    ShutdownWithActiveMessagePipe_BetweenExtensionsInDifferentContexts) {
+  // A split-mode extension. This will have a separate process for the on- and
+  // off-the-record profiles.
+  static constexpr char kSplitModeManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "incognito": "split",
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kSplitBackgroundJs[] = R"(// Intentionally blank.)";
+
+  // A spanning mode extension. This will share a process between the on- and
+  // off-the-record profiles.
+  static constexpr char kSpanningManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "incognito": "spanning",
+           "background": {"service_worker": "background.js"}
+         })";
+
+  // The spanning mode extension listens for an external message (from the
+  // split mode extension). We save the `sendReply` callback so it's not garbage
+  // collected and keeps the message pipe open, and then asynchronously respond
+  // that the message was received.
+  // The asynchronous response is important in order to ensure the message being
+  // received from this extension is properly ack'd in the renderer before the
+  // script result is received.
+  static constexpr char kSpanningModeBackgroundJs[] =
+      R"(chrome.runtime.onMessageExternal.addListener(
+             (msg, sender, sendReply) => {
+               self.sendReply = sendReply;
+               setTimeout(
+                   () => { chrome.test.sendScriptResult('success'); }, 0);
+               return true;
+             });)";
+
+  TestExtensionDir split_mode_dir;
+  split_mode_dir.WriteManifest(kSplitModeManifest);
+  split_mode_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                           kSplitBackgroundJs);
+
+  TestExtensionDir spanning_mode_dir;
+  spanning_mode_dir.WriteManifest(kSpanningManifest);
+  spanning_mode_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                              kSpanningModeBackgroundJs);
+
+  const Extension* split_mode_extension = LoadExtension(
+      split_mode_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(split_mode_extension);
+  const Extension* spanning_mode_extension = LoadExtension(
+      spanning_mode_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(spanning_mode_extension);
+
+  // Open a new tab in incognito. This spawns the new process for the split mode
+  // extension.
+  Browser* incognito_browser = OpenURLOffTheRecord(
+      profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+
+  // Send a message to the spanning mode extension from the incognito context of
+  // the split mode extension.
+  // This will open a message pipe. Since the spanning mode extension never
+  // responds, the message pipe will remain open.
+  // The spanning mode extension will then send the script result "success" when
+  // it receives the message.
+  static constexpr char kOpenMessagePipe[] =
+      R"((async () => {
+           // Note: Pass a callback to signal a reply is expected.
+           chrome.runtime.sendMessage('%s', 'hello', () => {});
+         })();)";
+  Profile* incognito_profile = incognito_browser->profile();
+  base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
+      incognito_profile, split_mode_extension->id(),
+      base::StringPrintf(kOpenMessagePipe,
+                         spanning_mode_extension->id().c_str()),
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("success", script_result);
+
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ProcessManager* incognito_process_manager =
+      ProcessManager::Get(incognito_profile);
+
+  std::vector<WorkerId> worker_ids =
+      process_manager->GetServiceWorkersForExtension(
+          spanning_mode_extension->id());
+  ASSERT_EQ(1u, worker_ids.size());
+  WorkerId spanning_worker_id = worker_ids[0];
+
+  worker_ids = incognito_process_manager->GetServiceWorkersForExtension(
+      split_mode_extension->id());
+  ASSERT_EQ(1u, worker_ids.size());
+  WorkerId split_incognito_worker_id = worker_ids[0];
+
+  // Verify the current keepalives for the extensions.
+  // Each extension should have exactly one keepalive (the active message
+  // port). However, the context in which the keepalive is present is
+  // different:
+  // - The spanning mode extension should have a keepalive in the on-the-record
+  //   context, and not in the incognito context (where it's not running).
+  // - The split mode extension should have a keepalive in the incognito
+  //   context, but not the on-the-record context (since the message pipe is
+  //   with the incognito version).
+
+  EXPECT_THAT(process_manager->GetServiceWorkerKeepaliveDataForRecords(
+                  spanning_mode_extension->id()),
+              testing::UnorderedElementsAre(GetKeepaliveMatcher(
+                  spanning_worker_id, Activity::MESSAGE_PORT)));
+  EXPECT_THAT(
+      incognito_process_manager->GetServiceWorkerKeepaliveDataForRecords(
+          spanning_mode_extension->id()),
+      testing::IsEmpty());
+
+  EXPECT_THAT(process_manager->GetServiceWorkerKeepaliveDataForRecords(
+                  split_mode_extension->id()),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      incognito_process_manager->GetServiceWorkerKeepaliveDataForRecords(
+          split_mode_extension->id()),
+      testing::UnorderedElementsAre(GetKeepaliveMatcher(
+          split_incognito_worker_id, Activity::MESSAGE_PORT)));
+
+  // Verify the active external request count to validate the above.
+  EXPECT_EQ(1u, GetExternalRequestCountForWorker(*profile(),
+                                                 *spanning_mode_extension));
+  EXPECT_EQ(0u, GetExternalRequestCountForWorker(*incognito_profile,
+                                                 *spanning_mode_extension));
+  EXPECT_EQ(
+      0u, GetExternalRequestCountForWorker(*profile(), *split_mode_extension));
+  EXPECT_EQ(1u, GetExternalRequestCountForWorker(*incognito_profile,
+                                                 *split_mode_extension));
+
+  // Close the incognito browser while the message channel is still open. Since
+  // this is the only browser window for the incognito context, this also
+  // results in the browser context being invalidated.
+  ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
+  TestBrowserClosedWaiter browser_closed_waiter(incognito_browser);
+  incognito_browser->window()->Close();
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  profile_destruction_waiter.Wait();
+  // Note: `ProfileDestructionWaiter` only waits for the profile to signal it
+  // *will* be destroyed. Spin once to finish the job.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the profile is destroyed.
+  EXPECT_FALSE(
+      g_browser_process->profile_manager()->IsValidProfile(incognito_profile));
+
+  // Verify that all keepalives have been removed, since the message port was
+  // closed as part of the incognito profile shutdown. (We can't verify
+  // the incognito values since the incognito profile is destroyed.)
+  EXPECT_THAT(process_manager->GetServiceWorkerKeepaliveDataForRecords(
+                  spanning_mode_extension->id()),
+              testing::IsEmpty());
+  EXPECT_THAT(process_manager->GetServiceWorkerKeepaliveDataForRecords(
+                  split_mode_extension->id()),
+              testing::IsEmpty());
+  EXPECT_EQ(0u, GetExternalRequestCountForWorker(*profile(),
+                                                 *spanning_mode_extension));
+  EXPECT_EQ(
+      0u, GetExternalRequestCountForWorker(*profile(), *split_mode_extension));
 }
 
 }  // namespace extensions
