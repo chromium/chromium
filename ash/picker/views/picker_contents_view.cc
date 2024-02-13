@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/layout/fill_layout.h"
@@ -27,6 +28,8 @@ namespace ash {
 namespace {
 
 constexpr int kScrollViewGradientHeight = 16;
+
+constexpr auto kScrollViewContentsBorderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
 
 gfx::Insets GetPickerScrollBarInsets(PickerView::PickerLayoutType layout_type) {
   switch (layout_type) {
@@ -88,6 +91,8 @@ PickerContentsView::PickerContentsView(
   auto page_container = std::make_unique<views::FlexLayoutView>();
   page_container->SetOrientation(views::LayoutOrientation::kVertical);
   page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  page_container->SetBorder(
+      views::CreateEmptyBorder(kScrollViewContentsBorderInsets));
   page_container_ = scroll_view->SetContents(std::move(page_container));
 }
 
