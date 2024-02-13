@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -50,15 +52,19 @@ StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
           .ToLocal(&resolver)) {
     resolver_.Reset(script_state->GetIsolate(), resolver);
   }
-  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
+  if (ExecutionContext::From(script_state)->IsWindow()) {
+    script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
+  }
 }
 
 StreamPromiseResolver::StreamPromiseResolver(
     ScriptState* script_state,
     const ExceptionState& exception_state)
     : StreamPromiseResolver(script_state) {
-  class_like_name_ = exception_state.GetContext().GetClassName();
-  property_like_name_ = exception_state.GetContext().GetPropertyName();
+  if (ExecutionContext::From(script_state)->IsWindow()) {
+    class_like_name_ = exception_state.GetContext().GetClassName();
+    property_like_name_ = exception_state.GetContext().GetPropertyName();
+  }
 }
 
 void StreamPromiseResolver::Resolve(ScriptState* script_state,
