@@ -100,6 +100,7 @@ class AutocompleteControllerTest : public testing::Test {
         name, AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, false, false,
         traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
+    match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
     match.subtypes.emplace(omnibox::SUBTYPE_PERSONAL);
     match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX);
     return match;
@@ -627,7 +628,10 @@ TEST_F(AutocompleteControllerTest, UpdateResult_Ranking) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
-TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
+TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
+  auto zps_input = FakeAutocompleteController::CreateInput(u"");
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+
   {
     SCOPED_TRACE("Zero-prefix suggestions are offered synchronously");
     EXPECT_THAT(controller_.SimulateAutocompletePass(
@@ -636,11 +640,13 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
                         CreatePersonalizedZeroPrefixMatch("zps_1", 1450),
                         CreatePersonalizedZeroPrefixMatch("zps_2", 1449),
                     },
-                    FakeAutocompleteController::CreateInput(u"")),
+                    zps_input),
                 testing::ElementsAreArray({
                     "zps_1",
                     "zps_2",
                 }));
+    // Whether zero-prefix suggestions were enabled in the session is updated.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
     // The count of zero-prefix suggestions offered in the session is updated.
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
@@ -656,13 +662,14 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
                         CreatePersonalizedZeroPrefixMatch("zps_3", 1448),
                         CreatePersonalizedZeroPrefixMatch("zps_4", 1447),
                     },
-                    FakeAutocompleteController::CreateInput(u"")),
+                    zps_input),
                 testing::ElementsAreArray({
                     "zps_1",
                     "zps_2",
                     "zps_3",
                     "zps_4",
                 }));
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
     // If zero-prefix suggestions are offered multiple times in the session, the
     // most recent count is logged.
     EXPECT_EQ(controller_.published_result_
@@ -675,6 +682,8 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
     // Stop with clear_result=false does not clear the result set or notify
     // `OnResultChanged()`.
     EXPECT_FALSE(controller_.published_result_.empty());
+    // Whether zero-prefix suggestions were enabled in the session is unchanged.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
     // The count of zero-prefix suggestions offered in the session is unchanged.
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
@@ -690,6 +699,8 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
                 testing::ElementsAreArray({
                     "search_1",
                 }));
+    // Whether zero-prefix suggestions were enabled in the session is unchanged.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
     // The count of zero-prefix suggestions offered in the session is unchanged.
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
@@ -699,9 +710,11 @@ TEST_F(AutocompleteControllerTest, UpdateResult_NumZPSShownInSession) {
     SCOPED_TRACE("Stop with clear_result=true is called due to popup closing");
     controller_.Stop(/*clear_result=*/true);
     // Stop with clear_result=true clears the result set and notifies
-    // `OnResultChanged()`. The count of zero-prefix suggestions offered in the
-    // session is also reset.
+    // `OnResultChanged()`. Whether zero-prefix suggestions were enabled and the
+    // count of zero-prefix suggestions offered in the session is also reset.
     EXPECT_TRUE(controller_.published_result_.empty());
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
               0u);

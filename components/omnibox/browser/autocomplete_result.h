@@ -231,6 +231,14 @@ class AutocompleteResult {
     return suggestion_groups_map_;
   }
 
+  bool zero_prefix_enabled_in_session() const {
+    return zero_prefix_enabled_in_session_;
+  }
+
+  void set_zero_prefix_enabled_in_session(bool enabled) {
+    zero_prefix_enabled_in_session_ = enabled;
+  }
+
   size_t num_zero_prefix_suggestions_shown_in_session() const {
     return num_zero_prefix_suggestions_shown_in_session_;
   }
@@ -423,6 +431,11 @@ class AutocompleteResult {
   // The map of suggestion group IDs to suggestion group information for
   // `matches_`. Cleared on `ClearMatches()` or `Reset()`.
   omnibox::GroupConfigMap suggestion_groups_map_;
+
+  // Whether zero-prefix suggestions were enabled in the session (i.e., the
+  // user could have seen zero-prefix suggestions), regardless of current
+  // `matches_` - Cleared on `Reset()`.
+  bool zero_prefix_enabled_in_session_ = false;
 
   // The number of zero-prefix suggestions in the session, regardless of current
   // `matches_`. Cleared on `Reset()`.

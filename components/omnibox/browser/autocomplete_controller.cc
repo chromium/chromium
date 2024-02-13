@@ -1423,17 +1423,20 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     auto subtypes = match->subtypes;
     ExtendMatchSubtypes(*match, &subtypes);
 
-    // Count any suggestions that constitute zero-prefix suggestions.
-    if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
-        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
-        subtypes.contains(
-            omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES) ||
-        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
-        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_IMAGE) ||
-        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_TEXT) ||
-        subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_URL) ||
-        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
-      num_zero_prefix_suggestions_shown++;
+    if (input_.IsZeroSuggest()) {
+      result->set_zero_prefix_enabled_in_session(true);
+      // Count any suggestions that constitute zero-prefix suggestions.
+      if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
+          subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
+          subtypes.contains(
+              omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES) ||
+          subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
+          subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_IMAGE) ||
+          subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_TEXT) ||
+          subtypes.contains(omnibox::SUBTYPE_CLIPBOARD_URL) ||
+          subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
+        num_zero_prefix_suggestions_shown++;
+      }
     }
 
     auto* available_suggestion = searchbox_stats.add_available_suggestions();
@@ -1473,7 +1476,9 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
           ? result->num_zero_prefix_suggestions_shown_in_session()
           : num_zero_prefix_suggestions_shown);
   searchbox_stats.set_zero_prefix_enabled(
-      searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
+      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
+          ? result->zero_prefix_enabled_in_session()
+          : searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {
