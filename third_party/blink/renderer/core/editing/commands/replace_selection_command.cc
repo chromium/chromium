@@ -895,8 +895,9 @@ static bool FollowBlockElementStyle(const Node* node) {
 
 // Remove style spans before insertion if they are unnecessary.  It's faster
 // because we'll avoid doing a layout.
-static void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
-                                            const Position& insertion_pos) {
+void ReplaceSelectionCommand::HandleStyleSpansBeforeInsertion(
+    ReplacementFragment& fragment,
+    const Position& insertion_pos) {
   Node* top_node = fragment.FirstChild();
   if (!IsA<HTMLSpanElement>(top_node))
     return;
@@ -923,7 +924,8 @@ static void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
       return;
   }
 
-  if (FollowBlockElementStyle(node)) {
+  if (GetInputType() != InputEvent::InputType::kInsertFromPaste &&
+      FollowBlockElementStyle(node)) {
     fragment.RemoveNodePreservingChildren(wrapping_style_span);
     return;
   }
