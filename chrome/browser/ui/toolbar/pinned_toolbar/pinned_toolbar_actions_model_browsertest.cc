@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
     EXPECT_EQ(0, observer()->inserted_count());
     EXPECT_EQ(-1, observer()->moved_to_index());
 
-    model()->MaybeMigrateSearchCompanionPinnedStateForTesting();
+    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
 
     const base::Value::List& list_1 =
         browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
     EXPECT_EQ(0, observer()->inserted_count());
     EXPECT_EQ(-1, observer()->moved_to_index());
 
-    model()->MaybeMigrateSearchCompanionPinnedStateForTesting();
+    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
 
     const base::Value::List& list_1 =
         browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
     EXPECT_EQ(0, observer()->inserted_count());
     EXPECT_EQ(-1, observer()->moved_to_index());
 
-    model()->MaybeMigrateSearchCompanionPinnedStateForTesting();
+    companion::UpdateCompanionDefaultPinnedToToolbarState(browser()->profile());
 
     const base::Value::List& list_1 =
         browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
