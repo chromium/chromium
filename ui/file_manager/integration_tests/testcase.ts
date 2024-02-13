@@ -47,7 +47,7 @@ import * as shareTests from './file_manager/share.js';
 // import * as sortColumnsTests from './file_manager/sort_columns.js';
 // import * as tabIndexTests from './file_manager/tab_index.js';
 // import * as tasksTests from './file_manager/tasks.js';
-// import * as toolbarTests from './file_manager/toolbar.js';
+import * as toolbarTests from './file_manager/toolbar.js';
 // import * as transferTests from './file_manager/transfer.js';
 import * as trashTests from './file_manager/trash.js';
 import * as traverseTests from './file_manager/traverse.js';
@@ -105,7 +105,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...sortColumnsTests,
   // ...tabIndexTests,
   // ...tasksTests,
-  // ...toolbarTests,
+  ...toolbarTests,
   // ...transferTests,
   ...trashTests,
   ...traverseTests,

@@ -42,7 +42,6 @@ js_files = [
   "file_manager/tab_index.js",
   "file_manager/tasks.js",
   "file_manager/test_data.js",
-  "file_manager/toolbar.js",
   "file_manager/transfer.js",
 
   # Page Objects.
@@ -146,7 +145,7 @@ ts_files = [
 
   # "file_manager/test_data.ts",
 
-  # "file_manager/toolbar.ts",
+  "file_manager/toolbar.ts",
 
   # "file_manager/transfer.ts",
 
