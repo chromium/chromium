@@ -33,6 +33,9 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
   }
 }
 
+// A bitfield with all notification types enabled.
+const int kEnableAllNotifications = 7;
+
 }  // namespace
 
 NSString* const kTipsNotificationId = @"kTipsNotificationId";
@@ -88,4 +91,10 @@ UNNotificationTrigger* TipsNotificationTrigger() {
   return [UNTimeIntervalNotificationTrigger
       triggerWithTimeInterval:trigger_interval
                       repeats:NO];
+}
+
+int TipsNotificationsEnabledBitfield() {
+  return GetFieldTrialParamByFeatureAsInt(kIOSTipsNotifications,
+                                          kIOSTipsNotificationsEnabledParam,
+                                          kEnableAllNotifications);
 }

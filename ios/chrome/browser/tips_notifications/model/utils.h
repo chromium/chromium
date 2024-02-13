@@ -53,4 +53,8 @@ UNNotificationContent* ContentForTipsNotificationType(
 // Returns a trigger to be used when requesting a Tips notification.
 UNNotificationTrigger* TipsNotificationTrigger();
 
+// Returns a bitfield indicating which types of notifications should be
+// enabled. Bits are assigned based on the enum `TipsNotificationType`.
+int TipsNotificationsEnabledBitfield();
+
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

@@ -182,6 +182,7 @@ void TipsNotificationClient::MaybeRequestNotification() {
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
+  int enabled_bitfield = TipsNotificationsEnabledBitfield();
 
   // The types of notifications that could be sent will be evaluated in the
   // order they appear in this array.
@@ -192,8 +193,13 @@ void TipsNotificationClient::MaybeRequestNotification() {
   };
 
   for (TipsNotificationType type : kTypes) {
-    if (sent_bitfield & (1 << int(type))) {
+    int bit = 1 << int(type);
+    if (sent_bitfield & bit) {
       // This type of notification has already been sent.
+      continue;
+    }
+    if (!(enabled_bitfield & bit)) {
+      // This type of notification is not enabled.
       continue;
     }
     if (ShouldSendNotification(type)) {

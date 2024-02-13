@@ -570,6 +570,10 @@ BASE_DECLARE_FEATURE(kIOSTipsNotifications);
 // Tips notifications.
 extern const char kIOSTipsNotificationsTriggerTimeParam[];
 
+// Feature param containing a bitfield to specify which notifications should be
+// enabled. Bits are assigned based on the enum `TipsNotificationType`.
+extern const char kIOSTipsNotificationsEnabledParam[];
+
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 
