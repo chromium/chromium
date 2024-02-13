@@ -18,6 +18,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -29,6 +30,8 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -231,6 +234,15 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
+  // Check if origin is embargoed because of too many dismissals.
+  if (PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
+          ->IsEmbargoed(render_frame_host().GetLastCommittedOrigin().GetURL(),
+                        ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS)) {
+    ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
+    return;
+  }
+
   ASSIGN_OR_RETURN(
       (std::vector<SubAppInstallParams> add_options),
       AddOptionsFromMojo(render_frame_host().GetLastCommittedOrigin(),
@@ -356,9 +368,23 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
 void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
                                                bool dialog_accepted) {
   if (dialog_accepted) {
+    PermissionDecisionAutoBlockerFactory::GetForProfile(
+        Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
+        ->RemoveEmbargoAndResetCounts(
+            render_frame_host().GetLastCommittedOrigin().GetURL(),
+            ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS);
+
     ScheduleSubAppInstalls(add_call_id);
     return;
   }
+
+  // Dialog was declined.
+  PermissionDecisionAutoBlockerFactory::GetForProfile(
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()))
+      ->RecordDismissAndEmbargo(
+          render_frame_host().GetLastCommittedOrigin().GetURL(),
+          ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS,
+          /*dismissed_prompt_was_quiet=*/false);
 
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 

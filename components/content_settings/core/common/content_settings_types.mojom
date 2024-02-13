@@ -391,6 +391,10 @@ enum ContentSettingsType {
   // automatically (i.e. without transient activation) should be enabled.
   AUTOMATIC_FULLSCREEN,
 
+  // Content settings used to indicate that a web app is allowed to prompt the
+  // user for the installation of sub apps.
+  SUB_APP_INSTALLATION_PROMPTS,
+
   NUM_TYPES,
 };
 

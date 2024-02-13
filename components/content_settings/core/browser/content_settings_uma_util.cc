@@ -128,6 +128,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::WEB_PRINTING, 114},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, 115},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, 116},
+    {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, 117},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
