@@ -365,6 +365,8 @@ void ScreenshotManagerCapturer::SelectSources(
     gfx::Size thumbnail_size) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  thumbnail_size_ = thumbnail_size;
+
   // The iteration is in reverse order so that the sources
   // first in the list are captured first. This way we make sure that the first
   // thumbnails in the view are captured first.
