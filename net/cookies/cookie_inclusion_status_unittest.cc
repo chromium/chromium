@@ -160,6 +160,8 @@ TEST(CookieInclusionStatusTest, ExemptionReason) {
   ASSERT_EQ(status.exemption_reason(),
             CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
   ASSERT_TRUE(status.IsInclude());
+  ASSERT_EQ(status.GetDebugString(),
+            "INCLUDE, DO_NOT_WARN, Exemption3PCDMetadata");
 
   // Updating exemption reason would be no-op.
   status.MaybeSetExemptionReason(

@@ -100,6 +100,19 @@ enum CookieEffectiveSameSite {
   kUndefined = 4,
 };
 
+// Defined in net::CookieInclusionStatus::ExemptionReason.
+enum CookieExemptionReason {
+    kNone = 0,
+    kUserSetting = 1,
+    k3PCDMetadata = 2,
+    k3PCDDeprecationTrial = 3,
+    k3PCDHeuristics = 4,
+    kEnterprisePolicy = 5,
+    kStorageAccess = 6,
+    kTopLevelStorageAccess = 7,
+    kCorsOptIn = 8,
+};
+
 enum ContextType {
   CROSS_SITE,
   SAME_SITE_LAX_METHOD_UNSAFE,
@@ -200,6 +213,8 @@ struct CookieInclusionStatus {
   // Bitfield. Is defined in
   // net::CookieInclusionStatus::WarningReason.
   uint32 warning_reasons;
+
+  CookieExemptionReason exemption_reason;
 };
 
 struct CookieAndLineWithAccessResult {

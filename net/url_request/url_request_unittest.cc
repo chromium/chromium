@@ -7565,17 +7565,18 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"not_stored_cookie\",\"operation\":\"store\","
                   "\"path\":\"/\",\"status\":\"EXCLUDE_USER_PREFERENCES, "
-                  "DO_NOT_WARN\"}",
+                  "DO_NOT_WARN, NO_EXEMPTION\"}",
               SerializeNetLogValueToJson(entries[0].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
-                  "\",\"name\":\"stored_cookie\",\"operation\":\"store\","
-                  "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
-              SerializeNetLogValueToJson(entries[1].params));
     EXPECT_EQ(
         "{\"domain\":\"" + set_cookie_test_url.host() +
-            "\",\"name\":\"path_cookie\",\"operation\":\"store\","
-            "\"path\":\"/set-cookie\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
-        SerializeNetLogValueToJson(entries[2].params));
+            "\",\"name\":\"stored_cookie\",\"operation\":\"store\","
+            "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN, NO_EXEMPTION\"}",
+        SerializeNetLogValueToJson(entries[1].params));
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+                  "\",\"name\":\"path_cookie\",\"operation\":\"store\","
+                  "\"path\":\"/set-cookie\",\"status\":\"INCLUDE, DO_NOT_WARN, "
+                  "NO_EXEMPTION\"}",
+              SerializeNetLogValueToJson(entries[2].params));
     net_log_observer.Clear();
   }
   {
@@ -7608,12 +7609,13 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
                   "\",\"name\":\"path_cookie\",\"operation\":\"send\",\"path\":"
                   "\"/set-cookie\",\"status\":\"EXCLUDE_NOT_ON_PATH, "
-                  "EXCLUDE_USER_PREFERENCES, DO_NOT_WARN\"}",
+                  "EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, NO_EXEMPTION\"}",
               SerializeNetLogValueToJson(entries[0].params));
     EXPECT_EQ(
         "{\"domain\":\"" + set_cookie_test_url.host() +
             "\",\"name\":\"stored_cookie\",\"operation\":\"send\",\"path\":\"/"
-            "\",\"status\":\"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN\"}",
+            "\",\"status\":\"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, "
+            "NO_EXEMPTION\"}",
         SerializeNetLogValueToJson(entries[1].params));
     net_log_observer.Clear();
   }
@@ -7637,11 +7639,11 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     // are omitted, but other fields are logged as expected.
     EXPECT_EQ(
         "{\"operation\":\"send\",\"status\":\"EXCLUDE_NOT_ON_PATH, "
-        "EXCLUDE_USER_PREFERENCES, DO_NOT_WARN\"}",
+        "EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, NO_EXEMPTION\"}",
         SerializeNetLogValueToJson(entries[0].params));
     EXPECT_EQ(
         "{\"operation\":\"send\",\"status\":\"EXCLUDE_USER_PREFERENCES, "
-        "DO_NOT_WARN\"}",
+        "DO_NOT_WARN, NO_EXEMPTION\"}",
         SerializeNetLogValueToJson(entries[1].params));
 
     net_log_observer.Clear();
@@ -7675,12 +7677,14 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     EXPECT_EQ(
         "{\"domain\":\"" + set_cookie_test_url.host() +
             "\",\"name\":\"path_cookie\",\"operation\":\"send\",\"path\":\"/"
-            "set-cookie\",\"status\":\"EXCLUDE_NOT_ON_PATH, DO_NOT_WARN\"}",
+            "set-cookie\",\"status\":\"EXCLUDE_NOT_ON_PATH, DO_NOT_WARN, "
+            "NO_EXEMPTION\"}",
         SerializeNetLogValueToJson(entries[0].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
-                  "\",\"name\":\"stored_cookie\",\"operation\":\"send\","
-                  "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN\"}",
-              SerializeNetLogValueToJson(entries[1].params));
+    EXPECT_EQ(
+        "{\"domain\":\"" + set_cookie_test_url.host() +
+            "\",\"name\":\"stored_cookie\",\"operation\":\"send\","
+            "\"path\":\"/\",\"status\":\"INCLUDE, DO_NOT_WARN, NO_EXEMPTION\"}",
+        SerializeNetLogValueToJson(entries[1].params));
     net_log_observer.Clear();
   }
 }

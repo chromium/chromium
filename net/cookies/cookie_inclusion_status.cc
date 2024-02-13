@@ -5,8 +5,11 @@
 #include "net/cookies/cookie_inclusion_status.h"
 
 #include <initializer_list>
+#include <string_view>
+#include <tuple>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "url/gurl.h"
@@ -38,7 +41,8 @@ CookieInclusionStatus& CookieInclusionStatus::operator=(
 bool CookieInclusionStatus::operator==(
     const CookieInclusionStatus& other) const {
   return exclusion_reasons_ == other.exclusion_reasons_ &&
-         warning_reasons_ == other.warning_reasons_;
+         warning_reasons_ == other.warning_reasons_ &&
+         exemption_reason_ == other.exemption_reason_;
 }
 
 bool CookieInclusionStatus::operator!=(
@@ -52,9 +56,11 @@ bool CookieInclusionStatus::operator<(
                 "use .ullong() instead");
   static_assert(NUM_WARNING_REASONS <= sizeof(unsigned long) * CHAR_BIT,
                 "use .ullong() instead");
-  return std::pair(exclusion_reasons_.to_ulong(), warning_reasons_.to_ulong()) <
-         std::pair(other.exclusion_reasons_.to_ulong(),
-                   other.warning_reasons_.to_ulong());
+  return std::make_tuple(exclusion_reasons_.to_ulong(),
+                         warning_reasons_.to_ulong(), exemption_reason_) <
+         std::make_tuple(other.exclusion_reasons_.to_ulong(),
+                         other.warning_reasons_.to_ulong(),
+                         other.exemption_reason_);
 }
 
 bool CookieInclusionStatus::IsInclude() const {
@@ -282,8 +288,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
 
   // Add warning
   if (!ShouldWarn()) {
-    base::StrAppend(&out, {"DO_NOT_WARN"});
-    return out;
+    base::StrAppend(&out, {"DO_NOT_WARN, "});
   }
 
   constexpr std::pair<WarningReason, const char*> warning_reasons[] = {
@@ -329,8 +334,42 @@ std::string CookieInclusionStatus::GetDebugString() const {
       base::StrAppend(&out, {reason.second, ", "});
   }
 
-  // Strip trailing comma and space.
-  out.erase(out.end() - 2, out.end());
+  // Add exemption reason
+  if (exemption_reason() == CookieInclusionStatus::ExemptionReason::kNone) {
+    base::StrAppend(&out, {"NO_EXEMPTION"});
+    return out;
+  }
+
+  std::string_view reason;
+  switch (exemption_reason()) {
+    case ExemptionReason::kUserSetting:
+      reason = "ExemptionUserSetting";
+      break;
+    case ExemptionReason::k3PCDMetadata:
+      reason = "Exemption3PCDMetadata";
+      break;
+    case ExemptionReason::k3PCDDeprecationTrial:
+      reason = "Exemption3PCDDeprecationTrial";
+      break;
+    case ExemptionReason::k3PCDHeuristics:
+      reason = "Exemption3PCDHeuristics";
+      break;
+    case ExemptionReason::kEnterprisePolicy:
+      reason = "ExemptionEnterprisePolicy";
+      break;
+    case ExemptionReason::kStorageAccess:
+      reason = "ExemptionStorageAccess";
+      break;
+    case ExemptionReason::kTopLevelStorageAccess:
+      reason = "ExemptionTopLevelStorageAccess";
+      break;
+    case ExemptionReason::kCorsOptIn:
+      reason = "ExemptionCorsOptIn";
+      break;
+    case ExemptionReason::kNone:
+      NOTREACHED_NORETURN();
+  };
+  base::StrAppend(&out, {reason});
 
   return out;
 }
@@ -360,15 +399,17 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
 }
 
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
-    std::vector<ExclusionReason> reasons,
-    std::vector<WarningReason> warnings) {
+    std::vector<ExclusionReason> exclusions,
+    std::vector<WarningReason> warnings,
+    ExemptionReason exemption) {
   CookieInclusionStatus status;
-  for (ExclusionReason reason : reasons) {
+  for (ExclusionReason reason : exclusions) {
     status.AddExclusionReason(reason);
   }
   for (WarningReason warning : warnings) {
     status.AddWarningReason(warning);
   }
+  status.MaybeSetExemptionReason(exemption);
   return status;
 }
 

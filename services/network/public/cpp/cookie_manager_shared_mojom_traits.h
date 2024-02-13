@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_SHARED_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_SHARED_MOJOM_TRAITS_H_
 
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -32,6 +33,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
+    EnumTraits<network::mojom::CookieExemptionReason,
+               net::CookieInclusionStatus::ExemptionReason> {
+  static network::mojom::CookieExemptionReason ToMojom(
+      net::CookieInclusionStatus::ExemptionReason input);
+
+  static bool FromMojom(network::mojom::CookieExemptionReason input,
+                        net::CookieInclusionStatus::ExemptionReason* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
     StructTraits<network::mojom::CookieInclusionStatusDataView,
                  net::CookieInclusionStatus> {
   static uint32_t exclusion_reasons(const net::CookieInclusionStatus& s) {
@@ -39,6 +51,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
   }
   static uint32_t warning_reasons(const net::CookieInclusionStatus& s) {
     return static_cast<uint32_t>(s.warning_reasons().to_ulong());
+  }
+  static net::CookieInclusionStatus::ExemptionReason exemption_reason(
+      const net::CookieInclusionStatus& s) {
+    return s.exemption_reason();
   }
   static bool Read(network::mojom::CookieInclusionStatusDataView status,
                    net::CookieInclusionStatus* out);

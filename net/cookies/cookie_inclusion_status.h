@@ -282,11 +282,11 @@ class NET_EXPORT CookieInclusionStatus {
     k3PCDHeuristics = 4,
     // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
     kEnterprisePolicy = 5,
-    kStorageAccess = 7,
-    kTopLevelStorageAccess = 8,
+    kStorageAccess = 6,
+    kTopLevelStorageAccess = 7,
     // For CorsException in the ABA contexts, which the inner iframe is
     // same-site with the top-level site but has cross-site ancestor(s).
-    kCorsOptIn = 9,
+    kCorsOptIn = 8,
 
     // Keep last.
     kMaxValue = kCorsOptIn
@@ -302,8 +302,12 @@ class NET_EXPORT CookieInclusionStatus {
   // Make a status that contains the given exclusion reason.
   explicit CookieInclusionStatus(ExclusionReason reason);
   // Makes a status that contains the given exclusion reason and warning.
+  // TODO(shuuran): only called in tests, use `MakeFromReasonsForTesting`
+  // instead.
   CookieInclusionStatus(ExclusionReason reason, WarningReason warning);
   // Makes a status that contains the given warning.
+  // TODO(shuuran): only called in tests, use `MakeFromReasonsForTesting`
+  // instead.
   explicit CookieInclusionStatus(WarningReason warning);
 
   // Copyable.
@@ -397,16 +401,18 @@ class NET_EXPORT CookieInclusionStatus {
   bool HasExactlyWarningReasonsForTesting(
       std::vector<WarningReason> reasons) const;
 
-  // Validates mojo data, since mojo does not support bitsets.
+  // Validates mojo data, since mojo does not support bitsets. ExemptionReason
+  // is omitted intendedly.
   // TODO(crbug.com/1310444): Improve serialization validation comments
   // and check for mutually exclusive values.
   static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
                                                   uint32_t warning_reasons);
 
-  // Makes a status that contains the given exclusion reasons and warning.
+  // Makes a status that contains the given reasons.
   static CookieInclusionStatus MakeFromReasonsForTesting(
-      std::vector<ExclusionReason> reasons,
-      std::vector<WarningReason> warnings = std::vector<WarningReason>());
+      std::vector<ExclusionReason> exclusions,
+      std::vector<WarningReason> warnings = std::vector<WarningReason>(),
+      ExemptionReason exemption = ExemptionReason::kNone);
 
   // Returns true if the cookie was excluded because of user preferences.
   // HasOnlyExclusionReason(EXCLUDE_USER_PREFERENCES) will not return true for
@@ -417,6 +423,7 @@ class NET_EXPORT CookieInclusionStatus {
   void ResetForTesting() {
     exclusion_reasons_.reset();
     warning_reasons_.reset();
+    exemption_reason_ = ExemptionReason::kNone;
   }
 
  private:
