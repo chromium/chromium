@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -48,8 +49,8 @@ void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
   }
 }
 
-void RemoveDictionaryPath(base::Value::Dict& dict, base::StringPiece path) {
-  base::StringPiece current_path(path);
+void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
+  std::string_view current_path(path);
   base::Value::Dict* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
   if (delimiter_position != base::StringPiece::npos) {
