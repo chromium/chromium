@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "components/download/public/common/download_create_info.h"
@@ -196,6 +197,10 @@ BuildAttributionReportingIssueViolationType(
       return AttributionReportingIssueTypeEnum::WebAndOsHeaders;
     case blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport:
       return AttributionReportingIssueTypeEnum::NoWebOrOsSupport;
+    case blink::mojom::AttributionReportingIssueType::
+        kNavigationRegistrationWithoutTransientUserActivation:
+      // This issue is not reported from the browser.
+      NOTREACHED_NORETURN();
   }
 }
 

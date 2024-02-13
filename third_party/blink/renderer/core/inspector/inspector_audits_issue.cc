@@ -187,6 +187,8 @@ void AuditsIssue::ReportCorsIssue(
 
 namespace {
 
+using mojom::blink::AttributionReportingIssueType;
+
 protocol::Audits::AttributionReportingIssueType
 BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
   switch (type) {
@@ -239,11 +241,12 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
 
 }  // namespace
 
-void AuditsIssue::ReportAttributionIssue(ExecutionContext* execution_context,
-                                         AttributionReportingIssueType type,
-                                         Element* element,
-                                         const String& request_id,
-                                         const String& invalid_parameter) {
+void AuditsIssue::ReportAttributionIssue(
+    ExecutionContext* execution_context,
+    AttributionReportingIssueType type,
+    Element* element,
+    const String& request_id,
+    const String& invalid_parameter) {
   auto details = protocol::Audits::AttributionReportingIssueDetails::create()
                      .setViolationType(BuildAttributionReportingIssueType(type))
                      .build();

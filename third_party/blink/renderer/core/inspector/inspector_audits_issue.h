@@ -47,24 +47,6 @@ enum class RendererCorsIssueCode {
   kNoCorsRedirectModeNotFollow,
 };
 
-enum class AttributionReportingIssueType {
-  kPermissionPolicyDisabled,
-  kUntrustworthyReportingOrigin,
-  kInsecureContext,
-  kInvalidRegisterSourceHeader,
-  kInvalidRegisterTriggerHeader,
-  kSourceAndTriggerHeaders,
-  kSourceIgnored,
-  kTriggerIgnored,
-  kOsSourceIgnored,
-  kOsTriggerIgnored,
-  kInvalidRegisterOsSourceHeader,
-  kInvalidRegisterOsTriggerHeader,
-  kWebAndOsHeaders,
-  kNoWebOrOsSupport,
-  kNavigationRegistrationWithoutTransientUserActivation,
-};
-
 enum class SharedArrayBufferIssueType {
   kTransferIssue,
   kCreationIssue,
@@ -124,11 +106,12 @@ class CORE_EXPORT AuditsIssue {
                               WTF::String failedParameter,
                               std::optional<base::UnguessableToken> issue_id);
 
-  static void ReportAttributionIssue(ExecutionContext* execution_context,
-                                     AttributionReportingIssueType type,
-                                     Element* element,
-                                     const String& request_id,
-                                     const String& invalid_parameter);
+  static void ReportAttributionIssue(
+      ExecutionContext* execution_context,
+      mojom::blink::AttributionReportingIssueType type,
+      Element* element,
+      const String& request_id,
+      const String& invalid_parameter);
 
   static void ReportSharedArrayBufferIssue(
       ExecutionContext* execution_context,

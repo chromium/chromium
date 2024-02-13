@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -83,6 +84,8 @@ namespace {
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceType;
 using ::network::mojom::AttributionReportingEligibility;
+
+using mojom::blink::AttributionReportingIssueType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
