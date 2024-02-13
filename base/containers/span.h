@@ -20,7 +20,11 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+// TODO(crbug.com/40284755): checked_iterators should use UNSAFE_BUFFERS()
+// internally.
+UNSAFE_BUFFERS_INCLUDE_BEGIN
 #include "base/containers/checked_iterators.h"
+UNSAFE_BUFFERS_INCLUDE_END
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"

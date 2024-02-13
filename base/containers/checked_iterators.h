@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
@@ -38,10 +39,13 @@ class CheckedContiguousIterator {
 
   constexpr CheckedContiguousIterator() = default;
 
-  constexpr CheckedContiguousIterator(T* start, const T* end)
+  UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(T* start,
+                                                          const T* end)
       : CheckedContiguousIterator(start, start, end) {}
 
-  constexpr CheckedContiguousIterator(const T* start, T* current, const T* end)
+  UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(const T* start,
+                                                          T* current,
+                                                          const T* end)
       : start_(start), current_(current), end_(end) {
     CHECK_LE(start, current);
     CHECK_LE(current, end);

@@ -9,6 +9,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -38,13 +39,13 @@ TEST(BufferIteratorTest, Object) {
 
   {
     // Read the object.
-    BufferIterator<char> iterator(buffer, sizeof(buffer));
+    BufferIterator<char> iterator(buffer);
     const TestStruct* actual = iterator.Object<TestStruct>();
     EXPECT_EQ(expected, *actual);
   }
   {
     // Iterator's view of the data is not large enough to read the object.
-    BufferIterator<char> iterator(buffer, sizeof(buffer) - 1);
+    BufferIterator<char> iterator(span(buffer).first<sizeof(buffer) - 1u>());
     const TestStruct* actual = iterator.Object<TestStruct>();
     EXPECT_FALSE(actual);
   }
@@ -55,7 +56,7 @@ TEST(BufferIteratorTest, MutableObject) {
 
   char buffer[sizeof(TestStruct)];
 
-  BufferIterator<char> iterator(buffer, sizeof(buffer));
+  BufferIterator<char> iterator(buffer);
 
   {
     // Write the object.
@@ -126,7 +127,11 @@ TEST(BufferIteratorTest, Span) {
 TEST(BufferIteratorTest, SpanOverflow) {
   char buffer[64];
 
-  BufferIterator<char> iterator(buffer, std::numeric_limits<size_t>::max());
+  BufferIterator<char> iterator(
+      // SAFETY: This intentionally makes an incorrectly-sized span. The span
+      // pointer, stored in the BufferIterator is never moved past the start in
+      // this test, as that would cause Undefined Behaviour.
+      UNSAFE_BUFFERS(span(buffer, std::numeric_limits<size_t>::max())));
   {
     span<const uint64_t> empty_span = iterator.Span<uint64_t>(
         (std::numeric_limits<size_t>::max() / sizeof(uint64_t)) + 1);
@@ -137,16 +142,11 @@ TEST(BufferIteratorTest, SpanOverflow) {
         iterator.Span<uint64_t>(std::numeric_limits<size_t>::max());
     EXPECT_TRUE(empty_span.empty());
   }
-  {
-    iterator.Seek(iterator.total_size() - 7);
-    span<const uint64_t> empty_span = iterator.Span<uint64_t>(1);
-    EXPECT_TRUE(empty_span.empty());
-  }
 }
 
 TEST(BufferIteratorTest, Position) {
   char buffer[64];
-  BufferIterator<char> iterator(buffer, sizeof(buffer));
+  BufferIterator<char> iterator(buffer);
   EXPECT_EQ(sizeof(buffer), iterator.total_size());
 
   size_t position = iterator.position();
@@ -171,8 +171,12 @@ TEST(BufferIteratorTest, CopyObject) {
 
   constexpr int kNumCopies = 3;
   char buffer[sizeof(TestStruct) * kNumCopies];
-  for (int i = 0; i < kNumCopies; i++)
-    memcpy(buffer + i * sizeof(TestStruct), &expected, sizeof(TestStruct));
+  for (int i = 0; i < kNumCopies; i++) {
+    as_writable_bytes(span(buffer))
+        .subspan(i * sizeof(TestStruct))
+        .first<sizeof(TestStruct)>()
+        .copy_from(byte_span_from_ref(expected));
+  }
 
   BufferIterator<char> iterator(buffer);
   absl::optional<TestStruct> actual;
