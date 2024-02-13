@@ -57,3 +57,9 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/2
 -TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/0
 -TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/2
+
+# TODO(b/324465984) These tests are failing because of an issue with the skew
+# roller. They're using a new testing API which requires support from a version
+# of Ash > 121.0.6167.16. Remove this once the skew roller is fixed and a more
+# recent version of Ash lands in the skew tests.
+-TabDragging/DetachToBrowserInSeparateDisplayTabDragControllerTest.DragTabToWindowInSeparateDisplay/*
