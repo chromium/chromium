@@ -253,7 +253,7 @@ class BASE_EXPORT File {
   int WriteAtCurrentPosNoBestEffort(const char* data, int size);
 
   // Returns the current size of this file, or a negative number on failure.
-  int64_t GetLength();
+  int64_t GetLength() const;
 
   // Truncates the file to the given length. If |length| is greater than the
   // current size of the file, the file is extended with zeros. If the file

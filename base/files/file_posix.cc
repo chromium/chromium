@@ -367,7 +367,7 @@ int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
       HANDLE_EINTR(write(file_.get(), data, static_cast<size_t>(size))));
 }
 
-int64_t File::GetLength() {
+int64_t File::GetLength() const {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE("GetLength");
