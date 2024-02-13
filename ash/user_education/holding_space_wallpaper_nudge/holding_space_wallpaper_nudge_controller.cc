@@ -44,6 +44,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -296,9 +297,14 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
                      const gfx::Point& location_in_screen) override {
     if (features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
       if (NudgeShouldBeShown()) {
-        // Mark the nudge as "shown" for the counterfactual experiment arm.
+        // Mark the nudge as "shown" and record the corresponding metrics for
+        // the counterfactual experiment arm given that the nudge won't actually
+        // be shown to the user.
         holding_space_wallpaper_nudge_prefs::MarkNudgeShown(
             Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+        holding_space_wallpaper_nudge_metrics::RecordNudgeShown();
+        holding_space_wallpaper_nudge_metrics::RecordNudgeDuration(
+            base::TimeDelta());
       }
       return;
     }
@@ -512,9 +518,14 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     // `shelf` or `holding_space_tray` to hide. Also reset the pointer to
     // the `help_bubble_anchor_` on close.
     base::OnceClosure close_callback = base::BindOnce(
-        [](Shelf::ScopedDisableAutoHide*,
+        [](base::ElapsedTimer elapsed_timer, Shelf::ScopedDisableAutoHide*,
            HoldingSpaceController::ScopedForceShowInShelf*,
-           const base::AutoReset<uintptr_t>&) {},
+           const base::AutoReset<uintptr_t>&) {
+          // Record the duration of time that the nudge was shown.
+          holding_space_wallpaper_nudge_metrics::RecordNudgeDuration(
+              /*duration=*/elapsed_timer.Elapsed());
+        },
+        base::ElapsedTimer(),
         base::Owned(std::make_unique<Shelf::ScopedDisableAutoHide>(shelf)),
         base::Owned(
             std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>()),
@@ -528,8 +539,10 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
                 views::ElementTrackerViews::GetContextForView(
                     holding_space_tray),
                 std::move(close_callback))) {
+      // Mark the nudge as shown and record the corresponding metric.
       holding_space_wallpaper_nudge_prefs::MarkNudgeShown(
           Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      holding_space_wallpaper_nudge_metrics::RecordNudgeShown();
 
       // If we successfully created a help bubble, then it is safe to replace
       // the current `base::ScopedClosureRunner` because any previous help

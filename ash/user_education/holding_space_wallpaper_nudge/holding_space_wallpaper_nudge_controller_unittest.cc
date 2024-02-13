@@ -1422,6 +1422,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 // enabled counterfactually as part of an experiment arm.
 TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
        PreventsHoldingSpaceWallpaperNudgeCounterfactualArms) {
+  base::HistogramTester histogram_tester;
+
   const int64_t display_id = GetPrimaryDisplay().id();
   const bool expect_counterfactual = counterfactual_enabled().value_or(false);
   const bool expect_drop_to_pin =
@@ -1491,10 +1493,20 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
+  // Verify initial state of nudge shown related metrics.
+  constexpr char kShownMetric[] = "Ash.HoldingSpaceWallpaperNudge.Shown";
+  constexpr char kDurationMetric[] = "Ash.HoldingSpaceWallpaperNudge.Duration";
+  histogram_tester.ExpectTotalCount(kShownMetric, /*count=*/0);
+  histogram_tester.ExpectTotalCount(kDurationMetric, /*count=*/0);
+
   // Drag data from the `widget` to the wallpaper.
   MoveMouseTo(widget.get());
   PressLeftButton();
   MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+
+  // Verify the nudge shown metric was recorded. Note that this metric is
+  // recorded even if the experiment is enabled counterfactually.
+  histogram_tester.ExpectUniqueSample(kShownMetric, /*sample=*/1, /*count=*/1);
 
   // Expect the holding space tray to have a help bubble and a ping only iff
   // the experiment is enabled non-counterfactually.
@@ -1509,10 +1521,27 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   // The wallpaper highlight should show if drop-to-pin behavior is enabled.
   EXPECT_EQ(HasWallpaperHighlight(display_id), expect_drop_to_pin);
 
-  // Release the left button. This will complete the drop and pin items to the
-  // holding space if the drop-to-pin beahavior is enabled.
-  ReleaseLeftButton();
-  FlushMessageLoop();
+  {
+    // Mock elapsed timers so that they are deterministic for testing.
+    base::ScopedMockElapsedTimersForTest scoped_elapsed_timers;
+
+    // Release the left button. This will complete the drop and pin items to the
+    // holding space if the drop-to-pin behavior is enabled.
+    ReleaseLeftButton();
+    FlushMessageLoop();
+
+    // Wait for the help bubble to close, if one exists, and verify that the
+    // nudge duration metric was recorded. Note that this metric is recorded
+    // even if the experiment is enabled counterfactually.
+    WaitForHelpBubbleClose();
+    histogram_tester.ExpectUniqueTimeSample(
+        kDurationMetric,
+        /*sample=*/
+        expect_counterfactual
+            ? base::TimeDelta()
+            : base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        /*count=*/1);
+  }
 
   // Expect the dropped items to be pinned to holding space iff drop-to-pin
   // behavior is enabled.
