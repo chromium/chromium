@@ -2500,12 +2500,6 @@ BASE_FEATURE(kShelfStackedHotseat,
              "ShelfStackedHotseat",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
-// the swipe gesture to show the extended hotseat. Limited to certain apps.
-BASE_FEATURE(kShelfPalmRejectionSwipeOffset,
-             "ShelfPalmRejectionSwipeOffset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the OS update page in the shimless RMA flow.
 BASE_FEATURE(kShimlessRMAOsUpdate,
              "ShimlessRMAOsUpdate",
@@ -4210,10 +4204,6 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 
 bool IsShelfLauncherNudgeEnabled() {
   return base::FeatureList::IsEnabled(kShelfLauncherNudge);
-}
-
-bool IsShelfPalmRejectionSwipeOffsetEnabled() {
-  return base::FeatureList::IsEnabled(kShelfPalmRejectionSwipeOffset);
 }
 
 bool IsShelfStackedHotseatEnabled() {

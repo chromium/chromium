@@ -109,8 +109,7 @@ class HotseatWidgetTest
   virtual void SetupFeatureLists() {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kShelfPalmRejectionSwipeOffset, true}});
+          !navigation_buttons_shown_in_tablet_mode()}});
   }
 
   void TearDown() override {
@@ -231,7 +230,6 @@ class StackedHotseatWidgetTest : public HotseatWidgetTest {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kHideShelfControlsInTabletMode,
           !navigation_buttons_shown_in_tablet_mode()},
-         {features::kShelfPalmRejectionSwipeOffset, true},
          {features::kShelfStackedHotseat, true}});
   }
 };
