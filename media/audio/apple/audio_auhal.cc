@@ -74,6 +74,78 @@ bool SetStreamFormat(int channels,
                               sizeof(*format)) == noErr;
 }
 
+// Try map Rls & Rrs channel to Ls & Rs if necessary.
+//
+// Most of the configurable audio channel layout in Audio MIDI uses Side Left
+// (Ls) and Side Right (Rs) as the default surround channel, while some of the
+// WAV/FLAC/AAC audios uses Back Left (Rls) and Back Right (Rrs) as default
+// surround channel. If we unconditionally treat Rls and Rrs as it is, and if
+// Audio MIDI device has no Rls and Rrs channels (only `7.1 Surround` and
+// `7.1.4` configuration has Rls & Rrs channel for now), then these two
+// channels will be silent. QuickTime is doing something correct, so we
+// can do something similar here, the overall logic will be:
+//
+// 1. If Audio has no Rls & Rrs channels -> Do nothing.
+// 2. If Audio has Rls & Rrs channels, and has Ls & Rs channels -> Do nothing.
+// 3. If Audio has Rls & Rrs channels, and has no Ls & Rs channels, device has
+//    Rls & Rrs channels -> Do nothing.
+// 4. If Audio has Rls & Rrs channels, and has no Ls & Rs channels, device has
+//    no Rls & Rrs channels -> Map Rls to Ls, Rrs to Rs.
+void MaybeMapRearSurroundChannelToSurroundChannel(
+    const AudioUnit& audio_unit,
+    AudioChannelLayout* audio_layout) {
+  bool maybe_need_mapping = false;
+  for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
+    AudioChannelLabel label =
+        audio_layout->mChannelDescriptions[i].mChannelLabel;
+    // If audio already has Ls or Rs channel, skip.
+    if (label == kAudioChannelLabel_LeftSurround ||
+        label == kAudioChannelLabel_RightSurround) {
+      return;
+    }
+    if (label == kAudioChannelLabel_RearSurroundLeft ||
+        label == kAudioChannelLabel_RearSurroundRight) {
+      maybe_need_mapping = true;
+    }
+  }
+
+  // If audio has no Rls or Rrs channel, skip.
+  if (!maybe_need_mapping) {
+    return;
+  }
+
+  auto scoped_device_layout =
+      AudioManagerApple::GetOutputDeviceChannelLayout(audio_unit);
+  if (!scoped_device_layout) {
+    return;
+  }
+  AudioChannelLayout* device_layout = scoped_device_layout->layout();
+
+  // If device has Rls or Rrs channel, skip. Since we only do mapping when
+  // Rls or Rrs channel do not exist.
+  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; ++i) {
+    AudioChannelLabel label =
+        device_layout->mChannelDescriptions[i].mChannelLabel;
+    if (label == kAudioChannelLabel_RearSurroundLeft ||
+        label == kAudioChannelLabel_RearSurroundRight) {
+      return;
+    }
+  }
+
+  // Map Rls to Ls, Rrs to Rs.
+  for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
+    AudioChannelLabel label =
+        audio_layout->mChannelDescriptions[i].mChannelLabel;
+    if (label == kAudioChannelLabel_RearSurroundLeft) {
+      audio_layout->mChannelDescriptions[i].mChannelLabel =
+          kAudioChannelLabel_LeftSurround;
+    } else if (label == kAudioChannelLabel_RearSurroundRight) {
+      audio_layout->mChannelDescriptions[i].mChannelLabel =
+          kAudioChannelLabel_RightSurround;
+    }
+  }
+}
+
 // Converts |channel_layout| into CoreAudio format and sets up the AUHAL with
 // our layout information so it knows how to remap the channels.
 void SetAudioChannelLayout(int channels,
@@ -83,21 +155,11 @@ void SetAudioChannelLayout(int channels,
   DCHECK_GT(channels, 0);
   DCHECK_GT(channel_layout, CHANNEL_LAYOUT_UNSUPPORTED);
 
-  // On macOS, Audio MIDI only support setup 4 channel layout as
-  // Quadraphonic(kAudioChannelLayoutTag_Quadraphonic) which equals to
-  // "CHANNEL_LAYOUT_2_2" in FFMPEG/Chrome. FFMPEG and Chrome will guess
-  // 4 channel layout as "CHANNEL_LAYOUT_QUAD" which will always result
-  // in silent channel 3/4 output on Macs.
-  //
-  // On Windows, the system also support setup 4 channel layout as
-  // Quadraphonic(KSAUDIO_SPEAKER_QUAD) which equals to "CHANNEL_LAYOUT_QUAD"
-  // in FFMPEG/Chrome, so there is not such issue on Windows.
-  auto input_layout = channels == 4 && channel_layout == CHANNEL_LAYOUT_QUAD
-                          ? CHANNEL_LAYOUT_2_2
-                          : channel_layout;
-
   auto coreaudio_layout =
-      ChannelLayoutToAudioChannelLayout(input_layout, channels);
+      ChannelLayoutToAudioChannelLayout(channel_layout, channels);
+
+  MaybeMapRearSurroundChannelToSurroundChannel(audio_unit,
+                                               coreaudio_layout->layout());
 
   OSStatus result = AudioUnitSetProperty(
       audio_unit, kAudioUnitProperty_AudioChannelLayout, kAudioUnitScope_Input,
