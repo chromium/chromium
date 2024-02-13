@@ -780,6 +780,10 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
 
+  // NOTE: WebGPU allows reads of uncleared textures, in which case Dawn clears
+  // the texture on its initial access. Such reads must take exclusive access.
+  begin_access_desc.concurrentRead = readonly && IsCleared();
+
   std::vector<wgpu::SharedFence> shared_fences;
   std::vector<uint64_t> signaled_values;
 
