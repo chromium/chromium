@@ -656,6 +656,9 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       [self updateViewsForStateFailedNotResumable];
       break;
   }
+  self.overrideUserInterfaceStyle = self.incognito
+                                        ? UIUserInterfaceStyleDark
+                                        : UIUserInterfaceStyleUnspecified;
 }
 
 // Updates views `hidden` attribute according to the current state.
