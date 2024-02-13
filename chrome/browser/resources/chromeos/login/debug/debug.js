@@ -1488,7 +1488,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screen.reset();
             screen.loadAppList([
               {
-                title: 'gApp',
+                title: 'gApp1',
                 icon_url: 'https://www.google.com/favicon.ico',
                 category: 'Games',
                 in_app_purchases: true,
@@ -1496,7 +1496,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
                 content_rating: '',
               },
               {
-                title: 'anotherGapp',
+                title: 'anotherGapp2',
                 icon_url: 'https://www.google.com/favicon.ico',
                 category: 'Games',
                 in_app_purchases: true,
@@ -1505,7 +1505,68 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
                 description: 'Short description',
               },
               {
-                title: 'anotherGapp',
+                title: 'anotherGapp3',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+            ]);
+          },
+        },
+        {
+          id: '5-apps',
+          trigger: (screen) => {
+            screen.reset();
+            screen.loadAppList([
+              {
+                title: 'gApp1',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+              },
+              {
+                title: 'anotherGapp2',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                description: 'Short description',
+              },
+              {
+                title: 'anotherGapp3',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+              {
+                title: 'anotherGapp4',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
+              },
+              {
+                title: 'anotherGapp5',
                 icon_url: 'https://www.google.com/favicon.ico',
                 category: 'Games',
                 in_app_purchases: true,
