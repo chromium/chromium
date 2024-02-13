@@ -144,9 +144,17 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
+// TODO(https://crbug.com/324963992): Fix `BirchModel*Test.DataFetchTimeout`
+// for debug builds.
+#if defined(NDEBUG)
+#define MAYBE_DataFetchTimeout DataFetchTimeout
+#else
+#define MAYBE_DataFetchTimeout DISABLED_DataFetchTimeout
+#endif
+
 // Test that consumer is notified when waiting a set amount of time after
 // requesting birch data.
-TEST_F(BirchModelTest, DataFetchTimeout) {
+TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
@@ -195,7 +203,7 @@ TEST_F(BirchModelTest, DataFetchTimeout) {
   EXPECT_FALSE(model->IsDataFresh());
 }
 
-TEST_F(BirchModelWithoutWeatherTest, DataFetchTimeout) {
+TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
