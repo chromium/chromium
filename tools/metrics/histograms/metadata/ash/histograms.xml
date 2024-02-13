@@ -6819,6 +6819,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SnapWindowSuggestions.{SnapSource}" enum="Boolean"
+    expires_after="2025-02-09">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded at the time a window is snapped via a snap action source that can
+    start faster split view. Emits true if faster split view is enabled, false
+    otherwise.
+  </summary>
+  <token key="SnapSource" variants="SnapActionSource"/>
+</histogram>
+
 <histogram name="Ash.SpeechRecognitionSessionLength.{Location}" units="ms"
     expires_after="2024-06-30">
   <owner>dorianbrandon@google.com</owner>

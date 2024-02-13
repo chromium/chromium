@@ -69,6 +69,8 @@ constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
 constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
+constexpr char kSnapWindowSuggestionsHistogramPrefix[] =
+    "Ash.SnapWindowSuggestions.";
 constexpr char kHistogramPrefix[] = "Ash.SplitViewOverviewSession.";
 
 constexpr char kWindowLayoutCompleteOnSessionExitRootWord[] =
@@ -894,6 +896,21 @@ chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
              : chromeos::WindowStateType::kPrimarySnapped;
 }
 
+bool CanSnapActionSourceStartFasterSplitView(
+    WindowSnapActionSource snap_action_source) {
+  switch (snap_action_source) {
+    case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+    case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+    case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+    case WindowSnapActionSource::kTest:
+    case ash::WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+      // We only start partial overview for the above snap sources.
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool ShouldConsiderWindowForFasterSplitView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
@@ -916,16 +933,8 @@ bool ShouldConsiderWindowForFasterSplitView(
       return false;
     }
 
-    switch (snap_action_source) {
-      case WindowSnapActionSource::kDragWindowToEdgeToSnap:
-      case WindowSnapActionSource::kSnapByWindowLayoutMenu:
-      case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
-      case WindowSnapActionSource::kTest:
-      case ash::WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
-        // We only start partial overview for the above snap sources.
-        break;
-      default:
-        return false;
+    if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
+      return false;
     }
   }
 
@@ -978,6 +987,13 @@ ASH_EXPORT std::string BuildSplitViewOverviewExitPointHistogramName(
   histogram_name.append(".");
   histogram_name.append(kExitPointRootWord);
   AppendUIModeToHistogram(histogram_name);
+  return histogram_name;
+}
+
+std::string BuildSnapWindowSuggestionsHistogramName(
+    WindowSnapActionSource snap_action_source) {
+  std::string histogram_name(kSnapWindowSuggestionsHistogramPrefix);
+  histogram_name.append(GetSnapActionSourceMetricComponent(snap_action_source));
   return histogram_name;
 }
 

@@ -256,6 +256,10 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
 // if `window` is `kPrimarySnapped`.
 chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
 
+// Returns true if `snap_action_source` can be start faster split screen set up.
+ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
+    WindowSnapActionSource snap_action_source);
+
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is
 // used to filter out some unwanted snap sources.
@@ -294,6 +298,13 @@ ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram();
 // |------------prefix----------|-snap_action_source-|-root_word-|--ui_mode--|
 // "Ash.SplitViewOverviewSession.DragWindowEdgeToSnap.ExitPoint.ClamshellMode".
 ASH_EXPORT std::string BuildSplitViewOverviewExitPointHistogramName(
+    WindowSnapActionSource snap_action_source);
+
+// Builds the full histogram that records the pref value when a window is
+// snapped.
+// |----------prefix---------|-snap_action_source-|
+// "Ash.SnapWindowSuggestions.DragWindowEdgeToSnap".
+ASH_EXPORT std::string BuildSnapWindowSuggestionsHistogramName(
     WindowSnapActionSource snap_action_source);
 
 }  // namespace ash

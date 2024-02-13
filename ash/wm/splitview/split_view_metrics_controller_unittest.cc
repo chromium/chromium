@@ -4,10 +4,14 @@
 
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/wm_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 
@@ -234,6 +238,54 @@ TEST_F(SplitViewMetricsControllerTest, FloatToSnap) {
   // Snap then float `window1`.
   window_state1->OnWMEvent(&snap_right);
   window_state1->OnWMEvent(&float_event);
+}
+
+// Tests that we record the pref value whenever a window is snapped.
+TEST_F(SplitViewMetricsControllerTest, SnapWindowSuggestions) {
+  // The pref is enabled by default.
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  ASSERT_TRUE(pref->GetBoolean(prefs::kSnapWindowSuggestions));
+
+  const auto snap_action_sources = {
+      WindowSnapActionSource::kSnapByWindowLayoutMenu,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap,
+      WindowSnapActionSource::kLongPressCaptionButtonToSnap,
+      WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu,
+      WindowSnapActionSource::kKeyboardShortcutToSnap,
+      WindowSnapActionSource::kSnapByWindowStateRestore,
+      WindowSnapActionSource::kSnapByFullRestoreOrDeskTemplateOrSavedDesk,
+  };
+  for (const auto snap_action_source : snap_action_sources) {
+    // Verify initial histogram values.
+    std::string histogram_name(
+        BuildSnapWindowSuggestionsHistogramName(snap_action_source));
+    histogram_tester_.ExpectTotalCount(histogram_name,
+                                       /*expected_count=*/0);
+
+    // We only increment the histogram if the source can start split view.
+    bool increment =
+        CanSnapActionSourceStartFasterSplitView(snap_action_source);
+
+    // Enable the pref. Test it increments the `true` bucket.
+    pref->SetBoolean(prefs::kSnapWindowSuggestions, true);
+    const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,
+                                      snap_action_source);
+    WindowState* window_state1 = WindowState::Get(window1_.get());
+    window_state1->OnWMEvent(&snap_left);
+    histogram_tester_.ExpectBucketCount(histogram_name,
+                                        /*sample=*/true,
+                                        /*expected_count=*/increment ? 1 : 0);
+
+    // Disable the pref. Test it increments the `false` bucket.
+    pref->SetBoolean(prefs::kSnapWindowSuggestions, false);
+    const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY,
+                                       snap_action_source);
+    window_state1->OnWMEvent(&snap_right);
+    histogram_tester_.ExpectBucketCount(histogram_name,
+                                        /*sample=*/false,
+                                        /*expected_count=*/increment ? 1 : 0);
+  }
 }
 
 }  // namespace ash

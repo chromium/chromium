@@ -18,6 +18,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -29,6 +30,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/env.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -150,6 +152,23 @@ SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
   return display.is_landscape()
              ? SplitViewMetricsController::DeviceOrientation::kLandscape
              : SplitViewMetricsController::DeviceOrientation::kPortrait;
+}
+
+// Records the pref value of `kSnapWindowSuggestions` at the time a window is
+// snapped.
+void MaybeRecordSnapWindowSuggestions(
+    WindowSnapActionSource snap_action_source) {
+  if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
+    return;
+  }
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      BuildSnapWindowSuggestionsHistogramName(snap_action_source),
+      pref_service->GetBoolean(prefs::kSnapWindowSuggestions));
 }
 
 }  // namespace
@@ -346,6 +365,11 @@ void SplitViewMetricsController::OnPostWindowStateTypeChange(
 
   // We only care if a window is snapped or unsnapped.
   bool is_snapped = window_state->IsSnapped();
+  if (is_snapped) {
+    MaybeRecordSnapWindowSuggestions(
+        window_state->snap_action_source().value_or(
+            WindowSnapActionSource::kNotSpecified));
+  }
   bool was_snapped = chromeos::IsSnappedWindowStateType(old_type);
   if (is_snapped == was_snapped)
     return;
