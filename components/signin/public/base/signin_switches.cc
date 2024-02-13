@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
 
 namespace switches {
 
@@ -115,22 +114,22 @@ BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::TimeDelta kMinorModeRestrictionsFetchDeadlineDefaultValue =
+constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
 #if BUILDFLAG(IS_ANDROID)
     // Based on Signin.AccountCapabilities.UserVisibleLatency
-    base::Milliseconds(400);
+    400;
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Based on Signin.SyncOptIn.PreSyncConfirmationLatency
-    base::Milliseconds(900);
+    900;
 #elif BUILDFLAG(IS_IOS)
     // Based on Signin.AccountCapabilities.UserVisibleLatency
-    base::Seconds(1);
+    1000;
 #endif
 
-const base::FeatureParam<base::TimeDelta> kMinorModeRestrictionsFetchDeadline{
+const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs{
     &kMinorModeRestrictionsForHistorySyncOptIn,
-    /*name=*/"MinorModeRestrictionsFetchDeadline",
-    kMinorModeRestrictionsFetchDeadlineDefaultValue};
+    /*name=*/"MinorModeRestrictionsFetchDeadlineMs",
+    kMinorModeRestrictionsFetchDeadlineDefaultValueMs};
 #endif
 
 #if BUILDFLAG(IS_IOS)

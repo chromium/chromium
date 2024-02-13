@@ -68,7 +68,8 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
   // Not implemented for those platforms.
   NOTREACHED_NORETURN();
 #else
-  return ::switches::kMinorModeRestrictionsFetchDeadline.Get();
+  return base::Milliseconds(
+      ::switches::kMinorModeRestrictionsFetchDeadlineMs.Get());
 #endif
 }
 
