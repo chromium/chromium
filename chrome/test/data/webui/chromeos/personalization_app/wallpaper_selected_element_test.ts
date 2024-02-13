@@ -149,7 +149,7 @@ suite('WallpaperSelectedElementTest', function() {
       async () => {
         personalizationStore.data.wallpaper.seaPen.loading = {
           ...personalizationStore.data.wallpaper.seaPen.loading,
-          selected: {image: true, attribution: false},
+          currentSelected: true,
           setImage: 0,
         };
         wallpaperSelectedElement = initElement(WallpaperSelectedElement);
@@ -168,28 +168,12 @@ suite('WallpaperSelectedElementTest', function() {
         assertTrue(
             !!placeholder, 'image is loading, the placeholder should display');
 
-        // Attribution still loading, loading placeholder should be shown.
-        personalizationStore.data.wallpaper.seaPen = {
-          ...personalizationStore.data.wallpaper.seaPen,
-          loading: {
-            ...personalizationStore.data.wallpaper.seaPen.loading,
-            selected: {image: false, attribution: true},
-            setImage: 0,
-          },
-        };
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(wallpaperSelectedElement);
-
-        assertEquals(
-            '', placeholder.style.display,
-            'attribution is loading, loading placeholder should display');
-
         // Loading placeholder should be hidden.
         personalizationStore.data.wallpaper.seaPen = {
           ...personalizationStore.data.wallpaper.seaPen,
           loading: {
             ...personalizationStore.data.wallpaper.seaPen.loading,
-            selected: {image: false, attribution: false},
+            currentSelected: false,
             setImage: 0,
           },
         };
@@ -213,7 +197,7 @@ suite('WallpaperSelectedElementTest', function() {
           ...personalizationStore.data.wallpaper.seaPen,
           loading: {
             ...personalizationStore.data.wallpaper.seaPen.loading,
-            selected: {image: false, attribution: false},
+            currentSelected: false,
             setImage: 1,
           },
         };

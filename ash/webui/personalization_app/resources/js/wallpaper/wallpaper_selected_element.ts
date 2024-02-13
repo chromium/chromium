@@ -204,16 +204,14 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
     this.watch('error_', state => state.error);
     this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);
-    this.watch('isLoading_', state => {
-      const isWallpaperLoading = state.wallpaper.loading.setImage > 0 ||
-          state.wallpaper.loading.selected.image ||
-          state.wallpaper.loading.selected.attribution ||
-          state.wallpaper.loading.refreshWallpaper;
-      const isSeaPenLoading = state.wallpaper.seaPen.loading.setImage > 0 ||
-          state.wallpaper.seaPen.loading.selected.image ||
-          state.wallpaper.seaPen.loading.selected.attribution;
-      return isWallpaperLoading || isSeaPenLoading;
-    });
+    this.watch(
+        'isLoading_',
+        state => state.wallpaper.loading.setImage > 0 ||
+            state.wallpaper.loading.selected.image ||
+            state.wallpaper.loading.selected.attribution ||
+            state.wallpaper.loading.refreshWallpaper ||
+            state.wallpaper.seaPen.loading.currentSelected ||
+            state.wallpaper.seaPen.loading.setImage > 0);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
     this.watch(
         'imagesByCollectionId_', state => state.wallpaper.backdrop.images);

@@ -63,10 +63,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       },
       recentImages: false,
       thumbnails: false,
-      selected: {
-        image: false,
-        attribution: false,
-      },
+      currentSelected: false,
       setImage: 0,
     };
 
@@ -140,10 +137,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         recentImageData: {},
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
       recentImages: seaPenProvider.recentImages,
@@ -173,10 +167,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         },
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
     };
@@ -197,10 +188,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         },
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
     };
@@ -219,10 +207,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         recentImageData: {},
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
       recentImageData: seaPenProvider.recentImageData,
@@ -247,10 +232,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         },
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
     };
@@ -281,10 +263,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         },
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
     };
@@ -422,10 +401,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         '/sea_pen/333.jpg': false,
       },
       thumbnails: false,
-      selected: {
-        image: false,
-        attribution: false,
-      },
+      currentSelected: false,
       setImage: 0,
     };
 
@@ -494,10 +470,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       },
       recentImages: false,
       thumbnails: false,
-      selected: {
-        image: false,
-        attribution: false,
-      },
+      currentSelected: false,
       setImage: 0,
     };
 
@@ -530,10 +503,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
         },
         recentImages: false,
         thumbnails: false,
-        selected: {
-          image: false,
-          attribution: false,
-        },
+        currentSelected: false,
         setImage: 0,
       },
       recentImages: seaPenProvider.recentImages,

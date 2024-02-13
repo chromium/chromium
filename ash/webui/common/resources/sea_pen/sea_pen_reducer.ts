@@ -84,35 +84,18 @@ function loadingReducer(
     case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
       return {
         ...state,
-        selected: {
-          attribution: true,
-          image: true,
-        },
+        currentSelected: true,
       };
     case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
       return {
         ...state,
+        currentSelected: true,
         setImage: state.setImage + 1,
-        selected: {
-          attribution: true,
-          image: true,
-        },
       };
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       return {
         ...state,
-        selected: {
-          ...state.selected,
-          image: false,
-        },
-      };
-    case SeaPenActionName.SET_SEA_PEN_ATTRIBUTION:
-      return {
-        ...state,
-        selected: {
-          ...state.selected,
-          attribution: false,
-        },
+        currentSelected: false,
       };
     default:
       return state;

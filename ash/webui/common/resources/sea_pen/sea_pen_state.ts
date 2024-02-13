@@ -11,10 +11,7 @@ export interface SeaPenLoadingState {
   recentImageData: Record<FilePath['path'], boolean>;
   recentImages: boolean;
   thumbnails: boolean;
-  selected: {
-    attribution: boolean,
-    image: boolean,
-  };
+  currentSelected: boolean;
   setImage: number;
 }
 
@@ -35,10 +32,7 @@ export function emptyState(): SeaPenState {
       recentImages: false,
       recentImageData: {},
       thumbnails: false,
-      selected: {
-        attribution: false,
-        image: false,
-      },
+      currentSelected: false,
       setImage: 0,
     },
     recentImageData: {},
