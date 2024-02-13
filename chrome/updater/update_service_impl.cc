@@ -57,6 +57,7 @@
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 
@@ -1072,9 +1073,10 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             install_data.brand = brand;
             install_data.requires_network_encryption = false;
             install_data.version = installer_version;
-            update_client->SendInstallPing(install_data, result.error == 0,
-                                           result.error, result.extended_error,
-                                           base::DoNothing());
+            update_client->SendPing(
+                install_data, update_client::protocol_request::kEventInstall,
+                /*result=*/result.error == 0, /*error_code=*/result.error,
+                /*extra_code1=*/result.extended_error, base::DoNothing());
 
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);

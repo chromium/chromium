@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/update_client/crx_update_item.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_context.h"
@@ -88,8 +89,10 @@ void UpdateService::SendUninstallPing(const std::string& id,
   crx.version = version;
   // A ScopedExtensionUpdaterKeepAlive is bound into the callback to keep the
   // context alive throughout the operation.
-  update_client_->SendUninstallPing(
-      crx, reason,
+  update_client_->SendPing(
+      crx, update_client::protocol_request::kEventUninstall, /*result=*/1,
+      /*error_code=*/0,
+      /*extra_code1=*/reason,
       base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,
                         update_client::Error) {},
                      ExtensionsBrowserClient::Get()->CreateUpdaterKeepAlive(

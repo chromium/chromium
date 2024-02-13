@@ -90,16 +90,10 @@ class MockUpdateClient : public UpdateClient {
     std::move(callback).Run(update_client::Error::NONE);
   }
 
-  void SendUninstallPing(const CrxComponent& crx_component,
-                         int reason,
-                         Callback callback) override {
-    DoSendUninstallPing(crx_component, reason);
-    std::move(callback).Run(update_client::Error::NONE);
-  }
-
-  MOCK_METHOD5(SendInstallPing,
+  MOCK_METHOD6(SendPing,
                void(const CrxComponent& crx_component,
-                    bool success,
+                    int event_type,
+                    int result,
                     int error_code,
                     int extra_code1,
                     Callback callback));
@@ -121,8 +115,6 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD2(DoSendUninstallPing,
-               void(const CrxComponent& crx_component, int reason));
 
  private:
   ~MockUpdateClient() override = default;

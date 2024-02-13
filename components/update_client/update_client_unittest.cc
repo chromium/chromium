@@ -41,6 +41,7 @@
 #include "components/update_client/patcher.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/ping_manager.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
@@ -4373,79 +4374,34 @@ TEST_F(UpdateClientTest, EmptyIdList) {
   RunThreads();
 }
 
-TEST_F(UpdateClientTest, SendUninstallPing) {
-  class CompletionCallbackMock {
-   public:
-    static void Callback(base::OnceClosure quit_closure, Error error) {
-      std::move(quit_closure).Run();
-    }
-  };
+struct SendPingTestCase {
+  const int event_type;
+  const int result;
+  const std::optional<int> error_code;
+  const int extra_code1;
+  const std::optional<base::Version> previous_version;
+  const std::optional<base::Version> next_version;
+};
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    explicit MockUpdateChecker(int) {}
+class SendPingTest : public ::testing::WithParamInterface<SendPingTestCase>,
+                     public UpdateClientTest {};
 
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      NOTREACHED();
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
+                         SendPingTest,
+                         ::testing::ValuesIn(std::vector<SendPingTestCase>{
+                             // Install ping.
+                             {protocol_request::kEventInstall, 1, 2, 3},
 
-  class MockCrxDownloader : public CrxDownloader {
-   public:
-    static scoped_refptr<CrxDownloader> Create(
-        bool is_background_download,
-        scoped_refptr<NetworkFetcherFactory> network_fetcher_factory) {
-      return nullptr;
-    }
+                             // Uninstall ping.
+                             {protocol_request::kEventUninstall,
+                              1,
+                              {},
+                              10,
+                              base::Version("1.2.3.4"),
+                              base::Version("0")},
+                         }));
 
-    MockCrxDownloader() : CrxDownloader(nullptr) {}
-
-   private:
-    ~MockCrxDownloader() override = default;
-
-    base::OnceClosure DoStartDownload(const GURL& url) override {
-      return base::DoNothing();
-    }
-  };
-
-  class MockPingManager : public MockPingManagerImpl {
-   public:
-    explicit MockPingManager(scoped_refptr<Configurator> config)
-        : MockPingManagerImpl(config) {}
-
-   protected:
-    ~MockPingManager() override {
-      const auto ping_data = MockPingManagerImpl::ping_data();
-      EXPECT_EQ(1u, ping_data.size());
-      EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[0].id);
-      EXPECT_EQ(base::Version("1.2.3.4"), ping_data[0].previous_version);
-      EXPECT_EQ(base::Version("0"), ping_data[0].next_version);
-      EXPECT_EQ(10, ping_data[0].extra_code1);
-    }
-  };
-
-  SetMockCrxDownloader<MockCrxDownloader>();
-  scoped_refptr<UpdateClient> update_client =
-      base::MakeRefCounted<UpdateClientImpl>(
-          config(), base::MakeRefCounted<MockPingManager>(config()),
-          mock_update_checker_factory.GetFactory());
-
-  CrxComponent crx;
-  crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
-  crx.name = "test_jebg";
-  crx.version = base::Version("1.2.3.4");
-  update_client->SendUninstallPing(
-      crx, 10,
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
-
-  RunThreads();
-}
-
-TEST_F(UpdateClientTest, SendInstallPing) {
+TEST_P(SendPingTest, TestCases) {
   class CompletionCallbackMock {
    public:
     static void Callback(base::OnceClosure quit_closure, Error error) {
@@ -4494,9 +4450,19 @@ TEST_F(UpdateClientTest, SendInstallPing) {
       EXPECT_EQ(ping_data().size(), 1u);
       EXPECT_EQ(ping_data()[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
       EXPECT_EQ(events().size(), 1u);
-      EXPECT_EQ(events()[0].FindInt("eventresult"), 1);
-      EXPECT_EQ(events()[0].FindInt("errorcode"), 2);
-      EXPECT_EQ(events()[0].FindInt("extracode1"), 3);
+      EXPECT_EQ(events()[0].FindInt("eventtype"), GetParam().event_type);
+      EXPECT_EQ(events()[0].FindInt("eventresult"), GetParam().result);
+      if (GetParam().error_code) {
+        EXPECT_EQ(events()[0].FindInt("errorcode"), *GetParam().error_code);
+      }
+      EXPECT_EQ(events()[0].FindInt("extracode1"), GetParam().extra_code1);
+      if (GetParam().previous_version) {
+        EXPECT_EQ(ping_data()[0].previous_version,
+                  *GetParam().previous_version);
+      }
+      if (GetParam().next_version) {
+        EXPECT_EQ(ping_data()[0].next_version, *GetParam().next_version);
+      }
     }
   };
 
@@ -4509,9 +4475,10 @@ TEST_F(UpdateClientTest, SendInstallPing) {
   CrxComponent crx;
   crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx.name = "test_jebg";
-  crx.version = base::Version("1.2.3.4");
-  update_client->SendInstallPing(
-      crx, true, 2, 3,
+  crx.version = GetParam().previous_version.value_or(base::Version("1.2.3.4"));
+  update_client->SendPing(
+      crx, GetParam().event_type, GetParam().result,
+      GetParam().error_code.value_or(0), GetParam().extra_code1,
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();

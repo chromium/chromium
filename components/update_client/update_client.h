@@ -510,22 +510,15 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                       bool is_foreground,
                       Callback callback) = 0;
 
-  // Sends an uninstall ping for `crx_component`. `reason` is sent to the server
-  // to indicate the cause of the uninstallation. The current implementation of
-  // this function only sends a best-effort ping. It has no other side effects
+  // Sends a ping for `crx_component`. The current implementation of this
+  // function only sends a best-effort ping. It has no other side effects
   // regarding installs or updates done through an instance of this class.
-  virtual void SendUninstallPing(const CrxComponent& crx_component,
-                                 int reason,
-                                 Callback callback) = 0;
-
-  // Sends an install ping for `crx_component`. The current implementation of
-  // this function only sends a best-effort ping. It has no other side effects
-  // regarding installs or updates done through an instance of this class.
-  virtual void SendInstallPing(const CrxComponent& crx_component,
-                               bool success,
-                               int error_code,
-                               int extra_code1,
-                               Callback callback) = 0;
+  virtual void SendPing(const CrxComponent& crx_component,
+                        int event_type,
+                        int result,
+                        int error_code,
+                        int extra_code1,
+                        Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in
   // case of success and false in case of errors, such as |id| was

@@ -26,6 +26,7 @@
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
 namespace updater {
@@ -117,8 +118,10 @@ void RemoveAppIDsAndSendUninstallPings(
       crx_component.brand = brand;
       crx_component.version = app_version;
       crx_component.requires_network_encryption = false;
-      update_client->SendUninstallPing(
-          crx_component, ping_reason,
+      update_client->SendPing(
+          crx_component, update_client::protocol_request::kEventUninstall,
+          /*result=*/1, /*error_code=*/0,
+          /*extra_code1=*/ping_reason,
           base::BindOnce(&UninstallPingSent, barrier_closure));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;

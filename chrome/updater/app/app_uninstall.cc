@@ -33,6 +33,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -162,8 +163,10 @@ void AppUninstall::UninstallAll(int reason) {
     // currently-running version of the updater.
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
-  update_client::UpdateClientFactory(config_)->SendUninstallPing(
-      uninstall_data, reason,
+  update_client::UpdateClientFactory(config_)->SendPing(
+      uninstall_data, update_client::protocol_request::kEventUninstall,
+      /*result=*/1, /*error_code=*/0,
+      /*extra_code1=*/reason,
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {
