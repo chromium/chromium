@@ -23,7 +23,7 @@ void NotImplementedURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   network::URLLoaderCompletionStatus status;
   status.error_code = net::ERR_NOT_IMPLEMENTED;
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))

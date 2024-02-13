@@ -463,7 +463,7 @@ Action ClipboardHistoryItemView::CalculateActionForMainButtonClick() const {
       return Action::kDelete;
     case PseudoFocus::kEmpty:
     case PseudoFocus::kMaxValue:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return Action::kEmpty;
   }
 }

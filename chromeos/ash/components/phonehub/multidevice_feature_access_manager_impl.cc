@@ -320,7 +320,7 @@ void MultideviceFeatureAccessManagerImpl::OnFeatureSetupConnectionRequested() {
           DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       break;
   }
 }

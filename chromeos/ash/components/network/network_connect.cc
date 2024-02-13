@@ -182,7 +182,7 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
     return;
   }
 
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 }
 
 // If |shared| is true, sets |profile_path| to the shared profile path.

@@ -178,7 +178,8 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (pending_message_->type == kMessageTypeUnlockRequest) {
     expected_type = kMessageTypeUnlockResponse;
   } else {
-    NOTREACHED();  // There are no other message types that expect a response.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();  // There are no other message types
+                                         // that expect a response.
   }
 
   if (*type != expected_type) {

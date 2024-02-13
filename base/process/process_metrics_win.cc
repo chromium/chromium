@@ -180,7 +180,7 @@ TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
 
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return TimeDelta();
   }
 

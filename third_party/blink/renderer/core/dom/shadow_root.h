@@ -80,7 +80,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     switch (GetType()) {
       case ShadowRootType::kUserAgent:
         // UA ShadowRoot should not be exposed to the Web.
-        NOTREACHED();
+        DUMP_WILL_BE_NOTREACHED_NORETURN();
         return "";
       case ShadowRootType::kOpen:
         return "open";

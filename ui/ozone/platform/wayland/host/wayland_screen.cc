@@ -361,7 +361,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
 
   if (display_id_map_.find(entered_output_id.value()) ==
       display_id_map_.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return GetPrimaryDisplay();
   }
 

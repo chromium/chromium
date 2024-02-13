@@ -1051,7 +1051,7 @@ void LoginDisplayHostWebUI::ShowRemoteActivityNotificationScreen() {
 }
 
 void LoginDisplayHostWebUI::HideOobeDialog(bool saml_page_closed) {
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
 }
 
 void LoginDisplayHostWebUI::SetShelfButtonsEnabled(bool enabled) {

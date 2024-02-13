@@ -919,7 +919,7 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
       context_menu_->SelectMenuItemHoveredByMouse();
       return;
     case Action::kEmpty:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return;
   }
 }

@@ -183,7 +183,8 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       break;
     default:
       invalid_data_pipe_read_result_ = result;
-      NOTREACHED() << "Invalid data pipe read result: " << result;
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Invalid data pipe read result: " << result;
       break;
   }
 }

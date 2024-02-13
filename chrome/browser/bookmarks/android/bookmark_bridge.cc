@@ -927,7 +927,7 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
   // this is called with a nullptr.
   if (!node) {
     LOG(ERROR) << "Deleting null bookmark, type:" << type;
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 

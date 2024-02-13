@@ -624,7 +624,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // created).
     // https://crbug.com/1260773.
     if (!result->IsFunction()) {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return;
     }
     main_function = result.As<v8::Function>();

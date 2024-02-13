@@ -114,7 +114,7 @@ void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
       staged_result_ = std::move(result);
       return;
     case State::IDLE:
-      NOTREACHED() << "State::IDLE";
+      DUMP_WILL_BE_NOTREACHED_NORETURN() << "State::IDLE";
       return;
     case State::REPORT_STAGED_RESULT:
       NOTREACHED() << "State::REPORT_STAGED_RESULT";

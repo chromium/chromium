@@ -159,7 +159,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
     std::unique_ptr<PrintSettings> settings =
         PrintSettingsFromJobSettings(job_settings);
     if (!settings) {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return OnError();
     }
     settings_ = std::move(settings);

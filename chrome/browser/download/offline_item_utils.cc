@@ -317,7 +317,7 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
       break;
 
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       [[fallthrough]];
     case FailState::CANNOT_DOWNLOAD:
       [[fallthrough]];

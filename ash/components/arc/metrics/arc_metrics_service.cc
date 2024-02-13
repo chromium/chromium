@@ -87,7 +87,7 @@ std::string BootTypeToString(mojom::BootType boot_type) {
     case mojom::BootType::REGULAR_BOOT:
       return ".RegularBoot";
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   return "";
 }
 

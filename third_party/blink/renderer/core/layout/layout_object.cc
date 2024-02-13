@@ -1170,7 +1170,7 @@ LayoutBox* LayoutObject::EnclosingBox() const {
     curr = curr->Parent();
   }
 
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   return nullptr;
 }
 

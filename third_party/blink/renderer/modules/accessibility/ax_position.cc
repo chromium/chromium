@@ -410,7 +410,7 @@ const AXObject* AXPosition::ChildAfterTreePosition() const {
 int AXPosition::ChildIndex() const {
   if (!IsTextPosition())
     return text_offset_or_child_index_;
-  NOTREACHED() << *this << " should be a tree position.";
+  DUMP_WILL_BE_NOTREACHED_NORETURN() << *this << " should be a tree position.";
   return 0;
 }
 
