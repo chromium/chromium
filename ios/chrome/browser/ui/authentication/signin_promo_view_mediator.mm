@@ -117,6 +117,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -200,6 +202,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -285,6 +289,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -370,6 +376,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -444,6 +452,8 @@ const char* DisplayedCountPreferenceKey(
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -516,6 +526,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

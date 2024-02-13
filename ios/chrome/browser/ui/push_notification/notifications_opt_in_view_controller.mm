@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_view_controller.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -15,12 +16,6 @@
 namespace {
 enum SectionIdentifier {
   kNotificationOptions,
-};
-enum ItemIdentifier {
-  kContent,
-  kTips,
-  kPriceTracking,
-  kMaxValue = kPriceTracking,
 };
 struct CellConfig {
   int title_id;
@@ -66,8 +61,6 @@ CGFloat const kSpaceAboveTitle = 20.0;
   self.bannerName = kBanner;
   self.bannerSize = BannerImageSizeType::kShort;
   self.shouldBannerFillTopSpace = YES;
-  [self setPrimaryButtonConfiguration];
-  [self updatePrimaryButtonState];
   _tableView = [self createTableView];
   [self.specificContentView addSubview:_tableView];
   [NSLayoutConstraint activateConstraints:@[
@@ -82,6 +75,8 @@ CGFloat const kSpaceAboveTitle = 20.0;
                                               .bottomAnchor],
   ]];
   [self loadModel];
+  [self setPrimaryButtonConfiguration];
+  [self updatePrimaryButtonState];
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -119,11 +114,11 @@ CGFloat const kSpaceAboveTitle = 20.0;
            cellProvider:^UITableViewCell*(UITableView* tableView,
                                           NSIndexPath* indexPath,
                                           NSNumber* itemIdentifier) {
-             return
-                 [weakSelf cellForTableView:tableView
-                                  indexPath:indexPath
-                             itemIdentifier:static_cast<ItemIdentifier>(
-                                                itemIdentifier.integerValue)];
+             return [weakSelf
+                 cellForTableView:tableView
+                        indexPath:indexPath
+                   itemIdentifier:static_cast<NotificationsOptInItemIdentifier>(
+                                      itemIdentifier.integerValue)];
            }];
 
   RegisterTableViewCell<TableViewSwitchCell>(_tableView);
@@ -133,9 +128,14 @@ CGFloat const kSpaceAboveTitle = 20.0;
   [snapshot appendSectionsWithIdentifiers:@[
     @(SectionIdentifier::kNotificationOptions)
   ]];
+  if (IsContentPushNotificationsSetUpListEnabled()) {
+    [snapshot appendItemsWithIdentifiers:@[
+      @(NotificationsOptInItemIdentifier::kContent)
+    ]];
+  }
   [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifier::kContent), @(ItemIdentifier::kTips),
-    @(ItemIdentifier::kPriceTracking)
+    @(NotificationsOptInItemIdentifier::kTips),
+    @(NotificationsOptInItemIdentifier::kPriceTracking)
   ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
@@ -146,6 +146,32 @@ CGFloat const kSpaceAboveTitle = 20.0;
       willDisplayCell:(UITableViewCell*)cell
     forRowAtIndexPath:(NSIndexPath*)indexPath {
   cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+}
+
+#pragma mark - NotificationsOptInConsumer
+
+- (void)setOptInItem:(NotificationsOptInItemIdentifier)identifier
+             enabled:(BOOL)enabled {
+  switch (identifier) {
+    case kContent:
+      if (_contentToggle) {
+        _contentToggle.on = enabled;
+      }
+      _contentNotificationsEnabled = enabled;
+      break;
+    case kTips:
+      if (_tipsToggle) {
+        _tipsToggle.on = enabled;
+      }
+      _tipsNotificationsEnabled = enabled;
+      break;
+    case kPriceTracking:
+      if (_priceTrackingToggle) {
+        _priceTrackingToggle.on = enabled;
+      }
+      _priceTrackingNotificationsEnabled = enabled;
+      break;
+  }
 }
 
 #pragma mark - Private
@@ -171,7 +197,8 @@ CGFloat const kSpaceAboveTitle = 20.0;
 }
 
 // Returns the CellConfig for the given itemIdentifier.
-- (CellConfig)configForItemIdentifier:(ItemIdentifier)itemIdentifier {
+- (CellConfig)configForItemIdentifier:
+    (NotificationsOptInItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case kContent:
       return {IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE,
@@ -191,7 +218,8 @@ CGFloat const kSpaceAboveTitle = 20.0;
 // Configures the the table view cells.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(ItemIdentifier)itemIdentifier {
+                      itemIdentifier:
+                          (NotificationsOptInItemIdentifier)itemIdentifier {
   TableViewSwitchCell* cell =
       DequeueTableViewCell<TableViewSwitchCell>(tableView);
 
@@ -215,9 +243,10 @@ CGFloat const kSpaceAboveTitle = 20.0;
   cell.switchView.tag = itemIdentifier;
 
   // Make the separator invisible on the last row.
-  CGFloat separatorInset = itemIdentifier == ItemIdentifier::kMaxValue
-                               ? tableView.frame.size.width
-                               : kTableViewSeparatorInset;
+  CGFloat separatorInset =
+      itemIdentifier == NotificationsOptInItemIdentifier::kMaxValue
+          ? tableView.frame.size.width
+          : kTableViewSeparatorInset;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
 
   [cell.switchView addTarget:self
@@ -229,10 +258,12 @@ CGFloat const kSpaceAboveTitle = 20.0;
   return cell;
 }
 
-// Invoked when a a notification opt-in switch is toggled.
+// Invoked when a notification opt-in switch is toggled.
 - (void)switchToggled:(UISwitch*)sender {
-  // TODO(crbug.com/1519599): signal to
-  // NotificationsOptInViewControllerDelegate.
+  [self.notificationsDelegate
+      selectionChangedForItemType:static_cast<NotificationsOptInItemIdentifier>(
+                                      sender.tag)
+                         selected:sender.on];
   [self updatePrimaryButtonState];
 }
 

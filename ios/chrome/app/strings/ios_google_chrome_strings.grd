@@ -631,6 +631,9 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS notifications permission page">
         To receive notifications from Chrome, turn on notifications in your iOS Settings.
       </message>
+      <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT" desc="The label for the sign-in view after the user selects the tips notifications toggle.">
+        To receive personalized content based on your interests, sign in to Chrome.
+      </message>
       <message name="IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE" desc="The subtitle of the screen that prompts to select which notifications to opt-in to.">
         You can update your selections anytime in Chrome Settings.
       </message>

@@ -34409,6 +34409,14 @@ should be able to be added at any place in this file.
   <description>Recorded when showing sign in entry in the menu.</description>
 </action>
 
+<action name="Signin_Impression_FromNotificationsOptInScreenContentToggle">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when showing sign in entry in the notifications opt-in screen.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromNTP" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -35131,6 +35139,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MENU.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromNotificationsOptInScreenContentToggle">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE.
   </description>
 </action>
 

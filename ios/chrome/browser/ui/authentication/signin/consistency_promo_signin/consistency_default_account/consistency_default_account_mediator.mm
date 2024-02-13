@@ -90,6 +90,10 @@ NSString* GetPromoLabelString(
                          !sync_types_disabled_by_policy.Has(
                              syncer::UserSelectableType::kTabs));
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+      return l10n_util::GetNSString(
+          IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       // No text.
       return nil;

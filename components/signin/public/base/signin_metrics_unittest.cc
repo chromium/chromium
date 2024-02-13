@@ -45,6 +45,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_SET_UP_LIST,
     AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
     AccessPoint::ACCESS_POINT_TAB_ORGANIZATION,
+    AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -72,6 +73,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_READING_LIST,
     AccessPoint::ACCESS_POINT_SET_UP_LIST,
     AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+    AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE,
 };
 
 class SigninMetricsTest : public ::testing::Test {
@@ -184,6 +186,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "TabOrganization";
       case AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
         return "TipsNotification";
+      case AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+        return "NotificationsOptInScreenContentToggle";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";
