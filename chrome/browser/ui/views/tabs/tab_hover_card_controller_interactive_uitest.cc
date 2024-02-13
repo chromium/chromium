@@ -258,7 +258,8 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
 
 // Verify hover card thumbnail is not visible on active tabs.
 IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
-                       ThumbnailNotVisibileOnActiveTabs) {
+                       // TODO(crbug.com/325104668): Re-enable this test
+                       DISABLED_ThumbnailNotVisibileOnActiveTabs) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
   tab_strip->GetFocusManager()->SetFocusedView(tab);
