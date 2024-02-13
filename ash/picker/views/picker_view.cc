@@ -53,6 +53,11 @@ constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevated;
 
+// Padding to separate the Picker window from the caret.
+constexpr gfx::Outsets kPaddingAroundCaret(4);
+// Padding to separate the Picker window from the screen edge.
+constexpr gfx::Insets kPaddingFromScreenEdge(16);
+
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
@@ -74,10 +79,14 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
                                 const gfx::Point& cursor_point,
                                 const gfx::Rect& focused_window_bounds) {
-  return caret_bounds != gfx::Rect() &&
-                 focused_window_bounds.Contains(caret_bounds)
-             ? caret_bounds
-             : gfx::Rect(cursor_point, gfx::Size());
+  if (caret_bounds != gfx::Rect() &&
+      focused_window_bounds.Contains(caret_bounds)) {
+    gfx::Rect anchor_rect = caret_bounds;
+    anchor_rect.Outset(kPaddingAroundCaret);
+    return anchor_rect;
+  } else {
+    return gfx::Rect(cursor_point, gfx::Size());
+  }
 }
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
@@ -102,9 +111,10 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
                               PickerView::PickerLayoutType layout_type,
                               const gfx::Size& picker_view_size,
                               int picker_view_search_field_vertical_offset) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(anchor_bounds)
-                                         .work_area();
+  gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                   ->GetDisplayMatching(anchor_bounds)
+                                   .work_area();
+  screen_work_area.Inset(kPaddingFromScreenEdge);
   gfx::Rect picker_view_bounds(picker_view_size);
   if (anchor_bounds.right() + picker_view_size.width() <=
       screen_work_area.right()) {

@@ -401,7 +401,7 @@ TEST_F(PickerViewTest, BoundsDefaultAlignedWithCaret) {
                   .work_area()
                   .Contains(view->GetBoundsInScreen()));
   // Should be to the right of the caret.
-  EXPECT_GE(view->GetBoundsInScreen().x(), kDefaultCaretBounds.right());
+  EXPECT_GT(view->GetBoundsInScreen().x(), kDefaultCaretBounds.right());
   // Center of the search field should be vertically aligned with the caret.
   EXPECT_EQ(view->search_field_view_for_testing()
                 .GetBoundsInScreen()
@@ -425,7 +425,7 @@ TEST_F(PickerViewTest, BoundsAlignedWithCaretNearTopLeftOfScreen) {
   // Should be entirely on screen.
   EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
   // Should be to the right of the caret.
-  EXPECT_GE(view->GetBoundsInScreen().x(), caret_bounds.right());
+  EXPECT_GT(view->GetBoundsInScreen().x(), caret_bounds.right());
   // Center of the search field should be vertically aligned with the caret.
   EXPECT_EQ(view->search_field_view_for_testing()
                 .GetBoundsInScreen()
@@ -449,7 +449,7 @@ TEST_F(PickerViewTest, BoundsAlignedWithCaretNearBottomLeftOfScreen) {
   // Should be entirely on screen.
   EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
   // Should be to the right of the caret.
-  EXPECT_GE(view->GetBoundsInScreen().x(), caret_bounds.right());
+  EXPECT_GT(view->GetBoundsInScreen().x(), caret_bounds.right());
   // Center of the search field should be vertically aligned with the caret.
   EXPECT_EQ(view->search_field_view_for_testing()
                 .GetBoundsInScreen()
@@ -473,7 +473,7 @@ TEST_F(PickerViewTest, BoundsBelowCaretForCaretNearTopRightOfScreen) {
   // Should be entirely on screen.
   EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
   // Should be below the caret.
-  EXPECT_GE(view->GetBoundsInScreen().y(), caret_bounds.bottom());
+  EXPECT_GT(view->GetBoundsInScreen().y(), caret_bounds.bottom());
 }
 
 TEST_F(PickerViewTest, BoundsAboveCaretForCaretNearBottomRightOfScreen) {
@@ -491,7 +491,7 @@ TEST_F(PickerViewTest, BoundsAboveCaretForCaretNearBottomRightOfScreen) {
   // Should be entirely on screen.
   EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
   // Should be above the caret.
-  EXPECT_LE(view->GetBoundsInScreen().bottom(), caret_bounds.y());
+  EXPECT_LT(view->GetBoundsInScreen().bottom(), caret_bounds.y());
 }
 
 TEST_F(PickerViewTest, BoundsAlignedWithCursorForEmptyCaretBounds) {
