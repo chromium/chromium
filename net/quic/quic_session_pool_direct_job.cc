@@ -423,23 +423,15 @@ void QuicSessionPool::DirectJob::OnResolveHostComplete(int rv) {
 }
 
 void QuicSessionPool::DirectJob::OnCreateSessionComplete(int rv) {
-  if (rv != OK) {
-    DCHECK(!session_);
-    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
-      HistogramProtocolErrorLocation(
-          JobProtocolErrorLocation::kCreateSessionFailedAsync);
-    }
-    for (QuicSessionRequest* request : requests()) {
-      request->OnQuicSessionCreationComplete(rv);
-    }
-    if (!callback_.is_null()) {
-      std::move(callback_).Run(rv);
-    }
-    return;
+  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kCreateSessionFailedAsync);
   }
-  DCHECK(session_);
-  DVLOG(1) << "Created session on network: " << network_;
-  io_state_ = STATE_CREATE_SESSION_COMPLETE;
+  if (rv == OK) {
+    DCHECK(session_);
+    DVLOG(1) << "Created session on network: " << network_;
+  }
+
   rv = DoLoop(rv);
 
   for (QuicSessionRequest* request : requests()) {
