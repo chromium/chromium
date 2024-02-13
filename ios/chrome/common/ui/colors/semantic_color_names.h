@@ -54,6 +54,8 @@ extern NSString* const kToolbarShadowColor;
 extern NSString* const kOmniboxKeyboardButtonColor;
 // Color for separator between omnibox suggestions.
 extern NSString* const kOmniboxSuggestionRowSeparatorColor;
+// Color for separator between omnibox popout suggestions.
+extern NSString* const kOmniboxPopoutSuggestionRowSeparatorColor;
 
 // ***************
 // Standard Colors
