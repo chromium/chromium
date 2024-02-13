@@ -161,7 +161,7 @@
     <p id="previewTitle">[[i18nDynamic(locale, 'displaySizePreview')]]</p>
     <div id="grid-container" clsas="layout horizontal center flex">
       <div id="grid">
-        <template is="dom-repeat" items="[[apps_]]" as="app">
+        <template is="dom-repeat" items="[[apps]]" as="app">
           <div>
             <img class="app-icon" srcset="[[app.icon]]">
             <p class="app-name">[[i18nDynamic(locale, app.name)]]</p>
@@ -180,18 +180,18 @@
   </div>
   <div id="sliderContainer">
     <cr-button id="negativeButton" class="sign-button"
-        on-click="onNegativeClicked_">
+        on-click="onNegativeClicked">
       <iron-icon class="sign-icon" icon="oobe-16:negative"
           aria-label$="[[i18nDynamic(locale, 'displaySizeNegative')]]">
       </iron-icon>
     </cr-button>
-    <cr-slider id="sizeSlider" value="[[tickedSizeIndex_]]"
-        on-cr-slider-value-changed="onTickedSizeChanged_"
-        marker-count="[[markerCounts_]]" ticks="[[availableSizesTicks_]]"
+    <cr-slider id="sizeSlider" value="[[tickedSizeIndex]]"
+        on-cr-slider-value-changed="onTickedSizeChanged"
+        marker-count="[[markerCounts]]" ticks="[[availableSizesTicks]]"
         aria-labelledby="sliderTitleContainer" aria-live="polite">
     </cr-slider>
     <cr-button id="positiveButton" class="sign-button"
-        on-click="onPositiveClicked_">
+        on-click="onPositiveClicked">
       <iron-icon class="sign-icon" icon="oobe-16:positive"
           aria-label$="[[i18nDynamic(locale, 'displaySizePositive')]]">
       </iron-icon>

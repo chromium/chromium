@@ -40,7 +40,6 @@ group("closure_compile") {
     ":api_keys_notice",
     ":display_manager_types",
     ":oobe_a11y_option",
-    ":oobe_display_size_selector",
     ":oobe_i18n_dropdown",
     ":oobe_icons.html",
     ":oobe_illo_icons.html",
@@ -95,15 +94,6 @@ js_library("oobe_i18n_dropdown") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_display_size_selector") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_display_size_selector.js" ]
-  deps = [
-    "./behaviors:oobe_i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("oobe_network_icons.html") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.html.js" ]
   deps = []
@@ -154,7 +144,6 @@ html_to_js("web_components_local") {
   js_files = [
     "api_keys_notice.js",
     "oobe_a11y_option.js",
-    "oobe_display_size_selector.js",
     "oobe_i18n_dropdown.js",
     "oobe_screens_list.js",
   ]

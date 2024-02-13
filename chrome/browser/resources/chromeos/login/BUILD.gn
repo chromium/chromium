@@ -255,7 +255,6 @@ copy("copy_js") {
   sources = [
     "cr_ui.js",
     "display_manager.js",
-    "install_oobe_error_store.ts",
     "multi_tap_detector.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
