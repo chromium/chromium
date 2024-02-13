@@ -264,6 +264,7 @@ int QuicSessionPool::DirectJob::DoCreateSession() {
 
   return rv;
 }
+
 int QuicSessionPool::DirectJob::DoCreateSessionComplete(int rv) {
   session_creation_finished_ = true;
   if (rv != OK) {
@@ -515,4 +516,5 @@ quic::ParsedQuicVersion QuicSessionPool::DirectJob::SelectQuicVersion(
 
   return quic::ParsedQuicVersion::Unsupported();
 }
+
 }  // namespace net

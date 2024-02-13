@@ -375,7 +375,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     url::SchemeHostPort destination = kDefaultDestination;
     quic::ParsedQuicVersion quic_version;
     ProxyChain proxy_chain = ProxyChain::Direct();
-    absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag =
+    std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag =
         TRAFFIC_ANNOTATION_FOR_TESTS;
     SessionUsage session_usage = SessionUsage::kDestination;
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
