@@ -44,6 +44,7 @@ size_t DawnServiceSerializer::GetMaximumAllocationSize() const {
 }
 
 void* DawnServiceSerializer::GetCmdSpace(size_t size) {
+  base::AutoLock guard(lock_);
   // Note: Dawn will never call this function with |size| >
   // GetMaximumAllocationSize().
   DCHECK_LE(put_offset_, kMaxWireBufferSize);
@@ -56,7 +57,7 @@ void* DawnServiceSerializer::GetCmdSpace(size_t size) {
                 "");
   uint32_t next_offset = put_offset_ + static_cast<uint32_t>(size);
   if (next_offset > buffer_.size()) {
-    Flush();
+    FlushInternal();
     // TODO(enga): Keep track of how much command space the application is using
     // and adjust the buffer size accordingly.
 
@@ -74,9 +75,15 @@ bool DawnServiceSerializer::NeedsFlush() const {
 }
 
 bool DawnServiceSerializer::Flush() {
+  base::AutoLock guard(lock_);
+  FlushInternal();
+  return true;
+}
+
+void DawnServiceSerializer::FlushInternal() {
   if (NeedsFlush()) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                 "DawnServiceSerializer::Flush", "bytes", put_offset_);
+                 "DawnServiceSerializer::Flush", "bytes", put_offset_.load());
 
     bool is_tracing = false;
     TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
@@ -91,10 +98,9 @@ bool DawnServiceSerializer::Flush() {
       header->return_data_header.trace_id = trace_id;
     }
 
-    client_->HandleReturnData(base::span(buffer_).first(put_offset_));
+    client_->HandleReturnData(base::span(buffer_).first(put_offset_.load()));
     put_offset_ = kDawnReturnCmdsOffset;
   }
-  return true;
 }
 
 }  //  namespace gpu::webgpu
