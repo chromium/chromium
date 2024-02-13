@@ -37,8 +37,12 @@ defaults = args.defaults(
     refs = None,
 )
 
+_GEN_JSON_ROOT_DIR = "console_views"
+
 _CONSOLE_VIEW_ORDERING = nodes.create_unscoped_node_type("console_view_ordering")
 _OVERVIEW_CONSOLE_ORDERING = nodes.create_unscoped_node_type("overview_console_ordering")
+_CONSOLE_VIEW = nodes.create_unscoped_node_type("console_view")
+_BUILDER = nodes.create_unscoped_node_type("builder")
 
 def _console_view_ordering_impl(_ctx, *, console_name, ordering):
     key = _CONSOLE_VIEW_ORDERING.add(console_name, props = {
@@ -215,7 +219,13 @@ def ordering(*, short_names = None, categories = None):
         categories = categories or [],
     )
 
-def console_view(*, name, branch_selector = branches.selector.MAIN, ordering = None, **kwargs):
+def console_view(
+        *,
+        name,
+        branch_selector = branches.selector.MAIN,
+        ordering = None,
+        record_json = False,
+        **kwargs):
     """Create a console view, optionally providing an entry ordering.
 
     Args:
@@ -246,6 +256,8 @@ def console_view(*, name, branch_selector = branches.selector.MAIN, ordering = N
         3.  str: An alias for another category. The string must be another
             key in the dict. The ordering will be looked up by that key
             instead.
+      record_json - A boolean indicating whether to generate a json file that
+        lists all builders included in this console view.
       kwargs - Additional keyword arguments to forward on to
         `luci.console_view`. The header, repo and refs arguments support
         module-level defaults.
@@ -265,6 +277,13 @@ def console_view(*, name, branch_selector = branches.selector.MAIN, ordering = N
         console_name = name,
         ordering = ordering or {},
     )
+
+    graph.add_edge(keys.project(), _CONSOLE_VIEW.add(
+        name,
+        props = {
+            "record_json": record_json,
+        },
+    ))
 
 def overview_console_view(*, name, top_level_ordering, **kwargs):
     """Create an overview console view.
@@ -339,6 +358,41 @@ def console_view_entry(
         short_name = short_name,
     )
 
+def register_builder_to_console_view(
+        console_view,
+        category,
+        short_name,
+        project,
+        bucket,
+        group,
+        builder):
+    """Create a node of "builder" kind and link it to the console view.
+
+    Args:
+        console_view: (string) The console view name.
+        category - (string) The category of the builder in the console.
+        short_name - (string) The short name of the builder in the console.
+        project: (string) The project name.
+        bucket: (string) The bucket name.
+        group: (string) The builder group name.
+        builder: (string) The builder name.
+    """
+    graph.add_edge(
+        _CONSOLE_VIEW.key(console_view),
+        _BUILDER.add(
+            "{}/{}/{}".format(console_view, bucket, builder),
+            props = {
+                "console_view": console_view,
+                "category": category,
+                "short_name": short_name,
+                "project": project,
+                "bucket": bucket,
+                "group": group,
+                "builder": builder,
+            },
+        ),
+    )
+
 def _sorted_list_view_graph_key(console_name):
     return graph.key("@chromium", "", "sorted_list_view", console_name)
 
@@ -382,6 +436,8 @@ def list_view(*, name, branch_selector = branches.selector.MAIN, **kwargs):
     )
 
 def _sort_consoles(ctx):
+    if "luci/luci-milo.cfg" not in ctx.output:
+        return
     milo = ctx.output["luci/luci-milo.cfg"]
     consoles = []
     for console in milo.consoles:
@@ -394,7 +450,43 @@ def _sort_consoles(ctx):
             console.builders = sorted(console.builders, key_fn)
         consoles.append(console)
 
+def _console_view_json(ctx):
+    """Generator callback for generating "{console_view_name}.json" files.
+
+    Each console with "record_json = True" will have a json file inside
+    the _GEN_JSON_ROOT_DIR directory. The format of the jason is:
+    'project_name/bucket_name': {
+      'builder_group': ['builder1', ..]
+    }
+
+    Args:
+        ctx: the context object.
+    """
+    for console_node in graph.children(keys.project(), _CONSOLE_VIEW.kind):
+        if not console_node.props.record_json:
+            continue
+
+        console_dict = {}
+        for builder_node in graph.children(console_node.key):
+            props = builder_node.props
+            console_dict.setdefault(
+                "{}/{}".format(props.project, props.bucket),
+                {},
+            ).setdefault(
+                props.group,
+                {},
+            )[props.builder] = {
+                "category": props.category,
+                "short_name": props.short_name,
+            }
+        if console_dict:
+            ctx.output["{}/{}.json".format(_GEN_JSON_ROOT_DIR, console_node.key.id)] = json.indent(
+                json.encode(console_dict),
+                indent = "  ",
+            )
+
 lucicfg.generator(_sort_consoles)
+lucicfg.generator(_console_view_json)
 
 consoles = struct(
     # Module-level defaults for consoles functions

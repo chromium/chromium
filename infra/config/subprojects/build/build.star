@@ -65,7 +65,7 @@ ci.defaults.set(
     siso_enabled = True,
 )
 
-luci.console_view(
+consoles.console_view(
     name = "chromium.build",
     repo = "https://chromium.googlesource.com/chromium/src",
 )

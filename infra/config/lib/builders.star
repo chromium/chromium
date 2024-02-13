@@ -28,6 +28,7 @@ through `builders.cpu`, `builders.os` and `builders.goma` respectively.
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
+load("./consoles.star", "register_builder_to_console_view")
 load("./gn_args.star", "register_gn_args")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
@@ -1061,6 +1062,16 @@ def builder(
                 if not console_view:
                     fail("Builder does not have builder group and " +
                          "console_view_entry does not have console view: {}".format(entry))
+
+            register_builder_to_console_view(
+                console_view,
+                entry.category,
+                entry.short_name,
+                settings.project,
+                bucket,
+                builder_group,
+                name,
+            )
 
             luci.console_view_entry(
                 builder = builder_name,
