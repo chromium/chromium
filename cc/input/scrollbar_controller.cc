@@ -51,7 +51,7 @@ ScrollbarLayerImplBase* ScrollbarController::ScrollbarLayer() const {
   return nullptr;
 }
 
-PointerHitTestResult ScrollbarController::HitTest(
+const ScrollbarLayerImplBase* ScrollbarController::HitTest(
     const gfx::PointF position_in_widget) const {
   // If a non-custom scrollbar layer was not found, we return early as there is
   // no point in setting additional state in the ScrollbarController. Return an
@@ -59,20 +59,13 @@ PointerHitTestResult ScrollbarController::HitTest(
   // to InputHandlerProxy::RouteToTypeSpecificHandler, the pointer event gets
   // passed on to the main thread.
   const LayerImpl* layer_impl = GetLayerHitByPoint(position_in_widget);
-  PointerHitTestResult result;
-
   if (!(layer_impl && layer_impl->IsScrollbarLayer()))
-    return result;
+    return nullptr;
 
   // If the scrollbar layer has faded out (eg: Overlay scrollbars), don't
   // initiate a scroll.
   const ScrollbarLayerImplBase* scrollbar = ToScrollbarLayer(layer_impl);
-  if (scrollbar->OverlayScrollbarOpacity() == 0.f)
-    return result;
-
-  result.type = PointerResultType::kScrollbarScroll;
-  result.layer_impl = layer_impl;
-  return result;
+  return scrollbar->OverlayScrollbarOpacity() == 0.f ? nullptr : scrollbar;
 }
 
 // Performs hit test and prepares scroll deltas that will be used by GSB and
@@ -80,15 +73,11 @@ PointerHitTestResult ScrollbarController::HitTest(
 InputHandlerPointerResult ScrollbarController::HandlePointerDown(
     const gfx::PointF position_in_widget,
     bool jump_key_modifier) {
-  PointerHitTestResult hit_test_result = HitTest(position_in_widget);
-  if (hit_test_result.type != PointerResultType::kScrollbarScroll) {
+  const ScrollbarLayerImplBase* scrollbar = HitTest(position_in_widget);
+  if (!scrollbar) {
     return InputHandlerPointerResult();
   }
 
-  // TODO(arakeri): GetLayerHitByPoint should ideally be called only once per
-  // pointerdown. This needs to be optimized. See crbug.com/1156922.
-  const ScrollbarLayerImplBase* scrollbar =
-      ToScrollbarLayer(hit_test_result.layer_impl);
   captured_scrollbar_metadata_ = CapturedScrollbarMetadata();
   captured_scrollbar_metadata_->scroll_element_id =
       scrollbar->scroll_element_id();
