@@ -1894,8 +1894,15 @@ class TestDialog : public views::DialogDelegateView {
 
 // Drags from browser that has a web dialog to separate window.
 // The dialog should follow the new browser window.
+// TODO(crbug.com/40934892): Expectations are sometimes off by one pixel on
+// Windows. Reenable once deflaked.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DetachToOwnWindowWithDialog DISABLED_DetachToOwnWindowWithDialog
+#else
+#define MAYBE_DetachToOwnWindowWithDialog DetachToOwnWindowWithDialog
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DetachToOwnWindowWithDialog) {
+                       MAYBE_DetachToOwnWindowWithDialog) {
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2494,7 +2501,14 @@ void DragAllStep2(DetachToBrowserTabDragControllerTest* test,
 }  // namespace
 
 // Selects multiple tabs and starts dragging the window.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragAll) {
+// TODO(crbug.com/40934892): Expectations are sometimes off by one pixel on
+// Windows. Reenable once deflaked.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DragAll DISABLED_DragAll
+#else
+#define MAYBE_DragAll DragAll
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   browser()->tab_strip_model()->ToggleSelectionAt(0);
