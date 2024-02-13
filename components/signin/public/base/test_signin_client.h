@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -86,6 +87,8 @@ class TestSigninClient : public SigninClient {
       std::unique_ptr<network::mojom::CookieManager> cookie_manager) {
     cookie_manager_ = std::move(cookie_manager);
   }
+
+  network::mojom::NetworkContext* GetNetworkContext() override;
 
   // Returns |test_url_loader_factory_| if it is specified. Otherwise, lazily
   // creates a default factory and returns it.
@@ -157,6 +160,7 @@ class TestSigninClient : public SigninClient {
 
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
+  std::unique_ptr<network::mojom::NetworkContext> network_context_;
   bool are_signin_cookies_allowed_;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

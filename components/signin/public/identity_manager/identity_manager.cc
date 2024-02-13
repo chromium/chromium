@@ -419,6 +419,10 @@ DiagnosticsProvider* IdentityManager::GetDiagnosticsProvider() {
   return diagnostics_provider_.get();
 }
 
+void IdentityManager::PrepareForAddingNewAccount() {
+  account_fetcher_service_->PrepareForFetchingAccountCapabilities();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::LegacyGetAccountTrackerServiceJavaObject() {

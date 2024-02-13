@@ -43,6 +43,7 @@ class IOSChromeSigninClient : public SigninClient {
   PrefService* GetPrefs() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   void DoFinalInit() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;

@@ -407,6 +407,15 @@ class IdentityManager : public KeyedService,
     return account_consistency_;
   }
 
+  // Calling this method provides a hint that a new account may be added in the
+  // near future, and front-loads some processing to speed that up.
+  //
+  // Calling this API is an optional optimization (particularly for cases where
+  // latency of async processing is user-visible). It is OK to call this even
+  // if a new account is not then added, and it is OK to not call this even if a
+  // new account is later added.
+  void PrepareForAddingNewAccount();
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns a pointer to the AccountTrackerService Java instance associated
   // with this object.

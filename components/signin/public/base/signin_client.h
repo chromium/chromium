@@ -20,6 +20,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -85,6 +86,9 @@ class SigninClient : public KeyedService {
 
   // Returns the CookieManager for the client.
   virtual network::mojom::CookieManager* GetCookieManager() = 0;
+
+  // Returns the NetworkContext for the client.
+  virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
 
   // Returns true if clearing the primary account is allowed regardless of the
   // consent level.

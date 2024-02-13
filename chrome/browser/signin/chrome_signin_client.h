@@ -65,6 +65,7 @@ class ChromeSigninClient : public SigninClient {
       bool has_sync_account) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(

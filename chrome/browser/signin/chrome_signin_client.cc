@@ -251,6 +251,10 @@ network::mojom::CookieManager* ChromeSigninClient::GetCookieManager() {
       ->GetCookieManagerForBrowserProcess();
 }
 
+network::mojom::NetworkContext* ChromeSigninClient::GetNetworkContext() {
+  return profile_->GetDefaultStoragePartition()->GetNetworkContext();
+}
+
 bool ChromeSigninClient::AreSigninCookiesAllowed() {
   return ProfileAllowsSigninCookies(profile_);
 }
