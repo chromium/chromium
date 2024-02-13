@@ -12,6 +12,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/unified_consent/model",
+  "+ios/chrome/browser/page_info"
 ]
 
 specific_include_rules = {

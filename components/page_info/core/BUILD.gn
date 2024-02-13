@@ -35,11 +35,11 @@ static_library("core") {
   ]
 
   deps = [
+    ":proto",
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
-    "//components/page_info/core:proto",
     "//components/search:search",
     "//components/search_engines:search_engines",
     "//components/strings:components_strings_grit",
