@@ -699,6 +699,83 @@ IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
 
+// TODO(crbug.com/41493334): Refactor this test into the
+// DispatchToEventPage_Acks test since they are so similar.
+using PersistentBackgroundPageEventDispatchToSenderApiTest =
+    EventPageEventDispatchingApiTest;
+
+// Tests that persistent background pages will receive an event message (routed
+// through the EventRouter::DispatchToSender() flow) and properly track and
+// remove the unacked event message in ExtensionHost. Only persistent background
+// pages can use the webRequest API so event pages are not tested.
+IN_PROC_BROWSER_TEST_F(PersistentBackgroundPageEventDispatchToSenderApiTest,
+                       DispatchToPage_Acks) {
+  // Load an extension with a chrome.webRequest.onBeforeRequest
+  // (EventRouter::DispatchToSender()) listener and wait for the
+  // chrome.runtime.onInstalled listener to fire.
+  static constexpr char kManifest[] =
+      R"({
+       "name": "Persistent background page",
+       "version": "0.1",
+       "manifest_version": 2,
+       "background": {
+         "scripts": ["background.js"],
+         "persistent": true
+       },
+       "permissions": ["webRequest", "http://example.com/*"]
+     })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  constexpr char kBackgroundJs[] =
+      R"({
+        chrome.runtime.onInstalled.addListener((details) => {
+          // Asynchronously send the message that the listener fired so that the
+          // event is considered ack'd in the browser C++ code.
+          setTimeout(() => {
+            chrome.test.sendMessage('installed listener fired');
+          }, 0);
+        });
+
+        chrome.webRequest.onBeforeRequest.addListener(
+          (details) => {
+            setTimeout(() => {
+              chrome.test.sendMessage('listener fired');
+            }, 0);
+          },
+          {urls: ['<all_urls>'], types: ['main_frame']},
+          []
+        );
+      })";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected event state later when we check it.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  // Confirm there are no unacked messages before we send the test event.
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ExtensionHost* extension_host =
+      process_manager->GetBackgroundHostForExtension(extension->id());
+  ASSERT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
+
+  ExtensionTestMessageListener extension_event_listener_fired("listener fired");
+
+  // Navigate somewhere to trigger webRequest.onBeforeRequest event to the
+  // extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Confirm that the listener in the persistent background page script fired.
+  EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
+  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // unacked message was added and then removed?
+  EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
+}
+
 // Tests that an event targeted to a content script listener is not recorded
 // in unacked event messages in ExtensionHost.
 IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
