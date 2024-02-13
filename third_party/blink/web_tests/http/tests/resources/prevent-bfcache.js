@@ -7,7 +7,11 @@
 // page. The function should be async even if it doesn't seem necessary, so that
 // if we need to change how it blocks in the future to something async, we will
 // not need to update all callers.
-let bc;
 async function preventBFCache() {
-  bc = new BroadcastChannel("blocker");
+  await new Promise(resolve => {
+    // Use a random UUID as the (highly likely) unique lock name.
+    navigator.locks.request(Math.random(), () => {
+      resolve();
+    });
+  });
 }
