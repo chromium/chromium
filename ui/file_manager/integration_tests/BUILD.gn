@@ -32,7 +32,6 @@ js_files = [
   "file_manager/install_linux_package_dialog.js",
   "file_manager/metadata.js",
   "file_manager/metrics.js",
-  "file_manager/office.js",
   "file_manager/providers.js",
   "file_manager/recents.js",
   "file_manager/restore_prefs.js",
@@ -114,9 +113,7 @@ ts_files = [
 
   "file_manager/my_files.ts",
   "file_manager/navigation.ts",
-
-  # "file_manager/office.ts",
-
+  "file_manager/office.ts",
   "file_manager/open_audio_media_app.ts",
   "file_manager/open_files_in_web_drive.ts",
   "file_manager/open_image_media_app.ts",

@@ -32,7 +32,7 @@ import * as manageDialogTests from './file_manager/manage_dialog.js';
 // import * as metricsTests from './file_manager/metrics.js';
 import * as myFilesTests from './file_manager/my_files.js';
 import * as navigationTests from './file_manager/navigation.js';
-// import * as officeTests from './file_manager/office.js';
+import * as officeTests from './file_manager/office.js';
 import * as openAudioMediaAppTests from './file_manager/open_audio_media_app.js';
 import * as openFilesInWebDriveTests from './file_manager/open_files_in_web_drive.js';
 import * as openImageMediaAppTests from './file_manager/open_image_media_app.js';
@@ -90,7 +90,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...metricsTests,
   ...myFilesTests,
   ...navigationTests,
-  // ...officeTests,
+  ...officeTests,
   ...openAudioMediaAppTests,
   ...openFilesInWebDriveTests,
   ...openImageMediaAppTests,
