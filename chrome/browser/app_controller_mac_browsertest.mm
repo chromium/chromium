@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/task/single_thread_task_runner.h"
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/command_line.h"
@@ -354,6 +356,37 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
     return active_browser_list_;
   }
 
+  // Brings the ProfilerPicker onscreen and returns its NSWindow.
+  NSWindow* ActivateProfilePicker() {
+    NSArray<NSWindow*>* startingWindows = [NSApp windows];
+
+    // ProfilePicker::Show() calls ProfilePicker::Display(), which, for tests,
+    // creates the profile asynchronously. Only after the profile gets created
+    // is the profile picker initialized and brought onscreen. Therefore, we
+    // need to wait for the picker to appear before proceeding with the test.
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+
+    int counter = 5;
+    if (!ProfilePicker::IsActive() && counter--) {
+      base::TimeDelta delay = base::Seconds(1);
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), delay);
+      run_loop.Run();
+    }
+    EXPECT_TRUE(ProfilePicker::IsActive());
+
+    // The ProfilePicker is the new window in the list.
+    for (NSWindow* window in [NSApp windows]) {
+      if (![startingWindows containsObject:window]) {
+        return window;
+      }
+    }
+
+    return nil;
+  }
+
  private:
   raw_ptr<const BrowserList> active_browser_list_;
 };
@@ -527,29 +560,41 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 
 // Checks that menu items and commands work when the profile picker is open.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
-  // Show the profile picker.
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
-
   AppController* app_controller = AppController.sharedController;
 
-  // Unhandled menu items are disabled.
-  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
-  NSMenuItem* close_tab_menu_item = [file_submenu itemWithTag:IDC_CLOSE_TAB];
-  EXPECT_FALSE([app_controller validateUserInterfaceItem:close_tab_menu_item]);
-  [file_submenu update];
-  EXPECT_FALSE([close_tab_menu_item isEnabled]);
+  // Bring the ProfilePicker onscreen. In normal browser operation, it would
+  // be the mainWindow, but with Ventura, the test harness can't activate
+  // Chrome, and -mainWindow can return nil. Use a workaround to make it the
+  // main window.
+  NSWindow* profileWindow = ActivateProfilePicker();
+  [app_controller setMainWindowForTesting:profileWindow];
 
-  // Enabled menu items work.
+  // Menus are updated before they are brought onscreen. This includes a call
+  // to -menuNeedsUpdate: to update the menu's items.
+  NSMenu* file_submenu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
+  [app_controller menuNeedsUpdate:file_submenu];
+
+  // The Profiler Picker has no tabs, so Close Tab should not be present.
+  NSMenuItem* close_tab_menu_item = [file_submenu itemWithTag:IDC_CLOSE_TAB];
+  EXPECT_EQ(nil, close_tab_menu_item);
+
+  // Close Window should be available.
+  NSMenuItem* close_window_menu_item =
+      [file_submenu itemWithTag:IDC_CLOSE_WINDOW];
+  EXPECT_FALSE([close_window_menu_item isHidden]);
+  EXPECT_TRUE([close_window_menu_item isEnabled]);
+
+  // Make sure New Window works.
   NSMenuItem* new_window_menu_item = [file_submenu itemWithTag:IDC_NEW_WINDOW];
   EXPECT_TRUE([new_window_menu_item isEnabled]);
   EXPECT_TRUE([app_controller validateUserInterfaceItem:new_window_menu_item]);
-  // Click on the item and checks that a new browser is opened.
+
+  // Activate the item and check that a new browser is opened.
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   [file_submenu
       performActionForItemAtIndex:[file_submenu
-                                      indexOfItemWithTag:IDC_NEW_WINDOW]];
+                                      indexOfItem:new_window_menu_item]];
   EXPECT_TRUE(browser_added_observer.Wait());
 }
 
