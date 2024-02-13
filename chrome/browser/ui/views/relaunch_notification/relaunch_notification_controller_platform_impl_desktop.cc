@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
@@ -85,8 +87,11 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  if (widget_)
+  if (widget_) {
+    widget_->RemoveObserver(this);
     widget_->Close();
+    widget_ = nullptr;
+  }
   if (on_visible_) {
     BrowserList::RemoveObserver(this);
     on_visible_.Reset();
@@ -100,8 +105,11 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
   // Nothing to do if the dialog hasn't been shown yet (because no tabbed
   // browser has become active) or if the user has seen and dismissed the
   // dialog.
-  if (widget_)
-    RelaunchRequiredDialogView::FromWidget(widget_)->SetDeadline(deadline);
+  if (widget_) {
+    // The widget_ should always have a view; see https://crbug.com/324564051.
+    CHECK_DEREF(RelaunchRequiredDialogView::FromWidget(widget_))
+        .SetDeadline(deadline);
+  }
 
   // Hold on to the new deadline if the instance is waiting for a Browser to
   // become active.
