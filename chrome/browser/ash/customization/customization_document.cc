@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -342,7 +343,7 @@ void StartupCustomizationDocument::Init(
     if (keyboard_layout_ptr)
       keyboard_layout_ = *keyboard_layout_ptr;
 
-    if (const std::optional<base::StringPiece> hwid =
+    if (const std::optional<std::string_view> hwid =
             statistics_provider->GetMachineStatistic(
                 system::kHardwareClassKey)) {
       base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
@@ -386,16 +387,16 @@ void StartupCustomizationDocument::Init(
   }
 
   // If manifest doesn't exist still apply values from VPD.
-  if (const std::optional<base::StringPiece> locale_statistic =
+  if (const std::optional<std::string_view> locale_statistic =
           statistics_provider->GetMachineStatistic(system::kInitialLocaleKey)) {
     initial_locale_ = std::string(locale_statistic.value());
   }
-  if (const std::optional<base::StringPiece> timezone_statistic =
+  if (const std::optional<std::string_view> timezone_statistic =
           statistics_provider->GetMachineStatistic(
               system::kInitialTimezoneKey)) {
     initial_timezone_ = std::string(timezone_statistic.value());
   }
-  if (const std::optional<base::StringPiece> keyboard_statistic =
+  if (const std::optional<std::string_view> keyboard_statistic =
           statistics_provider->GetMachineStatistic(
               system::kKeyboardLayoutKey)) {
     keyboard_layout_ = std::string(keyboard_statistic.value());
@@ -574,7 +575,7 @@ void ServicesCustomizationDocument::StartFetching() {
   if (!url_.is_valid()) {
     system::StatisticsProvider* provider =
         system::StatisticsProvider::GetInstance();
-    const std::optional<base::StringPiece> customization_id =
+    const std::optional<std::string_view> customization_id =
         provider->GetMachineStatistic(system::kCustomizationIdKey);
     if (customization_id && !customization_id->empty()) {
       url_ = GURL(base::StringPrintf(
