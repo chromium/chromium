@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -20,10 +20,11 @@ import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, FakeTask,
 /**
  * Copy a text file to clipboard if the test requires it.
  *
- * @param {string} appId ID of the app window.
- * @param {string} commandId ID of the command in the context menu to check.
+ * @param appId ID of the app window.
+ * @param commandId ID of the command in the context menu to check.
  */
-async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
+async function maybeCopyToClipboard(
+    appId: string, commandId: string, file = 'hello.txt') {
   if (!/^paste/.test(commandId)) {
     return;
   }
@@ -36,10 +37,10 @@ async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
 /**
  * Selects a file in the file list.
  *
- * @param {string} appId ID of the app window.
- * @param {string} path Path to the file to be selected.
+ * @param appId ID of the app window.
+ * @param path Path to the file to be selected.
  */
-async function selectFile(appId, path) {
+async function selectFile(appId: string, path: string) {
   // Select the file |path|.
   await remoteCall.waitUntilSelected(appId, path);
 
@@ -51,9 +52,9 @@ async function selectFile(appId, path) {
  * Right clicks the currently selected file in the file list and waits for its
  * context menu to appear.
  *
- * @param {string} appId ID of the app window.
+ * @param appId ID of the app window.
  */
-async function rightClickSelectedFile(appId) {
+async function rightClickSelectedFile(appId: string) {
   // Right-click the selected file.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['.table-row[selected]']));
@@ -66,16 +67,16 @@ async function rightClickSelectedFile(appId) {
  * Tests that the specified menu item is in |expectedEnabledState| when the
  * entry at |path| is selected.
  *
- * @param {string} commandId ID of the command in the context menu to check.
- * @param {string} path Path to the file to open the context menu for.
- * @param {boolean} expectedEnabledState True if the command should be enabled
- *     in the context menu, false if not. Only checked if the command isn't
- * hidden.
- * @param {boolean} expectedHiddenState True if the command should be hidden
- *     in the context menu, false if not. Defaults to false.
+ * @param commandId ID of the command in the context menu to check.
+ * @param path Path to the file to open the context menu for.
+ * @param expectedEnabledState True if the command should be enabled in the
+ *     context menu, false if not. Only checked if the command isn't hidden.
+ * @param expectedHiddenState True if the command should be hidden in the
+ *     context menu, false if not. Defaults to false.
  */
 async function checkContextMenu(
-    commandId, path, expectedEnabledState, expectedHiddenState = false) {
+    commandId: string, path: string, expectedEnabledState: boolean,
+    expectedHiddenState: boolean = false) {
   // Open Files App on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
@@ -114,227 +115,161 @@ async function checkContextMenu(
 /**
  * Tests that the Delete menu item is enabled if a read-write entry is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkDeleteEnabledForReadWriteFile'].
-testcase.checkDeleteEnabledForReadWriteFile = () => {
+export async function checkDeleteEnabledForReadWriteFile() {
   return checkContextMenu('delete', 'hello.txt', true);
-};
+}
 
 /**
  * Tests that the Delete menu item is disabled if a read-only document is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteDisabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkDeleteDisabledForReadOnlyDocument'].
-testcase.checkDeleteDisabledForReadOnlyDocument = () => {
+export async function checkDeleteDisabledForReadOnlyDocument() {
   return checkContextMenu('delete', 'Read-Only Doc.gdoc', false);
-};
+}
 
 /**
  * Tests that the Delete menu item is disabled if a read-only file is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteDisabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkDeleteDisabledForReadOnlyFile'].
-testcase.checkDeleteDisabledForReadOnlyFile = () => {
+export async function checkDeleteDisabledForReadOnlyFile() {
   return checkContextMenu('delete', 'Read-Only File.jpg', false);
-};
+}
 
 /**
  * Tests that the Delete menu item is disabled if a read-only folder is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteDisabledForReadOnlyFolder'
-// comes from an index signature, so it must be accessed with
-// ['checkDeleteDisabledForReadOnlyFolder'].
-testcase.checkDeleteDisabledForReadOnlyFolder = () => {
+export async function checkDeleteDisabledForReadOnlyFolder() {
   return checkContextMenu('delete', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Tests that the Rename menu item is enabled if a read-write entry is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkRenameEnabledForReadWriteFile'].
-testcase.checkRenameEnabledForReadWriteFile = () => {
+export async function checkRenameEnabledForReadWriteFile() {
   return checkContextMenu('rename', 'hello.txt', true);
-};
+}
 
 /**
  * Tests that the Rename menu item is disabled if a read-only document is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameDisabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkRenameDisabledForReadOnlyDocument'].
-testcase.checkRenameDisabledForReadOnlyDocument = () => {
+export async function checkRenameDisabledForReadOnlyDocument() {
   return checkContextMenu('rename', 'Read-Only Doc.gdoc', false);
-};
+}
 
 /**
  * Tests that the Rename menu item is disabled if a read-only file is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameDisabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkRenameDisabledForReadOnlyFile'].
-testcase.checkRenameDisabledForReadOnlyFile = () => {
+export async function checkRenameDisabledForReadOnlyFile() {
   return checkContextMenu('rename', 'Read-Only File.jpg', false);
-};
+}
 
 /**
  * Tests that the Rename menu item is disabled if a read-only folder is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameDisabledForReadOnlyFolder'
-// comes from an index signature, so it must be accessed with
-// ['checkRenameDisabledForReadOnlyFolder'].
-testcase.checkRenameDisabledForReadOnlyFolder = () => {
+export async function checkRenameDisabledForReadOnlyFolder() {
   return checkContextMenu('rename', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Tests that the Copy menu item is enabled if a read-write entry is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCopyEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkCopyEnabledForReadWriteFile'].
-testcase.checkCopyEnabledForReadWriteFile = () => {
+export async function checkCopyEnabledForReadWriteFile() {
   return checkContextMenu('copy', 'hello.txt', true);
-};
+}
 
 /**
  * Tests that the Copy menu item is enabled if a read-only document is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCopyEnabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkCopyEnabledForReadOnlyDocument'].
-testcase.checkCopyEnabledForReadOnlyDocument = () => {
+export async function checkCopyEnabledForReadOnlyDocument() {
   return checkContextMenu('copy', 'Read-Only Doc.gdoc', true);
-};
+}
 
 /**
  * Tests that the Copy menu item is disabled if a strict (no-copy) read-only
  * document is selected.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkCopyDisabledForStrictReadOnlyDocument' comes from an index signature,
-// so it must be accessed with ['checkCopyDisabledForStrictReadOnlyDocument'].
-testcase.checkCopyDisabledForStrictReadOnlyDocument = () => {
+export async function checkCopyDisabledForStrictReadOnlyDocument() {
   return checkContextMenu('copy', 'Read-Only (Strict) Doc.gdoc', false);
-};
+}
 
 /**
  * Tests that the Copy menu item is enabled if a read-only file is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCopyEnabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkCopyEnabledForReadOnlyFile'].
-testcase.checkCopyEnabledForReadOnlyFile = () => {
+export async function checkCopyEnabledForReadOnlyFile() {
   return checkContextMenu('copy', 'Read-Only File.jpg', true);
-};
+}
 
 /**
  * Tests that the Copy menu item is enabled if a read-only folder is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCopyEnabledForReadOnlyFolder' comes
-// from an index signature, so it must be accessed with
-// ['checkCopyEnabledForReadOnlyFolder'].
-testcase.checkCopyEnabledForReadOnlyFolder = () => {
+export async function checkCopyEnabledForReadOnlyFolder() {
   return checkContextMenu('copy', 'Read-Only Folder', true);
-};
+}
 
 /**
  * Tests that the Cut menu item is enabled if a read-write entry is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCutEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkCutEnabledForReadWriteFile'].
-testcase.checkCutEnabledForReadWriteFile = () => {
+export async function checkCutEnabledForReadWriteFile() {
   return checkContextMenu('cut', 'hello.txt', true);
-};
+}
 
 /**
  * Tests that the Cut menu item is disabled if a read-only document is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCutDisabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkCutDisabledForReadOnlyDocument'].
-testcase.checkCutDisabledForReadOnlyDocument = () => {
+export async function checkCutDisabledForReadOnlyDocument() {
   return checkContextMenu('cut', 'Read-Only Doc.gdoc', false);
-};
+}
 
 /**
  * Tests that the Cut menu item is disabled if a read-only file is selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCutDisabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkCutDisabledForReadOnlyFile'].
-testcase.checkCutDisabledForReadOnlyFile = () => {
+export async function checkCutDisabledForReadOnlyFile() {
   return checkContextMenu('cut', 'Read-Only File.jpg', false);
-};
+}
 
 /**
  * Tests that the Restriction details menu item is hidden if DLP is disabled.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkDlpRestrictionDetailsDisabledForNonDlpFiles' comes from an index
-// signature, so it must be accessed with
-// ['checkDlpRestrictionDetailsDisabledForNonDlpFiles'].
-testcase.checkDlpRestrictionDetailsDisabledForNonDlpFiles = () => {
+export async function checkDlpRestrictionDetailsDisabledForNonDlpFiles() {
   return checkContextMenu(
       'dlp-restriction-details', 'hello.txt', /*expectedEnabledState=*/ false,
       /*expectedHiddenState=*/ true);
-};
+}
 
 /**
  * Tests that the Cut menu item is disabled if a read-only folder is
  * selected.
  */
-// @ts-ignore: error TS4111: Property 'checkCutDisabledForReadOnlyFolder' comes
-// from an index signature, so it must be accessed with
-// ['checkCutDisabledForReadOnlyFolder'].
-testcase.checkCutDisabledForReadOnlyFolder = () => {
+export async function checkCutDisabledForReadOnlyFolder() {
   return checkContextMenu('cut', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Tests that the Paste into Folder menu item is enabled if a read-write folder
  * is selected.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkPasteIntoFolderEnabledForReadWriteFolder' comes from an index
-// signature, so it must be accessed with
-// ['checkPasteIntoFolderEnabledForReadWriteFolder'].
-testcase.checkPasteIntoFolderEnabledForReadWriteFolder = () => {
+export async function checkPasteIntoFolderEnabledForReadWriteFolder() {
   return checkContextMenu('paste-into-folder', 'photos', true);
-};
+}
 
 /**
  * Tests that the Paste into Folder menu item is disabled if a read-only folder
  * is selected.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkPasteIntoFolderDisabledForReadOnlyFolder' comes from an index
-// signature, so it must be accessed with
-// ['checkPasteIntoFolderDisabledForReadOnlyFolder'].
-testcase.checkPasteIntoFolderDisabledForReadOnlyFolder = () => {
+export async function checkPasteIntoFolderDisabledForReadOnlyFolder() {
   return checkContextMenu('paste-into-folder', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Tests that the "Install with Linux" file context menu item is hidden for a
  * Debian file if Crostini root access is disabled.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkInstallWithLinuxDisabledForDebianFile' comes from an index signature,
-// so it must be accessed with ['checkInstallWithLinuxDisabledForDebianFile'].
-testcase.checkInstallWithLinuxDisabledForDebianFile = async () => {
+export async function checkInstallWithLinuxDisabledForDebianFile() {
   const optionHidden = '#file-context-menu:not([hidden]) ' +
       '[command="#default-task"][hidden]';
 
@@ -351,16 +286,13 @@ testcase.checkInstallWithLinuxDisabledForDebianFile = async () => {
 
   // Check: the "Install with Linux" context menu item should be hidden.
   await remoteCall.waitForElement(appId, optionHidden);
-};
+}
 
 /**
  * Tests that the "Install with Linux" file context menu item is shown for a
  * Debian file if Crostini root access is enabled.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkInstallWithLinuxEnabledForDebianFile' comes from an index signature, so
-// it must be accessed with ['checkInstallWithLinuxEnabledForDebianFile'].
-testcase.checkInstallWithLinuxEnabledForDebianFile = async () => {
+export async function checkInstallWithLinuxEnabledForDebianFile() {
   const optionShown = '#file-context-menu:not([hidden]) ' +
       '[command="#default-task"]:not([hidden])';
 
@@ -374,16 +306,13 @@ testcase.checkInstallWithLinuxEnabledForDebianFile = async () => {
 
   // Check: the "Install with Linux" context menu item should be shown.
   await remoteCall.waitForElement(appId, optionShown);
-};
+}
 
 /**
  * Tests that the "Replace your Linux apps and files" file context menu item is
  * hidden for a *.tini file if Crostini backup is disabled.
  */
-// @ts-ignore: error TS4111: Property 'checkImportCrostiniImageDisabled' comes
-// from an index signature, so it must be accessed with
-// ['checkImportCrostiniImageDisabled'].
-testcase.checkImportCrostiniImageDisabled = async () => {
+export async function checkImportCrostiniImageDisabled() {
   const optionHidden = '#file-context-menu:not([hidden]) ' +
       '[command="#default-task"][hidden]';
 
@@ -401,16 +330,13 @@ testcase.checkImportCrostiniImageDisabled = async () => {
 
   // Check: the context menu item should be hidden.
   await remoteCall.waitForElement(appId, optionHidden);
-};
+}
 
 /**
  * Tests that the "Replace your Linux apps and files" file context menu item is
  * shown for a *.tini file if Crostini backup is enabled.
  */
-// @ts-ignore: error TS4111: Property 'checkImportCrostiniImageEnabled' comes
-// from an index signature, so it must be accessed with
-// ['checkImportCrostiniImageEnabled'].
-testcase.checkImportCrostiniImageEnabled = async () => {
+export async function checkImportCrostiniImageEnabled() {
   const optionShown = '#file-context-menu:not([hidden]) ' +
       '[command="#default-task"]:not([hidden])';
 
@@ -424,15 +350,12 @@ testcase.checkImportCrostiniImageEnabled = async () => {
 
   // Check: the context menu item should be shown.
   await remoteCall.waitForElement(appId, optionShown);
-};
+}
 
 /**
  * Tests that text selection context menus are disabled in tablet mode.
  */
-// @ts-ignore: error TS4111: Property 'checkContextMenusForInputElements' comes
-// from an index signature, so it must be accessed with
-// ['checkContextMenusForInputElements'].
-testcase.checkContextMenusForInputElements = async () => {
+export async function checkContextMenusForInputElements() {
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -440,9 +363,8 @@ testcase.checkContextMenusForInputElements = async () => {
   await remoteCall.waitAndClickElement(appId, '#search-button');
 
   // Query all input elements.
-  const elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId,
-      ['input[type=text], input[type=search], textarea, cr-input']);
+  const elements = await remoteCall.queryElements(
+      appId, ['input[type=text], input[type=search], textarea, cr-input']);
 
   // Focus the search box.
   chrome.test.assertEq(2, elements.length);
@@ -474,16 +396,13 @@ testcase.checkContextMenusForInputElements = async () => {
 
   // Context menu must be visible if mouse induced.
   await remoteCall.waitForElement(appId, '#text-context-menu:not([hidden])');
-};
+}
 
 /**
  * Tests that opening context menu in the rename input won't commit the
  * renaming.
  */
-// @ts-ignore: error TS4111: Property 'checkContextMenuForRenameInput' comes
-// from an index signature, so it must be accessed with
-// ['checkContextMenuForRenameInput'].
-testcase.checkContextMenuForRenameInput = async () => {
+export async function checkContextMenuForRenameInput() {
   const textInput = '#file-list .table-row[renaming] input.rename';
   const contextMenu = '#text-context-menu:not([hidden])';
 
@@ -523,7 +442,7 @@ testcase.checkContextMenuForRenameInput = async () => {
   const focusedElement =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq(inputElement, focusedElement);
-};
+}
 
 /**
  * Tests that the specified menu item is in |expectedEnabledState| when the
@@ -531,13 +450,13 @@ testcase.checkContextMenuForRenameInput = async () => {
  * |folderName|. The folder is opened and the white area inside the folder is
  * selected. |folderName| must be inside the Google Drive root.
  *
- * @param {string} commandId ID of the command in the context menu to check.
- * @param {string} folderName Path to the file to open the context menu for.
- * @param {boolean} expectedEnabledState True if the command should be enabled
- *     in the context menu, false if not.
+ * @param commandId ID of the command in the context menu to check.
+ * @param folderName Path to the file to open the context menu for.
+ * @param expectedEnabledState True if the command should be enabled in the
+ *     context menu, false if not.
  */
 async function checkContextMenuInDriveFolder(
-    commandId, folderName, expectedEnabledState) {
+    commandId: string, folderName: string, expectedEnabledState: boolean) {
   // Open Files App on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPLEX_DRIVE_ENTRY_SET);
@@ -570,54 +489,42 @@ async function checkContextMenuInDriveFolder(
  * Tests that the New Folder menu item is enabled inside a folder that has
  * read-write permissions.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkNewFolderEnabledInsideReadWriteFolder' comes from an index signature,
-// so it must be accessed with ['checkNewFolderEnabledInsideReadWriteFolder'].
-testcase.checkNewFolderEnabledInsideReadWriteFolder = () => {
+export async function checkNewFolderEnabledInsideReadWriteFolder() {
   return checkContextMenuInDriveFolder('new-folder', 'photos', true);
-};
+}
 
 /**
  * Tests that the New Folder menu item is enabled inside a folder that has
  * read-write permissions.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkNewFolderDisabledInsideReadOnlyFolder' comes from an index signature,
-// so it must be accessed with ['checkNewFolderDisabledInsideReadOnlyFolder'].
-testcase.checkNewFolderDisabledInsideReadOnlyFolder = () => {
+export async function checkNewFolderDisabledInsideReadOnlyFolder() {
   return checkContextMenuInDriveFolder('new-folder', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Tests that the Paste menu item is enabled inside a folder that has read-write
  * permissions.
  */
-// @ts-ignore: error TS4111: Property 'checkPasteEnabledInsideReadWriteFolder'
-// comes from an index signature, so it must be accessed with
-// ['checkPasteEnabledInsideReadWriteFolder'].
-testcase.checkPasteEnabledInsideReadWriteFolder = () => {
+export async function checkPasteEnabledInsideReadWriteFolder() {
   return checkContextMenuInDriveFolder('paste', 'photos', true);
-};
+}
 
 /**
  * Tests that the Paste menu item is disabled inside a folder that has read-only
  * permissions.
  */
-// @ts-ignore: error TS4111: Property 'checkPasteDisabledInsideReadOnlyFolder'
-// comes from an index signature, so it must be accessed with
-// ['checkPasteDisabledInsideReadOnlyFolder'].
-testcase.checkPasteDisabledInsideReadOnlyFolder = () => {
+export async function checkPasteDisabledInsideReadOnlyFolder() {
   return checkContextMenuInDriveFolder('paste', 'Read-Only Folder', false);
-};
+}
 
 /**
  * Checks that mutating context menu items are not present for a root within
  * My files.
- * @param {string} itemName Name of item inside MyFiles that should be checked.
- * @param {!Object<string, boolean>} commandStates Commands that should be
- *     enabled for the checked item.
+ * @param itemName Name of item inside MyFiles that should be checked.
+ * @param commandStates Commands that should be enabled for the checked item.
  */
-async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
+async function checkMyFilesRootItemContextMenu(
+    itemName: string, commandStates: Record<string, boolean>) {
   const validCmds = {
     'copy': true,
     'cut': true,
@@ -653,11 +560,6 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
   ];
   await remoteCall.waitForFiles(
       appId, expectedRows,
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Select the item.
@@ -696,9 +598,7 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
  * Check that mutating context menu items are not shown for Downloads within My
  * files.
  */
-// @ts-ignore: error TS4111: Property 'checkDownloadsContextMenu' comes from an
-// index signature, so it must be accessed with ['checkDownloadsContextMenu'].
-testcase.checkDownloadsContextMenu = () => {
+export async function checkDownloadsContextMenu() {
   const commands = {
     copy: true,
     cut: false,
@@ -707,15 +607,13 @@ testcase.checkDownloadsContextMenu = () => {
     'zip-selection': true,
   };
   return checkMyFilesRootItemContextMenu('Downloads', commands);
-};
+}
 
 /**
  * Check that mutating context menu items are not shown for Play files within My
  * files.
  */
-// @ts-ignore: error TS4111: Property 'checkPlayFilesContextMenu' comes from an
-// index signature, so it must be accessed with ['checkPlayFilesContextMenu'].
-testcase.checkPlayFilesContextMenu = () => {
+export async function checkPlayFilesContextMenu() {
   const commands = {
     copy: false,
     cut: false,
@@ -724,15 +622,13 @@ testcase.checkPlayFilesContextMenu = () => {
     'zip-selection': false,
   };
   return checkMyFilesRootItemContextMenu('Play files', commands);
-};
+}
 
 /**
  * Check that mutating context menu items are not shown for Linux files within
  * My files.
  */
-// @ts-ignore: error TS4111: Property 'checkLinuxFilesContextMenu' comes from an
-// index signature, so it must be accessed with ['checkLinuxFilesContextMenu'].
-testcase.checkLinuxFilesContextMenu = () => {
+export async function checkLinuxFilesContextMenu() {
   const commands = {
     copy: false,
     cut: false,
@@ -741,19 +637,19 @@ testcase.checkLinuxFilesContextMenu = () => {
     'zip-selection': false,
   };
   return checkMyFilesRootItemContextMenu('Linux files', commands);
-};
+}
 
 /**
  * Tests that the specified menu item is in |expectedEnabledState| when the
  * entry at |path| is selected.
  *
- * @param {string} commandId ID of the command in the context menu to check.
- * @param {string} path Path to the file to open the context menu for.
- * @param {boolean} expectedEnabledState True if the command should be enabled
- *     in the context menu, false if not.
+ * @param commandId ID of the command in the context menu to check.
+ * @param path Path to the file to open the context menu for.
+ * @param expectedEnabledState True if the command should be enabled in the
+ *     context menu, false if not.
  */
 async function checkDocumentsProviderContextMenu(
-    commandId, path, expectedEnabledState) {
+    commandId: string, path: string, expectedEnabledState: boolean) {
   const documentsProviderVolumeType = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
@@ -774,10 +670,6 @@ async function checkDocumentsProviderContextMenu(
   // Check: the DocumentsProvider files should appear in the file list.
   const files =
       TestEntryInfo.getExpectedRows(COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
-  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime: true;
-  // }' is not assignable to parameter of type '{ orderCheck: boolean | null |
-  // undefined; ignoreFileSize: boolean | null | undefined;
-  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select the file |path|.
@@ -807,63 +699,52 @@ async function checkDocumentsProviderContextMenu(
  * Tests that the Delete menu item is disabled if the DocumentsProvider file is
  * not deletable.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteDisabledInDocProvider' comes
-// from an index signature, so it must be accessed with
-// ['checkDeleteDisabledInDocProvider'].
-testcase.checkDeleteDisabledInDocProvider = () => {
+export async function checkDeleteDisabledInDocProvider() {
   return checkDocumentsProviderContextMenu(
       'delete', 'Renamable File.txt', false);
-};
+}
 
 /**
  * Tests that the Delete menu item is enabled if the DocumentsProvider file is
  * deletable.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteEnabledInDocProvider' comes
-// from an index signature, so it must be accessed with
-// ['checkDeleteEnabledInDocProvider'].
-testcase.checkDeleteEnabledInDocProvider = () => {
+export async function checkDeleteEnabledInDocProvider() {
   return checkDocumentsProviderContextMenu(
       'delete', 'Deletable File.txt', true);
-};
+}
 
 /**
  * Tests that the Rename menu item is disabled if the DocumentsProvider file is
  * not renamable.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameDisabledInDocProvider' comes
-// from an index signature, so it must be accessed with
-// ['checkRenameDisabledInDocProvider'].
-testcase.checkRenameDisabledInDocProvider = () => {
+export async function checkRenameDisabledInDocProvider() {
   return checkDocumentsProviderContextMenu(
       'rename', 'Deletable File.txt', false);
-};
+}
 
 /**
  * Tests that the Rename menu item is enabled if the DocumentsProvider file is
  * renamable.
  */
-// @ts-ignore: error TS4111: Property 'checkRenameEnabledInDocProvider' comes
-// from an index signature, so it must be accessed with
-// ['checkRenameEnabledInDocProvider'].
-testcase.checkRenameEnabledInDocProvider = () => {
+export async function checkRenameEnabledInDocProvider() {
   return checkDocumentsProviderContextMenu(
       'rename', 'Renamable File.txt', true);
-};
+}
 
 /**
  * Tests that the specified menu item is in |expectedEnabledState| when the
  * entry at |path| is selected.
  *
- * @param {string} commandId ID of the command in the context menu to check.
- * @param {string} fileName Name of the file to open the context menu for.
- * @param {boolean} expectedEnabledState True if the command should be enabled
- *     in the context menu, false if not.
- * @param {boolean=} opt_selectMultiple True if multiple file should be selected
- *     before the context menu is shown.
+ * @param commandId ID of the command in the context menu to check.
+ * @param fileName Name of the file to open the context menu for.
+ * @param expectedEnabledState True if the command should be enabled in the
+ *     context menu, false if not.
+ * @param selectMultiple True if multiple file should be selected before the
+ *     context menu is shown.
  */
 async function checkRecentsContextMenu(
-    commandId, fileName, expectedEnabledState, opt_selectMultiple) {
+    commandId: string, fileName: string, expectedEnabledState: boolean,
+    selectMultiple?: boolean) {
   // Populate both downloads and drive with disjoint sets of files.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
@@ -877,7 +758,7 @@ async function checkRecentsContextMenu(
   const expectedRows = TestEntryInfo.getExpectedRows(RECENT_ENTRY_SET);
   await remoteCall.waitForFiles(appId, expectedRows);
 
-  if (opt_selectMultiple) {
+  if (selectMultiple) {
     // Select all the files.
     const ctrlA = ['#file-list', 'a', true, false, false];
     await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
@@ -912,45 +793,33 @@ async function checkRecentsContextMenu(
 /**
  * Tests that the Delete menu item is disabled for files in Recents.
  */
-// @ts-ignore: error TS4111: Property 'checkDeleteEnabledInRecents' comes from
-// an index signature, so it must be accessed with
-// ['checkDeleteEnabledInRecents'].
-testcase.checkDeleteEnabledInRecents = () => {
+export async function checkDeleteEnabledInRecents() {
   return checkRecentsContextMenu('delete', 'My Desktop Background.png', true);
-};
+}
 
 /**
  * Tests that the "Go to file location" menu item is enabled for files in
  * Recents.
  */
-// @ts-ignore: error TS4111: Property 'checkGoToFileLocationEnabledInRecents'
-// comes from an index signature, so it must be accessed with
-// ['checkGoToFileLocationEnabledInRecents'].
-testcase.checkGoToFileLocationEnabledInRecents = () => {
+export async function checkGoToFileLocationEnabledInRecents() {
   return checkRecentsContextMenu(
       'go-to-file-location', 'My Desktop Background.png', true);
-};
+}
 
 /**
  * Tests that the "Go to file location" menu item is disabled when multiple
  * files are selected in Recents.
  */
-// @ts-ignore: error TS4111: Property
-// 'checkGoToFileLocationDisabledInMultipleSelection' comes from an index
-// signature, so it must be accessed with
-// ['checkGoToFileLocationDisabledInMultipleSelection'].
-testcase.checkGoToFileLocationDisabledInMultipleSelection = () => {
+export async function checkGoToFileLocationDisabledInMultipleSelection() {
   return checkRecentsContextMenu(
       'go-to-file-location', 'My Desktop Background.png', false, true);
-};
+}
 
 /**
  * Tests that context menu in file list gets the focus, so ChromeVox can
  * announce it.
  */
-// @ts-ignore: error TS4111: Property 'checkContextMenuFocus' comes from an
-// index signature, so it must be accessed with ['checkContextMenuFocus'].
-testcase.checkContextMenuFocus = async () => {
+export async function checkContextMenuFocus() {
   // Open Files App on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -972,14 +841,12 @@ testcase.checkContextMenuFocus = async () => {
       appId, '#file-context-menu cr-menu-item:focus');
 
   // Check currently focused element.
-  const focusedElement =
+  const focusedElement: ElementObject =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('menuitem', focusedElement.attributes['role']);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'checkDefaultTask' comes from an index
-// signature, so it must be accessed with ['checkDefaultTask'].
-testcase.checkDefaultTask = async () => {
+export async function checkDefaultTask() {
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.photos, ENTRIES.hello], []);
@@ -997,9 +864,8 @@ testcase.checkDefaultTask = async () => {
   const menu = await remoteCall.getMenu(appId, 'context-menu');
 
   // Check the default task item is displayed for the DummyTask.
-  const defaultTaskItem =
-      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
-      menu['items'].find(el => el.attributes.id === 'default-task-menu-item');
+  const defaultTaskItem = menu!.items!.find(
+      (el: ElementObject) => el.attributes['id'] === 'default-task-menu-item');
   chrome.test.assertTrue(!!defaultTaskItem);
   chrome.test.assertFalse(defaultTaskItem.hidden);
   chrome.test.assertEq(defaultTaskItem.text, 'DummyTask');
@@ -1017,19 +883,13 @@ testcase.checkDefaultTask = async () => {
   const folderMenu = await remoteCall.getMenu(appId, 'context-menu');
 
   // Check the default task item is hidden.
-  // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-  // expression of type '"items"' can't be used to index type 'ElementObject'.
-  const folderDefaultTaskItem = folderMenu['items'].find(
-      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
-      el => el.attributes.id === 'default-task-menu-item');
+  const folderDefaultTaskItem = folderMenu!.items!.find(
+      (el: ElementObject) => el.attributes['id'] === 'default-task-menu-item');
   chrome.test.assertTrue(!!folderDefaultTaskItem);
   chrome.test.assertTrue(folderDefaultTaskItem.hidden);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'checkPolicyAssignedDefaultHasManagedIcon'
-// comes from an index signature, so it must be accessed with
-// ['checkPolicyAssignedDefaultHasManagedIcon'].
-testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
+export async function checkPolicyAssignedDefaultHasManagedIcon() {
   // Open FilesApp on Downloads.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -1056,11 +916,8 @@ testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
 
   // Check the default task item is visible and has is-default/is-managed
   // properties set.
-  // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-  // expression of type '"items"' can't be used to index type 'ElementObject'.
-  const contextMenuDefaultTaskItem = contextMenu['items'].find(
-      // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
-      el => el.attributes.id === 'default-task-menu-item');
+  const contextMenuDefaultTaskItem = contextMenu!.items!.find(
+      (el: ElementObject) => el.attributes['id'] === 'default-task-menu-item');
   chrome.test.assertTrue(!!contextMenuDefaultTaskItem);
   chrome.test.assertFalse(contextMenuDefaultTaskItem.hidden);
   chrome.test.assertEq(contextMenuDefaultTaskItem.text, 'DummyDefaultTask');
@@ -1078,36 +935,30 @@ testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
 
   // Check the default task item is visible and has is-default/is-managed
   // properties set.
-  // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-  // expression of type '"items"' can't be used to index type 'ElementObject'.
-  const tasksMenuDefaultTaskItem = tasksMenu['items'][0];
+  const tasksMenuDefaultTaskItem = tasksMenu!.items![0];
   chrome.test.assertTrue(!!tasksMenuDefaultTaskItem);
   chrome.test.assertFalse(tasksMenuDefaultTaskItem.hidden);
   chrome.test.assertTrue(
-      tasksMenuDefaultTaskItem.text.includes('DummyDefaultTask'));
+      tasksMenuDefaultTaskItem.text!.includes('DummyDefaultTask'));
   chrome.test.assertTrue('is-default' in tasksMenuDefaultTaskItem.attributes);
   chrome.test.assertTrue('is-managed' in tasksMenuDefaultTaskItem.attributes);
 
   // Check that the remaining items do not have is-default/is-managed
   // properties, and that `Change Default` is not shown.
-  // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-  // expression of type '"items"' can't be used to index type 'ElementObject'.
-  const tasksMenuNonDefaultTaskItems = tasksMenu['items'].slice(1);
+  const tasksMenuNonDefaultTaskItems = tasksMenu!.items!.slice(1);
   for (const nonDefaultTaskItem of tasksMenuNonDefaultTaskItems) {
     chrome.test.assertFalse('is-default' in nonDefaultTaskItem.attributes);
     chrome.test.assertFalse('is-managed' in nonDefaultTaskItem.attributes);
     chrome.test.assertFalse(
-        nonDefaultTaskItem.attributes['class'].includes('change-default'));
+        nonDefaultTaskItem.attributes['class']!.includes('change-default'));
   }
-};
+}
 
 /*
  * Test that the "copy" context menu item is disabled for Google Drive CSE
  * files.
  */
-// @ts-ignore: error TS4111: Property 'checkEncryptedCopyDisabled' comes from an
-// index signature, so it must be accessed with ['checkEncryptedCopyDisabled'].
-testcase.checkEncryptedCopyDisabled = async () => {
+export async function checkEncryptedCopyDisabled() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
@@ -1116,15 +967,13 @@ testcase.checkEncryptedCopyDisabled = async () => {
   await remoteCall.waitForElement(
       appId,
       '#file-context-menu:not([hidden]) [command="#copy"][disabled]:not([hidden])');
-};
+}
 
 /*
  * Test that a Google Drive CSE files can be moved (using cut+paste) within
  * Google Drive.
  */
-// @ts-ignore: error TS4111: Property 'checkEncryptedMoveEnabled' comes from an
-// index signature, so it must be accessed with ['checkEncryptedMoveEnabled'].
-testcase.checkEncryptedMoveEnabled = async () => {
+export async function checkEncryptedMoveEnabled() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.testCSEFile, ENTRIES.photos]);
 
@@ -1153,16 +1002,13 @@ testcase.checkEncryptedMoveEnabled = async () => {
   await remoteCall.waitForElement(
       appId,
       '#file-context-menu:not([hidden]) [command="#paste"]:not([disabled]):not([hidden])');
-};
+}
 
 /*
  * Test that a Google Drive CSE files can not be moved (using cut+paste) outside
  * of Google Drive.
  */
-// @ts-ignore: error TS4111: Property 'checkEncryptedCrossVolumeMoveDisabled'
-// comes from an index signature, so it must be accessed with
-// ['checkEncryptedCrossVolumeMoveDisabled'].
-testcase.checkEncryptedCrossVolumeMoveDisabled = async () => {
+export async function checkEncryptedCrossVolumeMoveDisabled() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
@@ -1190,4 +1036,4 @@ testcase.checkEncryptedCrossVolumeMoveDisabled = async () => {
   await remoteCall.waitForElement(
       appId,
       '#file-context-menu:not([hidden]) [command="#paste"][disabled]:not([hidden])');
-};
+}

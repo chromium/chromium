@@ -890,7 +890,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @return Promise to be fulfilled with the menu.
    */
   async getMenu(appId: string, menu: string|string[]):
-      Promise<undefined|ElementObject> {
+      Promise<undefined|MenuObject> {
     let menuId = '';
     // TODO: Implement for other menus.
     if (menu === 'context-menu') {
