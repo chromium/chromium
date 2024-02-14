@@ -793,33 +793,29 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                          text:(NSString*)text
                 dismissAction:(ProceduralBlock)dismissAction {
   DCHECK(self.engagementTracker);
-  if ([self shouldForcePresentBubbleForFeature:feature] ||
-      self.engagementTracker->WouldTriggerHelpUI(feature)) {
-    // Capture `weakSelf` instead of the feature engagement tracker object
-    // because `weakSelf` will safely become `nil` if it is deallocated, whereas
-    // the feature engagement tracker will remain pointing to invalid memory if
-    // its owner (the ChromeBrowserState) is deallocated.
-    __weak BubblePresenter* weakSelf = self;
-    CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
-        ^(IPHDismissalReasonType IPHDismissalReasonType,
-          feature_engagement::Tracker::SnoozeAction snoozeAction) {
-          if (dismissAction) {
-            dismissAction();
-          }
-          [weakSelf featureDismissed:feature withSnooze:snoozeAction];
-        };
+  // Capture `weakSelf` instead of the feature engagement tracker object
+  // because `weakSelf` will safely become `nil` if it is deallocated, whereas
+  // the feature engagement tracker will remain pointing to invalid memory if
+  // its owner (the ChromeBrowserState) is deallocated.
+  __weak BubblePresenter* weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        if (dismissAction) {
+          dismissAction();
+        }
+        [weakSelf featureDismissed:feature withSnooze:snoozeAction];
+      };
 
-    BubbleViewControllerPresenter* bubbleViewControllerPresenter =
-        [[BubbleViewControllerPresenter alloc]
-            initDefaultBubbleWithText:text
-                       arrowDirection:direction
-                            alignment:alignment
-                 isLongDurationBubble:[self isLongDurationBubble:feature]
-                    dismissalCallback:dismissalCallbackWithSnoozeAction];
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:direction
+                          alignment:alignment
+               isLongDurationBubble:[self isLongDurationBubble:feature]
+                  dismissalCallback:dismissalCallbackWithSnoozeAction];
 
-    return bubbleViewControllerPresenter;
-  }
-  return nil;
+  return bubbleViewControllerPresenter;
 }
 
 // If an in-product help message should be shown for `feature`, presents an IPH
