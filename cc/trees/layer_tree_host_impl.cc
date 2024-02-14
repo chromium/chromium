@@ -2885,10 +2885,10 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   auto* context_provider = layer_tree_frame_sink_->context_provider();
   auto* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
+  CHECK_EQ(!!worker_context_provider, !!context_provider);
 
-  if (!context_provider) {
+  if (!worker_context_provider) {
     // No context provider means software raster + compositing.
-    CHECK(!worker_context_provider);
     raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
 
     // Software compositing always uses the native skia RGBA N32 format, but we
@@ -2900,14 +2900,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
         layer_tree_frame_sink_->shared_image_interface()
             ? viz::SinglePlaneFormat::kBGRA_8888
             : viz::SinglePlaneFormat::kRGBA_8888;
-    return;
-  }
-
-  if (!worker_context_provider) {
-    // For Android UI it's possible to only have a compositor context and no
-    // worker context. Raster is not supported in this mode.
-    raster_caps_.max_texture_size =
-        context_provider->ContextCapabilities().max_texture_size;
     return;
   }
 
