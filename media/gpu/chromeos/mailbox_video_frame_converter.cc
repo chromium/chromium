@@ -570,7 +570,8 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   if (video_frame->metadata().is_webgpu_compatible &&
       !shared_image_caps->disable_webgpu_shared_images) {
-    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   }
 
   gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;

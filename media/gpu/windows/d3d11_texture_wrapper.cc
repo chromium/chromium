@@ -256,7 +256,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       return;
     }
 
-    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
     HANDLE shared_handle = nullptr;
     hr = dxgi_resource->CreateSharedHandle(

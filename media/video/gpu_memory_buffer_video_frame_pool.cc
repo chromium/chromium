@@ -1312,7 +1312,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       // OzoneImageBacking is by default turned on.
       if (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kEnableUnsafeWebGPU)) {
-        usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+        usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                 gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
       }
 #endif
 
