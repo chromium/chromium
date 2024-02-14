@@ -3339,6 +3339,244 @@
         <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_MODERN_ART" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
           modern art
         </message>
+        <!-- Wallpaper template characters -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_CHARACTERS" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          Characters
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_CHARACTERS" desc="Template used to generate an image of CHARACTERS. Users can select the variables from a drop-down menu.">
+          <ph name="CHARACTERS_COLOR">$1<ex>yellow</ex></ph> <ph name="CHARACTERS_SUBJECTS">$2<ex>lemons</ex></ph> on a <ph name="CHARACTERS_BACKGROUND">$3<ex>purple</ex></ph> background
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_YELLOW" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_RED" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BLUE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_INDIGO" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GREEN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_CYAN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_PURPLE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BROWN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GOLD" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_RUST" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_OLIVE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_GRAY" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_WHITE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_BEIGE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_MAGENTA" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_NEON_GREEN" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_LIGHT_BLUE" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_NEON_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_COLOR_CORAL_PINK" desc="Option to fill in the CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          coral pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_LEMONS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          lemons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_FLOWERS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_APPLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          apples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CHERRIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cherries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_ORANGES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          oranges
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PINEAPPLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pineapples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_STRAWBERRIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          strawberries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_WATERMELONS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          watermelons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_POTATOES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          potatoes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_SUSHI" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          sushi
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BACON_AND_EGGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bacon and eggs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PIZZA" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pizza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_HOT_DOGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          hot dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_HAMBURGERS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          hamburgers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_RAMEN" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          ramen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_TACOS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          tacos
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BUNNIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bunnies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CATS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_DOGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_KOALAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          koalas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PANDAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pandas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PENGUINS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          penguins
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PIGS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pigs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_SLOTHS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          sloths
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_PONIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          ponies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_ELEPHANTS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          elephants
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_FOXES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          foxes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_OWLS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          owls
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CRABS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          crabs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BEES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bees
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BUTTERFLIES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          butterflies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BICYCLES" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          bicycles
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BOATS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          boats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_BOOKS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          books
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_CUTLERY" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cutlery
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_UMBRELLAS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          umbrellas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_SUBJECTS_INSTRUMENTS" desc="Option to fill in the CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          instruments
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_PURPLE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BLUE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_INDIGO" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GREEN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_CYAN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BROWN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GOLD" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_RED" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_RUST" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_OLIVE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_GRAY" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_YELLOW" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_WHITE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_BEIGE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_MAGENTA" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_NEON_GREEN" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_LIGHT_BLUE" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_NEON_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_CORAL_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
+          coral pink
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

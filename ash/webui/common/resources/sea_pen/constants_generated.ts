@@ -462,10 +462,12 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kCharacters,
-      title: 'Characters',
-      text: `<${SeaPenTemplateChip.kCharactersColor}> <${
-          SeaPenTemplateChip.kCharactersSubjects}> on a <${
-          SeaPenTemplateChip.kCharactersBackground}> background`,
+      title: loadTimeData.getString('seaPenTemplateTitleCharacters'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateCharacters',
+          `<${SeaPenTemplateChip.kCharactersColor}>`,
+          `<${SeaPenTemplateChip.kCharactersSubjects}>`,
+          `<${SeaPenTemplateChip.kCharactersBackground}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
@@ -476,83 +478,103 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kCharactersColorYellow,
-              translation: 'yellow',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorYellow'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorPink,
-              translation: 'pink',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorPink'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorRed,
-              translation: 'red',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorRed'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorBlue,
-              translation: 'blue',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorBlue'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorIndigo,
-              translation: 'indigo',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorIndigo'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorGreen,
-              translation: 'green',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorGreen'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorCyan,
-              translation: 'cyan',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorCyan'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorPurple,
-              translation: 'purple',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorPurple'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorBrown,
-              translation: 'brown',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorBrown'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorGold,
-              translation: 'gold',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorGold'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorRust,
-              translation: 'rust',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorRust'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorOlive,
-              translation: 'olive',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorOlive'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorGray,
-              translation: 'gray',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorGray'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorWhite,
-              translation: 'white',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorWhite'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorBeige,
-              translation: 'beige',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorBeige'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorMagenta,
-              translation: 'magenta',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorMagenta'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorNeonGreen,
-              translation: 'neon green',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersColorNeonGreen'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorLightBlue,
-              translation: 'light blue',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersColorLightBlue'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorNeonPink,
-              translation: 'neon pink',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersColorNeonPink'),
             },
             {
               value: SeaPenTemplateOption.kCharactersColorCoralPink,
-              translation: 'coral pink',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersColorCoralPink'),
             },
           ],
         ],
@@ -561,151 +583,188 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kCharactersSubjectsLemons,
-              translation: 'lemons',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsLemons'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsFlowers,
-              translation: 'flowers',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsFlowers'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsApples,
-              translation: 'apples',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsApples'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsCherries,
-              translation: 'cherries',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsCherries'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsOranges,
-              translation: 'oranges',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsOranges'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPineapples,
-              translation: 'pineapples',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsPineapples'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsStrawberries,
-              translation: 'strawberries',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsStrawberries'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsWatermelons,
-              translation: 'watermelons',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsWatermelons'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPotatoes,
-              translation: 'potatoes',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsPotatoes'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsSushi,
-              translation: 'sushi',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsSushi'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBaconAndEggs,
-              translation: 'bacon and eggs',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsBaconAndEggs'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPizza,
-              translation: 'pizza',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsPizza'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsHotDogs,
-              translation: 'hot dogs',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsHotDogs'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsHamburgers,
-              translation: 'hamburgers',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsHamburgers'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsRamen,
-              translation: 'ramen',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsRamen'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsTacos,
-              translation: 'tacos',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsTacos'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBunnies,
-              translation: 'bunnies',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsBunnies'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsCats,
-              translation: 'cats',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsCats'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsDogs,
-              translation: 'dogs',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsDogs'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsKoalas,
-              translation: 'koalas',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsKoalas'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPandas,
-              translation: 'pandas',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsPandas'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPenguins,
-              translation: 'penguins',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsPenguins'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPigs,
-              translation: 'pigs',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsPigs'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsSloths,
-              translation: 'sloths',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsSloths'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsPonies,
-              translation: 'ponies',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsPonies'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsElephants,
-              translation: 'elephants',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsElephants'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsFoxes,
-              translation: 'foxes',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsFoxes'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsOwls,
-              translation: 'owls',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsOwls'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsCrabs,
-              translation: 'crabs',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsCrabs'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBees,
-              translation: 'bees',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsBees'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsButterflies,
-              translation: 'butterflies',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsButterflies'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBicycles,
-              translation: 'bicycles',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsBicycles'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBoats,
-              translation: 'boats',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsBoats'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsBooks,
-              translation: 'books',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersSubjectsBooks'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsCutlery,
-              translation: 'cutlery',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsCutlery'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsUmbrellas,
-              translation: 'umbrellas',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsUmbrellas'),
             },
             {
               value: SeaPenTemplateOption.kCharactersSubjectsInstruments,
-              translation: 'instruments',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersSubjectsInstruments'),
             },
           ],
         ],
@@ -714,83 +773,103 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kCharactersBackgroundPurple,
-              translation: 'purple',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundPurple'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundBlue,
-              translation: 'blue',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundBlue'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundIndigo,
-              translation: 'indigo',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundIndigo'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundGreen,
-              translation: 'green',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundGreen'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundCyan,
-              translation: 'cyan',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundCyan'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundBrown,
-              translation: 'brown',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundBrown'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundGold,
-              translation: 'gold',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundGold'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundRed,
-              translation: 'red',
+              translation:
+                  loadTimeData.getString('seaPenOptionCharactersBackgroundRed'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundRust,
-              translation: 'rust',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundRust'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundOlive,
-              translation: 'olive',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundOlive'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundPink,
-              translation: 'pink',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundPink'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundGray,
-              translation: 'gray',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundGray'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundYellow,
-              translation: 'yellow',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundYellow'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundWhite,
-              translation: 'white',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundWhite'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundBeige,
-              translation: 'beige',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundBeige'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundMagenta,
-              translation: 'magenta',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundMagenta'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundNeonGreen,
-              translation: 'neon green',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundNeonGreen'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundLightBlue,
-              translation: 'light blue',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundLightBlue'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundNeonPink,
-              translation: 'neon pink',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundNeonPink'),
             },
             {
               value: SeaPenTemplateOption.kCharactersBackgroundCoralPink,
-              translation: 'coral pink',
+              translation: loadTimeData.getString(
+                  'seaPenOptionCharactersBackgroundCoralPink'),
             },
           ],
         ],
