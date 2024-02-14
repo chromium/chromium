@@ -286,6 +286,11 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Display calendar events in birch UI.
+BASE_FEATURE(kBirchCalendar,
+             "BirchCalendar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Display weather information in birch UI.
 BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3159,6 +3164,10 @@ bool IsBatterySaverAvailable() {
 
 bool IsBatterySaverAlwaysOn() {
   return base::FeatureList::IsEnabled(kBatterySaverAlwaysOn);
+}
+
+bool IsBirchCalendarEnabled() {
+  return base::FeatureList::IsEnabled(kBirchCalendar);
 }
 
 bool IsBirchWeatherEnabled() {

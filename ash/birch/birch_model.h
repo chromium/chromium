@@ -109,6 +109,8 @@ class ASH_EXPORT BirchModel {
   raw_ptr<BirchClient> birch_client_ = nullptr;
 
   std::unique_ptr<BirchClient> weather_provider_;
+
+  std::unique_ptr<BirchClient> calendar_provider_;
 };
 
 }  // namespace ash
