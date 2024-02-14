@@ -455,12 +455,13 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
   SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes];
   for (int i = 0; i < num_yuva_planes; ++i) {
     yuva_sk_surfaces[i] = yuva_scoped_access[i]->surface();
-    if (!begin_semaphores.empty()) {
-      bool ret = yuva_sk_surfaces[i]->wait(begin_semaphores.size(),
-                                           begin_semaphores.data(),
-                                           /*deleteSemaphoresAfterWait=*/false);
-      DCHECK(ret);
-    }
+  }
+  if (!begin_semaphores.empty()) {
+    GrDirectContext* direct_context = shared_context_state_->gr_context();
+    bool ret =
+        direct_context->wait(begin_semaphores.size(), begin_semaphores.data(),
+                             /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(ret);
   }
 
   SkYUVAInfo yuva_info(rgba_sk_image->dimensions(), dst_plane_config,
@@ -832,9 +833,10 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
           &begin_semaphores, &end_semaphores);
   if (!begin_semaphores.empty()) {
-    bool ret = dest_scoped_access->surface()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
+    GrDirectContext* direct_context = shared_context_state_->gr_context();
+    bool ret =
+        direct_context->wait(begin_semaphores.size(), begin_semaphores.data(),
+                             /*deleteSemaphoresAfterWait=*/false);
     DCHECK(ret);
   }
   if (!source_scoped_access) {
