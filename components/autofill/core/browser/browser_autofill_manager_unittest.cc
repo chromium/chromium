@@ -7387,6 +7387,112 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   FormSubmitted(form_);
 }
 
+// Test that the call is properly forwarded to its SingleFieldFormFillRouter.
+TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
+  std::u16string test_value = u"TestValue";
+  FormData form = test::CreateTestAddressFormData();
+  FormFieldData field = form.fields[0];
+
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(test_value,
+                                              PopupItemId::kAutocompleteEntry));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
+
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(test_value,
+                                              PopupItemId::kAutocompleteEntry));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
+
+  EXPECT_CALL(
+      single_field_form_fill_router(),
+      OnSingleFieldSuggestionSelected(test_value, PopupItemId::kIbanEntry));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, PopupItemId::kIbanEntry, form, field);
+
+  EXPECT_CALL(single_field_form_fill_router(),
+              OnSingleFieldSuggestionSelected(
+                  test_value, PopupItemId::kMerchantPromoCodeEntry));
+
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, PopupItemId::kMerchantPromoCodeEntry, form, field);
+}
+
+// Test that we correctly fill an address form and update the used profile.
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"}}});
+  FormsSeen({form});
+
+  // Create a profile and add it to the PDM.
+  personal_data().ClearProfiles();
+  AutofillProfile profile = test::GetFullProfile();
+  profile.set_use_date(AutofillClock::Now());
+  profile.set_use_count(1u);
+  personal_data().AddProfile(profile);
+  AutofillProfile* pdm_profile =
+      personal_data().GetProfileByGUID(profile.guid());
+  ASSERT_TRUE(pdm_profile);
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  const base::Time hour_later = AutofillClock::Now();
+
+  FillAutofillFormData(form, form.fields[0], pdm_profile->guid());
+  EXPECT_EQ(2U, pdm_profile->use_count());
+  EXPECT_LE(hour_later, pdm_profile->use_date());
+}
+
+// Tests that `ProfileTokenQuality` is correctly integrated into
+// `AutofillProfile` and that on form submit, observations are collected.
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
+  base::test::ScopedFeatureList profile_token_quality_feature{
+      features::kAutofillTrackProfileTokenQuality};
+  personal_data().ClearProfiles();
+  AutofillProfile profile = test::GetFullProfile();
+  // This is needed to not get an update prompt that would compromise the test.
+  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  personal_data().AddProfile(profile);
+  AutofillProfile* pdm_profile =
+      personal_data().GetProfileByGUID(profile.guid());
+  ASSERT_TRUE(pdm_profile);
+  pdm_profile->token_quality().disable_randomization_for_testing();
+
+  // Create and fill an address form with profile `kElvisProfileGuid`.
+  FormData form = test::CreateTestAddressFormData();
+  FormsSeen({form});
+  FormData filled_form = FillAutofillFormDataAndGetResults(form, form.fields[0],
+                                                           pdm_profile->guid());
+
+  // Expect that no observations for any of the form's types were collected yet.
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  EXPECT_TRUE(base::ranges::all_of(
+      *form_structure,
+      [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
+        return pdm_profile->token_quality()
+            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .empty();
+      }));
+  // Submit the form and expect observations for all of the form's types. This
+  // updates the `profile` in `personal_data()`, invalidating the pointer.
+  FormSubmitted(filled_form);
+  pdm_profile = personal_data().GetProfileByGUID(profile.guid());
+  ASSERT_TRUE(pdm_profile);
+  EXPECT_TRUE(base::ranges::none_of(
+      *form_structure,
+      [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
+        return pdm_profile->token_quality()
+            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .empty();
+      }));
+}
+
 class BrowserAutofillManagerPlusAddressTest
     : public BrowserAutofillManagerTest {
  protected:
