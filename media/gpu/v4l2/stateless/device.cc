@@ -271,7 +271,6 @@ bool Buffer::CopyDataIn(const void* data, size_t length) {
   void* destination_addr = MappedAddress(0);
   if (!destination_addr || !data || (planes_.size() != 1) ||
       (length > planes_[0].length)) {
-    DVLOGF(1) << "Requirements to copy buffer failed.";
     return false;
   }
 
@@ -306,7 +305,7 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   std::set<VideoCodec> pix_fmts;
   v4l2_fmtdesc fmtdesc = {.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE};
   for (; IoctlDevice(VIDIOC_ENUM_FMT, &fmtdesc) == kIoctlOk; ++fmtdesc.index) {
-    DVLOGF(4) << "Enumerated input format: "
+    DVLOGF(3) << "Enumerated input format: "
               << media::FourccToString(fmtdesc.pixelformat) << " ("
               << fmtdesc.description << ")";
     VideoCodec enumerated_codec = V4L2PixFmtToVideoCodec(fmtdesc.pixelformat);
@@ -322,7 +321,7 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
 
 // VIDIOC_G_FMT
 std::optional<BufferFormat> Device::GetOutputFormat() {
-  DVLOGF(4);
+  DVLOGF(3);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
@@ -337,7 +336,6 @@ std::optional<BufferFormat> Device::GetOutputFormat() {
 std::optional<BufferFormat> Device::TrySetOutputFormat(
     int request,
     const BufferFormat& format) {
-  DVLOGF(4);
   struct v4l2_format v_format;
 
   BufferFormatToV4L2Format(v_format, format);
@@ -347,7 +345,7 @@ std::optional<BufferFormat> Device::TrySetOutputFormat(
   }
 
   if (format.fourcc.ToV4L2PixFmt() != v_format.fmt.pix_mp.pixelformat) {
-    DVLOGF(1) << "Format tried is not the format returned.";
+    VLOGF(2) << "Format tried is not the format returned.";
     return std::nullopt;
   }
 
@@ -356,13 +354,13 @@ std::optional<BufferFormat> Device::TrySetOutputFormat(
 
 std::optional<BufferFormat> Device::TryOutputFormat(
     const BufferFormat& format) {
-  DVLOGF(4);
+  DVLOGF(3);
   return TrySetOutputFormat(VIDIOC_TRY_FMT, format);
 }
 
 std::optional<BufferFormat> Device::SetOutputFormat(
     const BufferFormat& format) {
-  DVLOGF(4);
+  DVLOGF(3);
   return TrySetOutputFormat(VIDIOC_S_FMT, format);
 }
 
@@ -370,7 +368,7 @@ std::optional<BufferFormat> Device::SetOutputFormat(
 bool Device::SetInputFormat(VideoCodec codec,
                             gfx::Size resolution,
                             size_t encoded_buffer_size) {
-  DVLOGF(4);
+  DVLOGF(3);
   const uint32_t pix_fmt = VideoCodecToV4L2PixFmt(codec);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
@@ -397,7 +395,6 @@ bool Device::StreamOn(BufferType type) {
 
   const int ret = IoctlDevice(VIDIOC_STREAMON, &buf_type);
   if (ret) {
-    DVLOGF(1) << "VIDIOC_STREAMON failed: " << ret;
     return false;
   }
   return true;
@@ -409,7 +406,6 @@ bool Device::StreamOff(BufferType type) {
 
   const int ret = IoctlDevice(VIDIOC_STREAMOFF, &buf_type);
   if (ret) {
-    DVLOGF(1) << "VIDIOC_STREAMOFF failed: " << ret;
     return false;
   }
   return true;
@@ -454,8 +450,6 @@ std::optional<uint32_t> Device::RequestBuffers(BufferType type,
 
   const int ret = IoctlDevice(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
-    DVLOGF(1) << "Failed to allocate " << count
-              << " input buffers with VIDIOC_REQBUFS: " << ret;
     return std::nullopt;
   }
 
@@ -480,7 +474,6 @@ std::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
 
   const int ret = IoctlDevice(VIDIOC_QUERYBUF, &v4l2_buffer);
   if (ret) {
-    DVLOGF(1) << "VIDIOC_QUERYBUF failed: ";
     return std::nullopt;
   }
 
@@ -555,9 +548,9 @@ std::pair<gfx::Size, gfx::Size> Device::GetFrameResolutionRange(
     }
   }
 
-  VPLOGF(1) << "VIDIOC_ENUM_FRAMESIZES failed for "
-            << media::FourccToString(frame_size.pixel_format)
-            << ", using default values";
+  VLOGF(1) << "VIDIOC_ENUM_FRAMESIZES failed for "
+           << media::FourccToString(frame_size.pixel_format)
+           << ", using default values";
   return std::make_pair(kDefaultMinCodedSize, kDefaultMaxCodedSize);
 }
 
@@ -567,7 +560,7 @@ std::vector<VideoCodecProfile> Device::ProfilesForVideoCodec(VideoCodec codec) {
 
   if (!base::Contains(kV4L2CodecPixFmtToProfileCID, pix_fmt)) {
     // This is OK: there are many codecs that are not supported by Chrome.
-    DVLOGF(4) << "Unsupported codec: " << FourccToString(pix_fmt);
+    DVLOGF(2) << "Unsupported codec: " << FourccToString(pix_fmt);
     return {};
   }
 
@@ -589,13 +582,13 @@ std::vector<VideoCodecProfile> Device::ProfilesForVideoCodec(VideoCodec codec) {
     }
     const VideoCodecProfile profile =
         V4L2ProfileToVideoCodecProfile(profile_cid, query_menu.index);
-    DVLOGF_IF(4, profile == VIDEO_CODEC_PROFILE_UNKNOWN)
+    DVLOGF_IF(3, profile == VIDEO_CODEC_PROFILE_UNKNOWN)
         << "Profile: " << query_menu.name << " for " << FourccToString(pix_fmt)
         << " not supported by Chrome, skipping.";
 
     if (profile != VIDEO_CODEC_PROFILE_UNKNOWN) {
       profiles.push_back(profile);
-      DVLOGF(4) << FourccToString(pix_fmt) << " profile " << query_menu.name
+      DVLOGF(2) << FourccToString(pix_fmt) << " profile " << query_menu.name
                 << " supported.";
     }
   }
@@ -618,7 +611,7 @@ bool Device::OpenDevice() {
     const auto path = kDecoderDevicePrefix + base::NumberToString(i);
     device_fd_.reset(HANDLE_EINTR(open(path.c_str(), O_RDWR | O_CLOEXEC, 0)));
     if (!device_fd_.is_valid()) {
-      VPLOGF(2) << "Failed to open media device: " << path;
+      LOG(ERROR) << "Failed to open media device: " << path;
       continue;
     }
 
@@ -626,7 +619,7 @@ bool Device::OpenDevice() {
   }
 
   if (!device_fd_.is_valid()) {
-    DVLOGF(1) << "Failed to open device fd.";
+    LOG(ERROR) << "Failed to open device fd.";
     return false;
   }
 
@@ -637,9 +630,8 @@ bool Device::MmapBuffer(Buffer& buffer) {
   for (uint32_t plane = 0; plane < buffer.PlaneCount(); ++plane) {
     void* p = mmap(nullptr, buffer.PlaneLength(plane), PROT_READ | PROT_WRITE,
                    MAP_SHARED, device_fd_.get(), buffer.PlaneMemOffset(plane));
-    // dealloc rest if failed
     if (p == MAP_FAILED) {
-      VPLOGF(1) << "mmap() failed: ";
+      MunmapBuffer(buffer);
       return false;
     }
     buffer.SetMappedAddress(plane, p);
@@ -665,13 +657,18 @@ int Device::Ioctl(const base::ScopedFD& fd, uint64_t request, void* arg) {
   if (ret != kIoctlOk) {
     const logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
     if (err == EAGAIN && request == VIDIOC_DQBUF) {
-      DVLOGF(4) << IoctlToString(request)
+      DVLOGF(1) << IoctlToString(request)
                 << " failed: " << logging::SystemErrorCodeToString(err)
                 << ": This is _usually_ an expected failure from trying to "
                    "VIDIOC_DQBUF a buffer that is not done being processed.";
+    } else if (err == EINVAL &&
+               (request == VIDIOC_ENUM_FMT || request == VIDIOC_QUERYMENU ||
+                request == VIDIOC_QUERYCTRL || request == VIDIOC_DQBUF)) {
+      VLOGF(2) << IoctlToString(request)
+               << " failed: " << logging::SystemErrorCodeToString(err)
+               << " : This is _usually_ an expected error.";
     } else {
-      DVLOGF(1) << IoctlToString(request)
-                << " failed: " << logging::SystemErrorCodeToString(err);
+      PLOG(ERROR) << IoctlToString(request);
     }
   }
   return ret;

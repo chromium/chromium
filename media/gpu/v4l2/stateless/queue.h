@@ -32,7 +32,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   virtual ~BaseQueue() = 0;
 
   virtual bool PrepareBuffers(size_t num_buffers) = 0;
-  bool DeallocateBuffers();
+  void DeallocateBuffers();
   bool StartStreaming();
   bool StopStreaming();
   uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
