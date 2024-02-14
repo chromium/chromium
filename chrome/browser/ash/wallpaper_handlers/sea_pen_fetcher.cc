@@ -71,8 +71,7 @@ std::string MakeFakeJpgData() {
 std::vector<ash::SeaPenImage> MakeFakeSeaPenImages() {
   std::vector<ash::SeaPenImage> result;
   for (int i = 0; i < base::RandInt(0, 6); i++) {
-    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX),
-                        manta::proto::RESOLUTION_1024);
+    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX));
   }
   return result;
 }
@@ -96,6 +95,7 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
   ~FakeSeaPenFetcher() override = default;
 
   void FetchThumbnails(
+      manta::proto::FeatureName feature_name,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchThumbnailsComplete callback) override {
     sequenced_task_runner_->PostTaskAndReplyWithResult(
@@ -104,11 +104,12 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
   }
 
   void FetchWallpaper(
+      manta::proto::FeatureName feature_name,
       const ash::SeaPenImage& thumbnail,
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       OnFetchWallpaperComplete callback) override {
-    std::move(callback).Run(ash::SeaPenImage(thumbnail.jpg_bytes, thumbnail.id,
-                                             thumbnail.resolution));
+    std::move(callback).Run(
+        ash::SeaPenImage(thumbnail.jpg_bytes, thumbnail.id));
   }
 
  private:
