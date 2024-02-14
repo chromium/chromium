@@ -14,6 +14,7 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/stateless/h264_delegate.h"
 #include "media/gpu/v4l2/stateless/utils.h"
 #include "media/gpu/v4l2/stateless/vp8_delegate.h"
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
@@ -510,6 +511,10 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
           std::make_unique<AV1Delegate>(this), profile, color_space);
       break;
 #endif
+    case VideoCodec::kH264:
+      decoder_ = std::make_unique<H264Decoder>(
+          std::make_unique<H264Delegate>(this), profile, color_space);
+      break;
     case VideoCodec::kVP8:
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<VP8Delegate>(this), color_space);
