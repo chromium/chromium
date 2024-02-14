@@ -2,33 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, TestEntryInfo} from '../test_util.js';
+import {ENTRIES} from '../test_util.js';
 
 /**
  * Extension ID of the Files app.
- * @type {string}
- * @const
  */
 export const FILE_MANAGER_EXTENSIONS_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 
 /**
  * App ID of Files app SWA.
- * @type {string}
- * @const
  */
 export const FILE_MANAGER_SWA_APP_ID = 'fkiggjmkendpmbegkagpmagjepfkpmeb';
 
 /**
  * Base URL of Files app SWA.
- * @const {string}
  */
 export const FILE_SWA_BASE_URL = 'chrome://file-manager/';
 
 /**
  * Basic entry set for the local volume.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const BASIC_LOCAL_ENTRY_SET = [
   ENTRIES.hello,
@@ -40,11 +32,7 @@ export const BASIC_LOCAL_ENTRY_SET = [
 
 /**
  * Expected files shown in Downloads with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
-// @ts-ignore: error TS2769: No overload matches this call.
 export const BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN = BASIC_LOCAL_ENTRY_SET.concat([
   ENTRIES.hiddenFile,
   ENTRIES.dotTrash,
@@ -53,9 +41,6 @@ export const BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN = BASIC_LOCAL_ENTRY_SET.concat([
 /**
  * Basic entry set for the drive volume that only includes read-write entries
  * (no read-only or similar entries).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const BASIC_DRIVE_ENTRY_SET = [
   ENTRIES.hello,
@@ -71,20 +56,13 @@ export const BASIC_DRIVE_ENTRY_SET = [
 
 /**
  * Expected files shown in Drive with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
 export const BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN = BASIC_DRIVE_ENTRY_SET.concat([
-  // @ts-ignore: error TS4111: Property 'hiddenFile' comes from an index
-  // signature, so it must be accessed with ['hiddenFile'].
   ENTRIES.hiddenFile,
 ]);
 
 /**
  * Expected files shown in Drive with Google Docs disabled
- *
- * @type {!Array<!TestEntryInfo>}
  */
 export const BASIC_DRIVE_ENTRY_SET_WITHOUT_GDOCS = [
   ENTRIES.hello,
@@ -98,8 +76,6 @@ export const BASIC_DRIVE_ENTRY_SET_WITHOUT_GDOCS = [
 
 /**
  * Basic entry set for the local crostini volume.
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
 export const BASIC_CROSTINI_ENTRY_SET = [
   ENTRIES.hello,
@@ -109,8 +85,6 @@ export const BASIC_CROSTINI_ENTRY_SET = [
 
 /**
  * Basic entry set for the local volume with a ZIP archive.
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
 export const BASIC_ZIP_ENTRY_SET = [
   ENTRIES.hello,
@@ -120,8 +94,6 @@ export const BASIC_ZIP_ENTRY_SET = [
 
 /**
  * More complex entry set for the local volume with multiple ZIP archives.
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
 export const COMPLEX_ZIP_ENTRY_SET = [
   ENTRIES.hello,
@@ -133,9 +105,6 @@ export const COMPLEX_ZIP_ENTRY_SET = [
 /**
  * More complex entry set for Drive that includes entries with varying
  * permissions (such as read-only entries).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const COMPLEX_DRIVE_ENTRY_SET = [
   ENTRIES.hello,
@@ -149,9 +118,6 @@ export const COMPLEX_DRIVE_ENTRY_SET = [
 /**
  * More complex entry set for DocumentsProvider that includes entries with
  * arying permissions (such as read-only entries).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET = [
   ENTRIES.hello,
@@ -164,9 +130,6 @@ export const COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET = [
 
 /**
  * Nested entry set (directories inside each other).
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const NESTED_ENTRY_SET = [
   ENTRIES.directoryA,
@@ -177,9 +140,6 @@ export const NESTED_ENTRY_SET = [
 /**
  * Expected list of preset entries in fake test volumes. This should be in sync
  * with FakeTestVolume::PrepareTestEntries in the test harness.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const BASIC_FAKE_ENTRY_SET = [
   ENTRIES.hello,
@@ -189,9 +149,6 @@ export const BASIC_FAKE_ENTRY_SET = [
 /**
  * Expected files shown in "Recent". Directories (e.g. 'photos') are not in this
  * list as they are not expected in "Recent".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const RECENT_ENTRY_SET = [
   ENTRIES.desktop,
@@ -202,9 +159,6 @@ export const RECENT_ENTRY_SET = [
  * Expected files shown in "Offline", which should have the files
  * "available offline". Google Documents, Google Spreadsheets, and the files
  * cached locally are "available offline".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const OFFLINE_ENTRY_SET = [
   ENTRIES.testDocument,
@@ -215,9 +169,6 @@ export const OFFLINE_ENTRY_SET = [
 /**
  * Expected files shown in "Shared with me", which should be the entries labeled
  * with "shared-with-me".
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const SHARED_WITH_ME_ENTRY_SET = [
   ENTRIES.testSharedDocument,
@@ -229,9 +180,6 @@ export const SHARED_WITH_ME_ENTRY_SET = [
  * nested files with various permissions.
  *
  * TODO(sashab): Add support for capabilities of Shared Drive roots.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const SHARED_DRIVE_ENTRY_SET = [
   ENTRIES.hello,
@@ -247,9 +195,6 @@ export const SHARED_DRIVE_ENTRY_SET = [
 /**
  * Entry set for Drive that includes Computers, including nested computers with
  * files and nested "USB and External Devices" with nested devices.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const COMPUTERS_ENTRY_SET = [
   ENTRIES.hello,
@@ -260,9 +205,6 @@ export const COMPUTERS_ENTRY_SET = [
 
 /**
  * Basic entry set for the android volume.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const BASIC_ANDROID_ENTRY_SET = [
   ENTRIES.directoryDocuments,
@@ -273,12 +215,8 @@ export const BASIC_ANDROID_ENTRY_SET = [
 
 /**
  * Expected files shown in Android with hidden enabled
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
  */
 export const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN =
-    // @ts-ignore: error TS2769: No overload matches this call.
     BASIC_ANDROID_ENTRY_SET.concat([
       ENTRIES.hello,
       ENTRIES.world,
@@ -287,9 +225,6 @@ export const BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN =
 
 /**
  * Entry set for modified times.
- *
- * @type {!Array<TestEntryInfo>}
- * @const
  */
 export const MODIFIED_ENTRY_SET = [
   ENTRIES.hello,
@@ -302,34 +237,26 @@ export const MODIFIED_ENTRY_SET = [
  * Fake task.
  */
 export class FakeTask {
+  driveApp = false;
+  iconUrl = 'chrome://theme/IDR_DEFAULT_FAVICON';  // Dummy icon
+
   /**
-   * @param {boolean} isDefault Whether the task is default or not.
-   * @param {!FileTaskDescriptor} descriptor Task
-   *     descriptor.
-   * @param {string=} opt_title Title of the task.
-   * @param {boolean=} opt_isGenericFileHandler Whether the task is a generic
-   *     file handler.
-   * @param {boolean=} opt_isDlpBlocked Whether the task is blocked by DLP.
+   * @param isDefault Whether the task is default or not.
+   * @param descriptor Task descriptor.
+   * @param title Title of the task.
+   * @param isGenericFileHandler Whether the task is a generic file handler.
+   * @param isDlpBlocked Whether the task is blocked by DLP.
    */
   constructor(
-      isDefault, descriptor, opt_title, opt_isGenericFileHandler,
-      opt_isDlpBlocked) {
-    this.driveApp = false;
-    this.iconUrl = 'chrome://theme/IDR_DEFAULT_FAVICON';  // Dummy icon
-    this.isDefault = isDefault;
-    this.descriptor = descriptor;
-    this.title = opt_title;
-    this.isGenericFileHandler = opt_isGenericFileHandler || false;
-    this.isDlpBlocked = opt_isDlpBlocked || false;
+      public isDefault: boolean, public descriptor: FileTaskDescriptor,
+      public title?: string, public isGenericFileHandler: boolean = false,
+      public isDlpBlocked: boolean = false) {
     Object.freeze(this);
   }
 }
 
 /**
  * Fake tasks for a local volume.
- *
- * @type {Array<FakeTask>}
- * @const
  */
 export const DOWNLOADS_FAKE_TASKS = [
   new FakeTask(
