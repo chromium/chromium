@@ -1,0 +1,123 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Federated Service
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="FederatedPopulationName">
+  <variant name="launcher_query_analytics_v1"
+      summary="for launcher query analytics task"/>
+  <variant name="timezone_code_phh" summary="for timezone PHH task"/>
+</variants>
+
+<histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
+    expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    The events on FederatedService level, mainly about the fcp library loading.
+  </summary>
+</histogram>
+
+<histogram name="FederatedService.StorageEvent" enum="FederatedStorageEvent"
+    expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    The FederatedService storage related events, including DB connection,
+    disconnection and various errors.
+  </summary>
+</histogram>
+
+<histogram name="FederatedService.TrainingConditionToContinue"
+    enum="FederatedTrainingConditionResult" expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    Logs training condition check results during a federated round, including
+    the overall result (Pass/Failed) and particular reasons of failure. Libfcp
+    calls training condition check periodically during a round and once the
+    check fails, it aborts the round. Interpret the histogram with the following
+    formulas:
+
+    #all_calls = #Pass + #Failed; Failure rate = #Failed / (#Pass + #Failed)
+
+    weight of one reason = #this_reason / #Failed
+
+    Note: in one check, all failed conditions are logged as reasons (v.s. the
+    first failed one only). Therefore the sum of all reasons can be greater than
+    the number of Failed.
+  </summary>
+</histogram>
+
+<histogram name="FederatedService.TrainingConditionToStart"
+    enum="FederatedTrainingConditionResult" expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    Logs training condition check results before a federated round, including
+    the overall result (Pass/Failed) and particular reasons of failure.
+    Interpret the histogram with the following formulas:
+
+    #all_calls = #Pass + #Failed; Failure rate = #Failed / (#Pass + #Failed)
+
+    weight of one reason = #this_reason / #Failed
+
+    Note: in one check, all failed conditions are logged as reasons (v.s. the
+    first failed one only). Therefore the sum of all reasons can be greater than
+    the number of Failed.
+  </summary>
+</histogram>
+
+<histogram name="FederatedService.{Population}.CpuTimeMicrosec"
+    units="microseconds" expires_after="2024-06-30">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    CPU time (for one CPU core) of {Population} successful tasks. Reported for
+    all users; users without high-resolution clocks will report 0 for short
+    requests.
+  </summary>
+  <token key="Population" variants="FederatedPopulationName"/>
+</histogram>
+
+<histogram name="FederatedService.{Population}.Event"
+    enum="FederatedClientEvent" expires_after="2024-06-30">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>cros-federated-team@google.com</owner>
+  <summary>
+    The event of FederatedService population {Population}, including receiving
+    examples, task contributed/rejected and various failure reasons.
+  </summary>
+  <token key="Population" variants="FederatedPopulationName"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
