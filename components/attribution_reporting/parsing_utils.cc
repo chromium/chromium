@@ -22,7 +22,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -34,7 +33,7 @@ constexpr char kDeduplicationKey[] = "deduplication_key";
 constexpr char kPriority[] = "priority";
 
 template <typename T>
-base::expected<std::optional<T>, absl::monostate> ParseIntegerFromString(
+base::expected<std::optional<T>, ParseError> ParseIntegerFromString(
     const base::Value::Dict& dict,
     std::string_view key,
     bool (*parse)(std::string_view, T*)) {
@@ -46,7 +45,7 @@ base::expected<std::optional<T>, absl::monostate> ParseIntegerFromString(
   T parsed_val;
   if (const std::string* str = value->GetIfString();
       !str || !parse(*str, &parsed_val)) {
-    return base::unexpected(absl::monostate());
+    return base::unexpected(ParseError());
   }
   return parsed_val;
 }
@@ -82,19 +81,19 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   return out.str();
 }
 
-base::expected<std::optional<uint64_t>, absl::monostate> ParseUint64(
+base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
     const base::Value::Dict& dict,
     std::string_view key) {
   return ParseIntegerFromString<uint64_t>(dict, key, &base::StringToUint64);
 }
 
-base::expected<std::optional<int64_t>, absl::monostate> ParseInt64(
+base::expected<std::optional<int64_t>, ParseError> ParseInt64(
     const base::Value::Dict& dict,
     std::string_view key) {
   return ParseIntegerFromString<int64_t>(dict, key, &base::StringToInt64);
 }
 
-base::expected<int64_t, absl::monostate> ParsePriority(
+base::expected<int64_t, ParseError> ParsePriority(
     const base::Value::Dict& dict) {
   return ParseInt64(dict, kPriority).transform(&ValueOrZero<int64_t>);
 }
@@ -103,7 +102,7 @@ std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
   return ParseUint64(dict, kDebugKey).value_or(std::nullopt);
 }
 
-base::expected<std::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
     const base::Value::Dict& dict) {
   return ParseUint64(dict, kDeduplicationKey);
 }

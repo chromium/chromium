@@ -31,7 +31,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -102,12 +101,12 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.source_event_id,
                    ParseUint64(registration, kSourceEventId)
                        .transform(&ValueOrZero<uint64_t>),
-                   [](absl::monostate) {
+                   [](ParseError) {
                      return SourceRegistrationError::kSourceEventIdValueInvalid;
                    });
 
   ASSIGN_OR_RETURN(result.priority, ParsePriority(registration),
-                   [](absl::monostate) {
+                   [](ParseError) {
                      return SourceRegistrationError::kPriorityValueInvalid;
                    });
 

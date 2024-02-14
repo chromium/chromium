@@ -30,6 +30,7 @@ class SummaryBuckets;
 struct AggregatableDedupKey;
 struct EventTriggerData;
 struct OsRegistrationItem;
+struct ParseError;
 struct SourceRegistration;
 struct TriggerRegistration;
 
@@ -72,6 +73,8 @@ std::ostream& operator<<(std::ostream&, const TriggerSpecs&);
 std::ostream& operator<<(std::ostream&, const TriggerSpecs::const_iterator&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableTriggerConfig&);
+
+std::ostream& operator<<(std::ostream&, const ParseError&);
 
 }  // namespace attribution_reporting
 

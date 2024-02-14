@@ -137,4 +137,8 @@ std::ostream& operator<<(
   return out << dict;
 }
 
+std::ostream& operator<<(std::ostream& out, const ParseError&) {
+  return out << "ParseError";
+}
+
 }  // namespace attribution_reporting

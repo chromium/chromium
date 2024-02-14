@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class TimeDelta;
@@ -46,18 +45,21 @@ constexpr T ValueOrZero(std::optional<T> value) {
   return value.value_or(0);
 }
 
+struct ParseError {
+  friend bool operator==(ParseError, ParseError) = default;
+};
+
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<uint64_t>, absl::monostate> ParseUint64(
+base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
     const base::Value::Dict&,
     std::string_view key);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<int64_t>, absl::monostate> ParseInt64(
+base::expected<std::optional<int64_t>, ParseError> ParseInt64(
     const base::Value::Dict&,
     std::string_view key);
 
-base::expected<int64_t, absl::monostate> ParsePriority(
-    const base::Value::Dict&);
+base::expected<int64_t, ParseError> ParsePriority(const base::Value::Dict&);
 
 // Returns `debug_key` value as we do not need to fail the source registration
 // if the value is invalid, see
@@ -68,7 +70,7 @@ std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 // invalid, returns true otherwise.
 [[nodiscard]] bool ParseDebugReporting(const base::Value::Dict& dict);
 
-base::expected<std::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
     const base::Value::Dict&);
 
 base::expected<base::TimeDelta, mojom::SourceRegistrationError>
