@@ -21,7 +21,6 @@ found in the LICENSE file.
     <string name="help_context_incognito_learn_more">chrome_incognito</string>
     <string name="help_context_sad_tab">mobile_awsnap</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>
-    <string name="help_context_change_sync_passphrase">change_sync_passphrase</string>
     <string name="help_context_sync_and_services">syncgoogleservices</string>
     <string name="help_context_passwords">passwords</string>
     <string name="help_context_password_leak_detection">leak_detection_android</string>
