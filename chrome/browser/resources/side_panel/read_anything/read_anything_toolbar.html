@@ -104,6 +104,7 @@
       <cr-icon-button
         class="toolbar-button audio-controls"
         id="play-pause"
+        title$="[[playPauseButtonAriaLabel_(paused)]]"
         aria-label$="[[playPauseButtonAriaLabel_(paused)]]"
         aria-keyshortcuts="k"
         aria-description="$i18n{playDescription}"
@@ -116,6 +117,7 @@
           id="previousGranularity"
           class="toolbar-button audio-controls"
           aria-label="$i18n{previousSentenceLabel}"
+          title="$i18n{previousSentenceLabel}"
           iron-icon="cr:chevron-left"
           tabindex="-1"
           on-click="onPreviousGranularityClick_">
@@ -124,6 +126,7 @@
         id="nextGranularity"
         class="toolbar-button audio-controls"
         aria-label="$i18n{nextSentenceLabel}"
+        title="$i18n{nextSentenceLabel}"
         iron-icon="cr:chevron-right"
         tabindex="-1"
         on-click="onNextGranularityClick_">
@@ -135,6 +138,7 @@
       id="rate"
       tabindex="-1"
       aria-label="$i18n{voiceSpeedLabel}"
+      title="$i18n{voiceSpeedLabel}"
       aria-haspopup="menu"
       iron-icon="voice-rate:1"
       on-click="onShowRateMenuClick_">
@@ -160,7 +164,8 @@
     <select id="font-select" class="md-select" tabindex="0"
             on-change="onFontSelectValueChange_"
             on-keydown="onFontSelectKeyDown_"
-            aria-label="$i18n{fontNameTitle}">
+            aria-label="$i18n{fontNameTitle}"
+            title="$i18n{fontNameTitle}">
       <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
         <option value="[[item]]">[[item]]</option>
       </template>
@@ -171,6 +176,7 @@
         tabindex="-1"
         class="toolbar-button"
         aria-label="$i18n{decreaseFontSizeLabel}"
+        title="$i18n{decreaseFontSizeLabel}"
         iron-icon="read-anything:font-size-decrease-old"
         on-click="onFontSizeDecreaseClick_">
     </cr-icon-button>
@@ -179,6 +185,7 @@
         tabindex="-1"
         class="toolbar-button"
         aria-label="$i18n{increaseFontSizeLabel}"
+        title="$i18n{increaseFontSizeLabel}"
         iron-icon="read-anything:font-size-increase-old"
         on-click="onFontSizeIncreaseClick_">
     </cr-icon-button>
@@ -193,6 +200,7 @@
     disabled="[[!paused]]"
     id="[[item.id]]"
       aria-label="[[item.ariaLabel]]"
+      title="[[item.ariaLabel]]"
       iron-icon="[[item.icon]]"
       on-click="onToggleButtonClick_">
     </cr-icon-button>
@@ -204,6 +212,7 @@
       id="[[item.id]]"
       tabindex="-1"
       aria-label="[[item.ariaLabel]]"
+      title="[[item.ariaLabel]]"
       aria-haspopup="menu"
       iron-icon="[[item.icon]]"
       on-click="onTextStyleMenuButtonClick_">
@@ -213,6 +222,7 @@
       id="more"
       tabindex="-1"
       aria-label="$i18n{moreOptionsLabel}"
+      title="$i18n{moreOptionsLabel}"
       aria-haspopup="menu"
       iron-icon="cr:more-vert"
       on-click="onMoreOptionsClick_">
@@ -224,6 +234,7 @@
         id="[[item.id]]"
         class="more-options-icon"
         aria-label="[[item.ariaLabel]]"
+        title="[[item.ariaLabel]]"
         aria-haspopup="menu"
         iron-icon="[[item.icon]]"
         on-click="onTextStyleMenuButtonClick_">
@@ -244,6 +255,7 @@
         class="font-size"
         id="font-size-decrease"
         aria-label="$i18n{decreaseFontSizeLabel}"
+        title="$i18n{decreaseFontSizeLabel}"
         iron-icon="read-anything:font-size-decrease"
         on-click="onFontSizeDecreaseClick_">
     </cr-icon-button>
@@ -251,6 +263,7 @@
         class="font-size"
         id="font-size-increase"
         aria-label="$i18n{increaseFontSizeLabel}"
+        title="$i18n{increaseFontSizeLabel}"
         iron-icon="cr:add"
         on-click="onFontSizeIncreaseClick_">
     </cr-icon-button>
