@@ -661,10 +661,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanDirectionCutOff);
 // boost.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPCriticalPathPredictor);
 
-// If true, LCP critical path predictor mechanism doesn't change the fetch
+// If false, LCP critical path predictor mechanism doesn't change the fetch
 // priority but still the rest will work.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLCPCriticalPathPredictorDryRun;
+    kLCPCriticalPathAdjustImageLoadPriority;
 
 // The maximum element locator length for LCPP.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

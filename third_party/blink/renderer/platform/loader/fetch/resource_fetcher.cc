@@ -526,7 +526,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     if (is_potentially_lcp_element) {
       // Adjust priority of LCP image request.
       if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
-          !features::kLCPCriticalPathPredictorDryRun.Get()) {
+          features::kLCPCriticalPathAdjustImageLoadPriority.Get()) {
         should_modify_request_priority = true;
         preferred_priority =
             features::kLCPCriticalPathPredictorImageLoadPriority.Get();

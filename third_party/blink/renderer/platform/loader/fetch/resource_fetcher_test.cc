@@ -1490,7 +1490,8 @@ TEST_F(ResourceFetcherTest, IsPotentiallyLCPElement) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kLCPCriticalPathPredictor,
-          {{features::kLCPCriticalPathPredictorImageLoadPriority.name,
+          {{features::kLCPCriticalPathAdjustImageLoadPriority.name, "true"},
+           {features::kLCPCriticalPathPredictorImageLoadPriority.name,
             kPrioritySetting}}}},
         {});
     auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
