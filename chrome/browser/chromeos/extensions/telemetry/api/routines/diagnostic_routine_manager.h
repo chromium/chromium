@@ -121,11 +121,10 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
 namespace extensions {
 
 template <>
-struct extensions::BrowserContextFactoryDependencies<
-    chromeos::DiagnosticRoutineManager> {
+struct BrowserContextFactoryDependencies<chromeos::DiagnosticRoutineManager> {
   static void DeclareFactoryDependencies(
-      extensions::BrowserContextKeyedAPIFactory<
-          chromeos::DiagnosticRoutineManager>* factory) {
+      BrowserContextKeyedAPIFactory<chromeos::DiagnosticRoutineManager>*
+          factory) {
     factory->DependsOn(ExtensionRegistryFactory::GetInstance());
   }
 };
