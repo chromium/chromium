@@ -1526,8 +1526,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     if (settings.scheduler_loop_quarantine) {
       GetSchedulerLoopQuarantineBranch().Quarantine(object, slot_span,
                                                     slot_start);
+      return;
     }
-    return;
   }
 
 #if BUILDFLAG(USE_STARSCAN)
