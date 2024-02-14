@@ -48,7 +48,8 @@ BASE_FEATURE(kApplyNativeOcclusionToCompositor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
-const char kApplyNativeOcclusionToCompositorType[] = "type";
+const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
+    &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
 // When the WindowTreeHost is occluded or hidden, resources are released and
 // the compositor is hidden. See WindowTreeHost for specifics on what this
 // does.

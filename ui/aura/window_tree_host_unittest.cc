@@ -344,7 +344,7 @@ class WindowTreeHostWithReleaseTest : public test::AuraTestBase {
             {features::kCalculateNativeWinOcclusion, {}},
 #endif
             {features::kApplyNativeOcclusionToCompositor,
-             {{features::kApplyNativeOcclusionToCompositorType,
+             {{features::kApplyNativeOcclusionToCompositorType.name,
                features::kApplyNativeOcclusionToCompositorTypeRelease}}},
         },
         {});
@@ -420,7 +420,7 @@ class WindowTreeHostWithThrottleTest : public test::AuraTestBase {
             {features::kCalculateNativeWinOcclusion, {}},
 #endif
             {features::kApplyNativeOcclusionToCompositor,
-             {{features::kApplyNativeOcclusionToCompositorType,
+             {{features::kApplyNativeOcclusionToCompositorType.name,
                features::kApplyNativeOcclusionToCompositorTypeThrottle}}},
         },
         {});
@@ -482,7 +482,7 @@ class WindowTreeHostWithThrottleAndReleaseTest : public test::AuraTestBase {
             {features::kCalculateNativeWinOcclusion, {}},
 #endif
             {features::kApplyNativeOcclusionToCompositor,
-             {{features::kApplyNativeOcclusionToCompositorType,
+             {{features::kApplyNativeOcclusionToCompositorType.name,
                features::
                    kApplyNativeOcclusionToCompositorTypeThrottleAndRelease}}},
         },
