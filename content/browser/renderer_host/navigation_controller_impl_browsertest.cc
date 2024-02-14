@@ -21174,6 +21174,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
     EXPECT_TRUE(
         root->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
             main_url));
+    // Since this browser test needs to go back to `main_url` and test with
+    // different HTTP response, we shouldn't let the page enter BFCache.
+    DisableBFCacheForRFHForTesting(root->current_frame_host()->GetGlobalId());
   }
 
   {
@@ -21318,6 +21321,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
     EXPECT_FALSE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
     EXPECT_EQ(url::Origin::Create(main_url),
               root->current_frame_host()->GetLastCommittedOrigin());
+    // Since this browser test needs to go back to `main_url` and test with
+    // different HTTP response, we shouldn't let the page enter BFCache.
+    DisableBFCacheForRFHForTesting(root->current_frame_host()->GetGlobalId());
   }
 
   {
