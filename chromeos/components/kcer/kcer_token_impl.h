@@ -245,6 +245,30 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
       std::vector<ObjectHandle> private_key_handles,
       uint32_t result_code);
 
+  struct ListCertsTask {
+    explicit ListCertsTask(TokenListCertsCallback in_callback);
+    ListCertsTask(ListCertsTask&& other);
+    ~ListCertsTask();
+
+    TokenListCertsCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void ListCertsImpl(ListCertsTask task);
+  void ListCertsWithCertHandles(ListCertsTask task,
+                                std::vector<ObjectHandle> handles,
+                                uint32_t result_code);
+  void ListCertsGetOneCert(ListCertsTask task,
+                           std::vector<ObjectHandle> handles,
+                           std::vector<scoped_refptr<const Cert>> certs);
+  void ListCertsDidGetOneCert(ListCertsTask task,
+                              std::vector<ObjectHandle> handles,
+                              std::vector<scoped_refptr<const Cert>> certs,
+                              chaps::AttributeList attributes,
+                              uint32_t result_code);
+  void DidListCerts(ListCertsTask task,
+                    std::vector<ObjectHandle> object_list,
+                    uint32_t result_code);
+
   struct DoesPrivateKeyExistTask {
     DoesPrivateKeyExistTask(PrivateKeyHandle in_key,
                             Kcer::DoesKeyExistCallback in_callback);

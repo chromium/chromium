@@ -46,6 +46,7 @@ class HighLevelChapsClient {
     kPkcs11Id = chromeos::PKCS11_CKA_ID,
     kLabel = chromeos::PKCS11_CKA_LABEL,
     kKeyType = chromeos::PKCS11_CKA_KEY_TYPE,
+    kValue = chromeos::PKCS11_CKA_VALUE,
     // Stored on the private key.
     kKeyInSoftware = chaps::kKeyInSoftwareAttribute,
     kKeyPermissions = pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,

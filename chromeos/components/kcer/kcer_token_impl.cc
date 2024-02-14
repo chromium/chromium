@@ -1338,8 +1338,131 @@ void KcerTokenImpl::ListKeysDidFindEcPrivateKey(
 
 //==============================================================================
 
+KcerTokenImpl::ListCertsTask::ListCertsTask(TokenListCertsCallback in_callback)
+    : callback(std::move(in_callback)) {}
+KcerTokenImpl::ListCertsTask::ListCertsTask(ListCertsTask&& other) = default;
+KcerTokenImpl::ListCertsTask::~ListCertsTask() = default;
+
 void KcerTokenImpl::ListCerts(TokenListCertsCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImpl::ListCerts,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  ListCertsImpl(ListCertsTask(std::move(unblocking_callback)));
+}
+
+// Finds all certificate objects in Chaps.
+void KcerTokenImpl::ListCertsImpl(ListCertsTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  chromeos::PKCS11_CK_OBJECT_CLASS cert_class =
+      chromeos::PKCS11_CKO_CERTIFICATE;
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_CLASS, MakeSpan(&cert_class));
+
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::ListCertsWithCertHandles,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void KcerTokenImpl::ListCertsWithCertHandles(ListCertsTask task,
+                                             std::vector<ObjectHandle> handles,
+                                             uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListCertsImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+
+  ListCertsGetOneCert(std::move(task), std::move(handles),
+                      std::vector<scoped_refptr<const Cert>>());
+}
+
+// This is called repeatedly until `handles` is empty.
+void KcerTokenImpl::ListCertsGetOneCert(
+    ListCertsTask task,
+    std::vector<ObjectHandle> handles,
+    std::vector<scoped_refptr<const Cert>> certs) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (handles.empty()) {
+    return std::move(task.callback).Run(std::move(certs));
+  }
+
+  ObjectHandle current_handle = handles.back();
+  handles.pop_back();
+
+  chaps_client_->GetAttributeValue(
+      pkcs_11_slot_id_, current_handle,
+      {AttributeId::kPkcs11Id, AttributeId::kLabel, AttributeId::kValue},
+      base::BindOnce(&KcerTokenImpl::ListCertsDidGetOneCert,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(handles), std::move(certs)));
+}
+
+// Parses attributes of a single cert and adds the new object to `certs`.
+void KcerTokenImpl::ListCertsDidGetOneCert(
+    ListCertsTask task,
+    std::vector<ObjectHandle> handles,
+    std::vector<scoped_refptr<const Cert>> certs,
+    chaps::AttributeList attributes,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ListCertsImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    LOG(WARNING) << "Failed to get attributes for a cert, skipping it";
+    // Try to get as many certs as possible even if some of them fail.
+    return ListCertsGetOneCert(std::move(task), std::move(handles),
+                               std::move(certs));
+  }
+
+  base::span<const uint8_t> pkcs11_id =
+      GetAttributeValue(attributes, AttributeId::kPkcs11Id);
+  base::span<const uint8_t> nickname =
+      GetAttributeValue(attributes, AttributeId::kLabel);
+  base::span<const uint8_t> cert_der =
+      GetAttributeValue(attributes, AttributeId::kValue);
+  if (pkcs11_id.empty() || cert_der.empty()) {
+    LOG(WARNING) << "Invalid cert was fetched from Chaps, skipping it";
+    return ListCertsGetOneCert(std::move(task), std::move(handles),
+                               std::move(certs));
+  }
+
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(cert_der);
+  if (!x509_cert) {
+    LOG(WARNING) << "Failed to parse a cert from Chaps, skipping it";
+    return ListCertsGetOneCert(std::move(task), std::move(handles),
+                               std::move(certs));
+  }
+
+  std::vector<uint8_t> id(pkcs11_id.begin(), pkcs11_id.end());
+  certs.push_back(base::MakeRefCounted<Cert>(
+      token_, Pkcs11Id(std::move(id)),
+      std::string(nickname.begin(), nickname.end()), std::move(x509_cert)));
+  return ListCertsGetOneCert(std::move(task), std::move(handles),
+                             std::move(certs));
 }
 
 //==============================================================================

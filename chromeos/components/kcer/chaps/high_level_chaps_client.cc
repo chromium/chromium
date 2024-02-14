@@ -39,6 +39,8 @@ int GetDefaultLength(AttributeId attribute_id) {
       return 40;
     case AttributeId::kKeyType:
       return sizeof(chromeos::PKCS11_CK_KEY_TYPE);
+    case AttributeId::kValue:
+      return 800;
     case AttributeId::kKeyInSoftware:
       return sizeof(chromeos::PKCS11_CK_BBOOL);
     case AttributeId::kKeyPermissions:
