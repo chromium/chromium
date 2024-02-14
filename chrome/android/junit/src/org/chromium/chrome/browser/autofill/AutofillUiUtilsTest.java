@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.SpannableStringBuilder;
 import android.widget.EditText;
 
 import androidx.test.filters.SmallTest;
@@ -27,8 +28,10 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 /** Tests the AutofillUiUtils's java code. */
@@ -295,6 +298,19 @@ public class AutofillUiUtilsTest {
         int fourDigitYear = AutofillUiUtils.getFourDigitYear(mYearInput);
 
         Assert.assertEquals(-1, fourDigitYear);
+    }
+
+    @Test
+    @SmallTest
+    public void testSpannableStringForLegalMessageLinesAddsNewLineSeparator() {
+        SpannableStringBuilder spannableString =
+                AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                        /* context= */ null,
+                        Arrays.asList(new LegalMessageLine("line1"), new LegalMessageLine("line2")),
+                        /* underlineLinks= */ false,
+                        /* onClickCallback= */ null);
+
+        Assert.assertEquals("line1\nline2", spannableString.toString());
     }
 
     @Test

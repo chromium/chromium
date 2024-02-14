@@ -509,7 +509,8 @@ public class AutofillUiUtils {
             boolean underlineLinks,
             Callback<String> onClickCallback) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        for (LegalMessageLine line : legalMessageLines) {
+        for (int i = 0; i < legalMessageLines.size(); i++) {
+            LegalMessageLine line = legalMessageLines.get(i);
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
                 if (underlineLinks) {
@@ -533,6 +534,9 @@ public class AutofillUiUtils {
                 }
             }
             spannableStringBuilder.append(text);
+            if (i != legalMessageLines.size() - 1) {
+                spannableStringBuilder.append("\n");
+            }
         }
         return spannableStringBuilder;
     }
