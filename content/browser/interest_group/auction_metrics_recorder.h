@@ -66,6 +66,7 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // auction.
   void SetNumInterestGroups(int64_t num_interest_groups);
   void SetNumOwnersWithInterestGroups(int64_t num_interest_groups);
+  void SetNumOwnersWithoutInterestGroups(int64_t num_excluded);
   void SetNumSellersWithBidders(int64_t num_sellers_with_bidders);
 
   // Records the number of negative interest groups associated with an auction.

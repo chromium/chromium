@@ -152,6 +152,15 @@ TEST_F(AuctionMetricsRecorderTest, NumOwnersWithInterestGroupsName) {
       /*sample=*/62, /*expected_bucket_count=*/1);
 }
 
+TEST_F(AuctionMetricsRecorderTest, NumOwnersExcluded) {
+  recorder().SetNumOwnersWithoutInterestGroups(62);
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups",
+      /*sample=*/62, /*expected_bucket_count=*/1);
+}
+
 TEST_F(AuctionMetricsRecorderTest, NumSellersWithBidders) {
   recorder().SetNumSellersWithBidders(72);
   recorder().OnAuctionEnd(AuctionResult::kSuccess);

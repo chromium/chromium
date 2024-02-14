@@ -3892,6 +3892,13 @@ void InterestGroupAuction::OnOneLoadCompleted() {
           num_owners_with_interest_groups_);
       auction_metrics_recorder_->SetNumSellersWithBidders(
           num_sellers_with_bidders);
+
+      // Count the owners that passed the `IsInterestGroupApiAllowedCallback`
+      // filter, but were then excluded due to having no ads or no script URL.
+      // Double counts such buyers that participate in multiple auctions.
+      CHECK_GE(num_owners_loaded_, num_owners_with_interest_groups_);
+      auction_metrics_recorder_->SetNumOwnersWithoutInterestGroups(
+          num_owners_loaded_ - num_owners_with_interest_groups_);
     }
   }
 

@@ -1358,16 +1358,15 @@ class CONTENT_EXPORT InterestGroupAuction
       direct_from_seller_signals_header_ad_slot_ =
           base::MakeRefCounted<HeaderDirectFromSellerSignals::Result>();
 
-  // The number of buyers in the AuctionConfig that passed the
-  // IsInterestGroupApiAllowedCallback filter and interest groups were found
-  // for. Includes buyers from nested component auctions. Double-counts buyers
-  // in multiple Auctions.
+  // The number of buyers in the `AuctionConfig` that passed the
+  // `IsInterestGroupApiAllowedCallback` filter. Includes buyers from nested
+  // component auctions. Double-counts buyers in multiple auctions.
   int num_owners_loaded_ = 0;
 
-  // The number of buyers with InterestGroups participating in an auction.
-  // Includes buyers from nested component auctions, but excludes buyers with
-  // no ads or no script URL. Double-counts buyers that participate in
-  // multiple Auctions.
+  // The number of buyers with `InterestGroup`s participating in an auction.
+  // Includes buyers from nested component auctions, but excludes buyers with no
+  // ads or no script URL. Double-counts buyers that participate in multiple
+  // auctions.
   int num_owners_with_interest_groups_ = 0;
 
   // A list of all buyer owners that participated in this auction and had at

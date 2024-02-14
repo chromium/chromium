@@ -778,6 +778,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups"
+    units="owners" expires_after="2024-07-18">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of owner origins listed in an auction configuration that were
+    excluded from taking part in a FLEDGE auction because they have no eligible
+    interest groups. This does not count owners that were filtered due to user
+    settings. For multi-seller auctions, this is the sum of all such excluded
+    owners across all component auctions. This double-counts owners that
+    participate in multiple component auctions. Recorded after all interest
+    groups participating in an auction have been retrieved from storage at the
+    start of an auction. This is related to the sibling histogram named
+    &quot;NumOwnersWithInterestGroups&quot;.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumSellersWithBidders"
     units="sellers" expires_after="2024-06-20">
   <owner>mmenke@chromium.org</owner>

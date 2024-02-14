@@ -2514,8 +2514,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
-    MetricsExpectations& SetNumOwners(int64_t value) {
-      num_owners = value;
+    MetricsExpectations& SetNumOwnersWithInterestGroups(int64_t value) {
+      num_owners_with_interest_groups = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumOwnersWithoutInterestGroups(int64_t value) {
+      num_owners_without_interest_groups = value;
       return *this;
     }
 
@@ -2526,7 +2531,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     // Shorthand for .SetNumOwners(owners).SetNumDistinctOwners(owners)
     MetricsExpectations& SetNumOwnersAndDistinctOwners(int64_t value) {
-      num_owners = value;
+      num_owners_with_interest_groups = value;
       num_distinct_owners = value;
       return *this;
     }
@@ -2675,7 +2680,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     AuctionResult result;
     std::optional<int64_t> num_interest_groups;
     std::optional<int64_t> num_negative_interest_groups;
-    std::optional<int64_t> num_owners;
+    std::optional<int64_t> num_owners_with_interest_groups;
+    std::optional<int64_t> num_owners_without_interest_groups;
     std::optional<int64_t> num_sellers;
     int64_t num_distinct_owners = 0;
     int64_t num_bidder_worklets = 0;
@@ -2703,9 +2709,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     int64_t num_bids_queued_waiting_for_seller_worklet = 0;
   };
 
-  // Check histogram values and UKMs.
-  // If `num_interest_groups` or `num_owners` is null, expect the auction to be
-  // aborted before the corresponding histograms or UKMs are recorded.
+  // Check histogram values and UKMs. If `num_interest_groups` or
+  // `num_owners_with_interest_groups` is null, expect the auction to be aborted
+  // before the corresponding histograms or UKMs are recorded.
   void CheckMetrics(MetricsExpectations expectations,
                     const base::Location& location = FROM_HERE) {
     SCOPED_TRACE(location.ToString());
@@ -2745,18 +2751,28 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                   DoesNotHaveMetric(UkmEntry::kNumNegativeInterestGroupsName));
     }
 
-    if (expectations.num_owners.has_value()) {
+    if (expectations.num_owners_with_interest_groups.has_value()) {
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
-          *expectations.num_owners, 1);
-      EXPECT_THAT(ukm_metrics,
-                  HasMetricWithValue(UkmEntry::kNumOwnersWithInterestGroupsName,
-                                     expectations.num_owners));
+          *expectations.num_owners_with_interest_groups, 1);
+      EXPECT_THAT(
+          ukm_metrics,
+          HasMetricWithValue(UkmEntry::kNumOwnersWithInterestGroupsName,
+                             expectations.num_owners_with_interest_groups));
     } else {
       histogram_tester_->ExpectTotalCount(
           "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups", 0);
       EXPECT_THAT(ukm_metrics, DoesNotHaveMetric(
                                    UkmEntry::kNumOwnersWithInterestGroupsName));
+    }
+
+    if (expectations.num_owners_without_interest_groups.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups",
+          *expectations.num_owners_without_interest_groups, 1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups", 0);
     }
 
     EXPECT_THAT(
@@ -3326,6 +3342,7 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(0)
+                   .SetNumOwnersWithoutInterestGroups(2)
                    .SetNumSellers(0));
 }
 
@@ -3349,6 +3366,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoInterestGroups) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(0)
+                   .SetNumOwnersWithoutInterestGroups(2)
                    .SetNumSellers(0));
 }
 
@@ -3372,6 +3390,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(0)
+                   .SetNumOwnersWithoutInterestGroups(2)
                    .SetNumSellers(0));
 }
 
@@ -3395,6 +3414,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneInterestGroupNoAds) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(0)
+                   .SetNumOwnersWithoutInterestGroups(2)
                    .SetNumSellers(0));
 }
 
@@ -3418,6 +3438,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(0)
+                   .SetNumOwnersWithoutInterestGroups(2)
                    .SetNumSellers(0));
 }
 
@@ -3470,6 +3491,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -3696,6 +3718,7 @@ TEST_F(AuctionRunnerTest, Basic) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -4297,6 +4320,7 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -4859,6 +4883,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
   CheckMetrics(MetricsExpectations(AuctionResult::kAllBidsRejected)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -5034,7 +5059,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // twice.
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
-                   .SetNumOwners(2)
+                   .SetNumOwnersWithInterestGroups(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumDistinctOwners(1)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(1)
@@ -5099,6 +5125,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -5188,6 +5215,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -5312,6 +5340,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -5430,6 +5459,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(0)
                        .SetNumSellers(2)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -5579,6 +5609,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -5683,6 +5714,7 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -5792,6 +5824,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -5836,6 +5869,7 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -5920,6 +5954,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsAbortedByBidderWorkletFatalError(1)
@@ -6008,6 +6043,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -6091,6 +6127,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithNoBids(1)
@@ -6134,6 +6171,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsAbortedByBidderWorkletFatalError(2)
@@ -6180,6 +6218,7 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithNoBids(2)
@@ -6241,6 +6280,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
   CheckMetrics(MetricsExpectations(AuctionResult::kAllBidsRejected)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6330,6 +6370,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6358,6 +6399,7 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSellerWorkletLoadFailed)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2));
 }
@@ -6437,6 +6479,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6528,6 +6571,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6610,6 +6654,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6693,6 +6738,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6768,6 +6814,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6848,6 +6895,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -6998,6 +7046,7 @@ function reportResult(auctionConfig, browserSignals) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -7076,6 +7125,7 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
                    .SetNumConfigPromises(1)
                    .SetNumAuctionsWithConfigPromises(1)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumInterestGroups(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
                    .SetNumSellers(1));
@@ -8407,6 +8457,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
                    .SetNumInterestGroups(2)
                    .SetNumNegativeInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -8661,6 +8712,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
                    .SetNumInterestGroups(2)
                    .SetNumNegativeInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -9892,6 +9944,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
           MetricsExpectations(AuctionResult::kSuccess)
               .SetNumInterestGroups(2)
               .SetNumOwnersAndDistinctOwners(2)
+              .SetNumOwnersWithoutInterestGroups(0)
               .SetNumSellers(1)
               .SetNumBidderWorklets(2)
               .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
@@ -10123,6 +10176,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
+                       .SetNumOwnersWithoutInterestGroups(0)
                        .SetNumSellers(3)
                        .SetNumBidderWorklets(2)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
@@ -10177,6 +10231,7 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSellerWorkletLoadFailed)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2));
 }
@@ -10311,6 +10366,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -10584,6 +10640,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsAbortedByBidderWorkletFatalError(2)
@@ -10704,6 +10761,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
+                     .SetNumOwnersWithoutInterestGroups(0)
                      .SetNumSellers(1)
                      .SetNumBidderWorklets(2)
                      .SetNumBidsAbortedByBidderWorkletFatalError(1)
@@ -10817,6 +10875,7 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     MetricsExpectations expectations(AuctionResult::kSellerWorkletCrashed);
     expectations.SetNumInterestGroups(2)
         .SetNumOwnersAndDistinctOwners(2)
+        .SetNumOwnersWithoutInterestGroups(0)
         .SetNumSellers(1)
         .SetNumBidderWorklets(2);
     if (crash_phase == CrashPhase::kScoreBid) {
@@ -10860,6 +10919,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsAbortedByBidderWorkletFatalError(2)
@@ -10987,6 +11047,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsAbortedByBidderWorkletFatalError(1)
@@ -11032,6 +11093,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2));
 }
@@ -11156,6 +11218,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
+                     .SetNumOwnersWithoutInterestGroups(0)
                      .SetNumSellers(2)
                      .SetNumBidderWorklets(2)
                      .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -11232,6 +11295,7 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
   CheckMetrics(MetricsExpectations(AuctionResult::kBadMojoMessage)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -11329,6 +11393,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -11352,6 +11417,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -11450,6 +11516,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -11473,6 +11540,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -11875,6 +11943,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithNoBids(1)
@@ -12007,6 +12076,7 @@ TEST_F(AuctionRunnerTest, Tie) {
     CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                      .SetNumInterestGroups(2)
                      .SetNumOwnersAndDistinctOwners(2)
+                     .SetNumOwnersWithoutInterestGroups(0)
                      .SetNumSellers(1)
                      .SetNumBidderWorklets(2)
                      .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
@@ -12355,6 +12425,7 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
@@ -12430,6 +12501,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -12636,6 +12708,7 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeoutsAllBuyersTimeout) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
@@ -12678,6 +12751,7 @@ TEST_F(AuctionRunnerTest, PriorityVectorFiltersOnlyGroup) {
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups)
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(0)
                    .SetNumSellers(0)
                    .SetNumBidderWorklets(0)
                    .SetNumBidsFilteredDuringInterestGroupLoad(1));
@@ -12712,6 +12786,7 @@ TEST_F(AuctionRunnerTest, PriorityVectorZeroPriorityNotFiltered) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -12765,6 +12840,7 @@ TEST_F(AuctionRunnerTest, EmptyPriorityVector) {
     CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                      .SetNumInterestGroups(1)
                      .SetNumOwnersAndDistinctOwners(1)
+                     .SetNumOwnersWithoutInterestGroups(1)
                      .SetNumSellers(1)
                      .SetNumBidderWorklets(1)
                      .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -12825,6 +12901,7 @@ TEST_F(AuctionRunnerTest, PriorityVector) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -12873,6 +12950,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredDuringReprioritization(1)
@@ -12919,6 +12997,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -12973,6 +13052,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredDuringReprioritization(2)
@@ -13041,6 +13121,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsFilteredDuringReprioritization(1)
@@ -13110,6 +13191,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
                    .SetNumBidsFilteredDuringReprioritization(1)
@@ -13170,6 +13252,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -13228,6 +13311,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorNoGroupFiltered) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -13279,6 +13363,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorBasePriority) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -13332,6 +13417,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -13380,6 +13466,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsFilteredByPerBuyerLimits(1)
@@ -13444,6 +13531,7 @@ TEST_F(AuctionRunnerTest,
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBidderWorkletFatalError(1)
@@ -13496,6 +13584,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumAuctionsWithConfigPromises(0)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumOwnersWithoutInterestGroups(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
                    .SetNumBidsAbortedByBidderWorkletFatalError(2)
@@ -19793,6 +19882,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -19813,6 +19903,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
       CheckMetrics(MetricsExpectations(AuctionResult::kAllBidsRejected)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -19833,6 +19924,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
+                       .SetNumOwnersWithoutInterestGroups(1)
                        .SetNumSellers(1)
                        .SetNumBidderWorklets(1)
                        .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
@@ -19887,6 +19979,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
   MetricsExpectations expectations(AuctionResult::kSuccess);
   expectations.SetNumInterestGroups(1)
       .SetNumOwnersAndDistinctOwners(1)
+      .SetNumOwnersWithoutInterestGroups(1)
       .SetNumSellers(1)
       .SetNumBidderWorklets(1);
   if (kanon_mode() == KAnonMode::kNone) {
@@ -19994,6 +20087,7 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
     MetricsExpectations expectations(AuctionResult::kSuccess);
     expectations.SetNumInterestGroups(2)
         .SetNumOwnersAndDistinctOwners(2)
+        .SetNumOwnersWithoutInterestGroups(0)
         .SetNumSellers(run_as_component ? 2 : 1)
         .SetNumBidderWorklets(2);
 
@@ -20268,6 +20362,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
     MetricsExpectations expectations(AuctionResult::kSuccess);
     expectations.SetNumInterestGroups(2)
         .SetNumOwnersAndDistinctOwners(2)
+        .SetNumOwnersWithoutInterestGroups(0)
         .SetNumSellers(run_as_component ? 2 : 1)
         .SetNumBidderWorklets(2);
 
@@ -20500,6 +20595,7 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
   MetricsExpectations expectations(AuctionResult::kSuccess);
   expectations.SetNumInterestGroups(2)
       .SetNumOwnersAndDistinctOwners(2)
+      .SetNumOwnersWithoutInterestGroups(0)
       .SetNumSellers(1)
       .SetNumBidderWorklets(2);
 
@@ -20654,6 +20750,7 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
   MetricsExpectations expectations(AuctionResult::kSuccess);
   expectations.SetNumInterestGroups(1)
       .SetNumOwnersAndDistinctOwners(1)
+      .SetNumOwnersWithoutInterestGroups(1)
       .SetNumSellers(1)
       .SetNumBidderWorklets(1);
 
@@ -20775,6 +20872,7 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
   MetricsExpectations expectations(AuctionResult::kAborted);
   expectations.SetNumInterestGroups(2)
       .SetNumOwnersAndDistinctOwners(2)
+      .SetNumOwnersWithoutInterestGroups(0)
       .SetNumSellers(1)
       .SetNumBidderWorklets(2);
   if (kanon_mode() == KAnonMode::kNone) {
