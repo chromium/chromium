@@ -293,12 +293,6 @@ void FakeLocalFrameHost::CreateFencedFrame(
                   "unit tests, so this path should not be hit";
 }
 
-void FakeLocalFrameHost::ForwardFencedFrameEventToEmbedder(
-    const WTF::String& event_type) {
-  NOTREACHED() << "ForwardFencedFrameEventToEmbedder is tested above the unit "
-                  "test layer";
-}
-
 void FakeLocalFrameHost::StartDragging(
     const blink::WebDragData& drag_data,
     blink::DragOperationsMask operations_allowed,

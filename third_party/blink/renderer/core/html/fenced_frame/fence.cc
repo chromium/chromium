@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
-#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -92,7 +91,7 @@ void Fence::reportEvent(const FenceEvent* event,
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
-        "fully active.");
+        "fully active");
     return;
   }
 
@@ -216,7 +215,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
-        "fully active.");
+        "fully active");
     return;
   }
   if (!event->hasDestination()) {
@@ -300,7 +299,7 @@ ScriptPromise Fence::disableUntrustedNetwork(ScriptState* script_state,
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
-        "fully active.");
+        "fully active");
     return ScriptPromise();
   }
   LocalFrame* frame = DomWindow()->GetFrame();
@@ -344,7 +343,7 @@ void Fence::reportPrivateAggregationEvent(const String& event,
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
-        "fully active.");
+        "fully active");
     return;
   }
 
@@ -369,48 +368,6 @@ void Fence::reportPrivateAggregationEvent(const String& event,
 
   frame->GetLocalFrameHostRemote()
       .SendPrivateAggregationRequestsForFencedFrameEvent(event);
-}
-
-void Fence::notifyEvent(const Event* triggering_event,
-                        ExceptionState& exception_state) {
-  if (!DomWindow()) {
-    exception_state.ThrowSecurityError(
-        "May not use a Fence object associated with a Document that is not "
-        "fully active.");
-    return;
-  }
-
-  LocalFrame* frame = DomWindow()->GetFrame();
-  CHECK(frame);
-  // notifyEvent is not allowed in iframes.
-  if (!frame->IsFencedFrameRoot()) {
-    exception_state.ThrowSecurityError(
-        "notifyEvent is only available in fenced frame "
-        "roots.");
-    return;
-  }
-
-  if (!triggering_event || !triggering_event->isTrusted() ||
-      !triggering_event->IsBeingDispatched()) {
-    exception_state.ThrowSecurityError(
-        "The triggering_event object is in an invalid "
-        "state.");
-    return;
-  }
-
-  if (!CanNotifyEventTypeAcrossFence(triggering_event->type().Ascii())) {
-    exception_state.ThrowSecurityError(
-        "notifyEvent called with an unsupported event type.");
-    return;
-  }
-
-  frame->GetLocalFrameHostRemote().ForwardFencedFrameEventToEmbedder(
-      triggering_event->type());
-
-  // The browser process checks and consumes user activation as part of the
-  // above IPC, so this just needs to update the renderer's state.
-  LocalFrame::ConsumeTransientUserActivation(
-      frame, UserActivationUpdateSource::kBrowser);
 }
 
 void Fence::AddConsoleMessage(const String& message,

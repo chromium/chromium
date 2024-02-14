@@ -13,5 +13,4 @@ interface HTMLFencedFrameElement : HTMLElement {
     // Feature Policy
     [CEReactions, Reflect, RuntimeEnabled=FencedFramesAPIChanges] attribute DOMString allow;
     [PutForwards=value] readonly attribute DOMTokenList sandbox;
-    attribute EventHandler onfencedtreeclick;
 };

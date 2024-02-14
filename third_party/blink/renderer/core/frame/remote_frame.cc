@@ -7,7 +7,6 @@
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -39,7 +38,6 @@
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -1114,14 +1112,6 @@ void RemoteFrame::CreateRemoteChild(
 void RemoteFrame::CreateRemoteChildren(
     Vector<mojom::blink::CreateRemoteChildParamsPtr> params) {
   Client()->CreateRemoteChildren(params);
-}
-
-void RemoteFrame::ForwardFencedFrameEventToEmbedder(
-    const WTF::String& event_type) {
-  // This will also CHECK if the conversion to HTMLFrameOwnerElement fails.
-  CHECK(To<HTMLFrameOwnerElement>(Owner())->IsHTMLFencedFrameElement());
-  static_cast<HTMLFencedFrameElement*>(Owner())->DispatchFencedEvent(
-      event_type);
 }
 
 }  // namespace blink
