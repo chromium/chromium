@@ -437,6 +437,7 @@ textOverflow
 textRendering
 textShadow
 textSizeAdjust
+textSpacingTrim
 textTransform
 textUnderlineOffset
 textUnderlinePosition
