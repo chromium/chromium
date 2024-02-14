@@ -16,11 +16,11 @@
 #include "components/history/core/test/thumbnail-inl.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
 
 namespace {
@@ -183,7 +183,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -194,7 +194,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
   TopSitesDatabase db;
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
     ASSERT_TRUE(db.Init(file_name_));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -216,7 +216,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -227,7 +227,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
   TopSitesDatabase db;
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
     ASSERT_TRUE(db.Init(file_name_));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -247,7 +247,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -259,7 +259,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
     TopSitesDatabase db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_TRUE(db.Init(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -299,7 +299,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
 
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
 
     // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
     // will recover the database and poison the handle, so the outer call
@@ -366,7 +366,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndexAndLostRow) {
 
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
 
     // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
     // will recover the database and poison the handle, so the outer call

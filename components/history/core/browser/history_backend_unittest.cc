@@ -50,10 +50,10 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/history/core/test/visit_annotations_test_utils.h"
 #include "components/sync/base/features.h"
+#include "sql/sqlite_result_code_values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/sqlite/sqlite3.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
@@ -3274,7 +3274,8 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
 TEST_F(HistoryBackendTest, DatabaseError) {
   base::HistogramTester histogram_tester;
 
-  backend_->DatabaseErrorCallback(SQLITE_CANTOPEN, nullptr);
+  backend_->DatabaseErrorCallback(
+      static_cast<int>(sql::SqliteResultCode::kCantOpen), nullptr);
   // Run loop to let any posted callbacks run before TearDown().
   base::RunLoop().RunUntilIdle();
 
@@ -3289,7 +3290,8 @@ TEST_F(HistoryBackendTest, DatabaseError) {
 // https://crbug.com/853395)
 TEST_F(HistoryBackendTest, DatabaseErrorSynchronouslyKillAndNotifyBridge) {
   // Notify the backend that a database error occurred.
-  backend_->DatabaseErrorCallback(SQLITE_CORRUPT, nullptr);
+  backend_->DatabaseErrorCallback(
+      static_cast<int>(sql::SqliteResultCode::kCorrupt), nullptr);
   // In-between (before the posted task finishes), we can again delete all
   // history.
   backend_->ExpireHistoryBetween(/*restrict_urls=*/std::set<GURL>(),
