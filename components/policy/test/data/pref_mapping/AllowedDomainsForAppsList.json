@@ -16,14 +16,6 @@
         },
         "prefs": {
           "settings.allowed_domains_for_apps": {
-            "value": "google.com,mit.edu"
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "settings.allowed_domains_for_apps": {
             "default_value": ""
           }
         }
