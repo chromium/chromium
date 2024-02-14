@@ -22,6 +22,10 @@ found in the LICENSE file.
         android:key="active_topics"
         android:title="@string/settings_topics_page_active_topics_heading"
         android:summary="@string/settings_topics_page_active_topics_description"
+        android:clickable="false"
+        android:longClickable="false"
+        android:enabled="false"
+        android:shouldDisableView="false"
         app:allowDividerBelow="false" />
 
     <PreferenceCategory
