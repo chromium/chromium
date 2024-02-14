@@ -14661,6 +14661,22 @@
             ]
         }
     ],
+    "PrivacyHubGeolocation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosPrivacyHub"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyHubMVP": [
         {
             "platforms": [
