@@ -2,6 +2,17 @@
 <issues format="6" by="lint 8.4.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.4.0-alpha09">
 
     <issue
+        id="MissingClass"
+        message="Class referenced in the manifest, `org.chromium.test.broker.OnDeviceInstrumentationBroker`, was not found in the project or the libraries"
+        errorLine1="    &lt;activity android:name=&quot;org.chromium.test.broker.OnDeviceInstrumentationBroker&quot; android:exported=&quot;true&quot;/>"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/AndroidManifest.xml"
+            line="189"
+            column="29"/>
+    </issue>
+
+    <issue
         id="RequiresFeature"
         message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
         errorLine1="            TracingController tracingController = TracingController.getInstance();"
