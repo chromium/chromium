@@ -220,7 +220,7 @@ BASE_FEATURE(kEagerSurfaceGarbageCollection,
 // vsync rate (the behavior at the time this feature was created.)
 BASE_FEATURE(kOverrideThrottledFrameRateParams,
              "OverrideThrottledFrameRateParams",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to gate calling SetPurgeable on OutputPresenter::Image from
 // SkiaOutputDeviceBufferQueue.
