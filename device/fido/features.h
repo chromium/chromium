@@ -95,10 +95,6 @@ BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
 
-// Show an incognito confirmation sheet on Android when creating a credential.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
-
 // Support evaluating PRFs during create() calls.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPRFEvalDuringCreate);

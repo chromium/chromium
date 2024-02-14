@@ -117,11 +117,6 @@ BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
              "WebAuthenticationFilterGooglePasskeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M119. Remove in or after M122.
-BASE_FEATURE(kWebAuthnAndroidIncognitoConfirmation,
-             "WebAuthenticationAndroidIncognitoConfirmation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled in M120. Remove in or after M123.
 BASE_FEATURE(kWebAuthnPRFEvalDuringCreate,
              "WebAuthenticationPRFEvalDuringCreate",

@@ -8,8 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 
 /**
  * A factory class to create a {@link CreateConfirmationUiDelegate} using {@link
@@ -19,9 +17,7 @@ public class ChromeAuthenticatorConfirmationFactory
         implements CreateConfirmationUiDelegate.Factory {
     @Override
     public @Nullable CreateConfirmationUiDelegate create(WebContents webContents) {
-        if (webContents.isIncognito()
-                && DeviceFeatureMap.isEnabled(
-                        DeviceFeatureList.WEBAUTHN_ANDROID_INCOGNITO_CONFIRMATION)) {
+        if (webContents.isIncognito()) {
             return (accept, reject) -> {
                 var sheet = new AuthenticatorIncognitoConfirmationBottomsheet(webContents);
                 return sheet.show(accept, reject);
