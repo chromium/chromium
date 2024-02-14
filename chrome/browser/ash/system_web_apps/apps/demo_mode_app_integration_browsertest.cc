@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, WebUIDoesNotLaunch) {
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
   const GURL url(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(SystemWebAppType::DEMO_MODE,
-                                                  url, "Demo Mode App"));
+                                                  url, "ChromeOS Highlights"));
 }
 
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
