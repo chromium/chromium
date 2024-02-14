@@ -3,16 +3,13 @@
 // found in the LICENSE file.
 
 import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Tests restoring the sorting order.
  */
-// @ts-ignore: error TS4111: Property 'restoreSortColumn' comes from an index
-// signature, so it must be accessed with ['restoreSortColumn'].
-testcase.restoreSortColumn = async () => {
+export async function restoreSortColumn() {
   const EXPECTED_FILES = TestEntryInfo.getExpectedRows([
     ENTRIES.photos,     // 'photos' (directory)
     ENTRIES.world,      // 'world.ogv', 56758 bytes
@@ -43,10 +40,6 @@ testcase.restoreSortColumn = async () => {
   await remoteCall.waitForElement(appId, iconSortedDesc);
 
   // Check the sorted files.
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, EXPECTED_FILES, {orderCheck: true});
 
   // Open another window, where the sorted column should be restored.
@@ -56,19 +49,13 @@ testcase.restoreSortColumn = async () => {
   await remoteCall.waitForElement(appId, iconSortedDesc);
 
   // Check the sorted files.
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, EXPECTED_FILES, {orderCheck: true});
-};
+}
 
 /**
  * Tests restoring the current view (the file list or the thumbnail grid).
  */
-// @ts-ignore: error TS4111: Property 'restoreCurrentView' comes from an index
-// signature, so it must be accessed with ['restoreCurrentView'].
-testcase.restoreCurrentView = async () => {
+export async function restoreCurrentView() {
   // Set up Files app.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -87,4 +74,4 @@ testcase.restoreCurrentView = async () => {
 
   // Check the current view.
   await remoteCall.waitForElement(appId2, '.detail-table[hidden]');
-};
+}

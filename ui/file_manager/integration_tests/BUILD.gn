@@ -26,7 +26,6 @@ js_files = [
   "file_manager/holding_space.js",
   "file_manager/install_linux_package_dialog.js",
   "file_manager/recents.js",
-  "file_manager/restore_prefs.js",
   "file_manager/search.js",
   "file_manager/tab_index.js",
   "file_manager/test_data.js",
@@ -113,7 +112,7 @@ ts_files = [
 
   # "file_manager/recents.ts",
 
-  # "file_manager/restore_prefs.ts",
+  "file_manager/restore_prefs.ts",
 
   # "file_manager/search.ts",
 
