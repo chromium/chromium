@@ -29,7 +29,6 @@ chromium/try/chromeos-amd64-generic-lacros-dbg
 chromium/try/chromeos-amd64-generic-rel
 chromium/try/chromeos-amd64-generic-rel-gtest
 chromium/try/chromeos-amd64-generic-rel-gtest-and-tast
-chromium/try/chromeos-amd64-generic-siso-rel
 chromium/try/chromeos-arm-generic-dbg
 chromium/try/chromeos-arm-generic-rel
 chromium/try/chromeos-arm64-generic-rel

@@ -191,32 +191,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "chromeos-amd64-generic-siso-rel",
-    description_html = """\
-This builder shadows chromeos-amd64-generic-rel-gtest builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating chromeos-amd64-generic-rel-gtest from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel-gtest"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    gn_args = "try/chromeos-amd64-generic-rel-gtest",
-    compilator = "chromeos-amd64-generic-siso-rel-compilator",
-    main_list_view = "try",
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
-try_.compilator_builder(
-    name = "chromeos-amd64-generic-siso-rel-compilator",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "chromeos-arm-generic-dbg",
     mirrors = [

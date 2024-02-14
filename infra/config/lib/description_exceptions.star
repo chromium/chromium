@@ -686,7 +686,6 @@ exempted_from_description_builders = {
         "chromeos-amd64-generic-lacros-dbg",
         "chromeos-amd64-generic-rel",
         "chromeos-amd64-generic-rel-compilator",
-        "chromeos-amd64-generic-siso-rel-compilator",
         "chromeos-arm-generic-dbg",
         "chromeos-arm-generic-rel",
         "chromeos-arm64-generic-rel",
