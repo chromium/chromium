@@ -89,8 +89,11 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
       return;
     }
 
-    const int corner_radius =
-        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+    aura::Window* frame_window = GetWidget()->GetNativeWindow();
+
+    const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+    frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                              corner_radius);
 
     if (draw_frame()) {
       SetFrameCornerRadius(corner_radius);
