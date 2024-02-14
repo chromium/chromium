@@ -409,7 +409,8 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
             &PredictionManagerTestBase::AreComponentUpdatesEnabled,
             base::Unretained(this)),
         false, kTestLocale, temp_dir());
-    prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
+    prediction_manager_->GetPredictionModelFetchTimerForTesting()
+        ->SetClockForTesting(task_environment_.GetMockClock());
   }
 
   void CreateAndInitializePredictionModelStore() {

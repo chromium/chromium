@@ -23,7 +23,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_info.h"
@@ -195,7 +194,6 @@ PredictionManager::PredictionManager(
               // Its safe to use `base::Unretained(this)` here since
               // `prediction_model_fetch_timer_` is owned by `this`.
               base::Unretained(this))),
-      clock_(base::DefaultClock::GetInstance()),
       off_the_record_(off_the_record),
       application_locale_(application_locale),
       model_cache_key_(GetModelCacheKey(application_locale_)),
@@ -211,7 +209,6 @@ PredictionManager::~PredictionManager() {
 
 void PredictionManager::Initialize(
     BackgroundDownloadServiceProvider background_download_service_provider) {
-  store_is_ready_ = true;
   LoadPredictionModels(GetRegisteredOptimizationTargets());
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.StoreInitialized", true);
@@ -293,10 +290,6 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
         << "Registered new OptimizationTarget: " << optimization_target;
   }
 
-  // Before loading/fetching models and features, the store must be ready.
-  if (!store_is_ready_)
-    return;
-
   if (ShouldFetchModels(off_the_record_,
                         component_updates_enabled_provider_.Run())) {
     prediction_model_fetch_timer_.ScheduleFetchOnModelRegistration();
@@ -346,7 +339,6 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 
 void PredictionManager::FetchModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store_is_ready_);
 
   // The histogram that gets recorded here is used for integration tests that
   // pass in a model override. For simplicity, we place the recording of this
@@ -465,7 +457,6 @@ void PredictionManager::OnModelsFetched(
     std::optional<std::unique_ptr<proto::GetModelsResponse>>
         get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store_is_ready_);
   if (!get_models_response_data) {
     for (const auto& model_info : models_request_info) {
       RecordLifecycleState(model_info.optimization_target(),
@@ -924,12 +915,6 @@ void PredictionManager::StoreLoadedModelInfo(
 
   optimization_target_model_info_map_.insert_or_assign(optimization_target,
                                                        std::move(model_info));
-}
-
-void PredictionManager::SetClockForTesting(const base::Clock* clock) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  clock_ = clock;
-  prediction_model_fetch_timer_.SetClockForTesting(clock);  // IN-TEST
 }
 
 base::FilePath PredictionManager::GetBaseModelDirForDownload(
