@@ -1108,6 +1108,8 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 }
 
+// TODO(crbug.com/40251730): Delete and rewire callsites to directly call
+// Synchronize().
 void MaybeRegisterOsUninstall(const WebApp* web_app,
                               WebAppManagementTypes sources_uninstalling,
                               OsIntegrationManager& os_integration_manager,
@@ -1143,6 +1145,8 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
   std::move(callback).Run(OsHooksErrors());
 }
 
+// TODO(crbug.com/40251730): Delete and rewire callsites to directly call
+// Synchronize().
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
                                 WebAppManagement::Type source_installing,
                                 OsIntegrationManager& os_integration_manager) {

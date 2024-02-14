@@ -653,8 +653,6 @@ source_set("web_applications_test_support") {
     "test/mock_data_retriever.h",
     "test/mock_file_utils_wrapper.cc",
     "test/mock_file_utils_wrapper.h",
-    "test/mock_os_integration_manager.cc",
-    "test/mock_os_integration_manager.h",
     "test/os_integration_test_override_impl.cc",
     "test/os_integration_test_override_impl.h",
     "test/signed_web_bundle_utils.cc",
