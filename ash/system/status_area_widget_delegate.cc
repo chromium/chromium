@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
@@ -173,10 +174,6 @@ views::View* StatusAreaWidgetDelegate::GetDefaultFocusableChild() {
                                        : GetFirstFocusableChild();
 }
 
-const char* StatusAreaWidgetDelegate::GetClassName() const {
-  return "ash/StatusAreaWidgetDelegate";
-}
-
 views::Widget* StatusAreaWidgetDelegate::GetWidget() {
   return View::GetWidget();
 }
@@ -313,5 +310,8 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // Fix for crbug.com/623438.
   child->DeprecatedLayoutImmediately();
 }
+
+BEGIN_METADATA(StatusAreaWidgetDelegate)
+END_METADATA
 
 }  // namespace ash

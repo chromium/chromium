@@ -38,6 +38,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 using message_center::MessageCenter;
@@ -54,7 +55,8 @@ constexpr base::TimeDelta kClearAllStackedAnimationDuration =
 constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
     base::Milliseconds(160);
 
-constexpr char kMessageViewContainerClassName[] = "MessageViewContainer";
+constexpr char kMessageViewContainerClassName[] =
+    "NotificationListView::MessageViewContainer";
 
 constexpr char kMoveDownAnimationSmoothnessHistogramName[] =
     "Ash.Notification.MoveDown.AnimationSmoothness";
@@ -243,10 +245,6 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
                            start_bounds_.height(), target_bounds_.height()));
     }
     return gfx::Size(list_view_->message_view_width_, target_bounds_.height());
-  }
-
-  const char* GetClassName() const override {
-    return kMessageViewContainerClassName;
   }
 
   // MessageView::Observer:
@@ -608,7 +606,7 @@ bool NotificationListView::IsAnimatingExpandOrCollapseContainer(
     return false;
   }
 
-  DCHECK_EQ(kMessageViewContainerClassName, view->GetClassName())
+  DCHECK(views::IsViewClass<NotificationListView::MessageViewContainer>(view))
       << view->GetClassName() << " is not a " << kMessageViewContainerClassName;
   const MessageViewContainer* message_view_container = AsMVC(view);
   return message_view_container == expand_or_collapsing_container_;
@@ -715,7 +713,8 @@ void NotificationListView::AnimateResize() {
 message_center::MessageView*
 NotificationListView::GetMessageViewForNotificationId(const std::string& id) {
   auto it = base::ranges::find(children(), id, [](views::View* child) {
-    DCHECK(child->GetClassName() == kMessageViewContainerClassName);
+    DCHECK(
+        views::IsViewClass<NotificationListView::MessageViewContainer>(child));
     return AsMVC(child)->message_view()->notification_id();
   });
 

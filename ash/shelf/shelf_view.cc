@@ -447,7 +447,7 @@ ShelfAppButton* ShelfView::GetShelfAppButton(const ShelfID& id) {
     return nullptr;
 
   views::View* const view = view_model_->view_at(index);
-  DCHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
+  DCHECK(views::IsViewClass<ShelfAppButton>(view));
   return static_cast<ShelfAppButton*>(view);
 }
 
@@ -882,7 +882,7 @@ void ShelfView::OnShelfConfigUpdated() {
 
 bool ShelfView::ShouldEventActivateButton(View* view, const ui::Event& event) {
   // This only applies to app buttons.
-  DCHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
+  DCHECK(views::IsViewClass<ShelfAppButton>(view));
   if (dragging())
     return false;
 
@@ -1316,7 +1316,7 @@ void ShelfView::PointerPressedOnButton(views::View* view,
   is_repost_event_on_same_item_ =
       IsRepostEvent(event) && (last_pressed_index_ == index);
 
-  CHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
+  CHECK(views::IsViewClass<ShelfAppButton>(view));
   drag_view_ = static_cast<ShelfAppButton*>(view);
   drag_origin_ = gfx::Point(event.x(), event.y());
   UMA_HISTOGRAM_ENUMERATION("Ash.ShelfAlignmentUsage",
@@ -2478,7 +2478,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     case TYPE_APP:
     case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
-      CHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
+      CHECK(views::IsViewClass<ShelfAppButton>(view));
       ShelfAppButton* button = static_cast<ShelfAppButton*>(view);
       UpdateButton(button, item);
       break;

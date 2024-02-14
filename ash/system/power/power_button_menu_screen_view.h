@@ -60,9 +60,6 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   void OnWidgetShown(PowerButtonController::PowerButtonPosition position,
                      double offset_percentage);
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   class PowerButtonMenuBackgroundView;
 

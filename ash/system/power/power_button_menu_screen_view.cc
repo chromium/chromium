@@ -105,11 +105,6 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
     layer()->SetOpacity(show ? kPowerButtonMenuOpacity : 0.f);
   }
 
-  // views::View:
-  const char* GetClassName() const override {
-    return "PowerButtonMenuBackgroundView";
-  }
-
  private:
   // views::View:
   void OnThemeChanged() override {
@@ -196,10 +191,6 @@ PowerButtonMenuScreenView::GetOrCreateCurtainView() {
         AddChildView(std::make_unique<PowerButtonMenuCurtainView>());
   }
   return power_button_menu_curtain_view_;
-}
-
-const char* PowerButtonMenuScreenView::GetClassName() const {
-  return "PowerButtonMenuScreenView";
 }
 
 void PowerButtonMenuScreenView::Layout(PassKey) {

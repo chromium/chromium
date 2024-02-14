@@ -420,9 +420,6 @@ END_METADATA
 // ShelfAppButton
 
 // static
-const char ShelfAppButton::kViewClassName[] = "ash/ShelfAppButton";
-
-// static
 bool ShelfAppButton::ShouldHandleEventFromContextMenu(
     const ui::GestureEvent* event) {
   switch (event->type()) {
@@ -901,10 +898,6 @@ gfx::Rect ShelfAppButton::CalculateSmallRippleArea() const {
   small_ripple_area.Offset(center_point.x() - ink_drop_small_size / 2,
                            center_point.y() - ink_drop_small_size / 2);
   return small_ripple_area;
-}
-
-const char* ShelfAppButton::GetClassName() const {
-  return kViewClassName;
 }
 
 bool ShelfAppButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -1475,5 +1468,8 @@ void ShelfAppButton::OnAnimatedInFromPromiseApp(
 
   callback.Run();
 }
+
+BEGIN_METADATA(ShelfAppButton)
+END_METADATA
 
 }  // namespace ash

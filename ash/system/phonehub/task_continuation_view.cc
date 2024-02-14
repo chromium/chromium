@@ -131,10 +131,6 @@ void TaskContinuationView::TaskChipsView::Layout(PassKey) {
   }
 }
 
-const char* TaskContinuationView::TaskChipsView::GetClassName() const {
-  return "TaskChipsView";
-}
-
 void TaskContinuationView::TaskChipsView::Reset() {
   task_chips_.Clear();
   RemoveAllChildViews();
