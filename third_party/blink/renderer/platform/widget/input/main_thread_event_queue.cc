@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/features.h"
@@ -215,6 +216,10 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
   const WebInputEvent& Event() const { return event_->Event(); }
 
   WebCoalescedInputEvent* mutable_coalesced_event() { return event_.get(); }
+
+  void SetQueuedTimeStamp(base::TimeTicks queued_time) {
+    event_->EventPointer()->SetQueuedTimeStamp(queued_time);
+  }
 
  private:
   FilterResult HandleTouchScrollStartQueued() {
@@ -644,10 +649,10 @@ void MainThreadEventQueue::QueueEvent(
   WebInputEvent::Type input_event_type = WebInputEvent::Type::kUndefined;
   WebInputEventAttribution attribution;
   if (is_input_event) {
-    auto* queued_input_event =
-        static_cast<const QueuedWebInputEvent*>(event.get());
+    auto* queued_input_event = static_cast<QueuedWebInputEvent*>(event.get());
     input_event_type = queued_input_event->Event().GetType();
     attribution = queued_input_event->attribution();
+    queued_input_event->SetQueuedTimeStamp(base::TimeTicks::Now());
   }
 
   {

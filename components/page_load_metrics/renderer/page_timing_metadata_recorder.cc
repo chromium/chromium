@@ -129,6 +129,28 @@ void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
       base::SampleMetadataScope::kProcess);
 }
 
+void PageTimingMetadataRecorder::AddInteractionDurationAfterQueueingMetadata(
+    const base::TimeTicks interaction_start,
+    const base::TimeTicks interaction_queued_main_thread,
+    const base::TimeTicks interaction_end) {
+  // Safe check that start < queued < end.
+  if (!IsTimeTicksRangeSensible(interaction_start,
+                                interaction_queued_main_thread) ||
+      !IsTimeTicksRangeSensible(interaction_queued_main_thread,
+                                interaction_end)) {
+    return;
+  }
+
+  ApplyMetadataToPastSamples(
+      interaction_queued_main_thread, interaction_end,
+      "Blink.Responsiveness.UserInteraction.MaxEventDurationFromQueued",
+      /* key=*/
+      CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
+      /* value=*/
+      (interaction_end - interaction_queued_main_thread).InMilliseconds(),
+      base::SampleMetadataScope::kProcess);
+}
+
 void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
     const std::optional<base::TimeTicks>& navigation_start,
     const std::optional<base::TimeTicks>& largest_contentful_paint,

@@ -61,6 +61,12 @@ class PageTimingMetadataRecorder {
   // with the given start and end time.
   void AddInteractionDurationMetadata(const base::TimeTicks interaction_start,
                                       const base::TimeTicks interaction_end);
+  // Adds interaction duration after queueing metadata to past samples for a
+  // user interaction with the given start, end and queued time.
+  void AddInteractionDurationAfterQueueingMetadata(
+      const base::TimeTicks interaction_start,
+      const base::TimeTicks interaction_end,
+      const base::TimeTicks interaction_queued_main_thread);
 
   // Packs the 32 bit instance_id and interaction_id into one 64 bit signed int
   // to fit the int64 key field of the Metadata API. Public for testing.

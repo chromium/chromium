@@ -94,6 +94,15 @@ void PerformanceEventTiming::SetInteractionIdAndOffset(
   interaction_offset_ = interaction_offset;
 }
 
+base::TimeTicks PerformanceEventTiming::unsafeQueuedTimestamp() const {
+  return unsafe_queued_timestamp_;
+}
+
+void PerformanceEventTiming::SetUnsafeQueuedTimestamp(
+    base::TimeTicks timestamp) {
+  unsafe_queued_timestamp_ = timestamp;
+}
+
 base::TimeTicks PerformanceEventTiming::unsafePresentationTimestamp() const {
   return unsafe_presentation_timestamp_;
 }

@@ -34,6 +34,8 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     // The time when the first display update caused by the input event was
     // performed.
     base::TimeTicks end_time;
+    // The time when the original WebInputEvent was queued on main thread.
+    base::TimeTicks main_thread_queued_time;
   };
 
   // Wrapper class to store PerformanceEventTiming and timestamps
@@ -143,6 +145,9 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
       UserInteractionType interaction_type,
       base::TimeDelta total_event_duration);
 
+  void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
+  base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;
+
  private:
   // Record UKM for user interaction latencies.
   void RecordUserInteractionUKM(
@@ -208,6 +213,9 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // remove this attribute once PointerId for clicks correctly points to the
   // same value as its corresponding pointerdown and pointerup.
   std::optional<PointerId> last_pointer_id_;
+
+  // Queued timestamp of current event being dispatched.
+  base::TimeTicks current_interaction_event_queued_timestamp_;
 
   uint32_t current_interaction_id_for_event_timing_;
   uint32_t interaction_count_ = 0;

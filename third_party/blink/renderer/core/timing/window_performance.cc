@@ -166,6 +166,8 @@ AtomicString SameOriginAttribution(Frame* observer_frame,
   return SameOriginKeyword();
 }
 
+// Eligible event types should be kept in sync with IsWebInteractionEvent
+// (widget_event_handler.cc)
 bool IsEventTypeForInteractionId(const AtomicString& type) {
   return type == event_type_names::kPointercancel ||
          type == event_type_names::kContextmenu ||
@@ -431,6 +433,8 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       event_target ? event_target->ToNode() : nullptr,
       DomWindow());  // TODO(haoliuk): Add WPT for Event Timing.
                      // See crbug.com/1320878.
+  entry->SetUnsafeQueuedTimestamp(
+      responsiveness_metrics_->CurrentInteractionEventQueuedTimestamp());
   std::optional<PointerId> pointer_id;
   if (pointer_event) {
     pointer_id = pointer_event->pointerId();
@@ -508,6 +512,7 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                                     base::TimeTicks presentation_timestamp) {
   PerformanceEventTiming* entry = event_data->GetEventTiming();
   base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
+  const base::TimeTicks event_queued_timestamp = entry->unsafeQueuedTimestamp();
   std::optional<int> key_code = event_data->GetKeyCode();
   std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
@@ -549,7 +554,7 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
 
   // Event Timing
   ResponsivenessMetrics::EventTimestamps event_timestamps = {
-      event_timestamp, entry_end_timetick};
+      event_timestamp, entry_end_timetick, event_queued_timestamp};
   if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
                                        event_timestamps)) {
     NotifyAndAddEventTimingBuffer(entry);

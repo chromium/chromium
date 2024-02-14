@@ -60,6 +60,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void SetUnsafePresentationTimestamp(base::TimeTicks presentation_timestamp);
 
+  base::TimeTicks unsafeQueuedTimestamp() const;
+
+  void SetUnsafeQueuedTimestamp(base::TimeTicks timestamp);
+
   void SetDuration(double duration);
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
@@ -82,6 +86,9 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   // ending time. It should not be exposed to performance observer API entries
   // for security and privacy reasons.
   base::TimeTicks unsafe_presentation_timestamp_ = base::TimeTicks::Min();
+  // This is the timestamp when the original WebInputEvent was queued on main
+  // thread.
+  base::TimeTicks unsafe_queued_timestamp_;
 };
 }  // namespace blink
 

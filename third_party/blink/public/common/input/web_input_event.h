@@ -321,8 +321,14 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   int GetModifiers() const { return modifiers_; }
   void SetModifiers(int modifiers_param) { modifiers_ = modifiers_param; }
 
+  // Event time since platform start with microsecond resolution.
   base::TimeTicks TimeStamp() const { return time_stamp_; }
   void SetTimeStamp(base::TimeTicks time_stamp) { time_stamp_ = time_stamp; }
+  // Event time when queued by compositor on main thread.
+  base::TimeTicks QueuedTimeStamp() const { return queued_time_stamp_; }
+  void SetQueuedTimeStamp(base::TimeTicks time_stamp) {
+    queued_time_stamp_ = time_stamp;
+  }
 
   const ui::EventLatencyMetadata& GetEventLatencyMetadata() const {
     return event_latency_metadata_;
@@ -374,8 +380,8 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   static DispatchType MergeDispatchTypes(DispatchType type_1,
                                          DispatchType type_2);
 
-  // Event time since platform start with microsecond resolution.
   base::TimeTicks time_stamp_;
+  base::TimeTicks queued_time_stamp_;
   Type type_ = Type::kUndefined;
   int modifiers_ = kNoModifiers;
 

@@ -577,13 +577,16 @@ class BLINK_EXPORT WebLocalFrameClient {
   // multiple input events (e.g. keydown then keyup). Each of these events has
   // an input to next frame latency. This reports the timings of the max
   // input-to-frame latency for each interaction. `max_event_start` is when
-  // input was received, and `max_event_end` is when the next frame was
-  // presented. See https://web.dev/inp/#whats-in-an-interaction for more
+  // input was received, `max_event_end` is when the next frame was
+  // presented and `max_event_queued_main_thread` is when the input was queued.
+  // See https://web.dev/inp/#whats-in-an-interaction for more
   // detailed motivation and explanation.
-  virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
-                                         base::TimeTicks max_event_end,
-                                         UserInteractionType interaction_type,
-                                         uint64_t interaction_offset) {}
+  virtual void DidObserveUserInteraction(
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
+      base::TimeTicks max_event_queued_main_thread,
+      UserInteractionType interaction_type,
+      uint64_t interaction_offset) {}
 
   // The first scroll delay, which measures the time between the user's first
   // scrolling and the resultant display update, has been observed.

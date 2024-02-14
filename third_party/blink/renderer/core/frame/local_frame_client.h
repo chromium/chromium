@@ -210,10 +210,12 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidChangePerformanceTiming() {}
 
   // Will be called when a user interaction is observed.
-  virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
-                                         base::TimeTicks max_event_end,
-                                         UserInteractionType interaction_type,
-                                         uint64_t interaction_offset) {}
+  virtual void DidObserveUserInteraction(
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
+      base::TimeTicks max_event_queued_main_thread,
+      UserInteractionType interaction_type,
+      uint64_t interaction_offset) {}
 
   // Will be called when |CpuTiming| events are updated
   virtual void DidChangeCpuTiming(base::TimeDelta time) {}

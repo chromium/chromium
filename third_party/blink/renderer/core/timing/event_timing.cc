@@ -81,7 +81,9 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
   // events that are considered continuous: event types for which the user agent
   // may have timer-based dispatch under certain conditions. These are excluded
   // since EventCounts cannot be used to properly computed percentiles on those.
-  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed
+  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed.
+  // Need to be kept in sync with IsWebInteractionEvent
+  // (widget_event_handler.cc).
   return event.isTrusted() &&
          (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||
           IsA<TouchEvent>(event) || IsA<KeyboardEvent>(event) ||

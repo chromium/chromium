@@ -411,6 +411,57 @@ TEST_F(PageTimingMetadataRecorderTest,
   }
 }
 
+TEST_F(PageTimingMetadataRecorderTest,
+       InteractionDurationQueuedDurationSucceed) {
+  PageTimingMetadataRecorder::MonotonicTiming timing;
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  const base::TimeTicks time_origin = base::TimeTicks::Now();
+
+  const base::TimeTicks interaction1_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction1_end =
+      time_origin - base::Milliseconds(300);
+  const base::TimeTicks interaction1_queued =
+      time_origin - base::Milliseconds(400);
+  recorder.AddInteractionDurationAfterQueueingMetadata(
+      interaction1_start, interaction1_queued, interaction1_end);
+
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(interaction1_queued, requests.at(0).period_start);
+  EXPECT_EQ(interaction1_end, requests.at(0).period_end);
+}
+
+TEST_F(PageTimingMetadataRecorderTest,
+       InteractionDurationQueuedInvalidDurationRejected) {
+  PageTimingMetadataRecorder::MonotonicTiming timing;
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  const base::TimeTicks time_origin = base::TimeTicks::Now();
+
+  const base::TimeTicks interaction1_start =
+      time_origin - base::Milliseconds(500);
+  const base::TimeTicks interaction1_end =
+      time_origin - base::Milliseconds(300);
+  // Queued timestamp earlier than start is invalid.
+  base::TimeTicks interaction1_queued = time_origin - base::Milliseconds(501);
+  recorder.AddInteractionDurationAfterQueueingMetadata(
+      interaction1_start, interaction1_queued, interaction1_end);
+
+  ASSERT_EQ(0u, requests.size());
+
+  // Queued timestamp after end is invalid.
+  interaction1_queued = time_origin - base::Milliseconds(299);
+  recorder.AddInteractionDurationAfterQueueingMetadata(
+      interaction1_start, interaction1_queued, interaction1_end);
+
+  ASSERT_EQ(0u, requests.size());
+}
+
 TEST_F(PageTimingMetadataRecorderTest, LargestContentfulPaintUpdate) {
   PageTimingMetadataRecorder::MonotonicTiming timing;
   // The PageTimingMetadataRecorder constructor is supposed to call
