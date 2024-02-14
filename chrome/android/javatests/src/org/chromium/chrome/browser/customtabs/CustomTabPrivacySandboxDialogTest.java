@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -195,13 +196,8 @@ public class CustomTabPrivacySandboxDialogTest {
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
     public void adsNoticeCCT_PartialShouldNotShowNotice() throws Exception {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", false);
         doTestLaunchPartialCustomTabWithInitialHeight();
-
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
-        watcher.assertExpected();
     }
 
     private void startActivityForResultCCT() {
@@ -280,5 +276,36 @@ public class CustomTabPrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
         shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
         appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_PWAShouldNotShowDialog() throws Exception {
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.WEBAPP,
+                CustomTabActivityTypeTestUtils.createActivityTestRule(ActivityType.WEBAPP),
+                "about:blank");
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_TWAShouldNotShowDialog() throws Exception {
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY,
+                CustomTabActivityTypeTestUtils.createActivityTestRule(
+                        ActivityType.TRUSTED_WEB_ACTIVITY),
+                "about:blank");
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
     }
 }

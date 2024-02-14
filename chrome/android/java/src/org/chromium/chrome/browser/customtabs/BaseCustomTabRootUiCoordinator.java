@@ -576,16 +576,20 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             boolean didShowPrompt = false;
                             boolean shouldShowPrivacySandboxDialog =
                                     PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
-                                                    mTabModelSelectorSupplier
-                                                            .get()
-                                                            .isIncognitoSelected())
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                            boolean isCustomTab =
+                                    mIntentDataProvider.get().getActivityType()
+                                                    == ActivityType.CUSTOM_TAB
                                             && !(mIntentDataProvider.get().isPartialCustomTab());
-                            RecordHistogram.recordBooleanHistogram(
-                                    "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
-                                    shouldShowPrivacySandboxDialog);
+                            if (isCustomTab) {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
+                                        shouldShowPrivacySandboxDialog);
+                            }
                             if (ChromeFeatureList.isEnabled(
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                                    && shouldShowPrivacySandboxDialog) {
+                                    && shouldShowPrivacySandboxDialog
+                                    && isCustomTab) {
                                 boolean shouldShowPrivacySandboxDialogAppIdCheck = true;
                                 String appId = mIntentDataProvider.get().getClientPackageName();
                                 String paramAdsNoticeAppId =
