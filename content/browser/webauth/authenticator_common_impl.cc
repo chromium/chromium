@@ -1074,9 +1074,7 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
-  } else if (options->timeout &&
-             base::FeatureList::IsEnabled(
-                 device::kWebAuthConditionalUIExperimentation)) {
+  } else if (options->timeout) {
     // These are magic values that a site can set to experiment with different
     // conditional UI behaviours.
     //
