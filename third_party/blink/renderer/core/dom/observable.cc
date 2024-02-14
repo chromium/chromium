@@ -166,7 +166,7 @@ class OperatorForEachInternalObserver final
     ScriptState::Scope scope(script_state);
     v8::TryCatch try_catch(script_state->GetIsolate());
     // Invoking `callback_` can detach the context, but that's OK, nothing below
-    // this invocation relies on a detached context.
+    // this invocation relies on an attached/valid context.
     std::ignore = callback_->Invoke(nullptr, value, idx_++);
     if (try_catch.HasCaught()) {
       ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
