@@ -39,7 +39,10 @@ suite('CookiesPageTest', function() {
 
   suiteSetup(function() {
     // This test is for the pre-3PCD cookies page.
-    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isCookieSettingsUiAlignmentEnabled: true,
+    });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -69,17 +72,24 @@ suite('CookiesPageTest', function() {
 
   test('ElementVisibility', async function() {
     await flushTasks();
+    // Headers
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
-    assertTrue(isChildVisible(page, '#exceptionHeader'));
+    assertTrue(isChildVisible(page, '#advancedHeader'));
+    assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
     assertTrue(isChildVisible(page, '#allowExceptionsList'));
-    assertFalse(isChildVisible(page, '#rollbackNotice'));
+    // To be removed with old UI.
+    assertFalse(isChildVisible(page, '#exceptionHeader'));
+    assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
 
+    // Settings
     assertTrue(isChildVisible(page, '#doNotTrack'));
-
     assertTrue(isChildVisible(page, '#allowThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
+    // By default these toggles should be hidden.
+    assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
   });
 
   test('ThirdPartyCookiesRadioClicksRecorded', async function() {
@@ -237,7 +247,7 @@ suite('CookiesPageTest', function() {
   });
 });
 
-suite('CookieSettingsUiAlignmentTest', function() {
+suite('PreCookieSettingsUiAlignmentTest', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -245,7 +255,7 @@ suite('CookieSettingsUiAlignmentTest', function() {
     // This test is for the V2 UI of the pre-3PCD cookies page.
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
-      isCookieSettingsUiAlignmentEnabled: true,
+      isCookieSettingsUiAlignmentEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -260,24 +270,17 @@ suite('CookieSettingsUiAlignmentTest', function() {
   });
 
   test('ElementVisibility', async function() {
-    // Headers
     assertTrue(isChildVisible(page, '#explanationText'));
     assertTrue(isChildVisible(page, '#generalControls'));
-    assertTrue(isChildVisible(page, '#advancedHeader'));
-    assertTrue(isChildVisible(page, '#exceptionHeader3pcd'));
+    assertTrue(isChildVisible(page, '#exceptionHeader'));
     assertTrue(isChildVisible(page, '#allowExceptionsList'));
-    // To be removed with old UI.
-    assertFalse(isChildVisible(page, '#exceptionHeader'));
-    assertFalse(isChildVisible(page, '#exceptionHeaderSubLabel'));
+    assertFalse(isChildVisible(page, '#rollbackNotice'));
 
-    // Settings
     assertTrue(isChildVisible(page, '#doNotTrack'));
+
     assertTrue(isChildVisible(page, '#allowThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
-    // By default these toggles should be hidden.
-    assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
-    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
   });
 });
 
