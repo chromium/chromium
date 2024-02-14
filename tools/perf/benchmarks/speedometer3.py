@@ -34,6 +34,7 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
   enable_systrace = False
   extra_chrome_categories = False
   enable_rcs = False
+  enable_details = False
   iteration_count = None
 
   @classmethod
@@ -55,7 +56,7 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
     story_set.AddStory(
         story_cls(story_set, should_filter_suites, filtered_suite_names,
-                  iteration_count))
+                  iteration_count, self.enable_details))
     return story_set
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
@@ -99,9 +100,16 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
                       type="string",
                       help="Only runs suites that match regex provided")
     parser.add_option('--enable-rcs',
+                      '--rcs',
                       action="store_true",
                       help="Enables runtime call stats")
+    parser.add_option('--enable-details',
+                      '--details',
+                      action="store_true",
+                      help=("Enables detailed benchmark metrics "
+                            "(per line-item, iteration,...)"))
     parser.add_option('--iteration-count',
+                      '--iterations',
                       type="int",
                       help="Override the default number of iterations")
 
@@ -119,6 +127,8 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
       cls.extra_chrome_categories = args.extra_chrome_categories
     if args.enable_rcs:
       cls.enable_rcs = True
+    if args.enable_details:
+      cls.enable_details = True
     if args.iteration_count:
       cls.iteration_count = args.iteration_count
 

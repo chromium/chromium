@@ -50,11 +50,13 @@ class _Speedometer3Story(press_story.PressStory):
                page_set,
                should_filter_suites,
                filtered_suite_names=None,
-               iterations=None):
+               iterations=None,
+               enable_details=False):
     super(_Speedometer3Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
     self._iterations = iterations
+    self._enable_details = enable_details
 
   @staticmethod
   def GetSuites(suite_regex):
@@ -123,7 +125,22 @@ class _Speedometer3Story(press_story.PressStory):
         "score": "unitless_biggerIsBetter",
     }
     for name, metric in metrics.items():
+      if not self._IsSpeedometerMetricEnabled(name):
+        continue
       self.AddMeasurement(name, UNIT_LOOKUP[metric["unit"]], metric["values"])
+
+  def _IsSpeedometerMetricEnabled(self, name):
+    if self._enable_details:
+      return True
+    # Skip nested metrics:
+    if "/" in name:
+      return False
+    # Skip top-level iteration metrics:
+    if name.startswith("Iteration-"):
+      return False
+    if name == "Geomean":
+      return False
+    return True
 
 
 class Speedometer30Story(_Speedometer3Story):
