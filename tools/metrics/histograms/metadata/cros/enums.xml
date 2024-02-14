@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AppsSyncOptinFileWrite">
-  <int value="0" label="Attempt"/>
-  <int value="1" label="Failure"/>
-</enum>
-
 <enum name="CrOSActionRecorderEvent">
   <int value="0" label="Disabled"/>
   <int value="1" label="RecordAction"/>

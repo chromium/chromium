@@ -23,8 +23,6 @@ namespace ash {
 constexpr char kOldDaemonStorePath[] = "/run/daemon-store/appsync-consent";
 constexpr char kDaemonStorePath[] = "/run/daemon-store/appsync-optin";
 constexpr char kDaemonStoreFileName[] = "opted-in";
-constexpr char kAppsSyncOptinIOHistogram[] =
-    "Cros.AppsSyncOptinFileWriteAttempts";
 
 namespace {
 bool IsAppsSyncEnabledForSyncService(const syncer::SyncService& sync_service) {
@@ -35,15 +33,9 @@ bool IsAppsSyncEnabledForSyncService(const syncer::SyncService& sync_service) {
 void WriteOptinFile(base::FilePath filepath, bool opted_in) {
   const std::string file_contents = opted_in ? "1" : "0";
 
-  base::UmaHistogramEnumeration(
-      kAppsSyncOptinIOHistogram,
-      SyncAppsyncOptinClient::AppsSyncOptinFileWrite::kAttempt);
   if (!base::WriteFile(filepath, file_contents)) {
     DLOG(ERROR) << "Failed to persist opt-in change " << file_contents
                 << " to daemon-store. State on disk will be inaccurate!";
-    base::UmaHistogramEnumeration(
-        kAppsSyncOptinIOHistogram,
-        SyncAppsyncOptinClient::AppsSyncOptinFileWrite::kFailure);
   }
 }
 
