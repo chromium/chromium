@@ -2286,6 +2286,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.DeskLifetime_Profile_{DeskIndex}" units="hr"
+    expires_after="2024-12-21">
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Variant of Ash.Desks.DeskLifetime that is emitted if the closed desk has a
+    desk profile assigned to it. It has the same semantics as DeskLifetime.
+  </summary>
+  <token key="DeskIndex">
+    <variant name="1" summary="1"/>
+    <variant name="2" summary="2"/>
+    <variant name="3" summary="3"/>
+    <variant name="4" summary="4"/>
+    <variant name="5" summary="5"/>
+    <variant name="6" summary="6"/>
+    <variant name="7" summary="7"/>
+    <variant name="8" summary="8"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
     expires_after="2024-08-11">
   <owner>afakhry@chromium.org</owner>
