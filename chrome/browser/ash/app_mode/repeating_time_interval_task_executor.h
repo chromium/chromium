@@ -11,10 +11,10 @@
 namespace ash {
 
 // When the device enters and exits the specified time interval, this class
-// invokes the provided `interval_start_callback` callback and
-// `interval_end_callback` callback respectively. This class schedules the time
-// interval using the system timezone. Changes to the system timezone will make
-// it reprogram the time interval.
+// invokes the provided `on_interval_start_callback` callback and
+// `on_interval_end_callback` callback respectively. This class schedules the
+// time interval using the system timezone. Changes to the system timezone will
+// make it reprogram the time interval.
 // TODO(b/319087271) Implement case when current time falls in interval.
 // TODO(b/319086751) Implement case when next interval is in the future.
 // TODO(b/319083880) Observe time zone changes and cancel pending executors.
@@ -24,8 +24,8 @@ class RepeatingTimeIntervalTaskExecutor {
 
   RepeatingTimeIntervalTaskExecutor(
       const policy::WeeklyTimeInterval& time_interval,
-      base::RepeatingClosure interval_start_callback,
-      base::RepeatingClosure interval_end_callback);
+      base::RepeatingClosure on_interval_start_callback,
+      base::RepeatingClosure on_interval_end_callback);
 
   RepeatingTimeIntervalTaskExecutor(const RepeatingTimeIntervalTaskExecutor&) =
       delete;
@@ -34,10 +34,12 @@ class RepeatingTimeIntervalTaskExecutor {
 
   ~RepeatingTimeIntervalTaskExecutor();
 
+  const policy::WeeklyTimeInterval& GetTimeInterval() const;
+
  private:
   const policy::WeeklyTimeInterval time_interval_;
-  const base::RepeatingClosure interval_start_callback_;
-  const base::RepeatingClosure interval_end_callback_;
+  const base::RepeatingClosure on_interval_start_callback_;
+  const base::RepeatingClosure on_interval_end_callback_;
 };
 
 }  // namespace ash

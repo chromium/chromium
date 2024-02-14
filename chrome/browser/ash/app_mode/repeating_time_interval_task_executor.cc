@@ -10,13 +10,18 @@ namespace ash {
 
 RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
-    base::RepeatingClosure interval_start_callback,
-    base::RepeatingClosure interval_end_callback)
+    base::RepeatingClosure on_interval_start_callback,
+    base::RepeatingClosure on_interval_end_callback)
     : time_interval_(time_interval),
-      interval_start_callback_(interval_start_callback),
-      interval_end_callback_(interval_end_callback) {}
+      on_interval_start_callback_(on_interval_start_callback),
+      on_interval_end_callback_(on_interval_end_callback) {}
 
 RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
     default;
+
+const policy::WeeklyTimeInterval&
+RepeatingTimeIntervalTaskExecutor::GetTimeInterval() const {
+  return time_interval_;
+}
 
 }  // namespace ash
