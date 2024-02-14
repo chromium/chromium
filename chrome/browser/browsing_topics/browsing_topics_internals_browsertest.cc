@@ -719,8 +719,8 @@ Model file path: /test_path/test_model.tflite
                      /*world_id=*/1));
 
   EXPECT_EQ(GetHostsClassificationResultTableContent(),
-            R"(foo1.com|1. Arts & entertainment;2. Acting & theater;|
-foo2.com|3. Comics;4. Concerts & music festivals;5. Dance;|
+            R"(foo1.com|1. Arts & Entertainment;2. Acting & Theater;|
+foo2.com|3. Comics;4. Concerts & Music Festivals;5. Dance;|
 )");
 
   EXPECT_TRUE(GetHostsClassificationInputValidationError().empty());

@@ -2275,7 +2275,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_EQ(epoch0->taxonomy_version, "1");
   EXPECT_EQ(epoch0->topics.size(), 5u);
   EXPECT_EQ(epoch0->topics[0]->topic_id, 6);
-  EXPECT_EQ(epoch0->topics[0]->topic_name, u"Entertainment industry");
+  EXPECT_EQ(epoch0->topics[0]->topic_name, u"Entertainment Industry");
   EXPECT_TRUE(epoch0->topics[0]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[0]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[1]->topic_id, 7);
@@ -2283,11 +2283,11 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_TRUE(epoch0->topics[1]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[1]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[2]->topic_id, 8);
-  EXPECT_EQ(epoch0->topics[2]->topic_name, u"Live comedy");
+  EXPECT_EQ(epoch0->topics[2]->topic_name, u"Live Comedy");
   EXPECT_FALSE(epoch0->topics[2]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[2]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[3]->topic_id, 9);
-  EXPECT_EQ(epoch0->topics[3]->topic_name, u"Live sporting events");
+  EXPECT_EQ(epoch0->topics[3]->topic_name, u"Live Sporting Events");
   EXPECT_FALSE(epoch0->topics[3]->is_real_topic);
   EXPECT_TRUE(epoch0->topics[3]->observed_by_domains.empty());
   EXPECT_EQ(epoch0->topics[4]->topic_id, 10);
@@ -2305,7 +2305,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_EQ(epoch2->taxonomy_version, "1");
   EXPECT_EQ(epoch2->topics.size(), 5u);
   EXPECT_EQ(epoch2->topics[0]->topic_id, 1);
-  EXPECT_EQ(epoch2->topics[0]->topic_name, u"Arts & entertainment");
+  EXPECT_EQ(epoch2->topics[0]->topic_name, u"Arts & Entertainment");
   EXPECT_TRUE(epoch2->topics[0]->is_real_topic);
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains.size(), 2u);
   // The unhashed domain for 123 is unavailable, so "123" is used.
@@ -2313,7 +2313,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   // "456.com" is stored in the call to OnBrowsingTopicsApiUsed above.
   EXPECT_EQ(epoch2->topics[0]->observed_by_domains[1], "456.com");
   EXPECT_EQ(epoch2->topics[1]->topic_id, 2);
-  EXPECT_EQ(epoch2->topics[1]->topic_name, u"Acting & theater");
+  EXPECT_EQ(epoch2->topics[1]->topic_name, u"Acting & Theater");
   EXPECT_TRUE(epoch2->topics[1]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[1]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[2]->topic_id, 0);
@@ -2321,7 +2321,7 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsStateForWebUi) {
   EXPECT_TRUE(epoch2->topics[2]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[2]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[3]->topic_id, 4);
-  EXPECT_EQ(epoch2->topics[3]->topic_name, u"Concerts & music festivals");
+  EXPECT_EQ(epoch2->topics[3]->topic_name, u"Concerts & Music Festivals");
   EXPECT_TRUE(epoch2->topics[3]->is_real_topic);
   EXPECT_TRUE(epoch2->topics[3]->observed_by_domains.empty());
   EXPECT_EQ(epoch2->topics[4]->topic_id, 5);
