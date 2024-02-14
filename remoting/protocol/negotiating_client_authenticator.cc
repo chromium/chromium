@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/pairing_client_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -48,7 +49,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
   state_ = PROCESSING_MESSAGE;
 
   std::string method_attr = message->Attr(kMethodAttributeQName);
-  Method method = ParseMethodString(method_attr);
+  Method method = HostAuthenticationConfig::ParseMethodString(method_attr);
 
   // The host picked a method different from the one the client had selected.
   if (method != current_method_) {
@@ -108,7 +109,7 @@ NegotiatingClientAuthenticator::GetNextMessage() {
       if (!supported_methods.empty()) {
         supported_methods += kSupportedMethodsSeparator;
       }
-      supported_methods += MethodToString(method);
+      supported_methods += HostAuthenticationConfig::MethodToString(method);
     }
     result->AddAttr(kSupportedMethodsAttributeQName, supported_methods);
     state_ = WAITING_MESSAGE;
@@ -155,6 +156,9 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
               weak_factory_.GetWeakPtr(), preferred_initial_state,
               base::Passed(std::move(resume_callback))));
       break;
+
+    case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
+      NOTREACHED();
   }
 }
 

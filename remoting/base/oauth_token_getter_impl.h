@@ -30,6 +30,9 @@ namespace remoting {
 class OAuthTokenGetterImpl : public OAuthTokenGetter,
                              public gaia::GaiaOAuthClient::Delegate {
  public:
+  // |auto_refresh|: If true, automatically refresh the access token when it is
+  //   about to expire; otherwise refresh the access token only when
+  //   CallWithToken() is called while the cached token has expired.
   OAuthTokenGetterImpl(
       std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials,
       const OAuthTokenGetter::CredentialsUpdatedCallback& on_credentials_update,

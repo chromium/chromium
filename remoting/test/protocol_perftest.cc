@@ -36,6 +36,7 @@
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/session_config.h"
@@ -329,10 +330,12 @@ class ProtocolPerfTest
 
     std::string host_pin_hash =
         protocol::GetSharedSecretHash(kHostId, kHostPin);
-    std::unique_ptr<protocol::AuthenticatorFactory> auth_factory =
-        protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-            kHostOwner, host_cert, key_pair, std::vector<std::string>(),
-            host_pin_hash, nullptr);
+    auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
+        host_cert, key_pair);
+    auth_config->AddSharedSecretAuth(host_pin_hash);
+    auto auth_factory =
+        std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+            kHostOwner, std::vector<std::string>(), std::move(auth_config));
     host_->SetAuthenticatorFactory(std::move(auth_factory));
 
     host_->status_monitor()->AddStatusObserver(this);

@@ -87,6 +87,8 @@ static_library("protocol") {
     "frame_consumer.h",
     "frame_stats.cc",
     "frame_stats.h",
+    "host_authentication_config.cc",
+    "host_authentication_config.h",
     "host_control_dispatcher.cc",
     "host_control_dispatcher.h",
     "host_event_dispatcher.cc",

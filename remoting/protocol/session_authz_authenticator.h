@@ -50,6 +50,10 @@ class SessionAuthzAuthenticator : public Authenticator {
   SessionAuthzAuthenticator& operator=(const SessionAuthzAuthenticator&) =
       delete;
 
+  // Start the authenticator. The authenticator won't be in the `MESSAGE_READY`
+  // state until |resume_callback| is called.
+  void Start(base::OnceClosure resume_callback);
+
   // Authenticator implementation.
   State state() const override;
   bool started() const override;

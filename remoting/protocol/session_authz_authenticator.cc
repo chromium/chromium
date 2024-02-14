@@ -28,6 +28,10 @@ SessionAuthzAuthenticator::SessionAuthzAuthenticator(
 
 SessionAuthzAuthenticator::~SessionAuthzAuthenticator() = default;
 
+void SessionAuthzAuthenticator::Start(base::OnceClosure resume_callback) {
+  GenerateHostToken(std::move(resume_callback));
+}
+
 Authenticator::State SessionAuthzAuthenticator::state() const {
   switch (session_authz_state_) {
     case SessionAuthzState::NOT_STARTED:
@@ -65,9 +69,6 @@ void SessionAuthzAuthenticator::ProcessMessage(
   DCHECK_EQ(state(), WAITING_MESSAGE);
 
   switch (session_authz_state_) {
-    case SessionAuthzState::NOT_STARTED:
-      GenerateHostToken(std::move(resume_callback));
-      break;
     case SessionAuthzState::WAITING_FOR_SESSION_TOKEN:
       VerifySessionToken(*message, std::move(resume_callback));
       break;
@@ -129,6 +130,7 @@ void SessionAuthzAuthenticator::OnHostTokenGenerated(
     std::unique_ptr<internal::GenerateHostTokenResponseStruct> response) {
   if (!status.ok()) {
     HandleSessionAuthzError("GenerateHostToken", status);
+    std::move(resume_callback).Run();
     return;
   }
   session_id_ = response->session_id;
@@ -169,6 +171,7 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
     std::unique_ptr<internal::VerifySessionTokenResponseStruct> response) {
   if (!status.ok()) {
     HandleSessionAuthzError("VerifySessionToken", status);
+    std::move(resume_callback).Run();
     return;
   }
   if (response->session_id != session_id_) {
@@ -176,6 +179,7 @@ void SessionAuthzAuthenticator::OnVerifiedSessionToken(
                << session_id_ << ", actual: " << response->session_id;
     session_authz_state_ = SessionAuthzState::FAILED;
     session_authz_rejection_reason_ = RejectionReason::INVALID_ACCOUNT_ID;
+    std::move(resume_callback).Run();
     return;
   }
   session_authz_state_ = SessionAuthzState::SHARED_SECRET_FETCHED;

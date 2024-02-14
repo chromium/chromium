@@ -18,7 +18,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/notreached.h"
@@ -49,6 +51,7 @@
 #include "net/socket/client_socket_factory.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/is_google_email.h"
@@ -99,6 +102,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/network_settings.h"
@@ -801,8 +805,24 @@ void HostProcess::CreateAuthenticatorFactory() {
     return;
   }
 
-  std::unique_ptr<protocol::AuthenticatorFactory> factory;
-
+  auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
+      local_certificate, key_pair_);
+  // TODO: b/323068262 - add a new host setting for enabling PIN auth for corp.
+  // The logic should be:
+  //   is_googler_ && allow_pin_auth_ ->
+  //     host supports all methods (may or may not include 3P auth) except
+  //     SessionAuthz
+  //   is_googler_ && !allow_pin_auth_ ->
+  //     host only supports SessionAuthz and maybe 3P auth
+  // The current logic does not remove PIN and pairing auth for Googlers, but
+  // it should work as if no one has PIN exemption as long as the host lists
+  // SessionAuthz as the first supported auth method.
+  if (is_googler_) {
+    auth_config->AddSessionAuthzAuth(
+        base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
+            context_->url_loader_factory(), service_account_email_,
+            oauth_refresh_token_));
+  }
   if (third_party_auth_config_.is_null()) {
     scoped_refptr<PairingRegistry> pairing_registry;
     if (allow_pairing_) {
@@ -823,10 +843,8 @@ void HostProcess::CreateAuthenticatorFactory() {
       pairing_registry = pairing_registry_;
     }
 
-    factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-        host_owner_, local_certificate, key_pair_, client_domain_list_,
-        pin_hash_, pairing_registry);
-
+    auth_config->AddPairingAuth(pairing_registry);
+    auth_config->AddSharedSecretAuth(pin_hash_);
     host_->set_pairing_registry(pairing_registry);
   } else {
     // ThirdPartyAuthConfig::Parse() leaves the config in a valid state, so
@@ -848,10 +866,16 @@ void HostProcess::CreateAuthenticatorFactory() {
     scoped_refptr<protocol::TokenValidatorFactory> token_validator_factory =
         new TokenValidatorFactoryImpl(third_party_auth_config_, key_pair_,
                                       context_->url_request_context_getter());
-    factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithThirdPartyAuth(
-        host_owner_, local_certificate, key_pair_, client_domain_list_,
-        token_validator_factory);
+    auth_config->AddThirdPartyAuth(token_validator_factory);
   }
+  HOST_LOG << "Host's supported authentication methods: ";
+  for (const auto& method : auth_config->GetSupportedMethods()) {
+    HOST_LOG << "  "
+             << protocol::HostAuthenticationConfig::MethodToString(method);
+  }
+  std::unique_ptr<protocol::AuthenticatorFactory> factory =
+      std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+          host_owner_, client_domain_list_, std::move(auth_config));
 
 #if BUILDFLAG(IS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.

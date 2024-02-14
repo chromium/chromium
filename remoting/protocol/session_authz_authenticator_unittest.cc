@@ -101,14 +101,14 @@ class FakeClientAuthenticator : public Authenticator {
 
  private:
   enum class SessionAuthzState {
-    NOT_STARTED,
     WAITING_FOR_HOST_TOKEN,
     READY_TO_SEND_SESSION_TOKEN,
     AUTHORIZED,
     FAILED,
   };
 
-  SessionAuthzState session_authz_state_ = SessionAuthzState::NOT_STARTED;
+  SessionAuthzState session_authz_state_ =
+      SessionAuthzState::WAITING_FOR_HOST_TOKEN;
   RejectionReason session_authz_rejection_reason_;
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   std::unique_ptr<Authenticator> underlying_;
@@ -120,10 +120,6 @@ class FakeClientAuthenticator : public Authenticator {
 
 Authenticator::State FakeClientAuthenticator::state() const {
   switch (session_authz_state_) {
-    // The authentication is initialized by the client, so `NOT_STARTED` is
-    // mapped to `MESSAGE_READY`, and an empty authentication message will be
-    // sent to the host.
-    case SessionAuthzState::NOT_STARTED:
     case SessionAuthzState::READY_TO_SEND_SESSION_TOKEN:
       return MESSAGE_READY;
     case SessionAuthzState::WAITING_FOR_HOST_TOKEN:
@@ -136,7 +132,7 @@ Authenticator::State FakeClientAuthenticator::state() const {
 }
 
 bool FakeClientAuthenticator::started() const {
-  return session_authz_state_ != SessionAuthzState::NOT_STARTED;
+  return session_authz_state_ != SessionAuthzState::WAITING_FOR_HOST_TOKEN;
 }
 
 FakeClientAuthenticator::FakeClientAuthenticator(
@@ -187,10 +183,7 @@ FakeClientAuthenticator::GetNextMessage() {
   if (!message) {
     message = CreateEmptyAuthenticatorMessage();
   }
-  if (session_authz_state_ == SessionAuthzState::NOT_STARTED) {
-    session_authz_state_ = SessionAuthzState::WAITING_FOR_HOST_TOKEN;
-  } else if (session_authz_state_ ==
-             SessionAuthzState::READY_TO_SEND_SESSION_TOKEN) {
+  if (session_authz_state_ == SessionAuthzState::READY_TO_SEND_SESSION_TOKEN) {
     jingle_xmpp::XmlElement* session_token_element =
         new jingle_xmpp::XmlElement(
             SessionAuthzAuthenticator::kSessionTokenTag);
@@ -222,7 +215,13 @@ class SessionAuthzAuthenticatorTest : public AuthenticatorTestBase {
  protected:
   void SetUp() override;
 
+  // Caller must add an expectation for
+  // mock_service_client_->GenerateHostToken() and run the callback, otherwise
+  // this method will not return.
+  void StartAuthExchange();
+
   raw_ptr<MockSessionAuthzServiceClient> mock_service_client_;
+  raw_ptr<SessionAuthzAuthenticator> host_authenticator_;
   raw_ptr<FakeClientAuthenticator> client_authenticator_;
   base::MockCallback<SessionAuthzAuthenticator::ReauthTokenReadyCallback>
       mock_reauth_token_ready_callback_;
@@ -235,16 +234,25 @@ void SessionAuthzAuthenticatorTest::SetUp() {
   AuthenticatorTestBase::SetUp();
   auto mock_service_client = std::make_unique<MockSessionAuthzServiceClient>();
   mock_service_client_ = mock_service_client.get();
-  host_ = std::make_unique<SessionAuthzAuthenticator>(
+  auto host_authenticator = std::make_unique<SessionAuthzAuthenticator>(
       std::move(mock_service_client),
       base::BindRepeating(&Spake2Authenticator::CreateForHost, kHostId,
                           kClientId, host_cert_, key_pair_),
       mock_reauth_token_ready_callback_.Get());
+  host_authenticator_ = host_authenticator.get();
+  host_ = std::move(host_authenticator);
   auto client_authenticator =
       std::make_unique<FakeClientAuthenticator>(base::BindRepeating(
           &Spake2Authenticator::CreateForClient, kClientId, kHostId));
   client_authenticator_ = client_authenticator.get();
   client_ = std::move(client_authenticator);
+}
+
+void SessionAuthzAuthenticatorTest::StartAuthExchange() {
+  base::RunLoop run_loop;
+  host_authenticator_->Start(run_loop.QuitClosure());
+  run_loop.Run();
+  RunHostInitiatedAuthExchange();
 }
 
 TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
@@ -261,7 +269,7 @@ TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
                   kFakeSessionReauthTokenLifetime))
       .WillOnce(Return());
 
-  RunAuthExchange();
+  StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_->state(), Authenticator::ACCEPTED);
   ASSERT_EQ(client_authenticator_->host_token(), kFakeHostToken);
@@ -281,13 +289,18 @@ TEST_F(SessionAuthzAuthenticatorTest, SuccessfulAuth) {
 }
 
 TEST_F(SessionAuthzAuthenticatorTest, GenerateHostToken_RpcError_Rejected) {
+  base::MockCallback<base::OnceClosure> mock_resume_callback;
   SessionAuthzServiceClient::GenerateHostTokenCallback
       generate_host_token_callback;
   EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
       .WillOnce(SaveArgByMove<0>(&generate_host_token_callback));
+  EXPECT_CALL(mock_resume_callback, Run()).Times(0);
 
-  RunAuthExchange();
+  host_authenticator_->Start(mock_resume_callback.Get());
   ASSERT_EQ(host_->state(), Authenticator::PROCESSING_MESSAGE);
+
+  EXPECT_CALL(mock_resume_callback, Run()).Times(1);
+
   std::move(generate_host_token_callback)
       .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::PERMISSION_DENIED,
                               "Permission denied"),
@@ -305,7 +318,7 @@ TEST_F(SessionAuthzAuthenticatorTest, VerifySessionToken_RpcError_Rejected) {
   EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
       .WillOnce(SaveArgByMove<1>(&verify_session_token_callback));
 
-  RunAuthExchange();
+  StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::PROCESSING_MESSAGE);
   std::move(verify_session_token_callback)
       .Run(ProtobufHttpStatus(ProtobufHttpStatus::Code::PERMISSION_DENIED,
@@ -323,7 +336,7 @@ TEST_F(SessionAuthzAuthenticatorTest,
   EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
       .WillOnce(RespondVerifySessionToken("mismatched_session_id"));
 
-  RunAuthExchange();
+  StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
             Authenticator::RejectionReason::INVALID_ACCOUNT_ID);
@@ -339,7 +352,7 @@ TEST_F(SessionAuthzAuthenticatorTest,
   EXPECT_CALL(mock_reauth_token_ready_callback_, Run(_, _, _))
       .WillOnce(Return());
 
-  RunAuthExchange();
+  StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
             Authenticator::RejectionReason::PROTOCOL_ERROR);
@@ -355,7 +368,7 @@ TEST_F(SessionAuthzAuthenticatorTest,
   EXPECT_CALL(mock_reauth_token_ready_callback_, Run(_, _, _))
       .WillOnce(Return());
 
-  RunAuthExchange();
+  StartAuthExchange();
 
   // With the mismatched shared secret, the underlying authenticator will just
   // believe the client has not sent enough data to complete the key exchange.
