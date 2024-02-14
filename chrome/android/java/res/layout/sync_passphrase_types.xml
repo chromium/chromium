@@ -12,19 +12,6 @@ found in the LICENSE file.
     android:orientation="vertical"
     style="@style/AlertDialogContent">
 
-    <CheckedTextView android:id="@+id/explicit_passphrase_checkbox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
-        android:gravity="center_vertical"
-        android:checkMark="?android:attr/listChoiceIndicatorSingle"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:text="@string/sync_passphrase_type_custom"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
-
     <CheckedTextView android:id="@+id/keystore_passphrase_checkbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +23,19 @@ found in the LICENSE file.
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:text="@string/sync_passphrase_type_keystore"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
+
+    <CheckedTextView android:id="@+id/explicit_passphrase_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:gravity="center_vertical"
+        android:checkMark="?android:attr/listChoiceIndicatorSingle"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/sync_passphrase_type_custom"
         android:textAppearance="?android:attr/textAppearanceListItemSmall" />
 
     <org.chromium.ui.widget.TextViewWithClickableSpans

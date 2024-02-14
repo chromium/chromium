@@ -40,10 +40,15 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCase {
+    private static final int RENDER_TEST_REVISION = 3;
+    private static final String RENDER_TEST_DESCRIPTION =
+            "Updated strings and re-ordering of the two options.";
+
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setDescription(RENDER_TEST_DESCRIPTION)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SYNC)
                     .build();
 

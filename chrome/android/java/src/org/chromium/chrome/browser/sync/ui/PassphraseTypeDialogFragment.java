@@ -99,8 +99,8 @@ public class PassphraseTypeDialogFragment extends DialogFragment
         return SpanApplier.applySpans(
                 getString(R.string.sync_passphrase_encryption_reset_instructions),
                 new SpanInfo(
-                        "<resetlink>",
-                        "</resetlink>",
+                        "BEGIN_LINK",
+                        "END_LINK",
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
