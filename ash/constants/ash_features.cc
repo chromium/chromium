@@ -2358,6 +2358,11 @@ BASE_FEATURE(kProjectorAccountSwitchNotification,
              "ProjectorAccountSwitchNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to use USM for serverside speech recognition for projector.
+BASE_FEATURE(kProjectorUseUSMForS3,
+             "kProjectorUseUSMForS3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to show promise icons during app installations.
 BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4153,6 +4158,10 @@ bool IsProjectorV2Enabled() {
 
 bool IsProjectorTranscriptChapterTitleEnabled() {
   return base::FeatureList::IsEnabled(kProjectorTranscriptChapterTitle);
+}
+
+bool IsProjectorUseUSMForS3Enabled() {
+  return base::FeatureList::IsEnabled(kProjectorUseUSMForS3);
 }
 
 bool IsQuickDimEnabled() {
