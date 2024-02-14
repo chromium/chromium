@@ -5,7 +5,7 @@
 import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {IGNORE_APP_ERRORS, isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET} from './test_data.js';
 
@@ -59,10 +59,6 @@ export async function fileDisplayLaunchOnLocalFolder() {
   // Check: The current directory is MyFiles/Downloads/photos.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/My files/Downloads/photos');
-
-  // The API used to launch the Files app does not set the IN_TEST flag to true:
-  // error when attempting to retrieve Web Store access token.
-  return IGNORE_APP_ERRORS;
 }
 
 /**
@@ -88,10 +84,6 @@ export async function fileDisplayLaunchOnLocalFile() {
   // Check: The target file is selected.
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="hello.txt"][selected]');
-
-  // The API used to launch the Files app does not set the IN_TEST flag to true:
-  // error when attempting to retrieve Web Store access token.
-  return IGNORE_APP_ERRORS;
 }
 
 /**
@@ -109,10 +101,6 @@ export async function fileDisplayLaunchOnDrive() {
   // Check: the app should be open on My Drive.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('My Drive');
-
-  // The API used to launch the Files app does not set the IN_TEST flag to true:
-  // error when attempting to retrieve Web Store access token.
-  return IGNORE_APP_ERRORS;
 }
 
 /**

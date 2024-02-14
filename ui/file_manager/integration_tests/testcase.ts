@@ -55,7 +55,7 @@ import * as zipFilesTests from './file_manager/zip_files.js';
 // clang-format on
 
 export type TestFunctionName = string;
-export type TestFunction = (() => void)|(() => Promise<void>);
+export type TestFunction = () => Promise<void|any>;
 
 /**
  * Namespace for test cases.

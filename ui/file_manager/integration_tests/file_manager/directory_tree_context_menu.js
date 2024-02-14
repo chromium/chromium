@@ -5,7 +5,7 @@
 import {addEntries, ENTRIES, EntryType, getCaller, pending, REPEAT_UNTIL_INTERVAL, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {createShortcut, IGNORE_APP_ERRORS, isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {createShortcut, isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, COMPUTERS_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
@@ -582,11 +582,6 @@ testcase.dirRenameRemovableWithKeyboard = async () => {
   await directoryTree.triggerRenameWithKeyboardByLabel('fake-usb');
   await directoryTree.renameItemByLabel('fake-usb', 'usb-was-renamed');
   await directoryTree.waitForItemByLabel('usb-was-renamed');
-
-  // Even though the Files app rename flow worked, the background.js page
-  // console errors about not being able to 'mount' the older volume name
-  // due to a disk_mount_manager.cc error: user/fake-usb not found.
-  return IGNORE_APP_ERRORS;
 };
 
 /**
@@ -629,11 +624,6 @@ testcase.dirRenameRemovableWithContentMenu = async () => {
   // Rename the USB.
   await directoryTree.renameItemByLabel('fake-usb', 'usb-was-renamed');
   await directoryTree.waitForItemByLabel('usb-was-renamed');
-
-  // Even though the Files app rename flow worked, the background.js page
-  // console errors about not being able to 'mount' the older volume name
-  // due to a disk_mount_manager.cc error: user/fake-usb not found.
-  return IGNORE_APP_ERRORS;
 };
 
 /**

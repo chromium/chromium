@@ -126,15 +126,14 @@ export async function repeatUntil(checkFunction: (() => PendingFunction | any)):
 }
 
 /**
- * Sends the test |command| to the browser test harness and awaits a 'string'
- * result. Calls |callback| with that result.
+ * Sends the test `command` to the browser test harness and awaits a string
+ * result.
  * @param command Test command to send. Refer to sendTestMessage() above for the
- *     expected format of a test |command| object.
+ *     expected format of a test `command` object.
  * @param debug If truthy, log the result.
  */
 export async function sendBrowserTestCommand(
-    command: TestMessageCommand, callback?: (result: string) => void,
-    debug: boolean = false): Promise<string> {
+    command: TestMessageCommand, debug: boolean = false): Promise<string> {
   const caller = getCaller();
   if (typeof command.name !== 'string') {
     chrome.test.fail('Invalid test command: ' + JSON.stringify(command));
@@ -154,9 +153,6 @@ export async function sendBrowserTestCommand(
   });
   if (debug) {
     console.log('BrowserTest ' + command.name + ': ' + result);
-  }
-  if (callback) {
-    callback(result);
   }
   return result;
 }

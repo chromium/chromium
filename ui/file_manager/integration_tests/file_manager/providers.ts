@@ -4,7 +4,7 @@
 
 import {getHistogramCount, RootPath, sendTestMessage} from '../test_util.js';
 
-import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -234,11 +234,6 @@ export async function providerEject() {
   chrome.test.assertTrue(a11yMessages instanceof Array);
   chrome.test.assertEq(1, a11yMessages.length);
   chrome.test.assertEq('Test (1) has been ejected.', a11yMessages[0]);
-
-  // Note: We disable app error checking because sometimes there are
-  // JS errors due to volume related actions performed while volume is
-  // ejected.
-  return IGNORE_APP_ERRORS;
 }
 
 /**

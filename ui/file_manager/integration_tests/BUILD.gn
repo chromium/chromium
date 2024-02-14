@@ -11,7 +11,6 @@ js_files = [
   "test_util.ts",
 
   # File Manager.
-  "file_manager/background.js",
   "file_manager/directory_tree_context_menu.js",
   "file_manager/dlp.js",
   "file_manager/dlp_enterprise_connectors.js",
@@ -37,7 +36,7 @@ ts_files = [
   # File Manager.
   "file_manager/android_photos.ts",
 
-  # "file_manager/background.ts",
+  "file_manager/background.ts",
 
   "file_manager/breadcrumbs.ts",
   "file_manager/choose_entry.ts",

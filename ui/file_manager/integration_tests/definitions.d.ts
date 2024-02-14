@@ -33,6 +33,23 @@ declare namespace chrome {
     export function getAll(
         queryOptions?: QueryOptions,
         callback?: (windows: Window[]) => void): void;
-
+    export function create(
+        createData?: {
+          url?: string|string[],
+          tabId?: number,
+          left?: number,
+          top?: number,
+          width?: number,
+          height?: number,
+          focused?: boolean,
+          incognito?: boolean,
+          type?: CreateType,
+          state?: WindowState,
+          setSelfAsOpener?: boolean,
+        },
+        callback?: (window: Window) => void): void;
+  }
+  export namespace extension {
+    export const inIncognitoContext: boolean;
   }
 }

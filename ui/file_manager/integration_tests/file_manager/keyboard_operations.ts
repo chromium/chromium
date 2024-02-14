@@ -4,7 +4,7 @@
 
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
-import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -346,11 +346,6 @@ export async function renameRemovableWithKeyboardOnFileList() {
   expectedRows[2]![0] = smallerPartitionName;
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});
-
-  // Even though the Files app rename flow worked, the background.js page
-  // console errors about not being able to 'mount' the older volume name
-  // due to a disk_mount_manager.cc error: user/fake-usb not found.
-  return IGNORE_APP_ERRORS;
 }
 
 /**
