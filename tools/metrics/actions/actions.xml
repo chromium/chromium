@@ -41307,6 +41307,7 @@ should be able to be added at any place in this file.
   <suffix name="DownloadToolbarButton"
       label="For Download toolbar button feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
+  <suffix name="ExperimentalAIPromo" label="For Experimental AI feature."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
   <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>
   <suffix name="ExtensionsRequestAccessButton"
