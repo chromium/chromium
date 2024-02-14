@@ -1032,6 +1032,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "address_data_cleaner_unittest.cc",
+    "address_data_manager_unittest.cc",
     "address_normalization_manager_unittest.cc",
     "address_normalizer_impl_unittest.cc",
     "address_profile_save_manager_unittest.cc",
