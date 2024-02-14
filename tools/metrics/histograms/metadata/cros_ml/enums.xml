@@ -22,8 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<!-- Enum types -->
-
 <enums>
 
 <enum name="MachineLearningServiceCreateGraphExecutorResultEvent">

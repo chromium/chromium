@@ -23,11 +23,16 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="BuiltinModelName">
+<!-- Built-in with common TFLite-related histograms -->
+
   <variant name="SmartDimModel"/>
   <variant name="TestModel"/>
 </variants>
 
 <variants name="PerformanceMetricsRequestName">
+<!-- ML Service Mojo requests for which standard performance histograms are
+  gathered using RequestMetrics -->
+
   <variant name="DocumentScanner.DetectCornersFromJPEG"/>
   <variant name="DocumentScanner.DetectCornersFromNV12"/>
   <variant name="DocumentScanner.DoPostProcessing"/>
