@@ -75,7 +75,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
       .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
                         /*width=*/padding_width)
       .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
-                 /*v_align=*/views::LayoutAlignment::kStart,
+                 /*v_align=*/views::LayoutAlignment::kCenter,
                  /*horizontal_resize=*/1.0f,
                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
                  /*fixed_width=*/0, /*min_width=*/0)
