@@ -746,7 +746,7 @@ testcase.openDlpRestrictedFile = async () => {
 // index signature, so it must be accessed with ['openFolderDlpRestricted'].
 testcase.openFolderDlpRestricted = async () => {
   // Make sure the file picker will open to Downloads.
-  sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
+  sendBrowserTestCommand({name: 'setLastDownloadDir'});
 
   const directoryAjpeg = new TestEntryInfo({
     type: EntryType.FILE,

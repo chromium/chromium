@@ -21,11 +21,18 @@ interface FileTaskDescriptor {
 }
 
 
-// TODO(b/319189127): Remove this when the integration tests extension is
-// migrated to manifest v3 and can use the Promise version of this API.
+// TODO(b/319189127): Remove these when the integration tests extension is
+// migrated to manifest v3 and can use the Promise version of these APIs.
 declare namespace chrome {
   export namespace commandLinePrivate {
     export function hasSwitch(
         name: string, callback: (result: boolean) => void): void;
+  }
+
+  export namespace windows {
+    export function getAll(
+        queryOptions?: QueryOptions,
+        callback?: (windows: Window[]) => void): void;
+
   }
 }

@@ -1029,8 +1029,7 @@ export class RemoteCallFilesApp extends RemoteCall {
     const caller = getCaller();
     return repeatUntil(async () => {
       const actualRequiredSpace =
-          await sendTestMessage({name: 'getBulkPinningRequiredSpace'}) as
-          string;
+          await sendTestMessage({name: 'getBulkPinningRequiredSpace'});
       const parsedSpace = parseInt(actualRequiredSpace, 10);
       if (parsedSpace === want) {
         return true;

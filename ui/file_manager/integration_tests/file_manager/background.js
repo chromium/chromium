@@ -53,7 +53,7 @@ import './zip_files.js';
 
 import {FilesAppState} from '../prod/file_manager/shared_types.js';
 import {RemoteCallFilesApp} from '../remote_call.js';
-import {addEntries, getCaller, getRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, getCaller, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
@@ -356,7 +356,9 @@ window.addEventListener('load', () => {
     // Request the test case name.
     // @ts-ignore: error TS7006: Parameter 'paths' implicitly has an 'any' type.
     paths => {
-      const roots = /** @type {getRootPathsResult} */ (JSON.parse(paths));
+      const roots =
+          /** @type {import('../test_util.js').GetRootPathsResult} */ (
+              JSON.parse(paths));
       RootPath.DOWNLOADS = roots.downloads;
       RootPath.MY_FILES = roots.my_files;
       RootPath.DRIVE = roots.drive;

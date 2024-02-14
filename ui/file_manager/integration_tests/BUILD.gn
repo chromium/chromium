@@ -8,7 +8,7 @@ preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
 js_files = [
-  "test_util.js",
+  "test_util.ts",
 
   # File Manager.
   "file_manager/background.js",

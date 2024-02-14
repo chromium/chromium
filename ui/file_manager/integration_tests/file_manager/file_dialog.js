@@ -1142,7 +1142,7 @@ testcase.saveFileDialogExtensionNotAddedWhenProvided = async () => {
 // ['openFileDialogFileListShowContextMenu'].
 testcase.openFileDialogFileListShowContextMenu = async () => {
   // Make sure the file picker will open to Downloads.
-  sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
+  sendBrowserTestCommand({name: 'setLastDownloadDir'});
 
   // Add entries to Downloads.
   await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
@@ -1233,7 +1233,7 @@ testcase.openFileDialogSelectAllDisabled = async () => {
 // ['openMultiFileDialogSelectAllEnabled'].
 testcase.openMultiFileDialogSelectAllEnabled = async () => {
   // Make sure the file picker will open to Downloads.
-  sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
+  sendBrowserTestCommand({name: 'setLastDownloadDir'});
 
   // Open file picker dialog with support for selecting multiple files.
   await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
