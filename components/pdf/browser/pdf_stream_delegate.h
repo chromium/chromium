@@ -46,23 +46,20 @@ class PdfStreamDelegate {
     bool use_skia = false;
   };
 
-  PdfStreamDelegate();
-  PdfStreamDelegate(const PdfStreamDelegate&) = delete;
-  PdfStreamDelegate& operator=(const PdfStreamDelegate&) = delete;
-  virtual ~PdfStreamDelegate();
+  virtual ~PdfStreamDelegate() = default;
 
   // Maps the navigation to the original URL. This method should associate a
   // `StreamInfo` with the `blink::Document` for `navigation_handle`'s parent
   // `RenderFrameHost`, for later retrieval by `GetStreamInfo()`.
   virtual std::optional<GURL> MapToOriginalUrl(
-      content::NavigationHandle& navigation_handle);
+      content::NavigationHandle& navigation_handle) = 0;
 
   // Gets the stream information associated with the given `RenderFrameHost`.
   // The frame must be a PDF extension frame or Print Preview's frame.
   // Returns null if there is no associated stream or if `embedder_frame` is
   // `nullptr`.
   virtual std::optional<StreamInfo> GetStreamInfo(
-      content::RenderFrameHost* embedder_frame);
+      content::RenderFrameHost* embedder_frame) = 0;
 };
 
 }  // namespace pdf
