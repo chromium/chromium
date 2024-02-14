@@ -282,7 +282,7 @@
     Got it
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER_V2" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Site-suggested ads' setting." translateable="false">
-    Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>ad topics<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalized ads. Learn more about <ph name="BEGIN_LINK3">&lt;a href="$3" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END3">&lt;/a&gt;</ph>
+    Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>ad topics<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you're viewing personalizes ads. Learn more about <ph name="BEGIN_LINK3">&lt;a href="$3" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END3">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_UNBLOCK_TOPIC_BUTTON_TEXT_V2" desc="A button associated with each of the user's topics. When the user clicks 'Unblock', it makes that topic eligible in the 'pool of topics' that Chrome can use to estimate the user's topics of interest. Clicking 'Unblock' doesn't automatically put the added topic back onto the list of 'Your topics'. For that to happen, a user would have to browse sites associated with the unblocked topic and Chrome would have to estimate the topic as relevant to that user." translateable="false">
     Unblock
@@ -300,7 +300,7 @@
     Manage topics
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
-    Choose which broad categories of topics can be used to personalize ads
+    Choose which broad categories of topics can be used to help personalize ads
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_EXPLANATION" desc="" formatter_data="android_java" translateable="false">
     Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
