@@ -16,7 +16,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -66,14 +65,7 @@ class SyncConsentDisabledChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientStandaloneTransportSyncTest : public SyncTest {
  public:
-  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
-
-  ~SingleClientStandaloneTransportSyncTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {}
 };
 
 // On Chrome OS sync auto-starts on sign-in.
