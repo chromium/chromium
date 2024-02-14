@@ -23,7 +23,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
 #include "remoting/protocol/connection_tester.h"
-#include "remoting/protocol/v2_authenticator.h"
+#include "remoting/protocol/spake2_authenticator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting::protocol {
@@ -237,11 +237,12 @@ void SessionAuthzAuthenticatorTest::SetUp() {
   mock_service_client_ = mock_service_client.get();
   host_ = std::make_unique<SessionAuthzAuthenticator>(
       std::move(mock_service_client),
-      base::BindRepeating(&V2Authenticator::CreateForHost, host_cert_,
-                          key_pair_),
+      base::BindRepeating(&Spake2Authenticator::CreateForHost, kHostId,
+                          kClientId, host_cert_, key_pair_),
       mock_reauth_token_ready_callback_.Get());
-  auto client_authenticator = std::make_unique<FakeClientAuthenticator>(
-      base::BindRepeating(&V2Authenticator::CreateForClient));
+  auto client_authenticator =
+      std::make_unique<FakeClientAuthenticator>(base::BindRepeating(
+          &Spake2Authenticator::CreateForClient, kClientId, kHostId));
   client_authenticator_ = client_authenticator.get();
   client_ = std::move(client_authenticator);
 }

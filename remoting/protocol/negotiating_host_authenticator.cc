@@ -20,7 +20,6 @@
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/spake2_authenticator.h"
 #include "remoting/protocol/token_validator.h"
-#include "remoting/protocol/v2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
@@ -51,10 +50,8 @@ NegotiatingHostAuthenticator::CreateWithSharedSecret(
   result->shared_secret_hash_ = shared_secret_hash;
   result->pairing_registry_ = pairing_registry;
   result->AddMethod(Method::SHARED_SECRET_SPAKE2_CURVE25519);
-  result->AddMethod(Method::SHARED_SECRET_SPAKE2_P224);
   if (pairing_registry.get()) {
     result->AddMethod(Method::PAIRED_SPAKE2_CURVE25519);
-    result->AddMethod(Method::PAIRED_SPAKE2_P224);
   }
   return result;
 }
@@ -72,7 +69,6 @@ NegotiatingHostAuthenticator::CreateWithThirdPartyAuth(
                                        key_pair));
   result->token_validator_factory_ = token_validator_factory;
   result->AddMethod(Method::THIRD_PARTY_SPAKE2_CURVE25519);
-  result->AddMethod(Method::THIRD_PARTY_SPAKE2_P224);
   return result;
 }
 
@@ -181,15 +177,6 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       NOTREACHED();
       break;
 
-    case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
-          base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
-                              local_key_pair_),
-          token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_));
-      std::move(resume_callback).Run();
-      break;
-
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
       current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
           base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
@@ -198,19 +185,6 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
                                                          remote_id_));
       std::move(resume_callback).Run();
       break;
-
-    case Method::PAIRED_SPAKE2_P224: {
-      PairingHostAuthenticator* pairing_authenticator =
-          new PairingHostAuthenticator(
-              pairing_registry_,
-              base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
-                                  local_key_pair_),
-              shared_secret_hash_);
-      current_authenticator_.reset(pairing_authenticator);
-      pairing_authenticator->Initialize(client_id_, preferred_initial_state,
-                                        std::move(resume_callback));
-      break;
-    }
 
     case Method::PAIRED_SPAKE2_CURVE25519: {
       PairingHostAuthenticator* pairing_authenticator =
@@ -230,14 +204,6 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       current_authenticator_ = Spake2Authenticator::CreateForHost(
           local_id_, remote_id_, local_cert_, local_key_pair_,
           shared_secret_hash_, preferred_initial_state);
-      std::move(resume_callback).Run();
-      break;
-
-    case Method::SHARED_SECRET_PLAIN_SPAKE2_P224:
-    case Method::SHARED_SECRET_SPAKE2_P224:
-      current_authenticator_ = V2Authenticator::CreateForHost(
-          local_cert_, local_key_pair_, shared_secret_hash_,
-          preferred_initial_state);
       std::move(resume_callback).Run();
       break;
   }

@@ -34,6 +34,9 @@ class AuthenticatorTestBase : public testing::Test {
   ~AuthenticatorTestBase() override;
 
  protected:
+  static inline constexpr char kHostId[] = "alice@gmail.com/123";
+  static inline constexpr char kClientId[] = "alice@gmail.com/abc";
+
   class MockChannelDoneCallback {
    public:
     MockChannelDoneCallback();

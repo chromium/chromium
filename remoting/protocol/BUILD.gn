@@ -204,8 +204,6 @@ static_library("protocol") {
     "token_validator.h",
     "transport_context.cc",
     "transport_context.h",
-    "v2_authenticator.cc",
-    "v2_authenticator.h",
     "validating_authenticator.cc",
     "validating_authenticator.h",
     "video_channel_state_observer.h",
@@ -421,7 +419,6 @@ source_set("unit_tests") {
     "spake2_authenticator_unittest.cc",
     "ssl_hmac_channel_authenticator_unittest.cc",
     "third_party_authenticator_unittest.cc",
-    "v2_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
   ]
