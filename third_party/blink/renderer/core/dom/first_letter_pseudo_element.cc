@@ -80,11 +80,7 @@ inline bool IsSpace(UChar c) {
 }
 
 inline bool IsSpaceForFirstLetter(UChar c, bool preserve_breaks) {
-  return (RuntimeEnabledFeatures::
-                      CSSFirstLetterNoNewLineAsPrecedingCharEnabled() &&
-                  preserve_breaks
-              ? IsSpace(c)
-              : IsSpaceOrNewline(c)) ||
+  return (preserve_breaks ? IsSpace(c) : IsSpaceOrNewline(c)) ||
          c == WTF::unicode::kNoBreakSpaceCharacter;
 }
 

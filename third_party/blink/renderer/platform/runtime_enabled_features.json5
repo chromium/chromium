@@ -903,12 +903,6 @@
       status: "stable",
     },
     {
-      // Don't allow new line as preceding character for ::first-letter.
-      // See crbug.com/1477217
-      name: "CSSFirstLetterNoNewLineAsPrecedingChar",
-      status: "stable",
-    },
-    {
       name: "CSSFirstLetterTextRewrite",
       status: "stable",
     },
