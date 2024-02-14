@@ -1680,6 +1680,7 @@ enum HeaderBehaviour {
 
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
   [self.helpHandler hideAllHelpBubbles];
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 // Returns the appropriate frame for the NTP.
