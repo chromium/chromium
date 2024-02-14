@@ -1,5 +1,5 @@
 # Static files are used as-is from the repository.
-image_loader_static_js_files = [ "image_loader/image_request_task.js" ]
+image_loader_static_js_files = []
 
 image_loader_ts = [
   "image_loader/background.ts",
@@ -9,7 +9,7 @@ image_loader_ts = [
   "image_loader/image_loader_util.ts",
   "image_loader/image_orientation.ts",
 
-  # "image_loader/image_request_task.ts",
+  "image_loader/image_request_task.ts",
 
   "image_loader/load_image_request.ts",
   "image_loader/piex_loader.ts",
@@ -521,6 +521,7 @@ other_dts_files = [
   "//tools/typescript/definitions/wallpaper.d.ts",
   "//tools/typescript/definitions/webview_tag.d.ts",
   "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
+  "//ui/file_manager/image_loader/image_loader_private.d.ts",
 ]
 
 generated_js_files = [

@@ -187,7 +187,7 @@ export class ImageCache {
    */
   saveImage(
       key: string, timestamp: number, width: number, height: number,
-      ifd: undefined|string, data: string) {
+      ifd: string|undefined, data: string) {
     if (!this.db_) {
       console.warn('Cache database not available.');
       return;

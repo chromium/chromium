@@ -23,7 +23,7 @@ function loadAndCheckCacheUsed(
     cacheUsed = false;
     callback?.(new LoadImageResponse(
         LoadImageResponseStatus.SUCCESS, request.taskId || -1,
-        {width: 100, height: 100, ifd: null, data: 'ImageData'}));
+        {width: 100, height: 100, ifd: undefined, data: 'ImageData'}));
   };
 
   const request = createForUrl(url);

@@ -48,6 +48,8 @@ declare global {
 
       export function getURL(path: string): string;
 
+      export function reload(): void;
+
       export interface SerializedContentScripts {
         matches: string[];
       }
