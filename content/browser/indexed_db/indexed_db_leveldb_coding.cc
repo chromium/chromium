@@ -463,7 +463,7 @@ bool DecodeBinary(std::string_view* slice, std::string* value) {
   if (slice->size() < size)
     return false;
 
-  value->assign(slice->begin(), size);
+  value->assign(slice->data(), size);
   slice->remove_prefix(size);
   return true;
 }
@@ -558,11 +558,14 @@ bool DecodeIDBKey(std::string_view* slice,
 }
 
 bool DecodeDouble(std::string_view* slice, double* value) {
-  if (slice->size() < sizeof(*value))
+  constexpr size_t size = sizeof(*value);
+  if (slice->size() < size) {
     return false;
+  }
 
-  memcpy(value, slice->begin(), sizeof(*value));
-  slice->remove_prefix(sizeof(*value));
+  base::byte_span_from_ref(*value).copy_from(
+      base::as_byte_span(*slice).first<size>());
+  slice->remove_prefix(size);
   return true;
 }
 
@@ -687,12 +690,12 @@ bool ConsumeEncodedIDBKey(std::string_view* slice) {
 }
 
 bool ExtractEncodedIDBKey(std::string_view* slice, std::string* result) {
-  const char* start = slice->begin();
+  const char* start = slice->data();
   if (!ConsumeEncodedIDBKey(slice))
     return false;
 
   if (result)
-    result->assign(start, slice->begin());
+    result->assign(start, slice->data());
   return true;
 }
 
@@ -737,8 +740,8 @@ int CompareEncodedStringsWithLength(std::string_view* slice1,
   }
 
   // Extract the string data, and advance the passed slices.
-  std::string_view string1(slice1->begin(), len1 * sizeof(char16_t));
-  std::string_view string2(slice2->begin(), len2 * sizeof(char16_t));
+  std::string_view string1(slice1->data(), len1 * sizeof(char16_t));
+  std::string_view string2(slice2->data(), len2 * sizeof(char16_t));
   slice1->remove_prefix(len1 * sizeof(char16_t));
   slice2->remove_prefix(len2 * sizeof(char16_t));
 
@@ -768,8 +771,8 @@ int CompareEncodedBinary(std::string_view* slice1,
   }
 
   // Extract the binary data, and advance the passed slices.
-  std::string_view binary1(slice1->begin(), size1);
-  std::string_view binary2(slice2->begin(), size2);
+  std::string_view binary1(slice1->data(), size1);
+  std::string_view binary2(slice2->data(), size2);
   slice1->remove_prefix(size1);
   slice2->remove_prefix(size2);
 

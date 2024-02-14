@@ -29,7 +29,7 @@ bool IsOneOf(char c, base::StringPiece set) {
 // `std::nullopt` and leaves `source_str` untouched. This is like matching the
 // regex `^[A-Z0-9-]+`.
 std::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
-  auto str = *source_str;
+  SourceString str = *source_str;
 
   // Returns whether the given char is permitted in an AttributeName
   const auto is_char_valid = [](char c) -> bool {
@@ -37,7 +37,7 @@ std::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
   };
 
   // Extract the substring where `is_char_valid` succeeds
-  const char* end = base::ranges::find_if_not(str.Str(), is_char_valid);
+  auto end = base::ranges::find_if_not(str.Str(), is_char_valid);
   const auto name = str.Consume(end - str.Str().cbegin());
 
   // At least one character must have matched

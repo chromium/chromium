@@ -1476,7 +1476,7 @@ std::string_view MakeStringView(const leveldb::Slice& s) {
 }
 
 leveldb::Slice MakeSlice(std::string_view s) {
-  return leveldb::Slice(s.begin(), s.size());
+  return leveldb::Slice(s.data(), s.size());
 }
 
 leveldb::Slice MakeSlice(base::span<const uint8_t> s) {

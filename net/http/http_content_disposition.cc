@@ -29,7 +29,7 @@ enum RFC2047EncodingType {
 bool DecodeQEncoding(base::StringPiece input, std::string* output) {
   std::string temp;
   temp.reserve(input.size());
-  for (auto* it = input.begin(); it != input.end(); ++it) {
+  for (auto it = input.begin(); it != input.end(); ++it) {
     if (*it == '_') {
       temp.push_back(' ');
     } else if (*it == '=') {

@@ -147,7 +147,8 @@ bool ReplaceTemplateExpressionsInternal(
     size_t next_pos = source.find(kLeader, current_pos);
 
     if (next_pos == std::string::npos) {
-      formatted->append(source.begin() + current_pos, source.end());
+      formatted->append(source.data() + current_pos,
+                        source.size() - current_pos);
       break;
     }
 

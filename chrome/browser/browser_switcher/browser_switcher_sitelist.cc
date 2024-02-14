@@ -36,8 +36,8 @@ namespace {
 //
 // If |token| is not in |input|, return a pointer to the null-byte at the end
 // of |input|.
-const char* StringFindInsensitiveASCII(base::StringPiece input,
-                                       base::StringPiece token) {
+auto StringFindInsensitiveASCII(base::StringPiece input,
+                                base::StringPiece token) {
   return base::ranges::search(input, token, std::equal_to<>(),
                               &base::ToLowerASCII<char>,
                               &base::ToLowerASCII<char>);
@@ -176,7 +176,7 @@ class DefaultModeRule : public Rule {
     }
 
     // Compare hosts and ports, case-insensitive.
-    const char* it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
+    auto it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
     return it != url.host_and_port().end();
   }
 
@@ -283,7 +283,7 @@ class IESiteListModeRule : public Rule {
       return false;
 
     // Compare paths, case-insensitively. They must match at the beginning.
-    const char* pos = StringFindInsensitiveASCII(url.path_piece(), path_);
+    auto pos = StringFindInsensitiveASCII(url.path_piece(), path_);
     if (pos != url.path_piece().begin())
       return false;
 

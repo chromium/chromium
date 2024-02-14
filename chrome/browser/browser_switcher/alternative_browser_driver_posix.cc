@@ -91,12 +91,13 @@ void ExpandEnvironmentVariables(std::string* arg) {
   static re2::LazyRE2 re = {
       "\\$\\{([a-zA-Z_][a-zA-Z_0-9]*)\\}|\\$([a-zA-Z_][a-zA-Z_0-9]*)"};
   std::string out;
+  std::string_view view(*arg);
   std::string_view submatch[3] = {};
   size_t start = 0;
   bool matched = false;
-  while (re->Match(*arg, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
+  while (re->Match(view, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
                    submatch, std::size(submatch))) {
-    out.append(*arg, start, submatch[0].data() - (arg->data() + start));
+    out.append(view, start, submatch[0].data() - (arg->data() + start));
     if (submatch[0] == kUrlVarName) {
       // Don't treat '${url}' as an environment variable, leave it as is.
       out.append(kUrlVarName);
@@ -106,12 +107,12 @@ void ExpandEnvironmentVariables(std::string* arg) {
       if (var_value != nullptr)
         out.append(var_value);
     }
-    start = submatch[0].end() - arg->data();
+    start = submatch[0].end() - view.begin();
     matched = true;
   }
   if (!matched)
     return;
-  out.append(arg->data() + start, arg->size() - start);
+  out.append(view.data() + start, view.size() - start);
   std::swap(out, *arg);
 }
 

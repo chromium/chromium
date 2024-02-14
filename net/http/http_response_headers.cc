@@ -147,9 +147,8 @@ int ParseStatus(base::StringPiece status, std::string& append_to) {
   // Skip whitespace. Tabs are not skipped, for backwards compatibility.
   RemoveLeadingSpaces(&status);
 
-  const char* first_non_digit =
-      std::find_if(status.begin(), status.end(),
-                   [](char c) { return !base::IsAsciiDigit(c); });
+  auto first_non_digit = std::ranges::find_if(
+      status, [](char c) { return !base::IsAsciiDigit(c); });
 
   if (first_non_digit == status.begin()) {
     DVLOG(1) << "missing response status number; assuming 200";

@@ -35,7 +35,9 @@ class StringSplitter {
     // |splitter|'s |text|, starting from |head|.
     Iterator(const StringSplitter& splitter,
              base::StringPiece::const_iterator head)
-        : splitter_(&splitter), current_(head, 0), end_(splitter.text_.end()) {
+        : splitter_(&splitter),
+          current_(head, head),
+          end_(splitter.text_.end()) {
       DCHECK_GE(head, splitter_->text_.begin());
       DCHECK_LE(head, end_);
 
@@ -70,7 +72,7 @@ class StringSplitter {
       base::StringPiece::const_iterator end = begin;
       while (end != end_ && !splitter_->is_separator_(*end))
         ++end;
-      current_ = base::StringPiece(begin, end - begin);
+      current_ = base::StringPiece(begin, end);
     }
 
     raw_ptr<const StringSplitter<IsSeparator>> splitter_;

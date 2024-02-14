@@ -157,14 +157,12 @@ SysInfo::SplitHardwareModelNameDoNotUse(std::string_view name) {
   }
 
   HardwareModelNameSplit split;
-  const auto* begin = name.begin();
-  if (!StringToInt(std::string_view(begin + number_loc, begin + comma_loc),
+  if (!StringToInt(name.substr(0u, comma_loc).substr(number_loc),
                    &split.model) ||
-      !StringToInt(std::string_view(begin + comma_loc + 1, name.end()),
-                   &split.variant)) {
+      !StringToInt(name.substr(comma_loc + 1), &split.variant)) {
     return absl::nullopt;
   }
-  split.category = name.substr(0, number_loc);
+  split.category = name.substr(0u, number_loc);
   return split;
 }
 
