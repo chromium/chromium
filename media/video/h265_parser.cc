@@ -25,6 +25,62 @@ namespace media {
 
 namespace {
 
+// Based on section 7.4.5 (equation 7-44), the elements of
+// ScalingList[0][matrixId][i] are expected to define a 4x4 matrix in up-right
+// diagonal scan order. Thus, the following 4x4 matrix (indexed by x and y):
+//
+//         x=0 x=1 x=2 x=3
+//        ________________
+//   y=0 |   a   b   c   d
+//   y=1 |   e   f   g   h
+//   y=2 |   i   j   k   l
+//   y=3 |   m   n   o   p
+//
+// is expected to appear in ScalingList[0][matrixId][...] as
+//
+//    {a, e, b, i, f, c, m, j, g, d, n, k, h, o, l, p}
+//   i=0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+//
+// The relationship between i and (x, y) is defined by the algorithm in 6.5.3
+// with an input of (1 << log2BlockSize) (see 7.4.3.2.1) where log2BlockSize is
+// 2 for a 4x4 matrix.
+//
+// Some APIs (such as the VA-API) want the scaling lists in raster scan order
+// instead of up-right diagonal scan order. That is, for the matrix above, they
+// expect:
+//
+//    {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p}
+//   j=0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+//
+// Therefore, given j and the data in up-right diagonal order, we need to get
+// the corresponding entry in raster order. The
+// k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx array allows us to do this.
+// It's an array where the index is j and the corresponding element is i. This
+// array is derived from the algorithm in 6.5.3 by simply setting:
+//
+//   k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[blkSize * y + x] = i
+//
+// every time diagScanX and diagScanY are updated.
+//
+// As a usage example, let's say we want to get the entry at index 6 of the
+// raster scan order. We get k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[6]
+// which is 8. Then we get arrayInUpRightDiagOrder[8] which in the example above
+// is 'g'.
+constexpr size_t k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
+    0, 2, 5, 9, 1, 4, 8, 12, 3, 7, 11, 14, 6, 10, 13, 15,
+};
+
+// k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx serves the same purpose as
+// k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx but for 8x8 matrices. This
+// array is also derived from the algorithm in 6.5.3 in a similar manner with
+// (1 << log2BlockSize) as the input where log2BlockSize is 3.
+constexpr size_t k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
+    0,  2,  5,  9,  14, 20, 27, 35, 1,  4,  8,  13, 19, 26, 34, 42,
+    3,  7,  12, 18, 25, 33, 41, 48, 6,  11, 17, 24, 32, 40, 47, 53,
+    10, 16, 23, 31, 39, 46, 52, 57, 15, 22, 30, 38, 45, 51, 56, 60,
+    21, 29, 37, 44, 50, 55, 59, 62, 28, 36, 43, 49, 54, 58, 61, 63,
+};
+
 // From Table 7-6.
 constexpr uint8_t kDefaultScalingListSize1To3Matrix0To2[] = {
     16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 16, 17, 16, 17, 18,
@@ -88,6 +144,58 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
 
 H265ScalingListData::H265ScalingListData() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+uint8_t H265ScalingListData::GetScalingList4x4EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-44, ScalingList[0][matrixId][..] (i.e., the 4x4 scaling list
+  // data) is associated with ScanOrder[2][0][..] (i.e., an up-right diagonal
+  // scan ordering for a 4x4 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_4x4[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList8x8EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-45, ScalingList[1][matrixId][..] (i.e., the 8x8 scaling list
+  // data) is associated with ScanOrder[3][0][..] (i.e., an up-right diagonal
+  // scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_8x8[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList16x16EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-46, ScalingList[2][matrixId][..] (i.e., the 16x16 scaling
+  // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
+  // diagonal scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_16x16[matrix_id][up_right_diag_idx];
+}
+
+uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
+    size_t matrix_id,
+    size_t raster_idx) const {
+  // Per equation 7-48, ScalingList[3][matrixId][..] (i.e., the 32x32 scaling
+  // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
+  // diagonal scan ordering for an 8x8 matrix).
+  CHECK_LT(raster_idx,
+           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
+  const size_t up_right_diag_idx =
+      k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
+  return scaling_list_32x32[matrix_id][up_right_diag_idx];
 }
 
 H265StRefPicSet::H265StRefPicSet() {
