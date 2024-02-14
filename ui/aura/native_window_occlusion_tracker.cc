@@ -15,11 +15,9 @@
 
 namespace aura {
 namespace {
-#if BUILDFLAG(IS_WIN)
 // Whether IsNativeWindowOcclusionTrackingAlwaysEnabled() should check for
 // CHROME_HEADLESS.
 bool g_headless_check_enabled = true;
-#endif
 }  // namespace
 
 // static
@@ -49,17 +47,23 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
 // static
 bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
     WindowTreeHost* host) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // chromedriver uses the environment variable CHROME_HEADLESS. In this case
   // it expected that native occlusion is not applied.
   static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
   if ((is_headless && g_headless_check_enabled) ||
       !host->IsNativeWindowOcclusionEnabled() ||
-      !base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion) ||
       !base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor)) {
     return false;
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion)) {
+    return false;
+  }
+#endif
+
   const std::string type = base::GetFieldTrialParamValueByFeature(
       features::kApplyNativeOcclusionToCompositor,
       features::kApplyNativeOcclusionToCompositorType);
@@ -67,20 +71,14 @@ bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
          type == features::kApplyNativeOcclusionToCompositorTypeThrottle ||
          type ==
              features::kApplyNativeOcclusionToCompositorTypeThrottleAndRelease;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We always enable native occlusion tracking for lacros. Occlusion
-  // information is plumbed via ozone through PlatformWindow, not here.
-  return true;
 #else
   return false;
 #endif
 }
 
-#if BUILDFLAG(IS_WIN)
 // static
 void NativeWindowOcclusionTracker::SetHeadlessCheckEnabled(bool enabled) {
   g_headless_check_enabled = enabled;
 }
-#endif
 
 }  // namespace aura
