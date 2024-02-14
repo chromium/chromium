@@ -1011,7 +1011,7 @@ class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
   }
 
  protected:
-  TabHandle tab_handle() {
+  tabs::TabHandle tab_handle() {
     return browser()->tab_strip_model()->GetTabHandleAt(
         browser()->tab_strip_model()->active_index());
   }
@@ -1156,7 +1156,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
 // re-shown without user prompt.
 TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
        VisibilityChange_Upload_ReshowAfterLinkClick) {
-  TabHandle tab = tab_handle();
+  tabs::TabHandle tab = tab_handle();
 
   ShowUploadBubble();
   EXPECT_TRUE(IsBubbleVisible());
@@ -1197,7 +1197,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
 TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
        VisibilityChange_Metric_Upload_ReshowAfterLinkClick) {
   base::HistogramTester histogram_tester;
-  TabHandle tab = tab_handle();
+  tabs::TabHandle tab = tab_handle();
 
   ShowUploadBubble();
   histogram_tester.ExpectUniqueSample(

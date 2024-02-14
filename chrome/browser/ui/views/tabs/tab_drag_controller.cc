@@ -2012,7 +2012,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
       // put it back into the original one. Marking the view as detached tells
       // the TabStrip to not animate its closure, as it's actually being moved.
       data->attached_view->set_detached();
-      std::unique_ptr<TabModel> detached_tab =
+      std::unique_ptr<tabs::TabModel> detached_tab =
           attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
       // No-longer removing the last tab, so reset state.
       removing_last_tab_setter.reset();

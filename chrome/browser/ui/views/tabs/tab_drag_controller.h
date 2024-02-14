@@ -38,12 +38,14 @@ namespace views {
 class View;
 class ViewTracker;
 }
+namespace tabs {
+class TabModel;
+}
 class Browser;
 class KeyEventTracker;
 class Tab;
 class TabDragControllerTest;
 class TabDragContext;
-class TabModel;
 class TabSlotView;
 class TabStripModel;
 class WindowFinder;
@@ -307,7 +309,7 @@ class TabDragController : public views::WidgetObserver,
     // There is a brief period of time when a tab is being moved from one tab
     // strip to another [after Detach but before Attach] that the TabDragData
     // owns the WebContents.
-    std::unique_ptr<TabModel> owned_tab;
+    std::unique_ptr<tabs::TabModel> owned_tab;
 
     // This is the index of the tab in |source_context_| when the drag
     // began. This is used to restore the previous state if the drag is aborted.

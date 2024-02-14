@@ -16,6 +16,8 @@
 
 class TabStripModel;
 
+namespace tabs {
+
 class TabModel final : public SupportsHandles<const TabModel> {
  public:
   TabModel(std::unique_ptr<content::WebContents> contents,
@@ -72,5 +74,7 @@ class TabModel final : public SupportsHandles<const TabModel> {
 };
 
 using TabHandle = TabModel::Handle;
+
+}  // namespace tabs
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MODEL_H_

@@ -159,7 +159,7 @@ void CloseTab(int browser_index, int tab_index) {
 }
 
 void MoveTab(int from_browser_index, int to_browser_index, int tab_index) {
-  std::unique_ptr<TabModel> detached_tab =
+  std::unique_ptr<tabs::TabModel> detached_tab =
       test()
           ->GetBrowser(from_browser_index)
           ->tab_strip_model()

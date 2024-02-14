@@ -14,8 +14,11 @@
 
 class Browser;
 class GURL;
-class TabModel;
 struct DetachedWebContents;
+
+namespace tabs {
+class TabModel;
+}
 
 namespace content {
 class WebContents;
@@ -74,7 +77,7 @@ class TabStripModelDelegate {
     ~NewStripContents();
     NewStripContents(NewStripContents&&);
     // The TabModel to add.
-    std::unique_ptr<TabModel> tab;
+    std::unique_ptr<tabs::TabModel> tab;
     // A bitmask of TabStripModel::AddTabTypes to apply to the added contents.
     int add_types = 0;
   };

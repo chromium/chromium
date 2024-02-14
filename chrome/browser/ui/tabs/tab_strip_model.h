@@ -62,7 +62,7 @@ class TabGroupModelFactory {
 struct DetachedWebContents {
   DetachedWebContents(int index_before_any_removals,
                       int index_at_time_of_removal,
-                      std::unique_ptr<TabModel> tab,
+                      std::unique_ptr<tabs::TabModel> tab,
                       content::WebContents* contents,
                       TabStripModelChange::RemoveReason remove_reason,
                       std::optional<SessionID> id);
@@ -77,7 +77,7 @@ struct DetachedWebContents {
   // non-null. In other words, all observers should use `contents`, it is
   // guaranteed to be valid for the life time of the notification (and
   // possibly longer).
-  std::unique_ptr<TabModel> tab;
+  std::unique_ptr<tabs::TabModel> tab;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents;
 
   // The index of the WebContents in the original selection model of the tab
@@ -165,8 +165,8 @@ class TabStripModel : public TabGroupController {
   int count() const { return static_cast<int>(contents_data_.size()); }
   bool empty() const { return contents_data_.empty(); }
 
-  int GetIndexOfTab(TabHandle tab) const;
-  TabHandle GetTabHandleAt(int index) const;
+  int GetIndexOfTab(tabs::TabHandle tab) const;
+  tabs::TabHandle GetTabHandleAt(int index) const;
 
   // Retrieve the Profile associated with this TabStripModel.
   Profile* profile() const { return profile_; }
@@ -217,7 +217,7 @@ class TabStripModel : public TabGroupController {
   // InsertWebContentsAt.
   int InsertDetachedTabAt(
       int index,
-      std::unique_ptr<TabModel> tab,
+      std::unique_ptr<tabs::TabModel> tab,
       int add_types,
       std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
@@ -235,7 +235,7 @@ class TabStripModel : public TabGroupController {
 
   // Detaches the tab at the specified index for reinsertion into another tab
   // strip. Returns the detached tab.
-  std::unique_ptr<TabModel> DetachTabAtForInsertion(int index);
+  std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(int index);
 
   // Detaches the WebContents at the specified index for reinsertion into
   // another tab strip. Returns the detached WebContents.
@@ -679,7 +679,7 @@ class TabStripModel : public TabGroupController {
   // constraint that all pinned tabs occur before non-pinned tabs. It returns
   // the index the tab is actually inserted to. See also AddWebContents.
   int InsertTabAtImpl(int index,
-                      std::unique_ptr<TabModel> tab,
+                      std::unique_ptr<tabs::TabModel> tab,
                       int add_types,
                       std::optional<tab_groups::TabGroupId> group);
 
@@ -825,7 +825,7 @@ class TabStripModel : public TabGroupController {
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
-  std::vector<std::unique_ptr<TabModel>> contents_data_;
+  std::vector<std::unique_ptr<tabs::TabModel>> contents_data_;
 
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;
