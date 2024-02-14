@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
@@ -440,7 +441,7 @@ void NotificationListView::Init(
     auto message_view_container = std::make_unique<MessageViewContainer>(
         CreateMessageView(*notification), this);
     message_view_container->set_disable_default_background(
-        notification->type() == message_center::NOTIFICATION_TYPE_CUSTOM);
+        notification->custom_view_type() == kArcNotificationCustomViewType);
     // The insertion order for notifications is reversed.
     AddChildViewAt(std::move(message_view_container), children().size());
     MessageCenter::Get()->DisplayedNotification(

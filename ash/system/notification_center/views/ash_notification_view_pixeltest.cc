@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/capture_mode/capture_mode_test_util.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -13,20 +10,15 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "ui/message_center/views/message_popup_view.h"
-#include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 
 namespace ash {
 
 namespace {
-
-constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 
 constexpr char kShortTitleString[] = "Short Title";
 constexpr char kMediumTitleString[] = "Test Notification's Multiline Title";
@@ -47,31 +39,6 @@ constexpr char kLongTitleScreenshot[] = "ash_notification_multiline_long_title";
 const ui::ImageModel test_green_icon = ui::ImageModel::FromImageSkia(
     CreateSolidColorTestImage(gfx::Size(/*width=*/48, /*height=*/48),
                               SK_ColorGREEN));
-
-// The types of the primary display size.
-enum class DisplayType {
-  // The display size is the default one.
-  kNormal,
-
-  // The display's height is much greater than its width.
-  kUltraHeight,
-
-  // The display's width is much greater than its height.
-  kUltraWidth,
-};
-
-// Returns the name of `type`.
-std::string GetDisplayTypeName(DisplayType type) {
-  std::string display_type_name;
-  switch (type) {
-    case DisplayType::kNormal:
-      return "normal";
-    case DisplayType::kUltraWidth:
-      return "ultra_width";
-    case DisplayType::kUltraHeight:
-      return "ultra_height";
-  }
-}
 
 }  // namespace
 
@@ -358,75 +325,6 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
   // Verify the spacing with a pixel test.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided_text_spacing", /*revision_number=*/3, notification_view));
-}
-
-class ScreenCaptureNotificationPixelTest
-    : public AshNotificationViewPixelTest,
-      public testing::WithParamInterface<DisplayType> {
- public:
-  // AshNotificationViewPixelTestBase:
-  void SetUp() override {
-    AshNotificationViewPixelTest::SetUp();
-
-    // Change the display size depending on the test param.
-    switch (GetDisplayType()) {
-      case DisplayType::kNormal:
-        break;
-      case DisplayType::kUltraWidth:
-        UpdateDisplay("1200x600");
-        break;
-      case DisplayType::kUltraHeight:
-        UpdateDisplay("600x1200");
-        break;
-    }
-
-    // Create windows so that the screenshot has more contents.
-    window1_ = CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(200, 200));
-    window2_ =
-        CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(220, 220, 100, 100));
-    DecorateWindow(window1_.get(), u"Window1", SK_ColorDKGRAY);
-    DecorateWindow(window2_.get(), u"Window2", SK_ColorBLUE);
-  }
-
-  void TearDown() override {
-    window2_.reset();
-    window1_.reset();
-    AshNotificationViewPixelTest::TearDown();
-  }
-
-  const DisplayType& GetDisplayType() const { return GetParam(); }
-
- private:
-  std::unique_ptr<aura::Window> window1_;
-  std::unique_ptr<aura::Window> window2_;
-};
-
-INSTANTIATE_TEST_SUITE_P(DisplaySize,
-                         ScreenCaptureNotificationPixelTest,
-                         testing::ValuesIn({DisplayType::kNormal,
-                                            DisplayType::kUltraWidth,
-                                            DisplayType::kUltraHeight}));
-
-// TODO(https://crbug.com/1490722): This test is failing on Chrome OS.
-// Verifies the notification popup of a full screenshot.
-TEST_P(ScreenCaptureNotificationPixelTest, DISABLED_VerifyPopup) {
-  // Take a full screenshot then wait for the file path to the saved image.
-  ash::CaptureModeController* controller = StartCaptureSession(
-      CaptureModeSource::kFullscreen, CaptureModeType::kImage);
-  controller->PerformCapture();
-  const base::FilePath image_file_path = WaitForCaptureFileToBeSaved();
-
-  // Wait until the notification popup shows.
-  MessagePopupAnimationWaiter(
-      GetPrimaryNotificationCenterTray()->popup_collection())
-      .Wait();
-
-  // Get the notification view.
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      base::StrCat({"screen_capture_popup_notification_",
-                    GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/10,
-      test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
 }  // namespace ash
