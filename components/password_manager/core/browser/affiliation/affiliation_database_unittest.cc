@@ -14,11 +14,11 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -275,7 +275,8 @@ TEST_F(AffiliationDatabaseTest, CorruptDBGetsPoisoned) {
   EXPECT_EQ(0u, affiliations.size());
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AffiliationDatabase.Error", SQLITE_INTERRUPT, 1);
+      "PasswordManager.AffiliationDatabase.Error",
+      sql::SqliteResultCode::kInterrupt, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AffiliationDatabase.StoreResult", 1);
 }
