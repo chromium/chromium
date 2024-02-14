@@ -767,7 +767,7 @@ void OverviewSession::PositionWindows(
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_)
     grid->PositionWindows(animate, ignored_items);
 
-  UpdateNoWindowsWidgetOnEachGrid(animate, /*is_continuous_enter=*/false);
+  RefreshNoWindowsWidgetBoundsOnEachGrid(animate);
 }
 
 bool OverviewSession::IsWindowInOverview(const aura::Window* window) {
@@ -1320,8 +1320,7 @@ void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
           ->InSplitViewMode()) {
     return;
   }
-  overview_grid->UpdateNoWindowsWidget(IsEmpty(), /*animate=*/false,
-                                       /*is_continuous_enter=*/false);
+  overview_grid->RefreshNoWindowsWidgetBounds(/*animate=*/false);
 }
 
 void OverviewSession::OnWindowDestroying(aura::Window* window) {
@@ -1566,13 +1565,11 @@ void OverviewSession::OnSplitViewStateChanged(
   // session.
   CHECK_NE(OverviewEnterExitType::kPine, enter_exit_overview_type_);
 
-  UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
-                                  /*is_continuous_enter=*/false);
+  RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }
 
 void OverviewSession::OnSplitViewDividerPositionChanged() {
-  UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
-                                  /*is_continuous_enter=*/false);
+  RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }
 
 void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
@@ -1657,6 +1654,16 @@ void OverviewSession::UpdateNoWindowsWidgetOnEachGrid(
   for (auto& grid : grid_list_) {
     grid->UpdateNoWindowsWidget(IsEmpty(), animate, is_continuous_enter);
   }
+}
+
+void OverviewSession::RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate) {
+  // If there are overview items then the no windows widgets will not be
+  // visible so early return.
+  if (!IsEmpty())
+    return;
+
+  for (auto& grid : grid_list_)
+    grid->RefreshNoWindowsWidgetBounds(animate);
 }
 
 void OverviewSession::OnItemAdded(aura::Window* window) {
