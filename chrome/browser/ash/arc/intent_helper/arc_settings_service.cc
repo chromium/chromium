@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
@@ -25,7 +26,6 @@
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

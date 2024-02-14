@@ -42,7 +42,7 @@ constexpr SkColor kErrorIconColor = gfx::kGoogleRed300;
 // static
 MessageView* MessageView::Show(DisplayOverlayController* controller,
                                views::View* parent,
-                               const base::StringPiece& message,
+                               std::string_view message,
                                MessageType message_type) {
   auto* view_ptr = parent->AddChildView(std::make_unique<MessageView>(
       controller, parent->size(), message, message_type));
@@ -52,7 +52,7 @@ MessageView* MessageView::Show(DisplayOverlayController* controller,
 
 MessageView::MessageView(DisplayOverlayController* controller,
                          const gfx::Size& parent_size,
-                         const base::StringPiece& message,
+                         std::string_view message,
                          MessageType message_type)
     : views::LabelButton(), display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);

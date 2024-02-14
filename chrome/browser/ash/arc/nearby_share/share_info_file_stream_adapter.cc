@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_stream_adapter.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
@@ -113,7 +113,7 @@ void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
   auto write_fd_func = base::BindOnce(
       [](int fd, scoped_refptr<net::IOBuffer> buf, int size) -> bool {
         const bool result =
-            base::WriteFileDescriptor(fd, base::StringPiece(buf->data(), size));
+            base::WriteFileDescriptor(fd, std::string_view(buf->data(), size));
         PLOG_IF(ERROR, !result) << "Failed writing to fd.";
         return result;
       },

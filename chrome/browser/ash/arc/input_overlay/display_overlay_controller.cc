@@ -642,7 +642,7 @@ std::optional<gfx::Rect> DisplayOverlayController::GetOverlayMenuEntryBounds() {
   return std::optional<gfx::Rect>(menu_entry_->GetBoundsInScreen());
 }
 
-void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,
+void DisplayOverlayController::AddEditMessage(std::string_view message,
                                               MessageType message_type) {
   // No need to show edit message for Beta version.
   // There is no instance for unittest.

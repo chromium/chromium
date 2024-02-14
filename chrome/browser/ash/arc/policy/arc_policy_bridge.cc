@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "arc_policy_util.h"
@@ -324,7 +325,7 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
     if (app_policy_dict.has_value() && app_policy_dict.value().is_dict()) {
       // Need a deep copy of all values here instead of doing a swap, because
       // JSONReader::Read constructs a dictionary whose StringValues are
-      // JSONStringValues which are based on StringPiece instead of string.
+      // JSONStringValues which are based on std::string_view instead of string.
       filtered_policies.Merge(std::move(app_policy_dict.value().GetDict()));
     } else {
       std::string app_policy_string =

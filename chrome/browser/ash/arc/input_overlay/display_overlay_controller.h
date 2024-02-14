@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
@@ -63,8 +64,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Get the bounds of `menu_entry_` in screen coordinates.
   std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
-  void AddEditMessage(const base::StringPiece& message,
-                      MessageType message_type);
+  void AddEditMessage(std::string_view message, MessageType message_type);
   void RemoveEditMessage();
 
   void OnInputBindingChange(Action* action,

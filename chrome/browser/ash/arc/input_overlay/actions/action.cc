@@ -124,7 +124,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const base::StringPiece key_name) {
+    const std::string_view key_name) {
   const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";

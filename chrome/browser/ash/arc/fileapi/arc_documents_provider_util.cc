@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -256,7 +257,7 @@ std::string StripMimeSubType(const std::string& mime_type) {
 // This is based on net/base/mime_util.cc: net::FindMimeType.
 std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
-    std::vector<base::StringPiece> extensions = base::SplitStringPiece(
+    std::vector<std::string_view> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (base::Contains(extensions, ext))
       return mapping.mime_type;
