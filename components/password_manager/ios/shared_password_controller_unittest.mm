@@ -435,7 +435,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
           uniqueFormID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
          uniqueFieldID:autofill::FieldRendererId(1)
-             fieldType:kPasswordFieldType  // Ensures this is a password form.
+             fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
@@ -476,7 +476,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
           uniqueFormID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
          uniqueFieldID:autofill::FieldRendererId(1)
-             fieldType:kPasswordFieldType  // Ensures this is a password form.
+             fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
@@ -512,7 +512,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
           uniqueFormID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
          uniqueFieldID:autofill::FieldRendererId(1)
-             fieldType:kPasswordFieldType  // Ensures this is a password form.
+             fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
@@ -568,7 +568,7 @@ TEST_F(SharedPasswordControllerTest,
           uniqueFormID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
          uniqueFieldID:autofill::FieldRendererId(1)
-             fieldType:kPasswordFieldType  // Ensures this is a password form.
+             fieldType:kObfuscatedFieldType  // Ensures this is a password form.
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
@@ -1088,7 +1088,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
               uniqueFormID:form.renderer_id
            fieldIdentifier:SysUTF16ToNSString(form.fields[1].name)
              uniqueFieldID:form.fields[1].renderer_id
-                 fieldType:@"password"
+                 fieldType:kObfuscatedFieldType
                       type:@"focus"
                 typedValue:@""
                    frameID:kTestFrameID];
@@ -1166,7 +1166,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
           uniqueFormID:autofill::FormRendererId(0)
        fieldIdentifier:@"field"
          uniqueFieldID:autofill::FieldRendererId(1)
-             fieldType:kPasswordFieldType
+             fieldType:kObfuscatedFieldType
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];

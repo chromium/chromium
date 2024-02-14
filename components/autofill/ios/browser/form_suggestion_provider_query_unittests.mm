@@ -25,7 +25,7 @@ NSString* const kTestFrameID = @"someframe";
 
 using FormSuggestionProviderQueryTest = PlatformTest;
 
-// Tests that a query caused by focusing a password field is processed
+// Tests that a query caused by focusing an obfuscated field is processed
 // correctly.
 TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
@@ -33,7 +33,7 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
           uniqueFormID:kTestFormUniqueID
        fieldIdentifier:kTestPasswordFieldIdentifier
          uniqueFieldID:kTestFieldUniqueID
-             fieldType:kPasswordFieldType
+             fieldType:kObfuscatedFieldType
                   type:kTestFocusType
             typedValue:kTestTypedValue
                frameID:kTestFrameID];
@@ -41,7 +41,7 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
   EXPECT_TRUE([formQuery hasFocusType]);
 }
 
-// Tests that a query caused by input in a non-password field id processed
+// Tests that a query caused by input in a non-obfuscated field id processed
 // correctly.
 TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]

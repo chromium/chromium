@@ -305,8 +305,8 @@ class PasswordCounterDelegateBridge
   }
 }
 
-- (BOOL)lastFocusedFieldWasPassword {
-  return _lastSeenParams.field_type == autofill::kPasswordFieldType;
+- (BOOL)lastFocusedFieldWasObfuscated {
+  return _lastSeenParams.field_type == autofill::kObfuscatedFieldType;
 }
 
 - (const autofill::FormActivityParams&)lastSeenParams {

@@ -285,7 +285,7 @@ enum class FormExtractionStatus {
 
 - (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
                      webFrame:(web::WebFrame*)webFrame {
-  if (![formQuery.fieldType isEqual:kPasswordFieldType]) {
+  if (![formQuery.fieldType isEqual:kObfuscatedFieldType]) {
     return NO;
   }
 

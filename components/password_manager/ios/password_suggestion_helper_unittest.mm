@@ -119,7 +119,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
       autofill::FieldRendererId uniqueFieldID,
       NSString* frameID) {
     return BuildQuery(uniqueFormID, @"password1", uniqueFieldID,
-                      kPasswordFieldType, frameID);
+                      kObfuscatedFieldType, frameID);
   }
 
   FormSuggestionProviderQuery* BuildQuery(NSString* fieldIdentifier,
@@ -145,7 +145,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
 TEST_F(PasswordSuggestionHelperTest,
        CheckIfSuggestions_WithFillDataImmediately_OnPasswordField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kPasswordFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"pwd1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.uniqueFormID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.uniqueFieldID;
@@ -229,7 +229,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kPasswordFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"pwd1", kObfuscatedFieldType, NSFrameId(main_frame_));
   OCMExpect([delegate_
       suggestionHelperShouldTriggerFormExtraction:helper_
                                           inFrame:main_frame_]);
@@ -267,7 +267,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kPasswordFieldType, kTestFrameID);
+      BuildQuery(@"pwd1", kObfuscatedFieldType, kTestFrameID);
   FormRendererId form1_renderer_id = query.uniqueFormID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.uniqueFieldID;
@@ -321,7 +321,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query1 =
-      BuildQuery(@"password1", kPasswordFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query1.uniqueFormID;
   FormRendererId form2_renderer_id = autofill::test::MakeFormRendererId();
   FieldRendererId username1_renderer_id = query1.uniqueFieldID;
@@ -695,7 +695,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
 // Tests retrieving suggestions on password field in form when available.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"password1", kPasswordFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.uniqueFormID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.uniqueFieldID;
@@ -828,7 +828,7 @@ TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   };
   {
     FormSuggestionProviderQuery* iframe_query =
-        BuildQuery(@"password1", kPasswordFieldType, NSFrameId(frame1_ptr));
+        BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(frame1_ptr));
     [helper_ checkIfSuggestionsAvailableForForm:iframe_query
                               completionHandler:completion];
   }

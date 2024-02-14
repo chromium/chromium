@@ -79,7 +79,7 @@
                                                        webState:webState
                                                     syncService:syncService
                                                             URL:GURL()
-                                         invokedOnPasswordField:NO];
+                                       invokedOnObfuscatedField:NO];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   _savedPasswordsPresenter =

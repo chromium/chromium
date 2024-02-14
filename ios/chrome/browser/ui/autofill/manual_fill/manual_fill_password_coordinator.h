@@ -49,7 +49,7 @@ class FormRendererId;
                        browser:(Browser*)browser
                            URL:(const GURL&)URL
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-        invokedOnPasswordField:(BOOL)invokedOnPasswordField
+      invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
                         formID:(const autofill::FormRendererId)formID
                        frameID:(const std::string&)frameID
     NS_DESIGNATED_INITIALIZER;

@@ -10,7 +10,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace {
-NSString* const kPasswordFieldType = @"password";
+// The "password" field type does not explicitly mean that the field contains a
+// password, it means that the field obfuscates its information instead of
+// showing it plainly.
+NSString* const kObfuscatedFieldType = @"password";
 }  // namespace
 
 // A class containing the data necessary for FormSuggestionProvider to

@@ -47,7 +47,7 @@
                        browser:(Browser*)browser
                            URL:(const GURL&)URL
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-        invokedOnPasswordField:(BOOL)invokedOnPasswordField
+      invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
                         formID:(const autofill::FormRendererId)formID
                        frameID:(const std::string&)frameID {
   self = [super initWithBaseViewController:viewController
@@ -64,11 +64,11 @@
         SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-         initWithFaviconLoader:faviconLoader
-                      webState:browser->GetWebStateList()->GetActiveWebState()
-                   syncService:syncService
-                           URL:URL
-        invokedOnPasswordField:invokedOnPasswordField];
+           initWithFaviconLoader:faviconLoader
+                        webState:browser->GetWebStateList()->GetActiveWebState()
+                     syncService:syncService
+                             URL:URL
+        invokedOnObfuscatedField:invokedOnObfuscatedField];
     [_passwordMediator fetchPasswordsForForm:formID frame:frameID];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;

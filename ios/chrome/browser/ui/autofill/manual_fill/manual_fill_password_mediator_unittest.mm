@@ -83,13 +83,13 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
     presenter_->Init();
 
     mediator_ = [[ManualFillPasswordMediator alloc]
-         initWithFaviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(browser_state_.get())
-                      webState:fake_web_state_.get()
-                   syncService:SyncServiceFactory::GetForBrowserState(
-                                   browser_state_.get())
-                           URL:GURL("http://www.example.com/")
-        invokedOnPasswordField:NO];
+           initWithFaviconLoader:IOSChromeFaviconLoaderFactory::
+                                     GetForBrowserState(browser_state_.get())
+                        webState:fake_web_state_.get()
+                     syncService:SyncServiceFactory::GetForBrowserState(
+                                     browser_state_.get())
+                             URL:GURL("http://www.example.com/")
+        invokedOnObfuscatedField:NO];
 
     consumer_ = OCMProtocolMock(@protocol(ManualFillPasswordConsumer));
     mediator_.consumer = consumer_;

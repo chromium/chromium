@@ -799,7 +799,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
           /*log_debug_data*/ true)) {
     return NO;
   }
-  if (![fieldType isEqual:kPasswordFieldType]) {
+  if (![fieldType isEqual:kObfuscatedFieldType]) {
     return NO;
   }
   const PasswordFormGenerationData* generationData =

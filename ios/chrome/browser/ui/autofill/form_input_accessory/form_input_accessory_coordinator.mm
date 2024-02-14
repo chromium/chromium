@@ -259,7 +259,7 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Starts the password coordinator and displays its view controller.
 - (void)startPasswordsFromButton:(UIButton*)button
-          invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+        invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
@@ -272,7 +272,7 @@ const CGFloat kIPHVerticalOffset = -5;
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-              invokedOnPasswordField:invokedOnPasswordField
+            invokedOnObfuscatedField:invokedOnObfuscatedField
                               formID:lastSeenParams.unique_form_id
                              frameID:lastSeenParams.frame_id];
 
@@ -394,10 +394,10 @@ const CGFloat kIPHVerticalOffset = -5;
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                   didPressPasswordButton:(UIButton*)passwordButton {
   [self stopChildren];
-  BOOL invokedOnPasswordField =
-      [self.formInputAccessoryMediator lastFocusedFieldWasPassword];
+  BOOL invokedOnObfuscatedField =
+      [self.formInputAccessoryMediator lastFocusedFieldWasObfuscated];
   [self startPasswordsFromButton:passwordButton
-          invokedOnPasswordField:invokedOnPasswordField];
+        invokedOnObfuscatedField:invokedOnObfuscatedField];
   [self updateKeyboardAccessoryForManualFilling];
 }
 

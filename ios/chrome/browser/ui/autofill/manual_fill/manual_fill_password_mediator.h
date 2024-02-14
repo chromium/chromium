@@ -75,7 +75,7 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
                              webState:(web::WebState*)webState
                           syncService:(syncer::SyncService*)syncService
                                   URL:(const GURL&)URL
-               invokedOnPasswordField:(BOOL)invokedOnPasswordField
+             invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

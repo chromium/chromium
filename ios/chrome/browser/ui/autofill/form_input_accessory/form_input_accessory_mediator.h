@@ -83,7 +83,7 @@ class WebStateList;
 - (void)disconnect;
 
 // Returns YES if the last focused field is of type 'password'.
-- (BOOL)lastFocusedFieldWasPassword;
+- (BOOL)lastFocusedFieldWasObfuscated;
 
 // Returns the last seen valid params of a form before retrieving suggestions.
 - (const autofill::FormActivityParams&)lastSeenParams;
