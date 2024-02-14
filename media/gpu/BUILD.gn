@@ -690,6 +690,20 @@ fuzzer_test("media_h264_decoder_fuzzer") {
   seed_corpuses = [ "//media/test/data" ]
 }
 
+# TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
+if (use_v4l2_codec || use_vaapi) {
+  fuzzer_test("media_vp8_decoder_fuzzer") {
+    sources = [ "vp8_decoder_fuzzer.cc" ]
+    deps = [
+      ":common",
+      ":gpu",
+      "//base",
+      "//media",
+    ]
+    seed_corpuses = [ "//media/test/data" ]
+  }
+}
+
 if (use_av1_hw_decoder) {
   fuzzer_test("media_av1_decoder_fuzzer") {
     sources = [ "av1_decoder_fuzzertest.cc" ]
