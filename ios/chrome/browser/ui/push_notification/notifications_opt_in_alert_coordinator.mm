@@ -172,7 +172,7 @@
 // Tells the delegate the result of the UI flow.
 - (void)setResult:(NotificationsOptInAlertResult)result {
   // TODO(crbug.com/1519157): Log metrics.
-  [self.delegate notificationsOptInAlertResult:result];
+  [self.delegate notificationsOptInAlertCoordinator:self result:result];
 }
 
 @end

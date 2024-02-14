@@ -84,6 +84,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
+#pragma mark - Public
+
+- (void)deniedPermissionsForClientIds:
+    (std::vector<PushNotificationClientId>)clientIds {
+  for (PushNotificationClientId clientID : clientIds) {
+    [self switchItemForClientId:clientID].on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(clientID, _gaiaID);
+  }
+  [self.consumer reloadData];
+}
+
 #pragma mark - Properties
 
 - (TableViewItem*)priceTrackingItem {
@@ -325,6 +336,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   service->SetPreference(base::SysUTF8ToNSString(_gaiaID), clientID, false);
+}
+
+// Returns the TableViewSwitchItem for the given `clientId`.
+- (TableViewSwitchItem*)switchItemForClientId:
+    (PushNotificationClientId)clientId {
+  switch (clientId) {
+    case PushNotificationClientId::kContent:
+      return _contentNotificationsItem;
+    case PushNotificationClientId::kTips:
+      return _tipsNotificationsItem;
+    case PushNotificationClientId::kCommerce:
+      // Not a switch.
+      NOTREACHED_NORETURN();
+  }
 }
 
 @end

@@ -108,6 +108,7 @@
       std::vector{PushNotificationClientId::kContent};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
+  _optInAlertCoordinator.delegate = self;
   [_optInAlertCoordinator start];
 }
 
@@ -120,6 +121,7 @@
       std::vector{PushNotificationClientId::kTips};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_TIPS_NOTIFICATIONS_SETTINGS_ALERT_SUBTITLE);
+  _optInAlertCoordinator.delegate = self;
   [_optInAlertCoordinator start];
 }
 
@@ -155,9 +157,25 @@
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
-- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
+  CHECK_EQ(_optInAlertCoordinator, alertCoordinator);
+  std::vector<PushNotificationClientId> clientIds =
+      alertCoordinator.clientIds.value();
   [_optInAlertCoordinator stop];
   _optInAlertCoordinator = nil;
+  switch (result) {
+    case NotificationsOptInAlertResult::kPermissionDenied:
+    case NotificationsOptInAlertResult::kCanceled:
+    case NotificationsOptInAlertResult::kError:
+    case NotificationsOptInAlertResult::kOpenedSettings:
+      [_mediator deniedPermissionsForClientIds:std::move(clientIds)];
+      break;
+    case NotificationsOptInAlertResult::kPermissionGranted:
+      break;
+  }
 }
 
 @end

@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class NotificationsOptInAlertCoordinator;
 enum class PushNotificationClientId;
 
 // The result of asking for permission to receive notifications.
@@ -24,7 +25,10 @@ enum class NotificationsOptInAlertResult {
 // A protocol used to communicate the result back to the owning coordinator.
 @protocol NotificationsOptInAlertCoordinatorDelegate
 // Called with the final result of the opt-in request.
-- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result;
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result;
 @end
 
 // Coordinates the presentation of an alert to ask the user for permission to

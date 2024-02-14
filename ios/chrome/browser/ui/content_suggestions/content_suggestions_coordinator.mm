@@ -845,7 +845,11 @@
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
-- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
+  CHECK_EQ(_notificationsOptInAlertCoordinator, alertCoordinator);
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
 }

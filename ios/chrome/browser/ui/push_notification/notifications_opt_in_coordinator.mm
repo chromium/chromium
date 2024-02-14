@@ -121,15 +121,22 @@
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
-- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
   // TODO(crbug.com/41492138): record metrics.
+  CHECK_EQ(_optInAlertCoordinator, alertCoordinator);
   [_optInAlertCoordinator stop];
   _optInAlertCoordinator = nil;
   switch (result) {
     case NotificationsOptInAlertResult::kPermissionGranted:
       [self dismissViewController];
       break;
-    default:
+    case NotificationsOptInAlertResult::kPermissionDenied:
+    case NotificationsOptInAlertResult::kOpenedSettings:
+    case NotificationsOptInAlertResult::kCanceled:
+    case NotificationsOptInAlertResult::kError:
       break;
   }
 }
