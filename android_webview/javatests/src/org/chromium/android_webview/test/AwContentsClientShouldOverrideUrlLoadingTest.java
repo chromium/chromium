@@ -172,7 +172,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                         + "} "
                         + "</script>",
                 String.format(
-                        "<iframe onLoad=\"setTimeout('doRedirect%s()', %d);\" />",
+                        "<script>" + "setTimeout('doRedirect%s()', %d)" + "</script>",
                         method, timeout));
     }
 
