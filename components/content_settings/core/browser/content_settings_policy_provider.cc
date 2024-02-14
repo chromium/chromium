@@ -113,6 +113,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
          ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedWebPrintingAllowedForUrls,
+         ContentSettingsType::WEB_PRINTING, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedWebPrintingBlockedForUrls,
+         ContentSettingsType::WEB_PRINTING, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -155,6 +159,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsBlockedForUrls,
     prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
+    prefs::kManagedWebPrintingAllowedForUrls,
+    prefs::kManagedWebPrintingBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -186,6 +192,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWindowManagementSetting,
     prefs::kManagedDefaultLocalFontsSetting,
     prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
+    prefs::kManagedDefaultWebPrintingSetting,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
@@ -291,6 +298,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultLocalFontsSetting},
         {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
+        {ContentSettingsType::WEB_PRINTING,
+         prefs::kManagedDefaultWebPrintingSetting},
 };
 
 // static

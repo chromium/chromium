@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_default_content_settings.web_printing": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultWebPrintingSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.web_printing": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultWebPrintingSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.web_printing": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

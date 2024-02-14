@@ -998,8 +998,16 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kAlwaysOnVpnPreConnectUrlAllowlist,
     policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
-    base::Value::Type::LIST
-  },
+    base::Value::Type::LIST },
+  { key::kDefaultWebPrintingSetting,
+    prefs::kManagedDefaultWebPrintingSetting,
+    base::Value::Type::INTEGER },
+  { key::kWebPrintingAllowedForUrls,
+    prefs::kManagedWebPrintingAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kWebPrintingBlockedForUrls,
+    prefs::kManagedWebPrintingBlockedForUrls,
+    base::Value::Type::LIST },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1,0 +1,30 @@
+caption: Control use of the WebPrinting API
+default: null
+desc: |-
+  Setting the policy to 2 automatically blocks sites from using the WebPrinting API.
+
+  Setting the policy to 3 will prompt the user when a site wants to use the WebPrinting API.
+
+  Leaving it unset lets websites ask for local printer access, but users can change this setting.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Do not allow any site to request access to local printers via the WebPrinting API
+  name: BlockWebPrinting
+  value: 2
+- caption: Allow sites to ask the user to grant access to local printers via the WebPrinting API
+  name: AskWebPrinting
+  value: 3
+owners:
+- file://chrome/browser/printing/web_api/OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+tags: []
+type: int-enum

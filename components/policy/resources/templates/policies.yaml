@@ -1217,6 +1217,9 @@ policies:
   1216: LocalUserFilesAllowed
   1217: DevToolsGenAiSettings
   1218: SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins
+  1219: DefaultWebPrintingSetting
+  1220: WebPrintingAllowedForUrls
+  1221: WebPrintingBlockedForUrls
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1268,3 +1271,4 @@ atomic_groups:
   48: ''
   49: ProfileSeparation
   50: FloatingSso
+  51: WebPrintingSettings

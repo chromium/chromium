@@ -2033,6 +2033,9 @@ chromium-metrics-reviews@google.com.
   <int value="1217" label="DevToolsGenAiSettings"/>
   <int value="1218"
       label="SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins"/>
+  <int value="1219" label="DefaultWebPrintingSetting"/>
+  <int value="1220" label="WebPrintingAllowedForUrls"/>
+  <int value="1221" label="WebPrintingBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

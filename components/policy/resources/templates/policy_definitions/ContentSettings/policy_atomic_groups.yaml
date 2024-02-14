@@ -81,3 +81,9 @@ WindowManagementSettings:
   - DefaultWindowPlacementSetting
   - WindowPlacementAllowedForUrls
   - WindowPlacementBlockedForUrls
+WebPrintingSettings:
+  caption: Web Printing settings
+  policies:
+  - DefaultWebPrintingSetting
+  - WebPrintingAllowedForUrls
+  - WebPrintingBlockedForUrls
