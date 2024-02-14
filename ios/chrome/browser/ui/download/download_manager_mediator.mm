@@ -237,12 +237,17 @@ float DownloadManagerMediator::GetDownloadManagerProgress() const {
 }
 
 void DownloadManagerMediator::UpdateUploadTask() {
-  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) || !download_task_) {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     return;
   }
-  DriveTabHelper* drive_tab_helper =
-      DriveTabHelper::FromWebState(download_task_->GetWebState());
-  SetUploadTask(drive_tab_helper->GetUploadTaskForDownload(download_task_));
+  UploadTask* new_upload_task = nullptr;
+  if (download_task_) {
+    DriveTabHelper* drive_tab_helper =
+        DriveTabHelper::FromWebState(download_task_->GetWebState());
+    new_upload_task =
+        drive_tab_helper->GetUploadTaskForDownload(download_task_);
+  }
+  SetUploadTask(new_upload_task);
 }
 
 void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
