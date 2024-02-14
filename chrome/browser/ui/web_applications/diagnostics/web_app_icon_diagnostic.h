@@ -18,9 +18,9 @@ class Profile;
 namespace web_app {
 
 class WebAppProvider;
-class WebApp;
 
 // Runs a series of icon health checks for |app_id|.
+// TODO(b/325094641): Convert into a command.
 class WebAppIconDiagnostic {
  public:
   struct Result {
@@ -69,7 +69,6 @@ class WebAppIconDiagnostic {
   const webapps::AppId app_id_;
 
   const raw_ptr<WebAppProvider> provider_;
-  const raw_ptr<const WebApp> app_;
 
   std::optional<SquareSizePx> icon_size_;
 

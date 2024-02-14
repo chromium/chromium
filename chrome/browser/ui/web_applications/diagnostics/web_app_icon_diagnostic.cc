@@ -18,8 +18,7 @@ WebAppIconDiagnostic::WebAppIconDiagnostic(Profile* profile,
                                            webapps::AppId app_id)
     : profile_(profile),
       app_id_(std::move(app_id)),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_.get())),
-      app_(provider_->registrar_unsafe().GetAppById(app_id_)) {}
+      provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_.get())) {}
 
 WebAppIconDiagnostic::~WebAppIconDiagnostic() = default;
 
@@ -27,19 +26,21 @@ void WebAppIconDiagnostic::Run(
     base::OnceCallback<void(std::optional<Result>)> result_callback) {
   result_callback_ = std::move(result_callback);
 
-  if (!app_) {
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id_);
+
+  if (!web_app) {
     CallResultCallback();
     return;
   }
 
   const SortedSizesPx& downloaded_icon_sizes =
-      app_->downloaded_icon_sizes(IconPurpose::ANY);
+      web_app->downloaded_icon_sizes(IconPurpose::ANY);
   if (!downloaded_icon_sizes.empty())
     icon_size_ = *downloaded_icon_sizes.begin();
 
   result_.emplace();
   result_->has_empty_downloaded_icon_sizes = downloaded_icon_sizes.empty();
-  result_->has_generated_icon_flag = app_->is_generated_icon();
+  result_->has_generated_icon_flag = web_app->is_generated_icon();
 
   RunChainedCallbacks(
       base::BindOnce(&WebAppIconDiagnostic::LoadIconFromProvider, GetWeakPtr()),
@@ -86,7 +87,13 @@ void WebAppIconDiagnostic::DiagnoseGeneratedOrEmptyIconBitmap(
     return;
   }
 
-  const std::string& name = app_->untranslated_name();
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id_);
+  if (!web_app) {
+    std::move(done_callback).Run();
+    return;
+  }
+
+  const std::string& name = web_app->untranslated_name();
   if (name.empty()) {
     std::move(done_callback).Run();
     return;
