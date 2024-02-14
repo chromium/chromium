@@ -32,7 +32,6 @@ class PLATFORM_EXPORT OrientationIterator {
 
  private:
   UTF16TextIterator utf16_iterator_;
-  unsigned buffer_size_;
   bool at_end_;
 };
 

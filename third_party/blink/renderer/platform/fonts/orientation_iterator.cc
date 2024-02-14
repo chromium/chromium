@@ -11,9 +11,7 @@ namespace blink {
 OrientationIterator::OrientationIterator(const UChar* buffer,
                                          unsigned buffer_size,
                                          FontOrientation run_orientation)
-    : utf16_iterator_(buffer, buffer_size),
-      buffer_size_(buffer_size),
-      at_end_(buffer_size == 0) {
+    : utf16_iterator_(buffer, buffer_size), at_end_(!buffer_size) {
   // There's not much point in segmenting by isUprightInVertical if the text
   // orientation is not "mixed".
   DCHECK_EQ(run_orientation, FontOrientation::kVerticalMixed);
@@ -44,7 +42,7 @@ bool OrientationIterator::Consume(unsigned* orientation_limit,
     }
     utf16_iterator_.Advance();
   }
-  *orientation_limit = buffer_size_;
+  *orientation_limit = utf16_iterator_.Size();
   *render_orientation = current_render_orientation;
   at_end_ = true;
   return true;
