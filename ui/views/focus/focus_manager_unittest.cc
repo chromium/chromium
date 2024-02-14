@@ -26,12 +26,16 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_platform_native_widget.h"
+#include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -1104,6 +1108,33 @@ TEST_F(FocusManagerTest, AnchoredDialogInPane) {
   EXPECT_TRUE(anchor->HasFocus());
   GetWidget()->GetFocusManager()->AdvanceFocus(false);
   EXPECT_TRUE(bubble_child->HasFocus());
+}
+
+// Test that a focused view has a visible focus ring.
+// This test uses FlexLayout intentionally because it had issues showing focus
+// rings.
+TEST_F(FocusManagerTest, FocusRing) {
+  GetContentsView()->SetLayoutManager(std::make_unique<FlexLayout>());
+  View* view = GetContentsView()->AddChildView(
+      std::make_unique<StaticSizedView>(gfx::Size(10, 10)));
+  GetContentsView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  FocusRing::Install(GetContentsView());
+  FocusRing::Install(view);
+
+  GetContentsView()->RequestFocus();
+  test::RunScheduledLayout(GetWidget());
+  EXPECT_TRUE(GetContentsView()->HasFocus());
+  EXPECT_TRUE(FocusRing::Get(GetContentsView())->GetVisible());
+  EXPECT_FALSE(view->HasFocus());
+  EXPECT_FALSE(FocusRing::Get(view)->GetVisible());
+
+  view->RequestFocus();
+  test::RunScheduledLayout(GetWidget());
+  EXPECT_FALSE(GetContentsView()->HasFocus());
+  EXPECT_FALSE(FocusRing::Get(GetContentsView())->GetVisible());
+  EXPECT_TRUE(view->HasFocus());
+  EXPECT_TRUE(FocusRing::Get(view)->GetVisible());
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)

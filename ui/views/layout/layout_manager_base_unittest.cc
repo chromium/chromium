@@ -9,6 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
@@ -621,6 +623,50 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
 
   EXPECT_TRUE(owned_child_view->GetVisible());
   EXPECT_EQ(kLargeSize, owned_child_view->size());
+}
+
+class TestDecorativeView : public View {
+  METADATA_HEADER(TestDecorativeView, View)
+ public:
+  TestDecorativeView() {
+    SetProperty(kIsDecorativeViewKey, true);
+    SetBoundsRect(kExpectedBounds);
+  }
+
+  static constexpr gfx::Rect kExpectedBounds{1, 2, 10, 40};
+};
+
+BEGIN_METADATA(TestDecorativeView)
+END_METADATA
+
+// A decorative view manages its own visibility and layout, and it does
+// not participate in its container's layout.
+TEST_F(LayoutManagerBaseManagerTest, DecorativeView) {
+  View* child_view = AddChildView(kSquarishSize);
+  test::RunScheduledLayout(host_view());
+  gfx::Rect host_view_bounds = host_view()->bounds();
+  gfx::Rect child_view_bounds = child_view->bounds();
+
+  TestDecorativeView* decorative_view =
+      host_view()->AddChildView(std::make_unique<TestDecorativeView>());
+  decorative_view->SetVisible(true);
+  test::RunScheduledLayout(host_view());
+  // The decorative view does not affect the layout of other views.
+  EXPECT_EQ(host_view()->bounds(), host_view_bounds);
+  EXPECT_EQ(child_view->bounds(), child_view_bounds);
+  // The decorative view manages its own layout.
+  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
+
+  // The decorative view's visibility shouldn't be changed by the layout
+  // manager.
+  decorative_view->SetVisible(false);
+  test::RunScheduledLayout(host_view());
+  EXPECT_EQ(decorative_view->GetVisible(), false);
+  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
+  decorative_view->SetVisible(true);
+  test::RunScheduledLayout(host_view());
+  EXPECT_EQ(decorative_view->GetVisible(), true);
+  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
 }
 
 TEST(LayoutManagerBase_ProposedLayoutTest, Equality) {

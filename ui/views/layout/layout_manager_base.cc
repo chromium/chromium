@@ -163,6 +163,7 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
   }
 
   return !child->GetProperty(kViewIgnoredByLayoutKey) &&
+         !child->GetProperty(kIsDecorativeViewKey) &&
          (include_hidden || it->second.can_be_visible);
 }
 
@@ -194,16 +195,19 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
     // Since we have a non-const reference to the parent here, we can safely use
     // a non-const reference to the child.
     View* const child_view = child_layout.child_view;
+    // A decorative view manages its own visibility and layout.
+    bool is_decorative = child_view->GetProperty(kIsDecorativeViewKey);
     // Should not be attempting to modify a child view that has been removed.
     DCHECK(host_view()->GetIndexOf(child_view).has_value());
-    if (child_view->GetVisible() != child_layout.visible)
+    if (child_view->GetVisible() != child_layout.visible && !is_decorative) {
       SetViewVisibility(child_view, child_layout.visible);
+    }
 
     // If the child view is not visible and we haven't bothered to specify
     // bounds, don't bother setting them (which would cause another cascade of
     // events that wouldn't do anything useful).
     if (new_available_size != cached_available_size_ || child_layout.visible ||
-        !child_layout.bounds.IsEmpty()) {
+        !child_layout.bounds.IsEmpty() || is_decorative) {
       const bool size_changed =
           child_view->bounds().size() != child_layout.bounds.size();
       if (child_view->bounds() != child_layout.bounds)

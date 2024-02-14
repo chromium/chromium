@@ -99,6 +99,7 @@ void FocusRing::Install(View* host) {
   auto ring = base::WrapUnique<FocusRing>(new FocusRing());
   ring->InvalidateLayout();
   ring->SchedulePaint();
+  ring->SetProperty(kIsDecorativeViewKey, true);
   host->SetProperty(kFocusRingIdKey, host->AddChildView(std::move(ring)));
 }
 

@@ -84,6 +84,11 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
 
+// A decorative view, e.g. FocusRing, is a view that logically attaches to other
+// views and decorates them. It manages its own visibility and layout and does
+// not participate in its container's layout.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const kIsDecorativeViewKey;
+
 // Tag for the view associated with ui::ElementTracker.
 VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
     kElementIdentifierKey;
