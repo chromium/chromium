@@ -264,7 +264,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.office_file_moved_google_drive =
       prefs->GetTime(prefs::kOfficeFileMovedToGoogleDrive)
           .InMillisecondsFSinceUnixEpoch();
-  result.local_user_files_enabled =
+  result.local_user_files_allowed =
       policy::local_user_files::LocalUserFilesAllowed();
 
   return RespondNow(WithArguments(result.ToValue()));

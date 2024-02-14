@@ -25,7 +25,7 @@ const INITIAL_PREFERENCES: Preferences = {
   officeFileMovedGoogleDrive: 0,
   driveFsBulkPinningAvailable: false,
   driveFsBulkPinningEnabled: false,
-  localUserFilesEnabled: true,
+  localUserFilesAllowed: true,
 };
 
 /**

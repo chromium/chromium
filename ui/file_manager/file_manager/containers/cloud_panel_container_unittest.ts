@@ -43,7 +43,7 @@ const PREFERENCES = {
   officeFileMovedGoogleDrive: 0,
   driveFsBulkPinningAvailable: true,
   driveFsBulkPinningEnabled: true,
-  localUserFilesEnabled: true,
+  localUserFilesAllowed: true,
 };
 
 export function setUp() {

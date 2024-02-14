@@ -546,7 +546,7 @@ declare global {
         officeFileMovedGoogleDrive: number;
         driveFsBulkPinningAvailable: boolean;
         driveFsBulkPinningEnabled: boolean;
-        localUserFilesEnabled: boolean;
+        localUserFilesAllowed: boolean;
       }
 
       export interface PreferencesChange {

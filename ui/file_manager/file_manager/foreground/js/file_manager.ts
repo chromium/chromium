@@ -349,7 +349,7 @@ export class FileManager {
    * Whether local user files (e.g. My Files, Downloads, Play files...) are
    * enabled or not, retrieved from user preferences.
    */
-  localUserFilesEnabled: boolean = true;
+  localUserFilesAllowed: boolean = true;
 
   constructor() {
     (function() {
@@ -1634,9 +1634,9 @@ export class FileManager {
       redraw = true;
     }
 
-    if (this.localUserFilesEnabled !== prefs.localUserFilesEnabled) {
-      this.localUserFilesEnabled = prefs.localUserFilesEnabled;
-      // TODO(aidazolic): Trigger all changes necessary: remove placeholders,
+    if (this.localUserFilesAllowed !== prefs.localUserFilesAllowed) {
+      this.localUserFilesAllowed = prefs.localUserFilesAllowed;
+      // TODO(b/322779971): Trigger all changes necessary: remove placeholders,
       // remove commands that aren't valid, etc.
     }
 
