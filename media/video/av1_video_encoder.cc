@@ -138,6 +138,7 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   }
 
   config.g_pass = AOM_RC_ONE_PASS;
+  // libaom encoding is performed synchronously.
   config.g_lag_in_frames = 0;
   config.rc_max_quantizer = 56;
   config.rc_min_quantizer = 10;
@@ -546,8 +547,20 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
-  DrainOutputs(std::move(temporal_id_status).value(), frame->timestamp(),
-               frame->ColorSpace());
+  auto output = GetEncoderOutput(std::move(temporal_id_status).value(),
+                                 frame->timestamp(), frame->ColorSpace());
+  if (svc_params_.number_temporal_layers > 1) {
+    // If we got an unexpected key frame, temporal_svc_frame_index needs to
+    // be adjusted, because the next frame should have index 1.
+    if (output.key_frame) {
+      temporal_svc_frame_index_ = 0;
+    }
+    if (output.size != 0) {
+      temporal_svc_frame_index_++;
+    }
+  }
+
+  output_cb_.Run(std::move(output), {});
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
@@ -624,47 +637,30 @@ base::TimeDelta Av1VideoEncoder::GetFrameDuration(const VideoFrame& frame) {
   return std::clamp(duration, min_duration, max_duration);
 }
 
-void Av1VideoEncoder::DrainOutputs(int temporal_id,
-                                   base::TimeDelta ts,
-                                   gfx::ColorSpace color_space) {
-  bool dropped_frame = true;
-  const aom_codec_cx_pkt_t* pkt = nullptr;
+VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
+    int temporal_id,
+    base::TimeDelta timestamp,
+    gfx::ColorSpace color_space) const {
   aom_codec_iter_t iter = nullptr;
+  const aom_codec_cx_pkt_t* pkt = nullptr;
+  VideoEncoderOutput output;
+  // We don't give timestamps to aom_codec_encode() that's why
+  // pkt->data.frame.pts can't be used here.
+  output.timestamp = timestamp;
   while ((pkt = aom_codec_get_cx_data(codec_.get(), &iter)) != nullptr) {
-    if (pkt->kind != AOM_CODEC_CX_FRAME_PKT)
-      continue;
-
-    dropped_frame = false;
-    VideoEncoderOutput result;
-    result.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
-    result.timestamp = ts;
-    result.color_space = color_space;
-    result.size = pkt->data.frame.sz;
-
-    if (result.key_frame) {
-      // If we got an unexpected key frame, temporal_svc_frame_index needs to
-      // be adjusted, because the next frame should have index 1.
-      temporal_svc_frame_index_ = 0;
-      result.temporal_id = 0;
-    } else {
-      result.temporal_id = temporal_id;
+    if (pkt->kind == AOM_CODEC_CX_FRAME_PKT) {
+      // The encoder is operating synchronously. There should be exactly one
+      // encoded packet, or the frame is dropped.
+      CHECK_EQ(output.size, 0u);
+      output.size = pkt->data.frame.sz;
+      output.data = std::make_unique<uint8_t[]>(output.size);
+      memcpy(output.data.get(), pkt->data.frame.buf, output.size);
+      output.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
+      output.temporal_id = output.key_frame ? 0 : temporal_id;
+      output.color_space = color_space;
     }
-
-    result.data = std::make_unique<uint8_t[]>(result.size);
-    memcpy(result.data.get(), pkt->data.frame.buf, result.size);
-    output_cb_.Run(std::move(result), {});
   }
-
-  if (dropped_frame) {
-    VideoEncoderOutput result;
-    result.timestamp = ts;
-    output_cb_.Run(std::move(result), {});
-    return;
-  }
-
-  if (svc_params_.number_temporal_layers > 1) {
-    temporal_svc_frame_index_++;
-  }
+  return output;
 }
 
 EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
@@ -717,18 +713,9 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
     return;
   }
 
-  auto error = aom_codec_encode(codec_.get(), nullptr, 0, 0, 0);
-  if (error != AOM_CODEC_OK) {
-    auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
-    std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
-    return;
-  }
-
-  // We don't call DrainOutputs() because Flush() is not expected to produce any
-  // outputs. The encoder configured with g_lag_in_frames = 0 and all outputs
-  // are drained after each Encode(). We might want to change this in the
-  // future, see: crbug.com/1280404
+  // The libaom encoder is operating synchronously and thus doesn't have to
+  // flush if and only if |g_lag_in_frames| is set to 0.
+  CHECK_EQ(config_.g_lag_in_frames, 0u);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
