@@ -8,13 +8,18 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash::app_install {
 
 // The WebUI for chrome://app-install-dialog, used for confirming app
 // installation.
 class AppInstallDialogUI : public ui::MojoWebDialogUI,
-                              public mojom::PageHandlerFactory {
+                           public mojom::PageHandlerFactory {
  public:
   explicit AppInstallDialogUI(content::WebUI* web_ui);
   AppInstallDialogUI(const AppInstallDialogUI&) = delete;
@@ -31,6 +36,10 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
@@ -42,6 +51,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   std::string expected_app_id_;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   std::unique_ptr<AppInstallPageHandler> page_handler_;
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

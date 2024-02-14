@@ -84,12 +84,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   // Wait for the button text to say "Open app", which means it knows the app
   // was installed successfully.
-  while (
-      !content::EvalJs(
-           web_contents,
-           "document.querySelector('app-install-dialog').shadowRoot."
-           "querySelector('.action-button').textContent.includes('Open app')")
-           .ExtractBool()) {
+  while (!content::EvalJs(
+              web_contents,
+              "document.querySelector('app-install-dialog').shadowRoot."
+              "querySelector('.action-button').label.includes('Open app')")
+              .ExtractBool()) {
   }
 
   // Click the open app button and expect the dialog was closed.
@@ -142,12 +141,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
                       "shadowRoot.querySelector('.action-button').click()"));
 
   // Make sure the button goes through the 'Installing' state.
-  while (
-      !content::EvalJs(
-           web_contents,
-           "document.querySelector('app-install-dialog').shadowRoot."
-           "querySelector('.action-button').textContent.includes('Installing')")
-           .ExtractBool()) {
+  while (!content::EvalJs(
+              web_contents,
+              "document.querySelector('app-install-dialog').shadowRoot."
+              "querySelector('.action-button').label.includes('Installing')")
+              .ExtractBool()) {
   }
 
   // Wait for the button text to say "Install", which means it knows the install
@@ -155,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   while (!content::EvalJs(
               web_contents,
               "text = document.querySelector('app-install-dialog').shadowRoot."
-              "querySelector('.action-button').textContent;"
+              "querySelector('.action-button').label;"
               "text.includes('Install') && !text.includes('Installing')")
               .ExtractBool()) {
   }

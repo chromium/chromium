@@ -5,32 +5,11 @@
     padding-block-end: 24px;
     padding-block-start: 32px;
     padding-inline: 24px;
+    height: 36px;
   }
 
-  .install-button::before {
-    -webkit-mask-position: center;
-    background-color: currentColor;
-    content: ' ';
-    display: inline-block;
-    height: 20px;
-    margin-inline-end: 8px;
-    width: 20px;
-  }
-
-  .install::before {
-    /* TODO(crbug.com/1488697): Use the download icon instead of the plus. */
-    -webkit-mask-image: url(chrome://resources/images/add.svg);
-    -webkit-mask-size: 100%;
-  }
-
-  .installing::before {
-    -webkit-mask-image: url(chrome://resources/images/throbber_medium.svg);
-    -webkit-mask-size: 100%;
-  }
-
-  .installed::before {
-    -webkit-mask-image: url(chrome://resources/images/open_in_new.svg);
-    -webkit-mask-size: 100%;
+  .install-button {
+    margin-inline-start: 8px;
   }
 </style>
 
@@ -46,11 +25,19 @@
     <img id="icon" is="cr-auto-img" width="32" height="32">
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button">
-      $i18n{cancel}
-    </cr-button>
-    <cr-button class="install-button action-button install">
-      $i18n{install}
-    </cr-button>
+    <cros-button
+        class="cancel-button"
+        label="$i18n{cancel}"
+        button-style="secondary">
+    </cros-button>
+    <cros-button
+        class="install-button action-button install"
+        label="$i18n{install}">
+      <!-- Spinner icon from //ui/webui/resources/images/throbber_medium.svg,
+           download and open in icons from https://fonts.google.com/icons. -->
+      <svg id="install-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" slot="leading-icon"><path fill="currentColor" d="M480-336 288-528l51-51 105 105v-342h72v342l105-105 51 51-192 192ZM263.717-192Q234-192 213-213.15T192-264v-72h72v72h432v-72h72v72q0 29.7-21.162 50.85Q725.676-192 695.96-192H263.717Z"></svg>
+      <svg id="installing-icon" version="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><style>@keyframes rotate{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes fillunfill{0%{stroke-dashoffset:58.8}50%{stroke-dashoffset:0}to{stroke-dashoffset:-58.4}}@keyframes rot{0%{transform:rotate(0deg)}to{transform:rotate(-360deg)}}@keyframes colors{0%,to{stroke:currentColor}}</style><g style="animation-duration:1568.63ms;animation-iteration-count:infinite;animation-name:rotate;animation-timing-function:linear;transform-origin:50% 50%;width:28px;height:28px"><path fill="none" d="M14 1.5A12.5 12.5 0 1 1 1.5 14" stroke-width="3" stroke-linecap="round" style="animation-duration:1333ms,5332ms,5332ms;animation-fill-mode:forwards;animation-iteration-count:infinite,infinite,infinite;animation-name:fillunfill,rot,colors;animation-play-state:running,running,running;animation-timing-function:cubic-bezier(.4,0,.2,1),steps(4),linear;transform-origin:50% 50%" stroke-dasharray="58.9" stroke-dashoffset="58.9"></g></svg>
+      <svg id="installed-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path fill="currentColor" d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h528v-264h72v264q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm171-192-51-51 357-357H576v-72h240v240h-72v-117L387-336Z"></svg>
+    </cros-button>
   </div>
 </cr-dialog>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::app_install {
 
@@ -41,6 +43,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+
+  ash::EnableTrustedTypesCSP(source);
 }
 
 AppInstallDialogUI::~AppInstallDialogUI() = default;
@@ -71,6 +75,12 @@ void AppInstallDialogUI::BindInterface(
     factory_receiver_.reset();
   }
   factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void AppInstallDialogUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void AppInstallDialogUI::CreatePageHandler(
