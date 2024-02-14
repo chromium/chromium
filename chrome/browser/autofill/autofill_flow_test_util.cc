@@ -304,8 +304,7 @@ struct AutofillSuggestionParams {
           ->GetView()
           ->GetRenderWidgetHost();
 
-  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
-  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
+  // All attempts to accept Autofill suggestions using keyboard "ENTER"
   // keystrokes will be ignored for the first 500ms after the popup is first
   // shown. This overrides this threshold.
   if (base::WeakPtr<AutofillPopupControllerImpl> controller =
