@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/overloaded.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -1649,8 +1650,7 @@ void PaymentsAutofillTable::ClearLocalPaymentMethodsData() {
 }
 
 bool PaymentsAutofillTable::SetCreditCardBenefits(
-    const std::vector<std::unique_ptr<CreditCardBenefit>>&
-        credit_card_benefits) {
+    const std::vector<CreditCardBenefit>& credit_card_benefits) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
     return false;
@@ -1661,11 +1661,25 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
     return false;
   }
 
-  for (const std::unique_ptr<CreditCardBenefit>& credit_card_benefit :
-       credit_card_benefits) {
-    if (!credit_card_benefit->IsValid()) {
+  for (const CreditCardBenefit& credit_card_benefit : credit_card_benefits) {
+    if (!absl::visit([](const auto& a) { return a.IsValid(); },
+                     credit_card_benefit)) {
       continue;
     }
+    const CreditCardBenefitBase& benefit_base = absl::visit(
+        [](const auto& a) -> const CreditCardBenefitBase& { return a; },
+        credit_card_benefit);
+
+    int benefit_type =
+        absl::visit(base::Overloaded{
+                        // WARNING: Do not renumber, since the identifiers are
+                        // stored in the database.
+                        [](const CreditCardFlatRateBenefit&) { return 0; },
+                        [](const CreditCardCategoryBenefit&) { return 1; },
+                        [](const CreditCardMerchantBenefit&) { return 2; },
+                        // Next free benefit type: 3.
+                    },
+                    credit_card_benefit);
 
     // Insert new card benefit data.
     sql::Statement insert_benefit;
@@ -1673,40 +1687,39 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
                   {kBenefitId, kInstrumentId, kBenefitType, kBenefitCategory,
                    kBenefitDescription, kStartTime, kEndTime});
     int index = 0;
-    insert_benefit.BindString(index++, *(credit_card_benefit->benefit_id()));
-    insert_benefit.BindInt64(
-        index++, *(credit_card_benefit->linked_card_instrument_id()));
+    insert_benefit.BindString(index++, *benefit_base.benefit_id());
+    insert_benefit.BindInt64(index++,
+                             *benefit_base.linked_card_instrument_id());
+    insert_benefit.BindInt(index++, benefit_type);
     insert_benefit.BindInt(
-        index++, static_cast<int>(credit_card_benefit->benefit_type()));
-    insert_benefit.BindInt(
-        index++, static_cast<int>(
-                     credit_card_benefit->benefit_type() ==
-                             CreditCardBenefit::BenefitType::kCategoryBenefit
-                         ? static_cast<CreditCardCategoryBenefit*>(
-                               credit_card_benefit.get())
-                               ->benefit_category()
-                         : CreditCardCategoryBenefit::BenefitCategory::
-                               kUnknownBenefitCategory));
-    insert_benefit.BindString16(index++,
-                                credit_card_benefit->benefit_description());
-    insert_benefit.BindTime(index++, credit_card_benefit->start_time());
-    insert_benefit.BindTime(index++, credit_card_benefit->expiry_time());
+        index++, base::to_underlying(absl::visit(
+                     base::Overloaded{
+                         [](const CreditCardCategoryBenefit& a) {
+                           return a.benefit_category();
+                         },
+                         [](const auto& a) {
+                           return CreditCardCategoryBenefit::BenefitCategory::
+                               kUnknownBenefitCategory;
+                         },
+                     },
+                     credit_card_benefit)));
+    insert_benefit.BindString16(index++, benefit_base.benefit_description());
+    insert_benefit.BindTime(index++, benefit_base.start_time());
+    insert_benefit.BindTime(index++, benefit_base.expiry_time());
     if (!insert_benefit.Run()) {
       return false;
     }
 
     // Insert merchant domains linked with the benefit.
-    if (credit_card_benefit->benefit_type() ==
-        CreditCardBenefit::BenefitType::kMerchantBenefit) {
-      for (const url::Origin& domain :
-           static_cast<CreditCardMerchantBenefit*>(credit_card_benefit.get())
-               ->merchant_domains()) {
+    if (const auto* merchant_benefit =
+            absl::get_if<CreditCardMerchantBenefit>(&credit_card_benefit)) {
+      for (const url::Origin& domain : merchant_benefit->merchant_domains()) {
         sql::Statement insert_benefit_merchant_domain;
         InsertBuilder(db_, insert_benefit_merchant_domain,
                       kBenefitMerchantDomainsTable,
                       {kBenefitId, kMerchantDomain});
         insert_benefit_merchant_domain.BindString(
-            0, *credit_card_benefit->benefit_id());
+            0, *merchant_benefit->benefit_id());
         insert_benefit_merchant_domain.BindString(1, domain.Serialize());
         if (!insert_benefit_merchant_domain.Run()) {
           return false;
@@ -1718,7 +1731,7 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
 }
 
 bool PaymentsAutofillTable::GetAllCreditCardBenefits(
-    std::vector<std::unique_ptr<CreditCardBenefit>>* credit_card_benefits) {
+    std::vector<CreditCardBenefit>* credit_card_benefits) {
   sql::Statement get_benefits;
   SelectBuilder(db_, get_benefits, kMaskedCreditCardBenefitsTable,
                 {kBenefitId, kInstrumentId, kBenefitType, kBenefitDescription,
@@ -1726,14 +1739,11 @@ bool PaymentsAutofillTable::GetAllCreditCardBenefits(
 
   while (get_benefits.Step()) {
     int index = 0;
-    CreditCardBenefit::BenefitId benefit_id =
-        CreditCardBenefit::BenefitId(get_benefits.ColumnString(index++));
-    CreditCardBenefit::LinkedCardInstrumentId linked_card_instrument_id =
-        CreditCardBenefit::LinkedCardInstrumentId(
-            get_benefits.ColumnInt64(index++));
-    CreditCardBenefit::BenefitType benefit_type =
-        static_cast<CreditCardBenefit::BenefitType>(
-            get_benefits.ColumnInt(index++));
+    CreditCardBenefitBase::BenefitId benefit_id(
+        get_benefits.ColumnString(index++));
+    CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id(
+        get_benefits.ColumnInt64(index++));
+    int benefit_type = get_benefits.ColumnInt(index++);
     std::u16string benefit_description = get_benefits.ColumnString16(index++);
     base::Time start_time = get_benefits.ColumnTime(index++);
     base::Time expiry_time = get_benefits.ColumnTime(index++);
@@ -1742,26 +1752,24 @@ bool PaymentsAutofillTable::GetAllCreditCardBenefits(
             get_benefits.ColumnInt(index++));
 
     switch (benefit_type) {
-      case CreditCardBenefit::BenefitType::kFlatRateBenefit:
-        credit_card_benefits->push_back(
-            std::make_unique<CreditCardFlatRateBenefit>(
-                benefit_id, linked_card_instrument_id, benefit_description,
-                start_time, expiry_time));
+      case 0:
+        credit_card_benefits->push_back(CreditCardFlatRateBenefit(
+            benefit_id, linked_card_instrument_id, benefit_description,
+            start_time, expiry_time));
         break;
-      case CreditCardBenefit::BenefitType::kCategoryBenefit:
-        credit_card_benefits->push_back(
-            std::make_unique<CreditCardCategoryBenefit>(
-                benefit_id, linked_card_instrument_id, benefit_category,
-                benefit_description, start_time, expiry_time));
+      case 1:
+        credit_card_benefits->push_back(CreditCardCategoryBenefit(
+            benefit_id, linked_card_instrument_id, benefit_category,
+            benefit_description, start_time, expiry_time));
         break;
-      case CreditCardBenefit::BenefitType::kMerchantBenefit:
-        credit_card_benefits->push_back(
-            std::make_unique<CreditCardMerchantBenefit>(
-                benefit_id, linked_card_instrument_id, benefit_description,
-                GetMerchantDomainsForBenefitId(benefit_id), start_time,
-                expiry_time));
-
+      case 2:
+        credit_card_benefits->push_back(CreditCardMerchantBenefit(
+            benefit_id, linked_card_instrument_id, benefit_description,
+            GetMerchantDomainsForBenefitId(benefit_id), start_time,
+            expiry_time));
         break;
+      default:
+        LOG(ERROR) << "Invalid CreditCardBenefit of type " << benefit_type;
     }
   }
 
@@ -2095,7 +2103,7 @@ bool PaymentsAutofillTable::DeleteFromUnmaskedCreditCards(const std::string& id)
 
 base::flat_set<url::Origin>
 PaymentsAutofillTable::GetMerchantDomainsForBenefitId(
-    const CreditCardBenefit::BenefitId benefit_id) {
+    const CreditCardBenefitBase::BenefitId benefit_id) {
   base::flat_set<url::Origin> merchant_domains;
   sql::Statement s;
   SelectBuilder(db_, s, kBenefitMerchantDomainsTable, {kMerchantDomain},

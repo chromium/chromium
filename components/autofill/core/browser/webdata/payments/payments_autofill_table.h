@@ -545,10 +545,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Set, get, and clear the `credit_card_benefits` table and the
   // 'benefit_merchant_domains' table.
   bool SetCreditCardBenefits(
-      const std::vector<std::unique_ptr<CreditCardBenefit>>&
-          credit_card_benefits);
+      const std::vector<CreditCardBenefit>& credit_card_benefits);
   bool GetAllCreditCardBenefits(
-      std::vector<std::unique_ptr<CreditCardBenefit>>* credit_card_benefits);
+      std::vector<CreditCardBenefit>* credit_card_benefits);
   bool ClearAllCreditCardBenefits();
 
   // Testing helper to access the database for checking the result of database
@@ -600,7 +599,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Get the list of eligible merchant domains for the specific 'benefit_id`.
   base::flat_set<url::Origin> GetMerchantDomainsForBenefitId(
-      const CreditCardBenefit::BenefitId benefit_id);
+      const CreditCardBenefitBase::BenefitId benefit_id);
 
   bool InitCreditCardsTable();
   bool InitLocalIbansTable();

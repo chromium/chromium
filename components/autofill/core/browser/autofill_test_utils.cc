@@ -615,35 +615,32 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
   return challenge_options;
 }
 
-std::unique_ptr<CreditCardFlatRateBenefit>
-GetActiveCreditCardFlatRateBenefit() {
-  return std::make_unique<CreditCardFlatRateBenefit>(
-      CreditCardBenefit::BenefitId("id1"),
-      CreditCardBenefit::LinkedCardInstrumentId(1234),
+CreditCardFlatRateBenefit GetActiveCreditCardFlatRateBenefit() {
+  return CreditCardFlatRateBenefit(
+      CreditCardBenefitBase::BenefitId("id1"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(1234),
       /*benefit_description=*/u"Get 2% cashback on any purchase",
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
-std::unique_ptr<CreditCardCategoryBenefit>
-GetActiveCreditCardCategoryBenefit() {
-  return std::make_unique<CreditCardCategoryBenefit>(
-      CreditCardBenefit::BenefitId("id2"),
-      CreditCardBenefit::LinkedCardInstrumentId(2234),
+CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit() {
+  return CreditCardCategoryBenefit(
+      CreditCardBenefitBase::BenefitId("id2"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(2234),
       CreditCardCategoryBenefit::BenefitCategory::kSubscription,
       /*benefit_description=*/u"Get 2x points on purchases on this website",
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
-std::unique_ptr<CreditCardMerchantBenefit>
-GetActiveCreditCardMerchantBenefit() {
+CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
   base::flat_set<url::Origin> merchant_domains = {
       url::Origin::Create(GURL("http://www.example.com")),
       url::Origin::Create(GURL("http://www.example3.com"))};
-  return std::make_unique<CreditCardMerchantBenefit>(
-      CreditCardBenefit::BenefitId("id3"),
-      CreditCardBenefit::LinkedCardInstrumentId(3234),
+  return CreditCardMerchantBenefit(
+      CreditCardBenefitBase::BenefitId("id3"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(3234),
       /*benefit_description=*/u"Get 2x points on purchases on this website",
       merchant_domains,
       /*start_time=*/GetArbitraryPastTime(),

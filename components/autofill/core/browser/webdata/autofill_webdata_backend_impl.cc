@@ -872,11 +872,10 @@ AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData(WebDatabase* db) {
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetCreditCardBenefits(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<CreditCardBenefit>> credit_card_benefits;
+  std::vector<CreditCardBenefit> credit_card_benefits;
   PaymentsAutofillTable::FromWebDatabase(db)->GetAllCreditCardBenefits(
       &credit_card_benefits);
-  return std::make_unique<
-      WDResult<std::vector<std::unique_ptr<CreditCardBenefit>>>>(
+  return std::make_unique<WDResult<std::vector<CreditCardBenefit>>>(
       CREDIT_CARD_BENEFIT_RESULT, std::move(credit_card_benefits));
 }
 

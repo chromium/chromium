@@ -11,47 +11,31 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace autofill {
 
+class CreditCardFlatRateBenefit;
+class CreditCardCategoryBenefit;
+class CreditCardMerchantBenefit;
+
 // An object that stores card benefit information, i.e., a credit-card-linked
 // benefit that users receive when making an online purchase.
-class CreditCardBenefit {
+using CreditCardBenefit = absl::variant<CreditCardFlatRateBenefit,
+                                        CreditCardCategoryBenefit,
+                                        CreditCardMerchantBenefit>;
+
+class CreditCardBenefitBase {
  public:
   using BenefitId = base::StrongAlias<class BenefitIdTag, std::string>;
   using LinkedCardInstrumentId =
-      ::base::IdType64<class LinkedCardInstrumentIdMarker>;
-
-  // Represents the type of benefit for the credit card.
-  enum class BenefitType {
-    // Flat rate benefit which applies to all online purchases.
-    // Example: 2% cashback on any purchase.
-    kFlatRateBenefit,
-    // Category benefit which only applies to websites in a specific category.
-    // See `CreditCardCategoryBenefit::BenefitCategory` for applicable
-    // categories.
-    // Example: 5% cashback on travel.
-    kCategoryBenefit,
-    // Merchant benefit which only applies to specific merchant websites.
-    // Example: 5% cashback on Walmart.com.
-    kMerchantBenefit,
-  };
-
-  CreditCardBenefit(const CreditCardBenefit&) = delete;
-  CreditCardBenefit& operator=(const CreditCardBenefit&) = delete;
-  virtual ~CreditCardBenefit();
-
-  virtual bool operator==(const CreditCardBenefit& other_benefit) const;
-  virtual bool operator!=(const CreditCardBenefit& other_benefit) const;
-
-  virtual bool IsValid() const;
+      base::IdType64<class LinkedCardInstrumentIdMarker>;
 
   const BenefitId& benefit_id() const { return benefit_id_; }
   LinkedCardInstrumentId linked_card_instrument_id() const {
     return linked_card_instrument_id_;
   }
-  BenefitType benefit_type() const { return benefit_type_; }
   const std::u16string& benefit_description() const {
     return benefit_description_;
   }
@@ -59,15 +43,33 @@ class CreditCardBenefit {
   base::Time expiry_time() const { return expiry_time_; }
 
  protected:
-  friend class CreditCardBenefitTestApi;
+  friend class CreditCardBenefitBaseTestApi;
+
+  CreditCardBenefitBase(const CreditCardBenefitBase&);
+  CreditCardBenefitBase& operator=(const CreditCardBenefitBase&);
+  CreditCardBenefitBase(CreditCardBenefitBase&&);
+  CreditCardBenefitBase& operator=(CreditCardBenefitBase&&);
+  ~CreditCardBenefitBase();
 
   // Constructor to assign values to member fields shared by all benefit types.
-  CreditCardBenefit(BenefitId benefit_id,
-                    LinkedCardInstrumentId linked_card_instrument_id,
-                    BenefitType benefit_type,
-                    std::u16string benefit_description,
-                    base::Time start_time,
-                    base::Time expiry_time);
+  CreditCardBenefitBase(BenefitId benefit_id,
+                        LinkedCardInstrumentId linked_card_instrument_id,
+                        std::u16string benefit_description,
+                        base::Time start_time,
+                        base::Time expiry_time);
+
+  // The following is intentional:
+  // - operator==() is defined as member so that it's not publicly accessible.
+  // - The friendships are necessary to allow the subclass's operator==() to
+  //   call the base class's protected operator==(). Limiting friendship to
+  //   the derived class's operator==() does not work nicely until Clang
+  //   implements https://reviews.llvm.org/D103929.
+  bool operator==(const CreditCardBenefitBase& b) const = default;
+  friend class CreditCardFlatRateBenefit;
+  friend class CreditCardCategoryBenefit;
+  friend class CreditCardMerchantBenefit;
+
+  bool IsValid() const;
 
   // Represents the unique identifier for this benefit. Generated in sync
   // server.
@@ -76,10 +78,6 @@ class CreditCardBenefit {
   // Represents the unique identifier for the credit card linked to this
   // benefit.
   LinkedCardInstrumentId linked_card_instrument_id_;
-
-  // Represents the type of benefit for the credit card. Flat rate, category,
-  // or merchant.
-  BenefitType benefit_type_;
 
   // The benefit description to be shown in the Autofill UI.
   std::u16string benefit_description_;
@@ -93,26 +91,29 @@ class CreditCardBenefit {
 
 // Credit-card-linked benefit that is available to users on any online
 // purchases.
-class CreditCardFlatRateBenefit : public CreditCardBenefit {
+class CreditCardFlatRateBenefit : public CreditCardBenefitBase {
  public:
   CreditCardFlatRateBenefit(BenefitId benefit_id,
                             LinkedCardInstrumentId linked_card_instrument_id,
                             std::u16string benefit_description,
                             base::Time start_time,
                             base::Time expiry_time);
-  ~CreditCardFlatRateBenefit() override;
+  CreditCardFlatRateBenefit(const CreditCardFlatRateBenefit&);
+  CreditCardFlatRateBenefit& operator=(const CreditCardFlatRateBenefit&);
+  CreditCardFlatRateBenefit(CreditCardFlatRateBenefit&&);
+  CreditCardFlatRateBenefit& operator=(CreditCardFlatRateBenefit&&);
+  ~CreditCardFlatRateBenefit();
 
-  bool operator==(const CreditCardBenefit& other) const override;
-  bool operator!=(const CreditCardBenefit& other) const override;
+  friend bool operator==(const CreditCardFlatRateBenefit&,
+                         const CreditCardFlatRateBenefit&) = default;
 
-  // CreditCardBenefit:
-  bool IsValid() const override;
+  bool IsValid() const;
 };
 
 // Credit-card-linked benefit that users receive when making an online purchases
 // in specific shopping categories. For example, a benefit the user will receive
 // for purchasing a subscription service online with the linked card.
-class CreditCardCategoryBenefit : public CreditCardBenefit {
+class CreditCardCategoryBenefit : public CreditCardBenefitBase {
  public:
   // Represents the category of purchases that the benefit can be applied to.
   // The category numbering should match
@@ -134,13 +135,16 @@ class CreditCardCategoryBenefit : public CreditCardBenefit {
                             std::u16string benefit_description,
                             base::Time start_time,
                             base::Time expiry_time);
-  ~CreditCardCategoryBenefit() override;
+  CreditCardCategoryBenefit(const CreditCardCategoryBenefit&);
+  CreditCardCategoryBenefit& operator=(const CreditCardCategoryBenefit&);
+  CreditCardCategoryBenefit(CreditCardCategoryBenefit&&);
+  CreditCardCategoryBenefit& operator=(CreditCardCategoryBenefit&&);
+  ~CreditCardCategoryBenefit();
 
-  bool operator==(const CreditCardBenefit& other) const override;
-  bool operator!=(const CreditCardBenefit& other) const override;
+  friend bool operator==(const CreditCardCategoryBenefit&,
+                         const CreditCardCategoryBenefit&) = default;
 
-  // CreditCardBenefit:
-  bool IsValid() const override;
+  bool IsValid() const;
 
   BenefitCategory benefit_category() const { return benefit_category_; }
 
@@ -153,7 +157,7 @@ class CreditCardCategoryBenefit : public CreditCardBenefit {
 
 // Credit-card-linked benefit that users receive when purchasing from specific
 // merchant websites.
-class CreditCardMerchantBenefit : public CreditCardBenefit {
+class CreditCardMerchantBenefit : public CreditCardBenefitBase {
  public:
   CreditCardMerchantBenefit(BenefitId benefit_id,
                             LinkedCardInstrumentId linked_card_instrument_id,
@@ -161,13 +165,16 @@ class CreditCardMerchantBenefit : public CreditCardBenefit {
                             base::flat_set<url::Origin> merchant_domains,
                             base::Time start_time,
                             base::Time expiry_time);
-  ~CreditCardMerchantBenefit() override;
+  CreditCardMerchantBenefit(const CreditCardMerchantBenefit&);
+  CreditCardMerchantBenefit& operator=(const CreditCardMerchantBenefit&);
+  CreditCardMerchantBenefit(CreditCardMerchantBenefit&&);
+  CreditCardMerchantBenefit& operator=(CreditCardMerchantBenefit&&);
+  ~CreditCardMerchantBenefit();
 
-  bool operator==(const CreditCardBenefit& other) const override;
-  bool operator!=(const CreditCardBenefit& other) const override;
+  friend bool operator==(const CreditCardMerchantBenefit&,
+                         const CreditCardMerchantBenefit&) = default;
 
-  // CreditCardBenefit:
-  bool IsValid() const override;
+  bool IsValid() const;
 
   const base::flat_set<url::Origin>& merchant_domains() const {
     return merchant_domains_;

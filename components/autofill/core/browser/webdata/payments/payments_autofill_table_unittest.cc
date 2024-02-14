@@ -53,6 +53,12 @@ using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
+namespace {
+
+CreditCardBenefitBase::BenefitId get_benefit_id(
+    const CreditCardBenefit& benefit) {
+  return absl::visit([](const auto& a) { return a.benefit_id(); }, benefit);
+}
 
 class PaymentsAutofillTableTest : public testing::Test {
  protected:
@@ -1692,80 +1698,79 @@ TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
 
 TEST_F(PaymentsAutofillTableTest, GetAllCreditCardBenefits) {
   // Add benefits to the table.
-  std::vector<std::unique_ptr<CreditCardBenefit>> input_benefits;
+  std::vector<CreditCardBenefit> input_benefits;
   input_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
   input_benefits.push_back(test::GetActiveCreditCardCategoryBenefit());
   input_benefits.push_back(test::GetActiveCreditCardMerchantBenefit());
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
   // Check all valid benefits are added to table and are searchable.
-  std::vector<std::unique_ptr<CreditCardBenefit>> output_benefits;
+  std::vector<CreditCardBenefit> output_benefits;
   EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
   EXPECT_EQ(input_benefits.size(), output_benefits.size());
   for (const auto& input_benefit : input_benefits) {
     // Find input benefits in outputs.
-    auto output_benefit_find_result =
-        base::ranges::find(output_benefits, input_benefit->benefit_id(),
-                           &CreditCardBenefit::benefit_id);
+    auto output_benefit_find_result = base::ranges::find(
+        output_benefits, get_benefit_id(input_benefit), get_benefit_id);
     EXPECT_NE(output_benefit_find_result, output_benefits.end());
-    EXPECT_EQ(*input_benefit, **output_benefit_find_result);
+    EXPECT_EQ(input_benefit, *output_benefit_find_result);
   }
 }
 
 TEST_F(PaymentsAutofillTableTest, AddInactiveCreditCardBenefit) {
   // Add one inactive benefit that will be available in the future to the table.
-  std::vector<std::unique_ptr<CreditCardBenefit>> input_benefits;
-  std::unique_ptr<CreditCardBenefit> inactive_benefit =
+  std::vector<CreditCardBenefit> input_benefits;
+  CreditCardMerchantBenefit inactive_benefit =
       test::GetActiveCreditCardMerchantBenefit();
-  test_api(*inactive_benefit)
+  test_api(inactive_benefit)
       .SetStartTimeForTesting(AutofillClock::Now() + base::Days(1));
-  EXPECT_TRUE(inactive_benefit->IsValid());
+  EXPECT_TRUE(inactive_benefit.IsValid());
   input_benefits.push_back(std::move(inactive_benefit));
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
   // Check the inactive benefit is added to table and is searchable.
-  std::vector<std::unique_ptr<CreditCardBenefit>> output_benefits;
+  std::vector<CreditCardBenefit> output_benefits;
   EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
   ASSERT_EQ(1u, output_benefits.size());
-  EXPECT_EQ(*input_benefits[0], *output_benefits[0]);
+  EXPECT_EQ(input_benefits[0], output_benefits[0]);
 }
 
 TEST_F(PaymentsAutofillTableTest, AddInvalidCreditCardBenefit) {
   // Attempt to add an invalid category benefit with unknown category and a
   // valid benefit.
-  std::unique_ptr<CreditCardFlatRateBenefit> valid_benefit =
+  CreditCardFlatRateBenefit valid_benefit =
       test::GetActiveCreditCardFlatRateBenefit();
-  ASSERT_TRUE(valid_benefit->IsValid());
-  std::unique_ptr<CreditCardCategoryBenefit> invalid_benefit =
+  ASSERT_TRUE(valid_benefit.IsValid());
+  CreditCardCategoryBenefit invalid_benefit =
       test::GetActiveCreditCardCategoryBenefit();
-  test_api(*invalid_benefit)
+  test_api(invalid_benefit)
       .SetBenefitCategoryForTesting(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory);
-  ASSERT_FALSE(invalid_benefit->IsValid());
+  ASSERT_FALSE(invalid_benefit.IsValid());
 
-  const CreditCardBenefit::BenefitId& valid_input_benefit_id =
-      valid_benefit->benefit_id();
-  std::vector<std::unique_ptr<CreditCardBenefit>> input_benefits;
+  CreditCardBenefitBase::BenefitId valid_input_benefit_id =
+      valid_benefit.benefit_id();
+  std::vector<CreditCardBenefit> input_benefits;
   input_benefits.push_back(std::move(valid_benefit));
   input_benefits.push_back(std::move(invalid_benefit));
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
   // Check invalid benefit will not be added to the table.
-  std::vector<std::unique_ptr<CreditCardBenefit>> output_benefits;
+  std::vector<CreditCardBenefit> output_benefits;
   EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
   ASSERT_EQ(output_benefits.size(), 1u);
-  EXPECT_EQ(valid_input_benefit_id, output_benefits[0]->benefit_id());
+  EXPECT_EQ(valid_input_benefit_id, get_benefit_id(output_benefits[0]));
 }
 
 TEST_F(PaymentsAutofillTableTest, ClearCreditCardBenefits) {
   // Add benefits to the table.
-  std::vector<std::unique_ptr<CreditCardBenefit>> input_benefits;
+  std::vector<CreditCardBenefit> input_benefits;
   input_benefits.push_back(test::GetActiveCreditCardFlatRateBenefit());
   input_benefits.push_back(test::GetActiveCreditCardCategoryBenefit());
   input_benefits.push_back(test::GetActiveCreditCardMerchantBenefit());
   EXPECT_TRUE(table_->SetCreditCardBenefits(input_benefits));
 
-  std::vector<std::unique_ptr<CreditCardBenefit>> output_benefits;
+  std::vector<CreditCardBenefit> output_benefits;
 
   // Check benefits are added.
   EXPECT_TRUE(table_->GetAllCreditCardBenefits(&output_benefits));
@@ -1787,4 +1792,5 @@ TEST_F(PaymentsAutofillTableTest, ClearCreditCardBenefits) {
   EXPECT_EQ(0, count_statement.ColumnInt(0));
 }
 
+}  // namespace
 }  // namespace autofill

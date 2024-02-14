@@ -13,10 +13,10 @@ namespace autofill {
 
 namespace {
 
-const CreditCardBenefit::BenefitId kArbitraryBenefitId =
-    CreditCardBenefit::BenefitId("id");
-const CreditCardBenefit::LinkedCardInstrumentId kArbitraryInstrumentId =
-    CreditCardBenefit::LinkedCardInstrumentId(1234);
+const CreditCardBenefitBase::BenefitId kArbitraryBenefitId =
+    CreditCardBenefitBase::BenefitId("id");
+const CreditCardBenefitBase::LinkedCardInstrumentId kArbitraryInstrumentId =
+    CreditCardBenefitBase::LinkedCardInstrumentId(1234);
 const std::u16string kArbitraryDescription = u"description";
 const base::Time kArbitraryPastTime = AutofillClock::Now() - base::Days(10);
 const base::Time kArbitraryFutureTime = AutofillClock::Now() + base::Days(10);
@@ -39,7 +39,7 @@ TEST(CreditCardBenefitTest, CompareFlatRateBenefits) {
 
   // Different IDs.
   test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefit::BenefitId("id2"));
+      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
@@ -47,7 +47,7 @@ TEST(CreditCardBenefitTest, CompareFlatRateBenefits) {
   // Different instrument IDs.
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(
-          CreditCardBenefit::LinkedCardInstrumentId(2234));
+          CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
@@ -72,12 +72,6 @@ TEST(CreditCardBenefitTest, CompareFlatRateBenefits) {
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
-
-  // Different benefit types.
-  CreditCardCategoryBenefit category_benefit = CreditCardCategoryBenefit(
-      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryBenefitCategory,
-      kArbitraryDescription, kArbitraryPastTime, kArbitraryFutureTime);
-  EXPECT_TRUE(benefit != category_benefit);
 }
 
 // Test equals when category benefits are different.
@@ -94,7 +88,7 @@ TEST(CreditCardBenefitTest, CompareCategoryBenefits) {
 
   // Different IDs.
   test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefit::BenefitId("id2"));
+      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
@@ -102,7 +96,7 @@ TEST(CreditCardBenefitTest, CompareCategoryBenefits) {
   // Different instrument IDs.
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(
-          CreditCardBenefit::LinkedCardInstrumentId(2234));
+          CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
@@ -136,12 +130,6 @@ TEST(CreditCardBenefitTest, CompareCategoryBenefits) {
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
-
-  // Different benefit types.
-  CreditCardFlatRateBenefit flat_rate_benefit = CreditCardFlatRateBenefit(
-      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryDescription,
-      kArbitraryPastTime, kArbitraryFutureTime);
-  EXPECT_TRUE(benefit != flat_rate_benefit);
 }
 
 // Test equals when merchant benefits are different.
@@ -160,7 +148,7 @@ TEST(CreditCardBenefitTest, CompareMerchantBenefits) {
 
   // Different IDs.
   test_api(other_benefit)
-      .SetBenefitIdForTesting(CreditCardBenefit::BenefitId("id2"));
+      .SetBenefitIdForTesting(CreditCardBenefitBase::BenefitId("id2"));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetBenefitIdForTesting(benefit.benefit_id());
   EXPECT_TRUE(benefit == other_benefit);
@@ -168,7 +156,7 @@ TEST(CreditCardBenefitTest, CompareMerchantBenefits) {
   // Different instrument IDs.
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(
-          CreditCardBenefit::LinkedCardInstrumentId(2234));
+          CreditCardBenefitBase::LinkedCardInstrumentId(2234));
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit)
       .SetLinkedCardInstrumentIdForTesting(benefit.linked_card_instrument_id());
@@ -202,12 +190,6 @@ TEST(CreditCardBenefitTest, CompareMerchantBenefits) {
   EXPECT_TRUE(benefit != other_benefit);
   test_api(other_benefit).SetEndTimeForTesting(benefit.expiry_time());
   EXPECT_TRUE(benefit == other_benefit);
-
-  // Different benefit types.
-  CreditCardFlatRateBenefit flat_rate_benefit = CreditCardFlatRateBenefit(
-      kArbitraryBenefitId, kArbitraryInstrumentId, kArbitraryDescription,
-      kArbitraryPastTime, kArbitraryFutureTime);
-  EXPECT_TRUE(benefit != flat_rate_benefit);
 }
 
 // Test that `IsValid` returns true for valid benefits.
@@ -234,7 +216,8 @@ TEST(CreditCardBenefitTest, BenefitValidation_ValidBenefits) {
 
 // Test that `IsValid` returns false for benefits without IDs.
 TEST(CreditCardBenefitTest, BenefitValidation_EmptyBenefitId) {
-  CreditCardBenefit::BenefitId empty_id = CreditCardBenefit::BenefitId();
+  CreditCardBenefitBase::BenefitId empty_id =
+      CreditCardBenefitBase::BenefitId();
 
   EXPECT_FALSE(CreditCardFlatRateBenefit(
                    empty_id, kArbitraryInstrumentId, kArbitraryDescription,
@@ -256,8 +239,8 @@ TEST(CreditCardBenefitTest, BenefitValidation_EmptyBenefitId) {
 
 // Test that `IsValid` returns false for benefits without instrument ID.
 TEST(CreditCardBenefitTest, BenefitValidation_EmptyInstrumentId) {
-  CreditCardBenefit::LinkedCardInstrumentId empty_instrument_id =
-      CreditCardBenefit::LinkedCardInstrumentId();
+  CreditCardBenefitBase::LinkedCardInstrumentId empty_instrument_id =
+      CreditCardBenefitBase::LinkedCardInstrumentId();
 
   EXPECT_FALSE(
       CreditCardFlatRateBenefit(kArbitraryBenefitId, empty_instrument_id,

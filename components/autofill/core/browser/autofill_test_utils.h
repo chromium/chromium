@@ -202,9 +202,9 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
 
 // Each Get returns an active CreditCardBenefit with dummy info.
 // One getter for each benefit type.
-std::unique_ptr<CreditCardFlatRateBenefit> GetActiveCreditCardFlatRateBenefit();
-std::unique_ptr<CreditCardCategoryBenefit> GetActiveCreditCardCategoryBenefit();
-std::unique_ptr<CreditCardMerchantBenefit> GetActiveCreditCardMerchantBenefit();
+CreditCardFlatRateBenefit GetActiveCreditCardFlatRateBenefit();
+CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit();
+CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with

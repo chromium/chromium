@@ -27,7 +27,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -217,13 +216,12 @@ template <typename ValueType>
 void ReceiveLoadedDbValues(WebDataServiceBase::Handle h,
                            WDTypedResult* result,
                            WebDataServiceBase::Handle* pending_handle,
-                           std::vector<std::unique_ptr<ValueType>>* dest) {
+                           std::vector<ValueType>* dest) {
   DCHECK_EQ(*pending_handle, h);
   *pending_handle = 0;
 
   *dest = std::move(
-      static_cast<WDResult<std::vector<std::unique_ptr<ValueType>>>*>(result)
-          ->GetValue());
+      static_cast<WDResult<std::vector<ValueType>>*>(result)->GetValue());
 }
 
 }  // namespace
@@ -1231,90 +1229,47 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
   return nullptr;
 }
 
-CreditCardFlatRateBenefit*
-PersonalDataManager::GetFlatRateBenefitByInstrumentId(
-    const CreditCardBenefit::LinkedCardInstrumentId instrument_id) {
+template <typename T>
+T* PersonalDataManager::GetCreditCardBenefitByInstrumentId(
+    CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
+    base::FunctionRef<bool(T&)> filter) {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return nullptr;
   }
+  base::Time now = AutofillClock::Now();
+  for (CreditCardBenefit& benefit : credit_card_benefits_) {
+    if (auto* b = absl::get_if<T>(&benefit);
+        b && b->linked_card_instrument_id() == instrument_id &&
+        b->start_time() <= now && now < b->expiry_time() && filter(*b)) {
+      return b;
+    }
+  }
+  return nullptr;
+}
 
-  auto find_result = base::ranges::find_if(
-      credit_card_benefits_,
-      [instrument_id](std::unique_ptr<CreditCardBenefit>& benefit) {
-        return benefit->linked_card_instrument_id() == instrument_id &&
-               benefit->benefit_type() ==
-                   CreditCardBenefit::BenefitType::kFlatRateBenefit &&
-               benefit->expiry_time() > AutofillClock::Now() &&
-               benefit->start_time() <= AutofillClock::Now();
-      });
-
-  // Casting the search result to `CreditCardFlatRateBenefit`.
-  // Safe to do so as benefit type is checked in the search criteria.
-  return find_result == credit_card_benefits_.end()
-             ? nullptr
-             : static_cast<CreditCardFlatRateBenefit*>(find_result->get());
+CreditCardFlatRateBenefit*
+PersonalDataManager::GetFlatRateBenefitByInstrumentId(
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) {
+  return GetCreditCardBenefitByInstrumentId<CreditCardFlatRateBenefit>(
+      instrument_id);
 }
 
 CreditCardCategoryBenefit*
 PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
-    const CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
-    return nullptr;
-  }
-
-  auto find_result = base::ranges::find_if(
-      credit_card_benefits_, [instrument_id, benefit_category](
-                                 std::unique_ptr<CreditCardBenefit>& benefit) {
-        return benefit->linked_card_instrument_id() == instrument_id &&
-               benefit->benefit_type() ==
-                   CreditCardBenefit::BenefitType::kCategoryBenefit &&
-               // Safe to down-cast as BenefitType was checked before the cast.
-               static_cast<CreditCardCategoryBenefit*>(benefit.get())
-                       ->benefit_category() == benefit_category &&
-               benefit->expiry_time() > AutofillClock::Now() &&
-               benefit->start_time() <= AutofillClock::Now();
-      });
-
-  // Casting the search result to `CreditCardCategoryBenefit`.
-  // Safe to do so as benefit type is checked in the search criteria.
-  return find_result == credit_card_benefits_.end()
-             ? nullptr
-             : static_cast<CreditCardCategoryBenefit*>(find_result->get());
+  return GetCreditCardBenefitByInstrumentId<CreditCardCategoryBenefit>(
+      instrument_id);
 }
 
 CreditCardMerchantBenefit*
 PersonalDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
-    const CreditCardBenefit::LinkedCardInstrumentId instrument_id,
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     const url::Origin& merchant_origin) {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
-    return nullptr;
-  }
-
-  auto find_result = base::ranges::find_if(
-      credit_card_benefits_, [instrument_id, merchant_origin](
-                                 std::unique_ptr<CreditCardBenefit>& benefit) {
-        return benefit->linked_card_instrument_id() == instrument_id &&
-               benefit->benefit_type() ==
-                   CreditCardBenefit::BenefitType::kMerchantBenefit &&
-               // Safe to down-cast as BenefitType was checked before the cast.
-               static_cast<CreditCardMerchantBenefit*>(benefit.get())
-                   ->merchant_domains()
-                   .contains(merchant_origin) &&
-               benefit->expiry_time() > AutofillClock::Now() &&
-               benefit->start_time() <= AutofillClock::Now();
+  return GetCreditCardBenefitByInstrumentId<CreditCardMerchantBenefit>(
+      instrument_id, [&merchant_origin](CreditCardMerchantBenefit& b) {
+        return b.merchant_domains().contains(merchant_origin);
       });
-
-  // Casting the search result to `CreditCardMerchantBenefit`.
-  // Safe to do so as benefit type is checked in the search criteria.
-  return find_result == credit_card_benefits_.end()
-             ? nullptr
-             : static_cast<CreditCardMerchantBenefit*>(find_result->get());
-}
-
-void PersonalDataManager::AddCreditCardBenefitForTest(
-    std::unique_ptr<CreditCardBenefit> benefit) {
-  credit_card_benefits_.push_back(std::move(benefit));
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
