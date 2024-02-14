@@ -162,7 +162,10 @@ enum class OfficeTaskResult {
   kLocalFileTask = 10,
   kFileAlreadyBeingUploaded = 11,
   kCannotGetFallbackChoice = 12,
-  kMaxValue = kCannotGetFallbackChoice,
+  kCannotShowSetupDialog = 13,
+  kCannotShowMoveConfirmation = 14,
+  kNoFilesToOpen = 15,
+  kMaxValue = kNoFilesToOpen,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

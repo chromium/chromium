@@ -1919,6 +1919,97 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotGetOfficeFallbackChoice) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Test to check that a second setup dialog will not launch when one
+// is already being shown.
+IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowSetupDialog) {
+  // Doing this before SetUpTest creates a FakeWebAppPublisher which would
+  // intercept Files app launching.
+  LaunchFilesAppAndWait();
+
+  // Creates a fake ODFS with a test file.
+  SetUpTest();
+
+  // Set online status to avoid the office fallback dialog showing.
+  SetNetworkConnected(true);
+
+  const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
+  std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};
+
+  // Watch for dialog URL chrome://cloud-upload.
+  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  content::TestNavigationObserver navigation_observer_dialog(
+      expected_dialog_URL);
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  web_app_publisher_->ClearPastLaunches();
+
+  // Launches the first setup dialog (file handler dialog). Let it
+  // hang waiting for a choice from the user.
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
+
+  // Wait for the first setup dialog to open.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Fails to launch a second setup dialog.
+  base::test::TestFuture<TaskResult, std::string> failed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  failed_future.GetCallback());
+  ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
+
+  // Both open file requests will log the CloudProvider metric.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 2);
+  // Only the second open file request will complete and with a
+  // kCannotShowSetupDialog TaskResult.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotShowSetupDialog, 1);
+}
+
+// Test to check that a second move confirmation dialog will not launch when one
+// is already being shown.
+IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowMoveConfirmation) {
+  FileSystemURL file_outside_one_drive = CreateOfficeFileSourceURL(profile());
+  std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
+
+  // Watch for dialog URL chrome://cloud-upload.
+  GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
+  content::TestNavigationObserver navigation_observer_dialog(
+      expected_dialog_URL);
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  LaunchFilesAppAndWait();
+
+  // Launches the first move confirmation dialog. Let it
+  // hang waiting for a choice from the user.
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
+      std::move(cloud_open_metrics_)));
+  task->OpenOrMoveFiles();
+
+  // Wait for the first move confirmation dialog to open.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Fails to launch a second move confirmation dialog.
+  task->OpenOrMoveFiles();
+
+  // Both open file requests will log the TransferRequired metric.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTransferRequiredMetric,
+      ash::cloud_upload::OfficeFilesTransferRequired::kMove, 2);
+  // Only the second open file request will complete and with a
+  // kCannotShowMoveConfirmation TaskResult.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotShowMoveConfirmation, 1);
+}
+
 // Test that OpenOrMoveFiles() will open an ODFS office file when the cloud
 // provider specified is OneDrive.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {

@@ -58,6 +58,31 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
 }
 
 // Returns true when `task_result` represents the cloud open/upload flow ending
+// before the setup has completed.
+bool DidEndWithoutSetUp(OfficeTaskResult task_result) {
+  switch (task_result) {
+    case OfficeTaskResult::kFallbackQuickOffice:
+    case OfficeTaskResult::kFallbackOther:
+    case OfficeTaskResult::kCancelledAtFallback:
+    case OfficeTaskResult::kCannotGetFallbackChoice:
+    case OfficeTaskResult::kLocalFileTask:
+    case OfficeTaskResult::kCancelledAtSetup:
+    case OfficeTaskResult::kCannotShowSetupDialog:
+    case OfficeTaskResult::kNoFilesToOpen:
+      return true;
+    case OfficeTaskResult::kOpened:
+    case OfficeTaskResult::kMoved:
+    case OfficeTaskResult::kCancelledAtConfirmation:
+    case OfficeTaskResult::kFailedToUpload:
+    case OfficeTaskResult::kFailedToOpen:
+    case OfficeTaskResult::kCopied:
+    case OfficeTaskResult::kFileAlreadyBeingUploaded:
+    case OfficeTaskResult::kCannotShowMoveConfirmation:
+      return false;
+  }
+}
+
+// Returns true when `task_result` represents the cloud open/upload flow ending
 // at the office fallback stage.
 bool DidEndAtFallback(OfficeTaskResult task_result) {
   switch (task_result) {
@@ -75,6 +100,34 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCancelledAtSetup:
     case OfficeTaskResult::kLocalFileTask:
     case OfficeTaskResult::kFileAlreadyBeingUploaded:
+    case OfficeTaskResult::kCannotShowSetupDialog:
+    case OfficeTaskResult::kCannotShowMoveConfirmation:
+    case OfficeTaskResult::kNoFilesToOpen:
+      return false;
+  }
+}
+
+// Returns true when `task_result` represents the cloud open/upload flow ending
+// at the move confirmation stage.
+bool DidEndAtMoveConfirmation(OfficeTaskResult task_result) {
+  switch (task_result) {
+    case OfficeTaskResult::kCancelledAtConfirmation:
+    case OfficeTaskResult::kCannotShowMoveConfirmation:
+      return true;
+    case OfficeTaskResult::kFallbackQuickOffice:
+    case OfficeTaskResult::kFallbackOther:
+    case OfficeTaskResult::kCancelledAtFallback:
+    case OfficeTaskResult::kCannotGetFallbackChoice:
+    case OfficeTaskResult::kOpened:
+    case OfficeTaskResult::kMoved:
+    case OfficeTaskResult::kFailedToUpload:
+    case OfficeTaskResult::kFailedToOpen:
+    case OfficeTaskResult::kCopied:
+    case OfficeTaskResult::kCancelledAtSetup:
+    case OfficeTaskResult::kLocalFileTask:
+    case OfficeTaskResult::kFileAlreadyBeingUploaded:
+    case OfficeTaskResult::kCannotShowSetupDialog:
+    case OfficeTaskResult::kNoFilesToOpen:
       return false;
   }
 }
@@ -125,12 +178,10 @@ void CloudOpenMetrics::CheckForInconsistencies(
   // Task result should always be logged.
   ExpectLogged(task_result);
   if (task_result.logged()) {
-    if (DidEndAtFallback(task_result.value) ||
-        task_result.value == OfficeTaskResult::kCancelledAtSetup ||
-        task_result.value == OfficeTaskResult::kLocalFileTask) {
-      // The cloud open/upload flow was exited at the Fallback Dialog or Setup
-      // flow.
+    if (DidEndWithoutSetUp(task_result.value)) {
+      // The cloud open/upload flow was exited before the setup completed.
       ExpectNotLogged(transfer_required);
+      ExpectNotLogged(source_volume);
       ExpectNotLogged(upload_result);
       if (DidEndAtFallback(task_result.value)) {
         // The cloud open/upload flow was exited at the Fallback Dialog.
@@ -189,8 +240,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
       // Setup flow.
       ExpectLogged(source_volume);
       ExpectLogged(transfer_required);
-      if (task_result.value == OfficeTaskResult::kCancelledAtConfirmation) {
-        // The cloud upload flow was exited at the Move Confirmation Dialog.
+      if (DidEndAtMoveConfirmation(task_result.value)) {
         ExpectNotLogged(upload_result);
         ExpectNotLogged(drive_open_error);
         ExpectNotLogged(one_drive_open_error);
@@ -488,7 +538,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
     } else {
       // TransferRequired was kCopy or kMove.
       if (task_result.logged() &&
-          (task_result.value == OfficeTaskResult::kCancelledAtConfirmation ||
+          (DidEndAtMoveConfirmation(task_result.value) ||
            task_result.value == OfficeTaskResult::kFileAlreadyBeingUploaded)) {
         // The cloud upload flow was exited at the Move Confirmation Dialog or
         // the upload was abandoned.
@@ -579,6 +629,9 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kLocalFileTask:
           case OfficeTaskResult::kFileAlreadyBeingUploaded:
           case OfficeTaskResult::kCannotGetFallbackChoice:
+          case OfficeTaskResult::kCannotShowSetupDialog:
+          case OfficeTaskResult::kCannotShowMoveConfirmation:
+          case OfficeTaskResult::kNoFilesToOpen:
             SetWrongValueLogged(task_result);
             break;
         }

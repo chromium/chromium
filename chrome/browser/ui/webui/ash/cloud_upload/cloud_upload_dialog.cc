@@ -402,6 +402,8 @@ CloudOpenTask::~CloudOpenTask() = default;
 bool CloudOpenTask::ExecuteInternal() {
   DCHECK(!file_urls_.empty());
   if (file_urls_.empty()) {
+    LOG(ERROR) << "No files to open";
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kNoFilesToOpen);
     return false;
   }
 
@@ -873,6 +875,15 @@ bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
   // upload requests, they should either be handled simultaneously or queued.
   if (SystemWebDialogDelegate::HasInstance(
           GURL(chrome::kChromeUICloudUploadURL))) {
+    LOG(WARNING) << "Another cloud upload dialog is already being shown";
+    if (dialog_page == DialogPage::kMoveConfirmationGoogleDrive ||
+        dialog_page == DialogPage::kMoveConfirmationOneDrive) {
+      cloud_open_metrics_->LogTaskResult(
+          OfficeTaskResult::kCannotShowMoveConfirmation);
+    } else {
+      cloud_open_metrics_->LogTaskResult(
+          OfficeTaskResult::kCannotShowSetupDialog);
+    }
     return false;
   }
 
@@ -1357,6 +1368,7 @@ bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
   // WebUI for dialogs.
   if (SystemWebDialogDelegate::HasInstance(
           GURL(chrome::kChromeUICloudUploadURL))) {
+    LOG(WARNING) << "Another cloud upload dialog is already being shown";
     return false;
   }
 

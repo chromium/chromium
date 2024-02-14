@@ -699,6 +699,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Local file task"/>
   <int value="11" label="File already being uploaded"/>
   <int value="12" label="Cannot get fallback choice"/>
+  <int value="13" label="Cannot show setup dialog"/>
+  <int value="14" label="Cannot show move confirmation"/>
+  <int value="15" label="No files to open"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">
