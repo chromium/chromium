@@ -40,50 +40,40 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
     apm_config.gain_controller2.enabled = false;
     return;
   }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Use the Hybrid AGC setup, which combines the AGC1 input volume controller
-  // and the AGC2 digital adaptive controller.
+  const bool kInputVolumeAdjustmentOverrideAllowed = true;
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  const bool kInputVolumeAdjustmentOverrideAllowed = false;
+#endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  // Use AGC2 digital and input volume controller.
   // TODO(crbug.com/1375239): Remove `kWebRtcAllowInputVolumeAdjustment` safely.
-  if (!base::FeatureList::IsEnabled(
+  if (kInputVolumeAdjustmentOverrideAllowed &&
+      !base::FeatureList::IsEnabled(
           ::features::kWebRtcAllowInputVolumeAdjustment)) {
-    // Entirely disable AGC1 to disable input volume adjustment.
-    apm_config.gain_controller1.enabled = false;
+    // Disable AGC2 input volume controller to disable input volume adjustment.
+    apm_config.gain_controller2.input_volume_controller.enabled = false;
   } else {
-    // Enable the AGC1 input volume controller.
-    apm_config.gain_controller1.enabled = true;
-    // TODO(bugs.webrtc.org/14685): Remove next line once `.mode` gets
-    // deprecated.
-    apm_config.gain_controller1.mode = Agc1Mode::kAdaptiveAnalog;
-    apm_config.gain_controller1.analog_gain_controller.enabled = true;
-    apm_config.gain_controller1.analog_gain_controller.clipping_predictor
-        .enabled = true;
-    apm_config.gain_controller1.analog_gain_controller.enable_digital_adaptive =
-        false;
+    // Enable AGC2 input volume controller.
+    apm_config.gain_controller2.input_volume_controller.enabled = true;
   }
-
+  // Enable AGC2 digital.
   apm_config.gain_controller2.enabled = true;
   apm_config.gain_controller2.fixed_digital.gain_db = 0.0f;
   apm_config.gain_controller2.adaptive_digital.enabled = true;
-  apm_config.gain_controller2.input_volume_controller.enabled = false;
-
-  return;
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  // Use AGC1 both as input volume and adaptive digital controller.
-
-  // When AGC1 is used both as input volume and digital gain controller, it is
-  // not possible to disable the input volume controller since the digital
-  // controller also gets disabled. Hence, `kWebRtcAllowInputVolumeAdjustment`
-  // is ignored in this case.
-  apm_config.gain_controller1.enabled = true;
-  // TODO(bugs.webrtc.org/14685): Remove next line once `.mode` gets deprecated.
-  apm_config.gain_controller1.mode = Agc1Mode::kAdaptiveAnalog;
-  apm_config.gain_controller1.analog_gain_controller.enabled = true;
-  apm_config.gain_controller1.analog_gain_controller.clipping_predictor
-      .enabled = true;
+  apm_config.gain_controller2.adaptive_digital.max_gain_db = 50;
+  apm_config.gain_controller2.adaptive_digital.initial_gain_db = 15;
+  apm_config.gain_controller2.adaptive_digital.max_gain_change_db_per_second =
+      6;
+  apm_config.gain_controller2.adaptive_digital.headroom_db = 5;
+  // Entirely disable AGC1.
+  apm_config.gain_controller1.enabled = false;
+  apm_config.gain_controller1.analog_gain_controller.enabled = false;
   apm_config.gain_controller1.analog_gain_controller.enable_digital_adaptive =
-      true;
-  apm_config.gain_controller2.enabled = false;
+      false;
   return;
 #elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Configure AGC for CAST.
@@ -92,6 +82,7 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   apm_config.gain_controller1.mode = Agc1Mode::kFixedDigital;
   apm_config.gain_controller1.analog_gain_controller.enabled = false;
   apm_config.gain_controller2.enabled = false;
+  apm_config.gain_controller2.input_volume_controller.enabled = false;
   return;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Configure AGC for mobile.
@@ -99,6 +90,7 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   apm_config.gain_controller2.enabled = true;
   apm_config.gain_controller2.fixed_digital.gain_db = 6.0f;
   apm_config.gain_controller2.adaptive_digital.enabled = false;
+  apm_config.gain_controller2.input_volume_controller.enabled = false;
   return;
 #else
 #error Undefined AGC configuration. Add a case above for the current platform.
@@ -167,7 +159,9 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
 #else
   apm_config.echo_canceller.mobile_mode = false;
 #endif
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) ||               \
+      BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   apm_config.transient_suppression.enabled =
       settings.transient_noise_suppression;
 #endif
