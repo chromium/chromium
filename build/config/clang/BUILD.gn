@@ -35,7 +35,7 @@ config("find_bad_constructs") {
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
-      "check-allow-auto-typedefs-better",
+      "check-allow-auto-typedefs-better-nested",
 
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
