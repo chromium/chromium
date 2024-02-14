@@ -236,6 +236,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "tab_grid_egtest.mm",
+    "tab_grid_gesture_iph_egtest.mm",
     "tab_grid_transition_egtest.mm",
   ]
 
@@ -243,6 +244,7 @@ source_set("eg2_tests") {
     ":tab_grid_ui_constants",
     "//base",
     "//components/bookmarks/common",
+    "//components/feature_engagement/public",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
@@ -252,6 +254,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/bubble/gesture_iph:constants",
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
@@ -262,6 +265,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",

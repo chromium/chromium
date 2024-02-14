@@ -5,8 +5,10 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -14,19 +16,28 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/gurl.h"
 
 namespace {
 
+using ::chrome_test_util::BackButton;
+using ::chrome_test_util::ForwardButton;
+
 // Performs the assertion that the gesture IPH appears and return the result.
-void ExpectThatGestureIPHAppears() {
+// NOTE: Do not directly pass the method as a parameter of assertion methods.
+BOOL HasGestureIPHAppeared() {
   // Disable scoped synchronization to perform checks with animation running.
   ScopedSynchronizationDisabler sync_disabler;
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(@"GestureInProductHelpViewBubbleAXId")];
+  return
+      [ChromeEarlGrey
+          testUIElementAppearanceWithMatcher:
+              grey_accessibilityID(kGestureInProductHelpViewBackgroundAXId)] &&
+      [ChromeEarlGrey
+          testUIElementAppearanceWithMatcher:
+              grey_accessibilityID(kGestureInProductHelpViewBubbleAXId)];
 }
 
 }  // namespace
@@ -69,6 +80,11 @@ void ExpectThatGestureIPHAppears() {
 
 #pragma mark - Tests
 
+- (void)tearDown {
+  [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+  [super tearDown];
+}
+
 // Tests that the New Tab IPH can be displayed when opening an URL from omnibox.
 // TODO(crbug.com/1471222): Test is flaky on device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
@@ -104,32 +120,249 @@ void ExpectThatGestureIPHAppears() {
                                               @"BubbleViewLabelIdentifier")];
 }
 
-// Tests that the pull-to-refresh IPH when user taps the omnibox to reload the
-// same page.
-- (void)testPullToRefreshIPHAfterReloadFromOmnibox {
+// Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
+// to reload the same page, and disappears after the user navigates away.
+- (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"Pull to refresh IPH did not appear after reloading from omnibox.");
+    [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"Pull to refresh IPH still showed after user navigates to another page");
+}
+
+// Tests that the pull-to-refresh IPH is attempted when user reloads the page
+// using context menu.
+- (void)testPullToRefreshIPHAfterReloadFromContextMenuAndDisappearsOnSwitchTab {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no reload in context menu)");
+  }
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  // Reload using context menu.
+  [ChromeEarlGreyUI reload];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(appearance, @"Pull to refresh IPH did not appear "
+                               @"after reloading from context menu.");
+    // Side swipe on the toolbar.
+    [[EarlGrey
+        selectElementWithMatcher:grey_kindOfClassName(@"SecondaryToolbarView")]
+        performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(appearance,
+                  @"Pull to refresh IPH did not dismiss after changing tab.");
+}
+
+// Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
+- (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
   [ChromeEarlGreyUI focusOmnibox];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-  ExpectThatGestureIPHAppears();
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"Pull to refresh IPH did not appear after reloading from omnibox.");
+    [ChromeEarlGreyUI openTabGrid];
+  }
+  // Use a separate condition block for verification instead of
+  // `HasGestureIPHAppeared()` in case the IPH does not have sufficient time to
+  // disappear before the verification.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kGestureInProductHelpViewBackgroundAXId)]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+  bool iphHidden =
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(1), condition);
+  GREYAssertTrue(iphHidden,
+                 @"Pull to refresh IPH still visible after going to tab grid.");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(appearance, @"Pull to refresh IPH still visible after going "
+                              @"to tab grid and coming back.");
 }
 
-// Tests that the pull-to-refresh IPH when user reloads the page using context
-// menu.
-- (void)testPullToRefreshIPHAfterReloadFromContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no reload in context menu)");
-  }
+// Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
+- (void)testPullToRefreshIPHShouldNotShowOnPageLoadFail {
   [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSPullToRefreshFeature"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
-  [ChromeEarlGreyUI reload];
-  ExpectThatGestureIPHAppears();
+  // Cut off server.
+  GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
+                 @"Server did not shut down.");
+  [ChromeEarlGreyUI focusOmnibox];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  BOOL appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(appearance,
+                  @"Pull to refresh IPH still appeared despite loading fails.");
+}
+
+// Tests that the swipe back/forward IPH is attempted on navigation, and
+// disappears when user leaves the page.
+- (void)testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"Swipe back/forward IPH did not appear after tapping back button.");
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        performAction:grey_tap()];
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"Swipe back/forward IPH still appeared after user left the page.");
+}
+
+// Tests that bi-directional swipe IPH shows when both forward and backward are
+// navigatable, but only one-directional swipe shows when the user can only
+// navigate back OR forward. The bi-directional swipe IPH takes longer to
+// timeout.
+- (void)testSwipeBackForwardIPHDirections {
+  // Single direction swipe IPH takes 9s, while bi-direction swipe IPH takes
+  // 12s; use a fixed wait time of 10s to distinguish between the two.
+  const base::TimeDelta waitTime = base::Seconds(10);
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+
+  // Go back to destination URL 1.
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  {
+    // Wait while animation runs.
+    ScopedSynchronizationDisabler sync_disabler;
+    base::test::ios::SpinRunLoopWithMinDelay(waitTime);
+  }
+  BOOL appearance = HasGestureIPHAppeared();
+  GREYAssertTrue(
+      appearance,
+      @"Bi-directional swipe back/forward IPH should still be visible.");
+
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+  // Go forward to destination URL 2.
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
+  {
+    // Wait while animation runs.
+    ScopedSynchronizationDisabler sync_disabler;
+    base::test::ios::SpinRunLoopWithMinDelay(waitTime);
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"One directional swipe back/forward IPH should not be visible.");
+}
+
+// Tests that opening a new tab hides the swipe back/forward IPH.
+- (void)testSwipeBackForwardIPHHidesOnNewTabOpening {
+  [self relaunchWithIPHFeatureForSafariSwitcher:@"IPH_iOSSwipeBackForward"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button during animation.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"Swipe back/forward IPH did not appear after tapping back button.");
+    [ChromeEarlGrey openNewTab];
+  }
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"Swipe back/forward IPH still appeared after user opens a new tab.");
+}
+
+// Tests that the swipe back/forward IPH would NOT show if the page load fails.
+- (void)testSwipeBackForwardDoesNotShowWhenPageFails {
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [ChromeEarlGrey purgeCachedWebViewPages];
+
+  // Cut off server and go back to destination URL 1.
+  GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
+                 @"Server did not shut down.");
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"Swipe back/forward IPH should not be visible when page fails to load.");
 }
 
 @end

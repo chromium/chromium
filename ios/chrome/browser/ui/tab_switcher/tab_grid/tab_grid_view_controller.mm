@@ -593,6 +593,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_tabGridMode == mode) {
     return;
   }
+  if (self.swipeToIncognitoIPH) {
+    [self.swipeToIncognitoIPH
+        dismissWithReason:IPHDismissalReasonType::
+                              kTappedOutsideIPHAndAnchorView];
+  }
+
   TabGridMode previousMode = _tabGridMode;
   _tabGridMode = mode;
 
@@ -894,6 +900,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   } else {
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                     nil);
+  }
+  // Dismiss IPH if not on regular page.
+  if (currentPage != TabGridPage::TabGridPageRegularTabs) {
+    [self.swipeToIncognitoIPH
+        dismissWithReason:IPHDismissalReasonType::
+                              kTappedOutsideIPHAndAnchorView];
   }
   if (IsPinnedTabsEnabled()) {
     const BOOL pinnedTabsAvailable =
