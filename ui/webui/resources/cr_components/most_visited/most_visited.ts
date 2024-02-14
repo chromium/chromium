@@ -427,9 +427,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   /**
-   * This method is always called when the drag and drop was finished.
-   * If the tiles were reordered successfully, there should be a tile with the
-   * "dropped" class.
+   * This method is always called when the drag and drop was finished (even when
+   * the drop was canceled). If the tiles were reordered successfully, there
+   * should be a tile with the "dropped" class.
    *
    * |reordering_| is not set to false when the tiles are reordered. The callers
    * will need to set it to false. This is necessary to handle a mouse drag
@@ -732,14 +732,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
       if (dropIndex !== -1) {
         this.enableForceHover_(dropIndex);
       }
-
-      this.addEventListener('pointermove', () => {
-        this.clearForceHover_();
-        // When |reordering_| is true, the normal hover style is not shown.
-        // After a drop, the element that has hover is not correct. It will be
-        // after the mouse moves.
-        this.reordering_ = false;
-      }, {once: true});
     };
 
     this.ownerDocument.addEventListener('dragover', dragOver);
@@ -748,6 +740,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.ownerDocument.removeEventListener('dragover', dragOver);
       this.ownerDocument.removeEventListener('drop', drop);
       this.dragEnd_();
+
+      this.addEventListener('pointermove', () => {
+        this.clearForceHover_();
+        // When |reordering_| is true, the normal hover style is not shown.
+        // After a drop, the element that has hover is not correct. It will be
+        // after the mouse moves.
+        this.reordering_ = false;
+      }, {once: true});
     }, {once: true});
   }
 
