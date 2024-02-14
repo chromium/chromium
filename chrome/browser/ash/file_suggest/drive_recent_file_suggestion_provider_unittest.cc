@@ -48,6 +48,8 @@ constexpr char16_t kEmail16[] = u"test-user@example.com";
 struct QueryItemInfo {
   base::FilePath path;
 
+  std::optional<bool> is_folder;
+
   base::Time last_modified_time;
   std::optional<base::Time> modified_by_me_time;
   std::optional<std::string> last_modifying_user;
@@ -102,6 +104,10 @@ std::vector<drivefs::mojom::QueryItemPtr> CreateQueryItems(
       result->metadata->sharing_user = drivefs::mojom::UserInfo::New();
       result->metadata->sharing_user->display_name = *item.sharing_user;
     }
+    result->metadata->type =
+        item.is_folder.value_or(false)
+            ? drivefs::mojom::FileMetadata::Type::kDirectory
+            : drivefs::mojom::FileMetadata::Type::kFile;
     result->metadata->capabilities = drivefs::mojom::Capabilities::New();
     results.push_back(std::move(result));
   }
@@ -340,6 +346,10 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
             {{.path = base::FilePath("/Modified last item 1"),
               .last_modified_time = GetReferenceTime(),
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
+             {.path = base::FilePath("/Folder last modified"),
+              .is_folder = true,
+              .last_modified_time = GetReferenceTime() - base::Hours(1),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
              {.path = base::FilePath("/Modified and viewed last item"),
               .last_modified_time = GetReferenceTime() - base::Days(1),
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1)},
@@ -364,6 +374,10 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
             {{.path = base::FilePath("/Viewed last item 1"),
               .last_modified_time = GetReferenceTime() - base::Days(1),
               .last_viewed_by_me_time = GetReferenceTime() - base::Hours(6)},
+             {.path = base::FilePath("/Viewed folder"),
+              .is_folder = true,
+              .last_modified_time = GetReferenceTime() - base::Days(1),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Hours(7)},
              {.path = base::FilePath("/Modified and viewed last item"),
               .last_modified_time = GetReferenceTime() - base::Hours(12),
               .last_viewed_by_me_time = GetReferenceTime() - base::Hours(12)},
@@ -621,6 +635,11 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
               .shared_with_me_time = GetReferenceTime() - base::Days(2)},
              {.path = base::FilePath("/Shared"),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .last_modifying_user = "Test User",
+              .shared_with_me_time = GetReferenceTime() - base::Hours(50)},
+             {.path = base::FilePath("/Shared folder"),
+              .is_folder = true,
               .last_modified_time = GetReferenceTime() - base::Minutes(2),
               .last_modifying_user = "Test User",
               .shared_with_me_time = GetReferenceTime() - base::Hours(50)},

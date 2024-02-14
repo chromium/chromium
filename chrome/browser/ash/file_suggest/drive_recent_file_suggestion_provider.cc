@@ -38,7 +38,7 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyModifiedQuery() {
   query->modified_time = base::Time::Now() - kMaxLastModifiedOrViewedTime;
   query->modified_time_operator =
       drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
-  query->page_size = 10;
+  query->page_size = 15;
   query->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   query->sort_direction =
@@ -49,7 +49,7 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyModifiedQuery() {
 
 drivefs::mojom::QueryParametersPtr CreateRecentlyViewedQuery() {
   auto query = drivefs::mojom::QueryParameters::New();
-  query->page_size = 10;
+  query->page_size = 15;
   query->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   query->sort_direction =
@@ -64,7 +64,7 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyViewedQuery() {
 
 drivefs::mojom::QueryParametersPtr CreateSharedWithMeQuery() {
   auto query = drivefs::mojom::QueryParameters::New();
-  query->page_size = 10;
+  query->page_size = 15;
   query->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   query->shared_with_me = true;
@@ -253,10 +253,22 @@ void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
             "."),
         items->size());
 
+    size_t folder_count = 0u;
     for (auto& item : *items) {
+      if (item->metadata->type ==
+          drivefs::mojom::FileMetadata::Type::kDirectory) {
+        ++folder_count;
+        continue;
+      }
       query_result_files_by_path_.emplace(item->path,
                                           std::move(item->metadata));
     }
+    base::UmaHistogramCounts100(
+        base::JoinString({kBaseHistogramName, "FolderCount",
+                          GetHistogramSuffix(search_type)},
+                         "."),
+        folder_count);
+
   } else {
     base::UmaHistogramTimes(
         base::JoinString({kBaseHistogramName, "DurationOnError",
