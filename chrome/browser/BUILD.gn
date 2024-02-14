@@ -7152,6 +7152,8 @@ static_library("browser") {
       "autocomplete/shortcuts_extensions_manager.h",
       "browsing_data/counters/hosted_apps_counter.cc",
       "browsing_data/counters/hosted_apps_counter.h",
+      "controlled_frame/controlled_frame_media_access_handler.cc",
+      "controlled_frame/controlled_frame_media_access_handler.h",
       "drive/drive_notification_manager_factory.cc",
       "drive/drive_notification_manager_factory.h",
       "guest_view/app_view/chrome_app_view_guest_delegate.cc",

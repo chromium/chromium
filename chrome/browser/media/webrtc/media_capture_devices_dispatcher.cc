@@ -49,6 +49,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
 #include "chrome/browser/media/extension_media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
@@ -97,6 +98,8 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
   media_access_handlers_.push_back(
       std::make_unique<DesktopCaptureAccessHandler>());
   media_access_handlers_.push_back(std::make_unique<TabCaptureAccessHandler>());
+  media_access_handlers_.push_back(
+      std::make_unique<controlled_frame::ControlledFrameMediaAccessHandler>());
 #endif
   media_access_handlers_.push_back(
       std::make_unique<PermissionBubbleMediaAccessHandler>());

@@ -5840,7 +5840,7 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, PermissionsPolicy) {
+TEST_F(ManifestParserTest, PermissionsPolicyParsesOrigins) {
   auto& manifest = ParseManifest(
       R"({ "permissions_policy": {
                 "geolocation": ["https://example.com"],
@@ -5848,6 +5848,54 @@ TEST_F(ManifestParserTest, PermissionsPolicy) {
         }})");
   EXPECT_EQ(0u, GetErrorCount());
   EXPECT_EQ(2u, manifest->permissions_policy.size());
+  for (const auto& policy : manifest->permissions_policy) {
+    EXPECT_EQ(1u, policy.allowed_origins.size());
+    EXPECT_EQ("https://example.com", policy.allowed_origins[0].Serialize());
+    EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesSelf) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["self"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ("http://foo.com",
+            manifest->permissions_policy[0].self_if_matches->Serialize());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyIgnoresSrc) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["src"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+  EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesNone) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["none"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesWildcard) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["*"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_TRUE(manifest->permissions_policy[0].matches_all_origins);
 }
 
 TEST_F(ManifestParserTest, PermissionsPolicyEmptyOrigin) {

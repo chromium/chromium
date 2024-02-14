@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +26,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/base/net_errors.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 
@@ -218,18 +221,29 @@ class ControlledFrameApiTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   ControlledFrameApiTest() {
-    isolated_web_app_dev_server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+    StartIsolatedWebAppServer("web_apps/simple_isolated_app");
   }
 
-  void SetUpOnMainThread() override {
+  void SetUpOnMainThread() override { InstallAndLaunchIsolatedWebApp(); }
+
+  void TearDownOnMainThread() override { app_contents_ = nullptr; }
+
+  void StartIsolatedWebAppServer(const std::string& path) {
+    base::FilePath::StringType os_path;
+#if BUILDFLAG(IS_WIN)
+    os_path = base::UTF8ToWide(path);
+#else
+    os_path = path;
+#endif
+    isolated_web_app_dev_server_ = CreateAndStartServer(os_path);
+  }
+
+  void InstallAndLaunchIsolatedWebApp() {
     web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
         isolated_web_app_dev_server().GetOrigin());
     Browser* app_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
     app_contents_ = app_browser->tab_strip_model()->GetActiveWebContents();
   }
-
-  void TearDownOnMainThread() override { app_contents_ = nullptr; }
 
   [[nodiscard]] bool CreateControlledFrame(content::WebContents* web_contents,
                                            const GURL& src) {
@@ -775,6 +789,378 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebTransportApiTest,
     })();
   )",
                            webtransport_server().server_address().port())));
+}
+
+namespace {
+constexpr char kPermissionAllowedHost[] = "permission-allowed.com";
+constexpr char kPermissionDisallowedHost[] = "permission-disllowed.com";
+}  // namespace
+
+class ControlledFramePermissionsPolicyTest : public ControlledFrameApiTest {
+ public:
+  ControlledFramePermissionsPolicyTest() = default;
+
+  ControlledFramePermissionsPolicyTest(
+      const ControlledFramePermissionsPolicyTest&) = delete;
+  ControlledFramePermissionsPolicyTest& operator=(
+      const ControlledFramePermissionsPolicyTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ControlledFrameApiTest::SetUpCommandLine(command_line);
+    command_line->AppendArg("--use-fake-device-for-media-stream");
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ControlledFrameApiTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void TearDownOnMainThread() override {
+    CHECK(embedded_test_server_.ShutdownAndWaitUntilComplete());
+    ControlledFrameApiTest::TearDownOnMainThread();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+    ControlledFrameApiTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  bool StartEmbeddedTestServer(const std::string& path) {
+    base::FilePath::StringType os_path;
+#if BUILDFLAG(IS_WIN)
+    os_path = base::UTF8ToWide(path);
+#else
+    os_path = path;
+#endif
+    const base::FilePath server_root =
+        base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
+            .Append(base::FilePath(os_path));
+    embedded_test_server_.AddDefaultHandlers(server_root);
+    return embedded_test_server_.Start();
+  }
+
+  void SetUpPermissionRequestEventListener(bool allow_permission) {
+    const std::string& handle_request_str = allow_permission ? "allow" : "deny";
+    EXPECT_EQ("SUCCESS",
+              content::EvalJs(app_contents(),
+                              content::JsReplace(R"(
+      (function() {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame) {
+          return 'FAIL: Could not find a controlledframe element.';
+        }
+        frame.addEventListener('permissionrequest', (e) => {
+          e.request[$1]();
+        });
+        return 'SUCCESS'
+      })();
+    )",
+                                                 handle_request_str)));
+  }
+
+  void RequestMediaPermissionFromControlledFrame(
+      bool request_audio,
+      bool request_video,
+      bool expect_audio_permission_allowed,
+      bool expect_video_permission_allowed) {
+    extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_contents());
+    EXPECT_EQ("SUCCESS", content::EvalJs(web_view_guest->web_contents(),
+                                         content::JsReplace(
+                                             R"(
+    (async function() {
+      const constraints = { audio: $1, video: $2 };
+      const expectAudioPermissionAllowed = $3;
+      const expectVideoPermissionAllowed = $4;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        const checkPermissionType =
+            function(type, tracks, expectPermissionAllowed) {
+          const hasTracks = tracks.length;
+          if (expectPermissionAllowed != hasTracks) {
+            const expectedPermissionStr =
+                expectPermissionAllowed ? 'has' : 'does not have';
+            const hasTrackStr = hasTracks ? 'has' : 'does not have';
+            return 'FAIL: getUserMedia() ' + expectedPermissionStr + ' ' +
+                type + ' stream permission, but ' + hasTrackStr + ' ' +
+                type + ' tracks';
+          }
+          return 'SUCCESS';
+        }
+
+        let audioPermissionCheckResult = checkPermissionType(
+            'audio', stream.getAudioTracks(), expectAudioPermissionAllowed);
+        if (audioPermissionCheckResult != 'SUCCESS') {
+          return audioPermissionCheckResult;
+        }
+
+        let videoPermissionCheckResult = checkPermissionType(
+            'video', stream.getVideoTracks(), expectVideoPermissionAllowed);
+        if (videoPermissionCheckResult != 'SUCCESS') {
+          return videoPermissionCheckResult;
+        }
+
+        return 'SUCCESS';
+      } catch (err) {
+        if (!expectAudioPermissionAllowed && !expectVideoPermissionAllowed) {
+          return 'SUCCESS';
+        }
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )",
+                                             request_audio, request_video,
+                                             expect_audio_permission_allowed,
+                                             expect_video_permission_allowed)));
+  }
+
+  net::EmbeddedTestServer* embedded_test_server() {
+    return &embedded_test_server_;
+  }
+
+ protected:
+  net::EmbeddedTestServer embedded_test_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
+namespace {}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraPermissionAllowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/false,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       OnlyCameraPermissionAllowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraPermissionDenied) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/false,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraPermissionDisallowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/false,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       MicrophonePermissionAllowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/false,
+      /*expect_audio_permission_allowed=*/true,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       OnlyMicrophonePermissionAllowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/true,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       MicrophonePermissionDenied) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/false,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       MicrophonePermissionDisallowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/false,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraAndMicrophonePermissionAllowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/true,
+      /*expect_video_permission_allowed=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraAndMicrophonePermissionDenied) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionAllowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/false);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFramePermissionsPolicyTest,
+                       CameraAndMicrophonePermissionDisallowed) {
+  const std::string& test_server_dir =
+      "web_apps/controlled_frame_permissions_policy/camera_and_microphone";
+  EXPECT_TRUE(StartEmbeddedTestServer(test_server_dir));
+
+  StartIsolatedWebAppServer(test_server_dir);
+  InstallAndLaunchIsolatedWebApp();
+
+  const GURL& kControlledFrameUrl =
+      embedded_test_server()->GetURL(kPermissionDisallowedHost, "/index.html");
+  ASSERT_TRUE(CreateControlledFrame(app_contents(), kControlledFrameUrl));
+
+  SetUpPermissionRequestEventListener(/*allow_permission=*/true);
+  RequestMediaPermissionFromControlledFrame(
+      /*request_audio=*/true,
+      /*request_video=*/true,
+      /*expect_audio_permission_allowed=*/false,
+      /*expect_video_permission_allowed=*/false);
 }
 
 class ControlledFramePromiseApiTest

@@ -1859,11 +1859,27 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     PermissionsPolicyParser::Declaration new_policy;
     new_policy.feature_name = feature;
     for (const auto& origin : allowlist) {
-      // PermissionsPolicyParser expects origin strings to be wrapped in single
-      // quotes, as they would be in the header's permissions policy string. The
-      // asterisk is a token, which does not need to be wrapped in single
-      // quotes.
-      String wrapped_origin = (origin == "*" ? origin : "'" + origin + "'");
+      // PermissionsPolicyParser expects 4 types of origin strings:
+      // - "self": wrapped in single quotes (as in a header)
+      // - "none": wrapped in single quotes (as in a header)
+      // - "*" (asterisk): not wrapped
+      // - "<origin>": actual origin names should not be wrapped in single
+      //        quotes
+      // The "src" origin string type can be ignored here as it's only used in
+      // the iframe "allow" attribute.
+      //
+      // Sidenote: Actual origin names ("<origin>") are parsed using
+      // OriginWithPossibleWildcards::Parse() which fails if the origin string
+      // contains any non-alphanumeric characters, such as a single quote. For
+      // this reason, actual origin names must not be wrapped since the parser
+      // will just drop them as being improperly formatted (i.e. they would be
+      // the equivalent to some manifest containing an origin wrapped in single
+      // quotes, which is invalid).
+      String wrapped_origin = origin;
+      if (EqualIgnoringASCIICase(origin, "self") ||
+          EqualIgnoringASCIICase(origin, "none")) {
+        wrapped_origin = "'" + origin + "'";
+      }
       new_policy.allowlist.push_back(wrapped_origin);
     }
     policy.declarations.push_back(new_policy);
