@@ -1,4 +1,5 @@
-#!special-case-list-v2
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
 
 # This ignore list is the subset of ignorelist.txt that's needed in
 # is_ubsan_security builds. is_ubsan_security builds also use
@@ -50,7 +51,7 @@ src:*/ppapi/shared_impl/id_assignment.h
 fun:*hashEntry*
 fun:*LocaleCacheKey*hashCode*
 fun:*google*protobuf*hash*
-fun:*{hash,Hash}*
+fun:*(hash|Hash)*
 
 #############################################################################
 # Bounds ignorelist.
