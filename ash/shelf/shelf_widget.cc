@@ -41,6 +41,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -48,6 +49,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -106,18 +108,28 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   // Sets the shelf background color.
   void SetBackgroundColor(SkColor color) {
+    if (color == background_color_) {
+      return;
+    }
+
     background_color_ = color;
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   void SetBorderType(views::HighlightBorder::Type type) {
+    if (type == highlight_border_type_) {
+      return;
+    }
+
     highlight_border_type_ = type;
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   // Sets the rounded corners used by the shelf.
   void SetRoundedCornerRadius(float radius) {
+    const bool needs_paint = corner_radius_ != radius;
     corner_radius_ = radius;
+
     layer()->SetRoundedCornerRadius({
         shelf_->SelectValueForShelfAlignment(radius, 0.0f, radius),
         shelf_->SelectValueForShelfAlignment(radius, radius, 0.0f),
@@ -125,7 +137,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
         shelf_->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
     });
 
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    if (needs_paint) {
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    }
   }
 
   SkColor background_color() const { return background_color_; }
@@ -239,7 +253,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   const raw_ptr<Shelf> shelf_;
   const raw_ptr<views::View> owner_view_;
 
-  SkColor background_color_;
+  SkColor background_color_ = gfx::kPlaceholderColor;
   float corner_radius_ = 0.0f;
   views::HighlightBorder::Type highlight_border_type_ =
       chromeos::features::IsJellyrollEnabled()
