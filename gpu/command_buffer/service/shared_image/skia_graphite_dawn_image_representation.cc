@@ -226,9 +226,4 @@ void SkiaGraphiteDawnImageRepresentation::EndReadAccess() {
   mode_ = RepresentationAccessMode::kNone;
 }
 
-bool SkiaGraphiteDawnImageRepresentation::
-    SupportsMultipleConcurrentReadAccess() {
-  return dawn_representation_->SupportsMultipleConcurrentReadAccess();
-}
-
 }  // namespace gpu

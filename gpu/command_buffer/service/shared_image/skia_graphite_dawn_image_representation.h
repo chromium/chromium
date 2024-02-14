@@ -36,7 +36,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
 
   std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
   void EndReadAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
 
  private:
   SkiaGraphiteDawnImageRepresentation(
