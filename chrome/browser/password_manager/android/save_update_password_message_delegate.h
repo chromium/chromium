@@ -94,7 +94,7 @@ class SaveUpdatePasswordMessageDelegate
   void HandleDialogDismissed(bool dialogAccepted) override;
   void HandleSavePasswordFromDialog(const std::u16string& username,
                                     const std::u16string& password) override;
-  bool IsUsingProfileStore(const std::u16string& username) override;
+  bool IsUsingAccountStorage(const std::u16string& username) override;
 
  private:
   friend class SaveUpdatePasswordMessageDelegateTest;

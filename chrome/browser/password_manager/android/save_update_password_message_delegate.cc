@@ -303,10 +303,9 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password) {
-  // If password is being updated in the profile storage, don't show the account
-  // even if it's available.
-  if (account_email_.has_value() &&
-      !IsUsingProfileStore(pending_credentials.username_value)) {
+  // If password is being updated in the account storage, the description should
+  // contain for which account the update is made.
+  if (IsUsingAccountStorage(pending_credentials.username_value)) {
     return l10n_util::GetStringFUTF16(
         update_password
             ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
@@ -493,23 +492,37 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
   SavePassword();
 }
 
-bool SaveUpdatePasswordMessageDelegate::IsUsingProfileStore(
+bool SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage(
     const std::u16string& username) {
+  if (!account_email_) {
+    return false;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   if (!UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
-    return !account_email_;
+    return account_email_.has_value();
   }
 
-  auto has_username_in_profile_store = [&username](const auto& form) {
-    return (form->username_value == username) && form->IsUsingProfileStore();
+  // Saving new credential to the account store.
+  auto different_username = [&username](const auto& form) {
+    return (form->username_value != username);
   };
   // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
   // rather than current_forms which is best_matches without PSL-matched
   // credentials.
-  return !account_email_ ||
-         base::ranges::any_of(passwords_state_.GetCurrentForms(),
-                              has_username_in_profile_store);
+  if (base::ranges::all_of(passwords_state_.GetCurrentForms(),
+                           different_username)) {
+    return true;
+  }
+
+  // If it's an update in the account store return true, else (meaning
+  // that the updated username is only in the profile store) return false.
+  auto same_username_in_account_store = [&username](const auto& form) {
+    return (form->username_value == username) && form->IsUsingAccountStore();
+  };
+  return base::ranges::any_of(passwords_state_.GetCurrentForms(),
+                              same_username_in_account_store);
 }
 
 void SaveUpdatePasswordMessageDelegate::ClearState() {

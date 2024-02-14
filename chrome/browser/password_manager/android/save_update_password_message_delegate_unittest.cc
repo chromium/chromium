@@ -1345,8 +1345,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, true);
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form1};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
   const bool is_signed_in = true;
   const bool is_update = true;
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/is_signed_in,
@@ -1384,6 +1387,34 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
+// Tests that the description is set correctly when the signed in user updated
+// the password, which is stored in both local and account stores.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_UpdatePasswordInBothStores) {
+  // Enables using split storages (local and account).
+  EnableUseUPMLocalAndSeparateStores();
+
+  SetPendingCredentials(kUsername, kPassword);
+  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
+  password_form.in_store =
+      password_manager::PasswordForm::Store::kProfileStore |
+      password_manager::PasswordForm::Store::kAccountStore;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form};
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+  const bool is_update = true;
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/is_update);
+
+  // Should display signed out message for updating the password in the local
+  // store (even when the user is signed in).
+  EXPECT_EQ(GetExpectedUPMMessageDescription(is_update, true, kAccountEmail16),
+            GetMessageWrapper()->GetDescription());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the description is set correctly when the signed-in user with a
 // non-displayable email updates a password.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
@@ -1409,7 +1440,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that SaveUpdatePasswordMessageDelegate::IsUsingProfileStore returns
+// Tests that SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage returns
 // correct value for the updated credential.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        IsUsingProfileStore_UpdatingExistingValue) {
@@ -1426,15 +1457,16 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
 
-  ASSERT_FALSE(get_password_edit_dialog_bridge_delegate()->IsUsingProfileStore(
+  EXPECT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
       kUsername));
-  ASSERT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingProfileStore(
-      kUsername2));
+  EXPECT_FALSE(
+      get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
+          kUsername2));
 
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that SaveUpdatePasswordMessageDelegate::IsUsingProfileStore returns
+// Tests that SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage returns
 // correct value for the saved credential.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        IsUsingProfileStore_SavingNewCredentialFromUpdateDialog) {
@@ -1449,9 +1481,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
 
-  ASSERT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingProfileStore(
-      kUsername));
-  ASSERT_FALSE(get_password_edit_dialog_bridge_delegate()->IsUsingProfileStore(
+  EXPECT_FALSE(
+      get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
+          kUsername));
+  EXPECT_TRUE(get_password_edit_dialog_bridge_delegate()->IsUsingAccountStorage(
       kUsername2));
 
   DismissMessage(messages::DismissReason::UNKNOWN);

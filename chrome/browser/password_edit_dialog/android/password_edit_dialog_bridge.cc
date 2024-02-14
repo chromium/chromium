@@ -86,9 +86,9 @@ void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
   delegate_->HandleDialogDismissed(dialogAccepted);
 }
 
-jboolean PasswordEditDialogBridge::IsUsingProfileStore(
+jboolean PasswordEditDialogBridge::IsUsingAccountStorage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username) {
-  return delegate_->IsUsingProfileStore(
+  return delegate_->IsUsingAccountStorage(
       base::android::ConvertJavaStringToUTF16(username));
 }
