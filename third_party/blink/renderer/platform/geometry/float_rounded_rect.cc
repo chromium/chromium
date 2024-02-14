@@ -248,55 +248,42 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
 
-  const gfx::SizeF& top_left = radii_.TopLeft();
-  if (!top_left.IsEmpty()) {
-    gfx::RectF rect(rect_.x(), rect_.y(), top_left.width(), top_left.height());
-    if (quad.IntersectsRect(rect)) {
-      gfx::PointF center(rect_.x() + top_left.width(),
-                         rect_.y() + top_left.height());
-      gfx::SizeF size(top_left.width(), top_left.height());
-      if (!quad.IntersectsEllipse(center, size))
+  if (!radii_.TopLeft().IsEmpty()) {
+    const gfx::RectF corner_rect(TopLeftCorner());
+    if (quad.IntersectsRect(corner_rect)) {
+      if (!quad.IntersectsEllipse(corner_rect.bottom_right(),
+                                  corner_rect.size())) {
         return false;
+      }
     }
   }
 
-  const gfx::SizeF& top_right = radii_.TopRight();
-  if (!top_right.IsEmpty()) {
-    gfx::RectF rect(rect_.right() - top_right.width(), rect_.y(),
-                    top_right.width(), top_right.height());
-    if (quad.IntersectsRect(rect)) {
-      gfx::PointF center(rect_.right() - top_right.width(),
-                         rect_.y() + top_right.height());
-      gfx::SizeF size(top_right.width(), top_right.height());
-      if (!quad.IntersectsEllipse(center, size))
+  if (!radii_.TopRight().IsEmpty()) {
+    const gfx::RectF corner_rect(TopRightCorner());
+    if (quad.IntersectsRect(corner_rect)) {
+      if (!quad.IntersectsEllipse(corner_rect.bottom_left(),
+                                  corner_rect.size())) {
         return false;
+      }
     }
   }
 
-  const gfx::SizeF& bottom_left = radii_.BottomLeft();
-  if (!bottom_left.IsEmpty()) {
-    gfx::RectF rect(rect_.x(), rect_.bottom() - bottom_left.height(),
-                    bottom_left.width(), bottom_left.height());
-    if (quad.IntersectsRect(rect)) {
-      gfx::PointF center(rect_.x() + bottom_left.width(),
-                         rect_.bottom() - bottom_left.height());
-      gfx::SizeF size(bottom_left.width(), bottom_left.height());
-      if (!quad.IntersectsEllipse(center, size))
+  if (!radii_.BottomLeft().IsEmpty()) {
+    const gfx::RectF corner_rect(BottomLeftCorner());
+    if (quad.IntersectsRect(corner_rect)) {
+      if (!quad.IntersectsEllipse(corner_rect.top_right(),
+                                  corner_rect.size())) {
         return false;
+      }
     }
   }
 
-  const gfx::SizeF& bottom_right = radii_.BottomRight();
-  if (!bottom_right.IsEmpty()) {
-    gfx::RectF rect(rect_.right() - bottom_right.width(),
-                    rect_.bottom() - bottom_right.height(),
-                    bottom_right.width(), bottom_right.height());
-    if (quad.IntersectsRect(rect)) {
-      gfx::PointF center(rect_.right() - bottom_right.width(),
-                         rect_.bottom() - bottom_right.height());
-      gfx::SizeF size(bottom_right.width(), bottom_right.height());
-      if (!quad.IntersectsEllipse(center, size))
+  if (!radii_.BottomRight().IsEmpty()) {
+    const gfx::RectF corner_rect(BottomRightCorner());
+    if (quad.IntersectsRect(corner_rect)) {
+      if (!quad.IntersectsEllipse(corner_rect.origin(), corner_rect.size())) {
         return false;
+      }
     }
   }
 
