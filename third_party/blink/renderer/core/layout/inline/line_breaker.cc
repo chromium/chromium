@@ -2382,6 +2382,14 @@ void LineBreaker::SplitTrailingBidiPreservedSpace(LineInfo* line_info) {
     return;
   }
 
+  // TODO(abotella): This early return fixes a crash (crbug.com/324684931)
+  // caused by |HandleTextForFastMinContent| creating item results with null
+  // |shape_result|. This might affect hanging other space separators, but their
+  // behavior with min-content is known to have bugs even in purely LTR text.
+  if (mode_ == LineBreakerMode::kMinContent) {
+    return;
+  }
+
   // At this point, all trailing collapsible spaces have been collapsed, and all
   // remaining trailing spaces must be preserved.
 
