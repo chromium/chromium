@@ -19,17 +19,16 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
-namespace notifications = api::notifications;
-
 namespace {
 
 base::Value::List CreateBaseEventArgs(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& scoped_notification_id) {
   // Unscope the notification id before returning it.
   size_t index_of_separator = extension_id.length() + 1;
@@ -49,10 +48,11 @@ ExtensionNotificationHandler::ExtensionNotificationHandler() = default;
 ExtensionNotificationHandler::~ExtensionNotificationHandler() = default;
 
 // static
-std::string ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme))
+ExtensionId ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIs(kExtensionScheme)) {
     return "";
-  return std::string(url.DeprecatedGetOriginAsURL().host_piece());
+  }
+  return ExtensionId(url.DeprecatedGetOriginAsURL().host_piece());
 }
 
 void ExtensionNotificationHandler::OnClose(
@@ -64,7 +64,7 @@ void ExtensionNotificationHandler::OnClose(
   EventRouter::UserGestureState gesture =
       by_user ? EventRouter::USER_GESTURE_ENABLED
               : EventRouter::USER_GESTURE_NOT_ENABLED;
-  std::string extension_id(GetExtensionId(GURL(origin)));
+  ExtensionId extension_id(GetExtensionId(GURL(origin)));
   DCHECK(!extension_id.empty());
 
   base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
@@ -89,7 +89,7 @@ void ExtensionNotificationHandler::OnClick(
     base::OnceClosure completed_closure) {
   DCHECK(!reply.has_value());
 
-  std::string extension_id(GetExtensionId(GURL(origin)));
+  ExtensionId extension_id(GetExtensionId(GURL(origin)));
   base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
   if (action_index.has_value())
     args.Append(action_index.value());
@@ -116,7 +116,7 @@ void ExtensionNotificationHandler::DisableNotifications(Profile* profile,
 
 void ExtensionNotificationHandler::SendEvent(
     Profile* profile,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     EventRouter::UserGestureState user_gesture,

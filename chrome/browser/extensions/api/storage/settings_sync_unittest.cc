@@ -34,6 +34,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_extension_system.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +50,7 @@ const ValueStore::WriteOptions DEFAULTS = ValueStore::DEFAULTS;
 // More saving typing. Maps extension IDs to a list of sync changes for that
 // extension.
 using SettingSyncDataMultimap =
-    std::map<std::string, std::unique_ptr<SettingSyncDataList>>;
+    std::map<ExtensionId, std::unique_ptr<SettingSyncDataList>>;
 
 // Gets the pretty-printed JSON for a value.
 static std::string GetJson(const base::Value& value) {
@@ -132,7 +133,7 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
 
   // Returns the only change for a given extension setting.  If there is not
   // exactly 1 change for that key, a test assertion will fail.
-  SettingSyncData* GetOnlyChange(const std::string& extension_id,
+  SettingSyncData* GetOnlyChange(const ExtensionId& extension_id,
                                  const std::string& key) {
     std::vector<SettingSyncData*> matching_changes;
     for (const std::unique_ptr<SettingSyncData>& change : changes_) {
@@ -211,8 +212,8 @@ class ExtensionSettingsSyncTest : public testing::Test {
  protected:
   // Adds a record of an extension or app to the extension service, then returns
   // its storage area.
-  ValueStore* AddExtensionAndGetStorage(
-      const std::string& id, Manifest::Type type) {
+  ValueStore* AddExtensionAndGetStorage(const ExtensionId& id,
+                                        Manifest::Type type) {
     scoped_refptr<const Extension> extension =
         settings_test_util::AddExtensionWithId(profile_.get(), id, type);
     return settings_test_util::GetStorage(extension, frontend_.get());
@@ -1440,7 +1441,7 @@ static void UnlimitedLocalStorageTestCallback(ValueStore* local_storage) {
 }  // namespace
 
 TEST_F(ExtensionSettingsSyncTest, UnlimitedStorageForLocalButNotSync) {
-  const std::string id = "ext";
+  const ExtensionId id = "ext";
   std::set<std::string> permissions;
   permissions.insert("unlimitedStorage");
   scoped_refptr<const Extension> extension =

@@ -13,11 +13,12 @@
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 SettingsSyncProcessor::SettingsSyncProcessor(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     syncer::ModelType type,
     syncer::SyncChangeProcessor* sync_processor)
     : extension_id_(extension_id),

@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -27,7 +28,7 @@ class ExtensionNotificationHandler : public NotificationHandler {
 
   // Extracts an extension ID from the URL for an app window, or an empty string
   // if the URL is not a valid app window URL.
-  static std::string GetExtensionId(const GURL& url);
+  static ExtensionId GetExtensionId(const GURL& url);
 
   // NotificationHandler implementation.
   void OnClose(Profile* profile,
@@ -46,7 +47,7 @@ class ExtensionNotificationHandler : public NotificationHandler {
  protected:
   // Overriden in unit tests.
   virtual void SendEvent(Profile* profile,
-                         const std::string& extension_id,
+                         const ExtensionId& extension_id,
                          events::HistogramValue histogram_value,
                          const std::string& name,
                          EventRouter::UserGestureState user_gesture,

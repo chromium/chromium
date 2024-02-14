@@ -15,12 +15,13 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/value_store_util.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
 namespace {
 
-void AddAllSyncData(const std::string& extension_id,
+void AddAllSyncData(const ExtensionId& extension_id,
                     const base::Value::Dict& src,
                     syncer::ModelType type,
                     syncer::SyncDataList* dst) {
@@ -67,13 +68,13 @@ SyncStorageBackend::SyncStorageBackend(
 SyncStorageBackend::~SyncStorageBackend() {}
 
 value_store::ValueStore* SyncStorageBackend::GetStorage(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DCHECK(IsOnBackendSequence());
   return GetOrCreateStorageWithSyncData(extension_id, EmptyDict());
 }
 
 SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     base::Value::Dict sync_data) const {
   DCHECK(IsOnBackendSequence());
 
@@ -107,7 +108,7 @@ SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
   return raw_syncable_storage;
 }
 
-void SyncStorageBackend::DeleteStorage(const std::string& extension_id) {
+void SyncStorageBackend::DeleteStorage(const ExtensionId& extension_id) {
   DCHECK(IsOnBackendSequence());
 
   // Clear settings when the extension is uninstalled.  Leveldb implementations
@@ -134,7 +135,7 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
 
   // For tests, all storage areas are kept in memory in `storage_objs_`.
   for (const auto& storage_obj : storage_objs_) {
-    std::string extension_id = storage_obj.first;
+    ExtensionId extension_id = storage_obj.first;
 
     value_store::ValueStore::ReadResult maybe_settings =
         GetOrCreateStorageWithSyncData(extension_id, EmptyDict())->Get();
@@ -162,7 +163,7 @@ std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
   sync_processor_ = std::move(sync_processor);
 
   // Group the initial sync data by extension id.
-  std::map<std::string, base::Value::Dict> grouped_sync_data;
+  std::map<ExtensionId, base::Value::Dict> grouped_sync_data;
 
   for (const syncer::SyncData& sync_data : initial_sync_data) {
     SettingSyncData data(sync_data);
@@ -176,7 +177,7 @@ std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
   // Start syncing all existing storage areas.  Any storage areas created in
   // the future will start being synced as part of the creation process.
   for (const auto& storage_obj : storage_objs_) {
-    const std::string& extension_id = storage_obj.first;
+    const ExtensionId& extension_id = storage_obj.first;
     SyncableSettingsStorage* storage = storage_obj.second.get();
 
     auto group = grouped_sync_data.find(extension_id);
@@ -213,7 +214,7 @@ std::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
   // Group changes by extension, to pass all changes in a single method call.
   // The raw pointers are safe because ownership of each item is passed to
   // storage->ProcessSyncChanges.
-  std::map<std::string, SettingSyncDataList*> grouped_sync_data;
+  std::map<ExtensionId, SettingSyncDataList*> grouped_sync_data;
 
   for (const syncer::SyncChange& change : sync_changes) {
     std::unique_ptr<SettingSyncData> data(new SettingSyncData(change));
@@ -256,7 +257,7 @@ void SyncStorageBackend::StopSyncing(syncer::ModelType type) {
 
 std::unique_ptr<SettingsSyncProcessor>
 SyncStorageBackend::CreateSettingsSyncProcessor(
-    const std::string& extension_id) const {
+    const ExtensionId& extension_id) const {
   CHECK(sync_processor_.get());
   return std::make_unique<SettingsSyncProcessor>(extension_id, sync_type_,
                                                  sync_processor_.get());

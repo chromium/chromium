@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "pdf/buildflags.h"
 
@@ -29,7 +30,7 @@
 namespace extensions {
 
 void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& stream_id,
     bool embedded,
     int frame_tree_node_id,

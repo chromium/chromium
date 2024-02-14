@@ -38,6 +38,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -144,7 +145,7 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
     }
   }
 
-  bool CrashEnabledExtension(const std::string& extension_id) {
+  bool CrashEnabledExtension(const ExtensionId& extension_id) {
     ExtensionHost* background_host =
         ProcessManager::Get(browser()->profile())
             ->GetBackgroundHostForExtension(extension_id);
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
   // time, to avoid interfering with the developer work flow.
   const Extension* extension = LoadExtension(dir.Pack());
   ASSERT_TRUE(extension);
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // The current limit for fast reload is 5, so the loop limit of 10
   // be enough to trigger termination. If the extension manages to
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
                                                      ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
   EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
 
   // This listener will respond to the ready message from the

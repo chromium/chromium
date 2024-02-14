@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 namespace extensions {
@@ -22,7 +23,7 @@ class StreamsPrivateAPI {
   // document is embedded within another document. The |frame_tree_node_id|
   // parameter is used for the top level plugins case. (PDF, etc).
   static void SendExecuteMimeTypeHandlerEvent(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& stream_id,
       bool embedded,
       int frame_tree_node_id,

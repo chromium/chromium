@@ -31,7 +31,7 @@ class SettingSyncData {
 
   // Creates explicitly.
   SettingSyncData(syncer::SyncChange::SyncChangeType change_type,
-                  const std::string& extension_id,
+                  const ExtensionId& extension_id,
                   const std::string& key,
                   base::Value value);
 

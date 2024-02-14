@@ -30,7 +30,7 @@ namespace extensions {
 //  - rate limiting (inherently per-extension, which is what we want).
 class SettingsSyncProcessor {
  public:
-  SettingsSyncProcessor(const std::string& extension_id,
+  SettingsSyncProcessor(const ExtensionId& extension_id,
                         syncer::ModelType type,
                         syncer::SyncChangeProcessor* sync_processor);
 

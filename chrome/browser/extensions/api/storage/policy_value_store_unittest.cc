@@ -22,6 +22,7 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,13 +55,13 @@ class MockSettingsObserver {
  public:
   MOCK_METHOD4(
       OnSettingsChangedJSON,
-      void(const std::string& extension_id,
+      void(const ExtensionId& extension_id,
            StorageAreaNamespace storage_area,
            std::optional<api::storage::AccessLevel> session_access_level,
            const std::string& changes_json));
 
   void OnSettingsChanged(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       StorageAreaNamespace storage_area,
       std::optional<api::storage::AccessLevel> session_access_level,
       base::Value changes) {

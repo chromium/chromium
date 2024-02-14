@@ -14,6 +14,7 @@
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/common/extension_id.h"
 
 using value_store::ValueStore;
 
@@ -21,7 +22,7 @@ namespace extensions {
 
 SyncableSettingsStorage::SyncableSettingsStorage(
     SequenceBoundSettingsChangedCallback observer,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     ValueStore* delegate,
     syncer::ModelType sync_type,
     const syncer::SyncableService::StartSyncFlare& flare)

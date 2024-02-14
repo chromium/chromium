@@ -549,7 +549,7 @@ void PreferenceAPI::EnsurePreferenceEventRouterCreated() {
   }
 }
 
-void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
+void PreferenceAPI::OnContentSettingChanged(const ExtensionId& extension_id,
                                             bool incognito) {
   if (incognito) {
     ExtensionPrefs::Get(profile_)->UpdateExtensionPref(

@@ -28,7 +28,7 @@ namespace extensions {
 // and manages its lifetime.
 class PolicyValueStore : public value_store::ValueStore {
  public:
-  PolicyValueStore(const std::string& extension_id,
+  PolicyValueStore(const ExtensionId& extension_id,
                    SequenceBoundSettingsChangedCallback observer,
                    std::unique_ptr<value_store::ValueStore> delegate);
 

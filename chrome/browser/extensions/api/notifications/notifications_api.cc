@@ -39,6 +39,7 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -87,14 +88,14 @@ const char kLowPriorityDeprecatedOnPlatform[] =
 
 // Given an extension id and another id, returns an id that is unique
 // relative to other extensions.
-std::string CreateScopedIdentifier(const std::string& extension_id,
+std::string CreateScopedIdentifier(const ExtensionId& extension_id,
                                    const std::string& id) {
   return extension_id + "-" + id;
 }
 
 // Removes the unique internal identifier to send the ID as the
 // extension expects it.
-std::string StripScopeFromIdentifier(const std::string& extension_id,
+std::string StripScopeFromIdentifier(const ExtensionId& extension_id,
                                      const std::string& scoped_id) {
   size_t index_of_separator = extension_id.length() + 1;
   DCHECK_LT(index_of_separator, scoped_id.length());
@@ -168,7 +169,7 @@ bool NotificationBitmapToGfxImage(
 bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
                                            const GURL& origin) {
   DCHECK(profile);
-  std::string extension_id =
+  ExtensionId extension_id =
       ExtensionNotificationHandler::GetExtensionId(origin);
   DCHECK(!extension_id.empty());
   AppWindowRegistry::AppWindowList windows =
@@ -570,7 +571,6 @@ NotificationsCreateFunction::RunNotificationsApi() {
   params_ = api::notifications::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  const std::string extension_id(extension_->id());
   std::string notification_id;
   if (params_->notification_id && !params_->notification_id->empty()) {
     // If the caller provided a notificationId, use that.

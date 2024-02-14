@@ -19,6 +19,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -60,7 +61,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   void RunWithValueStoreForExtension(
       StorageCallback callback,
       scoped_refptr<const Extension> extension) override;
-  void DeleteStorageSoon(const std::string& extension_id) override;
+  void DeleteStorageSoon(const ExtensionId& extension_id) override;
 
   // Returns the policy domain that should be used for the specified profile.
   static policy::PolicyDomain GetPolicyDomain(const Profile& profile);
@@ -80,16 +81,16 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // Posted by `OnPolicyUpdated()` to update a `PolicyValueStore` on the backend
   // sequence.
-  void UpdatePolicyOnBackend(const std::string& extension_id,
+  void UpdatePolicyOnBackend(const ExtensionId& extension_id,
                              const policy::PolicyMap& new_policy)
       VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // Returns or creates a `PolicyValueStore` for `extension_id`.
-  PolicyValueStore& GetOrCreateStore(const std::string& extension_id)
+  PolicyValueStore& GetOrCreateStore(const ExtensionId& extension_id)
       VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // Returns true if a backing store has been created for `extension_id`.
-  bool HasStore(const std::string& extension_id) const
+  bool HasStore(const ExtensionId& extension_id) const
       VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // The profile that owns the extension system being used.

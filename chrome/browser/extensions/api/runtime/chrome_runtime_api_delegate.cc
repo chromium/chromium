@@ -32,6 +32,7 @@
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "net/base/backoff_entry.h"
 
@@ -153,7 +154,7 @@ void ChromeRuntimeAPIDelegate::RemoveUpdateObserver(
 }
 
 void ChromeRuntimeAPIDelegate::ReloadExtension(
-    const std::string& extension_id) {
+    const extensions::ExtensionId& extension_id) {
   const Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context_)
           ->GetInstalledExtension(extension_id);
@@ -217,8 +218,9 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
   }
 }
 
-bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
-                                               UpdateCheckCallback callback) {
+bool ChromeRuntimeAPIDelegate::CheckForUpdates(
+    const extensions::ExtensionId& extension_id,
+    UpdateCheckCallback callback) {
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   extensions::ExtensionService* service = system->extension_service();
   ExtensionUpdater* updater = service->updater();
@@ -345,13 +347,13 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
 }
 
 void ChromeRuntimeAPIDelegate::OnExtensionUpdateFound(
-    const std::string& id,
+    const extensions::ExtensionId& extension_id,
     const base::Version& version) {
   if (version.IsValid()) {
     UpdateCheckResult result = UpdateCheckResult(
         extensions::api::runtime::RequestUpdateCheckStatus::kUpdateAvailable,
         version.GetString());
-    CallUpdateCallbacks(id, std::move(result));
+    CallUpdateCallbacks(extension_id, std::move(result));
   }
 }
 
@@ -369,7 +371,7 @@ void ChromeRuntimeAPIDelegate::OnExtensionInstalled(
 }
 
 void ChromeRuntimeAPIDelegate::UpdateCheckComplete(
-    const std::string& extension_id) {
+    const extensions::ExtensionId& extension_id) {
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   extensions::ExtensionService* service = system->extension_service();
   const Extension* update = service->GetPendingExtensionUpdate(extension_id);
@@ -394,7 +396,7 @@ void ChromeRuntimeAPIDelegate::UpdateCheckComplete(
 }
 
 void ChromeRuntimeAPIDelegate::CallUpdateCallbacks(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const UpdateCheckResult& result) {
   auto it = update_check_info_.find(extension_id);
   if (it == update_check_info_.end()) {

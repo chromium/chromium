@@ -30,6 +30,7 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,15 +51,15 @@ class TestEventRouter : public EventRouter {
   ~TestEventRouter() override = default;
 
   // An entry in our fake event registry.
-  using Entry = std::pair<std::string, std::string>;
+  using Entry = std::pair<ExtensionId, std::string>;
 
-  bool ExtensionHasEventListener(const std::string& extension_id,
+  bool ExtensionHasEventListener(const ExtensionId& extension_id,
                                  const std::string& event_name) const override {
     return base::Contains(fake_registry_, Entry(extension_id, event_name));
   }
 
   // Pretend that |extension_id| is listening for |event_name|.
-  void AddFakeListener(const std::string& extension_id,
+  void AddFakeListener(const ExtensionId& extension_id,
                        const std::string& event_name) {
     fake_registry_.insert(Entry(extension_id, event_name));
   }
@@ -83,7 +84,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 
   // On the next update check for extension |id|, we'll respond that no update
   // is available.
-  void AddNoUpdateResponse(const std::string& id) {
+  void AddNoUpdateResponse(const ExtensionId& id) {
     no_updates_.insert(id);
     if (updates_.find(id) != updates_.end()) {
       updates_.erase(id);
@@ -92,7 +93,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 
   // On the next update check for extension |id|, pretend that an update to
   // version |version| has been downloaded to |path|.
-  void AddUpdateResponse(const std::string& id,
+  void AddUpdateResponse(const ExtensionId& id,
                          const base::FilePath& path,
                          const std::string& version) {
     if (no_updates_.find(id) != no_updates_.end()) {
@@ -161,8 +162,8 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // These keep track of what response we should give for update checks, keyed
   // by extension id. A given extension id should only appear in one or the
   // other.
-  std::set<std::string> no_updates_;
-  std::map<std::string, DownloadFinishedArgs> updates_;
+  std::set<ExtensionId> no_updates_;
+  std::map<ExtensionId, DownloadFinishedArgs> updates_;
 };
 
 // Helper to let test code wait for and return an update check result.
@@ -232,18 +233,18 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
     ExtensionServiceTestWithInstall::TearDown();
   }
 
-  // Uses runtime_delegate_ to run an update check for |id|, expecting
+  // Uses runtime_delegate_ to run an update check for |extension_id|, expecting
   // |expected_status| and (if an update was available) |expected_version|.
   // The |expected_status| should be one of 'throttled', 'no_update', or
   // 'update_available'.
   void DoUpdateCheck(
-      const std::string& id,
+      const ExtensionId& extension_id,
       const api::runtime::RequestUpdateCheckStatus& expected_status,
       const std::string& expected_version) {
     UpdateCheckResultCatcher catcher;
     EXPECT_TRUE(runtime_delegate_->CheckForUpdates(
-        id, base::BindOnce(&UpdateCheckResultCatcher::OnResult,
-                           base::Unretained(&catcher))));
+        extension_id, base::BindOnce(&UpdateCheckResultCatcher::OnResult,
+                                     base::Unretained(&catcher))));
     std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> result =
         catcher.WaitForResult();
     ASSERT_NE(nullptr, result.get());
@@ -281,7 +282,7 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Start by installing version 1.
   scoped_refptr<const Extension> v1(InstallCRX(v1_path, INSTALL_NEW));
-  std::string id = v1->id();
+  ExtensionId id = v1->id();
 
   // Make it look like our test extension listens for the
   // runtime.onUpdateAvailable event, so that it won't be updated immediately

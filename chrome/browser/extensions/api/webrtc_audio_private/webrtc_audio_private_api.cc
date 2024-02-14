@@ -24,6 +24,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/audio/audio_system.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -91,7 +92,7 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
 
   for (const scoped_refptr<const extensions::Extension>& extension :
        ExtensionRegistry::Get(browser_context_)->enabled_extensions()) {
-    const std::string& extension_id = extension->id();
+    const ExtensionId& extension_id = extension->id();
     if (router->ExtensionHasEventListener(extension_id, kEventName) &&
         extension->permissions_data()->HasAPIPermission("webrtcAudioPrivate")) {
       std::unique_ptr<Event> event =

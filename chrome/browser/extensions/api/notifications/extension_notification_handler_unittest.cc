@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -28,7 +29,7 @@ static const char kChromeNotificationId[] =
 class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
  public:
   // Set expected arguments for this test handler.
-  void SetTestExpectations(const std::string& extension_id,
+  void SetTestExpectations(const ExtensionId& extension_id,
                            const std::string& event_name,
                            size_t param_count) {
     extension_id_ = extension_id;
@@ -38,7 +39,7 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
 
  protected:
   void SendEvent(Profile* profile,
-                 const std::string& extension_id,
+                 const ExtensionId& extension_id,
                  events::HistogramValue histogram_value,
                  const std::string& event_name,
                  EventRouter::UserGestureState user_gesture,

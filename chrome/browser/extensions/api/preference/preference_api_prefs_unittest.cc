@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Value;
@@ -58,7 +59,7 @@ class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
       const std::string& key,
       base::Value value);
   void InstallExtension(Extension* extension);
-  void UninstallExtension(const std::string& extension_id);
+  void UninstallExtension(const ExtensionId& extension_id);
 
   scoped_refptr<ContentSettingsStore> content_settings_store() {
     return content_settings_->content_settings_store();
@@ -66,7 +67,7 @@ class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
 
  protected:
   void EnsureExtensionInstalled(Extension* extension);
-  void EnsureExtensionUninstalled(const std::string& extension_id);
+  void EnsureExtensionUninstalled(const ExtensionId& extension_id);
 
   TestingProfile profile_;
   raw_ptr<ContentSettingsService> content_settings_;
@@ -125,7 +126,7 @@ void ExtensionControlledPrefsTest::InstallExtension(Extension* extension) {
 }
 
 void ExtensionControlledPrefsTest::UninstallExtension(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   EnsureExtensionUninstalled(extension_id);
 }
 
@@ -148,7 +149,7 @@ void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
 }
 
 void ExtensionControlledPrefsTest::EnsureExtensionUninstalled(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   Extension* extensions[] = {extension1(), extension2(), extension3(),
                              extension4(), internal_extension()};
   for (size_t i = 0; i < kNumInstalledExtensions; ++i) {
