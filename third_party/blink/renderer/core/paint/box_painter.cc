@@ -59,7 +59,7 @@ void BoxPainter::RecordScrollHitTestData(
   //
   // Note that if it is visibility: hidden, then the style.Visibility()
   // check above will fail and we will already have returned.
-  if (!RuntimeEnabledFeatures::HitTestTransparencyEnabled() &&
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
       !style.VisibleToHitTesting()) {
     auto& paint_controller = paint_info.context.GetPaintController();
     paint_controller.RecordScrollHitTestData(

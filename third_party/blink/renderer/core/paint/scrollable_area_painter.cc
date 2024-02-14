@@ -30,7 +30,7 @@ namespace blink {
 namespace {
 
 bool VisibleToHitTesting(const LayoutBox& box) {
-  if (RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     return ObjectPainter(box).GetHitTestOpaqueness() !=
            cc::HitTestOpaqueness::kTransparent;
   }

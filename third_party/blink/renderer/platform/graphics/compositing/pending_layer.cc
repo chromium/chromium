@@ -681,12 +681,7 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
 
 void PendingLayer::UpdateCcLayerHitTestOpaqueness() const {
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    auto hit_test_opaqueness = GetHitTestOpaqueness();
-    if (hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent &&
-        !RuntimeEnabledFeatures::HitTestTransparencyEnabled()) {
-      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
-    }
-    CcLayer().SetHitTestOpaqueness(hit_test_opaqueness);
+    CcLayer().SetHitTestOpaqueness(GetHitTestOpaqueness());
   } else {
     CcLayer().SetHitTestable(true);
   }
