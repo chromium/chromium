@@ -13,7 +13,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/gesture_event_type.h"
-#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/gfx/geometry/size_f.h"
 
 using blink::WebGestureEvent;
@@ -210,17 +209,6 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
   return Java_GestureListenerManagerImpl_filterTapOrPressEvent(
       env, j_obj, gesture_type, gesture.PositionInWidget().x() * dip_scale,
       gesture.PositionInWidget().y() * dip_scale);
-}
-
-void GestureListenerManager::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
-  if (j_obj.is_null())
-    return;
-  float x = params.accumulated_overscroll.x();
-  float y = params.accumulated_overscroll.y();
-  return Java_GestureListenerManagerImpl_didOverscroll(env, j_obj, x, y);
 }
 
 // All positions and sizes (except |top_shown_pix|) are in CSS pixels.

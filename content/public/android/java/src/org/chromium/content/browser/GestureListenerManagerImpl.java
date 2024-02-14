@@ -327,7 +327,6 @@ public class GestureListenerManagerImpl
                 mViewDelegate
                         .getContainerView()
                         .performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onLongPress();
                 break;
             default:
                 break;
@@ -399,14 +398,6 @@ public class GestureListenerManagerImpl
         }
 
         return false;
-    }
-
-    @CalledByNative
-    private void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {
-        for (mIterator.rewind(); mIterator.hasNext(); ) {
-            GestureStateListener listener = mIterator.next();
-            listener.didOverscroll(accumulatedOverscrollX, accumulatedOverscrollY);
-        }
     }
 
     @SuppressWarnings("unused")
