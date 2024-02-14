@@ -83,6 +83,13 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
                              base::ScopedFD file_descriptor,
                              FirmwareInstallOptions options) = 0;
 
+  // The following three member functions are used in FakeFwupdClient, and are
+  // functionally no-ops outside of a testing environment.
+  virtual void TriggerPropertiesChangeForTesting(uint32_t percentage,
+                                                 uint32_t status) = 0;
+  virtual void TriggerSuccessfulUpdateForTesting() = 0;
+  virtual bool HasUpdateStartedForTesting() = 0;
+
  protected:
   friend class FwupdClientTest;
 

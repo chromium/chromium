@@ -29,6 +29,8 @@ component("fwupd") {
     "fwupd_properties.h",
     "fwupd_properties_dbus.cc",
     "fwupd_properties_dbus.h",
+    "fwupd_properties_fake.cc",
+    "fwupd_properties_fake.h",
     "fwupd_request.cc",
     "fwupd_request.h",
     "fwupd_update.cc",

@@ -27,8 +27,16 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
                      base::ScopedFD file_descriptor,
                      FirmwareInstallOptions options) override;
 
+  void TriggerPropertiesChangeForTesting(uint32_t percentage,
+                                         uint32_t status) override;
+  void TriggerSuccessfulUpdateForTesting() override;
+  bool HasUpdateStartedForTesting() override;
+
  private:
   void SetFwupdFeatureFlags() override;
+
+  // True if InstallUpdate has been called.
+  bool has_update_started_ = false;
 
   // The temporary directory where fake update files are created.
   base::ScopedTempDir temp_directory_;

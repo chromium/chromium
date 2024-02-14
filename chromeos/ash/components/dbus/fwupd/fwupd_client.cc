@@ -227,6 +227,18 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void TriggerPropertiesChangeForTesting(uint32_t percentage,
+                                         uint32_t status) override {
+    // No-op, this only has an effect when called with FakeFwupdClient.
+  }
+  void TriggerSuccessfulUpdateForTesting() override {
+    // No-op, this only has an effect when called with FakeFwupdClient.
+  }
+  bool HasUpdateStartedForTesting() override {
+    // This only returns a real value when called with FakeFwupdClient.
+    return false;
+  }
+
  private:
   // Pops a string-to-variant-string dictionary from the reader.
   base::Value::Dict PopStringToStringDictionary(dbus::MessageReader* reader) {
