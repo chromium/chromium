@@ -62,11 +62,17 @@ void ScopedSetRasterScale::OnWindowDestroying(aura::Window* window) {
 }
 
 ScopedPauseRasterScaleUpdates::ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Pause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Pause();
+  }
 }
 
 ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Unpause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Unpause();
+  }
 }
 
 RasterScaleController::RasterScaleController() = default;
