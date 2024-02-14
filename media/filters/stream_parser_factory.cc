@@ -542,17 +542,28 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 #endif
 };
 
-std::unique_ptr<StreamParser> StreamParserFactory::CreateHLSProbeParser(
-    std::string_view mime,
-    base::span<const std::string> codecs) {
-  for (const auto& type_info : kSupportedTypeInfo) {
-    if (type_info.type == mime) {
-      NullMediaLog log;
-      return base::WrapUnique((*type_info.factory_function)(codecs, &log));
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+std::unique_ptr<StreamParser> StreamParserFactory::CreateRelaxedParser(
+    RelaxedParserSupportedType mime) {
+  const bool enable_mp4 = base::FeatureList::IsEnabled(kBuiltInHlsMP4);
+  switch (mime) {
+    case RelaxedParserSupportedType::kMP2T: {
+      // TODO(issue/40253609): Figure out how to determine SBR presence.
+      return std::make_unique<mp2t::Mp2tStreamParser>(std::nullopt, false);
+    }
+    case RelaxedParserSupportedType::kMP4: {
+      // TODO(issue/40253609): Figure out how to determine presence of SBR,
+      // FLAC, IAMF, DolbyVision.
+      return enable_mp4 ? std::make_unique<mp4::MP4StreamParser>(
+                              std::nullopt, false, true, false, false)
+                        : nullptr;
+    }
+    case RelaxedParserSupportedType::kAAC: {
+      return enable_mp4 ? std::make_unique<ADTSStreamParser>() : nullptr;
     }
   }
-  return nullptr;
 }
+#endif
 
 // Verify that |codec_info| is supported on this platform.
 //

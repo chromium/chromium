@@ -4,44 +4,33 @@
 
 #include "media/filters/stream_parser_factory.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 
-struct TestExpectation {
-  std::string container;
-  std::string codecs;
-  bool is_created;
-};
-
-static const TestExpectation kHlsProbeParserExpectations[] = {
-    {"video/webm", "vp9", true},
-    {"audio/webm", "opus", true},
-    {"video/mp4", "mp4a", true},
-    {"video/mp4", "avc1.420000", true},
-    {"audio/aac", "aac",
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-     true
-#else
-     false
-#endif
-    },
-    {"video/mp2t", "avc1.420000",
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && \
-    BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-     true
-#else
-     false
-#endif
-    },
-};
-
 TEST(StreamParserFactoryTest, HlsProbeParserTest) {
-  for (const auto& expectation : kHlsProbeParserExpectations) {
-    const std::string codecs[]{expectation.codecs};
-    auto parser_ptr = StreamParserFactory::CreateHLSProbeParser(
-        expectation.container, codecs);
-    EXPECT_EQ(expectation.is_created, (parser_ptr != nullptr));
+  EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
+                RelaxedParserSupportedType::kMP2T),
+            nullptr);
+
+  // These are feature gated!
+  EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
+                RelaxedParserSupportedType::kMP4),
+            nullptr);
+  EXPECT_EQ(StreamParserFactory::CreateRelaxedParser(
+                RelaxedParserSupportedType::kAAC),
+            nullptr);
+
+  {
+    base::test::ScopedFeatureList enable_mp4{kBuiltInHlsMP4};
+    EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
+                  RelaxedParserSupportedType::kMP4),
+              nullptr);
+    EXPECT_NE(StreamParserFactory::CreateRelaxedParser(
+                  RelaxedParserSupportedType::kAAC),
+              nullptr);
   }
 }
 

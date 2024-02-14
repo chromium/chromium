@@ -21,8 +21,19 @@ namespace media {
 class AudioDecoderConfig;
 class VideoDecoderConfig;
 
+// These entries represent mime types which can be created with a "relaxed"
+// parser, which is one which does not verify expected codecs, and instead
+// discovered all available ones.
+enum class RelaxedParserSupportedType {
+  kMP2T,
+  kMP4,
+  kAAC,
+};
+
 class MEDIA_EXPORT StreamParserFactory {
  public:
+  // Types of parsers supported for non-strict parsing.
+
   // Checks to see if the specified |type| and |codecs| list are supported.
   // Returns one of the following SupportsType values:
   // kNotSupported indicates definitive lack of support.
@@ -67,9 +78,11 @@ class MEDIA_EXPORT StreamParserFactory {
   // file. This parser won't log to media log because failure to parse is not
   // itself an error in hls media playback. This function may return null if
   // the mime type isn't supported.
-  static std::unique_ptr<StreamParser> CreateHLSProbeParser(
-      std::string_view mime,
-      base::span<const std::string> codecs);
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  static std::unique_ptr<StreamParser> CreateRelaxedParser(
+      RelaxedParserSupportedType mime);
+#endif
 };
 
 }  // namespace media
