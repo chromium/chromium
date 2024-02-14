@@ -24,7 +24,8 @@ class Section {
  public:
   explicit Section(size_t limit,
                    Groups groups,
-                   omnibox::GroupConfigMap& group_configs);
+                   omnibox::GroupConfigMap& group_configs,
+                   omnibox::GroupConfig_SideType side_type);
   virtual ~Section();
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
@@ -47,6 +48,10 @@ class Section {
   size_t count_{0};
   // The `Group`s this `Section` contains.
   Groups groups_{};
+  // This `Section`s map of group IDs to group information.
+  omnibox::GroupConfigMap group_configs_;
+  // This `Section`s side type.
+  omnibox::GroupConfig_SideType side_type_;
 };
 
 // Base section for ZPS limits and grouping. Ensures that matches with higher
@@ -56,7 +61,9 @@ class ZpsSection : public Section {
  public:
   ZpsSection(size_t limit,
              Groups groups,
-             omnibox::GroupConfigMap& group_configs);
+             omnibox::GroupConfigMap& group_configs,
+             omnibox::GroupConfig_SideType side_type =
+                 omnibox::GroupConfig_SideType_DEFAULT_PRIMARY);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
 };
@@ -117,8 +124,10 @@ class DesktopNTPZpsSection : public ZpsSection {
 };
 
 // Section expressing the Desktop secondary ZPS limits and grouping for the NTP.
-// - up to 3 suggestions total.
+// - up to 4 suggestions total.
 //  - up to 3 previous search related suggestion chips.
+// - up to 4 previous search related text suggestions.
+// - up to 4 trending suggestions.
 class DesktopSecondaryNTPZpsSection : public ZpsSection {
  public:
   explicit DesktopSecondaryNTPZpsSection(

@@ -4981,6 +4981,12 @@ const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
 const char kNtpPhotosModuleSoftOptOutDescription[] =
     "Enables soft opt-out option in Photos opt-in card";
 
+const char kNtpRealboxContextualAndTrendingSuggestionsName[] =
+    "NTP Realbox Contextual and Trending Suggestions";
+const char kNtpRealboxContextualAndTrendingSuggestionsDescription[] =
+    "Allows NTP Realbox's second column to display contextual and trending "
+    "text suggestions.";
+
 const char kNtpRealboxIsTallName[] = "NTP Realbox Is Tall";
 const char kNtpRealboxIsTallDescription[] =
     "Makes NTP Realbox taller when enabled.";

@@ -2800,15 +2800,14 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     result.SortAndCull(realbox_zps_input, template_url_service_.get(),
                        triggered_feature_service());
 
-    const std::array<TestData, 8> expected_data{{
+    const std::array<TestData, 5> expected_data{{
+        // Previous search related suggestion chips not permitted when their
+        // `SideType` is not SideType_Secondary.
         {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
         {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
         {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
-        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group3},
     }};
     AssertResultMatches(result, expected_data.begin(), expected_data.size());
 

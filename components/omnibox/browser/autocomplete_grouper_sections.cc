@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
@@ -22,24 +23,18 @@ constexpr size_t kMobileMostVisitedTilesLimit = 10;
 
 Section::Section(size_t limit,
                  Groups groups,
-                 omnibox::GroupConfigMap& group_configs)
-    : limit_(limit), groups_(std::move(groups)) {
+                 omnibox::GroupConfigMap& group_configs,
+                 omnibox::GroupConfig_SideType side_type)
+    : limit_(limit),
+      groups_(std::move(groups)),
+      group_configs_(group_configs),
+      side_type_(side_type) {
 #if DCHECK_IS_ON()
-  // Make sure all the `Group`s in the `Section` have the same `SideType` and
-  // and all the `GroupId`s in the `Group`s have the same `RenderType`.
-  std::optional<omnibox::GroupConfig_SideType> last_side_type;
+  // Make sure all the `GroupId`s in the `Group`s have the same `RenderType`.
   for (const auto& group : groups_) {
     std::optional<omnibox::GroupConfig_RenderType> last_render_type;
     for (const auto& [group_id, _] : group.group_id_limits_and_counts()) {
-      // Ignore the `GroupId` if it is not present in the group configs.
-      if (!base::Contains(group_configs, group_id)) {
-        continue;
-      }
       const auto& group_config = group_configs[group_id];
-
-      DCHECK(last_side_type.value_or(group_config.side_type()) ==
-             group_config.side_type());
-      last_side_type = group_config.side_type();
 
       DCHECK(last_render_type.value_or(group_config.render_type()) ==
              group_config.render_type());
@@ -78,6 +73,11 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches& matches) {
 }
 
 Groups::iterator Section::FindGroup(const AutocompleteMatch& match) {
+  // Check if match is allowed in this `Section` by its GroupId `SideType`.
+  const auto& group_id = match.suggestion_group_id.value();
+  if (group_configs_[group_id].side_type() != side_type_) {
+    return groups_.end();
+  }
   return base::ranges::find_if(
       groups_, [&](const auto& group) { return group.CanAdd(match); });
 }
@@ -97,8 +97,9 @@ bool Section::Add(const AutocompleteMatch& match) {
 
 ZpsSection::ZpsSection(size_t limit,
                        Groups groups,
-                       omnibox::GroupConfigMap& group_configs)
-    : Section(limit, groups, group_configs) {}
+                       omnibox::GroupConfigMap& group_configs,
+                       omnibox::GroupConfig_SideType side_type)
+    : Section(limit, groups, group_configs, side_type) {}
 
 void ZpsSection::InitFromMatches(ACMatches& matches) {
   // Sort matches in the order of their potential containing groups. E.g., if
@@ -168,11 +169,34 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
 
 DesktopSecondaryNTPZpsSection::DesktopSecondaryNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(3,
+    : ZpsSection((omnibox_feature_configs::
+                      RealboxContextualAndTrendingSuggestions::Get()
+                          .enabled)
+                     ? omnibox_feature_configs::
+                           RealboxContextualAndTrendingSuggestions::Get()
+                               .total_limit
+                     : 3,
                  {
                      {3, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS},
+                     {(omnibox_feature_configs::
+                           RealboxContextualAndTrendingSuggestions::Get()
+                               .enabled)
+                          ? omnibox_feature_configs::
+                                RealboxContextualAndTrendingSuggestions::Get()
+                                    .contextual_suggestions_limit
+                          : 0,
+                      omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                     {(omnibox_feature_configs::
+                           RealboxContextualAndTrendingSuggestions::Get()
+                               .enabled)
+                          ? omnibox_feature_configs::
+                                RealboxContextualAndTrendingSuggestions::Get()
+                                    .trending_suggestions_limit
+                          : 0,
+                      omnibox::GROUP_TRENDS},
                  },
-                 group_configs) {}
+                 group_configs,
+                 omnibox::GroupConfig_SideType_SECONDARY) {}
 
 DesktopSRPZpsSection::DesktopSRPZpsSection(
     omnibox::GroupConfigMap& group_configs)
@@ -211,7 +235,8 @@ DesktopNonZpsSection::DesktopNonZpsSection(
                    }},
                   {7, omnibox::GROUP_OTHER_NAVS},
               },
-              group_configs) {}
+              group_configs,
+              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
 void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
   auto& default_group = groups_[0];
