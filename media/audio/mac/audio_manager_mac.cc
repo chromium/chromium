@@ -55,7 +55,9 @@ static const int kMaxOutputStreams = 50;
 // Default sample-rate on most Apple hardware.
 static const int kFallbackSampleRate = 44100;
 
-static bool GetOutputDeviceChannels(AudioUnit audio_unit, int* channels);
+static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
+                                             int* channels,
+                                             ChannelLayout* channel_layout);
 
 // Helper method to construct AudioObjectPropertyAddress structure given
 // property selector and scope. The property element is always set to
@@ -315,12 +317,11 @@ static bool GetAudioUnitStreamFormatChannelCount(AudioUnit audio_unit,
   return true;
 }
 
-// Returns the channel layout for |device| as provided by the AudioUnit attached
-// to that device matching |element|. Returns true if the count could be pulled
-// from the AudioUnit successfully, false otherwise.
-static bool GetDeviceChannels(AudioDeviceID device,
-                              AUElement element,
-                              int* channels) {
+// Returns the `channels` for `device` as provided by the AudioUnit attached
+// to that input device. Returns true if the `channels` could be pulled
+// from the AudioUnit successfully, otherwise return false and `channels` is
+// untouched.
+static bool GetInputDeviceChannels(AudioDeviceID device, int* channels) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   CHECK(channels);
 
@@ -328,23 +329,30 @@ static bool GetDeviceChannels(AudioDeviceID device,
   // format.
   // TODO(https://crbug.com/796163): Find out if we can use channel layout on
   // input element, or confirm that we can't.
-  if (element == AUElement::INPUT) {
-    ScopedAudioUnit au(device, element);
-    if (!au.is_valid()) {
-      return false;
-    }
-
-    if (!GetAudioUnitStreamFormatChannelCount(au.audio_unit(), element,
-                                              channels)) {
-      return false;
-    }
-
-    DVLOG(2) << __FUNCTION__ << " Input channels: " << *channels;
-    return true;
+  ScopedAudioUnit au(device, AUElement::INPUT);
+  if (!au.is_valid()) {
+    return false;
   }
 
-  // For output, use the channel layout to determine channel count.
-  DCHECK(element == AUElement::OUTPUT);
+  if (!GetAudioUnitStreamFormatChannelCount(au.audio_unit(), AUElement::INPUT,
+                                            channels)) {
+    return false;
+  }
+
+  DVLOG(2) << __FUNCTION__ << " Input channels: " << *channels;
+  return true;
+}
+
+// Returns the `channels` and `channel_layout` for `device` as provided by the
+// AudioUnit attached to that output device. Returns true if the `channels` and
+// `channel_layout` could be pulled from the AudioUnit successfully, otherwise
+// return false and `channels` and `channel_layout` are untouched.
+static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
+                                             int* channels,
+                                             ChannelLayout* channel_layout) {
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  CHECK(channels);
+  CHECK(channel_layout);
 
   // If the device has more channels than possible for layouts to express, use
   // the total count of channels on the device; as of this writing, macOS will
@@ -352,48 +360,96 @@ static bool GetDeviceChannels(AudioDeviceID device,
   // > 8 channel devices, we must use the total channel count instead of the
   // channel count of the preferred layout.
   int total_channel_count = 0;
-  if (GetDeviceTotalChannelCount(device,
-                                 element == AUElement::OUTPUT
-                                     ? kAudioDevicePropertyScopeOutput
-                                     : kAudioDevicePropertyScopeInput,
+  if (GetDeviceTotalChannelCount(device, kAudioDevicePropertyScopeOutput,
                                  &total_channel_count) &&
       total_channel_count > kMaxConcurrentChannels) {
     *channels = total_channel_count;
-    return true;
-  }
-
-  ScopedAudioUnit au(device, element);
-  if (!au.is_valid()) {
-    return false;
-  }
-
-  return GetOutputDeviceChannels(au.audio_unit(), channels);
-}
-
-static bool GetOutputDeviceChannels(AudioUnit audio_unit, int* channels) {
-  // Attempt to retrieve the channel layout from the AudioUnit.
-  std::unique_ptr<ScopedAudioChannelLayout> audio_unit_layout =
-      AudioManagerApple::GetOutputDeviceChannelLayout(audio_unit);
-  if (!audio_unit_layout) {
-    DLOG(ERROR) << "Failed to retrieve output device channel layout.";
-    return false;
-  }
-  AudioChannelLayout* layout = audio_unit_layout->layout();
-
-  // There is no channel info for stereo, assume so for mono as well.
-  if (layout->mNumberChannelDescriptions <= 2) {
-    *channels = layout->mNumberChannelDescriptions;
+    *channel_layout = CHANNEL_LAYOUT_DISCRETE;
   } else {
-    *channels = 0;
-    for (UInt32 i = 0; i < layout->mNumberChannelDescriptions; ++i) {
-      if (layout->mChannelDescriptions[i].mChannelLabel !=
-          kAudioChannelLabel_Unknown) {
-        (*channels)++;
-      }
+    ScopedAudioUnit au(device, AUElement::OUTPUT);
+    if (!au.is_valid()) {
+      return false;
+    }
+
+    if (!GetOutputDeviceChannelsAndLayout(au.audio_unit(), channels,
+                                          channel_layout)) {
+      return false;
     }
   }
 
-  DVLOG(2) << __FUNCTION__ << " Output channels: " << *channels;
+  DVLOG(2) << __FUNCTION__ << " Output channels: " << *channels
+           << ", channel layout: " << ChannelLayoutToString(*channel_layout);
+  return true;
+}
+
+static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
+                                             int* channels,
+                                             ChannelLayout* channel_layout) {
+  // Attempt to retrieve the channel layout from the AudioUnit.
+  std::unique_ptr<ScopedAudioChannelLayout> scoped_device_layout =
+      AudioManagerApple::GetOutputDeviceChannelLayout(audio_unit);
+  if (!scoped_device_layout) {
+    DLOG(ERROR) << "Failed to retrieve output device channel layout.";
+    return false;
+  }
+  AudioChannelLayout* device_layout = scoped_device_layout->layout();
+
+  // There is no channel info for stereo, assume so for mono as well.
+  if (device_layout->mNumberChannelDescriptions == 1 ||
+      device_layout->mNumberChannelDescriptions == 2) {
+    *channels = device_layout->mNumberChannelDescriptions;
+    *channel_layout =
+        *channels == 2 ? CHANNEL_LAYOUT_STEREO : CHANNEL_LAYOUT_MONO;
+    return true;
+  }
+
+  *channels = 0;
+  // use `CHANNEL_LAYOUT_DISCRETE` as the default layout if we can't
+  // find out a matched one.
+  *channel_layout = CHANNEL_LAYOUT_DISCRETE;
+
+  std::vector<Channels> channels_to_match;
+  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; i++) {
+    AudioChannelLabel label =
+        device_layout->mChannelDescriptions[i].mChannelLabel;
+    if (label == kAudioChannelLabel_Unknown) {
+      continue;
+    }
+
+    (*channels)++;
+
+    Channels channel;
+    if (AudioChannelLabelToChannel(label, &channel)) {
+      channels_to_match.push_back(channel);
+    }
+  }
+
+  if (*channels == 0 ||
+      *channels != static_cast<int>(channels_to_match.size())) {
+    return true;
+  }
+
+  for (int i = 0; i < ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+    ChannelLayout layout = static_cast<ChannelLayout>(i);
+    if (ChannelLayoutToChannelCount(layout) != *channels) {
+      continue;
+    }
+
+    bool matched = true;
+    for (const auto& channel : channels_to_match) {
+      auto channel_order = ChannelOrder(layout, channel);
+      if (channel_order == -1) {
+        matched = false;
+        break;
+      }
+    }
+
+    if (matched) {
+      *channel_layout = layout;
+      return true;
+    }
+  }
+
   return true;
 }
 
@@ -625,7 +681,7 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
 
   int channels = 0;
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
-  if (GetDeviceChannels(device, AUElement::INPUT, &channels) && channels <= 2) {
+  if (GetInputDeviceChannels(device, &channels) && channels <= 2) {
     channel_layout_config = ChannelLayoutConfig::Guess(channels);
   } else {
     DLOG(ERROR) << "Failed to get the device channels, use stereo as default "
@@ -883,26 +939,27 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   }
 
   int hardware_channels;
-  if (!GetDeviceChannels(device, AUElement::OUTPUT, &hardware_channels)) {
+  ChannelLayout hardware_channel_layout;
+  if (!GetOutputDeviceChannelsAndLayout(device, &hardware_channels,
+                                        &hardware_channel_layout)) {
     hardware_channels = 2;
+    hardware_channel_layout = CHANNEL_LAYOUT_STEREO;
   }
 
   // Use the input channel count and channel layout if possible.  Let OSX take
   // care of remapping the channels; this lets user specified channel layouts
   // work correctly.
   int output_channels = input_params.channels();
-  ChannelLayout channel_layout = input_params.channel_layout();
+  ChannelLayout output_channel_layout = input_params.channel_layout();
   if (!has_valid_input_params || output_channels > hardware_channels) {
     output_channels = hardware_channels;
-    channel_layout = GuessChannelLayout(output_channels);
-    if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
-      channel_layout = CHANNEL_LAYOUT_DISCRETE;
-    }
+    output_channel_layout = hardware_channel_layout;
   }
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, output_channels},
-      hardware_sample_rate, buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      {output_channel_layout, output_channels}, hardware_sample_rate,
+      buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize,
                                      hardware_sample_rate),
