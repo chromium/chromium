@@ -767,10 +767,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const lastCommaIndex =
         utteranceText.substring(0, this.maxSpeechLength).lastIndexOf(',');
 
-    if (lastCommaIndex >= 0) {
+    // To prevent infinite looping, only use the lastCommaIndex if it's not the
+    // first character. Otherwise, use getAccessibleBoundary to prevent
+    // repeatedly splicing on the first comma of the same substring.
+    if (lastCommaIndex > 0) {
       return lastCommaIndex;
     }
-
 
     // TODO(crbug.com/1474951): getAccessibleBoundary breaks on the nearest
     // word boundary, but if there's some type of punctuation (such as a comma),
