@@ -6,11 +6,14 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -55,6 +58,42 @@ int KeycodeToHexDigit(unsigned int keycode) {
   if (ui::VKEY_A <= keycode && keycode <= ui::VKEY_F)
     return keycode - ui::VKEY_A + 10;
   return -1;  // |keycode| cannot be a hexadecimal digit.
+}
+
+// `ui::DomKey` only offers `ToDeadKeyCombiningCharacter()`, but we need the
+// non-combining character for the dead key for the preedit string. If we use
+// the combining character, it may combine with the character preceding the
+// preedit string, which is unwanted and confusing.
+std::optional<char16_t> DeadKeyToNonCombiningCharacter(ui::DomKey dom_key) {
+  CHECK(dom_key.IsDeadKey());
+  uint32_t combining_char = dom_key.ToDeadKeyCombiningCharacter();
+
+  // Unicode's list of "Combining Diacritical Marks"
+  // (https://www.unicode.org/charts/PDF/U0300.pdf) is much longer, but these
+  // should be the most commonly used ones.
+  switch (combining_char) {
+    // Combining grave.
+    case 0x300:
+      return u'`';
+    // Combining acute.
+    case 0x301:
+      return u'´';
+    // Combining circumflex.
+    case 0x302:
+      return u'^';
+    // Combining tilde.
+    case 0x303:
+      return u'~';
+    // Combining diaeresis.
+    case 0x308:
+      return u'¨';
+    // Unknown combining character.
+    default:
+      LOG(WARNING) << "Unable to convert unknown dead key combining character "
+                      "to non-combining variant: U+"
+                   << base::StringPrintf("%04d", combining_char);
+      return std::nullopt;
+  }
 }
 
 }  // namespace
@@ -171,8 +210,10 @@ void CharacterComposer::UpdatePreeditStringSequenceMode() {
     if (key.IsCharacter()) {
       base::WriteUnicodeCharacter(key.ToCharacter(), &preedit_string_);
     } else if (key.IsDeadKey()) {
-      base::WriteUnicodeCharacter(key.ToDeadKeyCombiningCharacter(),
-                                  &preedit_string_);
+      if (std::optional<char16_t> non_combining_character =
+              DeadKeyToNonCombiningCharacter(key)) {
+        base::WriteUnicodeCharacter(*non_combining_character, &preedit_string_);
+      }
     } else if (key.IsComposeKey() && (compose_buffer_.size() == 1)) {
       base::WriteUnicodeCharacter(kPreeditStringComposeKeySymbol,
                                   &preedit_string_);

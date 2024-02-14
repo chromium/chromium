@@ -26,6 +26,7 @@ namespace ui {
 
 namespace {
 
+const char16_t kAcute = 0x00B4;
 const char16_t kCombiningGrave = 0x0300;
 const char16_t kCombiningAcute = 0x0301;
 const char16_t kCombiningCircumflex = 0x0302;
@@ -347,8 +348,8 @@ TEST_F(CharacterComposerTest, KeySequenceCompositionPreeditEnabled) {
 
   // LATIN SMALL LETTER A WITH ACUTE
   ExpectDeadKeyFiltered(kCombiningAcute);
-  EXPECT_EQ(character_composer_->preedit_string(),
-            std::u16string(1, kCombiningAcute));
+  // The preedit string should be the non-combining variant of the dead key.
+  EXPECT_EQ(character_composer_->preedit_string(), std::u16string(1, kAcute));
   ExpectUnicodeKeyComposed(VKEY_A, DomCode::US_A, EF_NONE, 'a',
                            std::u16string(1, 0x00E1));
   EXPECT_TRUE(character_composer_->preedit_string().empty());
