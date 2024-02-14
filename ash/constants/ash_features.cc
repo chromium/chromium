@@ -856,6 +856,13 @@ BASE_FEATURE(kEnableTouchscreensInDiagnosticsApp,
              "EnableTouchscreensInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables rollback routine which will delete client keys and certificates
+// from the software backed Chaps storage. Copies of keys and certificates will
+// will continue to exist in NSS DB.
+BASE_FEATURE(kEnableNssDbClientCertsRollback,
+             "EnableNssDbClientCertsRollback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables WiFi QoS to detect and prioritize selected egress network traffic
 // using WiFi QoS/WMM in congested WiFi environments.
 BASE_FEATURE(kEnableWifiQos,
@@ -3858,6 +3865,10 @@ bool IsNotificationScrollBarEnabled() {
 
 bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
+}
+
+bool IsNssDbClientCertsRollbackEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
 }
 
 bool AreOngoingProcessesEnabled() {
