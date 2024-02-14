@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
+#import "ios/chrome/browser/docking_promo/ui/docking_promo_metrics.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -96,12 +97,14 @@
 - (void)confirmationAlertPrimaryAction {
   [self hidePromo];
   [self promoWasDismissed];
+  RecordDockingPromoAction(IOSDockingPromoAction::kGotIt);
 }
 
 - (void)confirmationAlertSecondaryAction {
   [self hidePromo];
   [self.mediator registerPromoWithPromosManager];
   [self promoWasDismissed];
+  RecordDockingPromoAction(IOSDockingPromoAction::kRemindMeLater);
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -109,6 +112,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self promoWasDismissed];
+  RecordDockingPromoAction(IOSDockingPromoAction::kDismissViaSwipe);
 }
 
 #pragma mark - Private

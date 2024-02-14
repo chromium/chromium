@@ -166,6 +166,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Swipe Down"/>
 </enum>
 
+<enum name="IOSDockingPromoAction">
+  <int value="0" label="Toggle appearance"/>
+  <int value="1" label="Primary Action Button (Got It)"/>
+  <int value="2" label="Secondary Action Button (Remind Me Later)"/>
+  <int value="3" label="Dismiss via Swipe"/>
+</enum>
+
 <enum name="IOSEditMenuActions">
   <int value="0" label="Invalid"/>
   <int value="1" label="NativeCut"/>

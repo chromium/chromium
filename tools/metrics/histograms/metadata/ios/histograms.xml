@@ -814,6 +814,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DockingPromo.Action" enum="IOSDockingPromoAction"
+    expires_after="2024-09-10">
+  <owner>bwwilliams@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs a user's action on the fullscreen, animated Docking Promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.EditMenu.DismissedMenuOnPage" enum="IOSEditMenuPage"
     expires_after="2024-07-28">
   <owner>olivierrobin@chromium.org</owner>
