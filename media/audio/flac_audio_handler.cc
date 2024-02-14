@@ -92,6 +92,7 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
 
   do {
     if (fifo_->frames() == 0 && !AtEnd()) {
+      write_callback_called_ = false;
       if (!FLAC__stream_decoder_process_single(decoder_.get())) {
         return false;
       }
@@ -179,7 +180,11 @@ FLAC__StreamDecoderReadStatus FlacAudioHandler::ReadCallbackInternal(
 FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
     const FLAC__Frame* frame,
     const FLAC__int32* const buffer[]) {
-  if (has_error_) {
+  // For some fuzzer cases (b/41495570), a single call of
+  // `FLAC__stream_decoder_process_single` will trigger the write callback for
+  // multiple times to add silence frames. We don't support the abnormal padding
+  // configurations.
+  if (has_error_ || write_callback_called_) {
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
@@ -207,6 +212,7 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   }
 
   fifo_->Push(bus_.get(), num_samples);
+  write_callback_called_ = true;
 
   return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
