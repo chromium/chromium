@@ -521,7 +521,7 @@
     "bases": [],
     "args": ["--force-presentation-receiver-for-testing",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Oct 1, 2025"
   },
   {
     "prefix": "single-renderer-process",
