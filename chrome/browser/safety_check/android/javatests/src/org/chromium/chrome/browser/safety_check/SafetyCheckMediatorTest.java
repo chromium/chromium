@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -714,16 +713,13 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testPasswordsInitialLoadUserSignedOut() {
         // Order: initial state is user signed out -> should display signed out error.
-        doReturn(false).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         mMediator.setInitialState();
+        setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE,
+                new PasswordCheckNativeException(
+                        "Test signed out error", PasswordCheckUIStatus.ERROR_SIGNED_OUT));
 
         assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckModel.get(PASSWORDS_STATE));
-        // Check that there was no password check results fetch operation started.
-        assertNull(
-                mPasswordCheckControllerFactory
-                        .getLastCreatedController()
-                        .getFuturePasswordCheckResultForStorageType(
-                                PasswordStorageType.ACCOUNT_STORAGE));
         // The results of the previous check should be ignored.
         assertEquals(
                 1,

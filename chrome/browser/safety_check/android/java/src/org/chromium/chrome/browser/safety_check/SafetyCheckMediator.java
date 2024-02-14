@@ -365,22 +365,6 @@ class SafetyCheckMediator {
         setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.CHECKING);
         setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.CHECKING);
 
-        // If the user is not signed in, immediately set the state and do not block on disk loads.
-        // TODO(b/321686503): When using UPM, the check may be available if the user is signed out
-        // of Chrome profile, but signed into Google account. This should be handled differently
-        // when using GMS core local storage.
-        if (!mBridge.userSignedIn()) {
-            setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.SIGNED_OUT);
-            setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.SIGNED_OUT);
-            // Record the value in UMA.
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Settings.SafetyCheck.PasswordsResult2",
-                    PasswordsStatus.SIGNED_OUT,
-                    PasswordsStatus.MAX_VALUE + 1);
-            updatePasswordElementClickDestination(PasswordStorageType.ACCOUNT_STORAGE);
-            updatePasswordElementClickDestination(PasswordStorageType.LOCAL_STORAGE);
-            return;
-        }
         fetchPasswordsAndBreachedCredentials(PasswordStorageType.ACCOUNT_STORAGE);
         fetchPasswordsAndBreachedCredentials(PasswordStorageType.LOCAL_STORAGE);
     }
@@ -535,10 +519,19 @@ class SafetyCheckMediator {
                 && passwordCheckResult.getBreachedCount().getAsInt() > 0) {
             return PasswordsState.COMPROMISED_EXIST;
         }
+        @PasswordsState
+        int passwordsState = passwordsStateFromPasswordCheckResult(passwordCheckResult);
+        if (passwordsState == PasswordsState.SIGNED_OUT) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Settings.SafetyCheck.PasswordsResult2",
+                    PasswordsStatus.SIGNED_OUT,
+                    PasswordsStatus.MAX_VALUE + 1);
+            return passwordsState;
+        }
         if (!mShowSafePasswordState) {
             return PasswordsState.UNCHECKED;
         }
-        return passwordsStateFromPasswordCheckResult(passwordCheckResult);
+        return passwordsState;
     }
 
     /**
