@@ -116,8 +116,8 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
 };
 
 // Broken authentication.
-// Fails on Linux and Windows. http://crbug.com/1516817
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Fails on Linux, ChromeOS Lacros and Windows. http://crbug.com/1516817
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_BrokenAuthentication DISABLED_BrokenAuthentication
 #else
 #define MAYBE_BrokenAuthentication BrokenAuthentication
