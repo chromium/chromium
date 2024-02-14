@@ -165,7 +165,7 @@
       expanded="{{blockedTopicsExpanded_}}">
     [[computeTopicsPageBlockedTopicsHeading_(shouldShowV2_)]]
     <div id="blockedTopicsDescriptionV2" hidden="[[!shouldShowV2_]]">
-      $i18n{topicsPageBlockedTopicsDescriptionV2}
+      $i18n{topicsPageBlockedTopicsDescriptionNew}
     </div>
   </cr-expand-button>
   <iron-collapse opened="[[blockedTopicsExpanded_]]">
@@ -242,7 +242,7 @@
   <settings-simple-confirmation-dialog id="blockTopicDialog"
       title-text="[[blockTopicDialogTitle_]]"
       body-text="[[blockTopicDialogBody_]]"
-      confirm-text="$i18n{manageTopicDialogBlockButtonText}"
+      confirm-text="$i18n{topicsPageBlockTopic}"
       on-close="onBlockTopicDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>

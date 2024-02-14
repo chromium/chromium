@@ -442,13 +442,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private computeTopicsPageCurrentTopicsHeading_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageCurrentTopicsHeadingV2' :
+        this.shouldShowV2_ ? 'topicsPageActiveTopicsHeading' :
                              'topicsPageCurrentTopicsHeading');
   }
 
   private computeTopicsPageCurrentTopicsDescription_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageCurrentTopicsDescriptionV2' :
+        this.shouldShowV2_ ? 'topicsPageActiveTopicsDescription' :
                              'topicsPageCurrentTopicsDescription');
   }
 
@@ -460,7 +460,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private computeTopicsPageBlockedTopicsHeading_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageBlockedTopicsHeadingV2' :
+        this.shouldShowV2_ ? 'topicsPageBlockedTopicsHeadingNew' :
                              'topicsPageBlockedTopicsHeading');
   }
 }

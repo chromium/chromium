@@ -1479,9 +1479,6 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
     You can block topics you don’t want shared with sites. Chrome also auto-deletes your topics older than 4 weeks.
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_V2" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly." translateable="false">
-    Topics older than 4 weeks get auto-deleted
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL" desc="Read by screen readers and associated with a 'learn more' button.">
     Learn more about ad topics
   </message>

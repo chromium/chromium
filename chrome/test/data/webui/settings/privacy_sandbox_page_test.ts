@@ -642,8 +642,7 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#secondDescription');
     assert(secondDescription);
     assertEquals(
-        secondDescription?.innerText,
-        page.i18n('fledgePageSecondaryDescriptionV2'));
+        secondDescription?.innerText, page.i18n('fledgePageExplanation'));
   });
 
   test('footerLinks', async function() {
@@ -963,7 +962,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
             '#blockedTopicsDescriptionV2')!;
     assertTrue(isVisible(blockedTopicsDescription));
     assertEquals(
-        loadTimeData.getString('topicsPageBlockedTopicsDescriptionV2'),
+        loadTimeData.getString('topicsPageBlockedTopicsDescriptionNew'),
         blockedTopicsDescription.innerText);
     assertEquals(1, blockedTopics.length);
     assertEquals(
