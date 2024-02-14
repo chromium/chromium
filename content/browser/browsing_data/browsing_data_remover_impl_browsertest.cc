@@ -480,10 +480,6 @@ IN_PROC_BROWSER_TEST_F(
 class CookiesBrowsingDataRemoverImplBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
-  CookiesBrowsingDataRemoverImplBrowserTest() {
-    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
-  }
-
   void SetUpOnMainThread() override {
     network_context()->GetCookieManager(
         cookie_manager_.BindNewPipeAndPassReceiver());
@@ -511,7 +507,6 @@ class CookiesBrowsingDataRemoverImplBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 };
 

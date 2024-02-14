@@ -778,18 +778,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   EXPECT_EQ(cookies[1].Domain(), "subdomain.origin2.com");
 }
 
-class PartitionedCookiesClearSiteDataHandlerBrowserTest
-    : public ClearSiteDataHandlerBrowserTest {
- public:
-  PartitionedCookiesClearSiteDataHandlerBrowserTest() {
-    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PartitionedCookiesClearSiteDataHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
                        ThirdPartyCookieBlocking) {
   // First disable third-party cookie blocking.
   network::mojom::CookieManager* cookie_manager =
