@@ -502,11 +502,11 @@ void ExtensionMenuItemView::OnPinButtonPressed() {
   CHECK(model_);
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
-  // Toggle pin visibility.
-  bool is_action_pinned = model_->IsActionPinned(controller_->GetId());
-  model_->SetActionVisibility(controller_->GetId(), !is_action_pinned);
+  // Toggle action visibility.
+  bool new_action_visibility = !model_->IsActionPinned(controller_->GetId());
+  model_->SetActionVisibility(controller_->GetId(), new_action_visibility);
   GetViewAccessibility().AnnounceText(
-      GetPinButtonPressedAccText(is_action_pinned));
+      GetPinButtonPressedAccText(new_action_visibility));
 }
 
 bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
