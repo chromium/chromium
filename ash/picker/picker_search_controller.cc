@@ -81,6 +81,7 @@ void PickerSearchController::StartSearch(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     PickerViewDelegate::SearchResultsCallback callback) {
+  client_->StopCrosQuery();
   // Show fake results while we wait for a response from CrOS Search.
   // TODO: b/324154537 - Show a loading animation instead.
   callback.Run(PickerSearchResults({{

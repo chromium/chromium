@@ -58,6 +58,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // (`app_list::SearchEngine::StartSearch`).
   virtual void StartCrosSearch(const std::u16string& query,
                                CrosSearchResultsCallback callback) = 0;
+  // Stops a search using the CrOS Search API
+  // (`app_list::SearchEngine::StopQuery`).
+  virtual void StopCrosQuery() = 0;
 
  protected:
   PickerClient();

@@ -46,6 +46,7 @@ class TestPickerClient : public PickerClient {
                            DownloadGifToStringCallback callback) override {}
   void StartCrosSearch(const std::u16string& query,
                        CrosSearchResultsCallback callback) override {}
+  void StopCrosQuery() override {}
 
  private:
   TestAshWebViewFactory web_view_factory_;

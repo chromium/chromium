@@ -25,10 +25,15 @@ namespace {
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
+using testing::DoAll;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
+using testing::InvokeWithoutArgs;
+using testing::IsEmpty;
 using testing::NiceMock;
+using testing::Not;
 using testing::Property;
 using testing::SaveArg;
 using testing::VariantWith;
@@ -57,6 +62,7 @@ class MockPickerClient : public PickerClient {
               StartCrosSearch,
               (const std::u16string& query, CrosSearchResultsCallback callback),
               (override));
+  MOCK_METHOD(void, StopCrosQuery, (), (override));
 
   // Set by the default `StartCrosSearch` behaviour. If the behaviour is
   // overridden, this may not be set on a `StartCrosSearch` callback.
@@ -97,7 +103,7 @@ TEST_F(PickerSearchControllerTest, ShowsInitialHeadingsOnSearch) {
 }
 
 TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearch) {
-  MockPickerClient client;
+  NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
@@ -145,6 +151,54 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
       {ash::PickerSearchResult::BrowsingHistory(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
+}
+
+TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  PickerSearchResults last_results;
+  // CrOS search calls `StopSearch()` automatically on starting a search.
+  // If `StopSearch` actually stops a search, some providers such as the omnibox
+  // automatically call the search result callback from the _last_ search with
+  // an empty vector.
+  // Ensure that we don't flash empty results if this happens - i.e. that we
+  // call `StopSearch` before starting a new search.
+  bool search_started = false;
+  ON_CALL(client, StopCrosQuery).WillByDefault([&search_started, &client]() {
+    if (search_started) {
+      client.cros_search_callback()->Run(AppListSearchResultType::kOmnibox, {});
+    }
+    search_started = false;
+  });
+  ON_CALL(client, StartCrosSearch)
+      .WillByDefault(DoAll(SaveArg<1>(client.cros_search_callback()),
+                           [&search_started, &client]() {
+                             client.StopCrosQuery();
+                             search_started = true;
+                           }));
+  ON_CALL(search_results_callback, Call)
+      .WillByDefault(SaveArg<0>(&last_results));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+  controller.StartSearch(
+      u"dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  EXPECT_THAT(
+      last_results,
+      Property("sections", &PickerSearchResults::sections,
+               Each(Property("results", &PickerSearchResults::Section::results,
+                             Not(IsEmpty())))));
 }
 
 }  // namespace

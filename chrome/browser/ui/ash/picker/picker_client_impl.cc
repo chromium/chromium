@@ -157,6 +157,11 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
   callback.Run(result_type, std::move(picker_results));
 }
 
+void PickerClientImpl::StopCrosQuery() {
+  CHECK(search_engine_);
+  search_engine_->StopQuery();
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);

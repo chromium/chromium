@@ -60,6 +60,7 @@ class PickerClientImpl
                            DownloadGifToStringCallback callback) override;
   void StartCrosSearch(const std::u16string& query,
                        CrosSearchResultsCallback callback) override;
+  void StopCrosQuery() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
