@@ -29,6 +29,8 @@ class ASH_EXPORT PickerEmojiItemView : public views::Button {
   PickerEmojiItemView& operator=(const PickerEmojiItemView&) = delete;
   ~PickerEmojiItemView() override;
 
+  std::u16string_view GetTextForTesting() const;
+
  private:
   raw_ptr<views::Label> emoji_label_ = nullptr;
 };
