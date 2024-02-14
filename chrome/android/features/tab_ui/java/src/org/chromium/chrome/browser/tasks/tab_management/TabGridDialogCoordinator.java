@@ -53,7 +53,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private TabContentManager mTabContentManager;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
-    private SnackbarManager mSnackbarManager;
+    private @Nullable SnackbarManager mSnackbarManager;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -95,8 +95,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
             }
-            mSnackbarManager =
-                    new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
+            if (!activity.isDestroyed() && !activity.isFinishing()) {
+                mSnackbarManager =
+                        new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
+            } else {
+                mSnackbarManager = null;
+            }
 
             mMediator =
                     new TabGridDialogMediator(
@@ -175,6 +179,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     private @Nullable TabListEditorController getTabListEditorController() {
         if (mTabListEditorCoordinator == null) {
+            assert mSnackbarManager != null
+                    : "SnackbarManager should have been created or the activity was already"
+                            + " finishing.";
+
             @TabListCoordinator.TabListMode
             int mode =
                     TabUiFeatureUtilities.shouldUseListMode()

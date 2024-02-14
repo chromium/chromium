@@ -121,7 +121,7 @@ public class TabGridDialogMediator
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final Runnable mScrimClickRunnable;
-    private final SnackbarManager mSnackbarManager;
+    private final @Nullable SnackbarManager mSnackbarManager;
     private final String mComponentName;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
@@ -345,7 +345,9 @@ public class TabGridDialogMediator
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
 
-        mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
+        if (mSnackbarManager != null) {
+            mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
+        }
 
         // Save the title first so that the animation has the correct title.
         saveCurrentGroupModifiedTitle();

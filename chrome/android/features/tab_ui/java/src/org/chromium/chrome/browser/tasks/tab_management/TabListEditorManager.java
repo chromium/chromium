@@ -38,7 +38,7 @@ public class TabListEditorManager {
     private final @NonNull Activity mActivity;
     private final @NonNull ViewGroup mCoordinatorView;
     private final @NonNull ViewGroup mRootView;
-    private final @NonNull SnackbarManager mSnackbarManager;
+    private final @Nullable SnackbarManager mSnackbarManager;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final @NonNull Supplier<TabModel> mRegularTabModelSupplier;
@@ -85,7 +85,11 @@ public class TabListEditorManager {
         // The snackbarManager used by mTabListEditorCoordinator. The rootView is the default
         // default parent view of the snackbar. When shown this will be re-parented inside the
         // TabListCoordinator's SelectableListLayout.
-        mSnackbarManager = new SnackbarManager(activity, rootView, null);
+        if (!activity.isDestroyed() && !activity.isFinishing()) {
+            mSnackbarManager = new SnackbarManager(activity, rootView, null);
+        } else {
+            mSnackbarManager = null;
+        }
     }
 
     /** Destroys the tab list editor. */
@@ -100,6 +104,9 @@ public class TabListEditorManager {
         // TODO(crbug.com/1504606): Permit a method of switching between selectable and closable
         // modes (or create separate instances).
         if (mTabListEditorCoordinator == null) {
+            assert mSnackbarManager != null
+                    : "SnackbarManager should have been created or the activity was already"
+                            + " finishing.";
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
