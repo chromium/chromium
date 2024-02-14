@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -48,7 +49,7 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentPageTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kComposeWebContents);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRendered);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChangedEvent);
 
 const char kTestPageDomain[] = "a.test";
@@ -123,21 +124,26 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   /////////////////////////////////////////
   // Compose interactive UI test step helpers.
-  InteractiveTestApi::StepBuilder PressJsButton(
+  InteractiveTestApi::MultiStep PressJsButton(
       const ui::ElementIdentifier web_contents_id,
       const DeepQuery& button_query) {
     // This can close/navigate the current page, so don't wait for success.
-    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
-                       ExecuteJsMode::kFireAndForget);
+    return Steps(
+        EnsurePresent(web_contents_id, button_query),
+        ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
+                    ExecuteJsMode::kFireAndForget));
   }
 
-  InteractiveTestApi::MultiStep WaitForElementToLoad(
-      const DeepQuery& element_query) {
-    StateChange element_loaded;
-    element_loaded.event = kElementReadyEvent;
-    element_loaded.type = StateChange::Type::kExists;
-    element_loaded.where = element_query;
-    return WaitForStateChange(kContentPageTabId, std::move(element_loaded));
+  InteractiveTestApi::MultiStep WaitForElementToRender(
+      const DeepQuery& element) {
+    StateChange element_renders;
+    element_renders.event = kElementRendered;
+    element_renders.where = element;
+    element_renders.test_function =
+        "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
+        "return rect.width > 0 && rect.height > 0; } return false; }";
+
+    return WaitForStateChange(kContentPageTabId, element_renders);
   }
 
   InteractiveTestApi::MultiStep WaitForElementValueToIncludeCucumbers(
@@ -153,7 +159,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   InteractiveTestApi::MultiStep OpenCompose() {
     return Steps(
-        WaitForElementToLoad(kTextarea),
+        WaitForElementToRender(kTextarea),
         MoveMouseTo(kContentPageTabId, kTextarea),
         ClickMouse(ui_controls::RIGHT),
         WaitForShow(RenderViewContextMenu::kComposeMenuItem),
@@ -205,6 +211,9 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
     SetUpOptimizationGuide();
     SetUpAccount();
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+    ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
+        browser()->window()->GetNativeWindow()));
   }
 
   void TearDownOnMainThread() override {
@@ -335,8 +344,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // Flaky on all platforms: https://crbug.com/1517430
-IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest,
-                       DISABLED_OpenAndCloseCompose) {
+IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest, OpenAndCloseCompose) {
   RunTestSequence(
       MakePrimaryAccountAvailable(), InstrumentTab(kContentPageTabId),
       NavigateWebContents(
@@ -345,6 +353,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest,
       WaitForWebContentsReady(
           kContentPageTabId,
           https_server()->GetURL(kTestPageDomain, kTestPageUrl)),
-      OpenCompose(), AcceptFRE(), RequestCompose(), AcceptComposeResult(),
+      ActivateSurface(kBrowserViewElementId), FlushEvents(), OpenCompose(),
+      AcceptFRE(), RequestCompose(), AcceptComposeResult(),
       WaitForElementValueToIncludeCucumbers(kTextarea));
 }

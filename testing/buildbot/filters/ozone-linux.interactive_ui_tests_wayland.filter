@@ -23,6 +23,7 @@
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu
 -BrowserFocusTest.BackgroundBrowserDontStealFocus
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
+-ComposeInteractiveUiTest.*
 -CrossSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
 -DesktopWindowTreeHostPlatformImplTest.CaptureEventForwarding
