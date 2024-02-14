@@ -38,7 +38,9 @@
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -394,7 +396,15 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
     ShowWebAuthnCredentials show_webauthn_credentials,
     const gfx::RectF& bounds) {
   if (autofill::IsAutofillManuallyTriggered(trigger_source)) {
-    // TODO(b/321678448): Implement manual fallback suggestion generation.
+    if (!manual_fallback_flow_) {
+      manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
+          password_manager_driver_, autofill_client_, password_client_,
+          std::make_unique<SavedPasswordsPresenter>(
+              password_client_->GetAffiliationService(),
+              password_client_->GetProfilePasswordStore(),
+              password_client_->GetAccountPasswordStore()));
+    }
+    manual_fallback_flow_->RunFlow(bounds, text_direction);
     return;
   }
   bool autofill_available =
@@ -438,6 +448,7 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
   CancelBiometricReauthIfOngoing();
   favicon_tracker_.TryCancelAll();
   page_favicon_ = gfx::Image();
+  manual_fallback_flow_.reset();
 }
 
 bool PasswordAutofillManager::FillSuggestionForTest(
@@ -448,6 +459,11 @@ bool PasswordAutofillManager::FillSuggestionForTest(
 bool PasswordAutofillManager::PreviewSuggestionForTest(
     const std::u16string& username) {
   return PreviewSuggestion(username, autofill::PopupItemId::kPasswordEntry);
+}
+
+void PasswordAutofillManager::SetManualFallbackFlowForTest(
+    std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow) {
+  manual_fallback_flow_.swap(manual_fallback_flow);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "ui/gfx/image/image.h"
 
@@ -108,6 +109,13 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
 
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
+
+  void SetManualFallbackFlowForTest(
+      std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow);
+
+  inline PasswordSuggestionFlow* manual_fallback_flow() {
+    return manual_fallback_flow_.get();
+  }
 
  private:
   // Called just before showing a popup to log which |suggestions| were shown.
@@ -202,6 +210,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // to be cleared before the password is filled. Currently only used
   // on Android, Mac and Windows.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
+
+  // Initialized when the user triggers the password manual fallback. This flow
+  // reads all user passworns upon initialization. Hence it's reset upon main
+  // frame navigation or if this `PasswordAutofillManager` is destroyed.
+  std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

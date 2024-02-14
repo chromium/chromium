@@ -40,10 +40,12 @@
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/mock_password_suggestion_flow.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -322,6 +324,8 @@ class PasswordAutofillManagerTest : public testing::Test {
                                          MockAutofillClient* autofill_client) {
     password_autofill_manager_ = std::make_unique<PasswordAutofillManager>(
         client->mock_driver(), autofill_client, client);
+    password_autofill_manager_->SetManualFallbackFlowForTest(
+        std::make_unique<NiceMock<MockPasswordSuggestionFlow>>());
     favicon::MockFaviconService favicon_service;
     EXPECT_CALL(*client, GetFaviconService())
         .WillOnce(Return(&favicon_service));
@@ -379,6 +383,11 @@ class PasswordAutofillManagerTest : public testing::Test {
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
   }
 #endif
+
+  MockPasswordSuggestionFlow& manual_fallback_flow() {
+    return *static_cast<MockPasswordSuggestionFlow*>(
+        password_autofill_manager_->manual_fallback_flow());
+  }
 
  protected:
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
@@ -2279,5 +2288,34 @@ TEST_F(PasswordAutofillManagerTest, NoPreviewSuggestionWithAuthBeforeFilling) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 }
 #endif
+
+TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+  const gfx::RectF bounds(1, 1, 2, 2);
+  EXPECT_CALL(manual_fallback_flow(),
+              RunFlow(bounds, base::i18n::LEFT_TO_RIGHT));
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId,
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+      base::i18n::LEFT_TO_RIGHT, std::u16string(),
+      ShowWebAuthnCredentials(false), bounds);
+}
+
+TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId,
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+      base::i18n::LEFT_TO_RIGHT, std::u16string(),
+      ShowWebAuthnCredentials(false), gfx::RectF(1, 1, 2, 2));
+  EXPECT_TRUE(password_autofill_manager_->manual_fallback_flow());
+  password_autofill_manager_->DidNavigateMainFrame();
+
+  EXPECT_FALSE(password_autofill_manager_->manual_fallback_flow());
+}
 
 }  // namespace password_manager
