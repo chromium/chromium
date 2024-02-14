@@ -26,9 +26,7 @@ export const PaperRippleMixin = dedupingMixin(superClass => {
         /**
          * @type {Element|undefined}
          */
-        _rippleContainer: {
-          type: Object,
-        }
+        _rippleContainer: Object,
       };
     }
 
@@ -36,27 +34,17 @@ export const PaperRippleMixin = dedupingMixin(superClass => {
     /**
      * Ensures this element contains a ripple effect. For startup efficiency
      * the ripple effect is dynamically on demand when needed.
-     * @param {!Event=} optTriggeringEvent (optional) event that triggered the
-     * ripple.
      */
-    ensureRipple(optTriggeringEvent) {
-      if (!this.hasRipple()) {
-        this._ripple = this._createRipple();
-        this._ripple.noink = this.noink;
-        var rippleContainer = this._rippleContainer || this.root;
-        if (rippleContainer) {
-          dom(rippleContainer).appendChild(this._ripple);
-        }
-        if (optTriggeringEvent) {
-          // Check if the event happened inside of the ripple container
-          // Fall back to host instead of the root because distributed text
-          // nodes are not valid event targets
-          var domContainer = dom(this._rippleContainer || this);
-          var target = dom(optTriggeringEvent).rootTarget;
-          if (domContainer.deepContains(/** @type {Node} */ (target))) {
-            this._ripple.uiDownAction(optTriggeringEvent);
-          }
-        }
+    ensureRipple() {
+      if (this.hasRipple()) {
+        return;
+      }
+
+      this._ripple = this._createRipple();
+      this._ripple.noink = this.noink;
+      var rippleContainer = this._rippleContainer || this.root;
+      if (rippleContainer) {
+        rippleContainer.appendChild(this._ripple);
       }
     }
 
