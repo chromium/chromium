@@ -6771,3 +6771,6 @@ crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-break
 
 # Gardener: 2024-02-06
 crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
+
+# Gardener: 2024-02-14
+b/325227176 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history-cross-origin.html [ Failure Pass ]
