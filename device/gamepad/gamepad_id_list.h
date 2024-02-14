@@ -158,7 +158,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
 
  private:
   friend base::LazyInstanceTraitsBase<GamepadIdList>;
-  GamepadIdList();
+  GamepadIdList() = default;
 };
 
 }  // namespace device
