@@ -142,9 +142,10 @@ See `download_file_types.proto` for all fields.
           the most recent midnight. This is taken to imply that the user has a
           history of visiting the site.
 
-      In addition, Chrome skips the warning if the download was explicit (i.e.
-      the user selected "Save link as ..." from the context menu), or if the
-      navigation that resulted in the download was initiated using the Omnibox.
+      In addition, Chrome skips the warning if the users preference enables Safe
+      Browsing or the download was explicit (i.e.  the user selected "Save link
+      as ..." from the context menu), or if the navigation that resulted in the
+      download was initiated using the Omnibox.
 
     If the `SafeBrowsingForTrustedSourcesEnabled` policy is set and the download
     originates from a Trusted source, no warnings will be shown even for types
