@@ -57,7 +57,7 @@ class AbsoluteUtilsTest : public RenderingTest {
     )HTML");
     RunDocumentLifecycle();
 
-    element_ = GetDocument().getElementById(AtomicString("target"));
+    element_ = GetElementById("target");
   }
 
   void SetHorizontalStyle(const String& left,

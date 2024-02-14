@@ -244,7 +244,7 @@ TEST_F(FlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
   EXPECT_TRUE(devtools);
 
   // Make the inner child short enough to eliminate the need for a scrollbar.
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* inner = GetElementById("inner");
   inner->SetInlineStyleProperty(CSSPropertyID::kHeight, "50px");
 
   devtools = LayoutForDevtools();

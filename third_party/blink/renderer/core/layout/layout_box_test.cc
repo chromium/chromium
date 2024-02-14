@@ -711,8 +711,8 @@ TEST_F(LayoutBoxTest, HitTestOverflowClipMargin) {
     </div>
   )HTML");
 
-  auto* container = GetDocument().getElementById(AtomicString("container"));
-  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* container = GetElementById("container");
+  auto* child = GetElementById("child");
   // In child overflowing container but within the overflow clip.
   EXPECT_EQ(child, HitTest(230, 50));
   // Outside of the overflow clip, would be in child without the clip.
@@ -730,7 +730,7 @@ TEST_F(LayoutBoxTest, HitTestContainPaint) {
     </div>
   )HTML");
 
-  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* child = GetElementById("child");
   EXPECT_EQ(GetDocument().documentElement(), HitTest(1, 1));
   EXPECT_EQ(child, HitTest(10, 10));
   EXPECT_EQ(GetDocument().FirstBodyElement(), HitTest(150, 10));
@@ -1786,10 +1786,9 @@ TEST_F(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
     </div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
-            HitTest(99, 99));
+  EXPECT_EQ(GetElementById("target"), HitTest(99, 99));
   EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
-      GetDocument().getElementById(AtomicString("textarea"))));
+      GetElementById("textarea")));
 }
 
 TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
@@ -1802,10 +1801,9 @@ TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
     </div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
-            HitTest(99, 99));
+  EXPECT_EQ(GetElementById("target"), HitTest(99, 99));
   EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
-      GetDocument().getElementById(AtomicString("textarea"))));
+      GetElementById("textarea")));
 }
 
 TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
@@ -1925,7 +1923,7 @@ TEST_F(LayoutBoxTest, IsUserScrollable) {
     </div>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
   auto* target = target_element->GetLayoutBox();
   EXPECT_TRUE(target->ScrollsOverflow());
   EXPECT_TRUE(target->IsUserScrollable());

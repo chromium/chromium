@@ -760,8 +760,8 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLegacyLayout) {
   )HTML");
 
   auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
-  auto* span_element = GetDocument().getElementById(AtomicString("span"));
-  auto* span2_element = GetDocument().getElementById(AtomicString("span2"));
+  auto* span_element = GetElementById("span");
+  auto* span2_element = GetElementById("span2");
 
   span_element->setAttribute(html_names::kStyleAttr,
                              AtomicString("outline: 50px solid red"));
@@ -804,8 +804,8 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLayoutNG) {
   )HTML");
 
   auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
-  auto* span_element = GetDocument().getElementById(AtomicString("span"));
-  auto* span2_element = GetDocument().getElementById(AtomicString("span2"));
+  auto* span_element = GetElementById("span");
+  auto* span2_element = GetElementById("span2");
 
   span_element->setAttribute(html_names::kStyleAttr,
                              AtomicString("outline: 50px solid red"));
@@ -845,7 +845,7 @@ TEST_F(LayoutInlineTest, VisualOverflowRecalcLegacyLayoutPositionRelative) {
   )HTML");
 
   auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
-  auto* span_element = GetDocument().getElementById(AtomicString("span"));
+  auto* span_element = GetElementById("span");
 
   span_element->setAttribute(html_names::kStyleAttr,
                              AtomicString("outline: 50px solid red"));

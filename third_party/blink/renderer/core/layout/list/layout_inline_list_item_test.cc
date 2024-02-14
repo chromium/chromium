@@ -24,9 +24,7 @@ li {
   list-style: upper-alpha;
 }
 </style>)HTML");
-  GetDocument()
-      .getElementById(AtomicString("li2"))
-      ->removeAttribute(html_names::kStyleAttr);
+  GetElementById("li2")->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   auto* block_flow = OffsetMapping::GetInlineFormattingContextOf(
       *GetLayoutObjectByElementId("li3"));

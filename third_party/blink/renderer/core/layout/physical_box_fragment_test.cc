@@ -273,10 +273,8 @@ TEST_F(PhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
       layout_box->GetPhysicalFragment(1)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(75), LayoutUnit(40))));
 
-  GetDocument()
-      .getElementById(AtomicString("test"))
-      ->SetInlineStyleProperty(CSSPropertyID::kOverflowClipMargin,
-                               "padding-box 15px");
+  GetElementById("test")->SetInlineStyleProperty(
+      CSSPropertyID::kOverflowClipMargin, "padding-box 15px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
       layout_box->GetPhysicalFragment(0)->InkOverflowRect(),
@@ -285,10 +283,8 @@ TEST_F(PhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
       layout_box->GetPhysicalFragment(1)->InkOverflowRect(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(80), LayoutUnit(45))));
 
-  GetDocument()
-      .getElementById(AtomicString("test"))
-      ->SetInlineStyleProperty(CSSPropertyID::kOverflowClipMargin,
-                               "border-box 15px");
+  GetElementById("test")->SetInlineStyleProperty(
+      CSSPropertyID::kOverflowClipMargin, "border-box 15px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
       layout_box->GetPhysicalFragment(0)->InkOverflowRect(),

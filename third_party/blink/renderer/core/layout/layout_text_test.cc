@@ -69,7 +69,7 @@ class LayoutTextTest : public RenderingTest {
     stream << "<div style='font: 10px/10px Ahem;'>" << selection_text
            << "</div>";
     SetSelectionAndUpdateLayoutSelection(stream.str());
-    const Node* target = GetDocument().getElementById(AtomicString("target"));
+    const Node* target = GetElementById("target");
     const LayoutObject* layout_object =
         target ? target->GetLayoutObject() : FindFirstLayoutText();
     return layout_object->LocalSelectionVisualRect();
@@ -1041,9 +1041,9 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBox) {
   //     Box offset:0,-17 size:89x53
   //       Box offset:20,15 size:49x23
   //         Text offset:5,5 size:39x13 start: 8 end: 11
-  const Element& div = *GetDocument().getElementById(AtomicString("div"));
-  const Element& one = *GetDocument().getElementById(AtomicString("one"));
-  const Element& two = *GetDocument().getElementById(AtomicString("two"));
+  const Element& div = *GetElementById("div");
+  const Element& one = *GetElementById("one");
+  const Element& two = *GetElementById("two");
   EXPECT_EQ(PhysicalRect(3, 6, 52, 13),
             To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
@@ -1111,9 +1111,9 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
   )HTML");
   // Similar to the previous test, with logical coordinates converted to
   // physical coordinates.
-  const Element& div = *GetDocument().getElementById(AtomicString("div"));
-  const Element& one = *GetDocument().getElementById(AtomicString("one"));
-  const Element& two = *GetDocument().getElementById(AtomicString("two"));
+  const Element& div = *GetElementById("div");
+  const Element& one = *GetElementById("one");
+  const Element& two = *GetElementById("two");
   EXPECT_EQ(PhysicalRect(25, 3, 13, 52),
             To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());

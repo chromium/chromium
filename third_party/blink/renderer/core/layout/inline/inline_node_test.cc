@@ -627,10 +627,7 @@ TEST_F(InlineNodeTest, AssociatedItemsWithControlItem) {
   SetBodyInnerHTML(
       "<pre id=t style='-webkit-rtl-ordering:visual'>ab\nde</pre>");
   auto* const layout_text =
-      To<LayoutText>(GetDocument()
-                         .getElementById(AtomicString("t"))
-                         ->firstChild()
-                         ->GetLayoutObject());
+      To<LayoutText>(GetElementById("t")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
   Vector<const InlineItem*> items;
   for (const InlineItem& item : layout_text->InlineItems()) {
