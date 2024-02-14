@@ -15,6 +15,7 @@
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "ui/base/models/image_model.h"
@@ -43,33 +44,10 @@ PickerSearchResults::Section GetFakeExpressionsSection() {
             gfx::Size(140, 140), u"gif")}});
 }
 
-PickerSearchResults::Section GetFakeLinksSection() {
-  return PickerSearchResults::Section(
-      u"Matching links",
-      {{
-          PickerSearchResult::BrowsingHistory(
-              GURL("http://www.foo.com"), u"Foo",
-              ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
-          PickerSearchResult::BrowsingHistory(
-              GURL("http://crbug.com"), u"Crbug",
-              ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
-      }});
-}
-
 PickerSearchResults::Section GetFakeFilesSection() {
   return PickerSearchResults::Section(
       u"Matching files", {{PickerSearchResult::Text(u"my file"),
                            PickerSearchResult::Text(u"my other file")}});
-}
-
-void HandleCrosSearchResults(PickerViewDelegate::SearchResultsCallback callback,
-                             AppListSearchResultType type,
-                             std::vector<PickerSearchResult> results) {
-  callback.Run(PickerSearchResults({{
-      GetFakeExpressionsSection(),
-      PickerSearchResults::Section(u"Matching links", results),
-      GetFakeFilesSection(),
-  }}));
 }
 
 }  // namespace
@@ -77,20 +55,49 @@ void HandleCrosSearchResults(PickerViewDelegate::SearchResultsCallback callback,
 PickerSearchController::PickerSearchController(PickerClient* client)
     : client_(CHECK_DEREF(client)) {}
 
+PickerSearchController::~PickerSearchController() = default;
+
 void PickerSearchController::StartSearch(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     PickerViewDelegate::SearchResultsCallback callback) {
   client_->StopCrosQuery();
+  ResetResults();
+  current_callback_ = std::move(callback);
+  client_->StartCrosSearch(
+      query, base::BindRepeating(&PickerSearchController::HandleSearchResults,
+                                 weak_ptr_factory_.GetWeakPtr()));
+
   // Show fake results while we wait for a response from CrOS Search.
   // TODO: b/324154537 - Show a loading animation instead.
-  callback.Run(PickerSearchResults({{
+  RunCallback();
+}
+
+void PickerSearchController::ResetResults() {
+  omnibox_results_ = std::vector({
+      PickerSearchResult::BrowsingHistory(
+          GURL("http://www.foo.com"), u"Foo",
+          ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
+      PickerSearchResult::BrowsingHistory(
+          GURL("http://crbug.com"), u"Crbug",
+          ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
+  });
+}
+
+void PickerSearchController::RunCallback() {
+  CHECK(current_callback_);
+  current_callback_.Run(PickerSearchResults({{
       GetFakeExpressionsSection(),
-      GetFakeLinksSection(),
+      PickerSearchResults::Section(u"Matching links", omnibox_results_),
       GetFakeFilesSection(),
   }}));
-  client_->StartCrosSearch(query, base::BindRepeating(&HandleCrosSearchResults,
-                                                      std::move(callback)));
+}
+
+void PickerSearchController::HandleSearchResults(
+    ash::AppListSearchResultType type,
+    std::vector<PickerSearchResult> results) {
+  omnibox_results_ = std::move(results);
+  RunCallback();
 }
 
 }  // namespace ash
