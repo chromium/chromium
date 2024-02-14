@@ -83,6 +83,7 @@ shared_library("libcontent_native") {
   deps = [
     ":content_native_lib",
     ":jni_headers",
+    "//components/zoom",
     "//components/crash/content/browser",
     "//device/vr:vr_util",
     "//media",
