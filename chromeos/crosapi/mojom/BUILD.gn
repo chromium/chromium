@@ -308,6 +308,7 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/shortcut/shortcut.h",
         "//components/services/app_service/public/cpp/capability_access.h",
         "//components/services/app_service/public/cpp/icon_types.h",
+        "//components/services/app_service/public/cpp/permission.h",
         "//components/services/app_service/public/cpp/preferred_app.h",
       ]
       traits_sources = [

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app.h"
 
 #include <memory>
 #include <string>
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -90,21 +91,21 @@ void VerifyOptionalValue(std::optional<T> App::*field) {
 
 }  // namespace
 
-using AppTypesTest = testing::Test;
+using AppTest = testing::Test;
 
-TEST_F(AppTypesTest, EmptyAppsIsEqual) {
+TEST_F(AppTest, EmptyAppsIsEqual) {
   std::vector<AppPtr> apps1;
   std::vector<AppPtr> apps2;
   EXPECT_TRUE(IsEqual(apps1, apps2));
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForEmptyOptionalValues) {
+TEST_F(AppTest, VerifyAppsIsEqualForEmptyOptionalValues) {
   AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
   AppPtr app2 = app1->Clone();
   EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForReadiness) {
+TEST_F(AppTest, VerifyAppsIsEqualForReadiness) {
   // Verify the app is equal with the same `readiness`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -123,27 +124,27 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForReadiness) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForName) {
+TEST_F(AppTest, VerifyAppsIsEqualForName) {
   VerifyOptionalValue(&App::name);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForShortName) {
+TEST_F(AppTest, VerifyAppsIsEqualForShortName) {
   VerifyOptionalValue(&App::short_name);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForPublisherId) {
+TEST_F(AppTest, VerifyAppsIsEqualForPublisherId) {
   VerifyOptionalValue(&App::publisher_id);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForDescription) {
+TEST_F(AppTest, VerifyAppsIsEqualForDescription) {
   VerifyOptionalValue(&App::description);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForVersion) {
+TEST_F(AppTest, VerifyAppsIsEqualForVersion) {
   VerifyOptionalValue(&App::version);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
+TEST_F(AppTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
   // Verify the app is equal with the same `additional_search_terms`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -162,7 +163,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForAdditionalSearchTerms) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
+TEST_F(AppTest, VerifyAppsIsEqualForIconKey) {
   // Verify the app is equal with the same `icon_key`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -194,15 +195,15 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIconKey) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForLastLaunchTime) {
+TEST_F(AppTest, VerifyAppsIsEqualForLastLaunchTime) {
   VerifyOptionalValue(&App::last_launch_time);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallTime) {
+TEST_F(AppTest, VerifyAppsIsEqualForInstallTime) {
   VerifyOptionalValue(&App::install_time);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForPermissions) {
+TEST_F(AppTest, VerifyAppsIsEqualForPermissions) {
   // Verify the app is equal with the same `permissions`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -224,7 +225,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPermissions) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallReason) {
+TEST_F(AppTest, VerifyAppsIsEqualForInstallReason) {
   // Verify the app is equal with the same `install_reason`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -243,7 +244,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallReason) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallSource) {
+TEST_F(AppTest, VerifyAppsIsEqualForInstallSource) {
   // Verify the app is equal with the same `install_source`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -262,7 +263,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForInstallSource) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForPolicyIds) {
+TEST_F(AppTest, VerifyAppsIsEqualForPolicyIds) {
   // Verify the app is equal with the same `policy_ids`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -281,51 +282,51 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForPolicyIds) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForIsPlatformApp) {
+TEST_F(AppTest, VerifyAppsIsEqualForIsPlatformApp) {
   VerifyOptionalValue(&App::is_platform_app);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForRecommendable) {
+TEST_F(AppTest, VerifyAppsIsEqualForRecommendable) {
   VerifyOptionalValue(&App::recommendable);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForSearchable) {
+TEST_F(AppTest, VerifyAppsIsEqualForSearchable) {
   VerifyOptionalValue(&App::searchable);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInLauncher) {
+TEST_F(AppTest, VerifyAppsIsEqualForShowInLauncher) {
   VerifyOptionalValue(&App::show_in_launcher);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInShelf) {
+TEST_F(AppTest, VerifyAppsIsEqualForShowInShelf) {
   VerifyOptionalValue(&App::show_in_shelf);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInSearch) {
+TEST_F(AppTest, VerifyAppsIsEqualForShowInSearch) {
   VerifyOptionalValue(&App::show_in_search);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForShowInManagement) {
+TEST_F(AppTest, VerifyAppsIsEqualForShowInManagement) {
   VerifyOptionalValue(&App::show_in_management);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForHandlesIntents) {
+TEST_F(AppTest, VerifyAppsIsEqualForHandlesIntents) {
   VerifyOptionalValue(&App::handles_intents);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForAllowUninstall) {
+TEST_F(AppTest, VerifyAppsIsEqualForAllowUninstall) {
   VerifyOptionalValue(&App::allow_uninstall);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForHasBadge) {
+TEST_F(AppTest, VerifyAppsIsEqualForHasBadge) {
   VerifyOptionalValue(&App::has_badge);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForPaused) {
+TEST_F(AppTest, VerifyAppsIsEqualForPaused) {
   VerifyOptionalValue(&App::paused);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
+TEST_F(AppTest, VerifyAppsIsEqualForIntentFilters) {
   IntentFilterPtr intent_filter1 = std::make_unique<IntentFilter>();
   intent_filter1->activity_name = "abc";
 
@@ -350,11 +351,11 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForIntentFilters) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForResizeLocked) {
+TEST_F(AppTest, VerifyAppsIsEqualForResizeLocked) {
   VerifyOptionalValue(&App::resize_locked);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForWindowMode) {
+TEST_F(AppTest, VerifyAppsIsEqualForWindowMode) {
   // Verify the app is equal with the same `window_mode`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -373,7 +374,7 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForWindowMode) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
+TEST_F(AppTest, VerifyAppsIsEqualForRunOnOsLogin) {
   // Verify the app is equal with the same `run_on_os_login`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -401,15 +402,15 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForRunOnOsLogin) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForAppSizeInBytes) {
+TEST_F(AppTest, VerifyAppsIsEqualForAppSizeInBytes) {
   VerifyOptionalValue(&App::app_size_in_bytes);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForDataSizeInBytes) {
+TEST_F(AppTest, VerifyAppsIsEqualForDataSizeInBytes) {
   VerifyOptionalValue(&App::data_size_in_bytes);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForSupportedLocales) {
+TEST_F(AppTest, VerifyAppsIsEqualForSupportedLocales) {
   // Verify the app is equal with the same `supported_locales`.
   {
     AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
@@ -428,11 +429,11 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForSupportedLocales) {
   }
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForSelectedLocale) {
+TEST_F(AppTest, VerifyAppsIsEqualForSelectedLocale) {
   VerifyOptionalValue(&App::selected_locale);
 }
 
-TEST_F(AppTypesTest, VerifyAppsIsEqualForExtra) {
+TEST_F(AppTest, VerifyAppsIsEqualForExtra) {
   VerifyOptionalValue(&App::extra);
 }
 

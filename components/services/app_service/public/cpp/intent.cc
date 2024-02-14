@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 
 #include "base/files/safe_base_name.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"

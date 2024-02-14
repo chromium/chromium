@@ -8,6 +8,7 @@
 #include <iosfwd>
 
 #include "base/functional/callback_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 
 namespace apps {

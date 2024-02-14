@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace apps {

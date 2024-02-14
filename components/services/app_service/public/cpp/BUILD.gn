@@ -11,6 +11,8 @@ import("//build/config/chromeos/ui_mode.gni")
 component("app_types") {
   output_name = "APP_TYPES"
   sources = [
+    "app.cc",
+    "app.h",
     "app_launch_util.cc",
     "app_launch_util.h",
     "app_types.cc",
@@ -314,7 +316,7 @@ source_set("unit_tests") {
     "app_capability_access_cache_wrapper_unittest.cc",
     "app_registry_cache_unittest.cc",
     "app_registry_cache_wrapper_unittest.cc",
-    "app_types_unittest.cc",
+    "app_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
     "icon_cache_unittest.cc",
