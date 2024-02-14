@@ -30,12 +30,11 @@ class CONTENT_EXPORT DigitalIdentityProvider {
 
   static std::unique_ptr<DigitalIdentityProvider> Create();
 
-  using DigitalCredentialCallback =
-      base::OnceCallback<void(const std::string&)>;
+  using DigitalIdentityCallback = base::OnceCallback<void(const std::string&)>;
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
                        const base::Value::Dict& request,
-                       DigitalCredentialCallback callback) = 0;
+                       DigitalIdentityCallback callback) = 0;
 
  protected:
   DigitalIdentityProvider();

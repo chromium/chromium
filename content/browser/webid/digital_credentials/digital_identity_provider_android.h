@@ -40,14 +40,14 @@ class CONTENT_EXPORT DigitalIdentityProviderAndroid
 
   // Triggers a request for a digital credential.
   void Request(WebContents* web_contents,
-                                const url::Origin& origin,
-                                const base::Value::Dict& request,
-                                DigitalCredentialCallback callback) override;
+               const url::Origin& origin,
+               const base::Value::Dict& request,
+               DigitalIdentityCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject>
       j_digital_identity_provider_android_;
-  DigitalCredentialCallback callback_;
+  DigitalIdentityCallback callback_;
 };
 
 }  // namespace content

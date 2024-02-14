@@ -25,7 +25,7 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
                void(WebContents*,
                     const url::Origin& origin,
                     const base::Value::Dict&,
-                    DigitalCredentialCallback));
+                    DigitalIdentityCallback));
 };
 
 }  // namespace content

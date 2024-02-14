@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
-          [](DigitalIdentityProvider::DigitalCredentialCallback callback) {
+          [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run("test-mdoc");
           }));
 
@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
 
   EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
-          [](DigitalIdentityProvider::DigitalCredentialCallback callback) {
+          [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run("test-mdoc");
           }));
 
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
       .WillOnce(WithArg<3>(
-          [&](DigitalIdentityProvider::DigitalCredentialCallback callback) {
+          [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
                 "AbortError: Only one navigator.credentials.get request may be "
                 "outstanding at one time.",

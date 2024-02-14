@@ -34,11 +34,10 @@ DigitalIdentityProviderAndroid::~DigitalIdentityProviderAndroid() {
       env, j_digital_identity_provider_android_);
 }
 
-void DigitalIdentityProviderAndroid::Request(
-    WebContents* web_contents,
-    const url::Origin& origin,
-    const base::Value::Dict& request,
-    DigitalCredentialCallback callback) {
+void DigitalIdentityProviderAndroid::Request(WebContents* web_contents,
+                                             const url::Origin& origin,
+                                             const base::Value::Dict& request,
+                                             DigitalIdentityCallback callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_origin =
