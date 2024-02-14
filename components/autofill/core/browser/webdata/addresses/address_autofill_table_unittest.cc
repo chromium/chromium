@@ -39,18 +39,14 @@ class AddressAutofillTableTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
-
-    table_ = std::make_unique<AddressAutofillTable>();
-    db_ = std::make_unique<WebDatabase>();
-    db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    db_.AddTable(&table_);
+    ASSERT_EQ(sql::INIT_OK,
+              db_.Init(temp_dir_.GetPath().AppendASCII("TestWebDatabase")));
   }
 
-  base::FilePath file_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<AddressAutofillTable> table_;
-  std::unique_ptr<WebDatabase> db_;
+  AddressAutofillTable table_;
+  WebDatabase db_;
 };
 
 // Tests for the AutofillProfil CRUD interface are tested with both profile
@@ -179,11 +175,11 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.set_language_code("en");
 
   // Add the profile to the table.
-  EXPECT_TRUE(table_->AddAutofillProfile(home_profile));
+  EXPECT_TRUE(table_.AddAutofillProfile(home_profile));
 
   // Get the 'Home' profile from the table.
   std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(home_profile.guid(), home_profile.source());
+      table_.GetAutofillProfile(home_profile.guid(), home_profile.source());
   ASSERT_TRUE(db_profile);
 
   // Verify that it is correct.
@@ -191,9 +187,9 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
 
   // Remove the profile and expect that no profiles remain.
   EXPECT_TRUE(
-      table_->RemoveAutofillProfile(home_profile.guid(), profile_source()));
+      table_.RemoveAutofillProfile(home_profile.guid(), profile_source()));
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(table_->GetAutofillProfiles(profile_source(), &profiles));
+  EXPECT_TRUE(table_.GetAutofillProfiles(profile_source(), &profiles));
   EXPECT_TRUE(profiles.empty());
 }
 
@@ -206,33 +202,33 @@ TEST_F(AddressAutofillTableTest, GetAutofillProfiles) {
                                 AddressCountryCode("ES"));
   AutofillProfile account_profile(AutofillProfile::Source::kAccount,
                                   AddressCountryCode("ES"));
-  EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
-  EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
+  EXPECT_TRUE(table_.AddAutofillProfile(local_profile));
+  EXPECT_TRUE(table_.AddAutofillProfile(account_profile));
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(table_->GetAutofillProfiles(
+  EXPECT_TRUE(table_.GetAutofillProfiles(
       AutofillProfile::Source::kLocalOrSyncable, &profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(local_profile)));
-  EXPECT_TRUE(table_->GetAutofillProfiles(AutofillProfile::Source::kAccount,
-                                          &profiles));
+  EXPECT_TRUE(
+      table_.GetAutofillProfiles(AutofillProfile::Source::kAccount, &profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
 }
 
 // Tests that `RemoveAllAutofillProfiles()` clears all profiles of the given
 // source.
 TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
-  ASSERT_TRUE(table_->AddAutofillProfile(
+  ASSERT_TRUE(table_.AddAutofillProfile(
       AutofillProfile(AutofillProfile::Source::kLocalOrSyncable,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
-  ASSERT_TRUE(table_->AddAutofillProfile(
+  ASSERT_TRUE(table_.AddAutofillProfile(
       AutofillProfile(AutofillProfile::Source::kAccount,
                       i18n_model_definition::kLegacyHierarchyCountryCode)));
 
-  EXPECT_TRUE(table_->RemoveAllAutofillProfiles(profile_source()));
+  EXPECT_TRUE(table_.RemoveAllAutofillProfiles(profile_source()));
 
   // Expect that the profiles from `profile_source()` are gone.
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  ASSERT_TRUE(table_->GetAutofillProfiles(profile_source(), &profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles(profile_source(), &profiles));
   EXPECT_TRUE(profiles.empty());
 
   // Expect that the profile from the opposite source remains.
@@ -240,7 +236,7 @@ TEST_P(AddressAutofillTableProfileTest, RemoveAllAutofillProfiles) {
       profile_source() == AutofillProfile::Source::kAccount
           ? AutofillProfile::Source::kLocalOrSyncable
           : AutofillProfile::Source::kAccount;
-  ASSERT_TRUE(table_->GetAutofillProfiles(other_source, &profiles));
+  ASSERT_TRUE(table_.GetAutofillProfiles(other_source, &profiles));
   EXPECT_EQ(profiles.size(), 1u);
 }
 
@@ -253,8 +249,8 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
                       ProfileTokenQualityTestApi::FormSignatureHash(12));
 
   // Add
-  table_->AddAutofillProfile(profile);
-  profile = *table_->GetAutofillProfile(profile.guid(), profile.source());
+  table_.AddAutofillProfile(profile);
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(ProfileTokenQuality::ObservationType::kAccepted));
@@ -267,8 +263,8 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
       .AddObservation(NAME_FIRST,
                       ProfileTokenQuality::ObservationType::kEditedFallback,
                       ProfileTokenQualityTestApi::FormSignatureHash(21));
-  table_->UpdateAutofillProfile(profile);
-  profile = *table_->GetAutofillProfile(profile.guid(), profile.source());
+  table_.UpdateAutofillProfile(profile);
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
   EXPECT_THAT(
       profile.token_quality().GetObservationTypesForFieldType(NAME_FIRST),
       UnorderedElementsAre(
@@ -300,28 +296,28 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   profile.set_language_code("en");
   profile.FinalizeAfterImport();
-  table_->AddAutofillProfile(profile);
+  table_.AddAutofillProfile(profile);
 
   // Get the profile.
   std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid(), profile.source());
+      table_.GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 
   // Now, update the profile and save the update to the database.
   // The modification date should change to reflect the update.
   profile.SetRawInfo(EMAIL_ADDRESS, u"js@smith.xyz");
-  table_->UpdateAutofillProfile(profile);
+  table_.UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
+  db_profile = table_.GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
 }
 
 TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   // Populate the address tables.
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+  ASSERT_TRUE(db_.GetSQLConnection()->Execute(
       "INSERT INTO local_addresses (guid, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000000', 11);"
       "INSERT INTO local_addresses_type_tokens (guid, type, value) "
@@ -349,8 +345,8 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Remove all entries modified in the bounded time range [17,41).
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  table_->RemoveAutofillDataModifiedBetween(Time::FromTimeT(17),
-                                            Time::FromTimeT(41), &profiles);
+  table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(17),
+                                           Time::FromTimeT(41), &profiles);
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());
@@ -359,7 +355,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_bounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT date_modified FROM local_addresses ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profiles_bounded.is_valid());
   ASSERT_TRUE(s_autofill_profiles_bounded.Step());
@@ -374,7 +370,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Make sure that only the expected profile names are still present.
   sql::Statement s_autofill_profile_names_bounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT value FROM local_addresses_type_tokens ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profile_names_bounded.is_valid());
   ASSERT_TRUE(s_autofill_profile_names_bounded.Step());
@@ -388,15 +384,15 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   EXPECT_FALSE(s_autofill_profile_names_bounded.Step());
 
   // Remove all entries modified on or after time 51 (unbounded range).
-  table_->RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
-                                            &profiles);
+  table_.RemoveAutofillDataModifiedBetween(Time::FromTimeT(51), Time(),
+                                           &profiles);
   ASSERT_EQ(2UL, profiles.size());
   EXPECT_EQ("00000000-0000-0000-0000-000000000004", profiles[0]->guid());
   EXPECT_EQ("00000000-0000-0000-0000-000000000005", profiles[1]->guid());
 
   // Make sure that only the expected profiles are still present.
   sql::Statement s_autofill_profiles_unbounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT date_modified FROM local_addresses ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profiles_unbounded.is_valid());
   ASSERT_TRUE(s_autofill_profiles_unbounded.Step());
@@ -407,7 +403,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Make sure that only the expected profile names are still present.
   sql::Statement s_autofill_profile_names_unbounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT value FROM local_addresses_type_tokens ORDER BY guid"));
   ASSERT_TRUE(s_autofill_profile_names_unbounded.is_valid());
   ASSERT_TRUE(s_autofill_profile_names_unbounded.Step());
@@ -417,7 +413,7 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
   EXPECT_FALSE(s_autofill_profile_names_unbounded.Step());
 
   // Remove all remaining entries.
-  table_->RemoveAutofillDataModifiedBetween(Time(), Time(), &profiles);
+  table_.RemoveAutofillDataModifiedBetween(Time(), Time(), &profiles);
 
   // Two profiles should have been removed.
   ASSERT_EQ(2UL, profiles.size());
@@ -426,14 +422,14 @@ TEST_F(AddressAutofillTableTest, RemoveAutofillDataModifiedBetween) {
 
   // Make sure there are no profiles remaining.
   sql::Statement s_autofill_profiles_empty(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT date_modified FROM local_addresses"));
   ASSERT_TRUE(s_autofill_profiles_empty.is_valid());
   EXPECT_FALSE(s_autofill_profiles_empty.Step());
 
   // Make sure there are no profile names remaining.
   sql::Statement s_autofill_profile_names_empty(
-      db_->GetSQLConnection()->GetUniqueStatement(
+      db_.GetSQLConnection()->GetUniqueStatement(
           "SELECT value FROM local_addresses_type_tokens"));
   ASSERT_TRUE(s_autofill_profile_names_empty.is_valid());
   EXPECT_FALSE(s_autofill_profile_names_empty.Step());
