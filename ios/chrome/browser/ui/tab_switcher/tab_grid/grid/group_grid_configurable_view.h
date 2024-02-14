@@ -11,16 +11,19 @@
 // topleading/topTrailing/bottomLeading/bottomTrailing.
 @interface GroupGridConfigurableView : UIView
 
-// Designated initializer with `spacing` to apply as vertical/horizontal gap
-// between the subviews.
-- (instancetype)initWithSpacing:(CGFloat)spacing NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
 // Used to set the corner radius of the 4 subviews within the
 // `GroupGridConfigurableView`.
 @property(nonatomic, assign) CGFloat applicableCornerRadius;
+
+// Designated initializer with `spacing` to apply as vertical/horizontal gap
+// between the subviews and a boolean `adaptForCompactSizeClass` to inform
+// whether to use compact constraints (if applicable) or not.
+- (instancetype)initWithSpacing:(CGFloat)spacing
+       adaptForCompactSizeClass:(BOOL)adaptForCompactSizeClass
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Adds a subview to the top leading view with the same constraints.
 - (void)updateTopLeadingWithView:(UIView*)view;

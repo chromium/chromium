@@ -12,12 +12,19 @@
   UIView* _topTrailingView;
   UIView* _bottomLeadingView;
   UIView* _bottomTrailingView;
+
+  NSArray<NSLayoutConstraint*>* _compactConstraints;
+  NSArray<NSLayoutConstraint*>* _nonCompactConstraints;
+
+  BOOL _adaptForCompactSizeClass;
 }
 
-- (instancetype)initWithSpacing:(CGFloat)spacing {
+- (instancetype)initWithSpacing:(CGFloat)spacing
+       adaptForCompactSizeClass:(BOOL)adaptForCompactSizeClass {
   self = [super initWithFrame:CGRectZero];
 
   if (self) {
+    _adaptForCompactSizeClass = adaptForCompactSizeClass;
     _topLeadingView = [[UIView alloc] init];
     _topTrailingView = [[UIView alloc] init];
     _bottomLeadingView = [[UIView alloc] init];
@@ -38,7 +45,7 @@
     [self addSubview:_bottomLeadingView];
     [self addSubview:_bottomTrailingView];
 
-    NSArray* constraints = @[
+    _nonCompactConstraints = @[
       [_topLeadingView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor],
       [_topLeadingView.topAnchor constraintEqualToAnchor:self.topAnchor],
@@ -82,7 +89,31 @@
           constraintEqualToAnchor:_topTrailingView.heightAnchor],
     ];
 
-    [NSLayoutConstraint activateConstraints:constraints];
+    _compactConstraints = @[
+      [_topLeadingView.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor],
+      [_topLeadingView.topAnchor constraintEqualToAnchor:self.topAnchor],
+
+      [_bottomTrailingView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [_bottomTrailingView.topAnchor constraintEqualToAnchor:self.topAnchor],
+
+      [_bottomTrailingView.leadingAnchor
+          constraintEqualToAnchor:_topLeadingView.trailingAnchor
+                         constant:spacing],
+      [_bottomTrailingView.widthAnchor
+          constraintEqualToAnchor:_topLeadingView.widthAnchor],
+
+      [_topLeadingView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [_bottomTrailingView.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor],
+
+    ];
+    [self updateAndActivateConstraints];
+    if (@available(iOS 17, *)) {
+      [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+                         withAction:@selector(updateAndActivateConstraints)];
+    }
   }
 
   return self;
@@ -112,12 +143,37 @@
   _bottomTrailingView.layer.cornerRadius = _applicableCornerRadius;
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  if (self.traitCollection.verticalSizeClass !=
+      previousTraitCollection.verticalSizeClass) {
+    [self updateAndActivateConstraints];
+  }
+}
+
 #pragma mark - Private
 
 // Adds a given subview to a view and applying the same constraints to it.
 - (void)updateView:(UIView*)view subview:(UIView*)subview {
   [view addSubview:subview];
   AddSameConstraints(view, subview);
+}
+
+// Applies the constraint to use depending the current vertical trait.
+- (void)updateAndActivateConstraints {
+  if (_adaptForCompactSizeClass && self.traitCollection.verticalSizeClass ==
+                                       UIUserInterfaceSizeClassCompact) {
+    [NSLayoutConstraint deactivateConstraints:_nonCompactConstraints];
+    [NSLayoutConstraint activateConstraints:_compactConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_compactConstraints];
+    [NSLayoutConstraint activateConstraints:_nonCompactConstraints];
+  }
 }
 
 @end

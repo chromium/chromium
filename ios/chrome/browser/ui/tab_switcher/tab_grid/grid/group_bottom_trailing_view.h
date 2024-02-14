@@ -16,7 +16,8 @@
 @interface GroupGridBottomTrailingView : GroupGridConfigurableView
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithSpacing:(CGFloat)spacing NS_UNAVAILABLE;
+- (instancetype)initWithSpacing:(CGFloat)spacing
+       adaptForCompactSizeClass:(BOOL)adaptForCompactSizeClass NS_UNAVAILABLE;
 
 // Configures the views with the corresponding favicons and if
 // `remainingTabsCount` is not equal to zero configure the bottom trailing view
