@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -228,14 +229,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;
 
-  base::flat_map<ContentSettingsType, ContentSettingsForOneType>
-      content_settings_;
+  typedef base::flat_map<ContentSettingsType, ContentSettingsForOneType>
+      EntryMap;
+  typedef base::flat_map<
+      ContentSettingsType,
+      std::vector<content_settings::HostIndexedContentSettings>>
+      EntryIndex;
 
-  // Holds a vector of indices. Each index corresponds to one
-  // ContentSettingsProvider.
-  base::flat_map<ContentSettingsType,
-                 std::vector<content_settings::HostIndexedContentSettings>>
-      host_indexed_content_settings_;
+  // Holds an EntryIndex if kHostIndexedMetadataGrants is enabled.
+  // Holds an EntryMap otherwise.
+  absl::variant<EntryMap, EntryIndex> content_settings_;
+
+  // TODO(b/316530672): These settings are used to store a copy of COOKIES
+  // settings when kHostIndexedMetadataGrants is enabled. This is only needed
+  // for CreateDeleteCookieOnExitPredicate(). Ideally, clear on exit would work
+  // with the index as well.
+  std::optional<ContentSettingsForOneType> cookie_settings_;
 };
 
 }  // namespace network

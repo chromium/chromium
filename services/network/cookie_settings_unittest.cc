@@ -173,8 +173,7 @@ class CookieSettingsTest
 
     if (IsHostIndexedMetadataGrantsEnabled()) {
       enabled_features.push_back(
-          {content_settings::features::kHostIndexedMetadataGrants,
-           {{"MetadataGrantsThreshold", "1"}}});
+          {content_settings::features::kHostIndexedMetadataGrants, {}});
     } else {
       disabled_features.push_back(
           content_settings::features::kHostIndexedMetadataGrants);

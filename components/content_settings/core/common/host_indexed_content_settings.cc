@@ -145,6 +145,26 @@ HostIndexedContentSettings::Iterator::Iterator(
   }
 }
 
+HostIndexedContentSettings::Iterator::Iterator(const Iterator& other)
+    : index_(other.index_),
+      stage_(other.stage_),
+      next_map_iterator_(other.next_map_iterator_),
+      next_map_end_(other.next_map_end_),
+      current_iterator_(other.current_iterator_),
+      current_end_(other.current_end_) {
+  index_->iterating_++;
+}
+
+HostIndexedContentSettings::Iterator::Iterator(Iterator&& other)
+    : index_(other.index_),
+      stage_(other.stage_),
+      next_map_iterator_(other.next_map_iterator_),
+      next_map_end_(other.next_map_end_),
+      current_iterator_(other.current_iterator_),
+      current_end_(other.current_end_) {
+  index_->iterating_++;
+}
+
 HostIndexedContentSettings::Iterator::~Iterator() {
   DCHECK_GT(index_->iterating_, 0);
   index_->iterating_--;
@@ -178,6 +198,13 @@ HostIndexedContentSettings::Iterator::operator++() {
     }
   }
   return *this;
+}
+
+HostIndexedContentSettings::Iterator
+HostIndexedContentSettings::Iterator::operator++(int) {
+  Iterator ret = *this;
+  operator++();
+  return ret;
 }
 
 void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {

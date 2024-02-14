@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <variant>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -21,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class ContentSettingsPattern;
@@ -116,23 +116,23 @@ class OriginValueMap {
   typedef std::map<ContentSettingsType, HostIndexedContentSettings> EntryIndex;
 
   EntryIndex& entry_index() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return std::get<EntryIndex>(entries_);
+    return absl::get<EntryIndex>(entries_);
   }
   const EntryIndex& entry_index() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return std::get<EntryIndex>(entries_);
+    return absl::get<EntryIndex>(entries_);
   }
   EntryMap& entry_map() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return std::get<EntryMap>(entries_);
+    return absl::get<EntryMap>(entries_);
   }
   const EntryMap& entry_map() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return std::get<EntryMap>(entries_);
+    return absl::get<EntryMap>(entries_);
   }
 
   mutable bool iterating_ = false;
   mutable base::Lock lock_;
   // This member is an EntryIndex when kIndexedHostContentSettingsMap is enabled
   // and an EntryMap otherwise.
-  std::variant<EntryMap, EntryIndex> entries_ GUARDED_BY(lock_);
+  absl::variant<EntryMap, EntryIndex> entries_ GUARDED_BY(lock_);
 };
 
 }  // namespace content_settings
