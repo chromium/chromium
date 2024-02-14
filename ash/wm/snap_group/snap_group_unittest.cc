@@ -84,6 +84,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_modality_controller.h"
@@ -1220,6 +1221,54 @@ TEST_F(FasterSplitScreenTest, ClamshellTabletTransitionTwoSnappedWindows) {
   EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get()));
 
   TabletModeControllerTestApi().LeaveTabletMode();
+}
+
+// Tests that there will be no overlap between two windows on window layout
+// setup complete. It used to happen because the minimum size of the window was
+// never taken into account. See http://b/324631432 for more details.
+TEST_F(FasterSplitScreenTest,
+       NoOverlapAfterSnapRatioVariesToAccommodateForMinimumSize) {
+  UpdateDisplay("900x600");
+
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+
+  // Create `window2` with window minimum size above 1/3 of the work area.
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
+      &delegate2, /*id=*/-1, gfx::Rect(600, 300)));
+  delegate2.set_minimum_size(gfx::Size(400, 200));
+
+  SnapOneTestWindow(window2.get(), chromeos::WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  VerifySplitViewOverviewSession(window2.get());
+
+  auto* item1 = GetOverviewItemForWindow(window1.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item1->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  WaitForOverviewExitAnimation();
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+
+  // Verify that the snap ratio of `window2` will be adjusted to accommodate for
+  // the window minimum size.
+  WindowState* window2_state = WindowState::Get(window2.get());
+  ASSERT_TRUE(window2_state->snap_ratio());
+  EXPECT_EQ(window2_state->GetStateType(),
+            chromeos::WindowStateType::kSecondarySnapped);
+  EXPECT_GT(window2_state->snap_ratio().value(), chromeos::kOneThirdSnapRatio);
+
+  // Verify that the auto snap ratio of `window1` will be adjusted as well.
+  WindowState* window1_state = WindowState::Get(window1.get());
+  ASSERT_TRUE(window1_state->snap_ratio());
+  EXPECT_EQ(window1_state->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_LT(window1_state->snap_ratio().value(), chromeos::kTwoThirdSnapRatio);
+
+  // Both windows will fit within the work are with no overlap
+  EXPECT_EQ(window1->GetBoundsInScreen().width() +
+                window2->GetBoundsInScreen().width(),
+            work_area_bounds().width());
 }
 
 // Tests that double tap to swap windows doesn't crash after transition to

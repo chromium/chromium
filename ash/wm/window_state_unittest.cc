@@ -163,7 +163,7 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
       &delegate, -1, gfx::Rect(0, 100, kWorkAreaBounds.width() - 1, 100)));
 
   // It should be possible to snap a window with a minimum size.
-  const int kMinimumWidth = 700;
+  const int kMinimumWidth = 750;
   delegate.set_minimum_size(gfx::Size(kMinimumWidth, 0));
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());

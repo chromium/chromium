@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/splitview/auto_snap_controller.h"
+
 #include <optional>
 
 #include "ash/root_window_controller.h"
