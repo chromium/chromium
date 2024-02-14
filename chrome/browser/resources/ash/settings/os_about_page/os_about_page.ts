@@ -446,7 +446,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private onRelaunchClick_(): void {
-    recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
