@@ -16,14 +16,14 @@ class FontCustomPlatformData;
 class BinaryDataFontFaceSource final : public CSSFontFaceSource {
  public:
   BinaryDataFontFaceSource(CSSFontFace*, SharedBuffer*, String&);
-  ~BinaryDataFontFaceSource() override;
+  void Trace(Visitor*) const override;
   bool IsValid() const override;
 
  private:
   SimpleFontData* CreateFontData(const FontDescription&,
                                  const FontSelectionCapabilities&) override;
 
-  scoped_refptr<FontCustomPlatformData> custom_platform_data_;
+  Member<const FontCustomPlatformData> custom_platform_data_;
 };
 
 }  // namespace blink

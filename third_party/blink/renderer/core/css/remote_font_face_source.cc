@@ -262,7 +262,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
         FontInvalidationReason::kFontFaceLoaded);
     if (custom_font_data_) {
       probe::FontsUpdated(execution_context, face_->GetFontFace(),
-                          resource->Url().GetString(), custom_font_data_.get());
+                          resource->Url().GetString(), custom_font_data_.Get());
     }
   }
 }
@@ -456,6 +456,7 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
 void RemoteFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
+  visitor->Trace(custom_font_data_);
   CSSFontFaceSource::Trace(visitor);
   FontResourceClient::Trace(visitor);
 }

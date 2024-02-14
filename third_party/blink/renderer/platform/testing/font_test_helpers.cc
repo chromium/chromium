@@ -29,7 +29,7 @@ class TestFontSelector : public FontSelector {
   static TestFontSelector* Create(const uint8_t* data, size_t size) {
     scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data, size);
     String ots_parse_message;
-    scoped_refptr<FontCustomPlatformData> font_custom_platform_data =
+    FontCustomPlatformData* font_custom_platform_data =
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message);
     if (!font_custom_platform_data)
       return nullptr;
@@ -37,11 +37,16 @@ class TestFontSelector : public FontSelector {
         std::move(font_custom_platform_data));
   }
 
-  TestFontSelector(scoped_refptr<FontCustomPlatformData> custom_platform_data)
-      : custom_platform_data_(std::move(custom_platform_data)) {
+  TestFontSelector(FontCustomPlatformData* custom_platform_data)
+      : custom_platform_data_(custom_platform_data) {
     DCHECK(custom_platform_data_);
   }
   ~TestFontSelector() override = default;
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(custom_platform_data_);
+    FontSelector::Trace(visitor);
+  }
 
   FontData* GetFontData(const FontDescription& font_description,
                         const FontFamily&) override {
@@ -112,7 +117,7 @@ class TestFontSelector : public FontSelector {
   }
 
  private:
-  scoped_refptr<FontCustomPlatformData> custom_platform_data_;
+  Member<FontCustomPlatformData> custom_platform_data_;
 };
 
 }  // namespace

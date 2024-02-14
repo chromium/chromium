@@ -43,7 +43,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   bool IsPendingDataUrl() const override;
 
   const FontCustomPlatformData* GetCustomPlaftormData() const override {
-    return custom_font_data_.get();
+    return custom_font_data_.Get();
   }
 
   void BeginLoadIfNeeded() override;
@@ -157,7 +157,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   Member<FontSelector> font_selector_;
 
   // |nullptr| if font is not loaded or failed to decode.
-  scoped_refptr<FontCustomPlatformData> custom_font_data_;
+  Member<const FontCustomPlatformData> custom_font_data_;
   // |nullptr| if font is not loaded or failed to decode.
   String url_;
 

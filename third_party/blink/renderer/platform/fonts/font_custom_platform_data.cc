@@ -115,7 +115,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     const ResolvedFontFeatures& resolved_font_features,
     FontOrientation orientation,
     const FontVariationSettings* variation_settings,
-    const FontPalette* palette) {
+    const FontPalette* palette) const {
   DCHECK(base_typeface_);
 
   sk_sp<SkTypeface> return_typeface = base_typeface_;
@@ -304,7 +304,7 @@ String FontCustomPlatformData::FamilyNameForInspector() const {
                           localized_string.fString.size());
 }
 
-scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
+FontCustomPlatformData* FontCustomPlatformData::Create(
     SharedBuffer* buffer,
     String& ots_parse_message) {
   DCHECK(buffer);
@@ -321,8 +321,8 @@ scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
     isolate->AdjustAmountOfExternalAllocatedMemory(data_size);
   }
-  return base::AdoptRef(
-      new FontCustomPlatformData(std::move(typeface), data_size));
+  return MakeGarbageCollected<FontCustomPlatformData>(std::move(typeface),
+                                                      data_size);
 }
 
 bool FontCustomPlatformData::MayBeIconFont() const {

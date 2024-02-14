@@ -112,7 +112,7 @@ void FontResource::StartLoadLimitTimersIfNecessary(
       kFontLoadWaitLong);
 }
 
-scoped_refptr<FontCustomPlatformData> FontResource::GetCustomFontData() {
+const FontCustomPlatformData* FontResource::GetCustomFontData() {
   if (!font_data_ && !ErrorOccurred() && !IsLoading()) {
     if (Data()) {
       auto decode_start_time = base::TimeTicks::Now();
@@ -225,6 +225,7 @@ void FontResource::AddClearDataObserver(
 }
 
 void FontResource::Trace(Visitor* visitor) const {
+  visitor->Trace(font_data_);
   visitor->Trace(clear_data_observers_);
   Resource::Trace(visitor);
 }

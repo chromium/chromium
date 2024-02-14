@@ -27,13 +27,16 @@ BinaryDataFontFaceSource::BinaryDataFontFaceSource(CSSFontFace* css_font_face,
     return;
   }
   probe::FontsUpdated(context, font_face, String(),
-                      custom_platform_data_.get());
+                      custom_platform_data_.Get());
 }
 
-BinaryDataFontFaceSource::~BinaryDataFontFaceSource() = default;
+void BinaryDataFontFaceSource::Trace(Visitor* visitor) const {
+  visitor->Trace(custom_platform_data_);
+  CSSFontFaceSource::Trace(visitor);
+}
 
 bool BinaryDataFontFaceSource::IsValid() const {
-  return custom_platform_data_.get();
+  return custom_platform_data_;
 }
 
 SimpleFontData* BinaryDataFontFaceSource::CreateFontData(
