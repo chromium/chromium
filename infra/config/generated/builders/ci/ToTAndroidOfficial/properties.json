@@ -31,6 +31,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "checkout_pgo_profiles",
                   "clang_tot",
                   "android"
                 ],
