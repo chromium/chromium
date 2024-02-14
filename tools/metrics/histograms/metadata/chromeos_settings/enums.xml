@@ -235,6 +235,9 @@ chromium-metrics-reviews@google.com.
   <int value="704" label="Do Not Disturb: On/Off"/>
   <int value="705" label="App Badging: On/Off"/>
   <int value="706" label="Enable Isolated Web Apps: On/Off"/>
+  <int value="707" label="App Notification: On/Off"/>
+  <int value="708" label="App Pin To Shelf: On/Off"/>
+  <int value="709" label="App Resize Lock: On/Off"/>
   <int value="800" label="Set Up Crostini"/>
   <int value="801" label="Uninstall Crostini"/>
   <int value="802" label="Backup Linux Apps And Files"/>

@@ -13,6 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../../assert_extras.js';
 import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './resize_lock_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
@@ -63,7 +64,7 @@ export class AppManagementResizeLockItemElement extends PolymerElement {
         this.app.id,
         newState,
     );
-    recordSettingChange();
+    recordSettingChange(Setting.kAppResizeLockOnOff, {boolValue: newState});
     const userAction = newState ?
         AppManagementUserAction.RESIZE_LOCK_TURNED_ON :
         AppManagementUserAction.RESIZE_LOCK_TURNED_OFF;

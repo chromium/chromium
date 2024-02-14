@@ -185,6 +185,9 @@ enum Setting {
   kDoNotDisturbOnOff = 704,
   kAppBadgingOnOff = 705,
   kEnableIsolatedWebAppsOnOff = 706,
+  kAppNotificationOnOff = 707,
+  kAppPinToShelfOnOff = 708,
+  kAppResizeLockOnOff = 709,
 
   // Crostini section.
   kSetUpCrostini= 800,

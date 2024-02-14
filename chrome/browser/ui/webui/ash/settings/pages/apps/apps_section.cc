@@ -596,10 +596,14 @@ const char* AppsSection::GetSectionPath() const {
 }
 
 bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
-  // Unimplemented.
   if (setting == mojom::Setting::kDoNotDisturbOnOff) {
     base::UmaHistogramBoolean("ChromeOS.Settings.Apps.DoNotDisturbOnOff",
                               value.GetBool());
+    return true;
+  }
+  if (setting == mojom::Setting::kAppNotificationOnOff) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.NotificationPage.PermissionOnOff", value.GetBool());
     return true;
   }
   return false;
@@ -631,6 +635,8 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::Subpage::kAppNotifications);
   generator->RegisterNestedSetting(mojom::Setting::kAppBadgingOnOff,
                                    mojom::Subpage::kAppNotifications);
+  generator->RegisterNestedSetting(mojom::Setting::kAppNotificationOnOff,
+                                   mojom::Subpage::kAppNotifications);
 
   // Manage Isolated Web Apps
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_APPS_LINK_TEXT,
@@ -647,6 +653,11 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_APP_DETAILS_TITLE, mojom::Subpage::kAppDetails,
       mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
       mojom::SearchResultDefaultRank::kMedium, mojom::kAppDetailsSubpagePath);
+  generator->RegisterNestedSetting(mojom::Setting::kAppPinToShelfOnOff,
+                                   mojom::Subpage::kAppDetails);
+  generator->RegisterNestedSetting(mojom::Setting::kAppResizeLockOnOff,
+                                   mojom::Subpage::kAppDetails);
+
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_GUEST_OS_SHARED_PATHS, mojom::Subpage::kPluginVmSharedPaths,
       mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
