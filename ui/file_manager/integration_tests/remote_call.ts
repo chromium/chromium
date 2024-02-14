@@ -679,7 +679,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param elementId String of `id` attribute which the next tabfocus'd element
    *     should have.
    */
-  async checkNextTabFocus(appId: string, elementId: string): Promise<void> {
+  async checkNextTabFocus(appId: string, elementId: string): Promise<boolean> {
     const result = await sendTestMessage({name: 'dispatchTabKey'});
     chrome.test.assertEq(
         result, 'tabKeyDispatched', 'Tab key dispatch failure');

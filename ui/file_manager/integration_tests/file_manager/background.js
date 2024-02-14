@@ -158,8 +158,8 @@ export async function pollForChosenEntry(caller) {
 /**
  * Opens a file dialog and waits for closing it.
  *
- * @param {chrome.fileSystem.AcceptsOption} dialogParams Dialog parameters to be
- *     passed to openEntryChoosingWindow() function.
+ * @param {chrome.fileSystem.ChooseEntryOptions} dialogParams Dialog parameters
+ *     to be passed to openEntryChoosingWindow() function.
  * @param {string} volumeType Volume icon type passed to the directory page
  *     object's selectItemByType function.
  * @param {!Array<!TestEntryInfo>} expectedSet Expected set of the entries.

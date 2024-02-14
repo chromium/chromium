@@ -23,7 +23,6 @@ js_files = [
   "file_manager/holding_space.js",
   "file_manager/recents.js",
   "file_manager/search.js",
-  "file_manager/tab_index.js",
   "file_manager/test_data.js",
   "file_manager/transfer.js",
 
@@ -111,9 +110,7 @@ ts_files = [
 
   "file_manager/share.ts",
   "file_manager/sort_columns.ts",
-
-  # "file_manager/tab_index.ts",
-
+  "file_manager/tab_index.ts",
   "file_manager/tasks.ts",
 
   # "file_manager/test_data.ts",
