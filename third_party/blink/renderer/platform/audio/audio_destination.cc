@@ -353,9 +353,10 @@ AudioDestination::AudioDestination(
           web_audio_device_ ? web_audio_device_->FramesPerBuffer() : 0),
       number_of_output_channels_(number_of_output_channels),
       render_quantum_frames_(render_quantum_frames),
-      fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
-                                           kFIFOSize,
-                                           render_quantum_frames)),
+      fifo_(std::make_unique<PushPullFIFO>(
+          number_of_output_channels,
+          std::max(kFIFOSize, callback_buffer_size_ + render_quantum_frames),
+          render_quantum_frames)),
       output_bus_(AudioBus::Create(number_of_output_channels,
                                    render_quantum_frames,
                                    false)),
@@ -395,9 +396,6 @@ AudioDestination::AudioDestination(
       fifo_->Push(render_bus_.get());
     }
   }
-
-  // Check if the requested buffer size is too large.
-  CHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
 }
 
 void AudioDestination::SetDeviceState(DeviceState state) {
