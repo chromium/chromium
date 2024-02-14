@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -209,13 +209,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
 // Test to verify that launching an app from the intent picker chip shows the
 // IPH bubble if the feature flag is enabled.
 class WebAppLinkCapturingIPHPromoTest
-    : public DefaultLinkCapturingInteractiveUiTest,
+    : public InteractiveFeaturePromoTestT<
+          DefaultLinkCapturingInteractiveUiTest>,
       public testing::WithParamInterface<bool> {
  public:
-  WebAppLinkCapturingIPHPromoTest() {
-    feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch});
-  }
+  WebAppLinkCapturingIPHPromoTest()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch})) {}
 
  protected:
   GURL GetAppUrl() {
@@ -298,9 +298,6 @@ class WebAppLinkCapturingIPHPromoTest
         feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
     return app_browser;
   }
-
- private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingIPHPromoTest,

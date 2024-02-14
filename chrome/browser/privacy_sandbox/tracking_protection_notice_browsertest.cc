@@ -4,6 +4,7 @@
 
 #include <optional>
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -210,12 +212,15 @@ void ExpectSurveyGroupHistogramEmitted(
 
 }  // namespace
 
-class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
+class TrackingProtectionBaseNoticeBrowserTest
+    : public InteractiveFeaturePromoTest {
  protected:
   explicit TrackingProtectionBaseNoticeBrowserTest(
       const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features = {}) {
-    feature_list_.InitAndEnableFeatures(enabled_features, disabled_features);
+      const std::vector<base::test::FeatureRef>& disabled_features = {})
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(enabled_features)) {
+    disabled_features_.InitWithFeatures({}, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -226,6 +231,7 @@ class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
     content::SetupCrossSiteRedirector(&https_server_);
     ASSERT_TRUE(https_server_.Start());
     ASSERT_TRUE(embedded_test_server()->Start());
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
   }
 
   privacy_sandbox::TrackingProtectionOnboarding* onboarding_service() {
@@ -244,7 +250,7 @@ class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
+  base::test::ScopedFeatureList disabled_features_;
 };
 
 class TrackingProtectionOnboardingNoticeBrowserTest
@@ -278,7 +284,6 @@ class TrackingProtectionOnboardingNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewTabEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -305,7 +310,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        SecondEligibleNavigation) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -331,7 +335,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NoticeWasShowingWhenAckPrefUpdated) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -362,7 +365,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewBackgroundTabEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -398,7 +400,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewTabIneligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -423,7 +424,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        SwitchesTabs) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -473,7 +473,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewPopupEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -501,7 +500,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NewWindowEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -534,7 +532,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        FirstWindowEligibleSecondWindowEligible) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkEligible();
 
@@ -571,7 +568,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        OnboardedNotAck) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   onboarding_service()->MaybeMarkEligible();
@@ -595,7 +591,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        AcknowledgesTheNotice) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   // Action
   onboarding_service()->MaybeMarkEligible();
@@ -620,7 +615,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        TreatsAsShownIfPreviouslyDismissed) {
   // Setup
   onboarding_service()->channel_ = version_info::Channel::CANARY;
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   // Action Onboarding and ack the user
@@ -690,7 +684,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        StopsObserving) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   // Action
   onboarding_service()->MaybeMarkEligible();
@@ -756,7 +749,6 @@ class TrackingProtectionOffboardingNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        IneligibleProfile) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -786,7 +778,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        EligibleProfile) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -817,7 +808,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        OnboardedProfile) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -847,7 +837,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        OffboardedProfile) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -876,7 +865,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        NoticeDoesntReshow) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -916,7 +904,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                        NoticeServiceEventHistogramCheck) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   onboarding_service()->MaybeMarkEligible();
@@ -998,8 +985,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        NoticeServiceEventHistogramCheck) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-
   WaitForFeatureEngagement(browser());
   browser()->window()->Activate();
   histogram_tester_.ExpectBucketCount(
@@ -1082,7 +1067,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        NoticeServiceEventHistogramCheckNonNormal) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -1106,7 +1090,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        IsObserving) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -1127,7 +1110,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
                        StopsObserving) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   // Navigates to eligible page.
@@ -1525,7 +1507,6 @@ class TrackingProtectionSilentOnboardingNoticeBrowserTest
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewTabEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkSilentEligible();
 
@@ -1550,7 +1531,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewBackgroundTabEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkSilentEligible();
 
@@ -1584,7 +1564,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewTabIneligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkSilentEligible();
 
@@ -1607,7 +1586,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        SwitchesTabs) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
 
   browser()->window()->Activate();
@@ -1649,7 +1627,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        NewPopupEligiblePage) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   onboarding_service()->MaybeMarkSilentEligible();
 
@@ -1697,7 +1674,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
                        StopsObserving) {
   // Setup
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   WaitForFeatureEngagement(browser());
   // Action
   onboarding_service()->MaybeMarkSilentEligible();

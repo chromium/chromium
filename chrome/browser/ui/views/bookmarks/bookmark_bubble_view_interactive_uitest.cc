@@ -4,7 +4,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -13,18 +12,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/feature_engagement/test/mock_tracker.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/interaction/interactive_test.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestTab);
@@ -39,13 +35,16 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 }
 }  // namespace
 
-class BookmarkBubbleViewInteractiveTest : public InteractiveBrowserTest {
+class BookmarkBubbleViewInteractiveTest : public InteractiveFeaturePromoTest {
  public:
+  BookmarkBubbleViewInteractiveTest()
+      : InteractiveFeaturePromoTest(UseMockTracker()) {}
+
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -54,7 +53,7 @@ class BookmarkBubbleViewInteractiveTest : public InteractiveBrowserTest {
         base::BindRepeating(&BasicResponse));
     embedded_test_server()->StartAcceptingConnections();
 
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
   }
 };
 
@@ -110,50 +109,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
       FlushEvents());
 }
 
-class BookmarkBubbleViewIPHInteractiveTest
-    : public BookmarkBubbleViewInteractiveTest {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&BookmarkBubbleViewIPHInteractiveTest::
-                                        OnWillCreateBrowserContextServices,
-                                    weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(CreateMockTracker));
-  }
-
-  static std::unique_ptr<KeyedService> CreateMockTracker(
-      content::BrowserContext* context) {
-    auto mock_tracker = std::make_unique<
-        testing::NiceMock<feature_engagement::test::MockTracker>>();
-    return mock_tracker;
-  }
-
- protected:
-  feature_engagement::test::MockTracker* GetMockTracker(Profile* profile) {
-    return static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetInstance()->GetForBrowserContext(
-            browser()->profile()));
-  }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
-
-  base::WeakPtrFactory<BookmarkBubbleViewIPHInteractiveTest> weak_ptr_factory_{
-      this};
-};
-
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
                        ShoppingCollectionIPH_Shown) {
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
 
-  ON_CALL(*GetMockTracker(browser()->profile()),
+  ON_CALL(*GetMockTrackerFor(browser()),
           ShouldTriggerHelpUI(
               testing::Ref(feature_engagement::kIPHShoppingCollectionFeature)))
       .WillByDefault(testing::Return(true));
@@ -170,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
 
   commerce::AddProductInfoToExistingBookmark(model, node, u"Product", 12345L);
 
-  EXPECT_CALL(*GetMockTracker(browser()->profile()),
+  EXPECT_CALL(*GetMockTrackerFor(browser()),
               Dismissed(testing::Ref(
                   feature_engagement::kIPHShoppingCollectionFeature)));
 
@@ -182,13 +143,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
                   FlushEvents());
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewIPHInteractiveTest,
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewInteractiveTest,
                        ShoppingCollectionIPH_NotShown) {
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
 
-  ON_CALL(*GetMockTracker(browser()->profile()),
-          ShouldTriggerHelpUI(testing::_))
+  ON_CALL(*GetMockTrackerFor(browser()), ShouldTriggerHelpUI(testing::_))
       .WillByDefault(testing::Return(false));
 
   RunTestSequence(InstrumentTab(kTestTab),

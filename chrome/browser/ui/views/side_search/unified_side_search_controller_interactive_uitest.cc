@@ -26,10 +26,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/feature_engagement/test/test_tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/navigation_controller.h"
@@ -969,13 +967,13 @@ IN_PROC_BROWSER_TEST_F(
 
 // Fixture base to test feature engagement functionality for the side search
 // feature.
-class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
+class SideSearchFeatureEngagementTest
+    : public InteractiveFeaturePromoTestT<SideSearchBrowserTest> {
  public:
-  SideSearchFeatureEngagementTest()
-      : subscription_(
-            BrowserContextDependencyManager::GetInstance()
-                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                    &SideSearchFeatureEngagementTest::RegisterTestTracker))) {}
+  explicit SideSearchFeatureEngagementTest(
+      std::vector<base::test::FeatureRef> iph_features)
+      : InteractiveFeaturePromoTestT(
+            UseDefaultTrackerAllowingPromos(std::move(iph_features))) {}
 
   // Navigates one page backwards in navigation history and waits for the
   // navigation to complete.
@@ -990,45 +988,24 @@ class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   }
 
-  std::map<std::string, std::string> GetFeatureEngagementParams() {
-    return {
-        {"availability", "any"},
-        {"event_used", "name:used;comparator:any;window:360;storage:360"},
-        {"event_trigger", "name:trigger;comparator:any;window:360;storage:360"},
-        {"session_rate", "<1"}};
-  }
-
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  static void RegisterTestTracker(content::BrowserContext* context) {
-    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestTracker));
-  }
-
-  static std::unique_ptr<KeyedService> CreateTestTracker(
-      content::BrowserContext*) {
-    return feature_engagement::CreateTestTracker();
-  }
-
   base::HistogramTester histogram_tester_;
-  base::CallbackListSubscription subscription_;
 };
 
 class SideSearchIPHAndTutorialBrowserTest
-    : public InteractiveBrowserTestT<SideSearchFeatureEngagementTest> {
+    : public SideSearchFeatureEngagementTest {
  public:
-  SideSearchIPHAndTutorialBrowserTest() {
-    feature_list_.InitAndEnableFeaturesWithParameters({
-        {feature_engagement::kIPHSideSearchFeature,
-         GetFeatureEngagementParams()},
-        {features::kSideSearch, {}},
-    });
+  SideSearchIPHAndTutorialBrowserTest()
+      : SideSearchFeatureEngagementTest(
+            {feature_engagement::kIPHSideSearchFeature}) {
+    feature_list_.InitWithFeatures({features::kSideSearch}, {});
   }
 
   // TODO(crbug.com/1491942): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    SideSearchFeatureEngagementTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
@@ -1039,32 +1016,33 @@ class SideSearchIPHAndTutorialBrowserTest
     }
 
     set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTestT::SetUp();
+    SideSearchFeatureEngagementTest::SetUp();
   }
 
-  bool CurrentBubbleAnchoredToCorrectElement(
-      const ui::ElementIdentifier& anchored_element_id) {
-    ui::TrackedElement* t =
-        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting);
-    auto* const view_element = t->AsA<views::TrackedElementViews>()->view();
-    return views::AsViewClass<views::BubbleDialogDelegateView>(view_element)
-               ->GetAnchorView()
-               ->GetProperty(views::kElementIdentifierKey) ==
-           anchored_element_id;
+  auto CheckHelpBubbleAnchoredToCorrectElement(
+      ui::ElementIdentifier anchored_element_id) {
+    return CheckView(
+        user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+        [](user_education::HelpBubbleView* view) {
+          return view->GetAnchorView()->GetProperty(
+              views::kElementIdentifierKey);
+        },
+        anchored_element_id);
   }
 
   auto StartNavigationFromSidePanel(Browser* browser, const GURL& url) {
-    auto* side_contents = GetActiveSidePanelWebContents(browser);
-    side_contents->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(url));
+    return Do([this, browser, url]() {
+      auto* const side_contents = GetActiveSidePanelWebContents(browser);
+      side_contents->GetController().LoadURLWithParams(
+          content::NavigationController::LoadURLParams(url));
+    });
   }
 
   auto CheckIPHTriggeredCorrectly(const ui::ElementIdentifier& primary_tab_id) {
     const auto srp_url = GetMatchingSearchUrl();
     const auto non_srp_url_1 = GetNonMatchingUrl();
     return Steps(
-        InstrumentTab(primary_tab_id),
+        WaitForFeatureEngagementReady(), InstrumentTab(primary_tab_id),
         // Navigate to a SRP URL and then once to a non-SRP URL.
         NavigateWebContents(primary_tab_id, srp_url),
         NavigateWebContents(primary_tab_id, non_srp_url_1),
@@ -1081,14 +1059,11 @@ class SideSearchIPHAndTutorialBrowserTest
         CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
                           &views::Label::GetText,
                           l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
-        Check(base::BindLambdaForTesting([this]() {
-          return CurrentBubbleAnchoredToCorrectElement(
-              kSideSearchButtonElementId);
-        })));
+        CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId));
   }
 
  private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
@@ -1125,10 +1100,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
           user_education::HelpBubbleView::kBodyTextIdForTesting,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId),
 
       // Click on side search page action icon to pop up side panel.
       PressButton(kSideSearchButtonElementId),
@@ -1142,15 +1114,10 @@ IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
                         &views::Label::GetText,
                         l10n_util::GetStringUTF16(
                             IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchWebViewElementId);
-      })),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchWebViewElementId),
 
       // Simulate a click on a random result in side panel.
-      Do(base::BindLambdaForTesting([&, this]() {
-        StartNavigationFromSidePanel(browser(), non_srp_url);
-      })),
+      StartNavigationFromSidePanel(browser(), non_srp_url),
       WaitForWebContentsNavigation(kPrimaryTabId),
 
       // 3rd tutorial bubble appears.
@@ -1162,10 +1129,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
           user_education::HelpBubbleView::kBodyTextIdForTesting,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_CLOSE_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSidePanelCloseButtonElementId);
-      })),
+      CheckHelpBubbleAnchoredToCorrectElement(kSidePanelCloseButtonElementId),
 
       // Press side panel close button.
       PressButton(kSidePanelCloseButtonElementId), FlushEvents(),
@@ -1178,10 +1142,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
       CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
                         &views::Label::GetText,
                         l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId),
 
       // Verify the final tutorial bubble has a Restart button.
       CheckViewProperty(
@@ -1201,27 +1162,25 @@ IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
           user_education::HelpBubbleView::kBodyTextIdForTesting,
           &views::Label::GetText,
           l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })));
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId));
 }
 
 class SideSearchAutoTriggeringBrowserTest
-    : public SideSearchFeatureEngagementTest,
-      public InteractiveBrowserTestApi {
+    : public SideSearchFeatureEngagementTest {
  public:
-  SideSearchAutoTriggeringBrowserTest() {
+  SideSearchAutoTriggeringBrowserTest()
+      : SideSearchFeatureEngagementTest(
+            {feature_engagement::kIPHSideSearchAutoTriggeringFeature}) {
     constexpr char kParam[] = "SideSearchAutoTriggeringReturnCount";
     constexpr char kTriggerCount[] = "2";
     base::FieldTrialParams params = {{kParam, kTriggerCount}};
 
-    feature_list_.InitAndEnableFeaturesWithParameters({
-        {features::kSideSearch, {}},
-        {features::kSideSearchAutoTriggering, params},
-        {feature_engagement::kIPHSideSearchAutoTriggeringFeature,
-         GetFeatureEngagementParams()},
-    });
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kSideSearch, {}},
+            {features::kSideSearchAutoTriggering, params},
+        },
+        {});
   }
 
   void SetUp() override {
@@ -1229,39 +1188,25 @@ class SideSearchAutoTriggeringBrowserTest
     SideSearchFeatureEngagementTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    SideSearchFeatureEngagementTest::SetUpOnMainThread();
-    private_test_impl().DoTestSetUp();
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
-  }
-
-  void TearDownOnMainThread() override {
-    private_test_impl().DoTestTearDown();
-    SideSearchFeatureEngagementTest::TearDownOnMainThread();
-  }
-
   auto CheckHistogramCounts(int expected_count) {
-    return Do(base::BindOnce(
-        [](base::HistogramTester* tester, int count) {
-          tester->ExpectUniqueSample(
-              "SideSearch.RedirectionToTabCountPerJourney2", 1, count);
-          tester->ExpectUniqueSample(
-              "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1,
-              count);
-          tester->ExpectUniqueSample(
-              "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2",
-              1, count);
-          tester->ExpectUniqueSample(
-              "SideSearch.AutoTrigger."
-              "NavigationCommittedWithinSideSearchCountPerJourney",
-              1, count);
-        },
-        base::Unretained(&histogram_tester()), expected_count));
+    return Do([this, expected_count]() {
+      histogram_tester().ExpectUniqueSample(
+          "SideSearch.RedirectionToTabCountPerJourney2", 1, expected_count);
+      histogram_tester().ExpectUniqueSample(
+          "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", 1,
+          expected_count);
+      histogram_tester().ExpectUniqueSample(
+          "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", 1,
+          expected_count);
+      histogram_tester().ExpectUniqueSample(
+          "SideSearch.AutoTrigger."
+          "NavigationCommittedWithinSideSearchCountPerJourney",
+          1, expected_count);
+    });
   }
 
  private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
@@ -1308,12 +1253,13 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       NavigateWebContents(kPrimaryTabId, non_srp_url_3),
       WaitForHide(kSideSearchButtonElementId), WaitForShow(kSidePanelElementId),
       // Verify that the side search panel is selected.
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->GetCurrentSidePanelEntryForTesting()
-                        ->key()
-                        .id();
-                  }),
-                  SidePanelEntry::Id::kSideSearch),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id();
+          },
+          SidePanelEntry::Id::kSideSearch),
       // When the side search WebContents is displayed, instrument it.
       InstrumentNonTabWebView(kSidePanelWebContentsId,
                               kSideSearchWebViewElementId),
@@ -1321,19 +1267,19 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       // that metrics are emitted correctly. A matching URL navigates in side
       // panel.
       AfterShow(kSidePanelWebContentsId,
-                base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                [this](ui::TrackedElement* el) {
                   // This isn't guaranteed to load in the side panel, so we
                   // don't use the NavigateWebContents() verb.
                   AsInstrumentedWebContents(el)->LoadPage(
                       GetMatchingSearchUrl());
-                })),
+                }),
       WaitForWebContentsNavigation(kSidePanelWebContentsId),
       // A non-matching URL navigates in the current browser tab.
       WithElement(kSidePanelWebContentsId,
-                  base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                  [this](ui::TrackedElement* el) {
                     AsInstrumentedWebContents(el)->LoadPage(
                         GetNonMatchingUrl());
-                  }))
+                  })
           .SetMustRemainVisible(false),
       WaitForWebContentsNavigation(kPrimaryTabId),
       // Metrics should not be emitted until the side panel is closed (i.e. the
@@ -1352,20 +1298,14 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
 class SideSearchPageActionLabelTriggerBrowserTest
     : public SideSearchFeatureEngagementTest {
  public:
-  SideSearchPageActionLabelTriggerBrowserTest() {
-    feature_list_.InitAndEnableFeaturesWithParameters({
-        {features::kSideSearch, {}},
-        {feature_engagement::kIPHSideSearchPageActionLabelFeature,
-         GetFeatureEngagementParams()},
-    });
-  }
-
-  void SetUp() override {
-    SideSearchFeatureEngagementTest::SetUp();
+  SideSearchPageActionLabelTriggerBrowserTest()
+      : SideSearchFeatureEngagementTest(
+            {feature_engagement::kIPHSideSearchPageActionLabelFeature}) {
+    feature_list_.InitWithFeatures({features::kSideSearch}, {});
   }
 
  private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SideSearchPageActionLabelTriggerBrowserTest,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <sstream>
 #include "base/feature_list.h"
 #include "base/functional/overloaded.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo_result.h"
@@ -43,9 +45,11 @@ constexpr int kBrowserContentAllowedMinimumWidth =
     BrowserViewLayout::kMainBrowserContentsMinimumWidth;
 }  // namespace
 
-class ToolbarControllerUiTest : public InteractiveBrowserTest {
+class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
  public:
-  ToolbarControllerUiTest() {
+  ToolbarControllerUiTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHTabSearchFeature})) {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures(
         {features::kResponsiveToolbar, features::kSidePanelPinning,
@@ -56,7 +60,7 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->StartAcceptingConnections();
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser());
     toolbar_controller_ = const_cast<ToolbarController*>(
         browser_view_->toolbar()->toolbar_controller());
@@ -76,7 +80,7 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
     toolbar_controller_ = nullptr;
     browser_view_ = nullptr;
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
   // Returns the minimum width the toolbar view can be without any ToolbarButton
@@ -292,6 +296,11 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
       toolbar_model->SetActionVisibility(extension->id(), true);
       views::test::RunScheduledLayout(browser_view_);
     }));
+  }
+
+  auto ResizeRelativeToOverflow(int diff) {
+    return Do(
+        [this, diff]() { SetBrowserWidth(overflow_threshold_width() + diff); });
   }
 
   void SetBrowserWidth(int width) {
@@ -604,48 +613,12 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ExtensionHasNoAnimationLoop) {
                    ->is_animating());
 }
 
-class ToolbarControllerIphUiTest : public ToolbarControllerUiTest {
- public:
-  ToolbarControllerIphUiTest() {
-    iph_feature_list_.InitForDemo(feature_engagement::kIPHTabSearchFeature);
-  }
-  ~ToolbarControllerIphUiTest() override = default;
-
-  auto TryShowHelpBubble(user_education::FeaturePromoResult expected_result =
-                             user_education::FeaturePromoResult::Success()) {
-    std::ostringstream desc;
-    desc << "TryShowHelpBubble(" << expected_result << ")";
-    return CheckResult(
-        [this]() {
-          return browser()->window()->MaybeShowFeaturePromo(
-              feature_engagement::kIPHTabSearchFeature);
-        },
-        expected_result, desc.str());
-  }
-
-  auto DismissHelpBubble() {
-    auto result = Steps(
-        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
-        WaitForHide(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-    AddDescription(result, "DismissHelpBubble( %s )");
-    return result;
-  }
-
-  auto ResizeRelativeToOverflow(int diff) {
-    return Do(
-        [this, diff]() { SetBrowserWidth(overflow_threshold_width() + diff); });
-  }
-
- private:
-  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ToolbarControllerIphUiTest, DoNotShowIphWhenOverflowed) {
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, DoNotShowIphWhenOverflowed) {
   RunTestSequence(
-      ObserveState(kFeatureEngagementInitializedState, browser()),
-      WaitForState(kFeatureEngagementInitializedState, true),
-      ResizeRelativeToOverflow(-1),
-      TryShowHelpBubble(user_education::FeaturePromoResult::kBlockedByUi),
-      ResizeRelativeToOverflow(1), TryShowHelpBubble(), DismissHelpBubble());
+      WaitForFeatureEngagementReady(), ResizeRelativeToOverflow(-1),
+      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
+                     user_education::FeaturePromoResult::kBlockedByUi),
+      ResizeRelativeToOverflow(1),
+      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
+      PressClosePromoButton());
 }
