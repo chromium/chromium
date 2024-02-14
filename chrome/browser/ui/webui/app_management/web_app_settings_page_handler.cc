@@ -111,6 +111,11 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
 
 WebAppSettingsPageHandler::~WebAppSettingsPageHandler() = default;
 
+void WebAppSettingsPageHandler::SetPinned(const std::string& app_id,
+                                          bool pinned) {
+  NOTIMPLEMENTED();
+}
+
 void WebAppSettingsPageHandler::SetResizeLocked(const std::string& app_id,
                                                 bool locked) {
   NOTIMPLEMENTED();

@@ -35,6 +35,7 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   ~WebAppSettingsPageHandler() override;
 
   // app_management::mojom::PageHandler:
+  void SetPinned(const std::string& app_id, bool pinned) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
   void SetPreferredApp(const std::string& app_id,
                        bool is_preferred_app) override;

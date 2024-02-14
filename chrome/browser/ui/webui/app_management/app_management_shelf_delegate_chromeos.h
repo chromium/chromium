@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
-class AppManagementPageHandlerBase;
+class AppManagementPageHandlerChromeOs;
 class ShelfControllerHelper;
 class Profile;
 
@@ -22,7 +22,7 @@ class Profile;
 class AppManagementShelfDelegate : public ash::ShelfModelObserver {
  public:
   explicit AppManagementShelfDelegate(
-      AppManagementPageHandlerBase* page_handler,
+      AppManagementPageHandlerChromeOs* page_handler,
       Profile* profile);
 
   AppManagementShelfDelegate(const AppManagementShelfDelegate&) = delete;
@@ -42,7 +42,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemRemoved(int index, const ash::ShelfItem& old_item) override;
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
-  raw_ptr<AppManagementPageHandlerBase> page_handler_;
+  raw_ptr<AppManagementPageHandlerChromeOs> page_handler_;
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 };
 

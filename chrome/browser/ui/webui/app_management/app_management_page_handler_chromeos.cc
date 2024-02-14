@@ -4,17 +4,27 @@
 
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
 
+#include <set>
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_set.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
+#include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 namespace {
@@ -38,6 +48,50 @@ apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
   return intent_filters;
 }
 
+// Returns a list of URLs supported by an app given an app ID.
+std::vector<std::string> GetSupportedLinks(Profile* profile,
+                                           const std::string& app_id) {
+  std::set<std::string> supported_links;
+  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
+  for (auto& filter : intent_filters) {
+    for (const auto& link :
+         apps_util::GetSupportedLinksForAppManagement(filter)) {
+      supported_links.insert(link);
+    }
+  }
+
+  return std::vector<std::string>(supported_links.begin(),
+                                  supported_links.end());
+}
+
+app_management::mojom::LocalePtr CreateLocaleForTag(
+    const std::string& locale_tag,
+    const std::string& system_locale) {
+  const std::string display_name =
+      base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
+          locale_tag, system_locale, /*is_for_ui=*/true));
+  const std::string native_display_name = base::UTF16ToUTF8(
+      l10n_util::GetDisplayNameForLocale(locale_tag, locale_tag,
+                                         /*is_for_ui=*/true));
+
+  // In ICU library, undefined locale is treated as unknown language
+  // (ICU-20273).
+  constexpr char kUndefinedTranslatedLocaleName[] = "und";
+
+  // In Android, it's possible for Apps to set custom locale tag, hence these
+  // locales might be untranslatable (based on ICU-20273).
+  // In this case, we'll pass empty string and let the UI decides what to
+  // display. For ARC, we'll display the `locale_tag` as is (this is safe
+  // within the limit specified by IETF BCP 47, as no malicious HTML tags
+  // could be formed).
+  return app_management::mojom::Locale::New(
+      locale_tag,
+      display_name == kUndefinedTranslatedLocaleName ? "" : display_name,
+      native_display_name == kUndefinedTranslatedLocaleName
+          ? ""
+          : native_display_name);
+}
+
 }  // namespace
 
 AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
@@ -48,13 +102,25 @@ AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
                                    profile,
-                                   delegate) {
+                                   delegate),
+      shelf_delegate_(this, profile) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
 }
 
 AppManagementPageHandlerChromeOs::~AppManagementPageHandlerChromeOs() = default;
+
+void AppManagementPageHandlerChromeOs::OnPinnedChanged(
+    const std::string& app_id,
+    bool pinned) {
+  NotifyAppChanged(app_id);
+}
+
+void AppManagementPageHandlerChromeOs::SetPinned(const std::string& app_id,
+                                                 bool pinned) {
+  shelf_delegate_.SetPinned(app_id, pinned);
+}
 
 void AppManagementPageHandlerChromeOs::SetResizeLocked(
     const std::string& app_id,
@@ -155,4 +221,46 @@ void AppManagementPageHandlerChromeOs::OnPreferredAppChanged(
 void AppManagementPageHandlerChromeOs::OnPreferredAppsListWillBeDestroyed(
     apps::PreferredAppsListHandle* handle) {
   preferred_apps_list_handle_observer_.Reset();
+}
+
+app_management::mojom::AppPtr AppManagementPageHandlerChromeOs::CreateApp(
+    const std::string& app_id) {
+  app_management::mojom::AppPtr app =
+      AppManagementPageHandlerBase::CreateApp(app_id);
+  if (!app) {
+    return nullptr;
+  }
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+
+  app->is_preferred_app =
+      proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
+  app->supported_links = GetSupportedLinks(profile(), app->id);
+
+  app->is_pinned = shelf_delegate_.IsPinned(app_id);
+  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(app_id);
+
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [this, &app](const apps::AppUpdate& update) {
+        app->resize_locked = update.ResizeLocked().value_or(false);
+        app->hide_resize_locked = !update.ResizeLocked().has_value();
+
+        if (ash::settings::IsPerAppLanguageEnabled(profile())) {
+          const std::string& system_locale =
+              g_browser_process->GetApplicationLocale();
+          // Translate supported locales.
+          for (const std::string& locale_tag : update.SupportedLocales()) {
+            app->supported_locales.push_back(
+                CreateLocaleForTag(locale_tag, system_locale));
+          }
+          // Translate selected locale.
+          std::optional<std::string> locale_tag = update.SelectedLocale();
+          if (locale_tag.has_value()) {
+            app->selected_locale =
+                CreateLocaleForTag(*locale_tag, system_locale);
+          }
+        }
+      });
+
+  return app;
 }

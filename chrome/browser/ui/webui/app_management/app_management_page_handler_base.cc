@@ -12,7 +12,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -27,7 +26,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -46,7 +44,6 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -66,12 +63,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
@@ -98,33 +93,6 @@ const char kFileHandlingLearnMore[] =
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
     arc::kPlayStoreAppId,
 };
-
-// In ICU library, undefined locale is treated as unknown language (ICU-20273).
-const char kUndefinedTranslatedLocaleName[] = "und";
-
-app_management::mojom::LocalePtr CreateLocaleForTag(
-    const std::string& locale_tag,
-    const std::string& system_locale) {
-  const std::string display_name =
-      base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-          locale_tag, system_locale, /*is_for_ui=*/true));
-  const std::string native_display_name = base::UTF16ToUTF8(
-      l10n_util::GetDisplayNameForLocale(locale_tag, locale_tag,
-                                         /*is_for_ui=*/true));
-
-  // In Android, it's possible for Apps to set custom locale tag, hence these
-  // locales might be untranslatable (based on ICU-20273).
-  // In this case, we'll pass empty string and let the UI decides what to
-  // display. For ARC, we'll display the `locale_tag` as is (this is safe
-  // within the limit specified by IETF BCP 47, as no malicious HTML tags
-  // could be formed).
-  return app_management::mojom::Locale::New(
-      locale_tag,
-      display_name == kUndefinedTranslatedLocaleName ? "" : display_name,
-      native_display_name == kUndefinedTranslatedLocaleName
-          ? ""
-          : native_display_name);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 app_management::mojom::ExtensionAppPermissionMessagePtr
@@ -165,43 +133,6 @@ bool CanShowDefaultAppAssociationsUi() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns a list of intent filters that support http/https given an app ID.
-apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
-                                                  const std::string& app_id) {
-  apps::IntentFilters intent_filters;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(app_id,
-                 [&app_id, &intent_filters](const apps::AppUpdate& update) {
-                   if (update.Readiness() == apps::Readiness::kReady) {
-                     for (auto& filter : update.IntentFilters()) {
-                       if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
-                         intent_filters.emplace_back(std::move(filter));
-                       }
-                     }
-                   }
-                 });
-  return intent_filters;
-}
-
-// Returns a list of URLs supported by an app given an app ID.
-std::vector<std::string> GetSupportedLinks(Profile* profile,
-                                           const std::string& app_id) {
-  std::set<std::string> supported_links;
-  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
-  for (auto& filter : intent_filters) {
-    for (const auto& link :
-         apps_util::GetSupportedLinksForAppManagement(filter)) {
-      supported_links.insert(link);
-    }
-  }
-
-  return std::vector<std::string>(supported_links.begin(),
-                                  supported_links.end());
-}
-#endif
-
 std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (bytes.has_value()) {
     // ui::FormatBytes requires a non-negative signed integer. In general, we
@@ -225,20 +156,6 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
 }  // namespace
 
 AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
-
-void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
-                                                   bool pinned) {
-  app_management::mojom::AppPtr app = CreateApp(app_id);
-
-  // If an app with this id is not already installed, do nothing.
-  if (!app) {
-    return;
-  }
-
-  app->is_pinned = pinned;
-
-  page_->OnAppChanged(std::move(app));
-}
 
 void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;
@@ -316,15 +233,6 @@ void AppManagementPageHandlerBase::GetExtensionAppPermissionMessages(
   std::move(callback).Run(std::move(messages));
 }
 
-void AppManagementPageHandlerBase::SetPinned(const std::string& app_id,
-                                             bool pinned) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  shelf_delegate_.SetPinned(app_id, pinned);
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AppManagementPageHandlerBase::SetPermission(
     const std::string& app_id,
     apps::PermissionPtr permission) {
@@ -367,9 +275,6 @@ AppManagementPageHandlerBase::AppManagementPageHandlerBase(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      shelf_delegate_(this, profile),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       delegate_(delegate) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
@@ -428,42 +333,11 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
   app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
   app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
-  // On other OS's, is_pinned defaults to std::nullopt, which is used to
-  // represent the fact that there is no concept of being pinned.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  app->is_pinned = shelf_delegate_.IsPinned(update.AppId());
-  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId());
-  app->resize_locked = update.ResizeLocked().value_or(false);
-  app->hide_resize_locked = !update.ResizeLocked().has_value();
-
-  if (ash::settings::IsPerAppLanguageEnabled(profile_)) {
-    const std::string& system_locale =
-        g_browser_process->GetApplicationLocale();
-    // Translate supported locales.
-    for (const std::string& locale_tag : update.SupportedLocales()) {
-      app->supported_locales.push_back(
-          CreateLocaleForTag(locale_tag, system_locale));
-    }
-    // Translate selected locale.
-    std::optional<std::string> locale_tag = update.SelectedLocale();
-    if (locale_tag.has_value()) {
-      app->selected_locale = CreateLocaleForTag(*locale_tag, system_locale);
-    }
-  }
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  app->is_preferred_app = apps::AppServiceProxyFactory::GetForProfile(profile_)
-                              ->PreferredAppsList()
-                              .IsPreferredAppForSupportedLinks(update.AppId());
-#endif  // BUILDFLAG(IS_CHROMEOS)
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
       !update.ShowInShelf().value_or(true) || ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  app->supported_links = GetSupportedLinks(profile_, app->id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   auto run_on_os_login = update.RunOnOsLogin();
   if (run_on_os_login.has_value()) {
     app->run_on_os_login = std::make_unique<apps::RunOnOsLogin>(
