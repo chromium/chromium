@@ -9,8 +9,7 @@
 #include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace ash {
-namespace federated {
+namespace ash::federated {
 
 // Encapsulates a connection to the Chrome OS Federated Service daemon via its
 // Mojo interface. Usage:
@@ -19,8 +18,8 @@ namespace federated {
 //        federated_service.BindNewPipeAndPassReceiver());
 //  if (federated_service) {
 //    chromeos::federated::mojom::ExamplePtr example = ...;
-//    const std::string client_name = ...;
-//    federated_service->ReportExample(client_name, std::move(example));
+//    const chromeos::federated::mojom::FederatedExampleTableId table_id = ...;
+//    federated_service->ReportExampleToTable(table_id, std::move(example));
 //  } else {
 //    // error handler
 //  }
@@ -55,7 +54,6 @@ class COMPONENT_EXPORT(CHROMEOS_FEDERATED) ScopedFakeServiceConnectionForTest {
   ~ScopedFakeServiceConnectionForTest();
 };
 
-}  // namespace federated
-}  // namespace ash
+}  // namespace ash::federated
 
 #endif  // CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_

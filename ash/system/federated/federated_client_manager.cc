@@ -18,7 +18,9 @@ namespace ash::federated {
 namespace {
 
 using chromeos::federated::mojom::Example;
+using chromeos::federated::mojom::ExamplePtr;
 using chromeos::federated::mojom::Features;
+using chromeos::federated::mojom::FederatedExampleTableId;
 
 ExamplePtr CreateSingleStringExamplePtr(const std::string& example_feature_name,
                                         const std::string& example_str) {
@@ -60,18 +62,18 @@ bool FederatedClientManager::IsFederatedServiceAvailable() {
 }
 
 void FederatedClientManager::ReportExample(
-    const std::string& client_name,
-    chromeos::federated::mojom::ExamplePtr example) {
-  ReportExampleToFederatedService(client_name, std::move(example));
+    const FederatedExampleTableId table_id,
+    ExamplePtr example) {
+  ReportExampleToFederatedService(table_id, std::move(example));
 }
 
 void FederatedClientManager::ReportSingleString(
-    const std::string& client_name,
+    const FederatedExampleTableId table_id,
     const std::string& example_feature_name,
     const std::string& example_str) {
   ExamplePtr example =
       CreateSingleStringExamplePtr(example_feature_name, example_str);
-  ReportExample(client_name, std::move(example));
+  ReportExample(table_id, std::move(example));
 }
 
 bool FederatedClientManager::IsFederatedStringsServiceAvailable() {
@@ -80,7 +82,7 @@ bool FederatedClientManager::IsFederatedStringsServiceAvailable() {
 }
 
 void FederatedClientManager::ReportStringViaStringsService(
-    const std::string& client_name,
+    const FederatedExampleTableId table_id,
     const std::string& client_string) {
   if (!ash::features::IsFederatedStringsServiceEnabled()) {
     return;
@@ -88,8 +90,8 @@ void FederatedClientManager::ReportStringViaStringsService(
 
   // TODO(b/289140140): Use a less generic word than "query".
   ReportExampleToFederatedService(
-      client_name, CreateSingleStringExamplePtr(
-                       /*example_feature_name*/ "query", client_string));
+      table_id, CreateSingleStringExamplePtr(
+                    /*example_feature_name*/ "query", client_string));
 }
 
 void FederatedClientManager::TryToBindFederatedServiceIfNecessary() {
@@ -104,7 +106,7 @@ void FederatedClientManager::TryToBindFederatedServiceIfNecessary() {
 }
 
 void FederatedClientManager::ReportExampleToFederatedService(
-    const std::string& client_name,
+    const FederatedExampleTableId table_id,
     ExamplePtr example) {
   TryToBindFederatedServiceIfNecessary();
 
@@ -114,7 +116,7 @@ void FederatedClientManager::ReportExampleToFederatedService(
     // TODO(b/289140140): UMA metrics.
   } else {
     // Federated service available and connected.
-    federated_service_->ReportExample(client_name, std::move(example));
+    federated_service_->ReportExampleToTable(table_id, std::move(example));
     ++successful_reports_for_test_;
     // TODO(b/289140140): UMA metrics.
   }

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/services/federated/public/mojom/tables.mojom.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -439,7 +440,8 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
   if (base::FeatureList::IsEnabled(features::kAutocorrectFederatedPhh)) {
     // Report `original_text` to the Federated Service.
     federated_manager_.ReportSingleString(
-        /*client_name*/ "input_autocorrect_phh",
+        /*table_id*/ chromeos::federated::mojom::FederatedExampleTableId::
+            INPUT_AUTOCORRECT,
         /*example_feature_name*/ "original_text",
         /*example_str*/ base::UTF16ToUTF8(original_text));
   }
@@ -847,8 +849,8 @@ void AutocorrectManager::OnSurroundingTextChanged(
     // TODO(b/161490813): Fix logic for text replace.
 
     // Count characters added between two calls of the event.
-    pending_autocorrect_->num_inserted_chars += text.length() -
-        pending_autocorrect_->text_length;
+    pending_autocorrect_->num_inserted_chars +=
+        text.length() - pending_autocorrect_->text_length;
   }
   pending_autocorrect_->text_length = text.length();
 
@@ -1014,8 +1016,8 @@ void AutocorrectManager::UndoAutocorrect() {
   pending_autocorrect_.reset();
 }
 
-void AutocorrectManager::ShowUndoWindow(
-  gfx::Range range, const std::u16string& text) {
+void AutocorrectManager::ShowUndoWindow(gfx::Range range,
+                                        const std::u16string& text) {
   if (!pending_autocorrect_.has_value() ||
       !pending_autocorrect_->is_validated ||
       pending_autocorrect_->undo_window_visible) {
@@ -1032,8 +1034,7 @@ void AutocorrectManager::ShowUndoWindow(
       pending_autocorrect_->learn_more_button_visible;
   properties.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
-      pending_autocorrect_->original_text,
-      autocorrected_text);
+      pending_autocorrect_->original_text, autocorrected_text);
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
 
@@ -1160,13 +1161,12 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     // Non-empty autocorrect range means that the user has not modified
     // autocorrect suggestion to invalidate it. So, it is considered as
     // accepted.
-    LogAssistiveAutocorrectAction(
-      AutocorrectActions::kUserAcceptedAutocorrect);
+    LogAssistiveAutocorrectAction(AutocorrectActions::kUserAcceptedAutocorrect);
   } else {
     MeasureAndLogAssistiveAutocorrectQualityBreakdown(
         AutocorrectActions::kUserActionClearedUnderline);
     LogAssistiveAutocorrectAction(
-      AutocorrectActions::kUserActionClearedUnderline);
+        AutocorrectActions::kUserActionClearedUnderline);
   }
 
   if (input_context) {
@@ -1223,7 +1223,7 @@ AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
       learn_more_button_visible(learn_more_button_visible) {}
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
-  const PendingAutocorrectState& other) = default;
+    const PendingAutocorrectState& other) = default;
 
 AutocorrectManager::PendingAutocorrectState::~PendingAutocorrectState() =
     default;
