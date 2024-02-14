@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,7 +22,6 @@
 
 namespace cc {
 class UIResourceManager;
-class TaskGraphRunner;
 }  // namespace cc
 
 namespace viz {
@@ -55,21 +53,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
     virtual ~ScopedKeepSurfaceAlive() = default;
   };
 
-  struct COMPONENT_EXPORT(CC_SLIM) InitParams {
-    InitParams();
-    ~InitParams();
-    InitParams(InitParams&&);
-    InitParams& operator=(InitParams&&);
-
-    // Non-owning. `client` needs to outlive `LayerTree`.
-    raw_ptr<LayerTreeClient> client = nullptr;
-
-    // Only used when wrapping cc.
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    raw_ptr<cc::TaskGraphRunner> cc_task_graph_runner = nullptr;
-  };
-
-  static std::unique_ptr<LayerTree> Create(InitParams params);
+  static std::unique_ptr<LayerTree> Create(LayerTreeClient* client);
 
   virtual ~LayerTree() = default;
 

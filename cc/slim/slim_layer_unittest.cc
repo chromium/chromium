@@ -190,9 +190,7 @@ TEST(SlimLayerTest, UIResourceLayerProperties) {
   layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
 
   TestLayerTreeClient client;
-  LayerTree::InitParams params;
-  params.client = &client;
-  auto layer_tree = LayerTree::Create(std::move(params));
+  auto layer_tree = LayerTree::Create(&client);
   layer_tree->SetRoot(layer);
 
   EXPECT_NE(layer->resource_id(), 0);
@@ -217,9 +215,7 @@ TEST(SlimLayerTest, NinePatchLayerProperties) {
   layer->SetNearestNeighbor(true);
 
   TestLayerTreeClient client;
-  LayerTree::InitParams params;
-  params.client = &client;
-  auto layer_tree = LayerTree::Create(std::move(params));
+  auto layer_tree = LayerTree::Create(&client);
   layer_tree->SetRoot(layer);
 
   EXPECT_EQ(layer_tree->GetUIResourceManager()

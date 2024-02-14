@@ -13,15 +13,10 @@
 namespace cc::slim {
 
 // static
-std::unique_ptr<LayerTree> LayerTree::Create(InitParams params) {
+std::unique_ptr<LayerTree> LayerTree::Create(LayerTreeClient* client) {
   return base::WrapUnique<LayerTree>(
-      new LayerTreeImpl(params.client, kNumUnneededBeginFrameBeforeStop,
+      new LayerTreeImpl(client, kNumUnneededBeginFrameBeforeStop,
                         kMinimumOcclusionTrackingDimension));
 }
-
-LayerTree::InitParams::InitParams() = default;
-LayerTree::InitParams::~InitParams() = default;
-LayerTree::InitParams::InitParams(InitParams&&) = default;
-LayerTree::InitParams& LayerTree::InitParams::operator=(InitParams&&) = default;
 
 }  // namespace cc::slim

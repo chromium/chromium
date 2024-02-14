@@ -435,13 +435,7 @@ void CompositorImpl::SetBackgroundColor(int color) {
 void CompositorImpl::CreateLayerTreeHost() {
   DCHECK(!host_);
 
-  cc::slim::LayerTree::InitParams init_params;
-  init_params.client = this;
-  init_params.cc_task_graph_runner =
-      CompositorDependenciesAndroid::Get().GetTaskGraphRunner();
-  init_params.task_runner =
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-  host_ = cc::slim::LayerTree::Create(std::move(init_params));
+  host_ = cc::slim::LayerTree::Create(this);
   DCHECK(!host_->IsVisible());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());

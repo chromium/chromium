@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "cc/raster/single_thread_task_graph_runner.h"
 #include "components/viz/client/frame_eviction_manager.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
@@ -59,15 +58,6 @@ void SendOnForegroundedToGpuService() {
         }
       }));
 }
-
-class SingleThreadTaskGraphRunner : public cc::SingleThreadTaskGraphRunner {
- public:
-  SingleThreadTaskGraphRunner() {
-    Start("CompositorTileWorker1", base::SimpleThread::Options());
-  }
-
-  ~SingleThreadTaskGraphRunner() override { Shutdown(); }
-};
 
 }  // namespace
 
@@ -116,12 +106,6 @@ void CompositorDependenciesAndroid::CreateVizFrameSinkManager() {
       std::move(frame_sink_manager_receiver),
       std::move(frame_sink_manager_client),
       host_frame_sink_manager_.debug_renderer_settings());
-}
-
-cc::TaskGraphRunner* CompositorDependenciesAndroid::GetTaskGraphRunner() {
-  if (!task_graph_runner_)
-    task_graph_runner_ = std::make_unique<SingleThreadTaskGraphRunner>();
-  return task_graph_runner_.get();
 }
 
 viz::FrameSinkId CompositorDependenciesAndroid::AllocateFrameSinkId() {
