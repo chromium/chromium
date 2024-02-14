@@ -2051,13 +2051,6 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
     no_windows_widget_->SetOpacity(is_continuous_enter ? 0.f : 1.f);
   }
 
-  RefreshNoWindowsWidgetBounds(/*animate=*/false);
-}
-
-void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
-  if (!no_windows_widget_)
-    return;
-
   const gfx::Rect grid_bounds(GetGridEffectiveBounds());
   no_windows_widget_->SetBoundsCenteredIn(grid_bounds, animate);
 }

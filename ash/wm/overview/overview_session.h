@@ -443,9 +443,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Updates the no windows widget on each `OverviewGrid`.
   void UpdateNoWindowsWidgetOnEachGrid(bool animate, bool is_continuous_enter);
 
-  // Refreshes the bounds of the no windows widget on each OverviewGrid.
-  void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);
-
   void OnItemAdded(aura::Window* window);
 
   size_t GetNumWindows() const;
