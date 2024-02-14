@@ -626,9 +626,10 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     buffer_transcryptor_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
     decoder_.reset();
+  } else {
+    MEDIA_LOG(INFO, media_log_)
+        << "VideoDecoderPipeline |decoder_| Initialize() successful";
   }
-  MEDIA_LOG(INFO, media_log_)
-      << "VideoDecoderPipeline |decoder_| Initialize() successful";
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (decoder_ && decoder_->NeedsTranscryption()) {
