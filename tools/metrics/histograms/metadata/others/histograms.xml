@@ -7138,7 +7138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mouse.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2024-07-21">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks mouse sensitivity setting changes by the user. This replaces the old
@@ -7178,13 +7178,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mouse.ScrollAcceleration" enum="BooleanEnabled"
-    expires_after="2022-06-15">
+    expires_after="2025-02-11">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>khorimoto@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Whether mouse scroll acceleration is enabled. Only reported on Chrome OS.
+
+    Warning: this histogram was expired from 2022-06-15 to M123; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -7192,7 +7195,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-06-30">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Mouse scroll sensitivity value. Only reported on Chrome OS.
@@ -10614,7 +10617,7 @@ features through Chrome Labs. -->
 
 <histogram name="Touchpad.NaturalScroll.Changed" enum="BooleanEnabled"
     expires_after="2024-06-30">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad natural scroll setting changes by the user. Only reported on
@@ -10627,7 +10630,7 @@ features through Chrome Labs. -->
 
 <histogram name="Touchpad.NaturalScroll.Started" enum="BooleanEnabled"
     expires_after="2024-06-30">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad natural scroll setting on startup. Only reported on Chrome
@@ -10637,7 +10640,7 @@ features through Chrome Labs. -->
 
 <histogram name="Touchpad.PointerSensitivity.Changed" enum="PointerSensitivity"
     expires_after="2024-04-28">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting changes by the user. This replaces the
@@ -10650,7 +10653,7 @@ features through Chrome Labs. -->
 
 <histogram name="Touchpad.PointerSensitivity.Started" enum="PointerSensitivity"
     expires_after="2024-04-28">
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad sensitivity setting on startup. This replaces the old
