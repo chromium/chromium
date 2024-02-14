@@ -20,6 +20,7 @@ const char kMainHistoryClusterTileLinkUrl[] =
 const char kHistoryClustersCartTileLinkUrl[] = "https://store.google.com/cart";
 const std::string kHistoryClusterSuggestTileLinkUrl =
     "https://www.google.com/search?q=new%20google%20products";
+const char kGooglePageUrl[] = "https://www.google.com/";
 }  // namespace
 
 class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
@@ -411,4 +412,59 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       // resulted from dismissing a module.
       WaitForElementChildElementCount(kModulesContainer,
                                       kSampleNumClusters - 1));
+}
+
+class NewTabPageTabResumptionModuleInteractiveUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest {
+ public:
+  NewTabPageTabResumptionModuleInteractiveUiTest() = default;
+  ~NewTabPageTabResumptionModuleInteractiveUiTest() override = default;
+  NewTabPageTabResumptionModuleInteractiveUiTest(
+      const NewTabPageTabResumptionModuleInteractiveUiTest&) = delete;
+  void operator=(const NewTabPageTabResumptionModuleInteractiveUiTest&) =
+      delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
+    features.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpTabResumptionModule,
+          {{ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}}},
+         {ntp_features::kNtpModulesRedesigned, {}}},
+        {ntp_features::kNtpHistoryClustersModule});
+    InteractiveBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTabResumptionModuleInteractiveUiTest,
+                       ClickingEntryNavigatesToCorrectPage) {
+  const DeepQuery kModulesContainer = {"ntp-app", "ntp-modules-v2",
+                                       "#container"};
+  const DeepQuery kTabResumptionModule = {
+      "ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "#moduleElement",
+      "ntp-tab-resumption"};
+  const DeepQuery kResumeTabLink = {"ntp-app",
+                                    "ntp-modules-v2",
+                                    "ntp-module-wrapper",
+                                    "#moduleElement",
+                                    "ntp-tab-resumption",
+                                    "#tabs",
+                                    "a"};
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesContainer, 1),
+      // 3. Wait for the Tab resumption module to load.
+      WaitForElementToLoad(kTabResumptionModule),
+      // 4. Wait for tile to load.
+      WaitForLinkToLoad(kResumeTabLink, kGooglePageUrl),
+      // 3. Scroll to tile. Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, kResumeTabLink),
+      // 4. Click the element link.
+      ClickElement(kNewTabPageElementId, kResumeTabLink),
+      // 5. Verify that the tab navigates to the tile's link.
+      WaitForWebContentsNavigation(kNewTabPageElementId, GURL(kGooglePageUrl)));
 }
