@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,9 +45,12 @@ class BufferHandleHolder {
   // Creates and returns a concrete implementation of this interface that
   // matches the buffer type of the given `buffer_handle`.
   // We only support the `kGpuMemoryBuffer` and `kSharedMemory` buffer types.
+  // `require_mapped_frame_callback` is a callback that is passed to the buffer
+  // handle only on Windows. It is used to request pre-mapped frames.
   static std::unique_ptr<BufferHandleHolder> Create(
       media::mojom::VideoBufferHandlePtr buffer_handle,
-      ui::ContextFactory* context_factory);
+      ui::ContextFactory* context_factory,
+      base::RepeatingClosure require_mapped_frame_callback);
 
   // Extracts and returns the ready video frame in the given `buffer`.
   virtual scoped_refptr<media::VideoFrame> OnFrameReadyInBuffer(
@@ -149,6 +154,10 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // `VideoSource` gets disconnected.
   void OnFatalErrorOrDisconnection();
 
+  // Sends a ProcessFeedback() call to `camera_video_stream_subsciption_remote_`
+  // requesting mapped frames. Only used on Windows.
+  void RequireMappedFrame();
+
   raw_ptr<Delegate> delegate_ = nullptr;
 
   const raw_ptr<ui::ContextFactory> context_factory_;
@@ -184,6 +193,8 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // called.
   base::flat_map</*buffer_id=*/int, std::unique_ptr<BufferHandleHolder>>
       buffer_map_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CameraVideoFrameHandler> weak_ptr_factory_{this};
 };
