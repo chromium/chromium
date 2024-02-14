@@ -118,6 +118,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
                          bool is_child_account);
 #endif
 
+  // Destroy any fetchers created for the specified account.
+  void DestroyFetchers(const CoreAccountId& account_id);
+
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;

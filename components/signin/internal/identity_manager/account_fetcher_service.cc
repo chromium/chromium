@@ -249,6 +249,11 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
+void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
+  user_info_requests_.erase(account_id);
+  account_capabilities_requests_.erase(account_id);
+}
+
 bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
@@ -457,8 +462,7 @@ void AccountFetcherService::OnRefreshTokenRevoked(
     return;
   }
 
-  user_info_requests_.erase(account_id);
-  account_capabilities_requests_.erase(account_id);
+  DestroyFetchers(account_id);
 #if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif

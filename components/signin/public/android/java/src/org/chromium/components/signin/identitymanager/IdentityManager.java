@@ -13,8 +13,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -164,13 +162,9 @@ public class IdentityManager {
      * the given list of {@link CoreAccountInfo} if the existing ones are stale.
      */
     public void refreshAccountInfoIfStale(List<CoreAccountInfo> accountInfos) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            IdentityManagerJni.get().refreshAccountInfoIfStale(mNativeIdentityManager, null);
-        } else {
-            for (CoreAccountInfo accountInfo : accountInfos) {
-                IdentityManagerJni.get()
-                        .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
-            }
+        for (CoreAccountInfo accountInfo : accountInfos) {
+            IdentityManagerJni.get()
+                    .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
         }
     }
 
