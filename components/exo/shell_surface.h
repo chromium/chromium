@@ -291,6 +291,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;
   float pending_raster_scale_ = 1.0;
+  aura::Window::OcclusionState last_occlusion_state_ =
+      aura::Window::OcclusionState::UNKNOWN;
 
   struct InflightFocusRotateRequest {
     uint32_t serial;

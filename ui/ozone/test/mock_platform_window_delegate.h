@@ -53,6 +53,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                std::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD1(OnOcclusionStateChanged,
+               void(PlatformWindowOcclusionState occlusion_state));
   MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));

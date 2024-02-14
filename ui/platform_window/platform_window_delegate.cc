@@ -22,7 +22,11 @@ bool IsPlatformWindowStateFullscreen(PlatformWindowState state) {
 
 bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
     const State& old) const {
-  // Changing the bounds origin won't produce a new frame. Anything else will.
+  // Changing the bounds origin won't produce a new frame. Anything else will,
+  // except for the occlusion state. We do not check that here since there isn't
+  // enough information to determine if it will produce a frame, as it depends
+  // on whether native occlusion is enabled and if the ui compositor changes
+  // visibility.
   return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
          old.window_scale != window_scale || old.raster_scale != raster_scale ||
          old.insets != insets;

@@ -15,6 +15,7 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/host_frame_rate_throttler.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -326,9 +327,25 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
     compositor()->SetExternalPageScaleFactor(latest.raster_scale);
   }
 
+  bool needs_frame = latest.ProducesFrameOnUpdateFrom(old);
+  if (old.occlusion_state != latest.occlusion_state &&
+      NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    const bool visible_before = compositor()->IsVisible();
+    OnOcclusionStateChanged(latest.occlusion_state);
+    if (!compositor()->IsVisible()) {
+      // If the compositor is not visible, then there's no need to wait for a
+      // frame.
+      needs_frame = false;
+    } else if (!visible_before && compositor()->IsVisible()) {
+      // If the compositor has become visible, make sure to wait for a frame.
+      needs_frame = true;
+    }
+  }
+
   // Only set the sequence ID if this change will produce a frame.
   // If it won't, we may wait indefinitely for a frame that will never come.
-  if (!latest.ProducesFrameOnUpdateFrom(old)) {
+  if (!needs_frame) {
     return -1;
   }
 

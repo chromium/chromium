@@ -2057,6 +2057,43 @@ TEST_P(WaylandWindowTest, ManyConfigureEventsDoesNotCrash) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 }
 
+TEST_P(WaylandWindowTest,
+       ThrottledConfigureEventsDoNotGetStuckOnHiddenOcclusion) {
+  uint32_t serial = 2u;
+
+  WaylandWindow::WindowStates window_states;
+  window_states.is_maximized = true;
+  gfx::Size size{500, 300};
+
+  // Configure window and expect the state to be applied. Use a hidden
+  // occlusion state.
+  window_->SetPendingOcclusionState(PlatformWindowOcclusionState::kHidden);
+  window_->HandleAuraToplevelConfigure(0, 0, size.width(), size.height(),
+                                       window_states);
+  window_->HandleSurfaceConfigure(serial);
+  EXPECT_EQ(size, window_->applied_state().bounds_dip.size());
+
+  // Send enough configures without any frame occurring to cause throttling.
+  for (int i = 1; i < 10; ++i) {
+    size.Enlarge(1, 1);
+    window_->HandleAuraToplevelConfigure(0, 0, size.width(), size.height(),
+                                         window_states);
+    window_->HandleSurfaceConfigure(++serial);
+  }
+  // Confirm throttling has occurred - we expect `applied_state()` to have
+  // the last bounds that was actually applied, which will not be the current
+  // value of `size` if throttling has occurred.
+  EXPECT_NE(size, window_->applied_state().bounds_dip.size());
+
+  // Send a configure with a visible occlusion state, and confirm that it will
+  // be applied even though we are in a throttled state. This is to ensure
+  // we can't get stuck in a throttled and hidden state with no way to make
+  // frames.
+  window_->SetPendingOcclusionState(PlatformWindowOcclusionState::kVisible);
+  window_->HandleSurfaceConfigure(++serial);
+  EXPECT_EQ(size, window_->applied_state().bounds_dip.size());
+}
+
 // If the server immediately changes the bounds after a window is initialised,
 // make sure that the client doesn't wait for a new frame to be produced.
 // See https://crbug.com/1427954.
@@ -5224,6 +5261,64 @@ TEST_P(WaylandWindowTest, SetUnsetFloat) {
   window_->AsWaylandToplevelWindow()->UnSetFloat();
   EXPECT_CALL(set_unset_float_cb, Run(/*floated=*/false, _));
   post_to_server_and_wait();
+}
+
+TEST_P(WaylandWindowTest,
+       UnsynchronizedOcclusionStateNotOverridenByConfigureOcclusionState) {
+  if (GetParam().enable_aura_shell != wl::EnableAuraShellProtocol::kEnabled) {
+    GTEST_SKIP();
+  }
+
+  constexpr gfx::Rect kNormalBounds{500, 300};
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
+  // OnOcclusionStateChanged(kHidden) will be called two times. First from the
+  // unsynchronized occlusion state change, then from the synchronized occlusion
+  // state which, which should have had its pending value overwritten.
+  EXPECT_CALL(delegate_, OnOcclusionStateChanged(
+                             ui::PlatformWindowOcclusionState::kHidden))
+      .Times(2);
+  EXPECT_CALL(delegate_, OnOcclusionStateChanged(
+                             ui::PlatformWindowOcclusionState::kVisible))
+      .Times(0);
+
+  PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
+        .Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+    EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
+    EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
+  });
+
+  // Set pending occlusion state (as if by configure).
+  window_->SetPendingOcclusionState(ui::PlatformWindowOcclusionState::kVisible);
+
+  // Set the occlusion state (as if by unsynchronized occlusion state setting).
+  // The applied occlusion state should be the unsynchronized one, since it came
+  // later.
+  window_->OcclusionStateChanged(ui::PlatformWindowOcclusionState::kHidden);
+
+  auto state = InitializeWlArrayWithActivatedState();
+  constexpr uint32_t kConfigureSerial = 2u;
+  SendConfigureEvent(surface_id_, kNormalBounds.size(), state,
+                     kConfigureSerial);
+
+  PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds));
+    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial));
+    EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
+    EXPECT_CALL(*mock_surface, SetInputRegion(_));
+  });
+
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

@@ -963,7 +963,19 @@ void ShellSurface::Configure(bool ends_drag) {
     if (window_state) {
       auto occlusion_state = root_surface()
                                  ? root_surface()->window()->GetOcclusionState()
-                                 : aura::Window::OcclusionState::HIDDEN;
+                                 : aura::Window::OcclusionState::UNKNOWN;
+      // The first occlusion calculation happens without a buffer yet attached
+      // to the surface so ignore this change. This avoids
+      // `OcclusionState::HIDDEN` being sent , which will be immediately
+      // followed by `OcclusionState::VISIBLE` anyway once buffer is attached.
+      // This is the same logic that `exo::Surface` uses.
+      if (last_occlusion_state_ == aura::Window::OcclusionState::UNKNOWN &&
+          occlusion_state == aura::Window::OcclusionState::HIDDEN) {
+        last_occlusion_state_ = occlusion_state;
+        occlusion_state = aura::Window::OcclusionState::UNKNOWN;
+      } else {
+        last_occlusion_state_ = occlusion_state;
+      }
       auto restore_state_type = std::optional<chromeos::WindowStateType>{
           window_state->GetRestoreWindowState()};
       serial = configure_callback_.Run(

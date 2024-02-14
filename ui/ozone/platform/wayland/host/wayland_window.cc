@@ -1212,6 +1212,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.raster_scale.has_value()) {
     state.raster_scale = pending_configure_state_.raster_scale.value();
   }
+  if (pending_configure_state_.occlusion_state.has_value()) {
+    state.occlusion_state = pending_configure_state_.occlusion_state.value();
+  }
 
   if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
@@ -1236,7 +1239,17 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
 
 void WaylandWindow::RequestStateFromServer(PlatformWindowDelegate::State state,
                                            int64_t serial) {
-  RequestState(state, serial, /*force=*/false);
+  bool force = false;
+  // Changing the native occlusion state can affect the compositor visibility,
+  // which can affect whether frames are produced. To avoid a bad interaction
+  // with state update throttling and frames not being produced, which could
+  // leave the system not able to apply a new state while also not being able to
+  // produce any frames to clear the previously throttled states, always force
+  // applying the state if the occlusion state changes.
+  if (state.occlusion_state != applied_state_.occlusion_state) {
+    force = true;
+  }
+  RequestState(state, serial, force);
 }
 
 void WaylandWindow::RequestStateFromClient(
