@@ -11,6 +11,7 @@
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -65,7 +65,7 @@ class AutofillCreditCardTableViewControllerTest
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+    autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
 
     autofill::CreditCard credit_card(
         base::Uuid::GenerateRandomV4().AsLowercaseString(), origin);
@@ -76,7 +76,7 @@ class AutofillCreditCardTableViewControllerTest
     personal_data_manager->OnAcceptedLocalCreditCardSave(credit_card);
     personal_data_manager->get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state_.Get());
-    waiter.Wait();  // Wait for completion of the asynchronous operation.
+    std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 
   // Deletes the item at (section, row) and waits util condition returns true or

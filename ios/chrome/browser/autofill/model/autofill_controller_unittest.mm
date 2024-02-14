@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
@@ -44,7 +45,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -510,9 +510,9 @@ void AutofillControllerTest::SetUpForSuggestions(
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
-  waiter.Wait();
+  std::move(waiter).Wait();
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
 
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(data, expected_number_of_forms));
@@ -612,10 +612,10 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
 
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
   personal_data_manager->AddProfile(profile2);
-  waiter.Wait();
+  std::move(waiter).Wait();
   EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
 
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
@@ -817,9 +817,9 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
 
   // This call cause a modification of the PersonalDataManager, so wait until
   // the asynchronous task complete in addition to waiting for the UI update.
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+  PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
   confirm_infobar->Accept();
-  waiter.Wait();
+  std::move(waiter).Wait();
 
   const std::vector<CreditCard*>& credit_cards =
       personal_data_manager->GetCreditCards();

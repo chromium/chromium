@@ -55,7 +55,6 @@ class PersonalDataLoadedObserverMock
   ~PersonalDataLoadedObserverMock() override;
 
   MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
-  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
 // Base class for any interactive PaymentRequest test that will need to open

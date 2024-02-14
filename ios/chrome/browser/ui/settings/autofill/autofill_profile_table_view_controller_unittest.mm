@@ -11,6 +11,7 @@
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -75,7 +75,7 @@ class AutofillProfileTableViewControllerTest
     personal_data_manager->get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state_.Get());
     personal_data_manager->SetSyncServiceForTest(nullptr);
-    PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+    autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
 
     autofill::AutofillProfile autofill_profile(
         autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -83,7 +83,7 @@ class AutofillProfileTableViewControllerTest
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));
     personal_data_manager->AddProfile(autofill_profile);
-    waiter.Wait();  // Wait for completion of the asynchronous operation.
+    std::move(waiter).Wait();  // Wait for completion of the async operation.
   }
 
   web::WebTaskEnvironment task_environment_;

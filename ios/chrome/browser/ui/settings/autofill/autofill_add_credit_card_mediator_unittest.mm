@@ -9,11 +9,11 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -58,7 +58,7 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
 // Test saving a credit card with invalid card number.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNumber) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidCardNumber|expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid number.
@@ -75,7 +75,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
                                       autofill::test::NextYear())
                      cardNickname:@""];
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   int number_of_credit_cards = personal_data_manager_->GetCreditCards().size();
 
@@ -89,7 +89,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 // Test saving a credit card with invalid expiration month.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidMonth) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -105,7 +105,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
                                       autofill::test::NextYear())
                      cardNickname:@""];
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   //  A credit card with invalid expiration date shouldn't be saved so the
   //  number of credit cards has to equal zero.
@@ -117,7 +117,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
 // Test saving a credit card with invalid expiration year.
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -134,7 +134,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
                            autofill::test::LastYear())  // This is invalid year.
                      cardNickname:@""];
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   // A credit card with invalid expiration date shouldn't be saved so the number
   // of credit cards has to equal zero.
@@ -147,7 +147,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
 // Test saving a credit card with invalid nickname.
 TEST_F(AutofillAddCreditCardMediatorTest,
        TestSavingCreditCardWithInvalidNickname) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorHasInvalidExpirationDate` expected to be called by
   // `add_credit_card_mediator_` if the credit card has invalid expiration date.
@@ -163,7 +163,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
                                       autofill::test::NextYear())
                      cardNickname:@"cvc123"];  // This is an invalid nickname.
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   // A credit card with invalid nickname shouldn't be saved so the number
   // of credit cards has to equal zero.
@@ -175,7 +175,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
 
 // Test saving a valid credit card.
 TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorDidFinish` expected to be called by
   // `add_credit_card_mediator_` if the credit card has valid data.
@@ -191,7 +191,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
                                       autofill::test::NextYear())
                      cardNickname:@"nickname"];
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   // A valid credit card expected to be savd so the number of credit cards has
   // to equal one.
@@ -203,7 +203,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
 
 // Test saving duplicated credit card with the same card number.
 TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager_);
 
   // `creditCardMediatorDidFinish` expected to be called by
   // `add_credit_card_mediator_` if the credit card has valid data.
@@ -218,7 +218,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
                                           expirationYear:year
                                             cardNickname:@"nickname"];
 
-  waiter.Wait();  // Wait for completion of the asynchronous operation.
+  std::move(waiter).Wait();  // Wait for completion of the async operation.
 
   // A duplicated credit card expected to be updated not saved as new one so the
   // number of credit cards has to remain eqal one.

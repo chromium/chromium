@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/variations/service/variations_service.h"
@@ -143,13 +144,6 @@ class MockAutofillDriver : public ContentAutofillDriver {
               (override));
 };
 
-class PersonalDataLoadedObserverMock
-    : public autofill::PersonalDataManagerObserver {
- public:
-  MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
-  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
-};
-
 }  // namespace
 
 // TODO(crbug.com/1493968): Simplify test setup.
@@ -180,18 +174,9 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile) {
     size_t profile_count = personal_data_->GetProfiles().size();
-
-    PersonalDataLoadedObserverMock personal_data_observer;
-    personal_data_->AddObserver(&personal_data_observer);
-    base::RunLoop data_loop;
-    EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&data_loop));
-    EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
-        .Times(testing::AnyNumber());
+    PersonalDataProfileTaskWaiter waiter(*personal_data_);
     personal_data_->AddProfile(profile);
-    data_loop.Run();
-
-    personal_data_->RemoveObserver(&personal_data_observer);
+    std::move(waiter).Wait();
     EXPECT_EQ(profile_count + 1, personal_data_->GetProfiles().size());
   }
 
@@ -202,19 +187,9 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
       return;
     }
     size_t card_count = personal_data_->GetCreditCards().size();
-
-    PersonalDataLoadedObserverMock personal_data_observer;
-    personal_data_->AddObserver(&personal_data_observer);
-    base::RunLoop data_loop;
-    EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
-        .WillOnce(QuitMessageLoop(&data_loop));
-    EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
-        .Times(testing::AnyNumber());
-
+    PersonalDataProfileTaskWaiter waiter(*personal_data_);
     personal_data_->AddCreditCard(card);
-    data_loop.Run();
-
-    personal_data_->RemoveObserver(&personal_data_observer);
+    std::move(waiter).Wait();
     EXPECT_EQ(card_count + 1, personal_data_->GetCreditCards().size());
   }
 

@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/ui/address_combobox_model.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_request.h"
@@ -475,18 +476,9 @@ void PaymentRequestBrowserTestBase::AddAutofillProfile(
     const autofill::AutofillProfile& profile) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   size_t profile_count = personal_data_manager->GetProfiles().size();
-
-  PersonalDataLoadedObserverMock personal_data_observer;
-  personal_data_manager->AddObserver(&personal_data_observer);
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&data_loop));
-  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
-      .Times(testing::AnyNumber());
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
   personal_data_manager->AddProfile(profile);
-  data_loop.Run();
-
-  personal_data_manager->RemoveObserver(&personal_data_observer);
+  std::move(waiter).Wait();
   EXPECT_EQ(profile_count + 1, personal_data_manager->GetProfiles().size());
 }
 
@@ -499,32 +491,15 @@ void PaymentRequestBrowserTestBase::AddCreditCard(
     return;
   }
   size_t card_count = personal_data_manager->GetCreditCards().size();
-
-  PersonalDataLoadedObserverMock personal_data_observer;
-  personal_data_manager->AddObserver(&personal_data_observer);
-  base::RunLoop data_loop;
-  EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&data_loop));
-  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
-      .Times(testing::AnyNumber());
-
+  autofill::PersonalDataProfileTaskWaiter waiter(*personal_data_manager);
   personal_data_manager->AddCreditCard(card);
-  data_loop.Run();
-
-  personal_data_manager->RemoveObserver(&personal_data_observer);
+  std::move(waiter).Wait();
   EXPECT_EQ(card_count + 1, personal_data_manager->GetCreditCards().size());
 }
 
 void PaymentRequestBrowserTestBase::WaitForOnPersonalDataChanged() {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  PersonalDataLoadedObserverMock personal_data_observer;
-  personal_data_manager->AddObserver(&personal_data_observer);
-  base::RunLoop run_loop;
-  EXPECT_CALL(personal_data_observer, OnPersonalDataFinishedProfileTasks())
-      .WillOnce(QuitMessageLoop(&run_loop));
-  EXPECT_CALL(personal_data_observer, OnPersonalDataChanged())
-      .Times(testing::AnyNumber());
-  run_loop.Run();
+  autofill::PersonalDataProfileTaskWaiter(*personal_data_manager).Wait();
 }
 
 void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
