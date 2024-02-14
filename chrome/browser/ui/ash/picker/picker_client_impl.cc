@@ -34,6 +34,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -124,6 +126,13 @@ void PickerClientImpl::DownloadGifToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&OnGifDownloaded, std::move(callback), std::move(loader)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PickerClientImpl::FetchGifSearch(const std::string& query,
+                                      FetchGifsCallback callback) {
+  std::move(callback).Run({ash::PickerSearchResult::Gif(
+      GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
+      gfx::Size(140, 140), u"gif")});
 }
 
 void PickerClientImpl::StartCrosSearch(const std::u16string& query,

@@ -4,6 +4,8 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include <string>
+
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -56,6 +58,8 @@ class TestPickerClient : public PickerClient {
 
   void DownloadGifToString(const ValidGifUrl& url,
                            DownloadGifToStringCallback callback) override {}
+  void FetchGifSearch(const std::string& query,
+                      FetchGifsCallback callback) override {}
   void StartCrosSearch(const std::u16string& query,
                        CrosSearchResultsCallback callback) override {}
   void StopCrosQuery() override {}

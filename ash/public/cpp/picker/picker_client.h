@@ -41,6 +41,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
  public:
   using DownloadGifToStringCallback =
       base::OnceCallback<void(const std::string& gif_data)>;
+  using FetchGifsCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
                                    std::vector<PickerSearchResult> results)>;
@@ -53,6 +55,10 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // `callback` is run with an empty string.
   virtual void DownloadGifToString(const ValidGifUrl& url,
                                    DownloadGifToStringCallback callback) = 0;
+
+  // Fetches a list of gifs from the Tenor API.
+  virtual void FetchGifSearch(const std::string& query,
+                              FetchGifsCallback callback) = 0;
 
   // Starts a search using the CrOS Search API
   // (`app_list::SearchEngine::StartSearch`).

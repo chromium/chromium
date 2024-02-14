@@ -59,6 +59,10 @@ class MockPickerClient : public PickerClient {
   }
 
   MOCK_METHOD(void,
+              FetchGifSearch,
+              (const std::string& query, FetchGifsCallback callback),
+              (override));
+  MOCK_METHOD(void,
               StartCrosSearch,
               (const std::u16string& query, CrosSearchResultsCallback callback),
               (override));
