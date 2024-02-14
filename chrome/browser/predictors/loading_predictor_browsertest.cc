@@ -2309,67 +2309,65 @@ INSTANTIATE_TEST_SUITE_P(
         /*IsPrefetchEnabled()=*/testing::Values(true),
         /*GetSubresourceType()=*/testing::Values("all")));
 
-// Tests that features work when there are multiple FrameTrees in a WebContents.
-class MultiPageBrowserTest : public InProcessBrowserTest {
+// Tests that LoadingPredictorTabHelper ignores prerender navigations and
+// page activations.
+class LoadingPredictorMultiplePageBrowserTest
+    : public LoadingPredictorBrowserTest {
  public:
-  MultiPageBrowserTest()
-      : prerender_test_helper_(
-            base::BindRepeating(&MultiPageBrowserTest::GetWebContents,
-                                base::Unretained(this))) {}
+  LoadingPredictorMultiplePageBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &LoadingPredictorMultiplePageBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
 
  protected:
   void SetUp() override {
     prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    InProcessBrowserTest::SetUp();
+    LoadingPredictorBrowserTest::SetUp();
   }
-  void SetUpOnMainThread() override {
-    test_server_handle_ = embedded_test_server()->StartAndReturnHandle();
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void TearDownOnMainThread() override { web_contents_ = nullptr; }
-
-  content::WebContents* web_contents() { return web_contents_; }
-
-  content::test::PrerenderTestHelper prerender_test_helper_;
 
  private:
-  content::WebContents* GetWebContents() { return web_contents_; }
-
-  net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
+IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
+                       PrerenderNavigationNotObserved) {
   GURL first_main = embedded_test_server()->GetURL("/title1.html");
   GURL prerender = embedded_test_server()->GetURL("/title2.html");
   GURL second_main = embedded_test_server()->GetURL("/title3.html");
   auto* loading_predictor =
       predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
 
-  // Start navigationin primary FrameTree.
+  // Start navigation in the primary main frame.
   auto first_main_observer = std::make_unique<content::TestNavigationManager>(
-      web_contents(), first_main);
-  web_contents()->GetController().LoadURL(first_main, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          std::string());
+      GetWebContents(), first_main);
+  GetWebContents()->GetController().LoadURL(first_main, content::Referrer(),
+                                            ui::PAGE_TRANSITION_TYPED,
+                                            std::string());
   ASSERT_TRUE(first_main_observer->WaitForRequestStart());
   EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
   ASSERT_TRUE(first_main_observer->WaitForNavigationFinished());
   EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
-  content::WaitForLoadStop(web_contents());
+  content::WaitForLoadStop(GetWebContents());
   EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
 
-  // Start a pre-render and a navigation in the main frame so we have 2
+  // Start a prerender and a navigation in the primary main frame so we have 2
   // concurrent navigations.
   auto prerender_observer = std::make_unique<content::TestNavigationManager>(
-      web_contents(), prerender);
+      GetWebContents(), prerender);
   auto second_main_observer = std::make_unique<content::TestNavigationManager>(
-      web_contents(), second_main);
-  prerender_test_helper_.AddPrerenderAsync(prerender);
-  web_contents()->GetController().LoadURL(second_main, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          std::string());
+      GetWebContents(), second_main);
+  prerender_test_helper().AddPrerenderAsync(prerender);
+  GetWebContents()->GetController().LoadURL(second_main, content::Referrer(),
+                                            ui::PAGE_TRANSITION_TYPED,
+                                            std::string());
   ASSERT_TRUE(prerender_observer->WaitForRequestStart());
   ASSERT_TRUE(second_main_observer->WaitForRequestStart());
   EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
@@ -2378,7 +2376,51 @@ IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
   ASSERT_TRUE(second_main_observer->WaitForNavigationFinished());
   EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
 
-  content::WaitForLoadStop(web_contents());
+  content::WaitForLoadStop(GetWebContents());
+  EXPECT_EQ(2u, loading_predictor->GetTotalHintsActivatedForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
+                       PrerenderActivationNotObserved) {
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+
+  // Navigate primary main frame.
+  GetWebContents()->GetController().LoadURL(
+      main_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  content::WaitForLoadStop(GetWebContents());
+  EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
+
+  // Start a prerender.
+  prerender_test_helper().AddPrerender(prerender_url);
+  EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
+
+  // Activate the prerender.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
+                       BackForwardCacheNavigationNotObserved) {
+  GURL url_1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url_2 = embedded_test_server()->GetURL("b.com", "/title2.html");
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(browser()->profile());
+
+  // Navigate primary main frame twice.
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), url_1));
+  content::RenderFrameHostWrapper rfh_1(
+      GetWebContents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), url_2));
+  ASSERT_EQ(rfh_1->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  EXPECT_EQ(2u, loading_predictor->GetTotalHintsActivatedForTesting());
+
+  // Go back (using BackForwardCache).
+  ASSERT_TRUE(content::HistoryGoBack(GetWebContents()));
+  ASSERT_EQ(GetWebContents()->GetPrimaryMainFrame(), rfh_1.get());
   EXPECT_EQ(2u, loading_predictor->GetTotalHintsActivatedForTesting());
 }
 

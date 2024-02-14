@@ -101,6 +101,7 @@ bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
 
   return navigation_handle->IsInPrimaryMainFrame() &&
          !navigation_handle->IsSameDocument() &&
+         !navigation_handle->IsPageActivation() &&
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
 
