@@ -75,9 +75,10 @@ component("google_benchmark") {
     "benchmark_EXPORTS=1",
 
     # Tell gtest to always use standard regular expressions.
-    "HAVE_GNU_POSIX_REGEX=0",
-    "HAVE_POSIX_REGEX=0",
     "HAVE_STD_REGEX=1",
+
+    # google_benchmark expects a BENCHMARK_VERSION definition
+    "BENCHMARK_VERSION=\"1.7.1\"",
   ]
 }
 
