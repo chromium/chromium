@@ -9,6 +9,7 @@
  */
 import {AutomationUtil} from '/common/automation_util.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
 import {SettingsManager} from '../../common/settings_manager.js';
@@ -205,3 +206,5 @@ export class SmartStickyMode implements ChromeVoxRangeObserver {
     return null;
   }
 }
+
+TestImportManager.exportForTesting(SmartStickyMode);

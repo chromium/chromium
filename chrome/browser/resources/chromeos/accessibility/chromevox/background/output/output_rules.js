@@ -5,6 +5,8 @@
 /**
  * @fileoverview Contains the rules for output based on type information.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
 import {OutputRoleInfo} from './output_role_info.js';
@@ -500,3 +502,5 @@ OutputRule.RULES = {
         {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
   },
 };
+
+TestImportManager.exportForTesting(OutputRule);

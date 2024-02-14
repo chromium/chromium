@@ -12,18 +12,6 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule('LiveRegions', '/chromevox/background/live_regions.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
     globalThis.TreeChangeType = chrome.automation.TreeChangeType;

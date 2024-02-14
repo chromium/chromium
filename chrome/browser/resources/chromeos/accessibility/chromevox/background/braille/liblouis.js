@@ -5,6 +5,7 @@
 /**
  * @fileoverview JavaScript shim for the liblouis Web Assembly wrapper.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /** Encapsulates a liblouis Web Assembly instance in the page. */
 export class LibLouis {
@@ -338,3 +339,5 @@ LibLouis.Translator = class {
     return hex;
   }
 };
+
+TestImportManager.exportForTesting(LibLouis);

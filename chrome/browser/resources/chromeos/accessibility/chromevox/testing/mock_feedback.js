@@ -96,21 +96,6 @@ MockFeedback = class {
     this.lastMatchedBraille_ = null;
   }
 
-  static async imports() {
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AbstractEarcons', '/chromevox/background/abstract_earcons.js'),
-      importModule(
-          'BrailleInterface',
-          '/chromevox/background/braille/braille_interface.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-  }
-
   /**
    * Install mock objects as |ChromeVox.tts| and |ChromeVox.braille|
    * to collect feedback.

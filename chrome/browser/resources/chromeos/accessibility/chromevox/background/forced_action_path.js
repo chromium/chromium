@@ -6,6 +6,7 @@
  * @fileoverview Forces user actions down a predetermined path.
  */
 import {KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -411,3 +412,5 @@ BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,
     evt => ForcedActionPath.instance?.onKeyDown(evt) ?? true);
+
+TestImportManager.exportForTesting(ForcedActionPath);

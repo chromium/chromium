@@ -13,24 +13,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/background/input/background_keyboard_handler.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/input/command_handler_interface.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule(
-          ['PanelCommand', 'PanelCommandType'],
-          '/chromevox/common/panel_command.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 

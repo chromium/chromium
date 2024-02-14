@@ -7,6 +7,7 @@
  */
 import {constants} from '/common/constants.js';
 import {LocalStorage} from '/common/local_storage.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
@@ -879,3 +880,5 @@ PrimaryTts.ALLOWED_PROPERTIES_ = [
 
 /** @private {RegExp} */
 PrimaryTts.SKIP_WHITESPACE_ = /^[\s\u00a0]*$/;
+
+TestImportManager.exportForTesting(PrimaryTts);

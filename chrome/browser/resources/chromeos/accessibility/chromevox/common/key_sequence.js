@@ -26,6 +26,7 @@
  */
 
 import {Key, KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from './command.js';
 
@@ -588,3 +589,5 @@ KeySequence.sequenceSwitchKeyCodes = [];
 
 /** @public {string} */
 KeySequence.modKeyStr = 'Search';
+
+TestImportManager.exportForTesting(KeySequence);

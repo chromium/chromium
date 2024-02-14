@@ -9,6 +9,7 @@ import {AsyncUtil} from '/common/async_util.js';
 import {EventGenerator} from '/common/event_generator.js';
 import {KeyCode} from '/common/key_code.js';
 import {StringUtil} from '/common/string_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
@@ -646,3 +647,5 @@ async function waitForWindowFocus() {
   return new Promise(
       resolve => window.addEventListener('focus', resolve, {once: true}));
 }
+
+TestImportManager.exportForTesting(MenuManager);

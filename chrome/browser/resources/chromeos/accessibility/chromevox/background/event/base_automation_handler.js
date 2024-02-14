@@ -7,6 +7,7 @@
  * node.
  */
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
@@ -143,3 +144,5 @@ export class BaseAutomationHandler {
  * @public {boolean}
  */
 BaseAutomationHandler.announceActions = false;
+
+TestImportManager.exportForTesting(BaseAutomationHandler);

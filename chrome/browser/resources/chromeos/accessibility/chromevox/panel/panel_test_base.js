@@ -13,11 +13,6 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        ['PanelCommand', 'PanelCommandType'],
-        '/chromevox/common/panel_command.js');
-
     await new PanelCommand(PanelCommandType.ENABLE_TEST_HOOKS).send();
     await this.waitForPendingMethods();
     this.getPanelWindow().MenuManager.disableMissingMsgsErrorsForTesting = true;

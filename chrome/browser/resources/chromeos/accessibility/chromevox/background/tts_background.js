@@ -8,6 +8,7 @@
  */
 
 import {constants} from '/common/constants.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -105,3 +106,5 @@ export class TtsBackground {
     new Output().format(state ? '@speech_on' : '@speech_off').go();
   }
 }
+
+TestImportManager.exportForTesting(TtsBackground);

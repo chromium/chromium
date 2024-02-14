@@ -18,61 +18,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'BrailleCommandHandler',
-          '/chromevox/background/braille/braille_command_handler.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'BaseAutomationHandler',
-          '/chromevox/background/event/base_automation_handler.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule(
-          'PageLoadSoundHandler',
-          '/chromevox/background/event/page_load_sound_handler.js'),
-      importModule(
-          'PointerHandler', '/chromevox/background/event/pointer_handler.js'),
-      importModule('FocusBounds', '/chromevox/background/focus_bounds.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/input/command_handler_interface.js'),
-      importModule(
-          'GestureCommandHandler',
-          '/chromevox/background/input/gesture_command_handler.js'),
-      importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/background/input/background_keyboard_handler.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule(
-          'OutputAction', '/chromevox/background/output/output_types.js'),
-      importModule('TtsBackground', '/chromevox/background/tts_background.js'),
-      importModule(
-          ['BrailleKeyEvent', 'BrailleKeyCommand'],
-          '/chromevox/common/braille/braille_key_types.js'),
-      importModule(
-          'CustomAutomationEvent',
-          '/chromevox/common/custom_automation_event.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule(
-          ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-      importModule('AutomationPredicate', '/common/automation_predicate.js'),
-      importModule('AutomationUtil', '/common/automation_util.js'),
-      importModule('Cursor', '/common/cursors/cursor.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-    ]);
-
     globalThis.simulateHitTestResult = this.simulateHitTestResult;
     globalThis.press = this.press;
     globalThis.doDefault = this.doDefault;

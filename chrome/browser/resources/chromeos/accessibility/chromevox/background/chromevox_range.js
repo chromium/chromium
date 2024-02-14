@@ -461,4 +461,4 @@ ChromeVoxRange.observers_ = [];
 /** @type {ChromeVoxRange} */
 ChromeVoxRange.instance;
 
-TestImportManager.exportForTesting(ChromeVoxRange);
+TestImportManager.exportForTesting(ChromeVoxRange, ChromeVoxRangeObserver);

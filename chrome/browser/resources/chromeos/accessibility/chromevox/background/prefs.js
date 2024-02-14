@@ -7,6 +7,7 @@
  * the background context (background page or options page).
  */
 import {LocalStorage} from '/common/local_storage.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -213,3 +214,5 @@ ChromeVoxPrefs.stickyOverride = null;
  * @private {boolean}
  */
 ChromeVoxPrefs.darkScreen_ = false;
+
+TestImportManager.exportForTesting(ChromeVoxPrefs);

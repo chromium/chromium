@@ -11,6 +11,7 @@
  * chrome.brailleDisplayPrivate.*.
  */
 import {Key, KeyCode, KeyName} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /**
  * The set of commands sent from a braille display.
@@ -220,3 +221,7 @@ for (let i = 0; i < 12; ++i) {
  *     textColumnCount: number, cellSize: number}}
  */
 export let BrailleDisplayState;
+
+TestImportManager.exportForTesting(
+    ['BrailleKeyCommand', BrailleKeyCommand],
+    ['BrailleKeyEvent', BrailleKeyEvent]);

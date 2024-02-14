@@ -5,6 +5,8 @@
 /**
  * @fileoverview Keeps track of the current braille translators.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BrailleTable} from '../../common/braille/braille_table.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {Output} from '../output/output.js';
@@ -258,3 +260,5 @@ export class BrailleTranslatorManager {
 
 /** @type {BrailleTranslatorManager} */
 BrailleTranslatorManager.instance;
+
+TestImportManager.exportForTesting(BrailleTranslatorManager);

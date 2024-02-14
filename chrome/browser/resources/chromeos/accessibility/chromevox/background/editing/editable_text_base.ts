@@ -15,6 +15,7 @@
  */
 import {LocalStorage} from '/common/local_storage.js';
 import {StringUtil} from '/common/string_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../../common/msgs.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
@@ -586,3 +587,5 @@ export class ChromeVoxEditableTextBase {
 // Private to module.
 
 const MAX_CHANGE_CHARS_BY_SINGLE_TYPE = 3;
+
+TestImportManager.exportForTesting(ChromeVoxEditableTextBase, TextChangeEvent);

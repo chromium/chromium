@@ -6,6 +6,8 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -304,3 +306,5 @@ const FILE_LIMIT = 20;
  * @const {number}
  */
 const INTERVAL_TIME_MILLISECONDS = 10000;
+
+TestImportManager.exportForTesting(DownloadHandler);

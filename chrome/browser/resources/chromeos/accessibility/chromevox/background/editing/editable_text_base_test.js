@@ -104,23 +104,6 @@ ChromeVoxEditableTextUnitTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'BrailleInterface',
-          '/chromevox/background/braille/braille_interface.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          ['ChromeVoxEditableTextBase', 'TextChangeEvent'],
-          '/chromevox/background/editing/editable_text_base.js'),
-      importModule(
-          'TypingEchoState', '/chromevox/background/editing/typing_echo.js'),
-      importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-    ]);
-
     LocalStorage.set('typingEcho', TypingEchoState.CHARACTER_AND_WORD);
     ChromeVoxEditableTextBase.eventTypingEcho = false;
     ChromeVoxEditableTextBase.shouldSpeakInsertions = true;

@@ -4,6 +4,7 @@
 
 import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../../common/command.js';
 
@@ -33,3 +34,5 @@ export class CommandHandlerInterface {
  * @type {CommandHandlerInterface}
  */
 CommandHandlerInterface.instance;
+
+TestImportManager.exportForTesting(CommandHandlerInterface);

@@ -6,6 +6,7 @@ import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
@@ -161,3 +162,5 @@ function isSetOrClear(intent: AutomationIntent): boolean {
   return intent.command === IntentCommandType.SET_SELECTION ||
       intent.command === IntentCommandType.CLEAR_SELECTION;
 }
+
+TestImportManager.exportForTesting(TextEditHandler);

@@ -9,6 +9,7 @@
  * 'en-US'. For more information on locales:
  * https://en.wikipedia.org/wiki/Locale_(computer_software)
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from './msgs.js';
 
@@ -188,3 +189,5 @@ export class LocaleOutputHelper {
 
 /** @type {LocaleOutputHelper} */
 LocaleOutputHelper.instance;
+
+TestImportManager.exportForTesting(LocaleOutputHelper);

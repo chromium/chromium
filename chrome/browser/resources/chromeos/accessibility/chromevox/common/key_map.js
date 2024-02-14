@@ -15,6 +15,7 @@
  * To retrieve static data about user commands, see CommandStore.
  */
 import {KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from './command.js';
 import {CommandStore} from './command_store.js';
@@ -157,3 +158,5 @@ export class KeyMap {
 
 /** @type {KeyMap} */
 KeyMap.instance;
+
+TestImportManager.exportForTesting(KeyMap);

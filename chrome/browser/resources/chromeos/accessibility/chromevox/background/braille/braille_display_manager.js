@@ -5,6 +5,8 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {SettingsManager} from '../../common/settings_manager.js';
@@ -608,3 +610,5 @@ BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
 
 /** @type {BrailleDisplayManager} */
 BrailleDisplayManager.instance;
+
+TestImportManager.exportForTesting(BrailleDisplayManager);

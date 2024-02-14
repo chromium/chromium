@@ -6,6 +6,7 @@
  * @fileoverview Commands to pass from the ChromeVox background page context
  * to the ChromeVox Panel.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /**
  * Create one command to pass to the ChromeVox Panel.
@@ -78,3 +79,6 @@ export const PanelCommandType = {
   TUTORIAL: 'tutorial',
   ENABLE_TEST_HOOKS: 'enable_test_hooks',
 };
+
+TestImportManager.exportForTesting(
+    PanelCommand, ['PanelCommandType', PanelCommandType]);

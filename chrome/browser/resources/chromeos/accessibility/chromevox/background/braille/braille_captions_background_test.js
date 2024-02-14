@@ -10,19 +10,6 @@ ChromeVoxBrailleCaptionsBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      // Alphabetical by path.
-      importModule(
-          ['BrailleCaptionsBackground', 'BrailleCaptionsListener'],
-          '/chromevox/background/braille/braille_captions_background.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js'),
-      importModule('Msgs', '/chromevox/common/msgs.js'),
-      importModule('PanelCommand', '/chromevox/common/panel_command.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('Settings', '/common/settings.js'),
-    ]);
 
     this.listener = new class extends BrailleCaptionsListener {
       constructor() {

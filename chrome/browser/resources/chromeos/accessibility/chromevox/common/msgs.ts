@@ -6,6 +6,7 @@
 /**
  * @fileoverview Defines methods related to retrieving translated messages.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export class Msgs {
   /** Return the current locale. */
@@ -164,3 +165,5 @@ export const Untranslated: Record<string, string> = {
   ARIA_VALUE_TEXT_BRL: '$1',
 };
 }
+
+TestImportManager.exportForTesting(Msgs);

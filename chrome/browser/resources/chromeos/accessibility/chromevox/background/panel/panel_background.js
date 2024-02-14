@@ -9,6 +9,7 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
@@ -345,3 +346,5 @@ class PanelRangeObserver {
     PanelBridge.onCurrentRangeChanged();
   }
 }
+
+TestImportManager.exportForTesting(PanelBackground);

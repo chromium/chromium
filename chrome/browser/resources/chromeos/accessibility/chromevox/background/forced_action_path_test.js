@@ -12,22 +12,6 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/background/input/background_keyboard_handler.js'),
-      importModule(
-          'ForcedActionPath', '/chromevox/background/forced_action_path.js'),
-      importModule(
-          'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js'),
-      importModule('KeySequence', '/chromevox/common/key_sequence.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 

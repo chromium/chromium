@@ -9,6 +9,7 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {EventGenerator} from '/common/event_generator.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';
@@ -288,3 +289,5 @@ export class PointerHandler extends BaseAutomationHandler {
 export namespace PointerHandler {
   export const MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = 500;
 }
+
+TestImportManager.exportForTesting(PointerHandler);

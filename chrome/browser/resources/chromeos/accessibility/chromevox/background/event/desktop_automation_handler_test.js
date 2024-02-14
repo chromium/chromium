@@ -14,27 +14,6 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'DesktopAutomationHandler',
-          '/chromevox/background/event/desktop_automation_handler.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule(
-          'CustomAutomationEvent',
-          '/chromevox/common/custom_automation_event.js'),
-      importModule('AutomationUtil', '/common/automation_util.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-
     await ChromeVoxState.ready();
     this.handler_ = DesktopAutomationInterface.instance;
 

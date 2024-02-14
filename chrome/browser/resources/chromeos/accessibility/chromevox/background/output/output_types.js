@@ -5,6 +5,7 @@
 /**
  * @fileoverview Definitions of all types related to output.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
 import {Spannable} from '../../common/spannable.js';
@@ -234,3 +235,8 @@ export const OutputNavigationType = {
   LEAVE: 'leave',
   START_OF: 'startOf',
 };
+
+TestImportManager.exportForTesting(
+    OutputAction, OutputEarconAction, OutputNodeSpan, OutputSelectionSpan,
+    ['OutputCustomEvent', OutputCustomEvent],
+    ['OutputContextOrder', OutputContextOrder]);

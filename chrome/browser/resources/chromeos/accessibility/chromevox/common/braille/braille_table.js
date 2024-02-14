@@ -5,6 +5,7 @@
 /**
  * @fileoverview Holds information about a braille table.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Msgs} from '../msgs.js';
 
@@ -165,3 +166,5 @@ BrailleTable.getDisplayName = function(table) {
         [baseName, table.variant, table.grade]);
   }
 };
+
+TestImportManager.exportForTesting(['BrailleTable', BrailleTable]);

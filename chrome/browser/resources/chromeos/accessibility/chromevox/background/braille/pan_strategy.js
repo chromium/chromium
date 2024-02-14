@@ -6,6 +6,8 @@
  * @fileoverview Logic for panning a braille display within a line of braille
  * content that might not fit on a single display.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {CURSOR_DOTS} from './cursor_dots.js';
 
 export class PanStrategy {
@@ -486,3 +488,5 @@ export class PanStrategy {
  * @typedef {{firstRow: number, lastRow: number}}
  */
 PanStrategy.Range;
+
+TestImportManager.exportForTesting(PanStrategy);

@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox braille command data.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../command.js';
 import {Msgs} from '../msgs.js';
@@ -157,3 +158,5 @@ BrailleCommandData.init_ = function() {
 };
 
 BrailleCommandData.init_();
+
+TestImportManager.exportForTesting(['BrailleCommandData', BrailleCommandData]);

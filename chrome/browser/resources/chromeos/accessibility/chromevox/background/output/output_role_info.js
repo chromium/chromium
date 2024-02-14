@@ -5,6 +5,7 @@
 /**
  * @fileoverview Roel information for the Output module.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
 import {AbstractRole, ChromeVoxRole} from '../../common/role_type.js';
@@ -267,3 +268,5 @@ export const OutputRoleInfo = {
   video: {msgId: 'tag_video', inherits: AbstractRole.FORM_FIELD_CONTAINER},
   window: {ignoreAncestry: true},
 };
+
+TestImportManager.exportForTesting(['OutputRoleInfo', OutputRoleInfo]);

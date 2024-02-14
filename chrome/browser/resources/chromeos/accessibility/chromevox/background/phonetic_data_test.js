@@ -11,15 +11,6 @@ ChromeVoxPhoneticDataTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('PhoneticData', '/chromevox/background/phonetic_data.js'),
-      importModule(
-          'JaPhoneticData',
-          '/chromevox/third_party/tamachiyomi/ja_phonetic_data.js'),
-    ]);
-
     JaPhoneticData.init(JA_TEST_MAP);
   }
 };

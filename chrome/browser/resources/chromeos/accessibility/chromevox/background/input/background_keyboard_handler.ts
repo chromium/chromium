@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 import {KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
@@ -180,3 +181,5 @@ export class BackgroundKeyboardHandler {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(BackgroundKeyboardHandler);

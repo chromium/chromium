@@ -7,19 +7,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture.
  */
-ChromeVoxPanStrategyUnitTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      importModule(
-          'CursorDots', '/chromevox/background/braille/cursor_dots.js'),
-      importModule(
-          'PanStrategy', '/chromevox/background/braille/pan_strategy.js'),
-    ]);
-  }
-};
+ChromeVoxPanStrategyUnitTest = class extends ChromeVoxE2ETest {};
 
 /**
  * Creates an array buffer based off of the passed in content.

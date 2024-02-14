@@ -5,6 +5,7 @@
 /**
  * @fileoverview Contains types related to speech generation.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /**
  * Categories for a speech utterance. This can be used with the
@@ -306,3 +307,7 @@ export const SubstitutionDictionary: Record<string, string> = {
   '\uf8ff': 'apple',
   '£': 'pound sterling',
 };
+
+TestImportManager.exportForTesting(
+    ['QueueMode', QueueMode], ['TtsSettings', TtsSettings], TtsSpeechProperties,
+    ['TtsCategory', TtsCategory]);

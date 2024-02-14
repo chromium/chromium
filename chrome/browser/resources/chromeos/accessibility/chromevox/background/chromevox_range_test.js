@@ -11,16 +11,6 @@ ChromeVoxRangeTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetized by path name.
-      importModule(
-          ['ChromeVoxRange', 'ChromeVoxRangeObserver'],
-          '/chromevox/background/chromevox_range.js'),
-      importModule('FocusBounds', '/chromevox/background/focus_bounds.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-    ]);
-
     globalThis.RoleType = chrome.automation.RoleType;
   }
 };

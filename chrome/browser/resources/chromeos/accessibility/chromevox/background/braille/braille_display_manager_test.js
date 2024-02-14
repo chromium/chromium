@@ -17,27 +17,6 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetized by file path.
-      importModule(
-          'BrailleCaptionsBackground',
-          '/chromevox/background/braille/braille_captions_background.js'),
-      importModule(
-          'BrailleDisplayManager',
-          '/chromevox/background/braille/braille_display_manager.js'),
-      importModule(
-          'BrailleTranslatorManager',
-          '/chromevox/background/braille/braille_translator_manager.js'),
-      importModule(
-          'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js'),
-      importModule(
-          'ExpandingBrailleTranslator',
-          '/chromevox/background/braille/expanding_braille_translator.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-    ]);
-
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});
     this.EMPTY_NAV_BRAILLE = new NavBraille({text: ''});

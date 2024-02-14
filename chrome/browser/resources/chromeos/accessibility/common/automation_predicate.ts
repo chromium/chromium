@@ -6,6 +6,7 @@
  * @fileoverview Predicates for the automation extension API.
  */
 import {constants} from './constants.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 import ActionType = chrome.automation.ActionType;
 import AutomationNode = chrome.automation.AutomationNode;
@@ -871,3 +872,6 @@ export namespace AutomationPredicate {
     Role.POP_UP_BUTTON,
   ]);
 }
+
+TestImportManager.exportForTesting(
+    ['AutomationPredicate', AutomationPredicate]);
