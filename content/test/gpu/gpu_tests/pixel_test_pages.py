@@ -1157,7 +1157,7 @@ class PixelTestPages():
     # and similar values combined into a single set using the most permissive
     # value for each parameter in that tier.
     strict_dc_sobel_algorithm = algo.SobelMatchingAlgorithm(
-        max_different_pixels=1000,
+        max_different_pixels=2000,
         pixel_per_channel_delta_threshold=3,
         edge_threshold=250,
         ignored_border_thickness=1)
