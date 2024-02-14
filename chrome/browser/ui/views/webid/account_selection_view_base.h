@@ -262,9 +262,6 @@ class AccountSelectionViewBase {
   // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
-  // Computes the minimum size of the brand icon.
-  static int GetBrandIconMinimumSize();
-
  protected:
   int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
   std::u16string GetTitle(

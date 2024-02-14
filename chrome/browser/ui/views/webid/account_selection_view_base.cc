@@ -102,7 +102,7 @@ void BrandIconImageView::OnImageFetched(
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
   if (image.Width() != image.Height() ||
-      image.Width() < AccountSelectionViewBase::GetBrandIconMinimumSize()) {
+      image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
     return;
   }
   gfx::ImageSkia idp_image =
@@ -331,9 +331,4 @@ base::WeakPtr<views::Widget> AccountSelectionViewBase::GetDialogWidget() {
 net::NetworkTrafficAnnotationTag
 AccountSelectionViewBase::GetTrafficAnnotation() {
   return kTrafficAnnotation;
-}
-
-// static
-int AccountSelectionViewBase::GetBrandIconMinimumSize() {
-  return 20 / kMaskableWebIconSafeZoneRatio;
 }
