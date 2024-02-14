@@ -43,6 +43,8 @@ NSString* const kOmniboxSuggestionRowSeparatorColor =
     @"omnibox_suggestion_row_separator_color";
 NSString* const kOmniboxPopoutSuggestionRowSeparatorColor =
     @"omnibox_popout_suggestion_row_separator_color";
+NSString* const kTabGroupFaviconBackgroundColor =
+    @"tab_group_favicons_background_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";

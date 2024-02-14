@@ -54,7 +54,8 @@ const CGFloat kBottomFaviconViewScaleFactor = 0.75;
     [_snapshotFaviconView addSubview:gradientView];
 
     _bottomFaviconView = [[UIView alloc] init];
-    _bottomFaviconView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _bottomFaviconView.backgroundColor =
+        [UIColor colorNamed:kTabGroupFaviconBackgroundColor];
     _bottomFaviconView.layer.cornerRadius =
         kGroupGridBottomTrailingCellCornerRadius;
     _bottomFaviconView.layer.masksToBounds = YES;
@@ -68,7 +69,8 @@ const CGFloat kBottomFaviconViewScaleFactor = 0.75;
     _bottomFaviconImageView.contentMode = UIViewContentModeScaleAspectFit;
 
     _faviconView = [[UIView alloc] init];
-    _faviconView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _faviconView.backgroundColor =
+        [UIColor colorNamed:kTabGroupFaviconBackgroundColor];
     _faviconView.layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
     _faviconView.layer.masksToBounds = YES;
     _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -80,7 +82,8 @@ const CGFloat kBottomFaviconViewScaleFactor = 0.75;
     _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
     _remainingTabsView = [[UIView alloc] init];
-    _remainingTabsView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _remainingTabsView.backgroundColor =
+        [UIColor colorNamed:kTabGroupFaviconBackgroundColor];
     _remainingTabsView.layer.cornerRadius =
         kGroupGridBottomTrailingCellCornerRadius;
     _remainingTabsView.layer.masksToBounds = YES;

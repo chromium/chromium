@@ -64,6 +64,7 @@ group("resources") {
     ":solid_white_color",
     ":static_blue_400_color",
     ":static_grey_300_color",
+    ":tab_group_favicons_background_color",
     ":table_view_row_highlight_color",
     ":tertiary_background_color",
     ":text_primary_color",
@@ -367,4 +368,8 @@ colorset("grouped_primary_background_color") {
 
 colorset("omnibox_keyboard_button_color") {
   sources = [ "omnibox_keyboard_button_color.colorset/Contents.json" ]
+}
+
+colorset("tab_group_favicons_background_color") {
+  sources = [ "tab_group_favicons_background_color.colorset/Contents.json" ]
 }
