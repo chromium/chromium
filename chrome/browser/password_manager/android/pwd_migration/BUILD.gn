@@ -112,6 +112,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningRenderTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewTest.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetViewTest.java",
   ]
 

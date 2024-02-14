@@ -798,6 +798,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_MIGRATION_WARNING_CANCEL" desc="The text for the cancel button in the password migration warning sheet. It closes the sheet">
         Cancel
       </message>
+      <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_TITLE" desc="The title of the post password migration sheet that informs the user that the migration happened." formatter_data="android_java">
+        We changed how passwords are saved on this device
+      </message>
+      <message name="IDS_POST_PASSWORD_MIGRATION_SHEET_SUBTITLE" desc="The subtitle of the post password migration sheet." formatter_data="android_java">
+        Your lists of saved passwords for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> were merged. You can still autofill all your saved passwords on both apps.
+      </message>
       <message name="IDS_EXPORTED_PASSWORDS_DELETION_DIALOG_TITLE" desc="The title of the dialog that offers to delete passwords from Google Password Manager." formatter_data="android_java">
         Delete passwords from Google Password Manager?
       </message>
