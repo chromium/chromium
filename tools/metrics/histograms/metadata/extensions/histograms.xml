@@ -464,8 +464,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram name="Extensions.CorruptExtensionDisabledReason"
     enum="CorruptExtensionDisabledReason" expires_after="2024-11-20">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rockot@chromium.org</owner>
+  <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The reason why an extension was detected to be corrupted. Recorded each time

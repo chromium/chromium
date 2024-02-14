@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -273,8 +273,8 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   DCHECK(should_disable);
   service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
   ExtensionPrefs::Get(context_)->IncrementPref(kCorruptedDisableCount);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.CorruptExtensionDisabledReason", reason,
-                            ContentVerifyJob::FAILURE_REASON_MAX);
+  base::UmaHistogramEnumeration("Extensions.CorruptExtensionDisabledReason",
+                                reason, ContentVerifyJob::FAILURE_REASON_MAX);
 }
 
 void ChromeContentVerifierDelegate::Shutdown() {}

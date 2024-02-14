@@ -39,6 +39,9 @@ class ContentVerifier;
 // can be created and used on any thread.
 class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
  public:
+  // Used in UMA metrics. Ensure this stays in sync with
+  // CorruptExtensionDisabledReason in
+  // //tools/metrics/histograms/metadata/extensions/enums.xml.
   enum FailureReason {
     // No failure.
     NONE,

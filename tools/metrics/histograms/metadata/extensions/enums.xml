@@ -57,8 +57,9 @@ chromium-metrics-reviews@google.com.
   </summary>
   <int value="0" label="Unknown Reason"/>
   <int value="1" label="Missing All Hashes"/>
-  <int value="2" label="Missing File Hash"/>
-  <int value="3" label="Hash Mismatch"/>
+  <int value="2" label="Corrupted Hashes"/>
+  <int value="3" label="No Hashes For File"/>
+  <int value="4" label="Hash Mismatch"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">
