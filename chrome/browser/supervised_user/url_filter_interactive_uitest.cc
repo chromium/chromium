@@ -25,8 +25,6 @@ namespace {
 static constexpr std::string_view kPermissionRequestUrl =
     "https://families.google.com/u/0/manage/family/";
 
-// TODO(b/303401498): Use dedicated RPCs in supervised user e2e desktop tests
-// instead of clicking around the pages.
 // All tests in this unit are subject to flakiness because they interact with a
 // system that can be externally modified during execution.
 class UrlFilterUiTest
