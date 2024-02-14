@@ -714,3 +714,13 @@ if (use_av1_hw_decoder) {
     ]
   }
 }
+
+fuzzer_test("media_vp9_decoder_fuzzer") {
+  sources = [ "vp9_decoder_fuzzer.cc" ]
+  deps = [
+    ":gpu",
+    "//base",
+    "//media",
+  ]
+  seed_corpuses = [ "//media/test/data" ]
+}
