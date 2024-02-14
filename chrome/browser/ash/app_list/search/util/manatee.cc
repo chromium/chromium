@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/util/manatee.h"
 
+#include <cmath>
 #include <numeric>
 #include <optional>
 #include <vector>
