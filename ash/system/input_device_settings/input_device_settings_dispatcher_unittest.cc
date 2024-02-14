@@ -102,6 +102,10 @@ class MockInputController : public ui::InputController {
               SetPointingStickPrimaryButtonRight,
               (std::optional<int> device_id, bool right),
               (override));
+  MOCK_METHOD(void,
+              BlockModifiersOnDevices,
+              (std::vector<int> device_ids),
+              (override));
 
  private:
   bool HasMouse() override { return false; }
@@ -199,6 +203,11 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
     controller_ = std::make_unique<MockInputController>();
     dispatcher_ =
         std::make_unique<InputDeviceSettingsDispatcher>(controller_.get());
+
+    ON_CALL(*controller_, BlockModifiersOnDevices)
+        .WillByDefault(testing::Invoke([&](std::vector<int> device_ids) {
+          device_ids_to_block_modifiers_ = std::move(device_ids);
+        }));
   }
 
   void TearDown() override {
@@ -213,6 +222,8 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
   std::unique_ptr<InputDeviceSettingsDispatcher> dispatcher_;
   std::unique_ptr<MockInputController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::vector<int> device_ids_to_block_modifiers_;
 };
 
 TEST_F(InputDeviceSettingsDispatcherTest, MouseTest) {
@@ -343,7 +354,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsBlockModifiers) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {ui::KeyboardDevice(duplicate_2_3)});
 
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   auto* input_device_settings_controller =
       Shell::Get()->input_device_settings_controller();
@@ -353,14 +364,14 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsBlockModifiers) {
   input_device_settings_controller->StartObservingButtons(duplicate_1_1.id);
   EXPECT_EQ(
       (std::vector<int>{duplicate_1_1.id, duplicate_1_2.id, duplicate_1_3.id}),
-      dispatcher_->device_ids_to_block_modifiers());
+      device_ids_to_block_modifiers_);
 
   // Add mouse button to configure.
   input_device_settings_controller->OnMouseButtonPressed(
       duplicate_1_1.id, *mojom::Button::NewVkey(ui::VKEY_TAB));
 
   input_device_settings_controller->StopObservingButtons();
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   auto mouse_settings =
       input_device_settings_controller->GetMouseSettings(duplicate_1_1.id)
@@ -374,7 +385,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsBlockModifiers) {
   // After configuring the button to an action, block modifiers from the device.
   EXPECT_EQ(
       (std::vector<int>{duplicate_1_1.id, duplicate_1_2.id, duplicate_1_3.id}),
-      dispatcher_->device_ids_to_block_modifiers());
+      device_ids_to_block_modifiers_);
 
   mouse_settings =
       input_device_settings_controller->GetMouseSettings(duplicate_1_1.id)
@@ -385,7 +396,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsBlockModifiers) {
 
   // After settings back to no remapping action, modifiers should not be
   // blocked.
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 }
 
 TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
@@ -407,7 +418,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {ui::KeyboardDevice(duplicate_2_3)});
 
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   auto* input_device_settings_controller =
       Shell::Get()->input_device_settings_controller();
@@ -415,14 +426,14 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
   // After starting to observe, nothing should be blocked as `duplicate_2_1`
   // does not require modifier blocking.
   input_device_settings_controller->StartObservingButtons(duplicate_2_1.id);
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   // Add mouse button to configure.
   input_device_settings_controller->OnMouseButtonPressed(
       duplicate_2_1.id, *mojom::Button::NewVkey(ui::VKEY_TAB));
 
   input_device_settings_controller->StopObservingButtons();
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   auto mouse_settings =
       input_device_settings_controller->GetMouseSettings(duplicate_2_1.id)
@@ -435,7 +446,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
 
   // After configuring the button to an action, no modifiers should be blocked
   // still.
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 
   mouse_settings =
       input_device_settings_controller->GetMouseSettings(duplicate_2_1.id)
@@ -446,7 +457,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
 
   // After settings back to no remapping action, modifiers should not be
   // blocked.
-  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+  EXPECT_TRUE(device_ids_to_block_modifiers_.empty());
 }
 
 }  // namespace ash

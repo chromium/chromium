@@ -455,4 +455,10 @@ bool InputControllerEvdev::AreAnyKeysPressed() {
   return any_keys_are_pressed_;
 }
 
+void InputControllerEvdev::BlockModifiersOnDevices(
+    std::vector<int> device_ids) {
+  input_device_settings_.blocked_modifiers_devices = device_ids;
+  ScheduleUpdateDeviceSettings();
+}
+
 }  // namespace ui

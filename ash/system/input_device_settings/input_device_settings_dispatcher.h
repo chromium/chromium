@@ -44,10 +44,6 @@ class ASH_EXPORT InputDeviceSettingsDispatcher
   // InputDeviceDuplicateIdFinder::Observer:
   void OnDuplicateDevicesUpdated() override;
 
-  const std::vector<int>& device_ids_to_block_modifiers() {
-    return device_ids_to_block_modifiers_;
-  }
-
  private:
   void Initialize();
 
@@ -62,8 +58,6 @@ class ASH_EXPORT InputDeviceSettingsDispatcher
   base::flat_set<VendorProductId> devices_with_blocked_modifiers_;
   base::flat_set<VendorProductId>
       devices_with_blocked_modifiers_from_observing_;
-
-  std::vector<int> device_ids_to_block_modifiers_;
 
   raw_ptr<ui::InputController> input_controller_;  // Not Owned
   raw_ptr<InputDeviceSettingsControllerImpl>

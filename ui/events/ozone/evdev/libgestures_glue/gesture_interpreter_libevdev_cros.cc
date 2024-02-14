@@ -8,6 +8,7 @@
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -115,6 +116,10 @@ const int kGestureScrollFingerCount = 2;
 
 // Number of fingers for swipe gestures.
 const int kGestureSwipeFingerCount = 3;
+
+static constexpr unsigned int kModifierEvdevCodes[] = {
+    KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
+    KEY_LEFTCTRL, KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT};
 
 }  // namespace
 
@@ -590,6 +595,15 @@ void GestureInterpreterLibevdevCros::DispatchChangedKeys(
     stime_t timestamp) {
   unsigned long key_state_diff[EVDEV_BITS_TO_LONGS(KEY_CNT)];
 
+  // Clear any set modifiers so they do not generate downstream events.
+  if (block_modifiers_) {
+    for (const auto key : kModifierEvdevCodes) {
+      if (EvdevBitIsSet(new_key_state, key)) {
+        EvdevClearBit(new_key_state, key);
+      }
+    }
+  }
+
   // Find changed keys.
   for (unsigned long i = 0; i < std::size(key_state_diff); ++i)
     key_state_diff[i] = new_key_state[i] ^ prev_key_state_[i];
@@ -654,6 +668,26 @@ void GestureInterpreterLibevdevCros::ReleaseMouseButtons(stime_t timestamp) {
   DispatchMouseButton(BTN_RIGHT, false /* down */, timestamp);
   DispatchMouseButton(BTN_BACK, false /* down */, timestamp);
   DispatchMouseButton(BTN_FORWARD, false /* down */, timestamp);
+}
+
+void GestureInterpreterLibevdevCros::SetBlockModifiers(bool block_modifiers) {
+  // Release held modifiers if we are changing from not blocking modifiers ->
+  // blocking modifiers.
+  const bool should_release_held_modifiers =
+      block_modifiers && !block_modifiers_;
+  block_modifiers_ = block_modifiers;
+
+  // If we should release held modifiers, create just a copy of
+  // `prev_key_state_` to represent the new state. `DispatchChangedKeys` will
+  // update it in the normal code path to remove pressed modifier keys which
+  // will in turn generate the release events.
+  if (should_release_held_modifiers) {
+    unsigned long copy_key_state[EVDEV_BITS_TO_LONGS(KEY_CNT)];
+    static_assert(sizeof(copy_key_state) == sizeof(prev_key_state_));
+    memcpy(copy_key_state, prev_key_state_, sizeof(prev_key_state_));
+    DispatchChangedKeys(copy_key_state,
+                        ui::EventTimeStampToSeconds(ui::EventTimeForNow()));
+  }
 }
 
 }  // namespace ui

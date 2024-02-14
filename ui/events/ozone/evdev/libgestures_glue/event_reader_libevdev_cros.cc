@@ -174,6 +174,10 @@ void EventReaderLibevdevCros::SetReceivedValidInputCallback(
   received_valid_input_callback_ = std::move(callback);
 }
 
+void EventReaderLibevdevCros::SetBlockModifiers(bool block_modifiers) {
+  delegate_->SetBlockModifiers(block_modifiers);
+}
+
 bool EventReaderLibevdevCros::HasCapsLockLed() const {
   return has_caps_lock_led_;
 }

@@ -228,6 +228,11 @@ void EventConverterEvdev::SetKeyFilter(bool enable_filter,
   NOTREACHED();
 }
 
+void EventConverterEvdev::SetBlockModifiers(bool block_modifiers) {
+  // No-op implementation on purpose for converter that do not implement the
+  // method.
+}
+
 void EventConverterEvdev::SetCapsLockLed(bool enabled) {
   if (!HasCapsLockLed())
     return;

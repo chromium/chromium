@@ -752,6 +752,66 @@ TEST_F(EventConverterEvdevImplTest, SetAllowedKeysBlockedKeyPressed) {
   ASSERT_EQ(0u, size());
 }
 
+TEST_F(EventConverterEvdevImplTest, SetBlockModifiers) {
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  struct input_event key_press[] = {
+      {{0, 0}, EV_KEY, KEY_LEFTMETA, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+  struct input_event key_release[] = {
+      {{0, 0}, EV_KEY, KEY_LEFTMETA, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(key_press, std::size(key_press));
+  ASSERT_EQ(1u, size());
+  ui::KeyEvent* event = dispatched_event(0);
+  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+
+  dev->ProcessEvents(key_release, std::size(key_release));
+  ASSERT_EQ(2u, size());
+  event = dispatched_event(1);
+  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+
+  dev->SetBlockModifiers(true);
+
+  dev->ProcessEvents(key_press, std::size(key_press));
+  ASSERT_EQ(2u, size());
+  dev->ProcessEvents(key_release, std::size(key_release));
+  ASSERT_EQ(2u, size());
+}
+
+TEST_F(EventConverterEvdevImplTest, SetBlockModifiersWithModifierHeldDown) {
+  ui::MockEventConverterEvdevImpl* dev = device();
+
+  struct input_event key_press[] = {
+      {{0, 0}, EV_KEY, KEY_LEFTCTRL, 1},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+  struct input_event key_release[] = {
+      {{0, 0}, EV_KEY, KEY_LEFTCTRL, 0},
+      {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+
+  dev->ProcessEvents(key_press, std::size(key_press));
+  ASSERT_EQ(1u, size());
+  ui::KeyEvent* event = dispatched_event(0);
+  EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
+
+  dev->SetBlockModifiers(true);
+  ASSERT_EQ(2u, size());
+  event = dispatched_event(1);
+  EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
+  EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
+
+  dev->ProcessEvents(key_release, std::size(key_release));
+  ASSERT_EQ(2u, size());
+
+  dev->SetBlockModifiers(false);
+  ASSERT_EQ(2u, size());
+}
+
 TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   ui::MockEventConverterEvdevImpl* dev = device();
 

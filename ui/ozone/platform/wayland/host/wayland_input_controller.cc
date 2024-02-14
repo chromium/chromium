@@ -129,6 +129,7 @@ class WaylandInputController : public InputController {
     NOTIMPLEMENTED_LOG_ONCE();
   }
   bool AreAnyKeysPressed() override { return false; }
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
 
  private:
   const raw_ptr<WaylandConnection> connection_;

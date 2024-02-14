@@ -128,6 +128,7 @@ class TestInputController : public ui::InputController {
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver) override {}
   bool AreAnyKeysPressed() override { return false; }
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
 
   bool GetAccelerationSuspended() { return acceleration_suspended_; }
 

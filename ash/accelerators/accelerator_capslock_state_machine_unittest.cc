@@ -118,6 +118,7 @@ class MockInputController : public ui::InputController {
                              bool right) override {}
   void SetPointingStickPrimaryButtonRight(std::optional<int> device_id,
                                           bool right) override {}
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
 };
 
 const bool kKeysPressed = true;

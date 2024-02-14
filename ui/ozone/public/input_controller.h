@@ -183,6 +183,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
           receiver) = 0;
 
   virtual bool AreAnyKeysPressed() = 0;
+
+  // Blocks all modifiers from being emitted on devices with the given device
+  // ids.
+  virtual void BlockModifiersOnDevices(std::vector<int> device_ids) = 0;
 };
 
 // Create an input controller that does nothing.

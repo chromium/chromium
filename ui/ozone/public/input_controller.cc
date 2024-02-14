@@ -120,6 +120,7 @@ class StubInputController : public InputController {
       HapticTouchpadEffect effect_type,
       HapticTouchpadEffectStrength strength) override {}
   bool AreAnyKeysPressed() override { return false; }
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
 };
 
 }  // namespace

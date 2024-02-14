@@ -64,9 +64,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
       const base::RepeatingCallback<void(bool)>& callback) override;
   void SetReceivedValidKeyboardInputCallback(
       base::RepeatingCallback<void(uint64_t)> callback) override;
-
   void SetReceivedValidMouseInputCallback(
       base::RepeatingCallback<void(int)> callback) override;
+  void SetBlockModifiers(bool block_modifiers) override;
 
   // Handler for gesture events generated from libgestures.
   void OnGestureReady(const Gesture* gesture);
@@ -113,6 +113,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   // and multi-touch mice.
   bool is_mouse_ = false;
   bool is_pointing_stick_ = false;
+
+  // Whether modifier keys should be blocked from the input device.
+  bool block_modifiers_;
 
   // Shared cursor state.
   CursorDelegateEvdev* cursor_;

@@ -180,6 +180,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   virtual void SetKeyFilter(bool enable_filter,
                             std::vector<DomCode> allowed_keys);
 
+  // Set that modifier keys should not be allowed to be produced from this
+  // converter.
+  virtual void SetBlockModifiers(bool block_modifiers);
+
   // Update caps lock LED state.
   virtual void SetCapsLockLed(bool enabled);
 

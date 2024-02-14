@@ -216,8 +216,7 @@ void InputDeviceSettingsDispatcher::DispatchDevicesToBlockModifiers() {
                       duplicate_ids->end());
   }
 
-  device_ids_to_block_modifiers_ = std::move(device_ids);
-  // TODO(dpad): Dispatch to input controller to block modifier keys.
+  input_controller_->BlockModifiersOnDevices(std::move(device_ids));
 }
 
 void InputDeviceSettingsDispatcher::OnCustomizableMouseObservingStarted(

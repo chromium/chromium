@@ -61,6 +61,10 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
     // whenever the device registers valid mouse input.
     virtual void SetReceivedValidMouseInputCallback(
         base::RepeatingCallback<void(int)> callback) = 0;
+
+    // Sets whether modifier events should be blocked when coming from this
+    // device.
+    virtual void SetBlockModifiers(bool block_modifiers) = 0;
   };
 
   EventReaderLibevdevCros(base::ScopedFD fd,
@@ -100,6 +104,7 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) override;
   void SetReceivedValidInputCallback(
       ReceivedValidInputCallback callback) override;
+  void SetBlockModifiers(bool block_modifiers) override;
 
   std::ostream& DescribeForLog(std::ostream& os) const override;
 
