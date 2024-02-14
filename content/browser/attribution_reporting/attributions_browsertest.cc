@@ -39,6 +39,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -621,7 +622,21 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
+class AttributionsCrossAppWebDisabledBrowserTest
+    : public AttributionsBrowserTest {
+ public:
+  AttributionsCrossAppWebDisabledBrowserTest()
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                network::features::kAttributionReportingCrossAppWeb}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionsCrossAppWebDisabledBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionsCrossAppWebDisabledBrowserTest,
                        AttributionEligibleNavigation_SetsEligibleHeader) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1233,8 +1248,11 @@ class AttributionsCrossAppWebRuntimeDisabledBrowserTest
     : public AttributionsBrowserTest {
  public:
   AttributionsCrossAppWebRuntimeDisabledBrowserTest()
-      : AttributionsBrowserTest(/*enabled_features=*/{
-            network::features::kAttributionReportingCrossAppWeb}) {}
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{network::features::
+                                      kAttributionReportingCrossAppWeb},
+            /*disabled_features=*/{
+                features::kAttributionReportingCrossAppWebOverride}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

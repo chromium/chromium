@@ -41,6 +41,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/content_features.h"
@@ -542,7 +543,20 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
   EXPECT_EQ(request->headers.at("Referer"), page_url.GetWithEmptyPath());
 }
 
-IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
+class AttributionSrcCrossAppWebDisabledBrowserTest
+    : public AttributionSrcBrowserTest {
+ public:
+  AttributionSrcCrossAppWebDisabledBrowserTest()
+      : AttributionSrcBrowserTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                network::features::kAttributionReportingCrossAppWeb}) {}
+};
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionSrcCrossAppWebDisabledBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebDisabledBrowserTest,
                        Img_SetsAttributionReportingEligibleHeader) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
@@ -1205,8 +1219,10 @@ class AttributionSrcCrossAppWebRuntimeDisabledBrowserTest
  public:
   AttributionSrcCrossAppWebRuntimeDisabledBrowserTest()
       : AttributionSrcBrowserTest(
-            /*enabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb}) {}
+            /*enabled_features=*/{network::features::
+                                      kAttributionReportingCrossAppWeb},
+            /*disabled_featurs=*/{
+                features::kAttributionReportingCrossAppWebOverride}) {}
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,

@@ -70,19 +70,22 @@ class CrossAppWebAttributionBrowserTestBase : public ContentBrowserTest {
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-class CrossAppWebAttributionEnabledBrowserTest
+class CrossAppWebAttributionEnabledOriginTrialBrowserTest
     : public CrossAppWebAttributionBrowserTestBase {
  public:
-  CrossAppWebAttributionEnabledBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        network::features::kAttributionReportingCrossAppWeb);
+  CrossAppWebAttributionEnabledOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::
+                                  kAttributionReportingCrossAppWeb},
+        /*disabled_features=*/{
+            features::kAttributionReportingCrossAppWebOverride});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialEnabled_FeatureDetected) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_cross_app_web_ot.html")));
@@ -94,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
   EXPECT_TRUE(CheckBrowserSideCrossAppWebRuntimeFeature());
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialDisabled_FeatureNotDetected) {
   // Navigate to a page without an OT token.
   EXPECT_TRUE(NavigateToURL(
@@ -108,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
   EXPECT_FALSE(CheckBrowserSideCrossAppWebRuntimeFeature());
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialEnabledDynamically) {
   // Navigate to a page without an OT token.
   EXPECT_TRUE(NavigateToURL(
@@ -144,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
   EXPECT_TRUE(CheckBrowserSideCrossAppWebRuntimeFeature());
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialEnabledByResponseHeader) {
   // Navigate to a page with an OT token in the response header.
   EXPECT_TRUE(NavigateToURL(
@@ -157,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
   EXPECT_TRUE(CheckBrowserSideCrossAppWebRuntimeFeature());
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialEnabled_EligibilitySet) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_cross_app_web_ot.html")));
@@ -174,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialDisabled_EligibilityNotSet) {
   // Navigate to a page without an OT token.
   EXPECT_TRUE(NavigateToURL(
@@ -193,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
             network::mojom::AttributionReportingEligibility::kUnset);
 }
 
-IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrossAppWebAttributionEnabledOriginTrialBrowserTest,
                        OriginTrialEnabledByThirdPartyToken_EligibilitySet) {
   EXPECT_TRUE(NavigateToURL(
       shell(),
