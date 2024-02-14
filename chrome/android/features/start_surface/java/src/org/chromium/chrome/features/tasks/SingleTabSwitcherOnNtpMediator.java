@@ -293,7 +293,8 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
                             super.onPageLoadFinished(tab, url);
                             mPropertyModel.set(TITLE, tab.getTitle());
                             if (mIsSurfacePolishEnabled) {
-                                mPropertyModel.set(URL, tab.getUrl().getHost());
+                                mPropertyModel.set(
+                                        URL, SingleTabSwitcherMediator.getDomainUrl(tab.getUrl()));
                             }
                             tab.removeObserver(this);
                         }
@@ -302,7 +303,8 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
         } else {
             mPropertyModel.set(TITLE, mMostRecentTab.getTitle());
             if (mIsSurfacePolishEnabled) {
-                mPropertyModel.set(URL, mMostRecentTab.getUrl().getHost());
+                mPropertyModel.set(
+                        URL, SingleTabSwitcherMediator.getDomainUrl(mMostRecentTab.getUrl()));
             }
         }
     }

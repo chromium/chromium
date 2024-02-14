@@ -188,7 +188,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                             Tab tab = normalTabModel.getTabAt(selectedTabIndex);
                             mPropertyModel.set(TITLE, tab.getTitle());
                             if (mIsSurfacePolishEnabled) {
-                                mPropertyModel.set(URL, tab.getUrl().getHost());
+                                mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
                             }
                             if (mTabTitleAvailableTime == null) {
                                 mTabTitleAvailableTime = SystemClock.elapsedRealtime();
@@ -311,7 +311,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
                 mPropertyModel.set(TITLE, activeTab.getTitle());
                 if (mIsSurfacePolishEnabled) {
-                    mPropertyModel.set(URL, activeTab.getUrl().getHost());
+                    mPropertyModel.set(URL, getDomainUrl(activeTab.getUrl()));
                 }
                 if (mTabTitleAvailableTime == null) {
                     mTabTitleAvailableTime = SystemClock.elapsedRealtime();
@@ -441,7 +441,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                     mPropertyModel.set(FAVICON, favicon);
                 });
         if (mIsSurfacePolishEnabled) {
-            mPropertyModel.set(URL, tab.getUrl().getHost());
+            mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
             mayUpdateTabThumbnail(tab);
         }
     }
@@ -478,6 +478,14 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @ModuleType
     int getModuleType() {
         return ModuleDelegate.ModuleType.SINGLE_TAB;
+    }
+
+    static String getDomainUrl(GURL url) {
+        if (StartSurfaceConfiguration.useMagicStack()) {
+            return UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+        } else {
+            return url.getHost();
+        }
     }
 
     OnTabSelectingListener getTabSelectingListenerForTesting() {

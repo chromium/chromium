@@ -241,7 +241,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         verify(mTabSwitcherViewObserver).startedShowing();
         verify(mTabSwitcherViewObserver).finishedShowing();
         assertEquals(mPropertyModel.get(TITLE), mTitle);
-        assertEquals(mPropertyModel.get(URL), mUrl.getHost());
+        assertEquals(mPropertyModel.get(URL), SingleTabSwitcherMediator.getDomainUrl(mUrl));
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
         verify(mOnTabSelectingListener).onTabSelecting(eq(mTabId));
