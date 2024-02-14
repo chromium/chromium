@@ -40,7 +40,9 @@
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="1207734034680156868">説明に基づいて選ばれたヘルプ記事です</translation>
 <translation id="121090498480012229">メディアを再生または一時停止する</translation>
+<translation id="1223498995510244364">要約</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
+<translation id="1232610416724362657">滝</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
 <translation id="1264369926465113395">Chromebook のクリエイター向けの新しい電子雑誌をお試しください</translation>
 <translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
@@ -69,6 +71,7 @@
 <translation id="1418991483994088776">オーキッド</translation>
 <translation id="142228117786570094">入力した鍵ペアを使用</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> キーが押されていません</translation>
+<translation id="1432110487435300883">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
 <translation id="1435763214710588005">指定した日に毎月データ使用量が自動的にリセットされます</translation>
 <translation id="1442433966118452622">画像ソース</translation>
 <translation id="1449035143498573192">Google 検索で開く</translation>
@@ -120,6 +123,7 @@
 <translation id="1710499924611012470">ユーザー補助の操作</translation>
 <translation id="1715359911173058521">スキャナとの通信に問題が発生しました。ネットワークまたは USB の接続を確認してから、もう一度お試しください。</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> と <ph name="SECOND_MANAGER" /> によって管理されています</translation>
+<translation id="1718553040985966377">湖</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
 <translation id="1731082422893354635">Bluetooth タッチパッド</translation>
 <translation id="1738949837603788263">ゾーン <ph name="ZONE_NUMBER" /></translation>
@@ -138,8 +142,10 @@
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
 <translation id="1807246157184219062">明</translation>
+<translation id="1808803439260407870">クラシック アート</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
 <translation id="1836553715834333258">システムカラー</translation>
+<translation id="183675228220305365">写実主義</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
 <translation id="1840474674287087346">デスクトップの色</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
@@ -173,6 +179,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">スクリーンセーバーを表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
+<translation id="2073232437457681324">大海原</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
 <translation id="2102231663024125441">テキスト編集</translation>
@@ -191,6 +198,8 @@
 <translation id="2163937499206714165">ダークモードをオンにする</translation>
 <translation id="2180197493692062006">エラーが発生しました。アプリをもう一度開いてください。</translation>
 <translation id="2189104374785738357">APN の詳細の編集</translation>
+<translation id="2203642483788377106">崖</translation>
+<translation id="2208388655216963643">印象派</translation>
 <translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2212733584906323460">名前解決</translation>
 <translation id="2215920961700443347">インターネットに接続されていません。インターネットに接続してから、もう一度お試しください。</translation>
@@ -248,6 +257,7 @@
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
 <translation id="2597774443162333062">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
+<translation id="2618015542787108131">砂丘</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
@@ -258,6 +268,7 @@
 <translation id="268270014981824665">キーボードを薄暗く</translation>
 <translation id="2712812801627182647">TLS 認証鍵</translation>
 <translation id="2713444072780614174">白</translation>
+<translation id="2715723665057727940">川</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
 <translation id="2728460467788544679">印刷履歴をすべて削除</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -275,6 +286,7 @@
 <translation id="2875812231449496375">この設定をオンにすると、この壁紙を効果的に使用できます。この設定はいつでもオフにできます。</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="2880569433548999039">「雲の流れ」のスクリーン セーバー</translation>
+<translation id="2890557891229184386">熱帯の島</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
 <translation id="2940811910881150316">デバイスをテストできません。テストするにはディスプレイをもう一度開きます。</translation>
 <translation id="2941112035454246133">低</translation>
@@ -300,6 +312,7 @@
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
 <translation id="3174321110679064523">「夜明けから夜更けまで」の壁紙</translation>
+<translation id="3178532070248519384">アバンギャルド</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
@@ -308,6 +321,7 @@
 <translation id="3211671540163313381">キーマッピングの D-pad</translation>
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3226657629376379887">レイアウトの操作メニュー</translation>
+<translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="324961752321393509">このアプリを閉じることは、管理者が許可していません</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
@@ -377,6 +391,7 @@
 <translation id="3749289110408117711">ファイル名</translation>
 <translation id="3771294271822695279">動画ファイル</translation>
 <translation id="3784455785234192852">ロック</translation>
+<translation id="3790109258688020991">点描</translation>
 <translation id="380097101658023925">RGB 設定</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
@@ -486,6 +501,7 @@
 <translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
 <translation id="4503223151711056411">左矢印</translation>
+<translation id="4503441351962730761">モダンアート</translation>
 <translation id="4507392511610824664">明るさを上げる</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
@@ -495,6 +511,7 @@
 <translation id="4548483925627140043">シグナルは検出されませんでした</translation>
 <translation id="4556753742174065117">すべてのファームウェアが最新です</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
+<translation id="456077979087158257">都市</translation>
 <translation id="4561801978359312462">SIM のロックは解除されています</translation>
 <translation id="4562494484721939086">サービスなし</translation>
 <translation id="4573777384450697571">失敗 - 証明書が期限切れです</translation>
@@ -528,8 +545,10 @@
 <translation id="4809927044794281115">ライトモード</translation>
 <translation id="4813136279048157860">自分の画像</translation>
 <translation id="4813345808229079766">接続</translation>
+<translation id="4830894019733815633">峡谷</translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
+<translation id="4838825304062068169">氷河</translation>
 <translation id="4839698083503556542">オリジナルの動画を作成しましょう</translation>
 <translation id="48409034532829769">「<ph name="APP_NAME" />」は、自動的に起動するよう管理者によって設定されています。このアプリは終了できません。</translation>
 <translation id="484462545196658690">自動</translation>
@@ -555,6 +574,7 @@
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
+<translation id="4965703485264574128">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値に <ph name="CONVERSION_RATE" /> をかける</translation>
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">モード変更</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
@@ -575,6 +595,7 @@
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5090362543162270857">IPsec（IKEv2）</translation>
+<translation id="5107243100836678918"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">類義語:</translation>
 <translation id="5137451382116112100">全画面表示</translation>
 <translation id="5142961317498132443">認証</translation>
@@ -633,6 +654,7 @@
 <translation id="5499114900554609492">スキャンを完了できませんでした</translation>
 <translation id="5499762266711462226">キーボードのバックライトの色は壁紙に基づいています</translation>
 <translation id="5502931783115429516">Android は実行されていません</translation>
+<translation id="550600468576850160">牧草地</translation>
 <translation id="551689408806449779">デバイスの接続が解除されました。テストするには再接続してください</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5543701552415191873">ロック中</translation>
@@ -643,6 +665,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
+<translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5654356773042347102">スズラン</translation>
@@ -667,6 +690,7 @@
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
+<translation id="5810296156135698005">バロック</translation>
 <translation id="5816802250591013230">ショートカットは割り当てられていません</translation>
 <translation id="5826644637650799838">アートについて</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
@@ -706,6 +730,7 @@
 <translation id="604124094241169006">自動設定</translation>
 <translation id="6048107060512778456">失敗 - 紙詰まりです</translation>
 <translation id="6050189528197190982">グレースケール</translation>
+<translation id="6054711098834486579">表現主義</translation>
 <translation id="6058625436358447366">終了するには、古いパスワードと新しいパスワードを入力してください</translation>
 <translation id="6061772781719867950">HTTP リクエストが失敗しました</translation>
 <translation id="6073292342939316679">キーボードの明るさを下げる</translation>
@@ -810,9 +835,13 @@
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6694534975463174713">ロック</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
+<translation id="6712933881624804031">渓谷</translation>
+<translation id="671733080802536771">アールヌーボー</translation>
+<translation id="6721525125027474520">沼地</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">キーボード バックライト</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
+<translation id="6744441848304920043">ジャングル</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
 <translation id="6749473226660745022">写真</translation>
 <translation id="6753452347192452143">デバイスの種類はパソコンです。</translation>
@@ -869,6 +898,7 @@
 <translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
+<translation id="7171665330126595869">洞窟</translation>
 <translation id="7171919371520438592">ウィンドウを画面の <ph name="DIRECTION" /> の小さい部分に固定</translation>
 <translation id="7172721935181587524">1 件の画像</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
@@ -881,6 +911,7 @@
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="725133483556299729">メールアドレスを選択</translation>
+<translation id="7271000785316964275">古典主義</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7271932918253517778">最上段のキーを使用するショートカットには、<ph name="META_KEY" /> キーを含める必要があります。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -967,8 +998,10 @@
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="780301667611848630">同意しない</translation>
 <translation id="7805768142964895445">ステータス</translation>
+<translation id="7813073042185856802">山</translation>
 <translation id="7819831665603418705">テンプレートを使用</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
+<translation id="7824219488248240180">後期印象派</translation>
 <translation id="7841134249932030522">ダークモードを有効にする</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7850847810298646851">Google AI を活用した壁紙</translation>
@@ -1002,6 +1035,7 @@
 <translation id="8067126283828232460">APN に接続しました。</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8076492880354921740">タブ</translation>
+<translation id="8079860070590459552">花畑</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="8082644724189923105">キーボード ゾーン</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
@@ -1015,6 +1049,7 @@
 <translation id="8151185429379586178">デベロッパー ツール</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />、<ph name="ACCELERATOR_INFO" />。</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183975772394450380">ビーチ</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
@@ -1030,12 +1065,14 @@
 <translation id="8302368968391049045">HTTPS ファイアウォール</translation>
 <translation id="8312330582793120272">メディアを再生する</translation>
 <translation id="8318753676953949627">0 件の画像</translation>
+<translation id="8320910311642849813">森林</translation>
 <translation id="8329018942023753850">電卓アプリ</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8339024191194156249">自動起動の詳細</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> または <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8349826889576450703">ランチャー</translation>
+<translation id="8351482263741655895"><ph name="CATEGORY_TEXT" /> の値に <ph name="CONVERSION_RATE" /> をかける</translation>
 <translation id="8351855506390808906">キーマッピングのタッチポイント</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
@@ -1044,6 +1081,7 @@
 <translation id="8380114448424469341">ウィンドウを画面の <ph name="DIRECTION" /> の半分に固定</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
+<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> スタイルの <ph name="ART_FEATURE" /> の絵画</translation>
 <translation id="8410244574650205435">自動的に検出</translation>
 <translation id="8420955526972171689">ハードウェアの問題に関するテストとトラブルシューティングを行う</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1055,6 +1093,7 @@
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
 <translation id="8476242415522716722">キーボードの光を抑える</translation>
 <translation id="8476942730579767658">ウィンドウとデスク</translation>
+<translation id="8477536061607044749">グラフィック デザイン</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8491311378305535241">Android アプリからファイアウォールを介して HTTP ウェブサイトに接続できません</translation>
@@ -1128,6 +1167,7 @@
 <translation id="8970109610781093811">再実行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{ ページ{NUMBER_OF_PAGES}をスキャン}}</translation>
+<translation id="89945434909472341">村</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9003704114456258138">周波数</translation>

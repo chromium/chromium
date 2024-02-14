@@ -583,6 +583,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3437677362970530951">Gemau ar y Play Store a llwyfannau chwarae gemau eraill</translation>
 <translation id="3439896670700055005">Ail-lwytho'r dudalen gyfredol heb ddefnyddio cynnwys sydd wedi'i storio</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Addasu eich llygoden</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
 <translation id="3445925074670675829">Dyfais USB-C</translation>
 <translation id="3454555520521576458">Ailfeintiol</translation>
@@ -1612,6 +1613,7 @@ Gosodiad newydd</translation>
 <translation id="7509246181739783082">Cadarnhewch eich hunaniaeth</translation>
 <translation id="7512509370370076552">Mae'r llwybr byr de-glicio yn cael ei ddiweddaru i'r fysell <ph name="LAUNCHER_KEY_NAME" /> + clic o alt + clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, heb ei ddewis</translation>
+<translation id="7513057995673284840">Gallwch chi bersonoleiddio gweithredoedd botymau ar gyfer eich <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Dewiswyd y modd sgrinlun</translation>
 <translation id="7513922695575567867">Calendr, wythnos o <ph name="DATE" />, mae <ph name="SELECTED_DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
@@ -1668,6 +1670,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Wrthi'n creu GIF</translation>
 <translation id="7714767791242455379">Ychwanegu rhwydwaith symudol newydd</translation>
+<translation id="7716257086539630827">Addasu eich llechen</translation>
 <translation id="7720400844887872976">Ymlaen tan <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RHOI CYNNIG ARALL ARNI</translation>
 <translation id="7721132362314201794">Enw desg</translation>
@@ -1693,6 +1696,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7807067443225230855">Search ac Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal cryf</translation>
+<translation id="7830453190047749513">Gallwch bersonoleiddio gweithredoedd botymau, cyflymder cyrchwr, a rhagor ar gyfer eich <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Amser wedi darfod</translation>
 <translation id="7842569679327885685">Rhybudd: Nodwedd arbrofol</translation>
 <translation id="7846634333498149051">Bysellfwrdd</translation>

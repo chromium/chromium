@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Παιχνίδια στο Play Store και σε άλλες πλατφόρμες gaming</translation>
 <translation id="3439896670700055005">Επανάληψη φόρτωσης της τρέχουσας σελίδας χωρίς τη χρήση περιεχομένου που έχει αποθηκευτεί στην κρυφή μνήμη</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Προσαρμογή του ποντικιού</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3445925074670675829">Συσκευή USB-C</translation>
 <translation id="3454555520521576458">Δυνατότητα αλλαγής μεγέθους</translation>
@@ -1612,6 +1613,7 @@
 <translation id="7509246181739783082">Επαλήθευση της ταυτότητάς σας</translation>
 <translation id="7512509370370076552">Η συντόμευση δεξιού κλικ ενημερώνεται στο πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + κλικ από alt + κλικ</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, μη επιλεγμένο</translation>
+<translation id="7513057995673284840">Μπορείτε να εξατομικεύσετε τις ενέργειες κουμπιών για τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Επιλέχτηκε λειτουργία στιγμιότυπου οθόνης.</translation>
 <translation id="7513922695575567867">Ημερολόγιο, εβδομάδα <ph name="DATE" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Λήψη</translation>
@@ -1668,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Δημιουργία GIF</translation>
 <translation id="7714767791242455379">Προσθήκη νέου δικτύου κινητής τηλεφωνίας</translation>
+<translation id="7716257086539630827">Προσαρμογή του tablet</translation>
 <translation id="7720400844887872976">Ενεργή έως τις <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ΔΟΚΙΜΑΣΤΕ ΞΑΝΑ</translation>
 <translation id="7721132362314201794">Όνομα γραφείου</translation>
@@ -1693,6 +1696,7 @@
 <translation id="7807067443225230855">Αναζήτηση και Βοηθός</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
+<translation id="7830453190047749513">Μπορείτε να εξατομικεύσετε τις ενέργειες κουμπιών, την ταχύτητα του δείκτη και πολλά άλλα για τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Ο χρόνος τελείωσε</translation>
 <translation id="7842569679327885685">Προειδοποίηση: Πειραματική λειτουργία</translation>
 <translation id="7846634333498149051">Πληκτρολόγιο</translation>

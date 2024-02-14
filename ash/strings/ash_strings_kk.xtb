@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">Сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Сөрені әрқашан көрсету</translation>
 <translation id="132346741904777634">Камера жоғарғы сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> жұмыс үстелін және терезелерін жабу</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
 <translation id="1340378040547539434">Бетті кішірейту</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Chrome мәзірін көрсету</translation>
 <translation id="240006516586367791">Мультимедианы басқару элементтері</translation>
 <translation id="2402411679569069051">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз немесе телефон құлпын ашыңыз.</translation>
+<translation id="240545663114741956">Аккаунттан шығу үшін <ph name="ACCELERATOR" /> тіркесімін екі рет басыңыз.</translation>
 <translation id="2405664212338326887">Қосылмаған</translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">Қолданбаны орнату</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2484513351006226581">Пернетақтаны ауыстыру үшін <ph name="KEYBOARD_SHORTCUT" /> пернелерін басыңыз.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> алғы көрінісі. Жұмыс үстелі белсенді.</translation>
 <translation id="2487915095798731898">Қосылу</translation>
+<translation id="250047928202119308">Жұмыс үстелі профилінің мәзірі</translation>
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
 <translation id="2504454902900101003">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру мүмкіндігін реттеуден бас тарту</translation>
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
@@ -905,6 +909,7 @@
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4644727592819780893">Аймақ камераның алғы көрінісін көрсету үшін тым кіші.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, қолданба ұсынысы</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> құсбелгі ұяшығы таңдалған.</translation>
 <translation id="4657775630156561295">Келесі ұсыныс аккаунтыңыздың ұсыныс тарихынан біржола өшіріледі:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@
 <translation id="5111930673176965299">Фонды бұлдырату</translation>
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5121628974188116412">Беттің соңына өту</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> алғы көрінісі. Жұмыс үстелі белсенді емес.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
 <translation id="5150070631291639005">Құпиялық параметрлері</translation>
@@ -1431,6 +1437,7 @@
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6686023075541098243">Телефондағы хабарландыруларды көру мүмкіндігін реттеу</translation>
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
+<translation id="6697913454192220372">Жаңа жұмыс үстелін қосу</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>
 <translation id="6707693040195709527">Құрылғыны алдыңғы нұсқаға қайтару мерзімі өтіп кетті</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
@@ -1562,6 +1569,7 @@
 <translation id="7262906531272962081">Еске салғыш жасау</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Скриншот түсіру үшін жылдам параметрлердегі экранды түсіру құралын пайдаланыңыз</translation>
+<translation id="7301826272005790482">Терезе ұсыныстарын жабу</translation>
 <translation id="7302889331339392448">Live Caption өшірулі.</translation>
 <translation id="7303365578352795231">Басқа құрылғыдан жауап берілуде.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@
 <translation id="8054466585765276473">Батарея уақытын есептеу.</translation>
 <translation id="8079538659226626406">Экранды көрсету</translation>
 <translation id="8083540854303889870">Кейінге сақталған</translation>
+<translation id="8088141034189573826">Қосымша опцияларды көру үшін Tab пернесін басыңыз. Барлық жұмыс үстеліне кіру үшін сол және оң бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="8091153018031979607">Басталу уақыты: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматты жаңартулар</translation>
 <translation id="8092380135549145188">Айналдыруды басқару элементтері</translation>
@@ -1965,6 +1974,7 @@
 <translation id="8936501819958976551">өшірілді</translation>
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>
 <translation id="8940956008527784070">Батарея заряды төмен (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> құсбелгі ұяшығы таңдалмаған.</translation>
 <translation id="8949925099261528566">Қосылған, интернет жоқ</translation>
 <translation id="8951539504029375108">Мақұлданған Thunderbolt құрылғылары ғана Chromebook-пен үйлесімді.</translation>
 <translation id="8964525410783593407">1 сағ</translation>

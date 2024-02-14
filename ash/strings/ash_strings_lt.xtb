@@ -329,6 +329,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2369165858548251131">„Labas“ kinų kalba</translation>
 <translation id="2382875860893882175">Perdavimas šiuo metu pristabdytas. Galite bet kada tęsti arba sustabdyti perdavimą.</translation>
 <translation id="2386292613071805067">Pasirinkti viską puslapyje</translation>
+<translation id="2392659840443812875">Nėra pasiekiamo viešosios interneto prieigos taško. Įsitikinkite, kad įrenginys yra netoliese ir įjungtas „Bluetooth“.</translation>
 <translation id="2397416548179033562">Rodyti „Chrome“ meniu</translation>
 <translation id="240006516586367791">Medijos valdikliai</translation>
 <translation id="2402411679569069051">Kad atrakintumėte „Chromebook“, naudokite kontrolinį kodą arba atrakinkite telefoną</translation>
@@ -587,6 +588,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3437677362970530951">Žaidimai „Play“ parduotuvėje ir kitose žaidimų platformose</translation>
 <translation id="3439896670700055005">Iš naujo įkelti dabartinį puslapį nenaudojant talpykloje saugomo turinio</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" /> iš <ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Pelės tinkinimas</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C įrenginys</translation>
 <translation id="3454555520521576458">Galima keisti dydį</translation>
@@ -1084,6 +1086,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5313326810920013265">„Bluetooth“ nustatymai</translation>
 <translation id="5314219114274263156">Ekrano vaizdas įrašytas</translation>
 <translation id="5314489738835854379">Pereiti atgal per langus</translation>
+<translation id="5315931444962548795">Įjunkite „Bluetooth“, kad aptiktumėte pasiekiamus viešosios interneto prieigos taškus netoliese</translation>
 <translation id="5316716239522500219">Dubliuoti monitorius</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319712128756744240">Naujo įrenginio susiejimas</translation>
@@ -1620,6 +1623,7 @@ Naujas įdiegimas</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>
 <translation id="7512509370370076552">Dešiniuoju klavišu spustelėjamas spartusis klavišas atnaujintas: dabar naudojamas derinys <ph name="LAUNCHER_KEY_NAME" /> klavišas + paspaudimas vietoj „Alt“ + paspaudimo</translation>
 <translation id="7512726380443357693">„<ph name="BUTTON_LABEL" />“, nepasirinkta</translation>
+<translation id="7513057995673284840">Galite suasmeninti „<ph name="PERIPHERAL_NAME" />“ mygtukų veiksmus</translation>
 <translation id="7513622367902644023">Pasirinktas ekrano kopijos režimas</translation>
 <translation id="7513922695575567867">Kalendorius, <ph name="DATE" /> savaitė, šiuo metu pasirinkta <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
@@ -1676,6 +1680,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Kuriamas GIF</translation>
 <translation id="7714767791242455379">Pridėti naują mobiliojo ryšio tinklą</translation>
+<translation id="7716257086539630827">Planšetinio kompiuterio tinkinimas</translation>
 <translation id="7720400844887872976">Įjungta iki <ph name="TIME" /></translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
 <translation id="7721132362314201794">Darbalaukio pavadinimas</translation>
@@ -1701,6 +1706,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7807067443225230855">Paieška ir Padėjėjas</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Stiprus signalas</translation>
+<translation id="7830453190047749513">Galite suasmeninti „<ph name="PERIPHERAL_NAME" />“ mygtukų veiksmus, žymeklio greitį ir kt.</translation>
 <translation id="7837740436429729974">Laikas baigėsi</translation>
 <translation id="7842569679327885685">Įspėjimas: eksperimentinė funkcija</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>

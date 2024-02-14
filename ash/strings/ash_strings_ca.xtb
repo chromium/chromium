@@ -583,6 +583,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3437677362970530951">Jocs a Play Store i en altres plataformes de videojocs</translation>
 <translation id="3439896670700055005">Torna a carregar la pàgina actual sense utilitzar contingut desat a la memòria cau</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Personalitza el teu ratolí</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3454555520521576458">Es pot canviar la mida</translation>
@@ -1612,6 +1613,7 @@ Instal·lació nova</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7512509370370076552">La drecera per fer clic amb el botó dret s'ha actualitzat d'Alt+clic a la tecla <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionat</translation>
+<translation id="7513057995673284840">Pots personalitzar les accions del botó per a <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">S'ha seleccionat el mode de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendari, setmana del <ph name="DATE" />, actualment està seleccionat el dia <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Baixa</translation>
@@ -1668,6 +1670,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">S'està creant el GIF</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
+<translation id="7716257086539630827">Personalitza la teva tauleta</translation>
 <translation id="7720400844887872976">Activada fins a les <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
 <translation id="7721132362314201794">Nom de l'escriptori</translation>
@@ -1693,6 +1696,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7807067443225230855">Cerca i Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
+<translation id="7830453190047749513">Pots personalitzar les accions dels botons, la velocitat del cursor i més per al teu dispositiu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>
 <translation id="7842569679327885685">Advertiment: funció experimental</translation>
 <translation id="7846634333498149051">Teclat</translation>

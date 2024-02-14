@@ -588,6 +588,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3437677362970530951">Igre u Play prodavnici i na drugim platformama za igre</translation>
 <translation id="3439896670700055005">Ponovo učitaj aktuelnu stranicu bez korišćenja keširanog sadržaja</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Prilagodite miš</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Uređaj sa USB priključkom tipa C</translation>
 <translation id="3454555520521576458">Promenljive veličine</translation>
@@ -1624,6 +1625,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
 <translation id="7512509370370076552">Prečica za desni klik je sada taster <ph name="LAUNCHER_KEY_NAME" /> + klik, a ne više alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nije izabrano</translation>
+<translation id="7513057995673284840">Možete da personalizujete radnje dugmadi za uređaj <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Izabran je režim snimka ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica kada je <ph name="DATE" />, <ph name="SELECTED_DATE" /> je trenutno izabran.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
@@ -1680,6 +1682,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Pravi se GIF</translation>
 <translation id="7714767791242455379">Dodajte novu mobilnu mrežu</translation>
+<translation id="7716257086539630827">Prilagodite tablet</translation>
 <translation id="7720400844887872976">Uključeno do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7721132362314201794">Naziv radne površine</translation>
@@ -1705,6 +1708,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7807067443225230855">Pretraga i Pomoćnik</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
+<translation id="7830453190047749513">Možete da personalizujete radnje dugmadi, brzinu kursora i drugo za uređaj <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Vreme je isteklo</translation>
 <translation id="7842569679327885685">Upozorenje: Eksperimentalna funkcija</translation>
 <translation id="7846634333498149051">Tastatura</translation>

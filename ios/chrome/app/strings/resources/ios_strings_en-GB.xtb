@@ -338,7 +338,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google</translation>
-<translation id="2709516037105925701">Auto-fill</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -1462,6 +1462,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8449347986464073209">Delete and sign out</translation>
 <translation id="8459333855531264009">Not Secure</translation>
+<translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="8487894141648868716">USPS</translation>
@@ -1625,6 +1626,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="96615566463761848">Show Tab Suggestions from Other Devices</translation>
 <translation id="973493300226275298">Track the price of a product across online shops. You’ll get alerts when the price drops.</translation>
 <translation id="981498610235328462">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.</translation>
+<translation id="984275831282074731">Payment methods</translation>
 <translation id="984509647832111802">Sync isn't working.</translation>
 <translation id="988141524645182168">Other devices</translation>
 <translation id="989988560359834682">Edit Address</translation>

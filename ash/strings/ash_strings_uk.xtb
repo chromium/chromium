@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Ігри в Google Play і на інших ігрових платформах</translation>
 <translation id="3439896670700055005">Оновити поточну сторінку без кешованого контенту</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Налаштуйте мишу</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
 <translation id="3454555520521576458">Можна змінювати розмір</translation>
@@ -1612,6 +1613,7 @@
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7512509370370076552">Комбінація клавіш для імітації кліку правою кнопкою миші змінилася з "Alt + клік" на "<ph name="LAUNCHER_KEY_NAME" /> + клік"</translation>
 <translation id="7512726380443357693">Кнопку "<ph name="BUTTON_LABEL" />" не вибрано</translation>
+<translation id="7513057995673284840">Ви можете персоналізувати дії для кнопок на пристрої <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Вибрано режим знімка екрана</translation>
 <translation id="7513922695575567867">Календар, тиждень від <ph name="DATE" />, зараз вибрано <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Завантажити</translation>
@@ -1668,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Створення файлу GIF</translation>
 <translation id="7714767791242455379">Додати мобільну мережу</translation>
+<translation id="7716257086539630827">Налаштуйте свій планшет</translation>
 <translation id="7720400844887872976">Увімкнено до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7721132362314201794">Назва робочого столу</translation>
@@ -1693,6 +1696,7 @@
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
+<translation id="7830453190047749513">Ви можете персоналізувати дії для кнопок, швидкість курсора тощо на пристрої <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Час минув</translation>
 <translation id="7842569679327885685">Попередження. Експериментальна функція</translation>
 <translation id="7846634333498149051">Клавіатура</translation>

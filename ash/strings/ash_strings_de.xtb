@@ -583,6 +583,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3437677362970530951">Spiele im Play Store und auf anderen Gaming-Plattformen</translation>
 <translation id="3439896670700055005">Aktuelle Seite ohne zwischengespeicherte Inhalte aktualisieren</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Maus anpassen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3454555520521576458">Größe kann geändert werden</translation>
@@ -1612,6 +1613,7 @@ Neuinstallation</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
 <translation id="7512509370370076552">Die Tastenkombination für den Rechtsklick wird von Alt + Klick in <ph name="LAUNCHER_KEY_NAME" />-Taste + Klick geändert</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nicht ausgewählt</translation>
+<translation id="7513057995673284840">Du kannst Tastenaktionen für dein Gerät (<ph name="PERIPHERAL_NAME" />) personalisieren</translation>
 <translation id="7513622367902644023">Screenshotmodus ausgewählt</translation>
 <translation id="7513922695575567867">Kalender, Woche ab dem <ph name="DATE" />, momentan ist der <ph name="SELECTED_DATE" /> ausgewählt.</translation>
 <translation id="7514365320538308">Herunterladen</translation>
@@ -1668,6 +1670,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF wird erstellt</translation>
 <translation id="7714767791242455379">Neues Mobilfunknetz hinzufügen</translation>
+<translation id="7716257086539630827">Tablet personalisieren</translation>
 <translation id="7720400844887872976">Aktiviert bis <ph name="TIME" /></translation>
 <translation id="7720410380936703141">WIEDERHOLEN</translation>
 <translation id="7721132362314201794">Desktopname</translation>
@@ -1693,6 +1696,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> und <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Starkes Signal</translation>
+<translation id="7830453190047749513">Du kannst unter anderem Tastenaktionen, die Cursorgeschwindigkeit und mehr für dein Gerät (<ph name="PERIPHERAL_NAME" />) personalisieren</translation>
 <translation id="7837740436429729974">Die Zeit ist um</translation>
 <translation id="7842569679327885685">Achtung: Experimentelle Funktion</translation>
 <translation id="7846634333498149051">Tastatur</translation>

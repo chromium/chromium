@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">თაროს ყოველთვის ჩვენება</translation>
 <translation id="132346741904777634">კამერა მიზიდულია ზედა მარცხენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" />-ისა და ფანჯრების დახურვა</translation>
 <translation id="1333308631814936910">დაკავშირებულია <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">გვერდზე მასშტაბის შემცირება</translation>
 <translation id="1341651618736211726">გადავსება</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Chrome-ის მენიუს ჩვენება</translation>
 <translation id="240006516586367791">მედიის მართვის საშუალებები</translation>
 <translation id="2402411679569069051">თქვენი Chromebook-ის განსაბლოკად გამოიყენეთ თქვენი თითის ანაბეჭდი, ან განბლოკეთ თქვენი ტელეფონი</translation>
+<translation id="240545663114741956">სისტემიდან გამოსასვლელად ორჯერ დააჭირეთ <ph name="ACCELERATOR" />-ს.</translation>
 <translation id="2405664212338326887">არ არის დაკავშირებული</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">დააინსტალირეთ პროგრამა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2484513351006226581">კლავიატურის განლაგების გადასართველად გამოიყენეთ კლავიშთა კომბინაცია: <ph name="KEYBOARD_SHORTCUT" />.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" />-ის გადასახედი ვერსია. აქტიური სამუშაო მაგიდა.</translation>
 <translation id="2487915095798731898">გაწევრიანება</translation>
+<translation id="250047928202119308">სამუშაო მაგიდის პროფილის მენიუ</translation>
 <translation id="2501920221385095727">კლავიშების ფიქსაცია</translation>
 <translation id="2504454902900101003">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვის დაყენების დახურვა</translation>
 <translation id="2509468283778169019">CAPS LOCK ჩართულია</translation>
@@ -905,6 +909,7 @@
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
 <translation id="4644727592819780893">რეგიონი ზედმეტად პატარაა კამერის მოსათავსებლად</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, აპის რეკომენდაცია</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> მოსანიშნი ველი მონიშნულია.</translation>
 <translation id="4657775630156561295">თქვენი ანგარიშის შემოთავაზებების ისტორიიდან სამუდამოდ ამოიშლება შემდეგი შემოთავაზება:
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@
 <translation id="5111930673176965299">ფონის გაბუნდოვნება</translation>
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5121628974188116412">გვერდის ბოლოში გადასვლა</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" />-ის გადასახედი ვერსია. არააქტიური სამუშაო მაგიდა.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5150070631291639005">კონფიდენციალურობის პარამეტრები</translation>
@@ -1431,6 +1437,7 @@
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6686023075541098243">თქვენი ტელეფონის შეტყობინებების ნახვის დაყენება</translation>
 <translation id="6696025732084565524">თქვენი განცალკევებადი კლავიატურა საჭიროებს კრიტიკულ განახლებას</translation>
+<translation id="6697913454192220372">ახალი სამუშაო მაგიდის დამატება</translation>
 <translation id="6700713906295497288">IME მენიუს ღილაკი</translation>
 <translation id="6707693040195709527">მოწყობილობის წინა ვერსიაზე დაბრუნება ვადაგადაცილებულია</translation>
 <translation id="6710213216561001401">წინა</translation>
@@ -1562,6 +1569,7 @@
 <translation id="7262906531272962081">შეხსენების შექმნა</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">ეკრანის ანაბეჭდების გადასაღებად გამოიყენეთ ეკრანის აღბეჭდვის ხელსაწყო სწრაფი პარამეტრებიდან</translation>
+<translation id="7301826272005790482">ფანჯრების შემოთავაზებების იგნორირება</translation>
 <translation id="7302889331339392448">ავტოსუბტიტრები გამორთულია.</translation>
 <translation id="7303365578352795231">პასუხის გაცემა მიმდინარეობს სხვა მოწყობილობაზე.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
 <translation id="8079538659226626406">ეკრანის გაზიარება</translation>
 <translation id="8083540854303889870">შენახულია სამომავლოდ</translation>
+<translation id="8088141034189573826">მეტი ვარიანტის გასაცნობად გამოიყენეთ Tab. ყველა სამუშაო მაგიდაზე წვდომისთვის გამოიყენეთ კლავიშები მარცხნივ და მარჯვნივ მიმართული ისრით.</translation>
 <translation id="8091153018031979607">იწყება <ph name="START_TIME" />-ზე (<ph name="DAYS_ELAPSED" />)</translation>
 <translation id="8091387634532529612">ავტომატური განახლებები</translation>
 <translation id="8092380135549145188">გადაადგილების მართვის საშუალებები</translation>
@@ -1965,6 +1974,7 @@
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> მოსანიშნი ველი მოუნიშნავია.</translation>
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8951539504029375108">თქვენს Chromebook-თან თავსებადია მხოლოდ დადასტურებული Thunderbolt მოწყობილობები</translation>
 <translation id="8964525410783593407">1 სთ</translation>

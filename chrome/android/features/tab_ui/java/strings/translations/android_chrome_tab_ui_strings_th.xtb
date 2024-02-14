@@ -6,6 +6,7 @@
 <translation id="1197088940767939838">สีส้ม</translation>
 <translation id="1215127405478249895">ตรวจสอบแท็บ</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
+<translation id="1322824555808364080">เชิญผู้อื่น</translation>
 <translation id="1326271443836399892">ตรวจสอบการตั้งค่าการจัดระเบียบปัจจุบัน</translation>
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
@@ -87,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{แชร์แท็บ}other{แชร์แท็บ}}</translation>
 <translation id="7129458170538955174">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับความสูงครึ่งหนึ่งของหน้าจอแล้ว</translation>
 <translation id="7204204600596740190">โหมดเลือกหลายรายการ</translation>
+<translation id="731648547091221002">เลือก <ph name="COLOR_NAME" /> อยู่</translation>
 <translation id="7326879924029668159">ดูนโยบายคืนสินค้าและอื่นๆ</translation>
 <translation id="7352298686197644113">ดูสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="753732157349120914">ตัวสลับแท็บ</translation>
@@ -97,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> รีวิว}other{การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> รีวิว}}</translation>
 <translation id="7885132941432959125">ย้ายแท็บไปทางขวา</translation>
+<translation id="7939917283308035850">ไม่ได้เลือก <ph name="COLOR_NAME" /> อยู่</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7966321538264951561">ปิดคำแนะนำ</translation>
 <translation id="8029301326595421733">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับเต็มความสูงของหน้าจอแล้ว</translation>

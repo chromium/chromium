@@ -100,6 +100,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1312604459020188865">Intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostra sempre barra delle app</translation>
 <translation id="132346741904777634">Fotocamera allineata all'angolo in alto a sinistra. Conflitto con la piattaforma di sistema.</translation>
+<translation id="132415371743256095">Chiudi <ph name="DESK_NAME" /> e finestre</translation>
 <translation id="1333308631814936910">Dispositivo <ph name="DISPLAY_NAME" /> connesso</translation>
 <translation id="1340378040547539434">Diminuisci lo zoom sulla pagina</translation>
 <translation id="1341651618736211726">Overflow</translation>
@@ -328,9 +329,11 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2382875860893882175">La trasmissione è attualmente in pausa. Puoi riprendere la trasmissione o interromperla in qualsiasi momento.</translation>
 <translation id="2386292613071805067">Seleziona tutto sulla pagina</translation>
+<translation id="2392659840443812875">Nessun hotspot disponibile. Assicurati che il dispositivo sia nelle vicinanze e che il Bluetooth sia attivo.</translation>
 <translation id="2397416548179033562">Mostra il menu Chrome</translation>
 <translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2402411679569069051">Per sbloccare Chromebook, utilizza la tua impronta o sblocca il telefono</translation>
+<translation id="240545663114741956">Premi due volte <ph name="ACCELERATOR" /> per uscire.</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
@@ -352,7 +355,9 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2478076885740497414">Installa app</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
+<translation id="2486214324139475545">Anteprima di <ph name="DESK_NAME" />. Scrivania attiva.</translation>
 <translation id="2487915095798731898">Partecipa</translation>
+<translation id="250047928202119308">Menu profilo scrivania</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2504454902900101003">Chiudi la configurazione della visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
@@ -902,6 +907,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4644727592819780893">Area troppo piccola per mostrare l'anteprima della fotocamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
+<translation id="4654916960643280876">Casella di controllo <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> selezionata.</translation>
 <translation id="4657775630156561295">Il seguente suggerimento verrà rimosso in modo permanente dalla cronologia dei suggerimenti del tuo account:
 
 <ph name="QUERY" /></translation>
@@ -1028,6 +1034,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5111930673176965299">Sfocatura sfondo</translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
+<translation id="5122517996953421795">Anteprima di <ph name="DESK_NAME" />. Scrivania non attiva.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
@@ -1075,6 +1082,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5313326810920013265">Impostazioni Bluetooth</translation>
 <translation id="5314219114274263156">Registrazione dello schermo acquisita</translation>
 <translation id="5314489738835854379">Spostati indietro tra le finestre</translation>
+<translation id="5315931444962548795">Attiva il Bluetooth per scoprire gli hotspot disponibili nelle vicinanze</translation>
 <translation id="5316716239522500219">Consente di duplicare i monitor</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319712128756744240">Accoppia nuovo dispositivo</translation>
@@ -1428,6 +1436,7 @@ Nuova installazione</translation>
 <translation id="6683022854667115063">Cuffie</translation>
 <translation id="6686023075541098243">Configura la visualizzazione di notifiche dello smartphone</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
+<translation id="6697913454192220372">Aggiungi nuova scrivania</translation>
 <translation id="6700713906295497288">Pulsante di menu IME</translation>
 <translation id="6707693040195709527">Il termine ultimo per il ripristino della versione precedente del dispositivo è trascorso</translation>
 <translation id="6710213216561001401">Precedente</translation>
@@ -1559,6 +1568,7 @@ Nuova installazione</translation>
 <translation id="7262906531272962081">Crea promemoria</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Usa lo strumento di acquisizione schermo nelle Impostazioni rapide per acquisire screenshot</translation>
+<translation id="7301826272005790482">Chiudi suggerimenti finestre</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
 <translation id="7303365578352795231">Risposta su un altro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1765,6 +1775,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
 <translation id="8079538659226626406">Condivisione schermo</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
+<translation id="8088141034189573826">Usa Tab per altre opzioni. Usa la Freccia destra e la Freccia sinistra per accedere a tutte le scrivanie.</translation>
 <translation id="8091153018031979607">Inizia alle ore <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Aggiornamenti automatici</translation>
 <translation id="8092380135549145188">Controlli di scorrimento</translation>
@@ -1961,6 +1972,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8936501819958976551">disattivato</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="8940956008527784070">Batteria in esaurimento (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">Casella di controllo <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> non selezionata.</translation>
 <translation id="8949925099261528566">Connesso, senza Internet</translation>
 <translation id="8951539504029375108">Soltanto i dispositivi Thunderbolt approvati sono compatibili con il tuo Chromebook</translation>
 <translation id="8964525410783593407">1 h</translation>

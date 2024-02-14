@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Play Store আৰু অন্য গে’মিং প্লেটফৰ্মত থকা গে’ম</translation>
 <translation id="3439896670700055005">কেশ্ব কৰা সমল ব্যৱহাৰ নকৰাকৈ আপোনাৰ বৰ্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">আপোনাৰ মাউছ কাষ্টমাইজ কৰক</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
 <translation id="3454555520521576458">আকাৰ সলনি কৰিব পৰা</translation>
@@ -1612,6 +1613,7 @@
 <translation id="7509246181739783082">আপোনাৰ পৰিচয় সত্যাপন কৰক</translation>
 <translation id="7512509370370076552">ৰাইট-ক্লিক শ্বৰ্টকাটটো alt + ক্লিকৰ পৰা<ph name="LAUNCHER_KEY_NAME" /> কী + ক্লিকলৈ আপডে’ট কৰা হৈছে</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, বাছনি কৰা হোৱা নাই</translation>
+<translation id="7513057995673284840">আপুনি আপোনাৰ <ph name="PERIPHERAL_NAME" />ৰ বাবে বুটামৰ কাৰ্যসমূহ ব্যক্তিগতকৰণ কৰিব পাৰে</translation>
 <translation id="7513622367902644023">স্ক্ৰীনশ্বট ম'ডটো বাছনি কৰা হ'ল</translation>
 <translation id="7513922695575567867">কেলেণ্ডাৰ, <ph name="DATE" />ৰ সপ্তাহ, <ph name="SELECTED_DATE" /> বৰ্তমান বাছনি কৰা হৈছে।</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
@@ -1668,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF সৃষ্টি কৰি থকা হৈছে</translation>
 <translation id="7714767791242455379">নতুন চেলুলাৰ নেটৱৰ্ক যোগ দিয়ক</translation>
+<translation id="7716257086539630827">আপোনাৰ টেবলেটটো কাষ্টমাইজ কৰক</translation>
 <translation id="7720400844887872976"><ph name="TIME" />লৈকে অন হৈ থাকিব</translation>
 <translation id="7720410380936703141">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7721132362314201794">ডেস্কৰ নাম</translation>
@@ -1693,6 +1696,7 @@
 <translation id="7807067443225230855">Search আৰু Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> আৰু <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">শক্তিশালী ছিগনেল</translation>
+<translation id="7830453190047749513">আপুনি আপোনাৰ <ph name="PERIPHERAL_NAME" />ৰ বাবে বুটামৰ কাৰ্যসমূহ, কাৰ্ছৰৰ গতিবেগ আৰু আন বহুতো বস্তু ব্যক্তিগতকৰণ কৰিব পাৰে</translation>
 <translation id="7837740436429729974">সময় শেষ হ’ল</translation>
 <translation id="7842569679327885685">সাৱধানবাণী: পৰীক্ষামূলক সুবিধা</translation>
 <translation id="7846634333498149051">কীব'ৰ্ড</translation>

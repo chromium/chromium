@@ -583,6 +583,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3437677362970530951">Game di Play Store dan platform game lainnya</translation>
 <translation id="3439896670700055005">Muat ulang halaman saat ini tanpa menggunakan konten yang disimpan dalam cache</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Sesuaikan mouse Anda</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3454555520521576458">Dapat diubah ukurannya</translation>
@@ -1612,6 +1613,7 @@ Baru diinstal</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7512509370370076552">Pintasan klik kanan diperbarui dari alt + klik menjadi tombol <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, tidak dipilih</translation>
+<translation id="7513057995673284840">Anda dapat mempersonalisasi tindakan tombol untuk <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Mode screenshot dipilih</translation>
 <translation id="7513922695575567867">Kalender, minggu <ph name="DATE" />, <ph name="SELECTED_DATE" /> saat ini dipilih.</translation>
 <translation id="7514365320538308">Download</translation>
@@ -1668,6 +1670,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Membuat GIF</translation>
 <translation id="7714767791242455379">Tambahkan jaringan seluler baru</translation>
+<translation id="7716257086539630827">Sesuaikan tablet Anda</translation>
 <translation id="7720400844887872976">Aktif sampai <ph name="TIME" /></translation>
 <translation id="7720410380936703141">COBA LAGI</translation>
 <translation id="7721132362314201794">Nama desktop</translation>
@@ -1693,6 +1696,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7807067443225230855">Penelusuran dan Asisten</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinyal kuat</translation>
+<translation id="7830453190047749513">Anda dapat mempersonalisasi tindakan tombol, kecepatan kursor, dan lainnya untuk <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Waktu habis</translation>
 <translation id="7842569679327885685">Peringatan: Fitur eksperimental</translation>
 <translation id="7846634333498149051">Keyboard</translation>

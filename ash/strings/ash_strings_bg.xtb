@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Игри в Google Play Магазин и други платформи за игри</translation>
 <translation id="3439896670700055005">Презареждане на текущата страница, без да се използва кеширано съдържание</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Персонализирайте мишката си</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
 <translation id="3454555520521576458">Може да се преоразмерява</translation>
@@ -1612,6 +1613,7 @@
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7512509370370076552">Прекият път с десния бутон на мишката е променен от Alt + кликване на клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + кликване</translation>
 <translation id="7512726380443357693">Бутонът „<ph name="BUTTON_LABEL" />“ не е избран</translation>
+<translation id="7513057995673284840">Можете да персонализирате действията с бутоните за <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Избран е режимът за екранна снимка</translation>
 <translation id="7513922695575567867">Календар, седмицата на <ph name="DATE" />, понастоящем е избрана датата <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
@@ -1668,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF файлът се създава</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
+<translation id="7716257086539630827">Персонализирайте таблета си</translation>
 <translation id="7720400844887872976">Включено до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">НОВ ОПИТ</translation>
 <translation id="7721132362314201794">Име на работния кът</translation>
@@ -1693,6 +1696,7 @@
 <translation id="7807067443225230855">Търсене и Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">силен сигнал</translation>
+<translation id="7830453190047749513">Можете да персонализирате действията за бутоните, скоростта на курсора и др. за <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Времето изтече</translation>
 <translation id="7842569679327885685">Предупреждение: Експериментална функция</translation>
 <translation id="7846634333498149051">Клавиатура</translation>

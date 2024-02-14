@@ -6,6 +6,7 @@
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1215127405478249895">Reveja os separadores</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
+<translation id="1322824555808364080">Convidar pessoas</translation>
 <translation id="1326271443836399892">Reveja as definições de organização atuais.</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
 <translation id="1555130319947370107">Azul</translation>
@@ -87,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partilhar separador}other{Partilhar separadores}}</translation>
 <translation id="7129458170538955174">Informações acerca desta loja abertas a meia altura</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="731648547091221002">Cor <ph name="COLOR_NAME" /> selecionada</translation>
 <translation id="7326879924029668159">Veja a Política de Devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual dos itens nos seus separadores abertos tem um preço mais baixo.</translation>
 <translation id="753732157349120914">Comutador de separadores</translation>
@@ -97,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Agrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> crítica}other{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> críticas}}</translation>
 <translation id="7885132941432959125">Mover separador para a direita</translation>
+<translation id="7939917283308035850">Cor <ph name="COLOR_NAME" /> não selecionada</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>

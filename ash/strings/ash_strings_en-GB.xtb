@@ -587,6 +587,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3437677362970530951">Games on the Play Store and other gaming platforms</translation>
 <translation id="3439896670700055005">Reload current page without using cached content</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Customise your mouse</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3454555520521576458">Resizable</translation>
@@ -1620,6 +1621,7 @@ New install</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7512509370370076552">The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME" /> key + click from alt + click</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, not selected</translation>
+<translation id="7513057995673284840">You can personalise button actions for your <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
 <translation id="7514365320538308">Download</translation>
@@ -1676,6 +1678,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Creating GIF</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
+<translation id="7716257086539630827">Customise your tablet</translation>
 <translation id="7720400844887872976">On until <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7721132362314201794">Desk name</translation>
@@ -1701,6 +1704,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Strong signal</translation>
+<translation id="7830453190047749513">You can personalise button actions, cursor speed and more for your <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Time's up</translation>
 <translation id="7842569679327885685">Warning: Experimental feature</translation>
 <translation id="7846634333498149051">Keyboard</translation>

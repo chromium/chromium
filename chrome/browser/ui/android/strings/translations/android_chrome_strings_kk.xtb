@@ -203,6 +203,7 @@
 <translation id="2132122640199389833">Байланыстырылған құрылғылардың барлығын өшіру</translation>
 <translation id="213279576345780926">Жабық <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Негізгі экранға қосу</translation>
+<translation id="2139414603196655536">Бет статистикасындағы әрекетіңіз Google аккаунтыңызға сақталады. <ph name="BEGIN_LINK" />Оны реттеу жолы туралы ақпарат<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Пайдалануыңызға негізделген ұсыныс</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
 <translation id="2155214902713132423">Бұл растау әдісі осы құрылғы үшін қолжетімсіз. Басқа құрылғыда өзге опцияны таңдаңыз.</translation>
@@ -1080,6 +1081,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="670498945988402717">Кеше тексерілді.</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> таймерінің уақыты бітті. Ол ертең қайта басталады.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Бетбелгі <ph name="FOLDER_NAME" /> қалтасына сақталды. Ол тек осы құрылғыға сақталады.}other{Бетбелгілер <ph name="FOLDER_NAME" /> қалтасына сақталды. Ол тек осы құрылғыға сақталады.}}</translation>
 <translation id="6715020873764921614"><ph name="FILE_NAME" /> файлын (<ph name="FILE_SIZE" />) сонда да жүктеп алғыңыз келе ме?</translation>
 <translation id="6719634564325948108">QR коды арқылы қосылсын ба?</translation>
 <translation id="6723740634201835758">Google аккаунтыңызда</translation>
@@ -1400,6 +1402,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8237871086242677046">Бет статистикасының төменгі парақшасы</translation>
 <translation id="8243077599929149377">Пайдаланушы атын қосыңыз</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Бетбелгі <ph name="ACCOUNT_EMAIL" /> аккаунтыңыздағы <ph name="FOLDER_NAME" /> қалтасына сақталды.}other{Бетбелгілер <ph name="ACCOUNT_EMAIL" /> аккаунтыңыздағы <ph name="FOLDER_NAME" /> қалтасына сақталды.}}</translation>
 <translation id="8255617931166444521">Сайттар cookie файлдарын өз тарапындағы браузерді қолдану мәліметін көру үшін ғана пайдалана алады.</translation>
 <translation id="8259179246279078674">Алдын ала жүктелетін беттер шифрланғандықтан, Google олардың контенті туралы ақпарат алмайды. Google серверлері қай сайттардың құпия түрде алдын ала жүктелгені туралы ақпарат алады. Бұл ақпарат тек беттерді алдын ала жүктеу үшін пайдаланылады және Google аккаунтыңыздың басқа деректерімен байланыстырылмайды.</translation>
 <translation id="8260126382462817229">Қайта кіріп көріңіз</translation>

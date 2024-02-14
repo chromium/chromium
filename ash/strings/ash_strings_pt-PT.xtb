@@ -588,6 +588,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3437677362970530951">Jogos na Play Store e noutras plataformas de videojogos</translation>
 <translation id="3439896670700055005">Atualizar a página atual sem usar o conteúdo em cache</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Personalize o seu rato</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454555520521576458">Redimensionável</translation>
@@ -1622,6 +1623,7 @@ Nova instalação</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
 <translation id="7512509370370076552">O atalho do clique com o botão direito do rato foi atualizado de alt + clique para a tecla <ph name="LAUNCHER_KEY_NAME" /> + clique</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, não selecionado</translation>
+<translation id="7513057995673284840">Pode personalizar as ações dos botões para o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Modo de captura de ecrã selecionado</translation>
 <translation id="7513922695575567867">Atualmente, está selecionada a semana de <ph name="DATE" />, <ph name="SELECTED_DATE" />, do calendário.</translation>
 <translation id="7514365320538308">Transferir</translation>
@@ -1678,6 +1680,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">A criar GIF</translation>
 <translation id="7714767791242455379">Adicionar nova rede móvel</translation>
+<translation id="7716257086539630827">Personalize o seu tablet</translation>
 <translation id="7720400844887872976">Ativada até à(s) <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7721132362314201794">Nome do espaço de trabalho</translation>
@@ -1703,6 +1706,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
+<translation id="7830453190047749513">Pode personalizar as ações dos botões, a velocidade do cursor e muito mais para o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
 <translation id="7842569679327885685">Aviso: funcionalidade experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>

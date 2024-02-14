@@ -587,6 +587,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3437677362970530951">Igre v Trgovini Play in na drugih igralnih platformah</translation>
 <translation id="3439896670700055005">Vnovično nalaganje trenutne strani brez uporabe predpomnjene vsebine</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Prilagajanje miške</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Naprava USB-C</translation>
 <translation id="3454555520521576458">Omogoča spreminjanje velikosti</translation>
@@ -1620,6 +1621,7 @@ Nova namestitev</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
 <translation id="7512509370370076552">Bližnjica, ki jo kliknete z desnim gumbom, je posodobljena na tipko <ph name="LAUNCHER_KEY_NAME" /> + klik s kombinacijo tipke alt + klik</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ni izbrano</translation>
+<translation id="7513057995673284840">Dejanja gumbov lahko osebno prilagodite za napravo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Izbran je način posnetka zaslona</translation>
 <translation id="7513922695575567867">Koledar, v tednu <ph name="DATE" />, trenutno izbran datum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Prenos</translation>
@@ -1676,6 +1678,7 @@ Nova namestitev</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Ustvarjanje GIF-a</translation>
 <translation id="7714767791242455379">Dodaj novo mobilno omrežje</translation>
+<translation id="7716257086539630827">Prilagajanje tabličnega računalnika</translation>
 <translation id="7720400844887872976">Vklopljeno do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">POSKUSI ZNOVA</translation>
 <translation id="7721132362314201794">Ime namizja</translation>
@@ -1701,6 +1704,7 @@ Nova namestitev</translation>
 <translation id="7807067443225230855">Iskanje in Pomočnik</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> in <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Močan signal</translation>
+<translation id="7830453190047749513">Za napravo <ph name="PERIPHERAL_NAME" /> lahko osebno prilagodite dejanja gumbov, hitrost kazalca in drugo</translation>
 <translation id="7837740436429729974">Čas je potekel</translation>
 <translation id="7842569679327885685">Opozorilo: poskusna funkcija</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>

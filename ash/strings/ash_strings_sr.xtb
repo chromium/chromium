@@ -588,6 +588,7 @@
 <translation id="3437677362970530951">Игре у Play продавници и на другим платформама за игре</translation>
 <translation id="3439896670700055005">Поново учитај актуелну страницу без коришћења кешираног садржаја</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Прилагодите миш</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
 <translation id="3454555520521576458">Променљиве величине</translation>
@@ -1624,6 +1625,7 @@
 <translation id="7509246181739783082">Верификујте идентитет</translation>
 <translation id="7512509370370076552">Пречица за десни клик је сада тастер <ph name="LAUNCHER_KEY_NAME" /> + клик, а не више alt + клик</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, није изабрано</translation>
+<translation id="7513057995673284840">Можете да персонализујете радње дугмади за уређај <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Изабран је режим снимка екрана</translation>
 <translation id="7513922695575567867">Календар, седмица када је <ph name="DATE" />, <ph name="SELECTED_DATE" /> је тренутно изабран.</translation>
 <translation id="7514365320538308">Преузми</translation>
@@ -1680,6 +1682,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Прави се GIF</translation>
 <translation id="7714767791242455379">Додајте нову мобилну мрежу</translation>
+<translation id="7716257086539630827">Прилагодите таблет</translation>
 <translation id="7720400844887872976">Укључено до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПРОБАЈ ПОНОВО</translation>
 <translation id="7721132362314201794">Назив радне површине</translation>
@@ -1705,6 +1708,7 @@
 <translation id="7807067443225230855">Претрага и Помоћник</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Јак сигнал</translation>
+<translation id="7830453190047749513">Можете да персонализујете радње дугмади, брзину курсора и друго за уређај <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Време је истекло</translation>
 <translation id="7842569679327885685">Упозорење: Експериментална функција</translation>
 <translation id="7846634333498149051">Тастатура</translation>

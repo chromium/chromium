@@ -328,6 +328,7 @@
 <translation id="2369165858548251131">„Helló” kínai nyelven</translation>
 <translation id="2382875860893882175">Az átküldés jelenleg szünetel. Bármikor folytathatja vagy leállíthatja az átküldést.</translation>
 <translation id="2386292613071805067">Az oldalon lévő összes elem kijelölése</translation>
+<translation id="2392659840443812875">Nincs rendelkezésre álló hotspot. Győződjön meg arról, hogy az eszköze a közelben van, és be van kapcsolva rajta a Bluetooth.</translation>
 <translation id="2397416548179033562">A Chrome-menü megjelenítése</translation>
 <translation id="240006516586367791">Médiaelemek vezérlője</translation>
 <translation id="2402411679569069051">A Chromebook zárolásának feloldásához használja ujjlenyomatát, vagy oldja fel telefonja zárolását.</translation>
@@ -583,6 +584,7 @@
 <translation id="3437677362970530951">Játékok a Play Áruházban és más játékplatformokon</translation>
 <translation id="3439896670700055005">Az aktuális oldal újratöltése gyorsítótárazott tartalom használata nélkül</translation>
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
+<translation id="3443917186865471894">Személyre szabhatja az egerét</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> perc</translation>
 <translation id="3445925074670675829">C típusú USB-vel kompatibilis eszköz</translation>
 <translation id="3454555520521576458">Újraméretezhető</translation>
@@ -1079,6 +1081,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5313326810920013265">Bluetooth-beállítások</translation>
 <translation id="5314219114274263156">Képernyőfelvétel elkészítve</translation>
 <translation id="5314489738835854379">Váltás visszafelé az ablakokon keresztül</translation>
+<translation id="5315931444962548795">Kapcsolja be a Bluetooth funkciót a közelben lévő hotspotok felfedezéséhez</translation>
 <translation id="5316716239522500219">Monitorok tükrözése</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319712128756744240">Új eszköz párosítása</translation>
@@ -1613,6 +1616,7 @@ Frissen telepítve</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>
 <translation id="7512509370370076552">A jobb egérgombos kattintás billentyűparancsa a(z) <ph name="LAUNCHER_KEY_NAME" /> billentyű + kattintás billentyűparancsra módosult a következőről: alt + kattintás.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, nincs kiválasztva</translation>
+<translation id="7513057995673284840">Személyre szabhatja <ph name="PERIPHERAL_NAME" /> eszközén a gombműveleteket</translation>
 <translation id="7513622367902644023">Képernyőkép mód kiválasztva</translation>
 <translation id="7513922695575567867">Naptár, <ph name="DATE" />-i hét, jelenleg kijelölt dátum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Letöltés</translation>
@@ -1669,6 +1673,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF létrehozása…</translation>
 <translation id="7714767791242455379">Új mobilhálózat hozzáadása</translation>
+<translation id="7716257086539630827">Személyre szabhatja a táblagépét</translation>
 <translation id="7720400844887872976">Bekapcsolva eddig: <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7721132362314201794">Asztal neve</translation>
@@ -1694,6 +1699,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> és <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Erős jel</translation>
+<translation id="7830453190047749513">Személyre szabhatja <ph name="PERIPHERAL_NAME" /> eszközén a gombműveleteket, a kurzor sebességét és egyebeket</translation>
 <translation id="7837740436429729974">Az idő lejárt</translation>
 <translation id="7842569679327885685">Figyelem! Kísérleti funkció</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>

@@ -1231,6 +1231,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio "KerberosUseCustomPrefilledConfig" viene attivato, il valore del criterio viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos. Se il criterio viene impostato su una stringa vuota o se non viene configurato, viene eliminata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.
 
       Se il criterio "KerberosUseCustomPrefilledConfig" viene disattivato, il valore di questo criterio non viene usato.</translation>
+<translation id="1967820716244187368">Consenti l'utilizzo di Chrome for Testing</translation>
 <translation id="1969212217917526199">Sostituisce le build di debug dell'host di accesso remoto.
 
           Il valore viene analizzato come un dizionario JSON di associazioni tra nomi e valori di norme.</translation>
@@ -2559,6 +2560,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">Non consentire l'utilizzo di Chrome for Testing</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -3071,6 +3073,7 @@ Questo criterio è disponibile per gli amministratori per visualizzare in antepr
 
 Le connessioni che non superano il controllo non andranno a buon fine con l'errore ERR_SSL_KEY_USAGE_INCOMPATIBLE. I siti che non superano questo errore hanno probabilmente un certificato configurato in modo errato. Le moderne suite di crittografia ECDHE_RSA utilizzano l'opzione di utilizzo della chiave "digitalSignature", mentre le suite di crittografia di decrittografia precedenti utilizzano l'opzione di utilizzo della chiave "keyEncipherment". In caso di dubbi, gli amministratori devono includere entrambi i certificati RSA destinati a HTTPS.</translation>
 <translation id="3459509316159669723">Stampa</translation>
+<translation id="3460485593332210712">Consenti Chrome for Testing</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
 <translation id="3468115890799739909">Questo criterio consente di stabilire la visibilità della pagina della cronologia di Chrome organizzata in gruppi di pagine.
 
@@ -6318,6 +6321,11 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
 <translation id="6254498834449523938">Non consentire agli utenti di bypassare l'avviso di Navigazione sicura</translation>
 <translation id="625580680776945310">La modalità ad alta efficienza verrà attivata.</translation>
 <translation id="6258314216623064461">Impostazioni per Aiutami a scrivere</translation>
+<translation id="6258502079038650092">Consente di stabilire se gli utenti possono utilizzare Chrome for Testing.
+
+      Se il criterio viene attivato o se non viene configurato, gli utenti possono installare ed eseguire Chrome for Testing.
+
+      Se viene disattivato, gli utenti non possono eseguire Chrome for Testing. Gli utenti potranno comunque installare Chrome for Testing, ma non verrà eseguito con i profili per cui questo criterio è disattivato.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.

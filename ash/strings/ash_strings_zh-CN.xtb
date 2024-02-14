@@ -328,6 +328,7 @@
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
+<translation id="2392659840443812875">没有可用的热点。确保您的设备就在附近且已开启蓝牙。</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
 <translation id="2402411679569069051">若要解锁 Chromebook，请使用指纹或解锁您的手机</translation>
@@ -583,6 +584,7 @@
 <translation id="3437677362970530951">Play 商店和其他游戏平台上的游戏</translation>
 <translation id="3439896670700055005">重新加载当前网页（不使用缓存的内容）</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">自定义鼠标按钮</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3454555520521576458">可调整大小</translation>
@@ -1076,6 +1078,7 @@
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
 <translation id="5314489738835854379">反向浏览各个窗口</translation>
+<translation id="5315931444962548795">开启蓝牙可发现附近的可用热点</translation>
 <translation id="5316716239522500219">镜像显示器</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
@@ -1610,6 +1613,7 @@
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7512509370370076552">“右键点击”对应的快捷键原为 alt + 点击，现已更新为<ph name="LAUNCHER_KEY_NAME" />键 + 点击</translation>
 <translation id="7512726380443357693">未选择“<ph name="BUTTON_LABEL" />”</translation>
+<translation id="7513057995673284840">您可以为 <ph name="PERIPHERAL_NAME" /> 设置个性化按钮操作</translation>
 <translation id="7513622367902644023">已选择截屏模式</translation>
 <translation id="7513922695575567867">日历，<ph name="DATE" />这周，目前所选日期为 <ph name="SELECTED_DATE" />。</translation>
 <translation id="7514365320538308">下载</translation>
@@ -1666,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">正在创建 GIF</translation>
 <translation id="7714767791242455379">添加新的移动网络</translation>
+<translation id="7716257086539630827">自定义平板电脑</translation>
 <translation id="7720400844887872976">保持开启状态，直到<ph name="TIME" /></translation>
 <translation id="7720410380936703141">重试</translation>
 <translation id="7721132362314201794">桌面名称</translation>
@@ -1691,6 +1696,7 @@
 <translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">信号较强</translation>
+<translation id="7830453190047749513">您可以为 <ph name="PERIPHERAL_NAME" /> 设置个性化按钮操作、光标速度等</translation>
 <translation id="7837740436429729974">时间到</translation>
 <translation id="7842569679327885685">警告：实验性功能</translation>
 <translation id="7846634333498149051">键盘</translation>

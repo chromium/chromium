@@ -214,6 +214,7 @@
 <translation id="20638360198452347">مُحدِّد نوع الوحدة</translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> يوم</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
+<translation id="2078437078822043850">يمكنك الانتقال لليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2080409463824088391">فتح في التطبيق…</translation>
 <translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
@@ -279,6 +280,7 @@
 <translation id="2421004566762153674">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2421044535038393232">متابعة التعديل</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
+<translation id="2434918313224755415">يمكنك الانتقال لليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2459155039684421202">في شريط العناوين، أدخِل مَهمة مثل "محو السجلّ" أو "تعديل كلمات المرور".</translation>
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
@@ -312,6 +314,7 @@
 <translation id="260378315836159338">في أعلى الشاشة، انقر على رمز "+"</translation>
 <translation id="2604176749896001318">تحديث المتصفّح</translation>
 <translation id="2609008503159898744">هل تريد إغلاق جميع علامات التبويب؟</translation>
+<translation id="261305050785128654">يمكنك السماح للمواقع الإلكترونية بمعرفة اللغات التي تتحدّث بها. وستعرض لك المحتوى بتلك اللغات إن أمكن ذلك.</translation>
 <translation id="2613747923081026172">إنشاء مجموعة</translation>
 <translation id="2617210333344098964">نقل العنوان إلى الحساب</translation>
 <translation id="261739049332372104">‏لتلقّي آخر الأخبار عن المحتوى الذي يهمّك، يُرجى تفعيل الإشعارات من إعدادات نظام التشغيل iOS.</translation>
@@ -514,6 +517,7 @@
 <translation id="3603009562372709545">‏نسخ عنوان URL للرابط</translation>
 <translation id="3607167657931203000">ملء البيانات تلقائيًا</translation>
 <translation id="3609785682760573515">جارٍ المزامنة...</translation>
+<translation id="3625008969091706597">يمكنك التمرير سريعًا من الحافة للرجوع للخلف.</translation>
 <translation id="3630104167004786843">عدم تلقّي إشعارات</translation>
 <translation id="3631443864840848029">احرص على حفظ كلمة المرور الحالية لهذا الموقع الإلكتروني.</translation>
 <translation id="3638472932233958418">تحميل صفحات الويب مسبقًا</translation>
@@ -631,6 +635,7 @@
 <translation id="4267586310863245665">{COUNT,plural, =1{لقد أغلقت تحذيرًا واحدًا ({COUNT}).}zero{لقد أغلقت {COUNT} تحذير.}two{لقد أغلقت تحذيرَين ({COUNT}).}few{لقد أغلقت {COUNT} تحذيرات.}many{لقد أغلقت {COUNT} تحذيرًا.}other{لقد أغلقت {COUNT} تحذير.}}</translation>
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
+<translation id="4279431713294750185">يمكنك التمرير سريعًا من الحافة للانتقال للأمام.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="4293080268407233932">بحث</translation>
@@ -1289,6 +1294,7 @@
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">مجموعات علامات التبويب</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7640669552036055091">‏علامات التبويب من Android</translation>
@@ -1458,6 +1464,7 @@
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8449347986464073209">الحذف وتسجيل الخروج</translation>
 <translation id="8459333855531264009">غير آمن</translation>
+<translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8487667956631253959">مفعّل</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8487894141648868716">USPS</translation>
@@ -1621,6 +1628,7 @@
 <translation id="96615566463761848">عرض اقتراحات علامات التبويب من أجهزة أخرى</translation>
 <translation id="973493300226275298">يمكنك تتبُّع سعر منتج معيَّن في المتاجر على الإنترنت. وستتلقّى تنبيهات عند انخفاض السعر.</translation>
 <translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>
+<translation id="984275831282074731">طرق الدفع</translation>
 <translation id="984509647832111802">المزامنة لا تعمل.</translation>
 <translation id="988141524645182168">أجهزة أخرى</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>

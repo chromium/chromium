@@ -1218,6 +1218,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je het beleid KerberosUseCustomPrefilledConfig toepast, wordt de waarde van het beleid toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie. Als je dit beleid instelt op een lege tekenreeks of niet instelt, wordt de aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie verwijderd.
 
       Als je het beleid KerberosUseCustomPrefilledConfig niet toepast, wordt de waarde van dit beleid niet gebruikt.</translation>
+<translation id="1967820716244187368">Gebruik van Chrome for Testing toestaan</translation>
 <translation id="1969212217917526199">Hiermee worden beleidsregels overgeschreven op Debug-builds van de host voor externe toegang.
 
           De waarde wordt geparseerd als een JSON-woordenboek van beleidsnaam tot beleidswaardelocaties.</translation>
@@ -2536,6 +2537,7 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="305106159605171619">Inkorting van user-agent uitgezet en kan niet worden aangezet door field trials of origin trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">Gebruik van Chrome for Testing niet toestaan</translation>
 <translation id="3063302084011279315">Screencast uitzetten</translation>
 <translation id="3063307261083019730">Niet toestaan dat pagina's met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> worden opgeslagen in Back-Forward Cache.</translation>
 <translation id="3064530882228745118">CNAME-lookup tijdens Kerberos-verificatie gebruiken</translation>
@@ -3044,6 +3046,7 @@ Dit beleid is beschikbaar voor beheerders om een voorbeeld van het gedrag van ee
 
 Verbindingen die niet door deze controle komen, krijgen de fout ERR_SSL_KEY_USAGE_INCOMPATIBLE. Sites met deze fout hebben waarschijnlijk een verkeerd ingesteld certificaat. Moderne ECDHE_RSA cipher suites gebruiken de sleutelgebruiksoptie 'digitalSignature', terwijl verouderde cipher suites voor RSA-ontsleuteling de sleutelgebruiksoptie 'keyEncipherment' gebruiken. Als beheerders niet zeker weten welke wordt gebruikt, moeten ze beide opnemen in RSA-certificaten die zijn bedoeld voor HTTPS.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
+<translation id="3460485593332210712">Chrome for Testing toestaan</translation>
 <translation id="3461279434465463233">Voedingsstatus rapporteren</translation>
 <translation id="3468115890799739909">Met dit beleid bepaal je de zichtbaarheid van Chrome-geschiedenispagina's die zijn ingedeeld in groepen pagina's.
 
@@ -6245,6 +6248,11 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="6254498834449523938">Gebruiker niet toestaan Safe Browsing-waarschuwingen over te slaan</translation>
 <translation id="625580680776945310">De modus voor hoge efficiëntie wordt aangezet.</translation>
 <translation id="6258314216623064461">Instellingen voor Help me met schrijven</translation>
+<translation id="6258502079038650092">Bepaalt of gebruikers Chrome for Testing mogen gebruiken.
+
+      Als je dit beleid toepast of niet instelt, kunnen gebruikers Chrome for Testing installeren en uitvoeren.
+
+      Als je dit beleid niet toepast, kunnen gebruikers Chrome for Testing niet uitvoeren. Gebruikers kunnen Chrome for Testing nog steeds installeren, maar de functie wordt niet uitgevoerd met de profielen waarvoor dit beleid niet wordt toegepast.</translation>
 <translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
 <translation id="6261643884958898336">ID-gegevens van machine rapporteren</translation>
 <translation id="6264247808139384018">Als je het beleid toepast of niet instelt, kunnen gebruikers die een wachtwoord gebruiken voor verificatie het scherm vergrendelen.

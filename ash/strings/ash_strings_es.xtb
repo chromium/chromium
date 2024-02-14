@@ -100,6 +100,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar estantería siempre</translation>
 <translation id="132346741904777634">Cámara ajustada a la esquina superior izquierda. Conflicto con la superficie del sistema.</translation>
+<translation id="132415371743256095">Cerrar <ph name="DESK_NAME" /> y ventanas</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
 <translation id="1340378040547539434">Reducir la página</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
@@ -331,6 +332,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear tu Chromebook, usa tu huella digital o desbloquea tu teléfono</translation>
+<translation id="240545663114741956">Pulsa <ph name="ACCELERATOR" /> dos veces para cerrar sesión.</translation>
 <translation id="2405664212338326887">No conectado</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
@@ -352,7 +354,9 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2478076885740497414">Instalar aplicación</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484513351006226581">Pulsa <ph name="KEYBOARD_SHORTCUT" /> para cambiar el diseño del teclado.</translation>
+<translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="250047928202119308">Menú de perfil de escritorio</translation>
 <translation id="2501920221385095727">Teclas persistentes</translation>
 <translation id="2504454902900101003">Cerrar la configuración de la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="2509468283778169019">Bloqueo de mayúsculas activado</translation>
@@ -583,6 +587,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3437677362970530951">Juegos de Play Store y otras plataformas de videojuegos</translation>
 <translation id="3439896670700055005">Volver a cargar la página actual sin utilizar contenido almacenado en caché</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Personaliza tu ratón</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454555520521576458">Tamaño ajustable</translation>
@@ -906,6 +911,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">El área es demasiado pequeña para que la cámara la capte</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, aplicación recomendada</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Casilla seleccionada.</translation>
 <translation id="4657775630156561295">La siguiente sugerencia se eliminará permanentemente del historial de sugerencias de tu cuenta:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1038,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5111930673176965299">Difuminado del fondo</translation>
 <translation id="5117590920725113268">Mostrar mes siguiente</translation>
 <translation id="5121628974188116412">Ir a la parte inferior de la página</translation>
+<translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
@@ -1432,6 +1439,7 @@ Nueva instalación</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6686023075541098243">Configurar la visualización de las notificaciones de tu teléfono</translation>
 <translation id="6696025732084565524">Tu teclado independiente necesita una actualización crítica</translation>
+<translation id="6697913454192220372">Añadir nuevo escritorio</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
 <translation id="6707693040195709527">El dispositivo ya debería haber cambiado a la versión anterior</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1563,6 +1571,7 @@ Nueva instalación</translation>
 <translation id="7262906531272962081">Crear recordatorio</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Retroceso</translation>
 <translation id="7285232777292757180">Usa la herramienta de captura de pantalla en los ajustes rápidos para hacer capturas de pantalla</translation>
+<translation id="7301826272005790482">Cerrar sugerencias de ventanas</translation>
 <translation id="7302889331339392448">Subtítulos automáticos desactivados.</translation>
 <translation id="7303365578352795231">Se está respondiendo en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1613,6 +1622,7 @@ Nueva instalación</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7512509370370076552">La combinación de teclas para hacer clic con el botón derecho ha pasado de ser Alt + hacer clic a pulsar la tecla <ph name="LAUNCHER_KEY_NAME" /> + hacer clic.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionado</translation>
+<translation id="7513057995673284840">Puedes personalizar las acciones de los botones de tu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Modo de captura de pantalla seleccionado</translation>
 <translation id="7513922695575567867">Calendario, semana del <ph name="DATE" />, actualmente está seleccionado el <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -1669,6 +1679,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Creando GIF</translation>
 <translation id="7714767791242455379">Añadir nueva red móvil</translation>
+<translation id="7716257086539630827">Personaliza tu tablet</translation>
 <translation id="7720400844887872976">Activada hasta el <ph name="TIME" /></translation>
 <translation id="7720410380936703141">REINTENTAR</translation>
 <translation id="7721132362314201794">Nombre del escritorio</translation>
@@ -1694,6 +1705,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
+<translation id="7830453190047749513">Puedes personalizar las acciones de los botones, la velocidad del cursor, entre otras, de tu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
@@ -1769,6 +1781,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
 <translation id="8079538659226626406">Compartir pantalla</translation>
 <translation id="8083540854303889870">Guardados para más tarde</translation>
+<translation id="8088141034189573826">Usa el tabulador para ver más opciones. Usa las flechas hacia la izquierda y hacia la derecha para acceder a todos los escritorios.</translation>
 <translation id="8091153018031979607">Empieza a las <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizaciones automáticas</translation>
 <translation id="8092380135549145188">Controles de desplazamiento</translation>
@@ -1966,6 +1979,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
 <translation id="8940956008527784070">Poca batería (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Casilla no seleccionada.</translation>
 <translation id="8949925099261528566">Conexión sin Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con Chromebook</translation>
 <translation id="8964525410783593407">1 h</translation>

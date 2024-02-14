@@ -10,7 +10,7 @@
 <translation id="1026212596705997935">Bližnjica se uporablja za »<ph name="CONFLICT_ACCEL_NAME" />«. Pritisnite novo bližnjico. Če želite zamenjati obstoječo bližnjico, znova pritisnite to bližnjico.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Na voljo je nova funkcija. Uporabite tipko s puščico gor, če želite izvedeti več o tem.</translation>
-<translation id="1049663189809099096">pastelno rumena</translation>
+<translation id="1049663189809099096">pastelno rumene</translation>
 <translation id="1059913517121127803">Ni bilo mogoče začeti optično brati</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> od <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -380,7 +380,7 @@
 <translation id="361575905210396100">Hvala za povratne informacije</translation>
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
 <translation id="3651050199673793219">Izbira enote temperature</translation>
-<translation id="3654530588944650786">Živahna cvetoča <ph name="FLOWER_COLOR" /> cvetlica vrste <ph name="FLOWER_TYPE" /></translation>
+<translation id="3654530588944650786">Živahna cvetoča <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> barve</translation>
 <translation id="3668449597372804501">Zaslonsko ozadje premika oblakov</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -422,7 +422,7 @@
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3969602104473960991">Geslo za Chrome OS je posodobljeno</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
-<translation id="3981099166243641873">svetlo zelena</translation>
+<translation id="3981099166243641873">svetlo zelene</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="3993704782688964914">Naprava <ph name="DEVICE_NAME" /> je posodobljena.</translation>
 <translation id="3998976413398910035">Upravljanje tiskalnikov</translation>
@@ -434,7 +434,7 @@
 <translation id="404928562651467259">OPOZORILO</translation>
 <translation id="4054683689023980771">Prenašanje slike</translation>
 <translation id="4060260348856573701">Nov APN</translation>
-<translation id="4063039537646912479">svetlo modra</translation>
+<translation id="4063039537646912479">svetlo modre</translation>
 <translation id="4093865285251893588">Slika profila</translation>
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="409469431304488632">Preizkus</translation>
@@ -632,7 +632,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Izberite novo</translation>
 <translation id="5333530671332546086">Neznano stanje portala</translation>
-<translation id="5335373365677455232">rožnata</translation>
+<translation id="5335373365677455232">rožnate</translation>
 <translation id="5346687412805619883">Lokalno omrežje</translation>
 <translation id="5358174242040570474">Prišlo je do napake. Poskusite znova izbrati zaslonsko ozadje ali znova odpreti aplikacijo.</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
@@ -718,7 +718,7 @@
 <translation id="594552776027197022">Ustvarjanje naključnega para ključev</translation>
 <translation id="5946538341867151940">Niste še povezani. Če mobilni operater priporoča APN po meri, vnesite informacije o APN-ju tako, da izberete »+ Nov APN«.</translation>
 <translation id="5972388717451707488">Posodobitev mehanizma</translation>
-<translation id="5975130252842127517">koralna</translation>
+<translation id="5975130252842127517">koralne</translation>
 <translation id="5984145644188835034">Privzeto ozadje</translation>
 <translation id="6017514345406065928">Zelena</translation>
 <translation id="6019566113895157499">Bližnjične tipke</translation>
@@ -744,7 +744,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, in še toliko albumov: <ph name="NUMBER" /></translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6122277663991249694">Storitev načina vnosa v okolju Chrome OS</translation>
-<translation id="6127426868813166163">bela</translation>
+<translation id="6127426868813166163">bele</translation>
 <translation id="6136285399872347291">vračalka</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
@@ -798,7 +798,7 @@
 <translation id="6462978824459367242">Gumb za dodajanje APN-ja je zdaj omogočen</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
-<translation id="64778964625672495">temno rdeča</translation>
+<translation id="64778964625672495">temno rdeče</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="6488559935020624631">Ekskluzivni ohranjevalnik zaslona za <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
@@ -855,7 +855,7 @@
 <translation id="6816797338148849397">Podatki, ki so na voljo v zvezi z vašim izborom. Za dostop uporabite tipko s puščico gor.</translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
 <translation id="6866732840889595464">marjetica</translation>
-<translation id="6871256179359663621">svetlo vijolična</translation>
+<translation id="6871256179359663621">svetlo vijolične</translation>
 <translation id="6889786074662672253">Med posodabljanjem ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="6900701049656042631">V tem albumu ni fotografij. Fotografije lahko dodate na <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Nazaj na stran <ph name="PAGE_NAME" /></translation>

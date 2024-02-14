@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">शेल्फ़ हमेशा दिखाएं</translation>
 <translation id="132346741904777634">कैमरा इनपुट की झलक, अब ऊपर बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> और विंडो बंद करें</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट किया गया</translation>
 <translation id="1340378040547539434">पेज पर ज़ूम आउट करें</translation>
 <translation id="1341651618736211726">ओवरफ़्लो</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Chrome मेन्यू दिखाएं</translation>
 <translation id="240006516586367791">मीडिया कंट्रोल</translation>
 <translation id="2402411679569069051">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें या अपना फ़ोन अनलॉक करें</translation>
+<translation id="240545663114741956">साइन आउट करने के लिए <ph name="ACCELERATOR" /> को दो बार दबाएं.</translation>
 <translation id="2405664212338326887">कनेक्ट नहीं है</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2484513351006226581">कीबोर्ड लेआउट स्विच करने के लिए <ph name="KEYBOARD_SHORTCUT" /> दबाएं.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> की झलक. इस डेस्क का इस्तेमाल किया जा रहा है.</translation>
 <translation id="2487915095798731898">जुड़ें</translation>
+<translation id="250047928202119308">डेस्क की प्रोफ़ाइल का मेन्यू</translation>
 <translation id="2501920221385095727">स्टिकी बटन</translation>
 <translation id="2504454902900101003">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और सूचनाओं को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="2509468283778169019">CAPS LOCK चालू है</translation>
@@ -583,6 +587,7 @@
 <translation id="3437677362970530951">Play Store और अन्य गेमिंग प्लैटफ़ॉर्म पर मौजूद गेम</translation>
 <translation id="3439896670700055005">कैश मेमोरी में सेव किए गए कॉन्टेंट का इस्तेमाल किए बिना, मौजूदा पेज फिर से लोड करें</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">माउस को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3454555520521576458">साइज़ बदलने की सुविधा वाला ऐप्लिकेशन</translation>
@@ -906,6 +911,7 @@
 <translation id="4642092649622328492">आंशिक स्क्रीनशॉट लें</translation>
 <translation id="4644727592819780893">कैमरा प्रीव्यू दिखाने के लिए जगह बहुत कम है</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ऐप्लिकेशन का सुझाव</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> चेक बॉक्स पर सही का निशान लगाया गया.</translation>
 <translation id="4657775630156561295">नीचे दिया गया सुझाव, आपके खाते के सुझाव के इतिहास से हमेशा के लिए हटा दिया जाएगा:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1038,7 @@
 <translation id="5111930673176965299">धुंधला बैकग्राउंड</translation>
 <translation id="5117590920725113268">अगला महीना दिखाएं</translation>
 <translation id="5121628974188116412">पेज में सबसे नीचे जाएं</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> की झलक. इस डेस्क का इस्तेमाल नहीं किया जा रहा है.</translation>
 <translation id="5136175204352732067">अलग कीबोर्ड कनेक्ट किया गया</translation>
 <translation id="5147567197700016471">अनलॉक हो गया</translation>
 <translation id="5150070631291639005">निजता सेटिंग</translation>
@@ -1432,6 +1439,7 @@
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6686023075541098243">अपने फ़ोन की सूचनाओं को देखने की सुविधा सेट अप करें</translation>
 <translation id="6696025732084565524">आपके अलग किए जाने लायक कीबोर्ड में एक महत्वपूर्ण अपडेट ज़रूरी है</translation>
+<translation id="6697913454192220372">नया डेस्क जोड़ें</translation>
 <translation id="6700713906295497288">IME मेन्यू बटन</translation>
 <translation id="6707693040195709527">डिवाइस को पिछले वर्शन पर ले जाना बाकी है</translation>
 <translation id="6710213216561001401">पिछला</translation>
@@ -1563,6 +1571,7 @@
 <translation id="7262906531272962081">रिमाइंडर लगाएं</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">स्क्रीनशॉट लेने के लिए, क्विक सेटिंग में जाकर स्क्रीन कैप्चर टूल का इस्तेमाल करें</translation>
+<translation id="7301826272005790482">विंडो के सुझाव खारिज करें</translation>
 <translation id="7302889331339392448">लाइव कैप्शन की सुविधा बंद है.</translation>
 <translation id="7303365578352795231">दूसरे डिवाइस पर जवाब देना.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1613,6 +1622,7 @@
 <translation id="7509246181739783082">अपनी पहचान की पुष्टि करें</translation>
 <translation id="7512509370370076552">दायां क्लिक करने पर मिलने वाला शॉर्टकट, alt + click से बदलकर <ph name="LAUNCHER_KEY_NAME" /> बटन + क्लिक हो गया है</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> को नहीं चुना गया</translation>
+<translation id="7513057995673284840">आपके पास <ph name="PERIPHERAL_NAME" /> के लिए, बटन से होने वाली कार्रवाइयों को अपने मनमुताबिक सेट करने का विकल्प है.</translation>
 <translation id="7513622367902644023">स्क्रीनशॉट मोड चुना गया</translation>
 <translation id="7513922695575567867"><ph name="DATE" /> वाले हफ़्ते के कैलेंडर में, फ़िलहाल<ph name="SELECTED_DATE" /> को चुना गया है.</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
@@ -1669,6 +1679,7 @@
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="770741401784017797">GIF बन रहा है</translation>
 <translation id="7714767791242455379">नया मोबाइल नेटवर्क जोड़ें</translation>
+<translation id="7716257086539630827">टैबलेट को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="7720400844887872976">यह सुविधा <ph name="TIME" /> तक चालू रहेगी</translation>
 <translation id="7720410380936703141">फिर से कोशिश करें</translation>
 <translation id="7721132362314201794">डेस्क का नाम</translation>
@@ -1694,6 +1705,7 @@
 <translation id="7807067443225230855">सर्च और Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> और <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">मज़बूत सिग्नल</translation>
+<translation id="7830453190047749513">आपके पास <ph name="PERIPHERAL_NAME" /> के लिए, बटन से होने वाली कार्रवाइयों, कर्सर की स्पीड वगैरह को अपने मनमुताबिक सेट करने का विकल्प है</translation>
 <translation id="7837740436429729974">समय खत्म हुआ</translation>
 <translation id="7842569679327885685">चेतावनी: यह फ़ीचर प्रयोग के लिए है</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
@@ -1769,6 +1781,7 @@
 <translation id="8054466585765276473">बैटरी समय की गणना की जा रही है.</translation>
 <translation id="8079538659226626406">स्क्रीन शेयर करें</translation>
 <translation id="8083540854303889870">बाद के लिए सेव किया गया</translation>
+<translation id="8088141034189573826">ज़्यादा विकल्प देखने के लिए, Tab का इस्तेमाल करें. सभी डेस्क को ऐक्सेस करने के लिए, लेफ़्ट और राइट ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> पर शरू होगा</translation>
 <translation id="8091387634532529612">अपने-आप होने वाले अपडेट</translation>
 <translation id="8092380135549145188">स्क्रोल के लिए कंट्रोल</translation>
@@ -1966,6 +1979,7 @@
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> चेक बॉक्स पर सही का निशान नहीं लगाया गया.</translation>
 <translation id="8949925099261528566">कनेक्ट हो गया, लेकिन इंटरनेट नहीं है</translation>
 <translation id="8951539504029375108">आपके Chromebook के साथ सिर्फ़ वे Thunderbolt डिवाइस काम कर सकते हैं जिन्हें अनुमति मिली है</translation>
 <translation id="8964525410783593407">1 घंटा</translation>

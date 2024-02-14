@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">എല്ലായ്‌പ്പോഴും ഷെല്‍ഫ് കാണിക്കുക</translation>
 <translation id="132346741904777634">മുകളിൽ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> എന്നതും വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="1340378040547539434">പേജിൽ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1341651618736211726">ഓവര്‍ഫ്ലോ</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Chrome മെനു കാണിക്കുക</translation>
 <translation id="240006516586367791">മീഡിയാ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2402411679569069051">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക അല്ലെങ്കിൽ ഫോൺ അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="240545663114741956">സൈൻ ഔട്ട് ചെയ്യാൻ രണ്ട് തവണ <ph name="ACCELERATOR" /> അമർത്തുക.</translation>
 <translation id="2405664212338326887">കണ‌ക്റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2408955596600435184">നിങ്ങളുടെ പിൻ നൽകുക</translation>
 <translation id="2412593942846481727">അപ്‌ഡേറ്റ് ലഭ്യമാണ്</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> പ്രിവ്യൂ. സജീവ ഡെസ്‌ക്.</translation>
 <translation id="2487915095798731898">ചേരുക</translation>
+<translation id="250047928202119308">ഡെസ്‌ക് പ്രൊഫൈൽ മെനു</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2504454902900101003">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
@@ -906,6 +910,7 @@
 <translation id="4642092649622328492">ഭാഗിക സ്‌ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4644727592819780893">മേഖല ക്യാമറയ്ക്ക് യോജിക്കുന്നതിലും വളരെ ചെറുതാണ്</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ആപ്പ് നിർദ്ദേശം</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ചെക്ക്ബോക്‌സിൽ ചെക്ക് മാർക്കിട്ടു.</translation>
 <translation id="4657775630156561295">ഇനിപ്പറയുന്ന നിർദ്ദേശം നിങ്ങളുടെ അക്കൗണ്ടിന്റെ നിർദ്ദേശ ചരിത്രത്തിൽ നിന്ന് ശാശ്വതമായി നീക്കം ചെയ്യും:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1037,7 @@
 <translation id="5111930673176965299">പശ്ചാത്തലം മങ്ങിക്കൽ</translation>
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5121628974188116412">പേജിന്റെ താഴേയ്ക്ക് പോവുക</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> പ്രിവ്യൂ. നിഷ്ക്രിയ ഡെസ്‌ക്.</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
 <translation id="5150070631291639005">സ്വകാര്യതാ ക്രമീകരണം</translation>
@@ -1432,6 +1438,7 @@
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
 <translation id="6686023075541098243">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="6696025732084565524">നിങ്ങളുടെ വേർപെടുത്താനാകുന്ന കീബോഡിന് നിർണ്ണായക അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
+<translation id="6697913454192220372">പുതിയ ഡെസ്‌ക് ചേർക്കുക</translation>
 <translation id="6700713906295497288">IME മെനു ബട്ടൺ</translation>
 <translation id="6707693040195709527">മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റേണ്ട സമയം കഴിഞ്ഞു.</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
@@ -1564,6 +1571,7 @@
 <translation id="7262906531272962081">റിമൈൻഡർ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">സ്ക്രീൻഷോട്ടുകൾ എടുക്കാൻ ദ്രുത ക്രമീകരണത്തിൽ സ്ക്രീൻ ക്യാപ്ചർ ചെയ്യൽ ടൂൾ ഉപയോഗിക്കുക</translation>
+<translation id="7301826272005790482">വിൻഡോ നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7302889331339392448">തത്സമയ ക്യാപ്ഷൻ ഓഫാണ്.</translation>
 <translation id="7303365578352795231">മറ്റൊരു ഉപകരണത്തിൽ മറുപടി നൽകുന്നു.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1773,6 +1781,7 @@
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
 <translation id="8079538659226626406">സ്ക്രീൻ പങ്കിടൽ</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>
+<translation id="8088141034189573826">കൂടുതൽ ഓപ്ഷനുകൾക്കായി ടാബ് ഉപയോഗിക്കുക. എല്ലാ ഡെസ്‌ക്കുകളും ആക്‌സസ് ചെയ്യാൻ ഇടത്, വലത് അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />-ന് <ph name="DAYS_ELAPSED" /> ആരംഭിക്കുന്നു</translation>
 <translation id="8091387634532529612">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ</translation>
 <translation id="8092380135549145188">സ്‌ക്രോൾ നിയന്ത്രണങ്ങൾ</translation>
@@ -1970,6 +1979,7 @@
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> ചെക്ക്‌ബോക്‌സിൽ ചെക്ക് മാർക്കിട്ടിട്ടില്ല.</translation>
 <translation id="8949925099261528566">കണക്റ്റ് ചെയ്തു, എന്നാൽ ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="8951539504029375108">അംഗീകൃത Thunderbolt ഉപകരണങ്ങൾ മാത്രമേ നിങ്ങളുടെ Chromebook-ന് അനുയോജ്യമാകൂ</translation>
 <translation id="8964525410783593407">ഒരു മണിക്കൂർ</translation>

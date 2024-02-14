@@ -1422,6 +1422,7 @@
 <translation id="206308717637808771">关闭所有窗口时删除数据。在数据处理方面，与您正在查看的网站相同</translation>
 <translation id="2065405795449409761">Chrome 正受到自动测试软件的控制。</translation>
 <translation id="2067591192939433190">来自“<ph name="VENDOR_NAME" />”</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" />已通过<ph name="PRINTER_NAME" />打印完毕</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{点击即可安装该扩展程序}other{点击即可安装这些扩展程序}}</translation>
@@ -1797,6 +1798,7 @@
 <translation id="233471714539944337">敏感内容</translation>
 <translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" />正在使用<ph name="PRINTER_NAME" />打印 1 页</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">无法安全地下载“<ph name="FILE_NAME" />”</translation>
 <translation id="2342180549977909852">您的孩子可以使用数字（PIN 码）代替密码来解锁此设备。如果想等到需要时再设置 PIN 码，到时请前往“设置”。</translation>
@@ -1909,6 +1911,7 @@
             <ph name="LINE_BREAKS" />
            书签、历史记录和已存密码不受影响。</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
+<translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 个账号，密码仅保存在此设备上。更多详情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 个账号，密码仅保存在此设备上。更多详情}}</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
 <translation id="2428978615149723410">这些购物车</translation>
@@ -1964,6 +1967,7 @@
 <translation id="2459706890611560967">继续将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2460356425461033301">备份您的浏览器资料，以便在任意设备上使用</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
+<translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
 <translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
@@ -2835,6 +2839,7 @@
 <translation id="3132277757485842847">我们无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">规则</translation>
 <translation id="3132996321662585180">每日刷新</translation>
+<translation id="3133184011320864289">开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
 <translation id="3141093262818886744">仍然打开</translation>
@@ -3976,6 +3981,7 @@
 <translation id="4021909830315618592">复制版本详情</translation>
 <translation id="4021941025609472374">关闭左侧标签页</translation>
 <translation id="4022426551683927403">添加到字典中(&amp;A)</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" />正在使用<ph name="PRINTER_NAME" />打印 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="4024768890073681126">您的浏览器由您的家长管理</translation>
 <translation id="4025039777635956441">将所选网站静音</translation>
 <translation id="402707738228916911">已收到<ph name="AUTHORIZE_INSTRUCTION_NAME" />说明</translation>
@@ -4575,6 +4581,7 @@
 <translation id="4507128560633489176">已清除数据。</translation>
 <translation id="4507373251891673233">您已禁止所有扩展程序访问 <ph name="HOST" /></translation>
 <translation id="4507401683427517298">点击“添加快捷方式”</translation>
+<translation id="4508332912150723117">用户名 <ph name="USER_EMAIL" />。查看详情</translation>
 <translation id="450867954911715010">无障碍设置</translation>
 <translation id="4508765956121923607">显示源代码(&amp;O)</translation>
 <translation id="4509277363725254222">当您分享<ph name="BEGIN_BOLD_USERNAME" />用户名<ph name="END_BOLD_USERNAME" />和<ph name="BEGIN_BOLD_PASSWORD" />密码<ph name="END_BOLD_PASSWORD" />的副本之后，您的家庭成员可以使用 Google 密码管理工具填充这些信息</translation>
@@ -5163,7 +5170,6 @@
 <translation id="496742804571665842">停用 eSIM 卡配置文件</translation>
 <translation id="4967571733817147990">自定义鼠标按键</translation>
 <translation id="4967852842111017386">“<ph name="FEATURE_NAME" />”功能的设备名称</translation>
-<translation id="4970462793141009561">输入组合键</translation>
 <translation id="4971412780836297815">完成后打开</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4972129977812092092">修改打印机</translation>
@@ -5448,7 +5454,6 @@
 <translation id="5199729219167945352">实验</translation>
 <translation id="5203035663139409780">可以修改您设备上的文件或文件夹</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{点击即可查看该扩展程序}other{点击即可查看这些扩展程序}}</translation>
-<translation id="5204249655833504508">绘图板</translation>
 <translation id="5204673965307125349">请对此设备执行 Powerwash，然后重试。</translation>
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5205484256512407285">一律不使用移动数据进行传输</translation>
@@ -6496,6 +6501,7 @@
 <translation id="6050189528197190982">灰度</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
 <translation id="6051811090255711417">贵组织屏蔽了此文件，因为它不符合安全政策</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" />正在尝试通过<ph name="PRINTER_NAME" />进行打印</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">输入访问代码即可开始投放</translation>
 <translation id="6052976518993719690">SSL 证书授权中心</translation>
@@ -6957,7 +6963,6 @@
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="6410328738210026208">变更版本并执行 Powerwash</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
-<translation id="6410668567036790476">添加搜索引擎</translation>
 <translation id="6411135999030237579">按住即可自动重复输入该键对应的字符</translation>
 <translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="641469293210305670">安装更新和应用</translation>
@@ -7006,7 +7011,6 @@
 <translation id="6446213738085045933">创建桌面快捷方式</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">更改您的隐私相关设置</translation>
-<translation id="6451344358166983408">网站或网页</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6451689256222386810">如果您忘记了密码或要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />。</translation>
 <translation id="6452181791372256707">拒绝</translation>
@@ -7426,6 +7430,7 @@
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787097042755590313">另一标签页</translation>
+<translation id="6787531944787756058">用户名 <ph name="USER_EMAIL" /> 仅会保存到此设备上。查看详情</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未封装的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
@@ -9087,6 +9092,7 @@
 <translation id="8052218774860457016">管理浏览器同步</translation>
 <translation id="8053278772142718589">PKCS #12 文件</translation>
 <translation id="8053390638574070785">重新加载此页</translation>
+<translation id="8053629544194355894">开启同步功能后即可让 Chrome 提供标签页分组建议</translation>
 <translation id="8054517699425078995">此类型的文件可能会危害您的设备。仍要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="8054563304616131773">请输入有效的电子邮件地址</translation>
 <translation id="8054609631325628928">这些号码可用于帮助激活服务</translation>
@@ -9401,6 +9407,7 @@
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8294476140219241086">标签页整理工具</translation>
+<translation id="8294895455164415895">打开设置，让 Chrome 提供标签页分组建议</translation>
 <translation id="8295449579927246485">实时翻译</translation>
 <translation id="8295450130892483256">安装 Microsoft 365</translation>
 <translation id="8297292446125062288">HID 设置</translation>
@@ -9553,6 +9560,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全屏</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
+<translation id="8412682423093430245">在“设置”中开启历史记录同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="8414249071344507766">回忆已设为隐藏两天</translation>
@@ -9582,6 +9590,7 @@
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
+<translation id="8436054240208929121">登录账号并开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439506636278576865">询问是否翻译此语言的网页</translation>
@@ -9977,7 +9986,6 @@
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">开关控制设置指南</translation>
-<translation id="874236987855738343">键组合</translation>
 <translation id="8742395827132970586">安装失败，正在清理</translation>
 <translation id="8742998548129056176">这是关于您的设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="8743357966416354615">代管式开发环境 (<ph name="GENERAL_NAME" />)</translation>

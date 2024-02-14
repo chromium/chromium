@@ -583,6 +583,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3437677362970530951">Jeux sur la boutique Play Store et d'autres plateformes de jeux</translation>
 <translation id="3439896670700055005">Actualiser la page actuelle sans utiliser de contenu mis en cache</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Personnalisez votre souris</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
 <translation id="3454555520521576458">Redimensionnable</translation>
@@ -1611,6 +1612,7 @@ Nouvelle installation</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7512509370370076552">L'ancien raccourci pour le clic droit (alt+clic) a été mis à jour par touche <ph name="LAUNCHER_KEY_NAME" />+clic</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, non sélectionné(s)</translation>
+<translation id="7513057995673284840">Vous pouvez personnaliser les actions des boutons pour votre <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
@@ -1667,6 +1669,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7705524343798198388">RPV</translation>
 <translation id="770741401784017797">Création du GIF en cours…</translation>
 <translation id="7714767791242455379">Ajouter un nouveau réseau cellulaire</translation>
+<translation id="7716257086539630827">Personnalisez votre tablette</translation>
 <translation id="7720400844887872976">Activée jusqu'à <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
 <translation id="7721132362314201794">Nom du bureau</translation>
@@ -1692,6 +1695,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7807067443225230855">Recherche et Assistant Google</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal fort</translation>
+<translation id="7830453190047749513">Vous pouvez personnaliser les actions des boutons, la vitesse du curseur et plus encore pour votre <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
 <translation id="7842569679327885685">Attention : Fonctionnalité expérimentale</translation>
 <translation id="7846634333498149051">Clavier</translation>

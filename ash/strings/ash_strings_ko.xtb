@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">앱 표시줄 항상 표시</translation>
 <translation id="132346741904777634">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> 및 창 닫기</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> 기기가 연결됨</translation>
 <translation id="1340378040547539434">페이지 축소</translation>
 <translation id="1341651618736211726">더보기</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">Chrome 메뉴 표시</translation>
 <translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2402411679569069051">Chromebook을 잠금 해제하려면 지문을 사용하거나 휴대전화를 잠금 해제하세요.</translation>
+<translation id="240545663114741956">로그아웃하려면 <ph name="ACCELERATOR" /> 키를 두 번 누릅니다.</translation>
 <translation id="2405664212338326887">연결되지 않음</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">앱 설치</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
+<translation id="2486214324139475545"><ph name="DESK_NAME" /> 미리보기입니다. 활성 데스크입니다.</translation>
 <translation id="2487915095798731898">가입</translation>
+<translation id="250047928202119308">데스크 프로필 메뉴</translation>
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2504454902900101003">휴대전화의 최근 사진, 미디어, 알림 보기 설정 닫기</translation>
 <translation id="2509468283778169019">CAPS LOCK이 켜져 있습니다.</translation>
@@ -583,6 +587,7 @@
 <translation id="3437677362970530951">Play 스토어 및 기타 게임 플랫폼의 게임</translation>
 <translation id="3439896670700055005">캐시된 콘텐츠를 사용하지 않고 현재 페이지 새로고침</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">마우스를 맞춤설정해 보세요</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3454555520521576458">크기 조정 가능</translation>
@@ -905,6 +910,7 @@
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4644727592819780893">영역이 너무 작아서 카메라 미리보기를 표시할 수 없습니다.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, 앱 추천</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 체크박스 선택됨</translation>
 <translation id="4657775630156561295">계정의 추천 기록에서 다음 추천 검색어가 완전히 삭제됩니다.
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1037,7 @@
 <translation id="5111930673176965299">배경 블러</translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5121628974188116412">페이지 맨 아래로 이동</translation>
+<translation id="5122517996953421795"><ph name="DESK_NAME" /> 미리보기입니다. 비활성 데스크입니다.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
@@ -1431,6 +1438,7 @@
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6686023075541098243">휴대전화 알림 보기 설정</translation>
 <translation id="6696025732084565524">분리식 키보드에 중요 업데이트 필요</translation>
+<translation id="6697913454192220372">새 데스크 추가</translation>
 <translation id="6700713906295497288">IME 메뉴 버튼</translation>
 <translation id="6707693040195709527">이전 버전으로 기기를 롤백할 기한 만료됨</translation>
 <translation id="6710213216561001401">이전</translation>
@@ -1562,6 +1570,7 @@
 <translation id="7262906531272962081">알림 만들기</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + 백스페이스</translation>
 <translation id="7285232777292757180">빠른 설정의 화면 캡처 도구를 사용하여 스크린샷 찍기</translation>
+<translation id="7301826272005790482">창 추천 닫기</translation>
 <translation id="7302889331339392448">실시간 자막이 꺼져 있습니다.</translation>
 <translation id="7303365578352795231">다른 기기에서 응답 중입니다.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1612,6 +1621,7 @@
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7512509370370076552">마우스 오른쪽 버튼 클릭 단축키가 Alt + 클릭에서 <ph name="LAUNCHER_KEY_NAME" /> 키 + 클릭으로 업데이트되었습니다.</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, 선택되지 않음</translation>
+<translation id="7513057995673284840"><ph name="PERIPHERAL_NAME" />의 버튼 작업을 맞춤설정할 수 있습니다.</translation>
 <translation id="7513622367902644023">스크린샷 모드 선택됨</translation>
 <translation id="7513922695575567867">현재 캘린더에서 <ph name="DATE" />이 속한 주를 표지 중이며 선택된 날짜는 <ph name="SELECTED_DATE" />입니다.</translation>
 <translation id="7514365320538308">다운로드</translation>
@@ -1668,6 +1678,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF 생성</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
+<translation id="7716257086539630827">태블릿을 맞춤설정해 보세요</translation>
 <translation id="7720400844887872976"><ph name="TIME" />까지 켜기</translation>
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7721132362314201794">데스크 이름</translation>
@@ -1693,6 +1704,7 @@
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />시간 <ph name="MINUTE" />분</translation>
 <translation id="7829386189513694949">신호 강함</translation>
+<translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" />의 버튼 작업, 커서 속도 등을 맞춤설정할 수 있습니다.</translation>
 <translation id="7837740436429729974">시간 종료</translation>
 <translation id="7842569679327885685">경고: 실험 기능</translation>
 <translation id="7846634333498149051">키보드</translation>
@@ -1768,6 +1780,7 @@
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
 <translation id="8079538659226626406">화면 공유</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
+<translation id="8088141034189573826">탭에서 더 많은 옵션을 사용해 보세요. 왼쪽 및 오른쪽 화살표로 모든 데스크에 액세스할 수 있습니다.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /><ph name="DAYS_ELAPSED" />에 시작</translation>
 <translation id="8091387634532529612">자동 업데이트</translation>
 <translation id="8092380135549145188">스크롤 제어</translation>
@@ -1965,6 +1978,7 @@
 <translation id="8936501819958976551">비활성화됨</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8940956008527784070">배터리 부족(<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 체크박스 선택되지 않음</translation>
 <translation id="8949925099261528566">연결됨, 인터넷 사용 불가</translation>
 <translation id="8951539504029375108">승인된 Thunderbolt 기기만 Chromebook과 호환됩니다.</translation>
 <translation id="8964525410783593407">1시간</translation>

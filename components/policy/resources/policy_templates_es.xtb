@@ -1217,6 +1217,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
       Si se habilita la política KerberosUseCustomPrefilledConfig, se aplicará el valor de esta política como configuración sugerida y se mostrará en la sección Configuración avanzada del cuadro de diálogo de autenticación de Kerberos. Si no se define esta política o se le asigna una cadena vacía, se eliminará la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.
 
       Si se inhabilita la política KerberosUseCustomPrefilledConfig, no se usará el valor de esta política.</translation>
+<translation id="1967820716244187368">Permitir el uso de Chrome for Testing</translation>
 <translation id="1969212217917526199">Anula las políticas de compilaciones de depuración del host de acceso remoto.
 
           El valor se analiza como un diccionario JSON del nombre de política para las asignaciones de valores de la política.</translation>
@@ -2541,6 +2542,7 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">No permitir el uso de Chrome for Testing</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
@@ -3055,6 +3057,7 @@ Esta política está disponible para que los administradores puedan revisar el c
 
 Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KEY_USAGE_INCOMPATIBLE. Los sitios con este error probablemente no tengan un certificado configurado correctamente. Los paquetes de cifrado ECDHE_RSA modernos emplean la opción para usar la clave "digitalSignature", mientras que los antiguos paquetes de cifrado para descifrar RSA emplean la opción para usar la clave "keyEncipherment". Si no lo tienes claro, los administradores deberían incluir ambas opciones en los certificados RSA destinados a HTTPS.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
+<translation id="3460485593332210712">Permitir Chrome for Testing</translation>
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
 <translation id="3468115890799739909">Esta política controla la visibilidad de la página del historial de Chrome organizada en grupos de páginas.
 
@@ -6298,6 +6301,11 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 <translation id="6254498834449523938">No permitir que el usuario omita las advertencias de Navegación segura</translation>
 <translation id="625580680776945310">Se habilitará el modo Alta eficiencia.</translation>
 <translation id="6258314216623064461">Ajustes de Ayúdame a escribir</translation>
+<translation id="6258502079038650092">Controla si los usuarios pueden usar Chrome for Testing.
+
+      Si se habilita esta política o no se define, los usuarios podrán instalar y ejecutar Chrome for Testing.
+
+      Si se inhabilita, los usuarios no podrán ejecutar Chrome for Testing. Los usuarios podrán seguir instalando Chrome for Testing, pero no se ejecutará con los perfiles en los que la política esté inhabilitada.</translation>
 <translation id="6258658183356534534">Controla la función User-Agent Client Hints GREASE Update.</translation>
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
 <translation id="6264247808139384018">Si se habilita esta política o no se define, se permitirá que los usuarios que usen la autenticación con contraseña bloqueen la pantalla.

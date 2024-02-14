@@ -100,6 +100,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1312604459020188865">Signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vienmēr rādīt plauktu</translation>
 <translation id="132346741904777634">Kamera pārnesta uz kreiso augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
+<translation id="132415371743256095">Aizvērt darbvietu <ph name="DESK_NAME" /> un logus</translation>
 <translation id="1333308631814936910">Izveidots savienojums ar ierīci “<ph name="DISPLAY_NAME" />”.</translation>
 <translation id="1340378040547539434">Tālināt saturu lapā</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
@@ -331,6 +332,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2397416548179033562">Rādīt Chrome izvēlni</translation>
 <translation id="240006516586367791">Multivides vadīklas</translation>
 <translation id="2402411679569069051">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu vai atbloķējiet tālruni.</translation>
+<translation id="240545663114741956">Lai izrakstītos, divreiz nospiediet īsinājumtaustiņu <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Nav savienojuma</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
@@ -352,7 +354,9 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2478076885740497414">Instalēt lietotni</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2484513351006226581">Nospiediet īsinājumtaustiņu <ph name="KEYBOARD_SHORTCUT" />, lai pārslēgtu tastatūras izkārtojumu.</translation>
+<translation id="2486214324139475545">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Aktīva darbvieta.</translation>
 <translation id="2487915095798731898">Pievienoties</translation>
+<translation id="250047928202119308">Darbvietas profila izvēlne</translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
 <translation id="2504454902900101003">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu, multivides satura un paziņojumu skatīšanu</translation>
 <translation id="2509468283778169019">Funkcija Caps Lock ir ieslēgta</translation>
@@ -905,6 +909,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
 <translation id="4644727592819780893">Reģions ir par mazu kamerai</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, lietotņu ieteikumi</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> izvēles rūtiņa ir atzīmēta</translation>
 <translation id="4657775630156561295">Tālāk norādītais ieteikums tiks neatgriezeniski noņemts no jūsu konta ieteikumu vēstures.
 
 <ph name="QUERY" /></translation>
@@ -1031,6 +1036,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5111930673176965299">Fona aizmiglojums</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5121628974188116412">Pāriet uz lapas beigām</translation>
+<translation id="5122517996953421795">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Neaktīva darbvieta.</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
 <translation id="5150070631291639005">Konfidencialitātes iestatījumi</translation>
@@ -1431,6 +1437,7 @@ Jauna instalācija</translation>
 <translation id="6683022854667115063">Austiņas</translation>
 <translation id="6686023075541098243">Iestatīt tālruņa paziņojumu skatīšanu</translation>
 <translation id="6696025732084565524">Noņemamajai tastatūrai nepieciešams svarīgs atjauninājums</translation>
+<translation id="6697913454192220372">Pievienot jaunu darbvietu</translation>
 <translation id="6700713906295497288">IME izvēlnes poga</translation>
 <translation id="6707693040195709527">Noteiktais termiņš iepriekšējās versijas atjaunošanai ierīcē jau ir pagājis</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
@@ -1562,6 +1569,7 @@ Jauna instalācija</translation>
 <translation id="7262906531272962081">Izveidot atgādinājumu</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + atkāpšanās taustiņš</translation>
 <translation id="7285232777292757180">Izmantojiet ekrānuzņēmuma izveides rīku ātrajos iestatījumos, lai izveidotu ekrānuzņēmumus.</translation>
+<translation id="7301826272005790482">Nerādīt logu ieteikumus</translation>
 <translation id="7302889331339392448">Subtitri reāllaikā ir izslēgti.</translation>
 <translation id="7303365578352795231">Tiek atbildēts citā ierīcē.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1768,6 +1776,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8054466585765276473">Notiek akumulatora darbības ilguma aprēķināšana.</translation>
 <translation id="8079538659226626406">Ekrāna kopīgošana</translation>
 <translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
+<translation id="8088141034189573826">Lai skatītu citas iespējas, izmantojiet tabulēšanas taustiņu. Lai piekļūtu visām darbvietām, izmantojiet kreiso un labo bultiņu.</translation>
 <translation id="8091153018031979607">Sākums: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
 <translation id="8092380135549145188">Ritināšanas vadīklas</translation>
@@ -1965,6 +1974,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8936501819958976551">deaktivizēta</translation>
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> izvēles rūtiņa nav atzīmēta</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8951539504029375108">Ar jūsu Chromebook datoru ir saderīgas tikai apstiprinātas Thunderbolt ierīces</translation>
 <translation id="8964525410783593407">1 h</translation>

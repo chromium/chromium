@@ -587,6 +587,7 @@
 <translation id="3437677362970530951">「Play 商店」和其他遊戲平台上的遊戲</translation>
 <translation id="3439896670700055005">重新載入目前網頁，而不使用快取內容</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">自訂滑鼠</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3454555520521576458">可調整大小</translation>
@@ -1508,7 +1509,7 @@
 <translation id="698231206551913481">移除這位使用者後，系統便會永久刪除所有與該使用者相關的檔案和本機數據。</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解像度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)。按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="6989752354829085073">請觀看快速導覽，瞭解如何操作 Chromebook。只需 6 個步驟就能開始運作。</translation>
-<translation id="7000027735917578303">Windows 和桌面設定</translation>
+<translation id="7000027735917578303">視窗同桌面設定</translation>
 <translation id="7004910047186208204">連線至流動數據</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>
 <translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
@@ -1618,6 +1619,7 @@
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7512509370370076552">「按一下右鍵」快速鍵已由「Alt 鍵 + 按一下」更新為「<ph name="LAUNCHER_KEY_NAME" />鍵 + 按一下」</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />，未選取</translation>
+<translation id="7513057995673284840">你可為「<ph name="PERIPHERAL_NAME" />」個人化按鈕操作</translation>
 <translation id="7513622367902644023">揀咗螢幕截圖模式</translation>
 <translation id="7513922695575567867">日曆，<ph name="DATE" />嗰個星期，目前揀咗 <ph name="SELECTED_DATE" /> 日。</translation>
 <translation id="7514365320538308">下載</translation>
@@ -1674,6 +1676,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">建立緊 GIF</translation>
 <translation id="7714767791242455379">新增流動網絡</translation>
+<translation id="7716257086539630827">自訂平板電腦</translation>
 <translation id="7720400844887872976">開啟，直到<ph name="TIME" /></translation>
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7721132362314201794">桌面名稱</translation>
@@ -1699,6 +1702,7 @@
 <translation id="7807067443225230855">搜尋和助理功能</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">訊號強大</translation>
+<translation id="7830453190047749513">你可為「<ph name="PERIPHERAL_NAME" />」個人化按鈕操作、游標速度等</translation>
 <translation id="7837740436429729974">時間到</translation>
 <translation id="7842569679327885685">警告：實驗性功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>

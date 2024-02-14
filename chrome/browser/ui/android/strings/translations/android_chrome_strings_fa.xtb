@@ -1081,7 +1081,7 @@
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
-<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{نشانک در <ph name="FOLDER_NAME" /> ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}one{نشانک در <ph name="FOLDER_NAME" /> ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}other{نشانک‌ها در <ph name="FOLDER_NAME" /> ذخیره شدند. نشانک‌ها فقط در این دستگاه ذخیره می‌شوند.}}</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{نشانک در <ph name="FOLDER_NAME" /> ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}one{نشانک در <ph name="FOLDER_NAME" /> ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}other{نشانک در <ph name="FOLDER_NAME" /> ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}}</translation>
 <translation id="6715020873764921614">می‌خواهید <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) درهرصورت بارگیری شود؟</translation>
 <translation id="6719634564325948108">با رمزینه پاسخ‌سریع وارد می‌شوید؟</translation>
 <translation id="6723740634201835758">‏در حساب Google</translation>
@@ -1119,6 +1119,7 @@
 <translation id="6869056123412990582">رایانه</translation>
 <translation id="6882836635272038266">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است.</translation>
 <translation id="6883204995689174413">هم‌رسانی</translation>
+<translation id="688398477366397178">به وب‌سایت‌ها اجازه دهید زبان‌هایی را که صحبت می‌کنید بدانند. این وب‌سایت‌ها درصورت امکان، محتوا را به آن زبان‌ها نشان می‌دهند.</translation>
 <translation id="688738109438487280">افزودن داده‌های موجود به <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">برای کپی کردن گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="6896758677409633944">کپی</translation>
@@ -1161,6 +1162,7 @@
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7105047059074518658">برای مرور آسان‌تر در دستگاه‌ها به سیستم وارد شوید</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
+<translation id="7111394291981742152">‏‫Chrome به شما کمک می‌کند بر آگهی‌هایی که می‌بینید تسلط بیشتری داشته باشید و همچنین میزان اطلاعاتی را که سایت‌ها هنگام نمایش آگهی‌های شخصی‌سازی‌شده به شما درباره‌تان جمع‌آوری می‌کنند محدود می‌کند.</translation>
 <translation id="7138678301420049075">دیگر</translation>
 <translation id="7140829094791862589">براساس ترتیب دستی</translation>
 <translation id="7146622961999026732">به‌نظر می‌رسد این سایت‌ها و برنامه‌ها برای شما مهم هستند:</translation>
@@ -1402,7 +1404,7 @@
 <translation id="8237871086242677046">برگ زیرین اطلاعات آماری صفحه</translation>
 <translation id="8243077599929149377">نام کاربری‌تان را اضافه کنید</translation>
 <translation id="8250920743982581267">اسناد</translation>
-<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{نشانک در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}one{نشانک در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}other{نشانک‌ها در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شدند.}}</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{نشانک در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}one{نشانک در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}other{نشانک در <ph name="FOLDER_NAME" /> در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}}</translation>
 <translation id="8255617931166444521">سایت‌ها فقط می‌توانند از کوکی‌هایتان برای دیدن فعالیت مرورتان در سایت خودشان استفاده کنند</translation>
 <translation id="8259179246279078674">‏ازآنجایی‌که صفحات پیش‌بارگیری‌شده رمزگذاری شده‌اند، Google هیچ اطلاعاتی درباره محتوای صفحه پیش‌بارگیری‌شده دریافت نخواهد کرد. سرورهای Google مطلع خواهد شد که کدام سایت‌ها خصوصی پیش‌بارگیری می‌شوند. از این اطلاعات فقط برای پیش‌بارگیری صفحات استفاده می‌شود و با سایر اطلاعات «حساب Google» شما پیوند داده نمی‌شود.</translation>
 <translation id="8260126382462817229">دوباره سعی کنید به سیستم وارد شوید</translation>

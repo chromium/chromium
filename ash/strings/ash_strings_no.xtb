@@ -587,6 +587,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3437677362970530951">Spill i Play-butikken og på andre gamingplattformer</translation>
 <translation id="3439896670700055005">Last inn siden på nytt uten å bruke bufret innhold</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Tilpass musen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3454555520521576458">Størrelsen kan endres</translation>
@@ -1620,6 +1621,7 @@ Nylig installert</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7512509370370076552">Høyreklikk-hurtigtasten er endret til <ph name="LAUNCHER_KEY_NAME" />-tasten + klikk fra Alt + klikk</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, ikke valgt</translation>
+<translation id="7513057995673284840">Du kan tilpasse knappehandlinger for <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
 <translation id="7513922695575567867">Kalender – uken som inneholder <ph name="DATE" />. For øyeblikket er <ph name="SELECTED_DATE" /> valgt.</translation>
 <translation id="7514365320538308">Last ned</translation>
@@ -1676,6 +1678,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Oppretter GIF</translation>
 <translation id="7714767791242455379">Legg til nytt mobilnettverk</translation>
+<translation id="7716257086539630827">Tilpass nettbrettet</translation>
 <translation id="7720400844887872976">Påslått til <ph name="TIME" /></translation>
 <translation id="7720410380936703141">PRØV PÅ NYTT</translation>
 <translation id="7721132362314201794">Skrivebordnavn</translation>
@@ -1701,6 +1704,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
+<translation id="7830453190047749513">Du kan tilpasse knappehandlinger, markørhastigheten med mer for <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tiden er ute</translation>
 <translation id="7842569679327885685">Advarsel: Funksjon på forsøksstadiet</translation>
 <translation id="7846634333498149051">Tastatur</translation>

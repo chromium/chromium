@@ -100,6 +100,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Plank altijd bekijken</translation>
 <translation id="132346741904777634">Camera uitgelijnd op de linkerbovenhoek. Conflict met systeemoppervlak.</translation>
+<translation id="132415371743256095"><ph name="DESK_NAME" /> en vensters sluiten</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> gekoppeld</translation>
 <translation id="1340378040547539434">Uitzoomen op pagina</translation>
 <translation id="1341651618736211726">Overloop</translation>
@@ -331,6 +332,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2397416548179033562">Chrome-menu bekijken</translation>
 <translation id="240006516586367791">Mediabediening</translation>
 <translation id="2402411679569069051">Gebruik je vingerafdruk of ontgrendel je telefoon om je Chromebook te ontgrendelen</translation>
+<translation id="240545663114741956">Druk 2 keer op <ph name="ACCELERATOR" /> om uit te loggen.</translation>
 <translation id="2405664212338326887">Niet verbonden</translation>
 <translation id="2408955596600435184">Je pincode invoeren</translation>
 <translation id="2412593942846481727">Update beschikbaar</translation>
@@ -352,7 +354,9 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2478076885740497414">App installeren</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2484513351006226581">Druk op <ph name="KEYBOARD_SHORTCUT" /> om van toetsenbordindeling te wisselen.</translation>
+<translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
+<translation id="250047928202119308">Menu voor bureauprofiel</translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
 <translation id="2504454902900101003">Instellen van de weergave van recente foto's, media en meldingen van je telefoon sluiten</translation>
 <translation id="2509468283778169019">CAPS LOCK staat aan</translation>
@@ -906,6 +910,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
+<translation id="4654916960643280876">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> aangevinkt.</translation>
 <translation id="4657775630156561295">De volgende suggestie wordt definitief uit de suggestiegeschiedenis van je account verwijderd:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1037,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5111930673176965299">Achtergrondvervaging</translation>
 <translation id="5117590920725113268">Volgende maand bekijken</translation>
 <translation id="5121628974188116412">Naar onderkant van pagina gaan</translation>
+<translation id="5122517996953421795">Voorbeeld van <ph name="DESK_NAME" />. Inactief bureau.</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5150070631291639005">Privacyinstellingen</translation>
@@ -1432,6 +1438,7 @@ Nieuwe installatie</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
 <translation id="6686023075541098243">De weergave van meldingen van je telefoon instellen</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
+<translation id="6697913454192220372">Nieuw bureau toevoegen</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
 <translation id="6707693040195709527">Het apparaat had al moeten zijn teruggezet naar een oudere versie</translation>
 <translation id="6710213216561001401">Vorige</translation>
@@ -1563,6 +1570,7 @@ Nieuwe installatie</translation>
 <translation id="7262906531272962081">Herinnering maken</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Gebruik de tool Screenshot in Snelle instellingen om screenshots te maken</translation>
+<translation id="7301826272005790482">Venstersuggesties sluiten</translation>
 <translation id="7302889331339392448">Live ondertiteling staat uit.</translation>
 <translation id="7303365578352795231">Je vraag wordt beantwoord op een ander apparaat.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1772,6 +1780,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
 <translation id="8079538659226626406">Scherm delen</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
+<translation id="8088141034189573826">Gebruik Tab voor meer opties. Gebruik de pijl-links en pijl-rechts voor toegang tot alle bureaus.</translation>
 <translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische updates</translation>
 <translation id="8092380135549145188">Bedieningselementen voor scrollen</translation>
@@ -1969,6 +1978,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8936501819958976551">gedeactiveerd</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8940956008527784070">Batterij is bijna leeg (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> niet aangevinkt.</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8951539504029375108">Alleen goedgekeurde Thunderbolt-apparaten werken met je Chromebook</translation>
 <translation id="8964525410783593407">1 u</translation>

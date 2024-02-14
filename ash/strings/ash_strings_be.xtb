@@ -583,6 +583,7 @@
 <translation id="3437677362970530951">Гульні ў Краме Play і на іншых гульнявых платформах</translation>
 <translation id="3439896670700055005">Абнавіць бягучую старонку без выкарыстання кэшаванага змесціва</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Наладзьце мыш</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
 <translation id="3454555520521576458">Памер можна змяняць</translation>
@@ -1612,6 +1613,7 @@
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
 <translation id="7512509370370076552">Спалучэнне клавіш для дзеяння "Націснуць правай кнопкай мышы" зменена з Alt + Левая кнопка мышы на <ph name="LAUNCHER_KEY_NAME" /> + Левая кнопка мышы</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, не выбрана</translation>
+<translation id="7513057995673284840">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />"</translation>
 <translation id="7513622367902644023">Быў выбраны рэжым здымка экрана</translation>
 <translation id="7513922695575567867">Каляндар, тыдзень з <ph name="DATE" />, дата, якая цяпер выбрана, – <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Спампаваць</translation>
@@ -1668,6 +1670,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Ідзе стварэнне файла GIF</translation>
 <translation id="7714767791242455379">Дадаць новую сотавую сетку</translation>
+<translation id="7716257086539630827">Наладзьце планшэт</translation>
 <translation id="7720400844887872976">Уключана да <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПАЎТАРЫЦЬ СПРОБУ</translation>
 <translation id="7721132362314201794">Назва працоўнага стала</translation>
@@ -1693,6 +1696,7 @@
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Моцны сігнал</translation>
+<translation id="7830453190047749513">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />", а таксама хуткасць курсора</translation>
 <translation id="7837740436429729974">Час выйшаў</translation>
 <translation id="7842569679327885685">Увага! Эксперыментальная функцыя</translation>
 <translation id="7846634333498149051">Клавіятура</translation>

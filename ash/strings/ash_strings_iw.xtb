@@ -100,6 +100,7 @@
 <translation id="1312604459020188865">עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">המדף תמיד מוצג</translation>
 <translation id="132346741904777634">המצלמה מוצמדת לפינה הימנית העליונה. התנגשות עם תצוגת המערכת.</translation>
+<translation id="132415371743256095">סגירה של <ph name="DESK_NAME" /> והחלונות</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> מחובר</translation>
 <translation id="1340378040547539434">הקטנת התצוגה של הדף</translation>
 <translation id="1341651618736211726">אפשרויות נוספות</translation>
@@ -331,6 +332,7 @@
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
+<translation id="240545663114741956">כדי לצאת, מקישים פעמיים על <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">לא מחובר</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
@@ -352,7 +354,9 @@
 <translation id="2478076885740497414">התקנת האפליקציה</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
+<translation id="2486214324139475545">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי פעיל.</translation>
 <translation id="2487915095798731898">הצטרפות</translation>
+<translation id="250047928202119308">תפריט הפרופיל של שולחן העבודה הווירטואלי</translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
 <translation id="2504454902900101003">ביטול ההגדרה של הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
 <translation id="2509468283778169019">‏CAPS LOCK מופעל</translation>
@@ -583,6 +587,7 @@
 <translation id="3437677362970530951">‏משחקים בחנות Play ובפלטפורמות גיימינג אחרות</translation>
 <translation id="3439896670700055005">טעינה מחדש של הדף הנוכחי בלי שימוש בתוכן שנשמר במטמון</translation>
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
+<translation id="3443917186865471894">התאמה אישית של העכבר</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
 <translation id="3454555520521576458">יכולת קביעת גודל</translation>
@@ -904,6 +909,7 @@
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
+<translation id="4654916960643280876">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> מסומנת.</translation>
 <translation id="4657775630156561295">ההצעה הבאה תוסר באופן סופי מהיסטוריית ההצעות בחשבון שלך:
 
 <ph name="QUERY" /></translation>
@@ -1030,6 +1036,7 @@
 <translation id="5111930673176965299">טשטוש הרקע</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5121628974188116412">מעבר אל תחתית הדף</translation>
+<translation id="5122517996953421795">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי לא פעיל.</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
 <translation id="5147567197700016471">הנעילה בוטלה</translation>
 <translation id="5150070631291639005">הגדרות פרטיות</translation>
@@ -1429,6 +1436,7 @@
 <translation id="6683022854667115063">אוזניות</translation>
 <translation id="6686023075541098243">הגדרת ההצגה של ההתראות שבטלפון</translation>
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
+<translation id="6697913454192220372">הוספת שולחן עבודה וירטואלי חדש</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
 <translation id="6707693040195709527">מועד שינוי המכשיר לגרסה קודמת כבר חלף</translation>
 <translation id="6710213216561001401">הקודם</translation>
@@ -1559,6 +1567,7 @@
 <translation id="7262906531272962081">יצירת תזכורת</translation>
 <translation id="7278787617901301220">‏<ph name="LAUNCHER_KEY_NAME" /> + מקש Backspace</translation>
 <translation id="7285232777292757180">ניתן להשתמש בכלי לצילום המסך שבהגדרות המהירות כדי ליצור צילומי מסך</translation>
+<translation id="7301826272005790482">סגירת ההצעות לחלונות</translation>
 <translation id="7302889331339392448">התכונה 'כתוביות מיידיות' מושבתת.</translation>
 <translation id="7303365578352795231">התשובה מתקבלת במכשיר אחר.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1609,6 +1618,7 @@
 <translation id="7509246181739783082">אימות זהות</translation>
 <translation id="7512509370370076552">‏מקשי הקיצור של לחיצה ימנית היו Alt + לחיצה ועכשיו הם מקש <ph name="LAUNCHER_KEY_NAME" /> + לחיצה</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, לא נבחר</translation>
+<translation id="7513057995673284840">אפשר להתאים אישית את פעולות הלחצנים במכשיר <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7513622367902644023">נבחר מצב של צילום מסך</translation>
 <translation id="7513922695575567867">יומן, השבוע של <ph name="DATE" />, התאריך שנבחר הוא <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">הורדה</translation>
@@ -1667,6 +1677,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">‏בתהליך של יצירת GIF</translation>
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
+<translation id="7716257086539630827">התאמה אישית של הטאבלט</translation>
 <translation id="7720400844887872976">התכונה פעילה עד <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7721132362314201794">שם שולחן העבודה הווירטואלי</translation>
@@ -1692,6 +1703,7 @@
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">אות חזק</translation>
+<translation id="7830453190047749513">אפשר להתאים אישית את פעולות הלחצנים, מהירות הסמן ועוד במכשיר <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">עבר הזמן</translation>
 <translation id="7842569679327885685">אזהרה: תכונה ניסיונית</translation>
 <translation id="7846634333498149051">מקלדת</translation>
@@ -1766,6 +1778,7 @@
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
 <translation id="8079538659226626406">שיתוף המסך</translation>
 <translation id="8083540854303889870">שולחן העבודה נשמר למועד מאוחר יותר</translation>
+<translation id="8088141034189573826">‏אפשר להשתמש במקש Tab כדי להציג אפשרויות נוספות. כדי לגשת לכל שולחנות העבודה הווירטואליים, משתמשים בחץ שמאלה ובחץ ימינה.</translation>
 <translation id="8091153018031979607">מתחיל בשעה <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">עדכונים אוטומטיים</translation>
 <translation id="8092380135549145188">פקדים לגלילה</translation>
@@ -1962,6 +1975,7 @@
 <translation id="8936501819958976551">מושבתת</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>
+<translation id="894774083269346314">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> לא מסומנת.</translation>
 <translation id="8949925099261528566">יש חיבור, אין אינטרנט</translation>
 <translation id="8951539504029375108">‏רק מכשירי Thunderbolt מאושרים תואמים ל-Chromebook</translation>
 <translation id="8964525410783593407">שעה אחת</translation>

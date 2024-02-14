@@ -40,7 +40,9 @@
 <translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="1207734034680156868">Suggesties zijn gebaseerd op je beschrijving</translation>
 <translation id="121090498480012229">media afspelen of pauzeren</translation>
+<translation id="1223498995510244364">Samenvatten</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
+<translation id="1232610416724362657">waterval</translation>
 <translation id="1238612778414822719">HTTPS-latentie</translation>
 <translation id="1264369926465113395">Bekijk het nieuwe digitale tijdschrift van Chromebook voor makers</translation>
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
@@ -69,6 +71,7 @@
 <translation id="1418991483994088776">orchidee</translation>
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
 <translation id="1423591390236870726">Er is niet op de toets <ph name="KEY_NAME" /> gedrukt</translation>
+<translation id="1432110487435300883">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="1435763214710588005">Het datagebruik wordt elke maand automatisch gereset op de geselecteerde datum</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1449035143498573192">Openen in Google Zoeken</translation>
@@ -120,6 +123,7 @@
 <translation id="1710499924611012470">Toegankelijkheidsnavigatie</translation>
 <translation id="1715359911173058521">Er is een communicatieprobleem met de scanner. Check het netwerk of de USB-aansluiting en probeer het opnieuw.</translation>
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
+<translation id="1718553040985966377">meer</translation>
 <translation id="1726100011689679555">Naamservers</translation>
 <translation id="1731082422893354635">Bluetooth-touchpad</translation>
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
@@ -138,8 +142,10 @@
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
+<translation id="1808803439260407870">Klassieke kunst</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
 <translation id="1836553715834333258">Systeemkleur</translation>
+<translation id="183675228220305365">realistisch</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1840474674287087346">Desktopkleur</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
@@ -173,6 +179,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Maak verbinding met een netwerk en laad de pagina opnieuw om de screensaver te bekijken.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2073232437457681324">enorme oceaan</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
 <translation id="2102231663024125441">Tekstbewerking</translation>
@@ -191,6 +198,8 @@
 <translation id="2163937499206714165">Donkere modus aanzetten</translation>
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
+<translation id="2203642483788377106">klif</translation>
+<translation id="2208388655216963643">impressionistisch</translation>
 <translation id="2209788852729124853">Verkeerstellers resetten</translation>
 <translation id="2212733584906323460">Naamresolutie</translation>
 <translation id="2215920961700443347">Geen internet. Maak verbinding met internet en probeer het opnieuw.</translation>
@@ -248,6 +257,7 @@
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
 <translation id="2597774443162333062">Bestanden worden naar Google gestuurd voor foutopsporing</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scannen afgerond. 1 pagina gescand}other{Scannen afgerond. {NUMBER_OF_PAGES} pagina's gescand}}</translation>
+<translation id="2618015542787108131">duin</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
@@ -258,6 +268,7 @@
 <translation id="268270014981824665">toetsenbord gedimd</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
+<translation id="2715723665057727940">rivier</translation>
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
 <translation id="2728460467788544679">Hele afdrukgeschiedenis wissen</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -275,6 +286,7 @@
 <translation id="2875812231449496375">Zet dit aan voor de beste resultaten met deze achtergrond. Je kunt deze instelling altijd uitzetten.</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="2880569433548999039">Screensaver Wolkenstroom</translation>
+<translation id="2890557891229184386">tropisch eiland</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="2940811910881150316">Kan apparaat niet testen. Open de klep opnieuw om te testen.</translation>
 <translation id="2941112035454246133">Laag</translation>
@@ -300,6 +312,7 @@
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Systeem- en app-gegevens<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />statistieken<ph name="END_LINK2" /> sturen</translation>
 <translation id="3170673040743561620">Leg je document op de scanner</translation>
 <translation id="3174321110679064523">Achtergrond Van dageraad tot donker</translation>
+<translation id="3178532070248519384">avant-garde</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="319101249942218879">Avatar-afbeelding gewijzigd</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
@@ -308,6 +321,7 @@
 <translation id="3211671540163313381">D-pad voor toetstoewijzing</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3226657629376379887">Actiemenu voor indeling</translation>
+<translation id="3227186760713762082">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /></translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="324961752321393509">Je beheerder staat deze app sluiten niet toe</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
@@ -377,6 +391,7 @@
 <translation id="3749289110408117711">Bestandsnaam</translation>
 <translation id="3771294271822695279">Videobestanden</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
+<translation id="3790109258688020991">pointillist</translation>
 <translation id="380097101658023925">rgb-bedieningselementen</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
@@ -486,6 +501,7 @@
 <translation id="4500722292849917410">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met een functietoets (Ctrl, Alt, Shift of <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Interfacekleur</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
+<translation id="4503441351962730761">moderne kunst</translation>
 <translation id="4507392511610824664">helderheid omhoog</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
@@ -495,6 +511,7 @@
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
 <translation id="4556753742174065117">Alle firmware is up-to-date</translation>
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
+<translation id="456077979087158257">stadsgezicht</translation>
 <translation id="4561801978359312462">Simkaart ontgrendeld</translation>
 <translation id="4562494484721939086">Geen service</translation>
 <translation id="4573777384450697571">Mislukt: certificaat verlopen</translation>
@@ -528,8 +545,10 @@
 <translation id="4809927044794281115">Licht thema</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
 <translation id="4813345808229079766">Verbinding</translation>
+<translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
+<translation id="4838825304062068169">gletsjer</translation>
 <translation id="4839698083503556542">Je eigen film maken</translation>
 <translation id="48409034532829769">Je beheerder heeft ingesteld dat <ph name="APP_NAME" /> automatisch wordt gestart. Je kunt deze app misschien niet sluiten.</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -555,6 +574,7 @@
 <translation id="4930320165497208503">Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> als je een verbinding wilt instellen of updaten.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4950314376641394653">Firmware voor <ph name="DEVICE_NAME" /> is geüpdatet naar versie <ph name="VERSION" /></translation>
+<translation id="4965703485264574128">Vermenigvuldig de waarde voor <ph name="CATEGORY_TEXT" /> met <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="4969079779290789265">Splitsen</translation>
 <translation id="4972592110715526173">modus wijzigen</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
@@ -633,6 +653,7 @@
 <translation id="5499114900554609492">Kan scan niet voltooien</translation>
 <translation id="5499762266711462226">Toetsenbordkleur is gebaseerd op achtergrond</translation>
 <translation id="5502931783115429516">Android wordt niet uitgevoerd</translation>
+<translation id="550600468576850160">weide</translation>
 <translation id="551689408806449779">De verbinding met het apparaat is verbroken. Maak opnieuw verbinding om te testen.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5543701552415191873">vergrendeld</translation>
@@ -643,6 +664,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5600027863942488546">De toets <ph name="KEY_NAME" /> is getest</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
+<translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">uittreksel</translation>
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5654356773042347102">lelietje-van-dalen</translation>
@@ -667,6 +689,7 @@
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
+<translation id="5810296156135698005">barok</translation>
 <translation id="5816802250591013230">Geen sneltoets toegewezen</translation>
 <translation id="5826644637650799838">Over de achtergrond</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
@@ -706,6 +729,7 @@
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6048107060512778456">Mislukt - Papierstoring</translation>
 <translation id="6050189528197190982">Grijstinten</translation>
+<translation id="6054711098834486579">expressionistisch</translation>
 <translation id="6058625436358447366">Geef je oude en nieuwe wachtwoord op om te voltooien</translation>
 <translation id="6061772781719867950">Mislukte HTTPS-verzoeken</translation>
 <translation id="6073292342939316679">helderheid van toetsenbord verlagen</translation>
@@ -810,9 +834,13 @@
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6694534975463174713">slot</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
+<translation id="6712933881624804031">dal</translation>
+<translation id="671733080802536771">art nouveau</translation>
+<translation id="6721525125027474520">moeras</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723847290197874913">Achtergrondverlichting toetsenbord</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
+<translation id="6744441848304920043">jungle</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6753452347192452143">Apparaat is een computer.</translation>
@@ -869,6 +897,7 @@
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7170236477717446850">Profielfoto</translation>
+<translation id="7171665330126595869">grot</translation>
 <translation id="7171919371520438592">Venster vastzetten op het kleinere <ph name="DIRECTION" />gedeelte van het scherm</translation>
 <translation id="7172721935181587524">1 afbeelding</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
@@ -881,6 +910,7 @@
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7233782086689993269">Sneltoets hersteld</translation>
 <translation id="725133483556299729">E-mailadres selecteren</translation>
+<translation id="7271000785316964275">classicistisch</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7271932918253517778">Sneltoets met toetsen op de bovenste rij moet de <ph name="META_KEY" />-toets bevatten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -967,8 +997,10 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7799817062559422778">Lichte modus</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7813073042185856802">berg</translation>
 <translation id="7819831665603418705">Een template gebruiken</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
+<translation id="7824219488248240180">post-impressionistisch</translation>
 <translation id="7841134249932030522">Donkere modus aanzetten</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7850847810298646851">Achtergrond mogelijk gemaakt door AI van Google</translation>
@@ -1002,6 +1034,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8067126283828232460">APN is verbonden.</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
+<translation id="8079860070590459552">bloemenveld</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="8082644724189923105">toetsenbordzone</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
@@ -1015,6 +1048,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8151185429379586178">Ontwikkelaarstools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183975772394450380">strand</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
@@ -1030,12 +1064,14 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8312330582793120272">media afspelen</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
+<translation id="8320910311642849813">bos</translation>
 <translation id="8329018942023753850">rekenmachine-app</translation>
 <translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8339024191194156249">Meer informatie over automatisch starten</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> of <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8349826889576450703">launcher</translation>
+<translation id="8351482263741655895">Vermenigvuldig de waarde voor <ph name="CATEGORY_TEXT" /> met <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Aanraakpunt voor toetstoewijzing</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
@@ -1044,6 +1080,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8380114448424469341">Venster vastzetten op de <ph name="DIRECTION" />helft van het scherm</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
+<translation id="8403988360557588704">Een schilderij van een <ph name="ART_FEATURE" /> in de stijl <ph name="ART_MOVEMENT" /></translation>
 <translation id="8410244574650205435">Automatisch gevonden</translation>
 <translation id="8420955526972171689">Tests uitvoeren en hardwareproblemen oplossen</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1055,6 +1092,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8476242415522716722">achtergrondverlichting toetsenbord</translation>
 <translation id="8476942730579767658">Vensters en bureaus</translation>
+<translation id="8477536061607044749">grafisch ontwerp</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>
@@ -1128,6 +1166,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>
+<translation id="89945434909472341">dorp</translation>
 <translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>
 <translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
 <translation id="9003704114456258138">Frequentie</translation>
