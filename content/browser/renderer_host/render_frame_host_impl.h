@@ -2654,6 +2654,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<mojo::MessageFilter> CreateMessageFilterForAssociatedReceiver(
       const char* interface_name);
 
+  int accessibility_fatal_error_count_for_testing() const {
+    return accessibility_fatal_error_count_;
+  }
+
   // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode are not const
   // as with prerenderer activation the page needs to move between
   // FrameTreeNodes and FrameTrees. Note that FrameTreeNode can only change for
@@ -4479,6 +4483,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // two groups: one for the initial request when accessibility is first enabled
   // for a WebContents' frames, and one for all subsequent requests.
   bool is_first_accessibility_request_ = true;
+
+  // A count of the number of times we received an unexpected fatal
+  // accessibility error and needed to reset accessibility, so we don't keep
+  // trying to reset forever.
+  int accessibility_fatal_error_count_ = 0;
 
   // The last AXTreeData for this frame received from the RenderFrame.
   ui::AXTreeData ax_tree_data_;

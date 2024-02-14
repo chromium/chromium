@@ -2910,11 +2910,19 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
       ax_rfhi_top_url_crash_key,
       GetOutermostMainFrameOrEmbedder()->GetLastCommittedURL().spec());
 
-  // Turn off accessibility for this WebContents to ensure we don't continue
-  // churning on failures, but do not crash the renderer.
-  delegate_->AccessibilityFatalError();
-  // Crash keys were set in BrowserAccessibilityManager::Unserialize().
-  base::debug::DumpWithoutCrashing();
+  accessibility_fatal_error_count_++;
+  if (accessibility_fatal_error_count_ > max_accessibility_resets_) {
+    // This will both create an "Aw Snap..." and generate a second crash report
+    // in addition to the DumpWithoutCrashing() for the first reset.
+    render_accessibility_->FatalError();
+  } else {
+    if (base::RandGenerator(20) == 0) {
+      // Only report crash ~5% of the time -- don't skew crash stats too much.
+      // Crash keys were set in BrowserAccessibilityManager::Unserialize().
+      base::debug::DumpWithoutCrashing();
+    }
+    AccessibilityReset();
+  }
 }
 
 gfx::AcceleratedWidget
@@ -13588,6 +13596,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // Reset the salt so that media device IDs are reset for the new document
   // if necessary.
   media_device_id_salt_base_ = CreateRandomMediaDeviceIDSalt();
+
+  accessibility_fatal_error_count_ = 0;
 
   UpdateIsolatableSandboxedIframeTracking(navigation_request);
 }
