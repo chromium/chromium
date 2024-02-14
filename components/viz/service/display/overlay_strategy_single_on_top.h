@@ -58,8 +58,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
   OverlayStrategy GetUMAEnum() const override;
 
  private:
-  static constexpr size_t kMaxFrameCandidateWithSameResourceId = 3;
-
   bool TryOverlay(AggregatedRenderPass* render_pass,
                   const PrimaryPlane* primary_plane,
                   OverlayCandidateList* candidate_list,
