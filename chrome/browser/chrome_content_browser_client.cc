@@ -1523,6 +1523,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
+  registry->RegisterListPref(
+      prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
 #endif
 }
 

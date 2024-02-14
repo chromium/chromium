@@ -1,0 +1,35 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "profile.isolated_web_app.sub_apps_allowed_without_user_gesture_and_authorization": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins": [
+            "https://mydomain.com",
+            "https://test.mydomain.com"
+          ]
+        },
+        "prefs": {
+          "profile.isolated_web_app.sub_apps_allowed_without_user_gesture_and_authorization": {
+            "value": [
+              "https://mydomain.com",
+              "https://test.mydomain.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

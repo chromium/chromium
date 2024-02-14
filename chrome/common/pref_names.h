@@ -2532,6 +2532,14 @@ inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
 // Isolated Web App,
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
+
+// Holds URL patterns that specify origins that will be allowed to call
+// `subApps.{add|remove|list}())` without prior user gesture and that will skip
+// the user dialog authorization.
+inline constexpr char
+    kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins[] =
+        "profile.isolated_web_app.sub_apps_allowed_without_user_gesture_and_"
+        "authorization";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
