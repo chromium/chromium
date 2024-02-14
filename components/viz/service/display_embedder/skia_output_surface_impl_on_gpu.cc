@@ -927,8 +927,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
     case CopyOutputRequest::ResultDestination::kNativeTextures: {
       auto representation = CreateSharedImageRepresentationSkia(
           SinglePlaneFormat::kRGBA_8888,
-          gfx::Size(geometry.result_bounds.width(),
-                    geometry.result_bounds.height()),
+          gfx::Size(geometry.result_selection.width(),
+                    geometry.result_selection.height()),
           color_space, "CopyOutputInMemory");
 
       if (!representation) {
@@ -991,7 +991,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
               std::move(representation)));
 
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
-          CopyOutputResult::Format::RGBA, geometry.result_bounds,
+          CopyOutputResult::Format::RGBA, geometry.result_selection,
           CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(),
                                           color_space),
           std::move(release_callbacks)));
