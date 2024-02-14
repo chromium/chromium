@@ -66,6 +66,14 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
       std::vector<std::string>{"https://www.google.com/maps/"});
+  // Files.
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
+  // Chrome.
+  data->apps_infos.emplace_back(
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
+      std::vector<std::string>{"https://www.twitter.com/",
+                               "https://www.youtube.com/",
+                               "https://www.google.com/"});
 
   MaybeStartPineOverviewSession(std::move(data));
 }
