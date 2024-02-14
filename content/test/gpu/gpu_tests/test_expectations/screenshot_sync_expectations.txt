@@ -103,7 +103,8 @@
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] ScreenshotSync_* [ RetryOnFailure ]
 
-crbug.com/324934210 [ mac intel angle-metal passthrough asan ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+crbug.com/324934210 [ mac intel angle-metal passthrough asan graphite-enabled ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+crbug.com/324934210 [ mac intel angle-metal passthrough asan graphite-enabled ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
