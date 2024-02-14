@@ -23,6 +23,8 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'isDarkModeEnabled',
       'isColorModeAutoScheduleEnabled',
       'isGeolocationEnabledForSystemServices',
+      'getSunriseTime',
+      'getSunsetTime',
     ]);
     this.staticColor = null;
   }

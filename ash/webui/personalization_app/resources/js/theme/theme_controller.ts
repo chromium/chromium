@@ -19,12 +19,15 @@ import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkMode
 export async function initializeData(
     provider: ThemeProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const [{enabled}, {darkModeEnabled}, {geolocationEnabled}] =
-      await Promise.all([
-        provider.isColorModeAutoScheduleEnabled(),
-        provider.isDarkModeEnabled(),
-        provider.isGeolocationEnabledForSystemServices(),
-      ]);
+  const [
+    { enabled },
+    { darkModeEnabled },
+    { geolocationEnabled },
+  ] = await Promise.all([
+    provider.isColorModeAutoScheduleEnabled(),
+    provider.isDarkModeEnabled(),
+    provider.isGeolocationEnabledForSystemServices(),
+  ]);
 
   store.beginBatchUpdate();
   store.dispatch(setDarkModeEnabledAction(darkModeEnabled));

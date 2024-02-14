@@ -18,6 +18,8 @@ export interface ThemeState {
   sampleColorSchemes: SampleColorScheme[];
   staticColorSelected: SkColor|null;
   geolocationPermissionEnabled: boolean|null;
+  sunriseTime: string|null;
+  sunsetTime: string|null;
 }
 
 export function emptyState(): ThemeState {
@@ -28,5 +30,7 @@ export function emptyState(): ThemeState {
     sampleColorSchemes: [],
     staticColorSelected: null,
     geolocationPermissionEnabled: null,
+    sunriseTime: null,
+    sunsetTime: null,
   };
 }

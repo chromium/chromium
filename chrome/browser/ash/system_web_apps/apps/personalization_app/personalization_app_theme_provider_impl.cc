@@ -13,12 +13,16 @@
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/i18n/time_formatting.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash::personalization_app {
 
@@ -85,6 +89,16 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   }
   // Call once to get the initial status.
   NotifyGeolocationPermissionChanged();
+
+  system::TimezoneSettings* tz_settings =
+      ash::system::TimezoneSettings::GetInstance();
+  CHECK(tz_settings);
+  // This provides the initial timezone.
+  TimezoneChanged(tz_settings->GetTimezone());
+  if (!timezone_settings_observer_.IsObserving()) {
+    // Listen to timezone changes to update the daylight time.
+    timezone_settings_observer_.Observe(tz_settings);
+  }
 
   if (chromeos::features::IsJellyEnabled()) {
     OnStaticColorChanged();
@@ -271,5 +285,15 @@ void PersonalizationAppThemeProviderImpl::OnColorProviderChanged() {
   GenerateSampleColorSchemes(base::BindOnce(
       &PersonalizationAppThemeProviderImpl::OnSampleColorSchemesChanged,
       weak_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppThemeProviderImpl::TimezoneChanged(
+    const icu::TimeZone& timezone) {
+  CHECK(theme_observer_remote_.is_bound());
+  auto [sunrise_time, sunset_time] =
+      ash::privacy_hub_util::SunriseSunsetSchedule();
+  theme_observer_remote_->OnDaylightTimeChanged(
+      base::TimeFormatTimeOfDay(sunrise_time),
+      base::TimeFormatTimeOfDay(sunset_time));
 }
 }  // namespace ash::personalization_app

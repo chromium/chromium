@@ -19,11 +19,14 @@ export enum ThemeActionName {
   SET_SAMPLE_COLOR_SCHEMES = 'set_sample_color_schemes',
   SET_STATIC_COLOR = 'set_static_color',
   SET_GEOLOCATION_PERMISSION_ENABLED = 'set_geolocation_permission_enabled',
+  SET_SUNRISE_TIME = 'set_sunrise_time',
+  SET_SUNSET_TIME = 'set_sunset_time',
 }
 
 export type ThemeActions = SetColorModeAutoScheduleAction|
     SetDarkModeEnabledAction|SetColorSchemeAction|SetSampleColorSchemesAction|
-    SetStaticColorAction|SetGeolocationPermissionEnabledAction;
+    SetStaticColorAction|SetGeolocationPermissionEnabledAction|
+    SetSunriseTimeAction|SetSunsetTimeAction;
 
 export interface SetDarkModeEnabledAction extends Action {
   name: ThemeActionName.SET_DARK_MODE_ENABLED;
@@ -59,6 +62,15 @@ export interface SetGeolocationPermissionEnabledAction extends Action {
   enabled: boolean;
 }
 
+export interface SetSunriseTimeAction extends Action {
+  name: ThemeActionName.SET_SUNRISE_TIME;
+  time: string;
+}
+
+export interface SetSunsetTimeAction extends Action {
+  name: ThemeActionName.SET_SUNSET_TIME;
+  time: string;
+}
 
 export function setDarkModeEnabledAction(enabled: boolean):
     SetDarkModeEnabledAction {
@@ -88,4 +100,12 @@ export function setStaticColorAction(staticColor: SkColor|
 export function setGeolocationPermissionEnabledAction(enabled: boolean):
     SetGeolocationPermissionEnabledAction {
   return {name: ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED, enabled};
+}
+
+export function setSunriseTimeAction(time: string): SetSunriseTimeAction {
+  return {name: ThemeActionName.SET_SUNRISE_TIME, time};
+}
+
+export function setSunsetTimeAction(time: string): SetSunsetTimeAction {
+  return {name: ThemeActionName.SET_SUNSET_TIME, time};
 }

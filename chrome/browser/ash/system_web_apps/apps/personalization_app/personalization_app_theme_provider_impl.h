@@ -11,6 +11,7 @@
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,7 +33,8 @@ namespace ash::personalization_app {
 class PersonalizationAppThemeProviderImpl
     : public PersonalizationAppThemeProvider,
       public ash::ColorModeObserver,
-      public ui::ColorProviderSourceObserver {
+      public ui::ColorProviderSourceObserver,
+      public ash::system::TimezoneSettings::Observer {
  public:
   explicit PersonalizationAppThemeProviderImpl(content::WebUI* web_ui);
 
@@ -84,6 +86,9 @@ class PersonalizationAppThemeProviderImpl
   void GenerateSampleColorSchemes(
       GenerateSampleColorSchemesCallback callback) override;
 
+  // ash::system::TimezoneSettings::Observer
+  void TimezoneChanged(const icu::TimeZone& timezone) override;
+
  private:
   bool IsColorModeAutoScheduleEnabled();
 
@@ -124,6 +129,11 @@ class PersonalizationAppThemeProviderImpl
   base::ScopedObservation<ui::ColorProviderSource,
                           ui::ColorProviderSourceObserver>
       color_provider_source_observer_{this};
+
+  // Timezone Settings notifies when the timezone is changed.
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_settings_observer_{this};
 
   mojo::Remote<ash::personalization_app::mojom::ThemeObserver>
       theme_observer_remote_;

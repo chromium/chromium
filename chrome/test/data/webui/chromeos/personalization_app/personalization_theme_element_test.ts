@@ -136,6 +136,10 @@ suite('PersonalizationThemeTest', function() {
   test('shows geolocation warning on location disabled', async () => {
     personalizationThemeElement = initElement(PersonalizationThemeElement);
 
+    // Set the default sunrise/sunset time.
+    personalizationStore.data.theme.sunriseTime = '6:00AM';
+    personalizationStore.data.theme.sunsetTime = '6:00PM';
+
     // Disable Privacy Hub feature flag.
     loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: false});
 
@@ -198,6 +202,9 @@ suite('PersonalizationThemeTest', function() {
                 'geolocationWarningDiv');
         if (autoScheduleEnabled) {
           assertTrue(!!warningElement);
+          const warningMessage =
+              warningElement.querySelector('localized-link')?.localizedString;
+          assertTrue(warningMessage?.includes('6:00AM - 6:00PM') ?? false);
         } else {
           assertFalse(!!warningElement);
         }
@@ -210,6 +217,10 @@ suite('PersonalizationThemeTest', function() {
 
     // Enable Privacy Hub feature flag.
     loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    // Set the default sunrise/sunset time.
+    personalizationStore.data.theme.sunriseTime = '6:00AM';
+    personalizationStore.data.theme.sunsetTime = '6:00PM';
 
     // Disable geolocation and select Auto Schedule; This should show the
     // warning message.

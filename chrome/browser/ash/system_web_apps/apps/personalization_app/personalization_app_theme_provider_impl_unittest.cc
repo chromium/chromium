@@ -80,6 +80,11 @@ class TestThemeObserver
     geolocation_for_system_enabled_ = enabled;
   }
 
+  void OnDaylightTimeChanged(const std::u16string& sunrise_time,
+                             const std::u16string& sunset_time) override {
+    // no-op
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
   pending_remote() {
     if (theme_observer_receiver_.is_bound()) {

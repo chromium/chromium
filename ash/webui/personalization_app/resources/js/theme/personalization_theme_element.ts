@@ -17,6 +17,7 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import '../geolocation_dialog.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
@@ -60,6 +61,14 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Boolean,
         value: null,
       },
+      sunriseTime_: {
+        type: String,
+        value: null,
+      },
+      sunsetTime_: {
+        type: String,
+        value: null,
+      },
       isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
@@ -77,8 +86,17 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeShouldShowGeolocationWarningText_(' +
             'colorModeAutoScheduleEnabled_, ' +
-            'geolocationPermissionEnabled_),',
+            'geolocationPermissionEnabled_, ' +
+            'sunriseTime_, sunsetTime_),',
         value: false,
+      },
+
+      geolocationWarningText_: {
+        type: String,
+        computed: 'computeGeolocationWarningText_(' +
+            'colorModeAutoScheduleEnabled_, ' +
+            'sunriseTime_, sunsetTime_),',
+        value: '',
       },
 
       shouldShowGeolocationDialog_: {
@@ -91,6 +109,9 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   private darkModeEnabled_: boolean|null;
   private colorModeAutoScheduleEnabled_: boolean|null;
   private geolocationPermissionEnabled_: boolean|null;
+  private geolocationWarningText_: string;
+  private sunriseTime_: string|null;
+  private sunsetTime_: string|null;
   private selectedButton_: CrButtonElement;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
@@ -111,6 +132,10 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     this.watch<PersonalizationThemeElement['geolocationPermissionEnabled_']>(
         'geolocationPermissionEnabled_',
         state => state.theme.geolocationPermissionEnabled);
+    this.watch<PersonalizationThemeElement['sunriseTime_']>(
+        'sunriseTime_', state => state.theme.sunriseTime);
+    this.watch<PersonalizationThemeElement['sunsetTime_']>(
+        'sunsetTime_', state => state.theme.sunsetTime);
 
     this.updateFromStore();
     initializeData(getThemeProvider(), this.getStore());
@@ -194,9 +219,17 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
 
   private computeShouldShowGeolocationWarningText_(): boolean {
     return (
-        isCrosPrivacyHubLocationEnabled() &&
+        isCrosPrivacyHubLocationEnabled() && this.sunriseTime_ !== null &&
+        this.sunsetTime_ !== null &&
         this.colorModeAutoScheduleEnabled_ === true &&
         this.geolocationPermissionEnabled_ === false);
+  }
+
+  private computeGeolocationWarningText_(): string {
+    // Not using i18n, as it removes the anchor tags from the link.
+    return loadTimeData.getStringF(
+        'geolocationWarningTextForWallpaper', this.sunriseTime_!,
+        this.sunsetTime_!);
   }
 
   private openGeolocationDialog_(e: CustomEvent<{event: Event}>): void {

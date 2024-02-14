@@ -410,6 +410,11 @@ interface ThemeObserver {
 
   // Notifies the JS side about the system geolocation permission change.
   OnGeolocationPermissionForSystemServicesChanged(bool enabled);
+
+  // Notifies the JS side about the change in the daylight time.
+  // This happens when the timezone setting is changed.
+  OnDaylightTimeChanged(mojo_base.mojom.String16 sunrise_time,
+                        mojo_base.mojom.String16 sunset_time);
 };
 
 // Provides APIs to expose theme settings such dark/light color mode.
