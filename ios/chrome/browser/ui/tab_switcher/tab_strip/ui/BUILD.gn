@@ -18,11 +18,13 @@ swift_source_set("swift") {
   ]
   deps = [
     ":ui",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
+    "//ui/base",
   ]
 }
 
