@@ -5249,7 +5249,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS" desc="The iOS menu item for adding the current page to the bookmarks. [iOS only]">
         Add to Bookmarks
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_BOOKMARKS" desc="The iOS menu item for opening the bookmarks manager [Length: 15em] [iOS only]" meaning="This is a menu item in title case.">
+      <message name="IDS_IOS_TOOLS_MENU_BOOKMARKS" desc="The iOS menu item for opening the bookmarks manager" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Bookmarks
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE" desc="Title and accessibility label of the badge displayed on a tools menu item when it represents a new feature [Length: 20em]" meaning="A badge with this title is displayed informing the user that this feature that is new to them.">
@@ -5267,7 +5267,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_CLOSE_TAB" desc="The iOS menu item for closing a tab [iOS only]" meaning="[Length: unlimited]">
         Close Tab
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_DOWNLOADS" desc="The iOS menu item for opening the downloads folder [iOS only]" meaning="[Length: unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_DOWNLOADS" desc="The iOS menu item for opening the downloads folder [iOS only]" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Downloads
       </message>
       <message name="IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK" desc="The iOS menu item for editing a bookmark. This is a verb." meaning="Edit the current bookmark [Length: unlimited] [Verb]">
@@ -5294,7 +5294,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_HELP_URL" translateable="false">
         https://support.google.com/chrome/?p=chrome_help&amp;hl=[GRITLANGCODE]&amp;ios=1
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu">
+      <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         History
       </message>
       <message name="IDS_IOS_TOOLS_MENU_LENS_CAMERA_SEARCH" desc="The iOS menu item for searching images with the device camera using Google Lens.">
@@ -5324,19 +5324,22 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_PARENT_MANAGED" desc="Text displayed to inform the user that the browser is managed by their parent at the bottom of the overflow menu (without link). [iOS only]">
         Managed by your parent
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER" desc="The iOS menu item for opening the passwords list [iOS only]">
+      <message name="IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER" desc="The iOS menu item for opening the passwords list [iOS only]" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Password Manager
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PASTE_AND_GO" desc="The iOS menu item for pasting a URL or text in the omnibox and navigating to the page or searching for the text">
         Paste and Go
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_PRICE_TRACKING" desc="The iOS menu item for Price Notifications" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
+        Track Price
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="Open the Reading List menu. [Length: Unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Reading List
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_RECENT_TABS" desc="The iOS menu item for opening the panel showing the recently closed tabs and the tabs from other devices." meaning="[In Title case] [iOS only] [Length: Unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_RECENT_TABS" desc="The iOS menu item for opening the panel showing the recently closed tabs and the tabs from other devices." meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Recent Tabs
       </message>
       <message name="IDS_IOS_TOOLS_MENU_RELOAD" desc="The title of the button in the menu allowing the user to reload the page.">
@@ -5357,13 +5360,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Text That You Copied.'" meaning="[Length:Unlimited]">
           Search for Text You Copied
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_SETTINGS" desc="The iOS menu item for opening the settings [iOS only]" meaning="Open the settings menu. [Length:Unlimited]">
+      <message name="IDS_IOS_TOOLS_MENU_SETTINGS" desc="The iOS menu item for opening the settings [iOS only]" meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Settings
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SHARE" desc="The iOS menu item for sharing the current URL [Length: 15em] [iOS only]">
         Share…
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_SITE_INFORMATION" desc="The iOS menu item for getting the site informations.">
+      <message name="IDS_IOS_TOOLS_MENU_SITE_INFORMATION" desc="The iOS menu item for getting the site informations." meaning="[Length: 16em] [iOS only] This is a menu item in title case.">
         Site Information
       </message>
       <message name="IDS_IOS_TOOLS_MENU_STOP" desc="The iOS menu item for stoping the loading of the page.">
@@ -5383,6 +5386,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TOOLS_MENU_VOICE_SEARCH" desc="The iOS menu item for opening Voice Search.">
         Voice Search
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_WHATS_NEW" desc="The iOS menu item for opening the What's New page" meaning="Length: 16em] [iOS only] This is a menu item in title case.">
+        What's New
       </message>
       <message name="IDS_IOS_TOP_ADDRESS_BAR_OPTION" desc="Tag label title displayed for the top address bar preference option. [iOS only]">
         Top

@@ -935,7 +935,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (OverflowMenuDestination*)newWhatsNewDestination {
   __weak __typeof(self) weakSelf = self;
   return
-      [self createOverflowMenuDestination:IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_WHATS_NEW
                               destination:overflow_menu::Destination::WhatsNew
                                symbolName:kCheckmarkSealSymbol
                              systemSymbol:YES
@@ -954,8 +954,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuDestination*)newPriceNotificationsDestination {
   __weak __typeof(self) weakSelf = self;
-  return [self createOverflowMenuDestination:
-                   IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
+  return [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_PRICE_TRACKING
                                  destination:overflow_menu::Destination::
                                                  PriceNotifications
                                   symbolName:kDownTrendSymbol
