@@ -2420,32 +2420,22 @@ config("optimize") {
       # to optimize for performance like `/O2` for clang.
       rustflags = []
     }
-  } else if (optimize_for_size) {
+  } else if (optimize_for_size || is_chromeos) {
     # Favor size over speed.
-    if (is_clang) {
-      cflags = [ "-Oz" ] + common_optimize_on_cflags
+    # -Os in clang is more of a size-conscious -O2 than "size at any cost" (AKA -Oz).
 
-      if (use_ml_inliner && is_a_target_toolchain) {
-        cflags += [
-          "-mllvm",
-          "-enable-ml-inliner=release",
-        ]
-      }
-    } else {
+    if (is_fuchsia) {
+      cflags = [ "-Oz" ] + common_optimize_on_cflags
+    } else { 
       cflags = [ "-Os" ] + common_optimize_on_cflags
     }
 
-    # Like with `-Oz` on Clang, `-Copt-level=z` will also turn off loop
-    # vectorization.
-    rustflags = [ "-Copt-level=z" ]
-  } else if (is_chromeos) {
-    # TODO(gbiv): This is partially favoring size over speed. CrOS exclusively
-    # uses clang, and -Os in clang is more of a size-conscious -O2 than "size at
-    # any cost" (AKA -Oz). It'd be nice to:
-    # - Make `optimize_for_size` apply to all platforms where we're optimizing
-    #   for size by default (so, also Windows)
-    # - Investigate -Oz here, maybe just for ARM?
-    cflags = [ "-Os" ] + common_optimize_on_cflags
+    if (is_clang && use_ml_inliner && is_a_target_toolchain && !is_chromeos) {
+      cflags += [
+        "-mllvm",
+        "-enable-ml-inliner=release",
+      ]
+    }
 
     # Similar to clang, we optimize with `-Copt-level=s` to keep loop
     # vectorization while otherwise optimizing for size.
