@@ -51,13 +51,15 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
   // Tab#initialize() should have been called by now otherwise we can't push
   // the window id.
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  if (tab)
+  if (tab) {
     tab->SetWindowSessionID(GetSessionId());
+  }
 
   // Count tabs that are used for incognito mode inside the browser (excluding
   // off-the-record tabs for incognito CCTs, etc.).
-  if (GetProfile()->IsIncognitoProfile())
+  if (GetProfile()->IsIncognitoProfile()) {
     UMA_HISTOGRAM_COUNTS_100("Tab.Count.Incognito", GetTabCount());
+  }
 }
 
 int TabModelJniBridge::GetTabCount() const {
@@ -144,8 +146,7 @@ void TabModelJniBridge::CloseTabAt(int index) {
   Java_TabModelJniBridge_closeTabAt(env, java_object_.get(env), index);
 }
 
-WebContents* TabModelJniBridge::CreateNewTabForDevTools(
-    const GURL& url) {
+WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url) {
   // TODO(dfalcantara): Change the Java side so that it creates and returns the
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
@@ -179,8 +180,9 @@ bool TabModelJniBridge::IsActiveModel() const {
 // static
 bool TabModelJniBridge::HasOtherRelatedTabs(TabAndroid* tab) {
   // Terminate early if tab is in the process of being destroyed.
-  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate())
+  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate()) {
     return false;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabModelJniBridge_hasOtherRelatedTabs(env, tab->GetJavaObject());
 }
@@ -199,8 +201,9 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
   observer_bridge_->RemoveObserver(observer);
 
   // Tear down the bridge if there are no observers left.
-  if (!observer_bridge_->has_observers())
+  if (!observer_bridge_->has_observers()) {
     observer_bridge_.reset();
+  }
 }
 
 void TabModelJniBridge::BroadcastSessionRestoreComplete(
