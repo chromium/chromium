@@ -590,12 +590,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill_address_form_in_oopif.html");
+      "a.com", "/autofill_address_multi_form_in_oopif.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 
-  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(6));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(10));
   ASSERT_EQ(main_autofill_manager().form_structures().size(), 1u);
 
   FormData form =
@@ -631,19 +631,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
 // Tests that only the handler associated with the root frame (page) handles
 // AutofillManager events (for cross-iframe filling, the filling events from all
 // frames are routed to the root AutofillManager and others don't emit them).
+// It also tests that only relevant elements (those from forms which have at
+// least one field autofilled, others are ignored) are sent to the frontend.
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill_address_form_in_oopif.html");
+      "a.com", "/autofill_address_multi_form_in_oopif.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(6));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(10));
   ASSERT_EQ(main_autofill_manager().form_structures().size(), 1u);
 
   std::string frame_target_id = GetOOPIFTargetId();
@@ -664,8 +666,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
 
   base::Value::Dict notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);
-  EXPECT_EQ(
-      notification.FindListByDottedPath("addressUi.addressFields")->size(), 6u);
+  EXPECT_EQ(notification.FindListByDottedPath("filledFields")->size(), 6u);
   EXPECT_FALSE(HasExistingNotification("Autofill.addressFormFilled"))
       << "The other handler should not handle `OnFillOrPreviewDataModelForm`";
 }

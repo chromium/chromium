@@ -242,10 +242,17 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
             return std::make_pair(field->global_id(), field);
           });
 
+  auto filled_form_ids = base::MakeFlatSet<autofill::FormGlobalId>(
+      filled_fields, {}, &FormFieldData::renderer_form_id);
   auto filled_fields_to_be_sent_to_devtools =
       std::make_unique<protocol::Array<protocol::Autofill::FilledField>>();
   filled_fields_to_be_sent_to_devtools->reserve(filled_fields.size());
   for (const auto& autofill_field : form_structure) {
+    // `form_structure` may contains fields from multiple forms, filter out
+    // fields from forms that have no autofilled fields as irrelevant.
+    if (!filled_form_ids.contains(autofill_field->renderer_form_id())) {
+      continue;
+    }
     // Whether the field was classified from the autocomplete attribute or
     // predictions. If no autocomplete attribute exists OR the actual ServerType
     // differs from what it would have been with only autocomplete, autofill
