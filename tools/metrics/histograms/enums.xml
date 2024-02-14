@@ -11229,6 +11229,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker"/>
   <int value="4858"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use"/>
+  <int value="4859" label="V8PointerEvent_GetCoalescedEvents_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

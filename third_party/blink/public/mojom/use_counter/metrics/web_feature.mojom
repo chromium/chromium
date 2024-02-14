@@ -4220,6 +4220,7 @@ enum WebFeature {
   kProgressElementVerticalRtl = 4856,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker = 4857,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use = 4858,
+  kV8PointerEvent_GetCoalescedEvents_Method = 4859,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
