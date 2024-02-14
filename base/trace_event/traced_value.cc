@@ -150,23 +150,20 @@ class PickleWriter final : public TracedValue::Writer {
   }
 
   void SetValue(const char* name, Writer* value) override {
-    DCHECK(value->IsPickleWriter());
+    CHECK(value->IsPickleWriter());
     const PickleWriter* pickle_writer = static_cast<const PickleWriter*>(value);
 
     BeginDictionary(name);
-    pickle_.WriteBytes(pickle_writer->pickle_.payload(),
-                       pickle_writer->pickle_.payload_size());
+    pickle_.WriteBytes(pickle_writer->pickle_.payload_bytes());
     EndDictionary();
   }
 
   void SetValueWithCopiedName(std::string_view name, Writer* value) override {
-    DCHECK(value->IsPickleWriter());
+    CHECK(value->IsPickleWriter());
     const PickleWriter* pickle_writer = static_cast<const PickleWriter*>(value);
 
     BeginDictionaryWithCopiedName(name);
-    pickle_.WriteBytes(
-        as_bytes(make_span(pickle_writer->pickle_.payload(),
-                           pickle_writer->pickle_.payload_size())));
+    pickle_.WriteBytes(pickle_writer->pickle_.payload_bytes());
     EndDictionary();
   }
 

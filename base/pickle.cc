@@ -322,12 +322,16 @@ void Pickle::WriteString16(const StringPiece16& value) {
 }
 
 void Pickle::WriteData(const char* data, size_t length) {
-  WriteData(std::string_view(data, length));
+  WriteData(as_bytes(span(data, length)));
 }
 
 void Pickle::WriteData(std::string_view data) {
+  WriteData(as_byte_span(data));
+}
+
+void Pickle::WriteData(base::span<const uint8_t> data) {
   WriteInt(checked_cast<int>(data.size()));
-  WriteBytes(as_byte_span(data));
+  WriteBytes(data);
 }
 
 void Pickle::WriteBytes(const void* data, size_t length) {

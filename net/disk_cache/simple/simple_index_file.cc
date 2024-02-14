@@ -42,7 +42,7 @@ const int64_t kMaxIndexFileSizeBytes =
     kMaxEntriesInIndex * (8 + EntryMetadata::kOnDiskSizeBytes);
 
 uint32_t CalculatePickleCRC(const base::Pickle& pickle) {
-  return simple_util::Crc32(pickle.payload(), pickle.payload_size());
+  return simple_util::Crc32(pickle.payload_bytes());
 }
 
 // Used in histograms. Please only add new values at the end.

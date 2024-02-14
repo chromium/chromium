@@ -167,7 +167,8 @@ TEST(ChannelReaderTest, TrimBuffer) {
     EXPECT_GE(reader.input_overflow_buf_.capacity(), message.size());
 
     // Write and process payload
-    reader.AppendData(message.payload(), message.payload_size());
+    reader.AppendData(message.payload_bytes().data(),
+                      message.payload_bytes().size());
     EXPECT_EQ(ChannelReader::DISPATCH_FINISHED,
               reader.ProcessIncomingMessages());
 

@@ -831,7 +831,8 @@ void NaClIPCAdapter::SaveMessage(
   header.flags = msg.flags();
   header.num_fds = static_cast<uint16_t>(rewritten_msg->desc_count());
 
-  rewritten_msg->SetData(header, msg.payload(), msg.payload_size());
+  rewritten_msg->SetData(header, msg.payload_bytes().data(),
+                         msg.payload_bytes().size());
   locked_data_.to_be_received_.push(std::move(rewritten_msg));
 }
 

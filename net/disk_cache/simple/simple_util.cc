@@ -104,6 +104,11 @@ int GetFileIndexFromStreamIndex(int stream_index) {
   return (stream_index == 2) ? 1 : 0;
 }
 
+uint32_t Crc32(base::span<const uint8_t> data) {
+  auto chars = base::as_chars(data);
+  return Crc32(chars.data(), base::checked_cast<int>(data.size()));
+}
+
 uint32_t Crc32(const char* data, int length) {
   uint32_t empty_crc = crc32(0, Z_NULL, 0);
   if (length == 0)
