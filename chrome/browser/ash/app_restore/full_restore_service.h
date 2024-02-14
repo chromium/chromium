@@ -21,6 +21,10 @@
 
 class Profile;
 
+namespace app_restore {
+class RestoreData;
+}  // namespace app_restore
+
 namespace message_center {
 class Notification;
 }  // namespace message_center
@@ -79,6 +83,7 @@ class FullRestoreService : public KeyedService,
     // Starts overview with the pine dialog unless overview is already active.
     virtual void MaybeStartPineOverviewSession(
         std::unique_ptr<PineContentsData> pine_contents_data) = 0;
+    virtual void MaybeEndPineOverviewSession() = 0;
   };
 
   static FullRestoreService* GetForProfile(Profile* profile);
@@ -134,7 +139,7 @@ class FullRestoreService : public KeyedService,
 
   // Returns true if `Init` can be called to show the notification or restore
   // apps. Otherwise, returns false.
-  bool CanBeInited();
+  bool CanBeInited() const;
 
   // Show the restore notification on startup.
   void MaybeShowRestoreNotification(const std::string& id,
@@ -148,9 +153,19 @@ class FullRestoreService : public KeyedService,
 
   // Returns true if there are some restore data and this is not the first time
   // Chrome is run. Otherwise, returns false.
-  bool ShouldShowNotification();
+  bool ShouldShowNotification() const;
 
   void OnAppTerminating();
+
+  // Callbacks for the pine dialog buttons.
+  void RestoreForForest();
+  void CancelForForest();
+
+  // Constructs the object needed to show the pine dialog. It will be passed to
+  // ash which will then use its contents to create and display the pine dialog.
+  std::unique_ptr<PineContentsData> CreatePineContentsData(
+      ::app_restore::RestoreData* restore_data,
+      bool last_session_crashed);
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;

@@ -31,6 +31,15 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
     const std::string& package_name,
     bool multi_app);
 
+// We create a class so we can friend and access certain private members.
+// TODO(sammiequon): Friend this function instead.
+class AppLaunchInfoSaveWaiter {
+ public:
+  // Instantly saves app restore data, bypassing the normal 2.5s timeout. If
+  // `allow_save` is true, allows writing to disk, if it wasn't already.
+  static void Wait(bool allow_save = true);
+};
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_TEST_UTIL_H_

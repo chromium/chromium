@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -52,7 +53,9 @@ struct ASH_EXPORT PineContentsData {
   // different strings in this case.
   bool last_session_crashed = false;
 
-  // TODO(sammiequon): Add ok/cancel callbacks.
+  // Callbacks for the restore and cancel buttons.
+  base::OnceClosure restore_callback;
+  base::OnceClosure cancel_callback;
 };
 
 }  // namespace ash

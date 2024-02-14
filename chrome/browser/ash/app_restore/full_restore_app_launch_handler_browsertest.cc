@@ -26,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -265,28 +264,6 @@ void ClickTemplateItem(int index) {
 }
 
 }  // namespace
-
-class AppLaunchInfoSaveWaiter {
- public:
-  static void Wait(bool allow_save = true) {
-    ::full_restore::FullRestoreSaveHandler* save_handler =
-        ::full_restore::FullRestoreSaveHandler::GetInstance();
-
-    if (allow_save) {
-      save_handler->AllowSave();
-    }
-
-    base::OneShotTimer* timer = save_handler->GetTimerForTesting();
-    if (timer->IsRunning()) {
-      // Simulate timeout, and the launch info is saved.
-      timer->FireNow();
-    }
-    content::RunAllTasksUntilIdle();
-
-    ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->profile_path_to_restore_data_.clear();
-  }
-};
 
 class FullRestoreAppLaunchHandlerBrowserTest
     : public extensions::PlatformAppBrowserTest {

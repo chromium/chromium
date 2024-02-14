@@ -22,6 +22,7 @@ class ASH_EXPORT PineController {
   PineController& operator=(const PineController&) = delete;
   ~PineController();
 
+  PineContentsData* pine_contents_data() { return pine_contents_data_.get(); }
   const PineContentsData* pine_contents_data() const {
     return pine_contents_data_.get();
   }
@@ -40,11 +41,10 @@ class ASH_EXPORT PineController {
   void MaybeStartPineOverviewSession(
       std::unique_ptr<PineContentsData> pine_contents_data);
 
-  // TODO(sammiequon): Create a separate controller for pine related things as
-  // we need to support first-time experience and other things.
-  // TODO(sammiequon): Add a `MaybeEndPineOverviewSession()` function which is
-  // controlled by the full restore service. This will clear
+  // Ends the overview session if it is active and deletes
   // `pine_contents_data_`.
+  void MaybeEndPineOverviewSession();
+
   // TODO(sammiequon): Entering overview normally should show the pine dialog if
   // `pine_contents_data_` is not null.
 

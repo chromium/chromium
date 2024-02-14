@@ -106,6 +106,12 @@ void PineController::MaybeStartPineOverviewSession(
       GetShutdownPineImagePath(), data_decoder::mojom::ImageCodec::kPng);
 }
 
+void PineController::MaybeEndPineOverviewSession() {
+  pine_contents_data_.reset();
+  OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
+                                         OverviewEnterExitType::kPine);
+}
+
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {
   CHECK(pine_contents_data_);
   pine_contents_data_->image = pine_image;

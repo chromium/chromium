@@ -62,7 +62,7 @@ AppLaunchHandler::AppLaunchHandler(Profile* profile) : profile_(profile) {}
 
 AppLaunchHandler::~AppLaunchHandler() = default;
 
-bool AppLaunchHandler::HasRestoreData() {
+bool AppLaunchHandler::HasRestoreData() const {
   return restore_data_ && !restore_data_->app_id_to_launch_list().empty();
 }
 

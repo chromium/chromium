@@ -110,6 +110,7 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
               MaybeStartPineOverviewSession,
               (std::unique_ptr<ash::PineContentsData> restore_data),
               (override));
+  MOCK_METHOD(void, MaybeEndPineOverviewSession, (), (override));
 };
 
 }  // namespace

@@ -463,13 +463,20 @@ PineContentsView::PineContentsView() {
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .AddChildren(
                       views::Builder<PillButton>()
-                          .SetText(u"Restore")
+                          .CopyAddressTo(&restore_button_for_testing_)
+                          .SetCallback(base::BindRepeating(
+                              &PineContentsView::OnRestoreButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()))
                           .SetPillButtonType(
-                              PillButton::Type::kPrimaryWithoutIcon),
+                              PillButton::Type::kPrimaryWithoutIcon)
+                          .SetText(u"Restore"),
                       views::Builder<PillButton>()
-                          .SetText(u"No thanks")
+                          .SetCallback(base::BindRepeating(
+                              &PineContentsView::OnCancelButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()))
                           .SetPillButtonType(
-                              PillButton::Type::kSecondaryWithoutIcon)),
+                              PillButton::Type::kSecondaryWithoutIcon)
+                          .SetText(u"No thanks")),
               views::Builder<views::View>().CopyAddressTo(&spacer),
               views::Builder<views::ImageButton>(
                   views::CreateVectorImageButtonWithNativeTheme(
@@ -477,7 +484,7 @@ PineContentsView::PineContentsView() {
                           &PineContentsView::OnSettingsButtonPressed,
                           weak_ptr_factory_.GetWeakPtr()),
                       kSettingsIcon, kSettingsIconSize))
-                  .CopyAddressTo(&settings_button_view_)
+                  .CopyAddressTo(&settings_button_)
                   .SetBackground(views::CreateRoundedRectBackground(
                       SK_ColorWHITE, kSettingsIconSize))
                   .SetTooltipText(u"Settings"))
@@ -526,6 +533,26 @@ std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
   return widget;
 }
 
+void PineContentsView::OnRestoreButtonPressed() {
+  if (PineContentsData* pine_contents_data =
+          Shell::Get()->pine_controller()->pine_contents_data()) {
+    if (pine_contents_data->restore_callback) {
+      // Destroys `this`.
+      std::move(pine_contents_data->restore_callback).Run();
+    }
+  }
+}
+
+void PineContentsView::OnCancelButtonPressed() {
+  if (PineContentsData* pine_contents_data =
+          Shell::Get()->pine_controller()->pine_contents_data()) {
+    if (pine_contents_data->cancel_callback) {
+      // Destroys `this`.
+      std::move(pine_contents_data->cancel_callback).Run();
+    }
+  }
+}
+
 void PineContentsView::OnSettingsButtonPressed() {
   context_menu_model_ = std::make_unique<PineContextMenuModel>();
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
@@ -542,8 +569,8 @@ void PineContentsView::OnSettingsButtonPressed() {
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
   menu_runner_->RunMenuAt(
-      settings_button_view_->GetWidget(), /*button_controller=*/nullptr,
-      settings_button_view_->GetBoundsInScreen(),
+      settings_button_->GetWidget(), /*button_controller=*/nullptr,
+      settings_button_->GetBoundsInScreen(),
       views::MenuAnchorPosition::kBubbleRight, ui::MENU_SOURCE_NONE);
 }
 

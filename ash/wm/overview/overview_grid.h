@@ -485,7 +485,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   const gfx::Rect bounds_for_testing() const { return bounds_; }
   float scroll_offset_for_testing() const { return scroll_offset_; }
-  views::Widget* pine_widget_for_testing() const { return pine_widget_.get(); }
+  views::Widget* pine_widget_for_testing() { return pine_widget_.get(); }
 
  private:
   friend class DesksTemplatesTest;
