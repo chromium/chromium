@@ -46,7 +46,7 @@ bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
 
   struct v4l2_capability caps;
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
-  if (IoctlDevice(VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+  if (!IoctlDevice(VIDIOC_QUERYCAP, &caps)) {
     return false;
   }
 
@@ -62,7 +62,7 @@ bool StatelessDevice::CheckCapabilities(VideoCodec codec) {
   reqbufs.count = 0;
   reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   reqbufs.memory = V4L2_MEMORY_MMAP;
-  if (IoctlDevice(VIDIOC_REQBUFS, &reqbufs) != kIoctlOk) {
+  if (!IoctlDevice(VIDIOC_REQBUFS, &reqbufs)) {
     return false;
   }
 
@@ -82,7 +82,7 @@ bool StatelessDevice::IsCompressedVP9HeaderSupported() {
   memset(&query_ctrl, 0, sizeof(query_ctrl));
   query_ctrl.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR;
 
-  return (IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) == kIoctlOk);
+  return IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl);
 }
 
 uint32_t StatelessDevice::VideoCodecToV4L2PixFmt(VideoCodec codec) {
@@ -123,15 +123,14 @@ bool StatelessDevice::SetHeaders(void* ctrls,
 
   ext_ctrls->request_fd = request_fd.get();
 
-  return (IoctlDevice(VIDIOC_S_EXT_CTRLS, ext_ctrls) == kIoctlOk);
+  return IoctlDevice(VIDIOC_S_EXT_CTRLS, ext_ctrls);
 }
 
 // MEDIA_IOC_REQUEST_ALLOC
 base::ScopedFD StatelessDevice::CreateRequestFD() {
   DVLOGF(4);
   int request_fd;
-  const int ret = Ioctl(media_fd_, MEDIA_IOC_REQUEST_ALLOC, &request_fd);
-  if (ret != kIoctlOk) {
+  if (!Ioctl(media_fd_, MEDIA_IOC_REQUEST_ALLOC, &request_fd)) {
     VPLOGF(1) << "Failed to create request file descriptor.";
     return base::ScopedFD(-1);
   }
@@ -142,14 +141,14 @@ base::ScopedFD StatelessDevice::CreateRequestFD() {
 // MEDIA_REQUEST_IOC_QUEUE
 bool StatelessDevice::QueueRequest(const base::ScopedFD& request_fd) {
   DVLOGF(4);
-  return (Ioctl(request_fd, MEDIA_REQUEST_IOC_QUEUE, nullptr) == kIoctlOk);
+  return Ioctl(request_fd, MEDIA_REQUEST_IOC_QUEUE, nullptr);
 }
 
 bool StatelessDevice::OpenMedia() {
   DVLOGF(4);
 
   struct v4l2_capability caps;
-  if (IoctlDevice(VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+  if (!IoctlDevice(VIDIOC_QUERYCAP, &caps)) {
     return false;
   }
 
@@ -175,7 +174,7 @@ bool StatelessDevice::OpenMedia() {
     }
 
     struct media_device_info media_info;
-    if (Ioctl(media_fd_, MEDIA_IOC_DEVICE_INFO, &media_info) != kIoctlOk) {
+    if (!Ioctl(media_fd_, MEDIA_IOC_DEVICE_INFO, &media_info)) {
       continue;
     }
 
