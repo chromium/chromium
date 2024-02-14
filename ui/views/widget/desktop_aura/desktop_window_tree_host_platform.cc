@@ -20,6 +20,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/transient_window_client.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
@@ -891,7 +892,9 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   // Propagate minimization/restore to compositor to avoid drawing 'blank'
   // frames that could be treated as previews, which show content even if a
   // window is minimized.
-  if (is_minimized != was_minimized) {
+  if (!aura::NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this) &&
+      is_minimized != was_minimized) {
     if (is_minimized) {
       SetVisible(false);
       GetContentWindow()->Hide();
