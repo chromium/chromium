@@ -95,18 +95,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of grammar check, which can be OK or ERROR.</summary>
 </histogram>
 
-<histogram name="MachineLearningService.GrammarChecker.LoadModelResult.Event"
-    enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2024-06-01">
-  <owner>jiwan@chromium.org</owner>
-  <owner>amoylan@chromium.org</owner>
-  <summary>
-    The result of load grammar model, which can be OK or some specific error.
-    The error code could be logged in machine learning service in chrome or in
-    chromeos when grammar model is not loaded successfully.
-  </summary>
-</histogram>
-
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
     expires_after="2024-04-28">
@@ -365,6 +353,30 @@ chromium-metrics-reviews@google.com.
   <token key="ModelName" variants="BuiltinModelName"/>
 </histogram>
 
+<histogram name="MachineLearningService.{ModelName}.LoadModelResult.Event"
+    enum="MachineLearningServiceLoadModelResultEvent"
+    expires_after="2024-06-30">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of LoadModel request for model {ModelName}, which can be OK or
+    some specific error. Additional error information may be found in Chrome
+    logs or ml_service logs within ChromeOS logs.
+  </summary>
+  <token key="ModelName">
+    <variant name="DocumentScanner"/>
+    <variant name="GrammarChecker">
+      <owner>jiwan@chromium.org</owner>
+      <owner>amoylan@chromium.org</owner>
+    </variant>
+    <variant name="ImageAnnotator"/>
+    <variant name="SmartDimModel"/>
+    <variant name="TestModel"/>
+    <variant name="TextClassifier"/>
+    <variant name="TextSuggester"/>
+  </token>
+</histogram>
+
 <histogram name="MachineLearningService.{RequestName}.CpuTimeMicrosec"
     units="microseconds" expires_after="2024-06-30">
   <owner>amoylan@chromium.org</owner>
@@ -375,25 +387,6 @@ chromium-metrics-reviews@google.com.
     requests.
   </summary>
   <token key="RequestName" variants="PerformanceMetricsRequestName"/>
-</histogram>
-
-<histogram name="MachineLearningService.{RequestName}.LoadModelResult.Event"
-    enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2024-06-30">
-  <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
-  <summary>
-    The result of {RequestName} LoadModel request, which can be OK or some
-    specific error.
-  </summary>
-  <token key="RequestName">
-    <variant name="DocumentScanner"/>
-    <variant name="ImageAnnotator"/>
-    <variant name="SmartDimModel"/>
-    <variant name="TestModel"/>
-    <variant name="TextClassifier"/>
-    <variant name="TextSuggester"/>
-  </token>
 </histogram>
 
 <histogram name="MachineLearningService.{RequestName}.TotalMemoryDeltaKb"
