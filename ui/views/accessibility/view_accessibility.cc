@@ -267,17 +267,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->relative_bounds.bounds = override_data_.relative_bounds.bounds;
   }
 
-#if DCHECK_IS_ON()
-  // This will help keep track of the attributes that have already
-  // been migrated from the old system of computing AXNodeData for Views (pull),
-  // to the new system (push). This will help ensure that new Views don't use
-  // the old system for attributes that have already been migrated.
-  // TODO(accessibility): Remove once migration is complete.
-  views::ViewsAXCompletedAttributes::Validate(*data);
-#endif
-
-  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
-
   // We need to add the ignored state to all ignored Views, similar to how Blink
   // exposes ignored DOM nodes. Calling AXNodeData::IsIgnored() would also check
   // if the role is in the list of roles that are inherently ignored.
@@ -329,6 +318,27 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
                               scale_factor);
     }
   }
+
+  // ***IMPORTANT***
+  //
+  // This step absolutely needs to be at the very end of the function in order
+  // for us to catch all the attributes that have been set through a different
+  // way than the ViewsAX AXNodeData push system. See `data_` for more info.
+
+#if DCHECK_IS_ON()
+  // This will help keep track of the attributes that have already
+  // been migrated from the old system of computing AXNodeData for Views (pull),
+  // to the new system (push). This will help ensure that new Views don't use
+  // the old system for attributes that have already been migrated.
+  // TODO(accessibility): Remove once migration is complete.
+  views::ViewsAXCompletedAttributes::Validate(*data);
+#endif
+
+  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
+
+  // Nothing should be added beyond this point. Reach out to the Chromium
+  // accessibility team in Slack, or to benjamin.beaudry@microsoft.com if you
+  // absolutely need to add something past this point.
 }
 
 void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
