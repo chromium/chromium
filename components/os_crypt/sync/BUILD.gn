@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
@@ -36,7 +35,6 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  # TODO(crbug.com/1339022): Provide a Fuchsia-specific implementation.
   if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
     sources += [ "os_crypt_posix.cc" ]
   }
