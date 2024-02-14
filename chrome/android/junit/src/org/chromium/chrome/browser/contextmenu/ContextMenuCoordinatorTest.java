@@ -460,7 +460,9 @@ public class ContextMenuCoordinatorTest {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .with(
+                                TEXT,
+                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
@@ -469,7 +471,9 @@ public class ContextMenuCoordinatorTest {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .with(
+                                TEXT,
+                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }

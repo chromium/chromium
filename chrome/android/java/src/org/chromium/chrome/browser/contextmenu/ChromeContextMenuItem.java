@@ -216,22 +216,24 @@ class ChromeContextMenuItem {
     }
 
     /**
-     * Transforms the id of the item into a string. It manages special cases that need minor
-     * changes due to templating.
+     * Transforms the id of the item into a string. It manages special cases that need minor changes
+     * due to templating.
+     *
      * @param context Requires to get the string resource related to the item.
+     * @param profile The {@link Profile} associated with the current page.
      * @param item Context menu item id.
      * @param showInProductHelp Whether the menu item should show the new superscript label.
      * @return Returns a string for the menu item.
      */
     public static CharSequence getTitle(
-            Context context, @Item int item, boolean showInProductHelp) {
+            Context context, Profile profile, @Item int item, boolean showInProductHelp) {
         switch (item) {
             case Item.OPEN_IN_BROWSER_ID:
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
                 return context.getString(
                         getStringId(context, item),
-                        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        TemplateUrlServiceFactory.getForProfile(profile)
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
             case Item.READ_LATER:

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +37,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -44,11 +46,14 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.Contex
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.MenuSourceType;
@@ -71,6 +76,8 @@ public class ChromeContextMenuPopulatorTest {
     private static final String IMAGE_TITLE_TEXT = "IMAGE!";
     private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
 
+    @Rule public JniMocker jniMocker = new JniMocker();
+
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveRule =
             new AutomotiveContextWrapperTestRule();
@@ -81,6 +88,9 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
     @Mock private ContextMenuNativeDelegate mNativeDelegate;
+    @Mock private WebContents mWebContents;
+    @Mock private Profile mProfile;
+    @Mock private Profile.Natives mProfileNatives;
 
     // Despite this being a spy, we add the @Mock annotation so that proguard doesn't strip the
     // spied class.
@@ -99,6 +109,10 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendEmailMessage()).thenReturn(true);
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
+        when(mItemDelegate.getWebContents()).thenReturn(mWebContents);
+
+        jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNatives);
+        when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
 
         FeatureList.setTestCanUseDefaultsForTesting();
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();

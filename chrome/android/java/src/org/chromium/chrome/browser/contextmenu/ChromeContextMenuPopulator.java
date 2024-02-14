@@ -903,7 +903,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
                         .with(
                                 TEXT,
-                                ChromeContextMenuItem.getTitle(mContext, item, showInProductHelp))
+                                ChromeContextMenuItem.getTitle(
+                                        mContext, getProfile(), item, showInProductHelp))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
@@ -914,7 +915,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mContext, item, false))
+                        .with(
+                                TEXT,
+                                ChromeContextMenuItem.getTitle(mContext, getProfile(), item, false))
                         .with(BUTTON_IMAGE, shareInfo.first)
                         .with(BUTTON_CONTENT_DESC, shareInfo.second)
                         .with(BUTTON_MENU_ID, ChromeContextMenuItem.getMenuId(iconButtonItem))
