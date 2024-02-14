@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/policy/idle/constants.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_launch_screen_view_controller.h"
@@ -272,6 +273,7 @@
 - (void)showSnackbar:(NSString*)messageText {
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
+  message.duration = kIdleTimeoutSnackbarDuration;
   message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
 }

@@ -8,3 +8,4 @@ NSString* const kIdleTimeoutDialogAccessibilityIdentifier =
     @"kIdleTimeoutConfirmationDialogAccessibilityIdentifier";
 NSString* const kIdleTimeoutLaunchScreenAccessibilityIdentifier =
     @"kIdleTimeoutLaunchScreenViewAccessibilityIdentifier";
+NSTimeInterval const kIdleTimeoutSnackbarDuration = 7.0;

@@ -9,6 +9,7 @@ source_set("idle_timeout_policy_scene_agent") {
   ]
 
   deps = [
+    ":constants",
     ":idle_timeout_policy_ui",
     "//base",
     "//components/enterprise/idle",

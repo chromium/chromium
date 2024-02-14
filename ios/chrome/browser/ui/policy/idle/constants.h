@@ -9,5 +9,5 @@
 
 extern NSString* const kIdleTimeoutDialogAccessibilityIdentifier;
 extern NSString* const kIdleTimeoutLaunchScreenAccessibilityIdentifier;
-
+extern NSTimeInterval const kIdleTimeoutSnackbarDuration;
 #endif  // IOS_CHROME_BROWSER_UI_POLICY_IDLE_CONSTANTS_H_
