@@ -16,6 +16,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
   public var leftStaticSeparator: TabStripDecorationView?
   public var rightStaticSeparator: TabStripDecorationView?
 
+  /// Wether the selected cell is animated, used only on iOS 16.
+  /// On iOS 16, the scroll animation after opening a new tab is delayed, the
+  /// selected cell should remain in an animated state until the end of the
+  /// (scroll) animation.
+  public var cellAnimatediOS16: Bool = false
+
   /// Dynamic size of a tab.
   private var tabCellSize: CGSize = .zero
 
@@ -308,10 +314,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return nil
     }
 
-    var cellAnimated = false
+    /// `cellAnimatediOS16` is always `false` above iOS 16.
+    var cellAnimated = cellAnimatediOS16
     let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell
     if let animationKeys = cell?.layer.animationKeys() {
-      cellAnimated = !animationKeys.isEmpty
+      cellAnimated = !animationKeys.isEmpty || cellAnimatediOS16
     }
 
     // Update cell separators.

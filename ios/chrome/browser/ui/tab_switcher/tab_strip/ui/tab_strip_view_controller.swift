@@ -46,6 +46,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // Handles drag and drop interactions.
   public weak var dragDropHandler: TabCollectionDragDropHandler?
 
+  /// Targeted scroll offset, used on iOS 16 only.
+  /// On iOS 16, the scroll animation after opening a new tab is delayed.
+  /// This variable ensures that the most recent scroll event is processed.
+  private var targetedScrollOffsetiOS16: CGFloat = 0
+
   init() {
     layout = TabStripLayout()
     collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -146,6 +151,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
 
+    if #unavailable(iOS 17.0) {
+      layout.cellAnimatediOS16 = true
+    }
+
     if let selectedItem = selectedItem,
       let diffableDataSource = diffableDataSource,
       diffableDataSource.indexPath(for: selectedItem) != nil
@@ -178,12 +187,15 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
           // occur simultaneously, the resulting animation lacks of
           // smoothness.
           weak var weakSelf = self
+          targetedScrollOffsetiOS16 = offset
           DispatchQueue.main.asyncAfter(
             deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
           ) {
             weakSelf?.scrollToContentOffset(offset)
           }
         }
+      } else {
+        layout.cellAnimatediOS16 = false
       }
     }
   }
@@ -204,7 +216,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
 
     /// Invalidate the layout to correctly recalculate the frame of the `selected` cell.
-    collectionView.collectionViewLayout.invalidateLayout()
+    layout.invalidateLayout()
   }
 
   func reloadItem(_ item: TabSwitcherItem?) {
@@ -243,6 +255,15 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     }
     let item = diffableDataSource.itemIdentifier(for: indexPath)
     mutator?.close(item)
+  }
+
+  // MARK: - UIScrollViewDelegate
+
+  func scrollViewDidEndDragging(
+    _ scrollView: UIScrollView,
+    willDecelerate decelerate: Bool
+  ) {
+    layout.cellAnimatediOS16 = false
   }
 
   // MARK: - Private
@@ -355,6 +376,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   /// Scrolls the collection view to the given horizontal `offset`.
   func scrollToContentOffset(_ offset: CGFloat) {
+    if #unavailable(iOS 17.0) {
+      if offset != targetedScrollOffsetiOS16 { return }
+    }
     self.collectionView.setContentOffset(
       CGPoint(x: offset, y: 0),
       animated: true)
