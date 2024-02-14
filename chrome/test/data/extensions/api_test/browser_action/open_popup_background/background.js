@@ -6,7 +6,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete') {
     chrome.browserAction.openPopup(function(popup) {
       chrome.test.sendMessage(
-          popup ? 'opened' : 'failed: ' + chrome.runtime.lastError);
+          popup ? 'opened' :
+              'failed: ' + chrome.runtime.lastError ?
+                  chrome.runtime.lastError.message :
+                  'unknown error');
     });
   }
 });
