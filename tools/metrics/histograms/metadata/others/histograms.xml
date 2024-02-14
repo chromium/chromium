@@ -10662,30 +10662,30 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram base="true" name="Touchpad.ScrollAcceleration" enum="BooleanEnabled"
-    expires_after="2023-12-10">
+    expires_after="2025-02-11">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Whether touchpad scroll acceleration is enabled. Only reported on Chrome OS.
 
-    Warning: this histogram was expired from 2020-12-01 to M105; data may be
-    missing.
+    Warning: this histogram was expired from 2020-12-01 to M105, 2023-12-10 to
+    M123; data may be missing.
   </summary>
 </histogram>
 
 <histogram base="true" name="Touchpad.ScrollSensitivity"
-    enum="PointerSensitivity" expires_after="2023-12-10">
+    enum="PointerSensitivity" expires_after="2025-02-11">
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
-  <owner>zentaro@chromium.org</owner>
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Touchpad scroll sensitivity value. Only reported on Chrome OS.
 
-    Warning: this histogram was expired from 2020-12-01 to M105; data may be
-    missing.
+    Warning: this histogram was expired from 2020-12-01 to M105, 2023-12-10 to
+    M123; data may be missing.
   </summary>
 </histogram>
 
