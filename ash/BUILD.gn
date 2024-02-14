@@ -2974,7 +2974,8 @@ component("ash") {
     "//cc/paint:paint",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/audio",
-    "//chromeos/ash/components/auth_panel",
+    "//chromeos/ash/components/auth_panel/impl",
+    "//chromeos/ash/components/auth_panel/public",
     "//chromeos/ash/components/cryptohome:cryptohome",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/audio",
@@ -3178,7 +3179,7 @@ component("ash") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
     "//ash/quick_pair/scanning",
-    "//chromeos/ash/components/auth_panel",
+    "//chromeos/ash/components/auth_panel/impl",
   ]
 
   if (enable_cros_ambient_mode_backend) {

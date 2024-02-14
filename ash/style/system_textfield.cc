@@ -231,8 +231,12 @@ void SystemTextfield::SetShowFocusRing(bool show) {
     return;
   }
   show_focus_ring_ = show;
-  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  views::FocusRing::Get(this)->SchedulePaint();
+
+  // It's possible that derived classes could have removed the focus ring.
+  if (auto* focus_ring = views::FocusRing::Get(this); focus_ring != nullptr) {
+    focus_ring->SetOutsetFocusRingDisabled(true);
+    focus_ring->SchedulePaint();
+  }
 }
 
 void SystemTextfield::SetShowBackground(bool show) {

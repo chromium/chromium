@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
@@ -26,23 +27,12 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // Returns the singleton instance.
   static InSessionAuthDialogController* Get();
 
-  // Callback passed from clients of the dialog
-  // `success`: Whether or not the authentication was successful.
-  // `token`: If the authentication was successful, a token is returned from
-  // backends
-  //   that can be passed to further sensitive operations (such as those in
-  //   quickUnlockPrivate).
-  // `timeout`: The length of time for which the token is valid.
-  using OnAuthComplete =
-      base::OnceCallback<void(bool success,
-                              const ash::AuthProofToken& token,
-                              base::TimeDelta timeout)>;
-
   // Summons a native UI dialog that authenticates the user, providing a
   // token, timeout and status in return.
   // `reason`: Indicates security context.
-  virtual void ShowAuthDialog(Reason reason,
-                              OnAuthComplete on_auth_complete) = 0;
+  virtual void ShowAuthDialog(
+      Reason reason,
+      auth_panel::AuthCompletionCallback on_auth_complete) = 0;
 
   // Must be called with a non null auth_token_provider prior to calling
   // `ShowAuthDialog`.

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
@@ -76,7 +77,7 @@ void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
 }  // namespace
 
 AuthenticationDialog::AuthenticationDialog(
-    InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+    auth_panel::AuthCompletionCallback on_auth_complete,
     InSessionAuthTokenProvider* auth_token_provider,
     std::unique_ptr<AuthPerformer> auth_performer,
     const AccountId& account_id)

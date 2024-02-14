@@ -2731,6 +2731,13 @@ BASE_FEATURE(kUseAndroidStagingSmds,
              "UseAndroidStagingSmds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This features toggles which implementation is used for authentication UIs on
+// Chrome password manager on ChromeOS. When the feature is enabled,
+// `AuthPanel` is used as an authentication UI.
+BASE_FEATURE(kUseAuthPanelInPasswordManager,
+             "UseAuthPanelInPasswordManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 BASE_FEATURE(kUseMessagesStagingUrl,
@@ -4476,6 +4483,10 @@ bool ShouldUseV1DeviceSync() {
 bool ShouldUseV2DeviceSync() {
   return base::FeatureList::IsEnabled(kCryptAuthV2Enrollment) &&
          base::FeatureList::IsEnabled(kCryptAuthV2DeviceSync);
+}
+
+bool IsUseAuthPanelInPasswordManagerEnabled() {
+  return base::FeatureList::IsEnabled(kUseAuthPanelInPasswordManager);
 }
 
 }  // namespace ash::features

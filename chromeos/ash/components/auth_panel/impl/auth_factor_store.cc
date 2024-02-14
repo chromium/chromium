@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/auth_panel/auth_factor_store.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 
 #include "ash/shell.h"
 #include "base/callback_list.h"
 #include "base/notreached.h"
-#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
@@ -26,7 +26,8 @@ void AuthFactorStore::State::InitializePasswordViewState(bool is_capslock_on) {
 
 AuthFactorStore::State::PasswordViewState::~PasswordViewState() = default;
 
-AuthFactorStore::AuthFactorStore(Shell* shell) {
+AuthFactorStore::AuthFactorStore(Shell* shell, AuthHubConnector* connector)
+    : auth_hub_connector_(connector) {
   auto* ime_controller = shell->ime_controller();
   // For now, assume the password view state is always required to be present
   // because we always have a password. We default to `false` for the state of

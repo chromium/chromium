@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_VIEWS_PASSWORD_AUTH_VIEW_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_VIEWS_PASSWORD_AUTH_VIEW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_PASSWORD_AUTH_VIEW_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_PASSWORD_AUTH_VIEW_H_
 
 #include <string>
 
@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/components/auth_panel/auth_factor_store.h"
-#include "chromeos/ash/components/auth_panel/factor_auth_view.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
+#include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -63,9 +63,11 @@ class PasswordAuthView : public FactorAuthView,
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void RequestFocus() override;
+  gfx::Size CalculatePreferredSize() const override;
 
   // ImeControllerImpl::Observer
   void OnCapsLockChanged(bool enabled) override;
+  void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {}
 
  private:
   class LoginPasswordRow;
@@ -110,4 +112,4 @@ class PasswordAuthView : public FactorAuthView,
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_PASSWORD_AUTH_VIEW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_PASSWORD_AUTH_VIEW_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/auth_panel/views/password_auth_view.h"
+#include "chromeos/ash/components/auth_panel/impl/views/password_auth_view.h"
 
 #include <memory>
 #include <optional>
@@ -13,10 +13,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/ash/components/auth_panel/auth_factor_store.h"
-#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/views/login_textfield.h"
-#include "chromeos/ash/components/auth_panel/views/view_size_constants.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
+#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
+#include "chromeos/ash/components/auth_panel/impl/views/view_size_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -126,6 +126,9 @@ void PasswordAuthView::CreateAndConfigurePasswordRow() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   password_row_layout_ = password_row_->SetLayoutManager(std::move(layout));
+
+  // Make the password row fill the view.
+  password_row_container_layout->SetFlexForView(password_row_, 1);
 }
 
 void PasswordAuthView::CreateAndConfigureCapslockIcon() {
@@ -261,6 +264,12 @@ void PasswordAuthView::ContentsChanged(views::Textfield* sender,
       AuthPanelEventDispatcher::UserAction::Type::
           kPasswordTextfieldContentsChanged,
       base::UTF16ToUTF8(textfield_->GetText())});
+}
+
+gfx::Size PasswordAuthView::CalculatePreferredSize() const {
+  gfx::Size size = views::View::CalculatePreferredSize();
+  size.set_width(kPasswordTotalWidthDp);
+  return size;
 }
 
 void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {

@@ -6,7 +6,11 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("auth_panel") {
+source_set("impl") {
+  public_deps = [
+    "//chromeos/ash/components/auth_panel/public",
+  ]
+
   deps = [
     "//ash/resources/vector_icons",
     "//ash/strings",
@@ -16,6 +20,7 @@ source_set("auth_panel") {
     "//chromeos/constants:constants",
     "//ui/views",
   ]
+
   sources = [
     "auth_factor_store.cc",
     "auth_factor_store.h",

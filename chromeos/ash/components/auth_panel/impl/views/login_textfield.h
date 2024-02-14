@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_VIEWS_LOGIN_TEXTFIELD_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_VIEWS_LOGIN_TEXTFIELD_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_
 
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/components/auth_panel/auth_factor_store.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -44,4 +44,4 @@ class LoginTextfield : public SystemTextfield {
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_VIEWS_LOGIN_TEXTFIELD_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_VIEWS_LOGIN_TEXTFIELD_H_

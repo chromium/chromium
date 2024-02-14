@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_FACTORY_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_FACTOR_AUTH_VIEW_FACTORY_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_FACTOR_AUTH_VIEW_FACTORY_H_
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/auth_panel/factor_auth_view.h"
+#include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
@@ -22,7 +22,7 @@ class FactorAuthViewFactory {
   using FactorAuthViewCreator =
       base::RepeatingCallback<std::unique_ptr<FactorAuthView>()>;
 
-  FactorAuthViewFactory();
+  FactorAuthViewFactory() = default;
   FactorAuthViewFactory(const FactorAuthViewFactory&) = delete;
   FactorAuthViewFactory(FactorAuthViewFactory&&) = delete;
   FactorAuthViewFactory& operator=(const FactorAuthViewFactory&) = delete;
@@ -31,13 +31,18 @@ class FactorAuthViewFactory {
 
   // Create the respective `FactorAuthView` specified by the `AshAuthFactor`
   // enum.
-  std::unique_ptr<FactorAuthView> CreateFactorAuthView(AshAuthFactor factor);
+  std::unique_ptr<FactorAuthView> CreateFactorAuthView(
+      AshAuthFactor factor,
+      raw_ptr<AuthFactorStore> store,
+      raw_ptr<AuthPanelEventDispatcher> dispatcher);
 
  private:
   // `FactorAuthView` factory functions:
-  std::unique_ptr<FactorAuthView> CreatePasswordView();
+  std::unique_ptr<FactorAuthView> CreatePasswordView(
+      raw_ptr<AuthFactorStore> store,
+      raw_ptr<AuthPanelEventDispatcher> dispatcher);
 };
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_FACTOR_AUTH_VIEW_FACTORY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_FACTOR_AUTH_VIEW_FACTORY_H_

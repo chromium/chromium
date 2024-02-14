@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_EVENT_DISPATCHER_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_EVENT_DISPATCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_PANEL_EVENT_DISPATCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_PANEL_EVENT_DISPATCHER_H_
 
 #include <optional>
 #include <string>
@@ -60,6 +60,14 @@ class AuthPanelEventDispatcher {
   raw_ptr<AuthFactorStore> store_;
 };
 
+class AuthPanelEventDispatcherFactory {
+ public:
+  std::unique_ptr<AuthPanelEventDispatcher> CreateAuthPanelEventDispatcher(
+      raw_ptr<AuthFactorStore> store) {
+    return std::make_unique<AuthPanelEventDispatcher>(store);
+  }
+};
+
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_EVENT_DISPATCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_PANEL_EVENT_DISPATCHER_H_

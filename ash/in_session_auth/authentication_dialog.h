@@ -46,7 +46,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // |on_auth_complete| is called when the user has been authenticated
   // or when the dialog has been aborted
   explicit AuthenticationDialog(
-      InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+      auth_panel::AuthCompletionCallback on_auth_complete,
       InSessionAuthTokenProvider* auth_token_provider,
       std::unique_ptr<AuthPerformer> auth_performer,
       const AccountId& account_id);
@@ -120,7 +120,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // See implementation of `CancelAuthAttempt` for details.
   bool is_closing_ = false;
 
-  InSessionAuthDialogController::OnAuthComplete on_auth_complete_;
+  auth_panel::AuthCompletionCallback on_auth_complete_;
 
   // Called when user submits an auth factor to check its validity
   std::unique_ptr<AuthPerformer> auth_performer_;

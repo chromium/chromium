@@ -422,6 +422,7 @@ component("cpp") {
     "//base",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/audio:in_process_audio_config",
+    "//chromeos/ash/components/auth_panel/public",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",

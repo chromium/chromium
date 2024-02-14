@@ -1,0 +1,6 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/osauth/public",
+]

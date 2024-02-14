@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/auth_panel/views/login_textfield.h"
+#include "chromeos/ash/components/auth_panel/impl/views/login_textfield.h"
 
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
-#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/views/auth_panel_views_utils.h"
-#include "chromeos/ash/components/auth_panel/views/view_size_constants.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
+#include "chromeos/ash/components/auth_panel/impl/views/auth_panel_views_utils.h"
+#include "chromeos/ash/components/auth_panel/impl/views/view_size_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -25,6 +26,11 @@ LoginTextfield::LoginTextfield(AuthPanelEventDispatcher* dispatcher)
   set_placeholder_font_list(font_list);
   SetFontList(font_list);
   SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
+  // Remove focus ring to remain consistent with other implementations of
+  // login input fields.
+  views::FocusRing::Remove(this);
+  SetShowBackground(false);
+  SetBackgroundColorEnabled(false);
   ConfigureAuthTextField(this);
 }
 
@@ -60,6 +66,11 @@ void LoginTextfield::OnStateChanged(
   SetTextInputType(password_view_state.is_password_visible_
                        ? ui::TEXT_INPUT_TYPE_NULL
                        : ui::TEXT_INPUT_TYPE_PASSWORD);
+
+  if (auto new_text = base::UTF8ToUTF16(password_view_state.password_);
+      new_text != GetText()) {
+    SetText(new_text);
+  }
 }
 
 BEGIN_METADATA(LoginTextfield)

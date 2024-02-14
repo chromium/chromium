@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_FACTOR_STORE_H_
-#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_FACTOR_STORE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_FACTOR_STORE_H_
+#define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_FACTOR_STORE_H_
 
 #include <optional>
 #include <string>
@@ -11,10 +11,12 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback_list.h"
-#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
+#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
+
+class AuthHubConnector;
 
 // This class encapsulates the UI state of `AuthPanel`.
 class AuthFactorStore {
@@ -53,7 +55,7 @@ class AuthFactorStore {
   using OnStateUpdatedCallbackList =
       base::RepeatingCallbackList<void(const State& state)>;
 
-  explicit AuthFactorStore(Shell* shell);
+  AuthFactorStore(Shell* shell, AuthHubConnector* connector);
   ~AuthFactorStore();
 
   base::CallbackListSubscription Subscribe(OnStateUpdatedCallback callback);
@@ -69,8 +71,19 @@ class AuthFactorStore {
   State state_;
 
   OnStateUpdatedCallbackList state_update_callbacks_;
+
+  raw_ptr<AuthHubConnector> auth_hub_connector_;
+};
+
+class AuthFactorStoreFactory {
+ public:
+  std::unique_ptr<AuthFactorStore> CreateAuthFactorStore(
+      Shell* shell,
+      AuthHubConnector* connector) {
+    return std::make_unique<AuthFactorStore>(shell, connector);
+  }
 };
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_FACTOR_STORE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_IMPL_AUTH_FACTOR_STORE_H_
