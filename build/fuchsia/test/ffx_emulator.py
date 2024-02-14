@@ -113,6 +113,10 @@ class FfxEmulator(AbstractContextManager):
             qemu_arm64_meta = data.replace(r'tools/x64', 'tools/arm64')
             with open(qemu_arm64_meta_file, "w+") as f:
                 json.dump(ast.literal_eval(qemu_arm64_meta), f)
+
+        # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
+        # x64 hosts with simulation.
+        if self._product.endswith('arm64'):
             emu_command.extend(['--engine', 'qemu'])
 
         run_ffx_command(cmd=emu_command,
