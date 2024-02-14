@@ -1383,9 +1383,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
       1);
 }
 
-// https://crbug.com/458160 test is flaky on all platforms; but mostly linux.
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
-                       DISABLED_PushEventEnforcesUserVisibleNotification) {
+                       PushEventEnforcesUserVisibleNotification) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   PushMessagingAppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
@@ -1464,9 +1463,16 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   // The notification will be automatically dismissed when the developer shows
   // a new notification themselves at a later point in time.
+  base::RunLoop notification_closed_run_loop;
+  notification_tester_->SetNotificationClosedClosure(
+      notification_closed_run_loop.QuitClosure());
+
   message.raw_data = "shownotification";
   SendMessageAndWaitUntilHandled(app_identifier, message);
   EXPECT_EQ("shownotification", RunScript("resultQueue.pop()", web_contents));
+
+  // Wait for the default notification to dismiss.
+  notification_closed_run_loop.Run();
 
   {
     std::vector<message_center::Notification> notifications =
