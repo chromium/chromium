@@ -850,7 +850,11 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
-        lcpp->OnLargestContentfulPaintUpdated(*element);
+        std::optional<KURL> maybe_url = std::nullopt;
+        if (!url.empty()) {
+          maybe_url = KURL(url);
+        }
+        lcpp->OnLargestContentfulPaintUpdated(*element, maybe_url);
       }
     }
   }

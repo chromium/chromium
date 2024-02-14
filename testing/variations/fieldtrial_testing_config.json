@@ -7686,6 +7686,30 @@
             ]
         }
     ],
+    "FenderAutoPreconnectLcpOrigins": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOne_20240214",
+                    "params": {
+                        "lcpp_preconnect_frequency_threshold": "0.5",
+                        "lcpp_preconnect_max_origins": "1"
+                    },
+                    "enable_features": [
+                        "LCPPAutoPreconnectLcpOrigin"
+                    ]
+                }
+            ]
+        }
+    ],
     "FenderScriptScheduling": [
         {
             "platforms": [
