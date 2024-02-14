@@ -835,6 +835,10 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
   return this->BeginAccess(usage);
 }
 
+bool DawnImageRepresentation::SupportsMultipleConcurrentReadAccess() {
+  return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SharedImageRepresentationFactoryRef
 

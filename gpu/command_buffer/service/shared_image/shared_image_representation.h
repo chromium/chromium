@@ -779,6 +779,8 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
       AllowUnclearedAccess allow_uncleared,
       const gfx::Rect& update_rect);
 
+  virtual bool SupportsMultipleConcurrentReadAccess();
+
  private:
   friend class WrappedDawnCompoundImageRepresentation;
 
