@@ -603,6 +603,10 @@
 	path = chrome/browser/nearby_sharing/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/nearby_sharing/internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/platform_experience/win"]
+	path = chrome/browser/platform_experience/win
+	url = https://chrome-internal.googlesource.com/chrome/browser/platform_experience/win
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/chromeos/quickoffice"]
 	path = chrome/browser/resources/chromeos/quickoffice
 	url = https://chrome-internal.googlesource.com/quickoffice/crx

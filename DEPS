@@ -3896,6 +3896,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/platform_experience/win': {
+      'url': Var('chrome_git') + '/chrome/browser/platform_experience/win.git' + '@' +
+        '6103bfca3c663665ae81db5d7194f7814687ffd9',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/resources/chromeos/quickoffice': {
       'url': Var('chrome_git') + '/quickoffice/crx.git' + '@' +
         '82b2a09bf9550c7435a774a6261e6736b787468f',
