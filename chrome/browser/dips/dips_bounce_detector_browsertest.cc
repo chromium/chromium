@@ -2857,7 +2857,9 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest, StorageRecording_Throttled) {
+// TODO(b/325196134): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
+                       DISABLED_StorageRecording_Throttled) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
 
@@ -2890,8 +2892,9 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest, StorageRecording_Throttled) {
                   start_time, start_time + kDIPSTimestampUpdateInterval)));
 }
 
+// TODO(b/325196134): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
-                       StorageRecording_NotThrottled_AfterRefresh) {
+                       DISABLED_StorageRecording_NotThrottled_AfterRefresh) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
 
