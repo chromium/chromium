@@ -24,25 +24,29 @@ class VersionCompatibilityTest(MojomParserTestCase):
 
     checker = compatibility_checker.BackwardCompatibilityChecker()
     compatibility_map = {}
+    errors = []
     for name in old:
       try:
         compatibility_map[name] = checker.IsBackwardCompatible(
             new[name], old[name])
-      except compatibility_checker.CompatibilityError:
+      except compatibility_checker.CompatibilityError as e:
         compatibility_map[name] = False
-    return compatibility_map
+        errors.append(e)
+    return compatibility_map, errors
 
   def assertBackwardCompatible(self, old_mojom, new_mojom):
-    compatibility_map = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
+    compatibility_map, errors = self._GetTypeCompatibilityMap(
+        old_mojom, new_mojom)
     for name, compatible in compatibility_map.items():
       if not compatible:
         raise AssertionError(
             'Given the old mojom:\n\n    %s\n\nand the new mojom:\n\n    %s\n\n'
             'The new definition of %s should pass a backward-compatibiity '
-            'check, but it does not.' % (old_mojom, new_mojom, name))
+            'check, but it does not. Errors: %s' %
+            (old_mojom, new_mojom, name, errors))
 
   def assertNotBackwardCompatible(self, old_mojom, new_mojom):
-    compatibility_map = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
+    compatibility_map, _ = self._GetTypeCompatibilityMap(old_mojom, new_mojom)
     if all(compatibility_map.values()):
       raise AssertionError(
           'Given the old mojom:\n\n    %s\n\nand the new mojom:\n\n    %s\n\n'
