@@ -13,7 +13,6 @@ js_files = [
   # File Manager.
   "file_manager/background.js",
   "file_manager/context_menu.js",
-  "file_manager/crostini.js",
   "file_manager/directory_tree_context_menu.js",
   "file_manager/dlp.js",
   "file_manager/dlp_enterprise_connectors.js",
@@ -51,11 +50,8 @@ ts_files = [
   # "file_manager/context_menu.ts",
 
   "file_manager/copy_between_windows.ts",
-
   "file_manager/create_new_folder.ts",
-
-  # "file_manager/crostini.ts",
-
+  "file_manager/crostini.ts",
   "file_manager/directory_tree.ts",
 
   # "file_manager/directory_tree_context_menu.ts",
