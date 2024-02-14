@@ -137,11 +137,6 @@ extern const char kUseTestMetadataName[];
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
 
-// The threshold for the amount of metadata grants needed to trigger usage of
-// the optimized data structure.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-extern const base::FeatureParam<int> kMetadataGrantsThreshold;
-
 // Enables generating and using test metadata. Used to test performance at
 // large list sizes. Set to a value greater than 0 to use that many generated
 // entries for testing.

@@ -239,8 +239,7 @@ class CookieSettingsTest
     }
 
     if (IsIndexedContentSettingsEnabled()) {
-      enabled_features.push_back({features::kHostIndexedMetadataGrants,
-                                  {{"MetadataGrantsThreshold", "1"}}});
+      enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
       enabled_features.push_back(
           {features::kIndexedHostContentSettingsMap, {}});
     } else {

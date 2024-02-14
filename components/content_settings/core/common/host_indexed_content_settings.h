@@ -116,13 +116,6 @@ class HostIndexedContentSettings {
   // Clears the object information.
   void Clear();
 
-  // Compares the output of the previous lookup algorithm on a flat vector with
-  // the optimized indexed lookup algorithm.
-  void DcheckSameResultAsLinearLookup(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      const ContentSettingsForOneType& linear_settings) const;
-
  private:
   HostToContentSettings primary_host_indexed_;
   HostToContentSettings secondary_host_indexed_;

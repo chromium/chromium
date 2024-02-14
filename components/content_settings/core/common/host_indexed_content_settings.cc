@@ -359,23 +359,4 @@ size_t HostIndexedContentSettings::size() const {
   return size;
 }
 
-void HostIndexedContentSettings::DcheckSameResultAsLinearLookup(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    const ContentSettingsForOneType& linear_settings) const {
-  DCHECK([&]() -> bool {
-    const ContentSettingPatternSource* found_content_setting =
-        FindContentSetting(primary_url, secondary_url, linear_settings);
-    const RuleEntry* found_indexed_content_setting =
-        Find(primary_url, secondary_url);
-
-    if (!found_content_setting || !found_indexed_content_setting) {
-      return !found_content_setting && !found_indexed_content_setting;
-    }
-    return found_content_setting->GetContentSetting() ==
-           ValueToContentSetting(found_indexed_content_setting->second.value);
-  }()) << "Different result in index lookup: "
-       << primary_url.spec() << " " << secondary_url.spec();
-}
-
 }  // namespace content_settings

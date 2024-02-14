@@ -23,6 +23,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class PrefService;
@@ -154,26 +155,31 @@ class CookieSettings
   void SetContentSettingsFor3pcdMetadataGrants(
       const ContentSettingsForOneType settings) {
     base::AutoLock lock(tpcd_lock_);
-    settings_for_3pcd_metadata_grants_ = settings;
-    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
-        std::cmp_greater_equal(settings.size(),
-                               features::kMetadataGrantsThreshold.Get())) {
+    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
       auto indices = HostIndexedContentSettings::Create(settings);
       // All 3pcd metadata grants should use the same source attribute.
       CHECK_EQ(indices.size(), 1u);
-      indexed_settings_for_3pcd_metadata_grants_ = std::move(indices.front());
-
-      // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
-      // only need one copy.
+      settings_for_3pcd_metadata_grants_ = std::move(indices.front());
     } else {
-      // only need one list.
-      indexed_settings_for_3pcd_metadata_grants_.Clear();
+      settings_for_3pcd_metadata_grants_ = settings;
     }
   }
 
   ContentSettingsForOneType GetTpcdMetadataGrants() {
     base::AutoLock lock(tpcd_lock_);
-    return settings_for_3pcd_metadata_grants_;
+    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
+      ContentSettingsForOneType result;
+      for (const auto& it : absl::get<HostIndexedContentSettings>(
+               settings_for_3pcd_metadata_grants_)) {
+        result.emplace_back(it.first.primary_pattern,
+                            it.first.secondary_pattern, it.second.value.Clone(),
+                            std::string(), false, it.second.metadata);
+      }
+      return result;
+    } else {
+      return absl::get<ContentSettingsForOneType>(
+          settings_for_3pcd_metadata_grants_);
+    }
   }
 
   // Resets the cookie setting for the given url.
@@ -302,11 +308,11 @@ class CookieSettings
   // service.
 
   mutable base::Lock tpcd_lock_;
-  ContentSettingsForOneType settings_for_3pcd_metadata_grants_
-      GUARDED_BY(tpcd_lock_);
-
-  HostIndexedContentSettings indexed_settings_for_3pcd_metadata_grants_
-      GUARDED_BY(tpcd_lock_);
+  // This member holds a HostIndexedContentSettings if
+  // kHostIndexedMetadataGrants is enabled. It holds a ContentSettingsForOneType
+  // otherwise.
+  absl::variant<ContentSettingsForOneType, HostIndexedContentSettings>
+      settings_for_3pcd_metadata_grants_ GUARDED_BY(tpcd_lock_);
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);

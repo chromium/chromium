@@ -99,15 +99,12 @@ BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kMetadataGrantsThresholdName[] = "MetadataGrantsThreshold";
 const char kUseTestMetadataName[] = "UseTestMetadata";
 
 BASE_FEATURE(kHostIndexedMetadataGrants,
              "HostIndexedMetadataGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kMetadataGrantsThreshold{
-    &kHostIndexedMetadataGrants, kMetadataGrantsThresholdName, 1};
 const base::FeatureParam<int> kUseTestMetadata{&kHostIndexedMetadataGrants,
                                                kUseTestMetadataName, 0};
 
