@@ -3229,7 +3229,7 @@
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle  --enable-features=SkiaGraphite',
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',

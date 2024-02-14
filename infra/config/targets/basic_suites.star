@@ -2903,7 +2903,7 @@ targets.legacy_basic_suite(
         "screenshot_sync_passthrough_graphite_tests": targets.legacy_test_config(
             args = [
                 "--dont-restore-color-profile-after-test",
-                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle  --enable-features=SkiaGraphite",
             ],
             android_args = [
                 # TODO(crbug.com/1093085): Remove this once we fix the tests.
