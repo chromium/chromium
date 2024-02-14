@@ -12,4 +12,5 @@ interface Fence {
     [RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
     [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
     [CallWith=ScriptState, RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] Promise<void> disableUntrustedNetwork();
+    [RaisesException, RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] void notifyEvent(Event triggering_event);
 };

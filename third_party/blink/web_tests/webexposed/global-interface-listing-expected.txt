@@ -3934,12 +3934,14 @@ interface HTMLFencedFrameElement : HTMLElement
     getter allow
     getter config
     getter height
+    getter onfencedtreeclick
     getter sandbox
     getter width
     method constructor
     setter allow
     setter config
     setter height
+    setter onfencedtreeclick
     setter sandbox
     setter width
 interface HTMLFieldSetElement : HTMLElement

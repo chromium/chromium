@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -118,6 +119,15 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // Note: This function is deprecated. Please use
   // `NavigatorAuction::canLoadAdAuctionFencedFrame` instead.
   static bool canLoadOpaqueURL(ScriptState*);
+
+  // Fires an event named `event_type` at `this`. This path is only invoked for
+  // events that were originally fired *inside* of the fenced frame content, and
+  // that have been intentionally propagated outwards to `this`, the frame
+  // owner, for reception by the embedder script.
+  void DispatchFencedEvent(const WTF::String& event_type);
+
+  // Defines attribute event listener `onfencedtreeclick`.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(fencedtreeclick, kFencedtreeclick)
 
  private:
   // This method will only navigate the underlying frame if the element

@@ -104,6 +104,14 @@ class CORE_EXPORT Event : public ScriptWrappable {
     return MakeGarbageCollected<Event>(type, initializer);
   }
 
+  // Creates event objects for use with fenced frames. Because timestamps are
+  // a potential privacy leak from the frame to its embedder, clamp all of them
+  // to the epoch.
+  static Event* CreateFenced(const AtomicString& type) {
+    return MakeGarbageCollected<Event>(type, Bubbles::kYes, Cancelable::kNo,
+                                       base::TimeTicks::UnixEpoch());
+  }
+
   Event();
   Event(const AtomicString& type,
         Bubbles,

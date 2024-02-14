@@ -222,6 +222,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       override;
   void CreateRemoteChildren(
       Vector<mojom::blink::CreateRemoteChildParamsPtr> params) override;
+  void ForwardFencedFrameEventToEmbedder(
+      const WTF::String& event_type) override;
 
   // Called only when this frame has a local frame owner.
   gfx::Size GetOutermostMainFrameSize() const override;

@@ -725,6 +725,12 @@ interface LocalFrameHost {
       blink.mojom.RemoteFrameToken frame_token,
       mojo_base.mojom.UnguessableToken devtools_frame_token);
 
+  // Can be called when a DOM event named `event_type` fires within a fenced
+  // frame's DOM tree. Propagates a censored version of the event to the
+  // embedder that omits privacy-sensitive information like mouse coordinates or
+  // timestamps.
+  ForwardFencedFrameEventToEmbedder(string event_type);
+
   // Notifies when the ViewTransition opt-in state for the current Document
   // changes.
   // See https://github.com/WICG/view-transitions/blob/main/explainer.md#declarative-opt-in-to-transitions.
