@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 
 class GURL;
 
@@ -38,7 +39,7 @@ class FacilitatedPaymentsDriver {
   // running PIX code detection and is passed a boolean informing whether or not
   // a PIX code was found.
   virtual void TriggerPixCodeDetection(
-      base::OnceCallback<void(bool)> callback) const = 0;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) = 0;
 
  private:
   std::unique_ptr<FacilitatedPaymentsManager> manager_;

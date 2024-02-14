@@ -12,6 +12,7 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/facilitated_payments/core/mojom",
     "//components/optimization_guide/core",
     "//url",
   ]

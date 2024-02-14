@@ -22,8 +22,8 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   MOCK_METHOD(void,
               TriggerPixCodeDetection,
-              (base::OnceCallback<void(bool)>),
-              (const override));
+              (base::OnceCallback<void(mojom::PixCodeDetectionResult)>),
+              (override));
 };
 
 class MockOptimizationGuideDecider

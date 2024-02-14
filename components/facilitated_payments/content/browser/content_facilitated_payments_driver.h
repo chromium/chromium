@@ -7,6 +7,13 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 
+#include "base/memory/raw_ref.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace optimization_guide {
 class OptimizationGuideDecider;
 }  // namespace optimization_guide
@@ -20,8 +27,9 @@ namespace payments::facilitated {
 // `FacilitatedPaymentsAgent` throughout its entire lifetime.
 class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
  public:
-  explicit ContentFacilitatedPaymentsDriver(
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
+  ContentFacilitatedPaymentsDriver(
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      content::RenderFrameHost* render_frame_host);
   ContentFacilitatedPaymentsDriver(const ContentFacilitatedPaymentsDriver&) =
       delete;
   ContentFacilitatedPaymentsDriver& operator=(
@@ -30,7 +38,19 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   // FacilitatedPaymentsDriver:
   void TriggerPixCodeDetection(
-      base::OnceCallback<void(bool)> callback) const override;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback)
+      override;
+
+ private:
+  // Lazily binds the agent.
+  const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& GetAgent();
+
+  mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent> agent_;
+
+  // TODO(b/324987918): Store the `GlobalRenderFrameHostId`, and retrieve the
+  // `RenderFrameHost` when required.
+  // The frame/document to which this driver is associated. Outlives `this`.
+  const raw_ref<content::RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace payments::facilitated

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 
 class GURL;
@@ -70,7 +71,8 @@ class FacilitatedPaymentsManager {
 
   // Callback to be called after attempting PIX code detection. `pix_code_found`
   // informs whether or not PIX code was found on the page.
-  void ProcessPixCodeDetectionResult(bool pix_code_found) const;
+  void ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult result) const;
 
   raw_ref<FacilitatedPaymentsDriver> driver_;
 

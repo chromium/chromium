@@ -90,6 +90,6 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 }
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
-    bool pix_code_found) const {}
+    mojom::PixCodeDetectionResult result) const {}
 
 }  // namespace payments::facilitated

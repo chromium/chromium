@@ -51,7 +51,7 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     return *iter->second;
   }
   driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
-      optimization_guide_decider_);
+      optimization_guide_decider_, render_frame_host);
   DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
   return *iter->second;
 }
