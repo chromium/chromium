@@ -21,15 +21,19 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -57,13 +61,16 @@ class TabListContainerViewBinder {
         } else if (BLOCK_TOUCH_INPUT == propertyKey) {
             view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
         } else if (IS_INCOGNITO == propertyKey) {
-            int primaryBackgroundColor =
-                    ChromeColors.getPrimaryBackgroundColor(
-                            view.getContext(), model.get(IS_INCOGNITO));
+            Context context = view.getContext();
+            boolean isIncognito = model.get(IS_INCOGNITO);
+            final @ColorInt int primaryBackgroundColor =
+                    HubFieldTrial.isHubEnabled()
+                            ? Color.TRANSPARENT
+                            : ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
             view.setBackgroundColor(primaryBackgroundColor);
             view.setToolbarHairlineColor(
                     ThemeUtils.getToolbarHairlineColor(
-                            view.getContext(), primaryBackgroundColor, model.get(IS_INCOGNITO)));
+                            context, primaryBackgroundColor, isIncognito));
         } else if (VISIBILITY_LISTENER == propertyKey) {
             view.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
