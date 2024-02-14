@@ -4,6 +4,7 @@
 
 import {AsyncUtil} from '/common/async_util.js';
 import {EventHandler} from '/common/event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
@@ -390,3 +391,5 @@ export namespace MouseController {
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 6;
 }
+
+TestImportManager.exportForTesting(MouseController);

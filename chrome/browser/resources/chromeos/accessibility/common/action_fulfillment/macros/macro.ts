@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '../../testing/test_import_manager.js';
 import {Context, ContextChecker} from '../context_checker.js';
 
 import {MacroName} from './macro_names.js';
@@ -127,3 +128,6 @@ export class Macro {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(
+    ['MacroError', MacroError], ['MacroName', MacroName]);

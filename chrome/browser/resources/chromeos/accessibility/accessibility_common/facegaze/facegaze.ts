@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {MediapipeAvailability} from '../third_party/mediapipe/availability/mediapipe_availability.js';
 import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
@@ -99,3 +101,5 @@ export class FaceGaze {
     callback();
   }
 }
+
+TestImportManager.exportForTesting(FaceGaze);

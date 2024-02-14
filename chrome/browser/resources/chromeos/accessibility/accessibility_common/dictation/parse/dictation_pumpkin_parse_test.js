@@ -18,14 +18,6 @@ DictationPumpkinParseTest = class extends DictationE2ETestBase {
     this.getPumpkinParseStrategy().init_();
 
     await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'SpeechParser',
-          '/accessibility_common/dictation/parse/speech_parser.js'),
-      importModule(
-          'SUPPORTED_LOCALES',
-          '/accessibility_common/dictation/parse/pumpkin/pumpkin_constants.js'),
-    ]);
 
     // By default, Dictation JS tests use regex parsing. Enable Pumpkin for
     // this test suite.

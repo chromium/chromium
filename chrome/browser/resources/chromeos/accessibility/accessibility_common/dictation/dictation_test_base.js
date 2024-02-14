@@ -94,10 +94,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     };
 
     // Re-initialize AccessibilityCommon with mock APIs.
-    const reinit = module => {
-      accessibilityCommon = new module.AccessibilityCommon();
-    };
-    import('/accessibility_common/accessibility_common_loader.js').then(reinit);
+    accessibilityCommon = new AccessibilityCommon();
   }
 
   /** @override */
@@ -105,14 +102,9 @@ DictationE2ETestBase = class extends E2ETestBase {
     await super.setUpDeferred();
 
     // Wait for the Dictation module to load and set the Dictation locale.
-    await Promise.all([
-      importModule('Dictation', '/accessibility_common/dictation/dictation.js'),
-      importModule(
-          'LocaleInfo', '/accessibility_common/dictation/locale_info.js'),
-      new Promise(
-          resolve => chrome.accessibilityFeatures.dictation.set(
-              {value: true}, resolve)),
-    ]);
+    await new Promise(
+        resolve =>
+            chrome.accessibilityFeatures.dictation.set({value: true}, resolve));
     assertNotNullNorUndefined(Dictation);
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
 

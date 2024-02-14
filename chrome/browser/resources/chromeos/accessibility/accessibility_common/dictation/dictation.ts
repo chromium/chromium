@@ -5,6 +5,7 @@
 import {Context} from '/common/action_fulfillment/context_checker.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {FocusHandler} from './focus_handler.js';
 import {InputControllerImpl} from './input_controller_impl.js';
@@ -585,3 +586,5 @@ export namespace Dictation {
     NO_FOCUSED_IME = 'Dictation stopped automatically: No focused IME',
   }
 }
+
+TestImportManager.exportForTesting(Dictation);

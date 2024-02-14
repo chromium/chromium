@@ -9,6 +9,7 @@ import EventType = chrome.automation.EventType;
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AsyncUtil} from '/common/async_util.js';
 import {EventHandler} from '/common/event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export class FocusHandler {
   private active_ = false;
@@ -106,3 +107,5 @@ export class FocusHandler {
 export namespace FocusHandler {
   export const DEACTIVATE_TIMEOUT_MS_ = 45 * 1000;
 }
+
+TestImportManager.exportForTesting(FocusHandler);

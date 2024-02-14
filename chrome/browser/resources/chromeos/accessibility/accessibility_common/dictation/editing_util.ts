@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {LocaleInfo} from './locale_info.js';
 
 /**
@@ -306,3 +308,5 @@ export namespace EditingUtil {
   export const BEGINS_WITH_PUNCTUATION_REGEX_ =
       /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/;
 }
+
+TestImportManager.exportForTesting(EditingUtil);

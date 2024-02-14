@@ -149,21 +149,7 @@ FaceGazeTestBase = class extends E2ETestBase {
       };
     }
 
-    await importModule(
-        'FaceGaze', '/accessibility_common/facegaze/facegaze.js');
-    await importModule(
-        [
-          'FacialGesture',
-          'MediapipeFacialGesture',
-          'FacialGesturesToMediapipeGestures',
-        ],
-        '/accessibility_common/facegaze/gesture_detector.js');
-    await importModule(
-        ['MouseController'],
-        '/accessibility_common/facegaze/mouse_controller.js');
-    await importModule(
-        'MacroName', '/common/action_fulfillment/macros/macro_names.js'),
-        assertNotNullNorUndefined(accessibilityCommon);
+    assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FacialGesture);
     assertNotNullNorUndefined(MediapipeFacialGesture);

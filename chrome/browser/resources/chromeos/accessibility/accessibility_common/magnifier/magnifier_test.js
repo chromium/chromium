@@ -27,15 +27,6 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 
   /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      importModule('RectUtil', '/common/rect_util.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-  }
-
-  /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
 /**
@@ -108,3 +110,8 @@ export class GestureDetector {
     return gestures;
   }
 }
+
+TestImportManager.exportForTesting(
+    ['FacialGesture', FacialGesture],
+    ['MediapipeFacialGesture', MediapipeFacialGesture],
+    ['FacialGesturesToMediapipeGestures', FacialGesturesToMediapipeGestures]);

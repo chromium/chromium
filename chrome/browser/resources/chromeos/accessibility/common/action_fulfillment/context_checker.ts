@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '../testing/test_import_manager.js';
+
 import {InputController} from './input_controller.js';
 
 export enum Context {
@@ -56,3 +58,5 @@ export class ContextChecker {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(['Context', Context]);

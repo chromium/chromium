@@ -5,9 +5,9 @@
 /**
  * @fileoverview Handles speech parsing for dictation.
  */
-
 import {InputController} from '/common/action_fulfillment/input_controller.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {MetricsUtils} from '../metrics_utils.js';
 
@@ -72,3 +72,5 @@ export class SpeechParser {
     this.pumpkinParseStrategy_.setEnabled(false);
   }
 }
+
+TestImportManager.exportForTesting(SpeechParser);

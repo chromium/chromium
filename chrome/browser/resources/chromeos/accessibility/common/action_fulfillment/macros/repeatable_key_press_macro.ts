@@ -4,6 +4,7 @@
 
 import {EventGenerator} from '../../event_generator.js';
 import {KeyCodeData} from '../../key_code.js';
+import {TestImportManager} from '../../testing/test_import_manager.js';
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
@@ -382,3 +383,5 @@ export class SelectPrevChar extends RepeatableKeyPressMacro {
     EventGenerator.sendKeyPress(KeyCodeData.LEFT.code, {shift: true});
   }
 }
+
+TestImportManager.exportForTesting(UnselectTextMacro);

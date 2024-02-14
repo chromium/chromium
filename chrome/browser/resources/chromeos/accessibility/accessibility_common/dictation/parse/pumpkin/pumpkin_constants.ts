@@ -5,6 +5,7 @@
 /**
  * @fileoverview Defines constants used for Pumpkin.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /**
  * The sandbox doesn't have access to extension APIs, so we need to keep a copy
@@ -142,3 +143,5 @@ export enum HypothesisArgumentName {
 
 export const SANDBOXED_PUMPKIN_TAGGER_JS_FILE =
     'dictation/parse/sandboxed_pumpkin_tagger.js';
+
+TestImportManager.exportForTesting(['SUPPORTED_LOCALES', SUPPORTED_LOCALES]);
