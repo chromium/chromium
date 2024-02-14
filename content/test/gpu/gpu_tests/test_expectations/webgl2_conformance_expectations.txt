@@ -898,6 +898,7 @@ crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2
 #####################
 
 crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
+crbug.com/324952609 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
