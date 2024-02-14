@@ -13,7 +13,6 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -340,7 +339,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   METADATA_HEADER(GameControlsDetailsRow, views::Button)
 
  public:
-  GameControlsDetailsRow(GameDashboardMainMenuView* main_menu)
+  explicit GameControlsDetailsRow(GameDashboardMainMenuView* main_menu)
       : views::Button(
             base::BindRepeating(&GameControlsDetailsRow::OnButtonPressed,
                                 base::Unretained(this))),

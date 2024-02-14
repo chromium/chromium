@@ -20,7 +20,6 @@
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -1259,27 +1258,6 @@ TEST_P(GameTypeGameDashboardContextTest, CollapseAndExpandToolbarWidget) {
 
   // Verify that the toolbar is back to its initially expanded height.
   EXPECT_EQ(initial_height, updated_height);
-}
-
-// Verifies the color mode, user color, and scheme variant never change.
-TEST_P(GameTypeGameDashboardContextTest, ColorProviderKey) {
-  test_api_->OpenTheMainMenu();
-  test_api_->OpenTheToolbar();
-
-  const GameDashboardWidget* widgets[] = {
-      test_api_->GetGameDashboardButtonWidget(), test_api_->GetToolbarWidget()};
-
-  for (const auto* widget : widgets) {
-    auto color_provider_key = widget->GetColorProviderKey();
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
-              color_provider_key.color_mode);
-  }
-
-  // Update and verify the color mode doesn't change.
-  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
-  for (const auto* widget : widgets) {
-    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, widget->GetColorMode());
-  }
 }
 
 // Verifies the toolbar won't follow the mouse cursor outside of the game window

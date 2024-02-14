@@ -33,7 +33,6 @@ class FeatureTile;
 class GameDashboardButton;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
-class GameDashboardWidget;
 class IconButton;
 class PillButton;
 class Switch;
@@ -53,7 +52,7 @@ class GameDashboardContextTestApi {
   const std::u16string& GetRecordingDuration() const;
 
   // Returns the Game Dashboard button widget, button, and title view.
-  GameDashboardWidget* GetGameDashboardButtonWidget() const;
+  views::Widget* GetGameDashboardButtonWidget() const;
   GameDashboardButton* GetGameDashboardButton() const;
   views::Label* GetGameDashboardButtonTitle() const;
 
@@ -91,7 +90,7 @@ class GameDashboardContextTestApi {
   void CloseTheMainMenu();
 
   // Returns the toolbar widget and all its views.
-  GameDashboardWidget* GetToolbarWidget();
+  views::Widget* GetToolbarWidget();
   GameDashboardToolbarView* GetToolbarView();
   IconButton* GetToolbarGamepadButton();
   IconButton* GetToolbarGameControlsButton();

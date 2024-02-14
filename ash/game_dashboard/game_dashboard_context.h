@@ -18,12 +18,15 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class GameDashboardButton;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
-class GameDashboardWidget;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
 // its instance is managed by the `GameDashboardController`.
@@ -47,7 +50,7 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   GameDashboardMainMenuView* main_menu_view() { return main_menu_view_; }
 
-  GameDashboardWidget* game_dashboard_button_widget() {
+  views::Widget* game_dashboard_button_widget() {
     return game_dashboard_button_widget_.get();
   }
 
@@ -153,16 +156,16 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   const raw_ptr<aura::Window> game_window_;
 
   // Game Dashboard button widget for the Game Dashboard.
-  std::unique_ptr<GameDashboardWidget> game_dashboard_button_widget_;
+  std::unique_ptr<views::Widget> game_dashboard_button_widget_;
 
   // Expanded main menu for the Game Dashboard.
   views::UniqueWidgetPtr main_menu_widget_;
 
   // The toolbar for the Game Dashboard.
-  std::unique_ptr<GameDashboardWidget> toolbar_widget_;
+  std::unique_ptr<views::Widget> toolbar_widget_;
 
   // The dialog displayed when the game window first opens.
-  std::unique_ptr<GameDashboardWidget> welcome_dialog_widget_;
+  std::unique_ptr<views::Widget> welcome_dialog_widget_;
 
   // The indicator of the current corner that the toolbar is placed.
   ToolbarSnapLocation toolbar_snap_location_;

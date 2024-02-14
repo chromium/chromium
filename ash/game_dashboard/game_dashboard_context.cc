@@ -15,7 +15,6 @@
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/game_dashboard_welcome_dialog.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
@@ -34,6 +33,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -58,7 +58,7 @@ constexpr int kMaxCenteredWelcomeDialogWidth =
 constexpr base::TimeDelta kToolbarBoundsChangeAnimationDuration =
     base::Milliseconds(150);
 
-std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
+std::unique_ptr<views::Widget> CreateTransientChildWidget(
     aura::Window* game_window,
     const std::string& widget_name,
     std::unique_ptr<views::View> view,
@@ -75,7 +75,7 @@ std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
   params.activatable = activatable;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
-  auto widget = std::make_unique<GameDashboardWidget>();
+  auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   wm::TransientWindowManager::GetOrCreate(widget->GetNativeWindow())
       ->set_parent_controls_visibility(true);

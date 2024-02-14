@@ -11,7 +11,6 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -44,7 +43,7 @@ const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
   return context_->GetRecordingDuration();
 }
 
-GameDashboardWidget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
+views::Widget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
     const {
   return context_->game_dashboard_button_widget();
 }
@@ -167,7 +166,7 @@ void GameDashboardContextTestApi::CloseTheMainMenu() {
   ASSERT_FALSE(GetMainMenuWidget());
 }
 
-GameDashboardWidget* GameDashboardContextTestApi::GetToolbarWidget() {
+views::Widget* GameDashboardContextTestApi::GetToolbarWidget() {
   return context_->toolbar_widget_.get();
 }
 
@@ -227,7 +226,7 @@ void GameDashboardContextTestApi::OpenTheToolbar() {
 }
 
 void GameDashboardContextTestApi::SetFocusOnToolbar() {
-  GameDashboardWidget* toolbar_widget = GetToolbarWidget();
+  views::Widget* toolbar_widget = GetToolbarWidget();
   ASSERT_TRUE(toolbar_widget)
       << "The toolbar view must be opened before trying to place focus on it.";
   toolbar_widget->Activate();
