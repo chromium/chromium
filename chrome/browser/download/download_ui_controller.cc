@@ -30,7 +30,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_controller_base.h"
-#include "chrome/common/pdf_util.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -322,7 +322,8 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
       !item->IsMustDownload() &&
-      base::EqualsCaseInsensitiveASCII(item->GetMimeType(), kPDFMimeType)) {
+      base::EqualsCaseInsensitiveASCII(item->GetMimeType(),
+                                       pdf::kPDFMimeType)) {
     needs_to_render = true;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

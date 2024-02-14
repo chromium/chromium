@@ -28,6 +28,7 @@ source_set("pdf") {
     "//chrome/browser/resources/pdf:resources",
     "//chrome/common",
     "//components/pdf/browser:interceptors",
+    "//components/pdf/common:constants",
     "//components/prefs",
     "//components/services/screen_ai/buildflags",
     "//components/zoom",

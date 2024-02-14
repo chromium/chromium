@@ -9,9 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/pdf_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/http/http_util.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -68,7 +68,8 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
     // Register a fake PDF Viewer plugin into our plugin service.
     content::WebPluginInfo info;
     info.path = base::FilePath(ChromeContentClient::kPDFExtensionPluginPath);
-    info.mime_types.emplace_back(kPDFMimeType, "pdf", "Fake PDF description");
+    info.mime_types.emplace_back(pdf::kPDFMimeType, "pdf",
+                                 "Fake PDF description");
     plugin_service->RegisterInternalPlugin(info, true);
 
     // Set the plugin list as dirty, like when the browser first starts.

@@ -100,6 +100,7 @@
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/pdf/common/constants.h"
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
@@ -218,7 +219,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/renderer/pdf/chrome_pdf_internal_plugin_delegate.h"
-#include "components/pdf/common/constants.h"
 #include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -911,7 +911,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   *plugin = CreatePlugin(render_frame, params, *plugin_info);
 #else  // !BUILDFLAG(ENABLE_PLUGINS)
   PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type, url);
-  if (orig_mime_type == kPDFMimeType) {
+  if (orig_mime_type == pdf::kPDFMimeType) {
     ReportPDFLoadStatus(
         PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
 

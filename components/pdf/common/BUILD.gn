@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//pdf/features.gni")
-
-assert(enable_pdf)
+# enable_pdf is not required. Some platforms may not have PDF enabled, but some
+# existing files still use the constants.
 
 source_set("constants") {
   sources = [ "constants.h" ]

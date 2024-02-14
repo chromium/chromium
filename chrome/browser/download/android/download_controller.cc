@@ -35,12 +35,12 @@
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/common/pdf_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/pdf/common/constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -229,7 +229,8 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
   }
 
   if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
-      base::EqualsCaseInsensitiveASCII(download->GetMimeType(), kPDFMimeType)) {
+      base::EqualsCaseInsensitiveASCII(download->GetMimeType(),
+                                       pdf::kPDFMimeType)) {
     return;
   }
 
@@ -345,7 +346,7 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
   // For dangerous downloads, we need to show the dangerous infobar before the
   // download can start.
   if (!download_item->IsDangerous() &&
-      download_item->GetMimeType() == kPDFMimeType &&
+      download_item->GetMimeType() == pdf::kPDFMimeType &&
       base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
     content::WebContents* web_contents =
         content::DownloadItemUtils::GetWebContents(download_item);

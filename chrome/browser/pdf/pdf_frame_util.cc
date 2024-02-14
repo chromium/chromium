@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/common/pdf_util.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +24,7 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
 
   // MIME type associated with `contents` must be `application/pdf` for a
   // full-page PDF.
-  if (contents->GetContentsMimeType() != kPDFMimeType) {
+  if (contents->GetContentsMimeType() != pdf::kPDFMimeType) {
     return nullptr;
   }
 

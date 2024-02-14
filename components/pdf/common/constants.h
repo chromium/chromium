@@ -11,6 +11,9 @@ namespace pdf {
 inline constexpr char kInternalPluginMimeType[] =
     "application/x-google-chrome-pdf";
 
+// MIME type of PDFs.
+inline constexpr char kPDFMimeType[] = "application/pdf";
+
 }  // namespace pdf
 
 #endif  // COMPONENTS_PDF_COMMON_CONSTANTS_H_

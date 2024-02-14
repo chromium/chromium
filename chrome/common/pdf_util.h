@@ -38,6 +38,4 @@ bool IsPdfExtensionOrigin(const url::Origin& origin);
 // parent of the frame that contains the in-process plugin.
 bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin);
 
-inline constexpr char kPDFMimeType[] = "application/pdf";
-
 #endif  // CHROME_COMMON_PDF_UTIL_H_

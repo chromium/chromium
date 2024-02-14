@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -62,8 +63,9 @@ bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(
       navigation_handle->GetWebContents()->GetBrowserContext(),
-      navigation_handle->GetURL(), kPDFMimeType, false /* allow_wildcard */,
-      is_stale, &plugin_info, nullptr /* actual_mime_type */);
+      navigation_handle->GetURL(), pdf::kPDFMimeType,
+      false /* allow_wildcard */, is_stale, &plugin_info,
+      nullptr /* actual_mime_type */);
 }
 #endif
 
@@ -98,8 +100,9 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
 
   std::string mime_type;
   response_headers->GetMimeType(&mime_type);
-  if (mime_type != kPDFMimeType)
+  if (mime_type != pdf::kPDFMimeType) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // We MUST download responses marked as attachments rather than showing
   // a placeholder.
