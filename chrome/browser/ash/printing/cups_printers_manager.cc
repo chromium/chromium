@@ -47,6 +47,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printing_constants.h"
@@ -143,6 +144,7 @@ class CupsPrintersManagerImpl
       std::unique_ptr<PrinterDetector> usb_detector,
       std::unique_ptr<PrinterDetector> zeroconf_detector,
       scoped_refptr<PpdProvider> ppd_provider,
+      DlcserviceClient* dlc_service_client,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
@@ -153,6 +155,7 @@ class CupsPrintersManagerImpl
         usb_detector_(std::move(usb_detector)),
         zeroconf_detector_(std::move(zeroconf_detector)),
         ppd_provider_(std::move(ppd_provider)),
+        dlc_service_client_(dlc_service_client),
         usb_notification_controller_(std::move(usb_notification_controller)),
         print_servers_manager_(std::move(print_servers_manager)),
         enterprise_printers_provider_(std::move(enterprise_printers_provider)),
@@ -416,7 +419,7 @@ class CupsPrintersManagerImpl
     // start/restart the setup process.
     if (printers_being_setup_[id].fingerprint != fingerprint) {
       printers_being_setup_[id].configurer =
-          PrinterConfigurer::Create(ppd_provider_);
+          PrinterConfigurer::Create(ppd_provider_, dlc_service_client_);
       printers_being_setup_[id].fingerprint = fingerprint;
       printers_being_setup_[id].configurer->SetUpPrinterInCups(
           printer,
@@ -1108,6 +1111,7 @@ class CupsPrintersManagerImpl
   std::unique_ptr<PrinterDetector> zeroconf_detector_;
 
   scoped_refptr<PpdProvider> ppd_provider_;
+  raw_ptr<DlcserviceClient> dlc_service_client_;
 
   std::unique_ptr<UsbPrinterNotificationController>
       usb_notification_controller_;
@@ -1189,7 +1193,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
           profile),
       UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
-      CreatePpdProvider(profile),
+      CreatePpdProvider(profile), DlcserviceClient::Get(),
       UsbPrinterNotificationController::Create(profile),
       PrintServersManager::Create(profile),
       EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
@@ -1203,6 +1207,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
     std::unique_ptr<PrinterDetector> usb_detector,
     std::unique_ptr<PrinterDetector> zeroconf_detector,
     scoped_refptr<PpdProvider> ppd_provider,
+    DlcserviceClient* dlc_service_client,
     std::unique_ptr<UsbPrinterNotificationController>
         usb_notification_controller,
     std::unique_ptr<PrintServersManager> print_servers_manager,
@@ -1211,7 +1216,7 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
     PrefService* pref_service) {
   return std::make_unique<CupsPrintersManagerImpl>(
       synced_printers_manager, std::move(usb_detector),
-      std::move(zeroconf_detector), std::move(ppd_provider),
+      std::move(zeroconf_detector), std::move(ppd_provider), dlc_service_client,
       std::move(usb_notification_controller), std::move(print_servers_manager),
       std::move(enterprise_printers_provider), event_tracker, pref_service);
 }

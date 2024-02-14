@@ -25,6 +25,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -38,6 +39,8 @@ namespace {
 
 using ::chromeos::PpdProvider;
 using ::chromeos::Printer;
+
+const char kEbuildWithHplipPlugins[] = "hplip-plugin";
 
 PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
                                                         int result_code) {
@@ -106,9 +109,11 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
-  explicit PrinterConfigurerImpl(scoped_refptr<PpdProvider> ppd_provider)
-      : ppd_provider_(ppd_provider) {
+  PrinterConfigurerImpl(scoped_refptr<PpdProvider> ppd_provider,
+                        DlcserviceClient* dlc_service_client)
+      : ppd_provider_(ppd_provider), dlc_service_client_(dlc_service_client) {
     DCHECK(ppd_provider_);
+    DCHECK(dlc_service_client_);
   }
 
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
@@ -125,12 +130,19 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                       << " Printer setup requested as " << printer.id();
 
     if (!printer.IsIppEverywhere()) {
-      PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
-      ppd_provider_->ResolvePpd(
-          printer.ppd_reference(),
-          base::BindOnce(&PrinterConfigurerImpl::ResolvePpdDone,
-                         weak_factory_.GetWeakPtr(), printer,
-                         std::move(callback)));
+      if (!printer.ppd_reference().user_supplied_ppd_url.empty()) {
+        // The PPD was provided by the user.
+        ResolvePpd(printer, std::move(callback));
+      } else {
+        // The PPD was selected from our PPD Index. We have to check its license
+        // to make sure it doesn't need any additional plugins before setup.
+        PRINTER_LOG(DEBUG) << printer.make_and_model() << " Check license";
+        ppd_provider_->ResolvePpdLicense(
+            printer.ppd_reference().effective_make_and_model,
+            base::BindOnce(&PrinterConfigurerImpl::ResolveLicenseDone,
+                           weak_factory_.GetWeakPtr(), printer,
+                           std::move(callback)));
+      }
       return;
     }
 
@@ -202,7 +214,75 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     }
   }
 
+  void ResolvePpd(const Printer& printer, PrinterSetupCallback cb) {
+    PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
+    ppd_provider_->ResolvePpd(
+        printer.ppd_reference(),
+        base::BindOnce(&PrinterConfigurerImpl::ResolvePpdDone,
+                       weak_factory_.GetWeakPtr(), printer, std::move(cb)));
+  }
+
+  void ResolveLicenseDone(const Printer& printer,
+                          PrinterSetupCallback cb,
+                          PpdProvider::CallbackResultCode result,
+                          const std::string& license_name) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    PRINTER_LOG(EVENT) << printer.make_and_model()
+                       << " License resolution Result: "
+                       << PpdProvider::CallbackResultCodeName(result);
+    switch (result) {
+      case PpdProvider::SUCCESS:
+        break;
+      case PpdProvider::CallbackResultCode::NOT_FOUND:
+        std::move(cb).Run(PrinterSetupResult::kPpdNotFound);
+        return;
+      case PpdProvider::CallbackResultCode::SERVER_ERROR:
+        std::move(cb).Run(PrinterSetupResult::kPpdUnretrievable);
+        return;
+      case PpdProvider::CallbackResultCode::INTERNAL_ERROR:
+        std::move(cb).Run(PrinterSetupResult::kFatalError);
+        return;
+      case PpdProvider::CallbackResultCode::PPD_TOO_LARGE:
+        std::move(cb).Run(PrinterSetupResult::kPpdTooLarge);
+        return;
+    }
+
+    if (license_name == kEbuildWithHplipPlugins) {
+      // Printers with this license require special plugin. We have to install
+      // it before proceeding.
+      PRINTER_LOG(DEBUG) << "Attempting installation of hplip-plugin";
+      dlcservice::InstallRequest install_request;
+      install_request.set_id(kEbuildWithHplipPlugins);
+      dlc_service_client_->Install(
+          install_request,
+          base::BindOnce(&PrinterConfigurerImpl::OnPluginInstallationComplete,
+                         weak_factory_.GetWeakPtr(), printer, std::move(cb)),
+          base::DoNothing());
+    } else {
+      // Proceed with PPD resolution.
+      ResolvePpd(printer, std::move(cb));
+    }
+  }
+
+  void OnPluginInstallationComplete(
+      const Printer& printer,
+      PrinterSetupCallback cb,
+      const DlcserviceClient::InstallResult& result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    if (result.root_path.empty()) {
+      // Empty path of the plugin location means failure.
+      PRINTER_LOG(ERROR) << "Cannot install plugin " << result.dlc_id << ": "
+                         << result.error;
+      std::move(cb).Run(PrinterSetupResult::kComponentUnavailable);
+    } else {
+      // Plugin installed. We can proceed with PPD resolution.
+      ResolvePpd(printer, std::move(cb));
+    }
+  }
+
   scoped_refptr<PpdProvider> ppd_provider_;
+  raw_ptr<DlcserviceClient> dlc_service_client_;
   base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_{this};
 };
 
@@ -231,8 +311,10 @@ void PrinterConfigurer::RecordUsbPrinterSetupSource(
 
 // static
 std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
-    scoped_refptr<PpdProvider> ppd_provider) {
-  return std::make_unique<PrinterConfigurerImpl>(ppd_provider);
+    scoped_refptr<PpdProvider> ppd_provider,
+    DlcserviceClient* dlc_service_client) {
+  return std::make_unique<PrinterConfigurerImpl>(ppd_provider,
+                                                 dlc_service_client);
 }
 
 // static

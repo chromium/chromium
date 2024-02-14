@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -48,6 +49,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -282,23 +284,31 @@ class FakePpdProvider : public PpdProvider {
     usb_manufacturer_ = manufacturer;
   }
 
+  void SetLicenseName(const std::string& license_name) {
+    license_name_ = license_name;
+  }
+
   void ResolvePpd(const Printer::PpdReference& reference,
                   ResolvePpdCallback cb) override {
     std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, "ppd content");
+  }
+
+  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+                         ResolvePpdLicenseCallback cb) override {
+    std::move(cb).Run(PpdProvider::CallbackResultCode::SUCCESS, license_name_);
   }
 
   // These methods are not used by CupsPrintersManager.
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {}
   void ResolvePrinters(const std::string& manufacturer,
                        ResolvePrintersCallback cb) override {}
-  void ResolvePpdLicense(std::string_view effective_make_and_model,
-                         ResolvePpdLicenseCallback cb) override {}
   void ReverseLookup(const std::string& effective_make_and_model,
                      ReverseLookupCallback cb) override {}
 
  private:
   ~FakePpdProvider() override {}
   std::string usb_manufacturer_;
+  std::string license_name_;
 };
 
 class FakeLocalPrintersObserver
@@ -407,12 +417,15 @@ class CupsPrintersManagerTest : public testing::Test,
     auto print_servers_manager = std::make_unique<FakePrintServersManager>();
     print_servers_manager_ = print_servers_manager.get();
 
+    // To make sure it is not called.
+    dlc_service_client_.set_install_error(dlcservice::kErrorInternal);
+
     // Register the pref |UserPrintersAllowed|
     CupsPrintersManager::RegisterProfilePrefs(pref_service_.registry());
 
     manager_ = CupsPrintersManager::CreateForTesting(
         &synced_printers_manager_, std::move(usb_detector),
-        std::move(zeroconf_detector), ppd_provider_,
+        std::move(zeroconf_detector), ppd_provider_, &dlc_service_client_,
         std::move(usb_notif_controller), std::move(print_servers_manager),
         std::move(enterprise_printers_provider), &event_tracker_,
         &pref_service_);
@@ -486,6 +499,7 @@ class CupsPrintersManagerTest : public testing::Test,
   raw_ptr<FakePrintServersManager, DanglingUntriaged>
       print_servers_manager_;  // Not owned.
   scoped_refptr<FakePpdProvider> ppd_provider_;
+  FakeDlcserviceClient dlc_service_client_;
 
   // This is unused, it's just here for memory ownership.
   PrinterEventTracker event_tracker_;
@@ -538,8 +552,15 @@ PrinterDetector::DetectedPrinter MakeAutomaticPrinter(const std::string& id) {
   return ret;
 }
 
-PrinterSetupCallback CallQuitOnRunLoop(base::RunLoop* run_loop) {
-  return base::IgnoreArgs<PrinterSetupResult>(run_loop->QuitClosure());
+PrinterSetupCallback CallQuitOnRunLoop(base::RunLoop* run_loop,
+                                       PrinterSetupResult* result = nullptr) {
+  if (result == nullptr) {
+    return base::IgnoreArgs<PrinterSetupResult>(run_loop->QuitClosure());
+  }
+  return base::BindLambdaForTesting([run_loop, result](PrinterSetupResult res) {
+    *result = res;
+    run_loop->Quit();
+  });
 }
 
 // Test that Enterprise printers from SyncedPrinterManager are
@@ -1270,6 +1291,40 @@ TEST_F(CupsPrintersManagerTest, PrinterStatusPolling) {
   // 1 call when the observer is added + 2 calls for initial printer status
   // queries to the Saved and Recent printer
   EXPECT_EQ(3u, observer.num_observer_calls());
+}
+
+TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcFails) {
+  Printer printer(kPrinterId);
+  printer.SetUri("ipp://manual.uri");
+  printer.mutable_ppd_reference()->effective_make_and_model = "Make and model";
+  ppd_provider_->SetLicenseName("hplip-plugin");
+
+  base::RunLoop run_loop;
+  PrinterSetupResult result;
+  manager_->SetUpPrinter(printer, /*is_automatic_installation=*/true,
+                         CallQuitOnRunLoop(&run_loop, &result));
+  run_loop.Run();
+
+  EXPECT_EQ(result, PrinterSetupResult::kComponentUnavailable);
+  EXPECT_FALSE(manager_->IsPrinterInstalled(printer));
+}
+
+TEST_F(CupsPrintersManagerTest, PrinterWithHplipPluginLicenseDlcSucceeds) {
+  Printer printer(kPrinterId);
+  printer.SetUri("ipp://manual.uri");
+  printer.mutable_ppd_reference()->effective_make_and_model = "Make and model";
+  ppd_provider_->SetLicenseName("hplip-plugin");
+  dlc_service_client_.set_install_error(dlcservice::kErrorNone);
+  dlc_service_client_.set_install_root_path("/root/path");
+
+  base::RunLoop run_loop;
+  PrinterSetupResult result;
+  manager_->SetUpPrinter(printer, /*is_automatic_installation=*/true,
+                         CallQuitOnRunLoop(&run_loop, &result));
+  run_loop.Run();
+
+  EXPECT_EQ(result, PrinterSetupResult::kSuccess);
+  EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
 }
 
 }  // namespace

@@ -19,6 +19,8 @@ class Printer;
 
 namespace ash {
 
+class DlcserviceClient;
+
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
 enum class PrinterSetupResult {
@@ -73,7 +75,8 @@ using PrinterSetupCallback = base::OnceCallback<void(PrinterSetupResult)>;
 class PrinterConfigurer {
  public:
   static std::unique_ptr<PrinterConfigurer> Create(
-      scoped_refptr<chromeos::PpdProvider> ppd_provider);
+      scoped_refptr<chromeos::PpdProvider> ppd_provider,
+      DlcserviceClient* dlc_service_client);
 
   PrinterConfigurer(const PrinterConfigurer&) = delete;
   PrinterConfigurer& operator=(const PrinterConfigurer&) = delete;
