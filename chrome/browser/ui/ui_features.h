@@ -212,6 +212,8 @@ BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
 BASE_DECLARE_FEATURE(kToolbarPinning);
 
+bool IsToolbarPinningEnabled();
+
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);

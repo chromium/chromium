@@ -327,6 +327,11 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
 BASE_FEATURE(kToolbarPinning,
              "ToolbarPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsToolbarPinningEnabled() {
+  return (IsSidePanelPinningEnabled() &&
+          base::FeatureList::IsEnabled(kToolbarPinning));
+}
 #endif
 
 BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
