@@ -12,9 +12,9 @@ import './input_device_settings_shared.css.js';
 import './customize_button_dropdown_item.js';
 import '../settings_shared.css.js';
 
-import {LWIN_KEY, META_KEY} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
-import {KeyToIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {LWIN_KEY, META_KEY, ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {KeyToIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -172,6 +172,10 @@ export class CustomizeButtonSelectElement extends
         type: Object,
         value: undefined,
       },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
     };
   }
 
@@ -188,6 +192,7 @@ export class CustomizeButtonSelectElement extends
   remappingIndex: number;
   actionList: ActionChoice[];
   selectedValue: string;
+  hasLauncherButton: boolean;
   private isInitialized_: boolean;
   private shouldShowDropdownMenu_: boolean;
   private label_: string;
@@ -458,6 +463,13 @@ export class CustomizeButtonSelectElement extends
     }
     const iconName = KeyToIconNameMap[key];
     return iconName ? `shortcut-input-keys:${iconName}` : null;
+  }
+
+  private getAriaLabelForIcon(key: string): string {
+    const ariaLabelStringId = ShortcutInputKeyElement.getAriaLabelStringId(
+        key, this.hasLauncherButton);
+
+    return this.i18n(ariaLabelStringId);
   }
 
   /**

@@ -29,15 +29,18 @@
     width: 168px;
   }
 </style>
-<div tabindex="0" id="selectDropdown"
+<div tabindex="0" id="selectDropdown" role="button"
     class="md-select label-container"
     on-click="showDropdownMenu_">
   <template is="dom-if" if="[[remappedToKeyCombination_]]">
     <template is="dom-repeat" items="[[inputKeys_]]">
       <template is="dom-if" if="[[getIconIdForKey_(item)]]">
-        <iron-icon icon="[[getIconIdForKey_(item)]]"
-            aria-hidden="true">
-        </iron-icon>
+        <div aria-label="[[getAriaLabelForIcon(item)]]" role="img">
+          <iron-icon icon="[[getIconIdForKey_(item)]]"
+              has-launcher-button="[[hasLauncherButton]]"
+              aria-hidden="true">
+          </iron-icon>
+        </div>
       </template>
       <template is="dom-if" if="[[!getIconIdForKey_(item)]]">
         <span>[[item]]</span>

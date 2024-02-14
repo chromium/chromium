@@ -113,16 +113,20 @@
     <div id="buttonLabel">[[buttonRemappingName_]]</div>
   </div>
   <div class="edit-icon-container">
-    <cr-icon-button class="edit-button"
+    <cr-icon-button class="edit-button" id="renameButton"
+      aria-label="$i18n{renameIconLabel}"
+      aria-describedby="buttonLabel"
       iron-icon="os-settings:edit"
       on-click="onEditButtonLabelClicked_">
     </cr-icon-button>
   </div>
   <div id="dropdownContainer" class="text-field-container">
     <customize-button-select id="remappingActionDropdown"
+        aria-describedby="buttonLabel"
         action-list="[[actionList]]"
         button-remapping-list="{{buttonRemappingList}}"
-        remapping-index="[[remappingIndex]]">
+        remapping-index="[[remappingIndex]]"
+        has-launcher-button="[[hasLauncherButton]]">
     </customize-button-select>
   </div>
 </div>

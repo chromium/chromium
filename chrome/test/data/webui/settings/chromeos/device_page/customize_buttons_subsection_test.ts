@@ -8,6 +8,8 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {CustomizeButtonsSubsectionElement, KeyCombinationInputDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -51,18 +53,19 @@ suite('<customize-buttons-subsection>', () => {
     assertTrue(!!customizeButtonsSubsection);
     assertTrue(!!customizeButtonsSubsection.get('buttonRemappingList'));
 
-    // Verify that renaming dialog will pop out when setting
-    // shouldShowRenamingDialog_ to true.
-    customizeButtonsSubsection.set('shouldShowRenamingDialog_', true);
-    customizeButtonsSubsection.set(
-        'selectedButton_',
-        fakeGraphicsTablets[0]!.settings!.penButtonRemappings[0]);
-    customizeButtonsSubsection.set(
-        'buttonRemappingList',
-        fakeGraphicsTablets[0]!.settings!.penButtonRemappings);
+    // Verify that renaming dialog will pop out when click the edit button.
+    const editButton =
+        customizeButtonsSubsection.shadowRoot!.querySelector('#row-0')!
+            .shadowRoot!.querySelector<CrIconButtonElement>('#renameButton');
+    assertTrue(!!editButton);
+    const dialog =
+        customizeButtonsSubsection.shadowRoot!.querySelector<CrDialogElement>(
+            '#renamingDialog');
+    assertTrue(!!dialog);
+
+    editButton.click();
     await flushTasks();
-    assertTrue(!!customizeButtonsSubsection.shadowRoot!.querySelector(
-        '#renamingDialog'));
+    assertTrue(dialog.open);
 
     // Verify that the renaming dialog update the button name after clicking
     // 'save' button.
@@ -108,9 +111,7 @@ suite('<customize-buttons-subsection>', () => {
     saveButton.click();
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 1);
-    assertFalse(customizeButtonsSubsection.get('shouldShowRenamingDialog_'));
-    assertFalse(!!customizeButtonsSubsection.shadowRoot!.querySelector(
-        '#renamingDialog'));
+    assertFalse(dialog.open);
   });
 
   test('open key combination dialog', async () => {

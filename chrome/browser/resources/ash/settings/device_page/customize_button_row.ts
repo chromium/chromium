@@ -10,6 +10,7 @@ import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
 
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -30,6 +31,7 @@ export interface CustomizeButtonRowElement {
   $: {
     container: HTMLDivElement,
     remappingActionDropdown: CustomizeButtonSelectElement,
+    renameButton: CrIconButtonElement,
   };
 }
 
@@ -101,6 +103,10 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         type: Object,
         value: null,
       },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
     };
   }
 
@@ -113,6 +119,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   actionList: ActionChoice[];
+  hasLauncherButton: boolean;
   private buttonPressObserverReceiver: ButtonPressObserverReceiver;
   private buttonRemapping_: ButtonRemapping;
   private buttonRemappingName_: string;

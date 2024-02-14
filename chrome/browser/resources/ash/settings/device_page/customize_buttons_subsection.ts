@@ -15,10 +15,11 @@ import '../settings_shared.css.js';
 import './customize_button_row.js';
 import './key_combination_input_dialog.js';
 
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
 import {getTemplate} from './customize_buttons_subsection.html.js';
@@ -30,6 +31,8 @@ export interface CustomizeButtonsSubsectionElement {
   $: {
     keyCombinationInputDialog: KeyCombinationInputDialogElement,
     subsection: HTMLDivElement,
+    buttonRemappingRows: DomRepeat,
+    renamingDialog: CrDialogElement,
   };
 }
 
@@ -66,11 +69,6 @@ export class CustomizeButtonsSubsectionElement extends
 
       selectedButton_: {
         type: Object,
-      },
-
-      shouldShowRenamingDialog_: {
-        type: Boolean,
-        value: false,
       },
 
       selectedButtonName_: {
@@ -110,7 +108,6 @@ export class CustomizeButtonsSubsectionElement extends
   hasLauncherButton: boolean;
   private selectedButton_: ButtonRemapping;
   private selectedButtonIndex_: number;
-  private shouldShowRenamingDialog_: boolean;
   private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
   private buttonNameInvalid_: boolean;
@@ -140,7 +137,7 @@ export class CustomizeButtonsSubsectionElement extends
     this.buttonNameInvalid_ = false;
     this.isSaveButtonDisabled_ = false;
     this.duplicateButtonName_ = false;
-    this.shouldShowRenamingDialog_ = true;
+    this.$.renamingDialog.showModal();
   }
 
   /**
@@ -163,7 +160,7 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private cancelRenamingDialogClicked_(): void {
-    this.shouldShowRenamingDialog_ = false;
+    this.$.renamingDialog.close();
   }
 
   private saveRenamingDialogClicked_(): void {
@@ -178,7 +175,7 @@ export class CustomizeButtonsSubsectionElement extends
     }
 
     this.updateButtonName_();
-    this.shouldShowRenamingDialog_ = false;
+    this.$.renamingDialog.close();
   }
 
   private onKeyDownInRenamingDialog_(event: KeyboardEvent): void {

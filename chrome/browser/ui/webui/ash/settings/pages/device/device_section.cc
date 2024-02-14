@@ -1779,6 +1779,7 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
       {"keyCombinationDialogTitle", IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE},
       {"keyCombinationOptionLabel", IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL},
       {"noRemappingOptionLabel", IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL},
+      {"renameIconLabel", IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL},
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
   ash::common::AddShortcutInputKeyStrings(html_source);
