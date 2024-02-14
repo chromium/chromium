@@ -719,11 +719,13 @@ public abstract class SyncConsentFragmentBase extends Fragment
                     }
                 };
 
+        Profile profile = getProfile();
         mConfirmSyncDataStateMachine =
                 new ConfirmSyncDataStateMachine(
+                        profile,
                         new ConfirmSyncDataStateMachineDelegate(
-                                requireContext(), getChildFragmentManager(), mModalDialogManager),
-                        UserPrefs.get(getProfile())
+                                requireContext(), profile, mModalDialogManager),
+                        UserPrefs.get(profile)
                                 .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
                         mSelectedAccountEmail,
                         listener);

@@ -12,8 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.signin.AccountEmailDomainDisplayability;
@@ -64,27 +62,31 @@ public class ConfirmImportSyncDataDialogCoordinator {
             ModalDialogManager dialogManager,
             Listener listener,
             String currentAccountName,
-            String newAccountName) {
+            String newAccountName,
+            boolean isCurrentAccountManaged) {
         this(
                 context,
                 dialogManager,
                 listener,
                 currentAccountName,
                 newAccountName,
-                AccountEmailDomainDisplayability::checkIfDisplayableEmailAddress);
+                AccountEmailDomainDisplayability::checkIfDisplayableEmailAddress,
+                isCurrentAccountManaged);
     }
 
     /**
      * Creates a new instance of ConfirmImportSyncDataDialogCoordinator and shows a dialog that
-     * gives the user the option to merge data between the account they are attempting to sign in
-     * to and the account they are currently signed into, or to keep the data separate. This dialog
-     * is shown before signing out the current sync account.
-     * @param context                           Context to create the view.
-     * @param listener                          Callback to be called if the user completes the
-     *                                          dialog (as opposed to hitting cancel).
-     * @param currentAccountName                The current sync account name.
-     * @param newAccountName                    The potential next sync account name.
-     * @param checkIfDisplayableEmailAddress    Predicate testing if an email is displayable.
+     * gives the user the option to merge data between the account they are attempting to sign in to
+     * and the account they are currently signed into, or to keep the data separate. This dialog is
+     * shown before signing out the current sync account.
+     *
+     * @param context Context to create the view.
+     * @param listener Callback to be called if the user completes the dialog (as opposed to hitting
+     *     cancel).
+     * @param currentAccountName The current sync account name.
+     * @param newAccountName The potential next sync account name.
+     * @param checkIfDisplayableEmailAddress Predicate testing if an email is displayable.
+     * @param isCurrentAccountManaged Whether the current account is a managed account.
      */
     @MainThread
     public ConfirmImportSyncDataDialogCoordinator(
@@ -93,7 +95,8 @@ public class ConfirmImportSyncDataDialogCoordinator {
             Listener listener,
             String currentAccountName,
             String newAccountName,
-            Predicate<String> checkIfDisplayableEmailAddress) {
+            Predicate<String> checkIfDisplayableEmailAddress,
+            boolean isCurrentAccountManaged) {
         mCheckIfDisplayableEmailAddress = checkIfDisplayableEmailAddress;
 
         mListener = listener;
@@ -104,11 +107,6 @@ public class ConfirmImportSyncDataDialogCoordinator {
         mKeepSeparateOption =
                 mConfirmImportSyncDataView.findViewById(R.id.sync_keep_separate_choice);
 
-        boolean isCurrentAccountManaged =
-                IdentityServicesProvider.get()
-                                .getSigninManager(Profile.getLastUsedRegularProfile())
-                                .getManagementDomain()
-                        != null;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)

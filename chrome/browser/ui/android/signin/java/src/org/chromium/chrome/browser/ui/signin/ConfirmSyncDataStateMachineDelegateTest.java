@@ -31,6 +31,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -46,6 +47,8 @@ public class ConfirmSyncDataStateMachineDelegateTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Mock private Profile mProfile;
 
     @Mock
     private ConfirmSyncDataStateMachineDelegate.TimeoutDialogListener mTimeoutDialogListenerMock;
@@ -63,9 +66,7 @@ public class ConfirmSyncDataStateMachineDelegateTest {
         mFragmentManager = activity.getSupportFragmentManager();
         mStateMachineDelegate =
                 new ConfirmSyncDataStateMachineDelegate(
-                        activity,
-                        activity.getSupportFragmentManager(),
-                        activity.getModalDialogManager());
+                        activity, mProfile, activity.getModalDialogManager());
     }
 
     @Test

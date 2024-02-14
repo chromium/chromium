@@ -15,12 +15,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.IBinder;
@@ -46,9 +43,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -63,7 +57,6 @@ import java.util.function.Predicate;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class ConfirmImportSyncDataDialogTest {
-    private static final String TEST_DOMAIN = "test.domain.example.com";
 
     private static class ToastMatcher extends TypeSafeMatcher<Root> {
         @Override
@@ -94,8 +87,6 @@ public class ConfirmImportSyncDataDialogTest {
 
     @Mock private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;
 
-    @Mock private SigninManager mSigninManagerMock;
-
     private ModalDialogManager mDialogManager;
     private ConfirmImportSyncDataDialogCoordinator mDialogCoordinator;
 
@@ -108,11 +99,6 @@ public class ConfirmImportSyncDataDialogTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    IdentityServicesProvider.setInstanceForTests(
-                            mock(IdentityServicesProvider.class));
-                    Profile.setLastUsedProfileForTesting(mock(Profile.class));
-                    when(IdentityServicesProvider.get().getSigninManager(any()))
-                            .thenReturn(mSigninManagerMock);
                     mDialogManager =
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivityTestRule.getActivity()),
@@ -123,8 +109,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testPositiveButtonWhenAccountIsManaged() {
-        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(true);
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onConfirm(true);
         verify(mListenerMock, never()).onCancel();
@@ -133,7 +118,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testPositiveButtonWhenAccountIsNotManaged() {
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(false);
         onView(withId(R.id.sync_confirm_import_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onConfirm(false);
@@ -143,7 +128,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testNegativeButton() {
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(false);
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
         verify(mListenerMock, never()).onConfirm(anyBoolean());
         verify(mListenerMock).onCancel();
@@ -152,7 +137,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testListenerOnCancelNotCalledWhenDialogDismissedInternally() {
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(false);
         TestThreadUtils.runOnUiThreadBlocking(mDialogCoordinator::dismissDialog);
         verify(mListenerMock, never()).onCancel();
     }
@@ -160,7 +145,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testListenerOnCancelCalledWhenDialogDismissedByUser() {
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(false);
         onView(isRoot()).perform(pressBack());
         verify(mListenerMock).onCancel();
     }
@@ -168,8 +153,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testToastOfConfirmImportOptionForManagedAccount() {
-        when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
-        showConfirmImportSyncDataDialog();
+        showConfirmImportSyncDataDialog(true);
         onView(withId(R.id.sync_confirm_import_choice)).inRoot(isDialog()).perform(click());
         onView(withText(R.string.managed_by_your_organization))
                 .inRoot(new ToastMatcher())
@@ -194,7 +178,7 @@ public class ConfirmImportSyncDataDialogTest {
         onView(withText(unexpectedString)).check(doesNotExist());
     }
 
-    private void showConfirmImportSyncDataDialog() {
+    private void showConfirmImportSyncDataDialog(boolean isCurrentAccountManaged) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogCoordinator =
@@ -203,7 +187,8 @@ public class ConfirmImportSyncDataDialogTest {
                                     mDialogManager,
                                     mListenerMock,
                                     "old.testaccount@gmail.com",
-                                    "new.testaccount@gmail.com");
+                                    "new.testaccount@gmail.com",
+                                    isCurrentAccountManaged);
                 });
     }
 
@@ -217,7 +202,8 @@ public class ConfirmImportSyncDataDialogTest {
                                     mListenerMock,
                                     "old.testaccount@gmail.com",
                                     "new.testaccount@gmail.com",
-                                    checkIfDisplayableEmailAddress);
+                                    checkIfDisplayableEmailAddress,
+                                    false);
                 });
     }
 }
