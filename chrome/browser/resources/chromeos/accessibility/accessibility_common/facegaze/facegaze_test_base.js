@@ -106,7 +106,7 @@ class MockFaceLandmarkerResult {
   }
 
   /**
-   * @param {string} name
+   * @param {MediapipeFacialGesture} name
    * @param {number} confidence
    * @return {!MockFaceLandmarkerResult}
    */
@@ -152,7 +152,11 @@ FaceGazeTestBase = class extends E2ETestBase {
     await importModule(
         'FaceGaze', '/accessibility_common/facegaze/facegaze.js');
     await importModule(
-        ['FacialGesture'],
+        [
+          'FacialGesture',
+          'MediapipeFacialGesture',
+          'FacialGesturesToMediapipeGestures',
+        ],
         '/accessibility_common/facegaze/gesture_detector.js');
     await importModule(
         ['MouseController'],
@@ -162,6 +166,8 @@ FaceGazeTestBase = class extends E2ETestBase {
         assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FacialGesture);
+    assertNotNullNorUndefined(MediapipeFacialGesture);
+    assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
     assertNotNullNorUndefined(MouseController);
     assertNotNullNorUndefined(MacroName);
     await new Promise(resolve => {
@@ -208,11 +214,13 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.gestureToMacroName) {
-      faceGaze.gestureToMacroName_ = new Map(config.gestureToMacroName);
+      faceGaze.gestureHandler_.gestureToMacroName_ =
+          new Map(config.gestureToMacroName);
     }
 
     if (config.gestureToConfidence) {
-      faceGaze.gestureToConfidence_ = new Map(config.gestureToConfidence);
+      faceGaze.gestureHandler_.gestureToConfidence_ =
+          new Map(config.gestureToConfidence);
     }
 
     if (config.bufferSize !== -1) {

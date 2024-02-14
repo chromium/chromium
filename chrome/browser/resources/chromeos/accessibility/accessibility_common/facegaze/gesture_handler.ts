@@ -19,6 +19,7 @@ import {MouseController} from './mouse_controller.js';
 export class GestureHandler {
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
+  private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
 
   constructor(mouseController: MouseController) {
@@ -29,10 +30,10 @@ export class GestureHandler {
     this.gestureToMacroName_
         .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
         .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT)
-        .set(FacialGesture.BROW_DOWN_LEFT, MacroName.RESET_CURSOR)
-        .set(FacialGesture.BROW_DOWN_RIGHT, MacroName.RESET_CURSOR);
+        .set(FacialGesture.BROWS_DOWN, MacroName.RESET_CURSOR);
 
-    // Initialize default mapping of facial gestures to confidence threshold.
+    // Initialize default mapping of facial gestures to confidence
+    // threshold.
     // TODO(b/309121742): Set this using the user's preferences.
     this.gestureToConfidence_
         .set(
@@ -41,10 +42,7 @@ export class GestureHandler {
             FacialGesture.BROW_INNER_UP,
             GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD)
         .set(
-            FacialGesture.BROW_DOWN_LEFT,
-            GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(
-            FacialGesture.BROW_DOWN_RIGHT,
+            FacialGesture.BROWS_DOWN,
             GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
   }
 
@@ -56,23 +54,15 @@ export class GestureHandler {
   private gesturesToMacros_(gestures: FacialGesture[]): Macro[] {
     const macroNames: MacroName[] = [];
     for (const gesture of gestures) {
-      if (gesture === FacialGesture.BROW_DOWN_LEFT ||
-          gesture === FacialGesture.BROW_DOWN_RIGHT) {
-        // Handle the BrowDown gesture separately.
+      const currentTime = new Date().getTime();
+      if (this.gestureLastRecognized_.has(gesture) &&
+          currentTime - this.gestureLastRecognized_.get(gesture)! <
+              GestureHandler.DEFAULT_REPEAT_DELAY_MS) {
+        // Avoid responding to the same macro repeatedly in too short a time.
         continue;
       }
+      this.gestureLastRecognized_.set(gesture, currentTime);
       const name = this.gestureToMacroName_.get(gesture);
-      if (name) {
-        macroNames.push(name);
-      }
-    }
-
-    if (gestures.includes(FacialGesture.BROW_DOWN_LEFT) &&
-        gestures.includes(FacialGesture.BROW_DOWN_RIGHT)) {
-      // The BrowDown gesture is special because it is the combination of
-      // two separate facial gestures. Ensure that the associated action
-      // is only performed if both gestures are recognized.
-      const name = this.gestureToMacroName_.get(FacialGesture.BROW_DOWN_LEFT);
       if (name) {
         macroNames.push(name);
       }
@@ -110,4 +100,8 @@ export class GestureHandler {
 export namespace GestureHandler {
   /** The default confidence threshold for facial gestures. */
   export const DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
+
+  /** Minimum repeat rate of a gesture. */
+  // TODO(b:322511275): Move to a pref in settings.
+  export const DEFAULT_REPEAT_DELAY_MS = 500;
 }
