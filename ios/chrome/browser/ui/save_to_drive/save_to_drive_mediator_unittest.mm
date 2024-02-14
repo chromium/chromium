@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
@@ -165,12 +167,14 @@ TEST_F(SaveToDriveMediatorTest, DoesNotSaveToDriveIfDestinationIsFiles) {
 // when `startDownloadWithIdentity:` is invoked if the selected destination is
 // `FileDestination::kDrive`.
 TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
+  base::HistogramTester histogram_tester;
   FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
   DriveTabHelper* drive_helper = GetDriveTabHelper();
   // Set up test file uploader with a quit closure.
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   auto test_file_uploader = std::make_unique<TestDriveFileUploader>(identity);
-  test_file_uploader->SetQuitClosure(task_environment_.QuitClosure());
+  test_file_uploader->SetFetchStorageQuotaQuitClosure(
+      task_environment_.QuitClosure());
   GetTestDriveService()->SetFileUploader(std::move(test_file_uploader));
   // No download/uploader task should have been started/created yet.
   EXPECT_EQ(nullptr, download_helper->download_task_started_);
@@ -192,4 +196,7 @@ TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
       drive_helper->GetUploadTaskForDownload(download_task_.get());
   ASSERT_NE(nullptr, upload_task);
   EXPECT_EQ(identity, upload_task->GetIdentity());
+  // Test that expected histograms were recorded.
+  histogram_tester.ExpectUniqueSample(kDriveStorageQuotaResultSuccessful, true,
+                                      1);
 }

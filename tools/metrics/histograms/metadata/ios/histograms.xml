@@ -3067,6 +3067,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToDrive.UploadTask.FileSizeMB.{FinalState}" units="MB"
+    expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when a Drive upload task's destructor is called, indicating the the
+    size of the uploaded file as a function of the final state of the task e.g.
+    Not Started, Cancelled, Completed or Failed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.UploadTask.FinalState"
+    enum="IOSSaveToDriveUploadTaskStateType" expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when a Drive upload task's destructor is called, indicating the final
+    state of the task e.g. Not Started, Cancelled, Completed or Failed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.UploadTask.MimeType.{FinalState}"
+    enum="DownloadMimeTypeResult" expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when a Drive upload task's destructor is called, indicating the the
+    MIME type of the uploaded file as a function of the final state of the task
+    e.g. Not Started, Cancelled, Completed or Failed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.UploadTask.NumberOfAttempts.{FinalState}"
+    units="count" expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when a Drive upload task's destructor is called, indicating the
+    number of attempts to complete the task (i.e. number of times it was
+    started) as a function of the final state of the task e.g. Not Started,
+    Cancelled, Completed or Failed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.{QueryType}.ErrorCode" enum="HttpResponseCode"
+    expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when receiving the response for a failed Drive query, indicating the
+    error code associated with the response.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.{QueryType}.Successful" enum="BooleanSuccess"
+    expires_after="2025-02-09">
+  <owner>qpubert@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logged when receiving the response for a Drive query, indicating whether the
+    response is successful or not.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
     expires_after="2024-08-04">
   <owner>qpubert@chromium.org</owner>

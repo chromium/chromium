@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
+#import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
@@ -28,14 +30,14 @@
 @interface SaveToDriveMediator () <CRWWebStateObserver, CRWDownloadTaskObserver>
 
 // Called when the storage quota has been fetched, with or without any error.
-- (void)didReceiveStorageQuotaResult:(DriveStorageQuotaResult)result;
+- (void)didReceiveStorageQuotaResult:(const DriveStorageQuotaResult&)result;
 
 @end
 
 namespace {
 
 void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
-                                  DriveStorageQuotaResult result) {
+                                  const DriveStorageQuotaResult& result) {
   [mediator didReceiveStorageQuotaResult:result];
 }
 
@@ -195,11 +197,14 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 }
 
 // Called when the storage quota has been fetched, with or without any error.
-- (void)didReceiveStorageQuotaResult:(DriveStorageQuotaResult)result {
+- (void)didReceiveStorageQuotaResult:(const DriveStorageQuotaResult&)result {
   [_accountPickerConsumer stopValidationSpinner];
+  // Report storage quota histograms.
+  base::UmaHistogramBoolean(kDriveStorageQuotaResultSuccessful,
+                            result.error == nil);
   if (result.error) {
-    // TODO(crbug.com/1495352): Show an error message.
-    return;
+    base::UmaHistogramSparse(kDriveStorageQuotaResultErrorCode,
+                             result.error.code);
   }
   // Check that there is enough storage space to store an additional file of the
   // given size. The upload is expected to fail if the storage space usage after

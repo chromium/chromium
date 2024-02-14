@@ -38,7 +38,11 @@ source_set("drive_upload_task") {
     "drive_upload_task.h",
     "drive_upload_task.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//ios/chrome/browser/download/model:mime_types",
+  ]
   public_deps = [
     ":drive_file_uploader",
     ":upload_task",
@@ -105,6 +109,13 @@ source_set("manage_storage_url_util") {
   ]
 }
 
+source_set("metrics") {
+  sources = [
+    "drive_metrics.h",
+    "drive_metrics.mm",
+  ]
+}
+
 source_set("test_constants") {
   testonly = true
   sources = [
@@ -143,8 +154,10 @@ source_set("unit_tests") {
     ":drive_service_factory",
     ":drive_tab_helper",
     ":drive_upload_task",
+    ":metrics",
     ":test_support",
     "//base/test:test_support",
+    "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin/model:fake_system_identity",

@@ -39,7 +39,7 @@ void DriveTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
     case web::DownloadTask::State::kComplete:
       upload_task_->SetFileToUpload(task->GetResponsePath(),
                                     task->GenerateFileName(),
-                                    task->GetMimeType());
+                                    task->GetMimeType(), task->GetTotalBytes());
       upload_task_->Start();
       break;
     case web::DownloadTask::State::kCancelled:

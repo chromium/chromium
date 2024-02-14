@@ -24,7 +24,7 @@ struct DriveFolderResult {
 };
 
 using DriveFolderCompletionCallback =
-    base::OnceCallback<void(DriveFolderResult)>;
+    base::OnceCallback<void(const DriveFolderResult&)>;
 
 // Progress returned asynchronously by the progress callback of a query to
 // upload a file.
@@ -36,7 +36,7 @@ struct DriveFileUploadProgress {
 };
 
 using DriveFileUploadProgressCallback =
-    base::RepeatingCallback<void(DriveFileUploadProgress)>;
+    base::RepeatingCallback<void(const DriveFileUploadProgress&)>;
 
 // Result returned asynchronously by the completion callback of a query to
 // upload a file.
@@ -48,7 +48,7 @@ struct DriveFileUploadResult {
 };
 
 using DriveFileUploadCompletionCallback =
-    base::OnceCallback<void(DriveFileUploadResult)>;
+    base::OnceCallback<void(const DriveFileUploadResult&)>;
 
 // Result reported by the completion block of a query to fetch the user's Drive
 // storage quota.
@@ -67,7 +67,7 @@ struct DriveStorageQuotaResult {
 };
 
 using DriveStorageQuotaCompletionCallback =
-    base::OnceCallback<void(DriveStorageQuotaResult)>;
+    base::OnceCallback<void(const DriveStorageQuotaResult&)>;
 
 // This interface is used to perform queries in a user's Drive account.
 class DriveFileUploader {

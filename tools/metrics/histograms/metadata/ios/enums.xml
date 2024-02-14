@@ -581,6 +581,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Success"/>
 </enum>
 
+<enum name="IOSSaveToDriveUploadTaskStateType">
+  <int value="0" label="Not Started"/>
+  <int value="1" label="In Progress"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="Failed"/>
+</enum>
+
 <enum name="IOSSaveToPhotosAccountPickerType">
   <int value="0"
       label="Account picker not presented because a default account exists"/>
