@@ -950,6 +950,11 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Requires user opt-in to receive extended updates support.
+BASE_FEATURE(kExtendedUpdatesRequireOptIn,
+             "ExtendedUpdatesRequireOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 BASE_FEATURE(kFamilyLinkOnSchoolDevice,
@@ -3298,6 +3303,10 @@ bool IsEOLIncentiveEnabled() {
 
 bool IsExperimentalRgbKeyboardPatternsEnabled() {
   return base::FeatureList::IsEnabled(kExperimentalRgbKeyboardPatterns);
+}
+
+bool IsExtendedUpdatesRequireOptInEnabled() {
+  return base::FeatureList::IsEnabled(kExtendedUpdatesRequireOptIn);
 }
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
