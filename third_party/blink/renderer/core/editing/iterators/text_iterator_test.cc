@@ -866,7 +866,7 @@ TEST_F(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
 }
 
 // crbug.com/1175482
-TEST_F(TextIteratorTest, FirstLetterAndReaminingAreDifferentBlocks) {
+TEST_F(TextIteratorTest, FirstLetterAndRemainingAreDifferentBlocks) {
   SetBodyContent(R"HTML(
       <style>.class11 { float:left; } *:first-letter { float:inherit; }</style>
       <body contenteditable=true autofocus><dt class="class11">Cascade)HTML");

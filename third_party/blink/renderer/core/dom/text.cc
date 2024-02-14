@@ -454,11 +454,20 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   // editing with the combination of -webkit-text-security in author styles on
   // other elements in combination with ::first-letter.
   // See crbug.com/1240988
-  if (text_layout_object->IsSecure())
+  if (text_layout_object->IsSecure()) {
     return false;
+  }
+  FirstLetterPseudoElement::Punctuation punctuation1 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::Punctuation punctuation2 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  bool preserve_breaks = ShouldPreserveBreaks(
+      text_layout_object->StyleRef().GetWhiteSpaceCollapse());
   if (!FirstLetterPseudoElement::FirstLetterLength(
-          text_layout_object->TransformedText()) &&
-      FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
+          text_layout_object->TransformedText(), preserve_breaks,
+          punctuation1) &&
+      FirstLetterPseudoElement::FirstLetterLength(
+          text_node.data(), preserve_breaks, punctuation2)) {
     // We did not previously apply ::first-letter styles to this |text_node|,
     // and if there was no first formatted letter, but now is, we may need to
     // reattach.

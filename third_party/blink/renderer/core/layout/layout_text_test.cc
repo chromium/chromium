@@ -1573,8 +1573,9 @@ TEST_F(LayoutTextTest, SetTextWithOffsetDeleteWithBidiControl) {
   Text& text = To<Text>(*GetElementById("target")->firstChild());
   text.deleteData(0, 1, ASSERT_NO_EXCEPTION);  // remove "\n"
 
-  EXPECT_EQ("LayoutText has NeedsCollectInlines",
-            GetItemsAsString(*text.GetLayoutObject()));
+  // FirstLetterPseudoElement::FirstLetterLength() change (due to \n removed)
+  // makes ShouldUpdateLayoutByReattaching() (in text.cc) return true.
+  EXPECT_TRUE(text.GetForceReattachLayoutTree());
 }
 
 // http://crbug.com/1125262
