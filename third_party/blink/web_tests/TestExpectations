@@ -6777,5 +6777,8 @@ crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-break
 crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
 
 # Gardener: 2024-02-14
-b/325227176 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history-cross-origin.html [ Failure Pass ]
-b/325255315 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history.html [ Failure Pass ]
+crbug.com/325227176 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history-cross-origin.html [ Failure Pass ]
+crbug.com/325255315 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history.html [ Failure Pass ]
+
+# Flaky test
+crbug.com/40275364 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/text-track-duplicate-label.html [ Failure Pass ]
