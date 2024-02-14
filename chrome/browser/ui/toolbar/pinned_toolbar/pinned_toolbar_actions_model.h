@@ -78,12 +78,7 @@ class PinnedToolbarActionsModel : public KeyedService {
   void UpdatePinnedState(const actions::ActionId& action_id,
                          const bool should_pin);
 
-  // TODO(b/307350981): Remove MaybeUpdateSearchCompanionPinnedState() and
-  // UpdateSearchCompanionDefaultState() after migration is complete.
-  // Migrate the search companion pin state
-  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
-  void MaybeUpdateSearchCompanionPinnedState(
-      bool companion_should_be_default_pinned);
+  void MaybeMigrateSearchCompanionPinnedStateForTesting();
 
   // Returns the ordered list of pinned ActionIds.
   const std::vector<actions::ActionId>& pinned_action_ids() const {
@@ -103,10 +98,15 @@ class PinnedToolbarActionsModel : public KeyedService {
   // the latest data from the pref.
   void UpdatePinnedActionIds();
 
+  // TODO(b/307350981): Remove MaybeMigrateSearchCompanionPinnedState() and
+  // UpdateSearchCompanionDefaultState() after migration is complete.
+  // Migrate the search companion pin state
+  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
+  void MaybeMigrateSearchCompanionPinnedState();
+
   // Calculates and updates `kPinnedActions` with current default pinned state
   // of the search companion feature.
-  void UpdateSearchCompanionDefaultState(
-      bool companion_should_be_default_pinned);
+  void UpdateSearchCompanionDefaultState();
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list);
 
