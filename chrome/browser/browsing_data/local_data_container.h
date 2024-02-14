@@ -17,7 +17,6 @@
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/content/shared_worker_helper.h"
 
 class CookiesTreeModel;
 class LocalDataContainer;
@@ -39,7 +38,6 @@ class LocalDataContainer {
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
   using SessionStorageInfoList = std::list<content::StorageUsageInfo>;
   using QuotaInfoList = std::list<BrowsingDataQuotaHelper::QuotaInfo>;
-  using SharedWorkerInfoList = std::list<browsing_data::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
 
   static std::unique_ptr<LocalDataContainer>
@@ -56,7 +54,6 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
-      scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
       scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
 
   LocalDataContainer(const LocalDataContainer&) = delete;
@@ -74,7 +71,6 @@ class LocalDataContainer {
   friend class CookieTreeLocalStorageNode;
   friend class CookieTreeSessionStorageNode;
   friend class CookieTreeQuotaNode;
-  friend class CookieTreeSharedWorkerNode;
   friend class CookieTreeCacheStorageNode;
 
   // Callback methods to be invoked when fetching the data is complete.
@@ -84,7 +80,6 @@ class LocalDataContainer {
   void OnSessionStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info);
   void OnQuotaModelInfoLoaded(const QuotaInfoList& quota_info);
-  void OnSharedWorkerInfoLoaded(const SharedWorkerInfoList& shared_worker_info);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info);
 
@@ -94,7 +89,6 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-  scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper_;
   scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
 
   // Storage for all the data that was retrieved through the helper objects.
@@ -103,7 +97,6 @@ class LocalDataContainer {
   LocalStorageInfoList local_storage_info_list_;
   LocalStorageInfoList session_storage_info_list_;
   QuotaInfoList quota_info_list_;
-  SharedWorkerInfoList shared_worker_info_list_;
   CacheStorageUsageInfoList cache_storage_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the

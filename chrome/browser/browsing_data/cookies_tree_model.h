@@ -27,8 +27,6 @@ class CookieTreeHostNode;
 class CookieTreeLocalStorageNode;
 class CookieTreeLocalStoragesNode;
 class CookieTreeQuotaNode;
-class CookieTreeSharedWorkerNode;
-class CookieTreeSharedWorkersNode;
 class CookieTreeSessionStorageNode;
 class CookieTreeSessionStoragesNode;
 class ExtensionSpecialStoragePolicy;
@@ -68,8 +66,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
       TYPE_SESSION_STORAGES,  // This is used for CookieTreeSessionStoragesNode.
       TYPE_SESSION_STORAGE,   // This is used for CookieTreeSessionStorageNode.
       TYPE_QUOTA,             // This is used for CookieTreeQuotaNode.
-      TYPE_SHARED_WORKERS,    // This is used for CookieTreeSharedWorkersNode.
-      TYPE_SHARED_WORKER,     // This is used for CookieTreeSharedWorkerNode.
       TYPE_CACHE_STORAGES,    // This is used for CookieTreeCacheStoragesNode.
       TYPE_CACHE_STORAGE,     // This is used for CookieTreeCacheStorageNode.
     };
@@ -86,8 +82,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     DetailedInfo& InitSessionStorage(
         const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitQuota(const BrowsingDataQuotaHelper::QuotaInfo* quota);
-    DetailedInfo& InitSharedWorker(
-        const browsing_data::SharedWorkerInfo* shared_worker);
     DetailedInfo& InitCacheStorage(
         const content::StorageUsageInfo* storage_usage_info);
 
@@ -97,7 +91,6 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     // Used for Cache Storage node types.
     raw_ptr<const content::StorageUsageInfo> usage_info = nullptr;
     raw_ptr<const BrowsingDataQuotaHelper::QuotaInfo> quota_info = nullptr;
-    raw_ptr<const browsing_data::SharedWorkerInfo> shared_worker_info = nullptr;
   };
 
   CookieTreeNode() {}
@@ -173,7 +166,6 @@ class CookieTreeHostNode : public CookieTreeNode {
   CookieTreeCookiesNode* GetOrCreateCookiesNode();
   CookieTreeLocalStoragesNode* GetOrCreateLocalStoragesNode();
   CookieTreeSessionStoragesNode* GetOrCreateSessionStoragesNode();
-  CookieTreeSharedWorkersNode* GetOrCreateSharedWorkersNode();
   CookieTreeCacheStoragesNode* GetOrCreateCacheStoragesNode();
   CookieTreeQuotaNode* UpdateOrCreateQuotaNode(
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info);
@@ -206,7 +198,6 @@ class CookieTreeHostNode : public CookieTreeNode {
       session_storages_child_ = nullptr;
   raw_ptr<CookieTreeQuotaNode, AcrossTasksDanglingUntriaged> quota_child_ =
       nullptr;
-  raw_ptr<CookieTreeSharedWorkersNode> shared_workers_child_ = nullptr;
   raw_ptr<CookieTreeCacheStoragesNode> cache_storages_child_ = nullptr;
 
   // The URL for which this node was initially created.
@@ -304,7 +295,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateLocalStorageInfo(LocalDataContainer* container);
   void PopulateSessionStorageInfo(LocalDataContainer* container);
   void PopulateQuotaInfo(LocalDataContainer* container);
-  void PopulateSharedWorkerInfo(LocalDataContainer* container);
   void PopulateCacheStorageUsageInfo(LocalDataContainer* container);
 
   LocalDataContainer* data_container() {
@@ -350,9 +340,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void PopulateQuotaInfoWithFilter(LocalDataContainer* container,
                                    ScopedBatchUpdateNotifier* notifier,
                                    const std::u16string& filter);
-  void PopulateSharedWorkerInfoWithFilter(LocalDataContainer* container,
-                                          ScopedBatchUpdateNotifier* notifier,
-                                          const std::u16string& filter);
   void PopulateCacheStorageUsageInfoWithFilter(
       LocalDataContainer* container,
       ScopedBatchUpdateNotifier* notifier,

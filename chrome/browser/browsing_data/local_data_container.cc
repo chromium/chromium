@@ -24,7 +24,7 @@ LocalDataContainer::CreateFromLocalSharedObjectsContainer(
   return std::make_unique<LocalDataContainer>(
       shared_objects.cookies(), shared_objects.local_storages(),
       shared_objects.session_storages(), /*quota_helper=*/nullptr,
-      shared_objects.shared_workers(), shared_objects.cache_storages());
+      shared_objects.cache_storages());
 }
 
 // static
@@ -42,7 +42,6 @@ LocalDataContainer::CreateFromStoragePartition(
       /*local_storage_helper=*/nullptr,
       /*session_storage_helper=*/nullptr,
       /*quota_helper=*/nullptr,
-      /*shared_worker_helper=*/nullptr,
       /*cache_storage_helper=*/nullptr);
 }
 
@@ -51,13 +50,11 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
-    scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
     scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : cookie_helper_(std::move(cookie_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
       session_storage_helper_(std::move(session_storage_helper)),
       quota_helper_(std::move(quota_helper)),
-      shared_worker_helper_(std::move(shared_worker_helper)),
       cache_storage_helper_(std::move(cache_storage_helper)) {}
 
 LocalDataContainer::~LocalDataContainer() {}
@@ -92,13 +89,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started++;
     quota_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnQuotaModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (shared_worker_helper_.get()) {
-    batches_started++;
-    shared_worker_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnSharedWorkerInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -161,13 +151,6 @@ void LocalDataContainer::OnQuotaModelInfoLoaded(
   quota_info_list_ = quota_info;
   DCHECK(model_);
   model_->PopulateQuotaInfo(this);
-}
-
-void LocalDataContainer::OnSharedWorkerInfoLoaded(
-    const SharedWorkerInfoList& shared_worker_info) {
-  shared_worker_info_list_ = shared_worker_info;
-  DCHECK(model_);
-  model_->PopulateSharedWorkerInfo(this);
 }
 
 void LocalDataContainer::OnCacheStorageModelInfoLoaded(

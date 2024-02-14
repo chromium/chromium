@@ -135,16 +135,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER: {
-      dict.Set(kKeyType, "shared_worker");
-
-      const browsing_data::SharedWorkerInfo& shared_worker_info =
-          *node.GetDetailedInfo().shared_worker_info;
-
-      dict.Set(kKeyOrigin, shared_worker_info.worker.spec());
-      dict.Set(kKeyName, shared_worker_info.name);
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE: {
       dict.Set(kKeyType, "cache_storage");
 

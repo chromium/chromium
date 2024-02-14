@@ -875,7 +875,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         mock_browsing_data_local_storage_helper,
         /*session_storage_helper=*/nullptr,
         /*quota_helper=*/nullptr,
-        /*data_shared_worker_helper=*/nullptr,
         /*cache_storage_helper=*/nullptr);
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
