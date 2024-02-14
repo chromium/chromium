@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
@@ -70,12 +71,14 @@ public interface TabGroupModelFilterObserver {
      * @param tabs The list of modified {@link Tab}s.
      * @param tabOriginalIndex The original tab index for each modified tab.
      * @param tabOriginalRootId The original root id for each modified tab.
+     * @param tabOriginalTabGroupId The original tab group id for each modified tab.
      * @param destinationGroupTitle The original destination group title.
      */
     default void didCreateGroup(
             List<Tab> tabs,
             List<Integer> tabOriginalIndex,
             List<Integer> tabOriginalRootId,
+            List<Token> tabOriginalTabGroupId,
             String destinationGroupTitle) {}
 
     /**
