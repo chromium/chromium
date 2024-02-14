@@ -114,7 +114,6 @@ export function invokePolymerMethod(element, name, ...args) {
 
       /**
        * Detects multi-tap gesture that invokes demo mode setup in OOBE.
-       * @type {?MultiTapDetector}
        * @private
        */
       this.demoModeStartListener_ = null;

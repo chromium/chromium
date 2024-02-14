@@ -215,7 +215,6 @@ js_type_check("closure_compile_local") {
   deps = [
     ":cr_ui",
     ":display_manager",
-    ":multi_tap_detector",
   ]
 }
 
@@ -237,16 +236,9 @@ js_library("display_manager") {
     "$root_gen_dir/chrome/browser/resources/chromeos/login/display_manager.js",
   ]
   deps = [
-    ":multi_tap_detector",
     "components:display_manager_types",
     "components:oobe_types",
   ]
-  extra_deps = [ ":copy_js" ]
-}
-
-js_library("multi_tap_detector") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/multi_tap_detector.js" ]
-  deps = []
   extra_deps = [ ":copy_js" ]
 }
 
@@ -255,7 +247,6 @@ copy("copy_js") {
   sources = [
     "cr_ui.js",
     "display_manager.js",
-    "multi_tap_detector.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
