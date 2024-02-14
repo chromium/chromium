@@ -59,6 +59,9 @@ inline constexpr char kAutofillOrphanRowsRemoved[] =
 // Boolean that is true, when users can save their CVCs.
 inline constexpr char kAutofillPaymentCvcStorage[] =
     "autofill.payment_cvc_storage";
+// Boolean that is true when users can see the card benefits with the card.
+inline constexpr char kAutofillPaymentCardBenefits[] =
+    "autofill.payment_card_benefits";
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";
@@ -175,6 +178,10 @@ void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
 bool IsPaymentCvcStorageEnabled(const PrefService* prefs);
 
 void SetPaymentCvcStorage(PrefService* prefs, bool value);
+
+bool IsPaymentCardBenefitsEnabled(const PrefService* prefs);
+
+void SetPaymentCardBenefits(PrefService* prefs, bool value);
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,

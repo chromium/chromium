@@ -53,6 +53,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillPaymentCvcStorage, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      kAutofillPaymentCardBenefits, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterBooleanPref(prefs::kAutofillCreditCardFidoAuthEnabled,
@@ -241,6 +244,14 @@ bool IsPaymentCvcStorageEnabled(const PrefService* prefs) {
 
 void SetPaymentCvcStorage(PrefService* prefs, bool value) {
   prefs->SetBoolean(kAutofillPaymentCvcStorage, value);
+}
+
+bool IsPaymentCardBenefitsEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillPaymentCardBenefits);
+}
+
+void SetPaymentCardBenefits(PrefService* prefs, bool value) {
+  prefs->SetBoolean(kAutofillPaymentCardBenefits, value);
 }
 
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,

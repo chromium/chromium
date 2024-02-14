@@ -1901,6 +1901,11 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
+bool PersonalDataManager::IsPaymentCardBenefitsEnabled() {
+  return base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits) &&
+         prefs::IsPaymentCardBenefitsEnabled(pref_service_);
+}
+
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
   return image_fetcher_;
 }
