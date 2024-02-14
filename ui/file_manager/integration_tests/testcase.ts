@@ -29,7 +29,7 @@ import * as guestOsTests from './file_manager/guest_os.js';
 import * as keyboardOperationsTests from './file_manager/keyboard_operations.js';
 import * as manageDialogTests from './file_manager/manage_dialog.js';
 import * as metadataTests from './file_manager/metadata.js';
-// import * as metricsTests from './file_manager/metrics.js';
+import * as metricsTests from './file_manager/metrics.js';
 import * as myFilesTests from './file_manager/my_files.js';
 import * as navigationTests from './file_manager/navigation.js';
 import * as officeTests from './file_manager/office.js';
@@ -87,7 +87,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...keyboardOperationsTests,
   ...manageDialogTests,
   ...metadataTests,
-  // ...metricsTests,
+  ...metricsTests,
   ...myFilesTests,
   ...navigationTests,
   ...officeTests,

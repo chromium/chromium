@@ -6,14 +6,11 @@
  */
 
 import {createTestFile, ENTRIES, getHistogramCount, getHistogramSum, RootPath} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {FakeTask} from './test_data.js';
 
-// @ts-ignore: error TS4111: Property 'metricsRecordEnum' comes from an index
-// signature, so it must be accessed with ['metricsRecordEnum'].
-testcase.metricsRecordEnum = async () => {
+export async function metricsRecordEnum() {
   const appId = null;
   const histogramName = 'Foo';
   const fullHistogramName = `FileBrowser.${histogramName}`;
@@ -34,11 +31,9 @@ testcase.metricsRecordEnum = async () => {
   for (let i = 0; i < validValues.length; ++i) {
     chrome.test.assertEq(1, await getHistogramCount(fullHistogramName, i));
   }
-};
+}
 
-// @ts-ignore: error TS4111: Property 'metricsOpenSwa' comes from an index
-// signature, so it must be accessed with ['metricsOpenSwa'].
-testcase.metricsOpenSwa = async () => {
+export async function metricsOpenSwa() {
   // Open Files SWA:
   await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
@@ -52,17 +47,12 @@ testcase.metricsOpenSwa = async () => {
       1,
       await getHistogramCount(
           'FileBrowser.SWA.Create', FileDialogTypeValues.FULL_PAGE));
-};
+}
 
 // Test that the DirectoryListLoad UMA is appropriately recorded and the
 // variance is taken into consideration (+/-20%).
-// @ts-ignore: error TS4111: Property 'metricsRecordDirectoryListLoad' comes
-// from an index signature, so it must be accessed with
-// ['metricsRecordDirectoryListLoad'].
-testcase.metricsRecordDirectoryListLoad = async () => {
-  // @ts-ignore: error TS7006: Parameter 'numEntries' implicitly has an 'any'
-  // type.
-  const createEntries = numEntries => {
+export async function metricsRecordDirectoryListLoad() {
+  const createEntries = (numEntries: number) => {
     const entries = [];
     for (let i = 0; i < numEntries; i++) {
       const testFile = createTestFile('file-' + i + '.txt');
@@ -75,9 +65,7 @@ testcase.metricsRecordDirectoryListLoad = async () => {
 
   // Open Files app on Downloads with 10 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
-  // @ts-ignore: error TS6133: 'appId' is declared but its value is never read.
-  let appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, entries.slice(0, 10), []);
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries.slice(0, 10), []);
   const tenFilesSum =
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.10');
   chrome.test.assertTrue(
@@ -87,8 +75,7 @@ testcase.metricsRecordDirectoryListLoad = async () => {
   // Histogram sum is cumulative so given 27 falls outside the buckets (and
   // their tolerance) the sum should not increase as no load time will be
   // recorded.
-  appId = await setupAndWaitUntilReady(
-      RootPath.DOWNLOADS, entries.slice(0, 27), []);
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries.slice(0, 27), []);
   const histogramSum =
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.10');
   chrome.test.assertEq(
@@ -97,18 +84,15 @@ testcase.metricsRecordDirectoryListLoad = async () => {
 
   // Open Files app on Downloads with 100 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
-  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
   const hundredFilesSum =
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.100');
   chrome.test.assertTrue(
       hundredFilesSum > 0, 'Load time for 100 files must exceed 0');
-};
+}
 
 // Test that the UpdateAvailableApps UMA is appropriately recorded.
-// @ts-ignore: error TS4111: Property 'metricsRecordUpdateAvailableApps' comes
-// from an index signature, so it must be accessed with
-// ['metricsRecordUpdateAvailableApps'].
-testcase.metricsRecordUpdateAvailableApps = async () => {
+export async function metricsRecordUpdateAvailableApps() {
   const entry = createTestFile('file-1.txt');
 
   // Setup 10 fake File Tasks.
@@ -139,4 +123,4 @@ testcase.metricsRecordUpdateAvailableApps = async () => {
   chrome.test.assertTrue(
       tenAppsSum > 0,
       `Load time for 10 files must exceed 0, got ${tenAppsSum}`);
-};
+}
