@@ -159,6 +159,10 @@ void BaseCaptureModeSession::MaybeUpdateSelfieCamInSessionVisibility() {
   if (!controller_->is_recording_in_progress()) {
     camera_controller->SetShouldShowPreview(controller_->type() ==
                                             CaptureModeType::kVideo);
+    // The selfie camera may have already been visible from before, but had the
+    // wrong parent and now needs to be updated (e.g. due to a change in the
+    // capture type).
+    camera_controller->MaybeReparentPreviewWidget();
   }
 }
 

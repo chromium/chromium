@@ -690,6 +690,8 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumBelowBar) {
 }
 
 TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
+  AddDefaultCamera();
+
   // Start a game dashboard initiated capture mode session and check the initial
   // configs for game dashboard initiated capture mode.
   auto* controller = StartGameCaptureModeSession();
@@ -722,6 +724,14 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
   // Verify that the configs in `CaptureModeController` are restored.
   EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kOff);
   EXPECT_FALSE(controller->enable_demo_tools());
+
+  // Verify that selfie camera is visible and is parented correctly to the game
+  // window.
+  const auto* camera_controller = controller->camera_controller();
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  ASSERT_TRUE(camera_preview_widget);
+  EXPECT_EQ(camera_preview_widget->GetNativeWindow()->parent(), game_window());
 }
 
 TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
