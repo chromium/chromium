@@ -20,6 +20,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -60,7 +61,7 @@ public class RecentTabsPage
     private boolean mIsAttachedToWindow;
 
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
-    private final Callback<Integer> mTabStripHeightChangeCallback;
+    private Callback<Integer> mTabStripHeightChangeCallback;
 
     /**
      * Constructor returns an instance of RecentTabsPage.
@@ -110,14 +111,16 @@ public class RecentTabsPage
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
-        mTabStripHeightChangeCallback =
-                newHeight ->
-                        mView.setPadding(
-                                mView.getPaddingLeft(),
-                                newHeight,
-                                mView.getPaddingRight(),
-                                mView.getPaddingBottom());
-        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            mTabStripHeightChangeCallback =
+                    newHeight ->
+                            mView.setPadding(
+                                    mView.getPaddingLeft(),
+                                    newHeight,
+                                    mView.getPaddingRight(),
+                                    mView.getPaddingBottom());
+            mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
+        }
 
         onUpdated();
     }

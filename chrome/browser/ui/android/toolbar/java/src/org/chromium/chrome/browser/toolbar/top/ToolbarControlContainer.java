@@ -335,6 +335,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 this::onCompositorInMotionChange;
 
         @Nullable private Toolbar mToolbar;
+        private int mTabStripHeightPx;
         @Nullable private ConstraintsChecker mConstraintsObserver;
         @Nullable private Supplier<Tab> mTabSupplier;
         @Nullable private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
@@ -381,6 +382,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 FullscreenManager fullscreenManager) {
             assert mToolbar == null;
             mToolbar = toolbar;
+            mTabStripHeightPx = mToolbar.getTabStripHeight();
 
             // These dependencies only matter when ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES is
             // enabled. Unfortunately this method is often called before native is initialized,
@@ -516,7 +518,16 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mToolbar.getLocationBarContentRect(mLocationBarRect);
             mLocationBarRect.offset(mTempPosition[0], mTempPosition[1]);
 
-            int shadowHeight = mToolbarHairline.getHeight();
+            int shadowHeight;
+            if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+                // When DynamicTopChrome is enabled, the tab strip height can be unpredictable
+                // during capture.
+                shadowHeight = mToolbarHairline.getHeight();
+            } else {
+                shadowHeight =
+                        mToolbarContainer.getHeight() - mToolbar.getHeight() - mTabStripHeightPx;
+            }
+
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
         }

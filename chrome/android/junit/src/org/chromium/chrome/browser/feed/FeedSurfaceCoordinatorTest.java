@@ -501,6 +501,7 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
     public void testTabStripHeightChangeCallback() {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
         verify(mTabStripHeightSupplier).addObserver(captor.capture());
