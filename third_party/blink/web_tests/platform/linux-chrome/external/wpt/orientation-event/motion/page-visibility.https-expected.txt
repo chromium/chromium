@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Tests to check that devicemotion events are not fired when the page is not visible.
-  assert_true: expected true got false
-Harness: the test ran to completion.

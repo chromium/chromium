@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 2 , harness_status.message = 
+[FAIL] fetch() rejects with abort reason
+  promise_rejects_exactly: function "function() { throw e }" threw object "AbortError: The user aborted a request." but we expected it to throw object "error1: error1"
+[FAIL] fetch() response body has abort reason
+  promise_rejects_exactly: function "function() { throw e }" threw object "AbortError: BodyStreamBuffer was aborted" but we expected it to throw object "error1: error1"
+[TIMEOUT] Service Worker can observe the fetch abort and associated abort reason
+  Test timed out
+[NOTRUN] Abort reason serialization happens on abort
+Harness: the test ran to completion.

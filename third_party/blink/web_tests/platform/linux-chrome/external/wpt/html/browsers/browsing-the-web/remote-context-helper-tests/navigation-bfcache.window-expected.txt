@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] RemoteContextHelper navigation using BFCache
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'persisted')"
-Harness: the test ran to completion.
-

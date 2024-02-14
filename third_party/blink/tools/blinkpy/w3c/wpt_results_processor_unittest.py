@@ -163,6 +163,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.artifacts, {})
 
     def test_report_unexpected_fail(self):
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests('TestExpectations'),
+            textwrap.dedent("""\
+                # results: [ Pass Timeout ]
+                wpt_internal/reftest.html [ Pass Timeout ]
+                """))
         self._event(action='test_start',
                     time=1000,
                     test='/wpt_internal/reftest.html')
@@ -222,11 +228,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     time=5500,
                     status='PASS',
                     subtest='subtest',
-                    message="subtest")
+                    message='only compare message on failure')
         self._event(action='test_end',
                     test='/variant.html?foo=bar/abc',
                     time=6000,
-                    status='OK')
+                    status='OK',
+                    message='message')
         self._event(action='suite_end', time=7000)
 
         self.assertEqual(self.processor.num_initial_failures, 1)
@@ -273,11 +280,15 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'https://wpt.fyi/results/variant.html%3Ffoo%3Dbar%2Fabc')
 
     def test_report_subtest_fail_all_expected(self):
-        """Subtest failures should be promoted to the test level.
-
-        When there are only expected subtest failures and expected subtest passes,
-        the overall result reported is expected failure.
-        """
+        """All (sub)tests running expectedly is reported as expected pass."""
+        self.fs.write_text_file(
+            self.path_finder.path_from_wpt_tests('test-expected.txt'),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] fail
+                [PASS] pass
+                Harness: the test ran to completion.
+                """))
         self._event(action='test_start', test='/test.html')
         self._event(action='test_status',
                     test='/test.html',
@@ -292,16 +303,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
         self.assertEqual(result.name, 'external/wpt/test.html')
-        self.assertEqual(result.actual, 'FAIL')
-        self.assertEqual(result.expected, {'FAIL'})
+        self.assertEqual(result.actual, 'PASS')
+        self.assertEqual(result.expected, {'PASS'})
         self.assertFalse(result.unexpected)
 
     def test_report_subtest_unexpected_pass(self):
-        """Unexpected subtest pass should be promoted to the test level.
-
-        An unexpected subtest pass has priority over an expected subtest fail, and
-        the overall result reported is unexpected pass.
-        """
+        """Unexpected subtest pass should be promoted to an unexpected failure."""
         self._event(action='test_start', test='/test.html')
         self._event(action='test_status',
                     test='/test.html',
@@ -317,11 +324,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
         self.assertEqual(result.name, 'external/wpt/test.html')
-        self.assertEqual(result.actual, 'PASS')
-        self.assertEqual(result.expected, {'FAIL'})
+        self.assertEqual(result.actual, 'FAIL')
+        self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
+        self.assertEqual(
+            result.artifacts, {
+                'actual_text': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'test-actual.txt'),
+                ],
+            })
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'test-actual.txt')),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] fail
+                Harness: the test ran to completion.
+                """))
 
-    def test_report_unexpected_subtest_fail(self):
+    def test_report_subtest_unexpected_fail(self):
         self._event(action='test_start', test='/test.html')
         self._event(action='test_status',
                     test='/test.html',
@@ -350,32 +374,19 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
 
-    def test_report_unexpected_pass_against_notrun(self):
-        """Any result against NOTRUN is an unexpected pass."""
+    def test_report_unexpected_fail_for_harness_mismatch(self):
+        self.fs.write_text_file(
+            self.path_finder.path_from_wpt_tests('test-expected.txt'),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                Harness Error. harness_status.status = 1 , harness_status.message = ignore this
+                Harness: the test ran to completion.
+                """))
         self._event(action='test_start', test='/test.html')
-        self._event(action='test_status',
+        self._event(action='test_end',
                     test='/test.html',
-                    subtest='notrun',
-                    status='FAIL',
-                    expected='NOTRUN')
-        self._event(action='test_end', test='/test.html', status='OK')
-
-        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
-            'result']
-        self.assertEqual(result.name, 'external/wpt/test.html')
-        self.assertEqual(result.actual, 'PASS')
-        self.assertEqual(result.expected, {'FAIL'})
-        self.assertTrue(result.unexpected)
-
-    def test_report_unexpected_fail_for_notrun(self):
-        """A NOTRUN against other results is an unexpected fail."""
-        self._event(action='test_start', test='/test.html')
-        self._event(action='test_status',
-                    test='/test.html',
-                    subtest='notrun',
-                    status='NOTRUN',
-                    expected='PASS')
-        self._event(action='test_end', test='/test.html', status='OK')
+                    status='OK',
+                    expected='ERROR')
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
@@ -397,11 +408,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # The unexpected flag is still set because the failures are of different
         # types.
         self.assertEqual(result.actual, 'FAIL')
-        self.assertEqual(result.expected, set())
+        self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
 
     def test_report_unexpected_timeout(self):
-        """NOTRUN should not be promoted to the test level."""
         self._event(action='test_start', test='/timeout.html')
         self._event(action='test_status',
                     test='/timeout.html',
@@ -413,6 +423,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     subtest='notrun',
                     status='NOTRUN',
                     expected='PASS')
+        self._event(action='process_output',
+                    command='chromedriver',
+                    data='Log this line')
         self._event(action='test_end',
                     test='/timeout.html',
                     status='TIMEOUT',
@@ -424,14 +437,27 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.actual, 'TIMEOUT')
         self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
+        # Timeouts and crashes shouldn't output `{actual,expected}_*` artifacts.
+        self.assertEqual(
+            result.artifacts, {
+                'crash_log': [
+                    self.fs.join('layout-test-results', 'external', 'wpt',
+                                 'timeout-crash-log.txt'),
+                ],
+            })
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'external', 'wpt',
+                             'timeout-crash-log.txt')), 'Log this line\n')
 
     def test_report_expected_timeout_with_unexpected_fails(self):
-        """Timeouts are always reported, even with subtest failures.
-
-        We want to surface when the harness fails to run to completion, even if
-        the failure to complete is expected. Timeouts/crashes need to be fixed
-        before the failed assertions.
-        """
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests('TestExpectations'),
+            textwrap.dedent("""\
+                # results: [ Pass Timeout ]
+                external/wpt/timeout.html [ Timeout ]
+                """))
         self._event(action='test_start', test='/timeout.html')
         self._event(action='test_status',
                     test='/timeout.html',
@@ -452,6 +478,12 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertFalse(result.unexpected)
 
     def test_report_skip(self):
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests('NeverFixTests'),
+            textwrap.dedent("""\
+                # results: [ Skip ]
+                external/wpt/reftest.html [ Skip ]
+                """))
         self._event(action='test_start', test='/reftest.html')
         self._event(action='test_end', test='/reftest.html', status='SKIP')
 
@@ -477,12 +509,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self._event(action='test_start', test='/variant.html?foo=baz')
             self._event(action='test_status',
                         test='/variant.html?foo=baz',
-                        subtest='passing subtest (include for now)',
-                        status='PASS')
-            self._event(action='test_status',
-                        test='/variant.html?foo=baz',
                         subtest='subtest',
-                        status='FAIL',
+                        status='PRECONDITION_FAILED',
+                        expected='FAIL',
                         message='actual-message')
             self._event(action='test_end',
                         test='/variant.html?foo=baz',
@@ -495,7 +524,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'variant_foo=baz-actual.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                [FAIL] subtest
+                [PRECONDITION_FAILED] subtest
                   actual-message
                 Harness: the test ran to completion.
                 """))
@@ -530,7 +559,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'multiglob.https.any.worker-expected.txt'),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
+                [FAIL] subtest
                 Harness: the test ran to completion.
                 """))
         with self.fs.patch_builtins():
@@ -541,6 +570,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 action='test_end',
                 test='/wpt_internal/dir/multiglob.https.any.worker.html',
                 status='ERROR',
+                expected='OK',
                 message="Uncaught SyntaxError: Unexpected token ')'")
         self.assertEqual(
             self.fs.read_text_file(
@@ -559,7 +589,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'multiglob.https.any.worker-expected.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
+                [FAIL] subtest
                 Harness: the test ran to completion.
                 """))
 
@@ -778,6 +808,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
         ])
 
     def test_early_exit_from_failures(self):
+        self.fs.write_text_file(
+            self.path_finder.path_from_wpt_tests(
+                'variant_foo=baz-expected.txt'),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                Harness Error. harness_status.status = 1 , harness_status.message = ignore this
+                Harness: the test ran to completion.
+                """))
         self.processor.failure_threshold = 2
         with mock.patch('os.kill') as kill_mock:
             self._event(action='test_start', test='/variant.html?foo=bar/abc')
@@ -845,8 +883,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 self._event(action='test_start', test='/reftest.html')
                 self._event(action='test_end',
                             test='/reftest.html',
-                            status='PASS',
-                            expected='PASS')
+                            status='PASS')
                 self._event(action='suite_end')
         self.processor.process_results_json()
 
@@ -856,7 +893,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'layout-test-results', 'full_results.json')))
         self.assertEqual(full_json['num_regressions'], 1)
         unexpected_fail = full_json['tests']['external']['wpt']['test.html']
-        self.assertEqual(unexpected_fail['has_stderr'], True)
+        self.assertTrue(unexpected_fail['has_stderr'])
         self.assertEqual(unexpected_fail['artifacts']['stderr'], [
             self.fs.join('layout-test-results', 'external', 'wpt',
                          'test-stderr.txt'),

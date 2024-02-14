@@ -29,8 +29,9 @@ from blinkpy.w3c.wpt_results_processor import (
 )
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.testharness_results import (
-    TestharnessLine,
     LineType,
+    Status,
+    TestharnessLine,
     parse_testharness_baseline,
 )
 from blinkpy.web_tests.models.typ_types import Expectation, ResultType
@@ -128,7 +129,11 @@ class TestLoader(testloader.TestLoader):
             for line in testharness_lines
             if line.line_type is LineType.HARNESS_ERROR
         }
-        if len(harness_errors) > 1:
+        if not can_have_subtests(test_type):
+            # Temporarily expect PASS so that unexpected passes don't contribute
+            # to retries or build failures.
+            test_statuses.add(Status.PASS.name)
+        elif len(harness_errors) > 1:
             raise ValueError(
                 f'testharness baseline for {exp_line.test!r} can only have up '
                 f'to one harness error; found {harness_errors!r}.')
@@ -136,22 +141,15 @@ class TestLoader(testloader.TestLoader):
             error = harness_errors.pop()
             test_statuses = test_statuses & {'CRASH', 'TIMEOUT'}
             test_statuses.update(status.name for status in error.statuses)
-        elif can_have_subtests(test_type) and exp_line.results == {
-                ResultType.Failure
-        }:
-            # The `[ Failure ]` line for this test was only masking subtest
-            # failures, but the harness is actually OK.
-            #
-            # ERROR and PRECONDITION_FAILED (if applicable) were already
-            # translated from `ResultType.Failure`.
+        else:
             test_statuses.add('OK')
 
         assert test_statuses, exp_line.to_string()
         test_ast = _build_expectation_ast(_test_basename(exp_line.test),
                                           normalize_statuses(test_statuses))
-        # If a `[ Failure ]` line exists, the baseline is allowed to be
-        # anything. To mimic this, skip creating any explicit subtests, and rely
-        # on implicit subtest creation.
+        # If any failure is expected or the test is never expected to complete,
+        # the baseline is allowed to be anything. To mimic this, skip creating
+        # any explicit subtests, and rely on implicit subtest creation.
         if ResultType.Failure in exp_line.results:
             expect_any = wptnode.KeyValueNode('expect_any_subtests')
             expect_any.append(wptnode.AtomNode(True))
@@ -209,7 +207,7 @@ def allow_any_subtests_on_timeout(test: wpttest.Test,
         https://github.com/web-platform-tests/wpt/pull/44134
     """
     harness_result, subtest_results = results
-    if harness_result.status == 'TIMEOUT':
+    if harness_result.status in {'CRASH', 'TIMEOUT'}:
         for result in subtest_results:
             result.expected, result.known_intermittent = result.status, []
             result.message = test.expected_fail_message(result.name)
@@ -266,7 +264,7 @@ class TestNode(manifestexpected.TestNode):
             # We still create PASS-only subtests in case the test can time out
             # overall (see below for adding TIMEOUT, NOTRUN).
             if self.get('expect_any_subtests'):
-                chromium_statuses = frozenset(WPTResult.status_priority)
+                chromium_statuses = frozenset(WPTResult.STATUSES)
         if name not in self.subtests and can_have_subtests(self.test_type):
             statuses = chromium_to_wptrunner_statuses(chromium_statuses,
                                                       self.test_type, True)

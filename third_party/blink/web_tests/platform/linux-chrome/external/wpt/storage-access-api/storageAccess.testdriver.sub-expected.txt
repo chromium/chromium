@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] TestDriver - Set Storage Access Command Tests
-  assert_false: Cross-site iframe should not be allowed to write cookies via document.cookie. expected false got true
-Harness: the test ran to completion.

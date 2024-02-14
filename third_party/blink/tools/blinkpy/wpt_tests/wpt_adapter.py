@@ -346,9 +346,10 @@ class WPTAdapter:
             runner_options.fail_on_unexpected = False
             runner_options.restart_on_unexpected = False
         else:
-            # By default, wpt will treat unexpected passes as errors, so we
-            # disable that to be consistent with Chromium CI.
-            runner_options.fail_on_unexpected_pass = False
+            # Unexpected subtest passes in wptrunner are equivalent to baseline
+            # mismatches in `run_web_tests.py`, so don't pass
+            # `--no-fail-on-unexpected-pass`. The test loader always adds
+            # test-level pass expectations to compensate.
             runner_options.restart_on_unexpected = False
             runner_options.restart_on_new_group = False
             # Add `--run-by-dir=0` so that tests can be more evenly distributed

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] fetchLater() sends out based on activateAfter, even if document is in BFCache.
-  Cannot read properties of undefined (reading 'persisted')
-Harness: the test ran to completion.
