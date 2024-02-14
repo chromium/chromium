@@ -310,14 +310,14 @@ void FillConfigurationsFromDevice(const patchpanel::NetworkDevice& device,
   mojo->arc_ipv4_prefix_length = device.ipv4_subnet().prefix_len();
   // Fill in DNS proxy addresses.
   mojo->dns_proxy_addresses = std::vector<std::string>();
-  auto dns_proxy_ipv4_addr =
-      PackedIPAddressToString(AF_INET, device.dns_proxy_ipv4_addr());
-  if (!dns_proxy_ipv4_addr.empty()) {
+  if (!device.dns_proxy_ipv4_addr().empty()) {
+    auto dns_proxy_ipv4_addr =
+        PackedIPAddressToString(AF_INET, device.dns_proxy_ipv4_addr());
     mojo->dns_proxy_addresses->emplace_back(dns_proxy_ipv4_addr);
   }
-  auto dns_proxy_ipv6_addr =
-      PackedIPAddressToString(AF_INET6, device.dns_proxy_ipv6_addr());
-  if (!dns_proxy_ipv6_addr.empty()) {
+  if (!device.dns_proxy_ipv6_addr().empty()) {
+    auto dns_proxy_ipv6_addr =
+        PackedIPAddressToString(AF_INET6, device.dns_proxy_ipv6_addr());
     mojo->dns_proxy_addresses->emplace_back(dns_proxy_ipv6_addr);
   }
   // Assign the technology of the physical device the virtual device is tied to.
