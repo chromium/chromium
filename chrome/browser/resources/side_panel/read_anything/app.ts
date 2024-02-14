@@ -734,18 +734,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  highlightAndPlayMessage(): boolean {
-    // getCurrentText gets the AX Node IDs of text that should be spoken and
-    // highlighted.
-    const nextTextIds: number[] = chrome.readingMode.getCurrentText();
-    return this.highlightAndPlayTextOf(nextTextIds);
-  }
-
   // Play text of these axNodeIds. When finished, read and highlight to read the
   // following text.
   // TODO (crbug.com/1474951): Investigate using AXRange.GetText to get text
   // between start node / end nodes and their offsets.
-  private highlightAndPlayTextOf(axNodeIds: number[]): boolean {
+  highlightAndPlayMessage(): boolean {
+    // getCurrentText gets the AX Node IDs of text that should be spoken and
+    // highlighted.
+    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
+
     const utteranceText = this.extractTextOf(axNodeIds);
     // Return if the utterance is empty or null.
     if (!utteranceText) {
