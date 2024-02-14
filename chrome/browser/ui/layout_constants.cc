@@ -53,6 +53,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 3;
     case LOCATION_BAR_CHILD_CORNER_RADIUS:
       return 12;
+    case LOCATION_BAR_CHIP_ICON_SIZE:
+      return 16;
+    case LOCATION_BAR_CHIP_PADDING:
+      return 4;
     case LOCATION_BAR_ELEMENT_PADDING:
       return touch_ui ? 3 : 2;
     case LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING:
@@ -76,8 +80,6 @@ int GetLayoutConstant(LayoutConstant constant) {
       }
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;
-    case LOCATION_BAR_CHIP_ICON_SIZE:
-      return 16;
     case LOCATION_BAR_LEADING_ICON_SIZE:
       return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case LOCATION_BAR_TRAILING_ICON_SIZE:

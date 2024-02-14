@@ -89,9 +89,6 @@ enum ChromeDistanceMetric {
   DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL,
   // Vertical padding at the top and bottom of the an omnibox match row.
   DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING,
-  // Horizontal overlap between an activity indicator chip and a permission
-  // request chip.
-  DISTANCE_OMNIBOX_CHIPS_OVERLAP,
   // Vertical padding at the top and bottom of the an omnibox match row for two
   // line layout.
   DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING,

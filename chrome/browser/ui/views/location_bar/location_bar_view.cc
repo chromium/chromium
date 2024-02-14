@@ -1164,6 +1164,13 @@ void LocationBarView::RefreshBackground() {
   // correctly enable subpixel AA.
   omnibox_view_->SetBackgroundColor(background_color);
 
+  // The divider between indicators and request chips should have the same color
+  // as the omnibox.
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    permission_dashboard_view_->SetDividerBackgroundColor(background_color);
+  }
+
   SchedulePaint();
 }
 

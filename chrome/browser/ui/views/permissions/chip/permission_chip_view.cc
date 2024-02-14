@@ -29,19 +29,6 @@
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
-namespace {
-
-// Padding between chip's icon and label.
-constexpr int kChipImagePadding = 4;
-// An extra space between chip's label and right edge.
-constexpr int kExtraRightPadding = 4;
-
-// These chrome refresh layout constants are not shared with other views.
-constexpr int kChipVerticalPadding = 4;
-constexpr int kChipHorizontalPadding = 6;
-
-}  // namespace
-
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView, kChipElementId);
 
 PermissionChipView::PermissionChipView(PressedCallback callback)
@@ -56,15 +43,8 @@ PermissionChipView::PermissionChipView(PressedCallback callback)
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // Equalizing padding on the left, right and between icon and label.
-  SetImageLabelSpacing(kChipImagePadding);
-  if (features::IsChromeRefresh2023()) {
-    SetCustomPadding(
-        gfx::Insets::VH(kChipVerticalPadding, kChipHorizontalPadding));
-  } else {
-    SetCustomPadding(gfx::Insets::VH(
-        GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-        GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
-  }
+  SetImageLabelSpacing(GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  SetCustomPadding(GetPadding());
   if (features::IsChromeRefresh2023()) {
     label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   }
@@ -102,7 +82,7 @@ void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
   if (label()->GetPreferredSize().width() < width()) {
     // As we're collapsing, we need to make sure that the padding is not
     // animated away.
-    base_width_ += kChipImagePadding + kExtraRightPadding;
+    base_width_ += GetPadding().width();
     ForceAnimateCollapse();
   } else {
     ForceAnimateExpand();
@@ -115,14 +95,15 @@ void PermissionChipView::ResetAnimation(double value) {
 }
 
 gfx::Size PermissionChipView::CalculatePreferredSize() const {
-  const int fixed_width = GetIconSize() + GetInsets().width();
-  const int collapsable_width = label()->GetPreferredSize().width() +
-                                kChipImagePadding + kExtraRightPadding;
+  const int icon_width = GetIconViewWidth();
+  const int label_width =
+      label()->GetPreferredSize().width() + GetPadding().width();
 
   const int width =
       base_width_ +
-      base::ClampRound(collapsable_width * animation_->GetCurrentValue()) +
-      fixed_width;
+      base::ClampRound(label_width * animation_->GetCurrentValue()) +
+      icon_width;
+
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -137,9 +118,9 @@ void PermissionChipView::UpdateBackgroundColor() {
     // icons (which kIconStyle mimics) don't have a background.
     SetBackground(nullptr);
   } else {
-    SetBackground(
-        CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
-            GetBackgroundColor(), GetCornerRadius())));
+    SetBackground(views::CreateBackgroundFromPainter(
+        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+            GetBackgroundColor(), GetCornerRadii())));
   }
 }
 
@@ -318,6 +299,26 @@ int PermissionChipView::GetCornerRadius() const {
   return GetIconSize();
 }
 
+gfx::RoundedCornersF PermissionChipView::GetCornerRadii() const {
+  const int leading_radius = GetCornerRadius();
+  // If the chips' divider is visible, the left/trailing side of the request
+  // chip should be rectangular.
+  const int trailing_radius = is_divider_visible_ ? 0 : leading_radius;
+
+  return gfx::RoundedCornersF(trailing_radius, leading_radius, leading_radius,
+                              trailing_radius);
+}
+
+gfx::Insets PermissionChipView::GetPadding() const {
+  if (features::IsChromeRefresh2023()) {
+    return gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  } else {
+    return gfx::Insets::VH(
+        GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+        GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left());
+  }
+}
+
 void PermissionChipView::SetChipIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
 
@@ -336,6 +337,35 @@ void PermissionChipView::AddObserver(Observer* observer) {
 
 void PermissionChipView::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void PermissionChipView::UpdateForDividerVisibility(bool is_divider_visible,
+                                                    int divider_arc_width) {
+  is_divider_visible_ = is_divider_visible;
+
+  UpdateBackgroundColor();
+
+  // The request chip should move under the divider arc if the divider is
+  // visible.
+  gfx::Insets margin = is_divider_visible
+                           ? gfx::Insets::TLBR(0, -divider_arc_width, 0, 0)
+                           : gfx::Insets();
+  SetProperty(views::kMarginsKey, margin);
+
+  gfx::Insets padding = GetPadding();
+  if (is_divider_visible) {
+    // Set a left padding to move the request chip's icon to the right.
+    padding += gfx::Insets::TLBR(0, divider_arc_width, 0, 0);
+  }
+  SetCustomPadding(padding);
+
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(), GetCornerRadii()));
+}
+
+int PermissionChipView::GetIconViewWidth() const {
+  return GetIconSize() + GetInsets().width();
 }
 
 BEGIN_METADATA(PermissionChipView)

@@ -314,9 +314,12 @@ void ChipController::ShowPermissionPrompt(
 
   AnnouncePermissionRequestForAccessibility(
       permission_prompt_model_->GetAccessibilityChipText());
+
   chip_->SetVisible(true);
+
   if (permission_dashboard_view_) {
     permission_dashboard_view_->SetVisible(true);
+    permission_dashboard_view_->UpdateDividerViewVisibility();
   }
 
   SyncChipWithModel();
@@ -522,9 +525,15 @@ void ChipController::HideChip() {
     return;
 
   chip_->SetVisible(false);
-  if (permission_dashboard_view_ &&
-      !permission_dashboard_view_->GetIndicatorChip()->GetVisible()) {
-    permission_dashboard_view_->SetVisible(false);
+  if (permission_dashboard_view_) {
+    // The request chip is gone, the divider view is no longer needed.
+    permission_dashboard_view_->UpdateDividerViewVisibility();
+
+    // Hide the parent view `permission_dashboard_view_` if no children are
+    // visible.
+    if (!permission_dashboard_view_->GetIndicatorChip()->GetVisible()) {
+      permission_dashboard_view_->SetVisible(false);
+    }
   }
   // When the chip visibility changed from visible -> hidden, the locationbar
   // layout should be updated.

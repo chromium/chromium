@@ -221,7 +221,13 @@ void PermissionDashboardController::HideIndicators() {
       ->GetViewAccessibility()
       .OverrideIsIgnored(true);
   permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
-  if (!permission_dashboard_view_->GetRequestChip()->GetVisible()) {
+  permission_dashboard_view_->GetDividerView()->SetVisible(false);
+  if (permission_dashboard_view_->GetRequestChip()->GetVisible()) {
+    // After the indicator view is gone, remove the divider padding if the
+    // request chip is visible.
+    permission_dashboard_view_->GetRequestChip()->UpdateForDividerVisibility(
+        false);
+  } else {
     permission_dashboard_view_->SetVisible(false);
   }
 

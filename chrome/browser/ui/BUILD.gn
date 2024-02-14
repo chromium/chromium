@@ -5668,8 +5668,6 @@ static_library("ui") {
       "views/permissions/chip/permission_chip_view.h",
       "views/permissions/chip/permission_dashboard_controller.cc",
       "views/permissions/chip/permission_dashboard_controller.h",
-      "views/permissions/chip/permission_dashboard_layout.cc",
-      "views/permissions/chip/permission_dashboard_layout.h",
       "views/permissions/chip/permission_dashboard_view.cc",
       "views/permissions/chip/permission_dashboard_view.h",
       "views/permissions/chip/permission_prompt_chip_model.cc",

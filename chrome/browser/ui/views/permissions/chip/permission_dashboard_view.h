@@ -22,16 +22,26 @@ class PermissionDashboardView : public views::View {
       delete;
   ~PermissionDashboardView() override;
 
-  PermissionChipView* GetRequestChip() { return request_chip_; }
-  PermissionChipView* GetIndicatorChip() { return indicator_chip_; }
+  PermissionChipView* GetRequestChip() { return secondary_chip_; }
+  PermissionChipView* GetIndicatorChip() { return anchored_chip_; }
+  views::View* GetDividerView() { return chip_divider_view_; }
+
+  void SetDividerBackgroundColor(SkColor background_color);
+  void UpdateDividerViewVisibility();
 
   // views::View.
   gfx::Size CalculatePreferredSize() const override;
-  gfx::Size GetMinimumSize() const override;
+  views::View::Views GetChildrenInZOrder() override;
 
  private:
-  raw_ptr<PermissionChipView> indicator_chip_;
-  raw_ptr<PermissionChipView> request_chip_;
+  // This chip is used to display in-use left-hand side activity indicators.
+  raw_ptr<PermissionChipView> anchored_chip_ = nullptr;
+  // This chip is used to display a permission request and blockade indicator.
+  raw_ptr<PermissionChipView> secondary_chip_ = nullptr;
+  // TODO(crbug.com/324449830): Remove `chip_divider_view_` and
+  // implement a custom background for `secondary_chip_` with a concave oval
+  // from the left side.
+  raw_ptr<views::View> chip_divider_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_VIEW_H_

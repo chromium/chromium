@@ -83,6 +83,10 @@ class PermissionChipView : public views::MdTextButton {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void UpdateForDividerVisibility(bool is_divider_visible,
+                                  int divider_arc_width = 0);
+  int GetIconViewWidth() const;
+
  protected:
   MultiImageContainer* multi_image_container();
 
@@ -112,6 +116,9 @@ class PermissionChipView : public views::MdTextButton {
   int GetIconSize() const;
 
   int GetCornerRadius() const;
+  gfx::RoundedCornersF GetCornerRadii() const;
+
+  gfx::Insets GetPadding() const;
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
@@ -138,6 +145,7 @@ class PermissionChipView : public views::MdTextButton {
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.
   bool fully_collapsed_ = false;
+  bool is_divider_visible_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 
