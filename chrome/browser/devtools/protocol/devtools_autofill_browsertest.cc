@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -570,4 +571,45 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
             "autofillInferred");
 }
 
+// Tests that only the handler associated with the root frame (page) handles
+// AutofillManager events (for cross-iframe filling, the filling events from all
+// frames are routed to the root AutofillManager and others don't emit them).
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill_address_form_in_oopif.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(6));
+  ASSERT_EQ(main_autofill_manager().form_structures().size(), 1u);
+
+  std::string frame_target_id = GetOOPIFTargetId();
+  std::string session_id = AttachToTarget(frame_target_id);
+
+  SendCommandSync("Autofill.enable");
+  SendSessionCommand("Autofill.enable", base::Value::Dict(), session_id, true);
+
+  AutofillProfile profile = CreateTestProfile();
+  FormData form =
+      main_autofill_manager().form_structures().begin()->second->ToFormData();
+  std::vector<const FormFieldData* const> filled_fields_by_autofill = {
+      {&form.fields[0], &form.fields[1]}};
+  main_autofill_manager().NotifyObservers(
+      &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
+      form.global_id(), autofill::mojom::ActionPersistence::kFill,
+      filled_fields_by_autofill, &profile);
+
+  base::Value::Dict notification = WaitForNotification(
+      "Autofill.addressFormFilled", /*allow_existing=*/true);
+  EXPECT_EQ(
+      notification.FindListByDottedPath("addressUi.addressFields")->size(), 6u);
+  EXPECT_FALSE(HasExistingNotification("Autofill.addressFormFilled"))
+      << "The other handler should not handle `OnFillOrPreviewDataModelForm`";
+}
 }  // namespace autofill

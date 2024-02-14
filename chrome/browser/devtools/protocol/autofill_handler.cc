@@ -369,16 +369,18 @@ Response AutofillHandler::Enable() {
           autofill::features::kAutofillTestFormWithDevtools)) {
     auto host = content::DevToolsAgentHost::GetForId(target_id_);
     CHECK(host);
-    autofill_managers_observation_.Observe(
-        host->GetWebContents(),
-        autofill::ScopedAutofillManagersObservation::InitializationPolicy::
-            kObservePreexistingManagers);
+
+    autofill::ContentAutofillDriver* driver = GetAutofillDriver();
+    if (driver && host->GetType() == content::DevToolsAgentHost::kTypePage) {
+      autofill_manager_observation_.Observe(&driver->GetAutofillManager());
+    }
   }
+
   return Response::Success();
 }
 
 Response AutofillHandler::Disable() {
   enabled_ = false;
-  autofill_managers_observation_.Reset();
+  autofill_manager_observation_.Reset();
   return Response::Success();
 }
