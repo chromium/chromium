@@ -60,7 +60,7 @@
 #define METADATA_ACCESSORS_INTERNAL_BASE(class_name)   \
   using kMetadataTag = class_name;                     \
   [[maybe_unused]] static const char kViewClassName[]; \
-  virtual const char* GetClassName() const;            \
+  const char* GetClassName() const;                    \
   static ui::metadata::ClassMetaData* MetaData();      \
   class_name* ReinterpretToBaseClass(void* obj);       \
   /* Don't hide non-const base class version. */       \
