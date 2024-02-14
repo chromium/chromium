@@ -45,7 +45,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "third_party/jni_zero/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 #endif
 
 class GURL;

@@ -17,7 +17,7 @@ shared_library("chromium_android_linker") {
 
   deps = [
     "//build:buildflag_header_h",
-    "//third_party/jni_zero:jni_export",
+    "//third_party/jni_zero:jni_zero",
   ]
 
   # Export JNI symbols.

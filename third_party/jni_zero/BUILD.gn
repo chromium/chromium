@@ -14,28 +14,41 @@ config("toolchain_define") {
   }
 }
 
-source_set("jni_export") {
-  sources = [ "jni_export.h" ]
-}
-
-component("jni_zero") {
+# These are intended to only be used within jni_zero and the code it generates
+# and are not external APIs.
+source_set("jni_zero_internals") {
   sources = [
-    "core.cc",
-    "core.h",
-    "jni_int_wrapper.h",
-    "jni_zero_helper.h",
+    "jni_export.h",
     "logging.cc",
     "logging.h",
-    "scoped_java_ref.cc",
-    "scoped_java_ref.h",
   ]
-  public_deps = [ ":jni_export" ]
+  visibility = [ ":*" ]
   if (is_android) {
     libs = [ "log" ]
   }
   if (is_robolectric) {
     public_configs = [ "//third_party/jdk:jdk" ]
   }
+  configs += [ ":toolchain_define" ]
+}
+
+# Just used by generated code. Cannot set visibility since it's depended on by a
+# template which gets instantiated everywhere.
+source_set("generated_file_helper") {
+  sources = [ "jni_zero_helper.h" ]
+  public_deps = [
+    ":jni_zero",
+    ":jni_zero_internals",
+  ]
+}
+
+# This is the public target that we intend others to use.
+component("jni_zero") {
+  sources = [
+    "jni_zero.cc",
+    "jni_zero.h",
+  ]
+  public_deps = [ ":jni_zero_internals" ]
   configs += [ ":toolchain_define" ]
 }
 

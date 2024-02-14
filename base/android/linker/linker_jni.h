@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include "build/build_config.h"
-#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Set this to 1 to enable debug traces to the Android log.
 // Note that LOG() from "base/logging.h" cannot be used, since it is

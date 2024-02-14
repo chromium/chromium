@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "third_party/jni_zero/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace gfx {
 class RectF;

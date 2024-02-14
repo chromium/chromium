@@ -17,7 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
-#include "third_party/jni_zero/core.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace base {
 namespace android {

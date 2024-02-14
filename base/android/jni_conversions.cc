@@ -6,8 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/base_export.h"
-#include "third_party/jni_zero/core.h"
-#include "third_party/jni_zero/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero {
 

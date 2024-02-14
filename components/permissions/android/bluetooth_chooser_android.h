@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/jni_zero/jni_int_wrapper.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace permissions {
 

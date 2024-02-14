@@ -5,7 +5,7 @@
 #ifndef BASE_ANDROID_SCOPED_JAVA_REF_H_
 #define BASE_ANDROID_SCOPED_JAVA_REF_H_
 
-#include "third_party/jni_zero/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace base {
 namespace android {
