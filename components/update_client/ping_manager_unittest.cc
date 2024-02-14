@@ -337,7 +337,7 @@ TEST_P(PingManagerTest, SendPing) {
     Component component(*update_context, "abc");
     CrxComponent crx_component;
     crx_component.version = base::Version("1.2.3.4");
-    component.PingOnly(crx_component, 4, 1, 0, 0);
+    component.PingOnly(crx_component, {.event_type = 4, .result = 1});
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
     ping_manager_->SendPing(component, *config_->GetPersistedData(),

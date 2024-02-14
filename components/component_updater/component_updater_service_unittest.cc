@@ -91,12 +91,9 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD6(SendPing,
+  MOCK_METHOD3(SendPing,
                void(const CrxComponent& crx_component,
-                    int event_type,
-                    int result,
-                    int error_code,
-                    int extra_code1,
+                    PingParams ping_params,
                     Callback callback));
   MOCK_METHOD2(SendRegistrationPing,
                void(const CrxComponent& crx_component, Callback callback));

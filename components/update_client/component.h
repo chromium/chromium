@@ -54,10 +54,7 @@ class Component {
 
   // Sets the ping-only state for this component.
   void PingOnly(const CrxComponent& crx_component,
-                int event_type,
-                int result,
-                int error_code,
-                int extra_code1);
+                UpdateClient::PingParams ping_params);
 
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(const std::optional<ProtocolParser::Result>& result,

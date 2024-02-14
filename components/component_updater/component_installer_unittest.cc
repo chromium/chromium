@@ -90,12 +90,9 @@ class MockUpdateClient : public UpdateClient {
     std::move(callback).Run(update_client::Error::NONE);
   }
 
-  MOCK_METHOD6(SendPing,
+  MOCK_METHOD3(SendPing,
                void(const CrxComponent& crx_component,
-                    int event_type,
-                    int result,
-                    int error_code,
-                    int extra_code1,
+                    PingParams ping_params,
                     Callback callback));
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));

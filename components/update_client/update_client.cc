@@ -246,16 +246,12 @@ void UpdateClientImpl::Stop() {
 }
 
 void UpdateClientImpl::SendPing(const CrxComponent& crx_component,
-                                int event_type,
-                                int result,
-                                int error_code,
-                                int extra_code1,
+                                PingParams ping_params,
                                 Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunTask(base::MakeRefCounted<TaskSendPing>(
-      update_engine_.get(), crx_component, event_type, result, error_code,
-      extra_code1,
+      update_engine_.get(), crx_component, ping_params,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }

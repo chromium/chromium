@@ -164,9 +164,11 @@ void AppUninstall::UninstallAll(int reason) {
     uninstall_data.version = base::Version(kUpdaterVersion);
   }
   update_client::UpdateClientFactory(config_)->SendPing(
-      uninstall_data, update_client::protocol_request::kEventUninstall,
-      /*result=*/1, /*error_code=*/0,
-      /*extra_code1=*/reason,
+      uninstall_data,
+      {.event_type = update_client::protocol_request::kEventUninstall,
+       .result = 1,
+       .error_code = 0,
+       .extra_code1 = reason},
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {

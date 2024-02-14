@@ -76,10 +76,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
       Callback update_callback);
 
   void SendPing(const CrxComponent& crx_component,
-                int type,
-                int result_code,
-                int error_code,
-                int extra_code1,
+                UpdateClient::PingParams ping_params,
                 Callback update_callback);
 
  private:

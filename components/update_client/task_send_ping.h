@@ -27,18 +27,12 @@ class TaskSendPing : public Task {
 
   // `update_engine` is injected here to handle the task.
   // `crx_component` represents the CRX to send the ping for.
-  // `event_type` is the type of ping to send.
-  // `result` is the result code to put in the ping.
-  // `error_code` is the error code to put in the ping.
-  // `extra_code1` is the extra code to put in the ping.
-  // `callback` is called to return the execution flow back to creator of
-  //    this task when the task is done.
+  // `ping_params` contains the parameters of the ping.
+  // `callback` is called to return the execution flow back to creator of this
+  //    task when the task is done.
   TaskSendPing(scoped_refptr<UpdateEngine> update_engine,
                const CrxComponent& crx_component,
-               int event_type,
-               int result,
-               int error_code,
-               int extra_code1,
+               UpdateClient::PingParams ping_params,
                Callback callback);
 
   TaskSendPing(const TaskSendPing&) = delete;
@@ -60,10 +54,7 @@ class TaskSendPing : public Task {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateEngine> update_engine_;
   const CrxComponent crx_component_;
-  const int event_type_;
-  const int result_;
-  const int error_code_;
-  const int extra_code1_;
+  const UpdateClient::PingParams ping_params_;
   Callback callback_;
 };
 

@@ -90,9 +90,11 @@ void UpdateService::SendUninstallPing(const std::string& id,
   // A ScopedExtensionUpdaterKeepAlive is bound into the callback to keep the
   // context alive throughout the operation.
   update_client_->SendPing(
-      crx, update_client::protocol_request::kEventUninstall, /*result=*/1,
-      /*error_code=*/0,
-      /*extra_code1=*/reason,
+      crx,
+      {.event_type = update_client::protocol_request::kEventUninstall,
+       .result = 1,
+       .error_code = 0,
+       .extra_code1 = reason},
       base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,
                         update_client::Error) {},
                      ExtensionsBrowserClient::Get()->CreateUpdaterKeepAlive(

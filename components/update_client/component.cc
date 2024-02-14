@@ -435,20 +435,17 @@ const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
 }
 
 base::Value::Dict MakeEvent(
-    int event_type,
-    int result,
-    int error_code,
-    int extra_code1,
+    UpdateClient::PingParams ping_params,
     const std::optional<base::Version>& previous_version,
     const std::optional<base::Version>& next_version) {
   base::Value::Dict event;
-  event.Set("eventtype", event_type);
-  event.Set("eventresult", result);
-  if (error_code) {
-    event.Set("errorcode", error_code);
+  event.Set("eventtype", ping_params.event_type);
+  event.Set("eventresult", ping_params.result);
+  if (ping_params.error_code) {
+    event.Set("errorcode", ping_params.error_code);
   }
-  if (extra_code1) {
-    event.Set("extracode1", extra_code1);
+  if (ping_params.extra_code1) {
+    event.Set("extracode1", ping_params.extra_code1);
   }
   if (previous_version) {
     event.Set("previousversion", previous_version->GetString());
@@ -584,20 +581,16 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
 }
 
 void Component::PingOnly(const CrxComponent& crx_component,
-                         int event_type,
-                         int result,
-                         int error_code,
-                         int extra_code1) {
+                         UpdateClient::PingParams ping_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(ComponentState::kNew, state());
   crx_component_ = crx_component;
   previous_version_ = crx_component_->version;
   next_version_ = base::Version("0");
-  error_code_ = error_code;
-  extra_code1_ = extra_code1;
+  error_code_ = ping_params.error_code;
+  extra_code1_ = ping_params.extra_code1;
   state_ = std::make_unique<StatePingOnly>(this);
-  AppendEvent(MakeEvent(event_type, result, error_code, extra_code1,
-                        previous_version_, std::nullopt));
+  AppendEvent(MakeEvent(ping_params, previous_version_, std::nullopt));
 }
 
 void Component::SetUpdateCheckResult(

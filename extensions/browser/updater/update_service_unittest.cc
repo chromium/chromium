@@ -133,13 +133,10 @@ class FakeUpdateClient : public update_client::UpdateClient {
   void Stop() override {}
 
   void SendPing(const update_client::CrxComponent& crx_component,
-                int event_type,
-                int result,
-                int error_code,
-                int extra_code1,
+                PingParams ping_params,
                 update_client::Callback callback) override {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
-                                  extra_code1);
+                                  ping_params.extra_code1);
   }
 
   void set_delay_update() { delay_update_ = true; }

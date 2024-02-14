@@ -458,6 +458,14 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
     virtual void OnEvent(Events event, const std::string& id) = 0;
   };
 
+  // Packs the parameters for sending a ping.
+  struct PingParams {
+    int event_type = 0;
+    int result = 0;
+    int error_code = 0;
+    int extra_code1 = 0;
+  };
+
   // Adds an observer for this class. An observer should not be added more
   // than once. The caller retains the ownership of the observer object.
   virtual void AddObserver(Observer* observer) = 0;
@@ -514,10 +522,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // function only sends a best-effort ping. It has no other side effects
   // regarding installs or updates done through an instance of this class.
   virtual void SendPing(const CrxComponent& crx_component,
-                        int event_type,
-                        int result,
-                        int error_code,
-                        int extra_code1,
+                        PingParams ping_params,
                         Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in

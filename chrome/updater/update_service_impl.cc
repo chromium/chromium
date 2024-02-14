@@ -1074,9 +1074,12 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             install_data.requires_network_encryption = false;
             install_data.version = installer_version;
             update_client->SendPing(
-                install_data, update_client::protocol_request::kEventInstall,
-                /*result=*/result.error == 0, /*error_code=*/result.error,
-                /*extra_code1=*/result.extended_error, base::DoNothing());
+                install_data,
+                {.event_type = update_client::protocol_request::kEventInstall,
+                 .result = result.error == 0,
+                 .error_code = result.error,
+                 .extra_code1 = result.extended_error},
+                base::DoNothing());
 
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);

@@ -59,10 +59,7 @@ class UpdateClientImpl : public UpdateClient {
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
   void SendPing(const CrxComponent& crx_component,
-                int event_type,
-                int result,
-                int error_code,
-                int extra_code1,
+                PingParams ping_params,
                 Callback callback) override;
 
  private:
@@ -75,7 +72,7 @@ class UpdateClientImpl : public UpdateClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // True if Stop method has been called.
+  // True if `Stop()` has been called.
   bool is_stopped_ = false;
 
   scoped_refptr<Configurator> config_;

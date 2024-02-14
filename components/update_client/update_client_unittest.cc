@@ -4477,8 +4477,11 @@ TEST_P(SendPingTest, TestCases) {
   crx.name = "test_jebg";
   crx.version = GetParam().previous_version.value_or(base::Version("1.2.3.4"));
   update_client->SendPing(
-      crx, GetParam().event_type, GetParam().result,
-      GetParam().error_code.value_or(0), GetParam().extra_code1,
+      crx,
+      {.event_type = GetParam().event_type,
+       .result = GetParam().result,
+       .error_code = GetParam().error_code.value_or(0),
+       .extra_code1 = GetParam().extra_code1},
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();

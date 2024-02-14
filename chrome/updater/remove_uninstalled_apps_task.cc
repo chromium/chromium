@@ -119,9 +119,11 @@ void RemoveAppIDsAndSendUninstallPings(
       crx_component.version = app_version;
       crx_component.requires_network_encryption = false;
       update_client->SendPing(
-          crx_component, update_client::protocol_request::kEventUninstall,
-          /*result=*/1, /*error_code=*/0,
-          /*extra_code1=*/ping_reason,
+          crx_component,
+          {.event_type = update_client::protocol_request::kEventUninstall,
+           .result = 1,
+           .error_code = 0,
+           .extra_code1 = ping_reason},
           base::BindOnce(&UninstallPingSent, barrier_closure));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;
