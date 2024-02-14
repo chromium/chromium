@@ -978,7 +978,7 @@ const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
     kCompanyEntityIconAdjustmentGroup{
         &omnibox::kCompanyEntityIconAdjustment,
         "OmniboxCompanyEntityAdjustmentGroup",
-        omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive,
+        omnibox::CompanyEntityIconAdjustmentGroup::kModerate,
         &kCompanyEntityIconAdjustmentGroupOptions};
 
 const base::FeatureParam<bool> kCompanyEntityIconAdjustmentCounterfactual(
