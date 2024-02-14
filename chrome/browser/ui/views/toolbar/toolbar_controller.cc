@@ -280,6 +280,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionSidePanelShowSearchCompanion,
            "PinnedShowSearchCompanionSidePanelButton"},
           {kActionSidePanelShowPerformance, "ShowPerformanceSidePanelButton"},
+          {kActionTaskManager, "PinnedTaskManagerButton"},
       });
 
   const auto it = identifier_to_action_name_map->find(identifier);

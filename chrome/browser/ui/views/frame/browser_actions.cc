@@ -263,4 +263,17 @@ void BrowserActions::InitializeBrowserActions() {
               profile->IsIncognitoProfile() ||
               (!profile->IsGuestSession() && !profile->IsSystemProfile()))
           .Build());
+
+  if (chrome::CanOpenTaskManager()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               chrome::OpenTaskManager(browser);
+                             },
+                             base::Unretained(&(browser_.get()))),
+                         kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
+                         kTaskManagerIcon)
+            .Build());
+  }
 }
