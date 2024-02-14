@@ -140,8 +140,6 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   // This class is owned by a class that is a WebContentsUserData, so this is
   // safe.
   const raw_ref<content::WebContents> web_contents_;
-  // Fetches the data required to display a banner for the current page.
-  const raw_ref<InstallableManager> installable_manager_;
   const raw_ptr<segmentation_platform::SegmentationPlatformService>
       segmentation_platform_service_;
   raw_ref<PrefService> pref_service_;

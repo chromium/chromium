@@ -54,7 +54,6 @@ AmbientBadgeManager::AmbientBadgeManager(
         segmentation_platform_service,
     PrefService& prefs)
     : web_contents_(web_contents),
-      installable_manager_(*InstallableManager::FromWebContents(&web_contents)),
       segmentation_platform_service_(segmentation_platform_service),
       pref_service_(prefs) {}
 
@@ -183,7 +182,9 @@ void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
   InstallableParams params;
   params.has_worker = true;
   params.wait_for_worker = true;
-  installable_manager_->GetData(params, std::move(callback));
+  InstallableManager* installable_manager =
+      InstallableManager::FromWebContents(&web_contents_.get());
+  installable_manager->GetData(params, std::move(callback));
 }
 
 void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
