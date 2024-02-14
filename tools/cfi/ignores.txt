@@ -1,4 +1,5 @@
-#!special-case-list-v2
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
 
 # This file defines which warnings should be ignored while running clang's
 # control flow integrity sanitizer, as run by the cfi_flags build target.
@@ -17,7 +18,7 @@
 #
 # __attribute__((no_sanitize("cfi-unrelated-cast")))
 
-[cfi-{unrelated,derived}-cast]
+[cfi-unrelated-cast|cfi-derived-cast]
 
 # e.g. RolloverProtectedTickClock
 fun:*MutableInstance*
@@ -132,7 +133,7 @@ fun:*traceImpl*
 #############################################################################
 # Cross-DSO vcalls
 
-[cfi-{vcall,unrelated-cast,derived-cast}]
+[cfi-vcall|cfi-unrelated-cast|cfi-derived-cast]
 
 # These classes are used to communicate between chrome.exe and
 # chrome_child.dll (see src/sandbox/win/src/sandbox.h,
