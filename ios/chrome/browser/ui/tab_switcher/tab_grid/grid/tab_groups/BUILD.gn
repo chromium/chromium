@@ -4,10 +4,6 @@
 
 source_set("tab_groups") {
   sources = [
-    "create_tab_group_coordinator.h",
-    "create_tab_group_coordinator.mm",
-    "create_tab_group_mediator.h",
-    "create_tab_group_mediator.mm",
     "tab_group_coordinator.h",
     "tab_group_coordinator.mm",
     "tab_group_mediator.h",
@@ -16,9 +12,9 @@ source_set("tab_groups") {
   deps = [
     ":tab_group_consumer",
     ":tab_group_mutator",
+    ":tab_groups_commands",
     ":tab_groups_ui",
     "//base",
-    "//components/tab_groups",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -26,7 +22,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
     "//ios/chrome/common/ui/colors",
@@ -34,27 +30,45 @@ source_set("tab_groups") {
   ]
 }
 
+source_set("tab_group_creation") {
+  sources = [
+    "create_tab_group_coordinator.h",
+    "create_tab_group_coordinator.mm",
+    "create_tab_group_mediator.h",
+    "create_tab_group_mediator.mm",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_creation_ui",
+    ":tab_group_mutator",
+    ":tab_groups_commands",
+    ":tab_groups_ui",
+    "//base",
+    "//components/tab_groups",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/web/public",
+  ]
+}
+
 source_set("tab_groups_ui") {
   sources = [
-    "create_tab_group_view_controller.h",
-    "create_tab_group_view_controller.mm",
-    "tab_group_snapshots_view.h",
-    "tab_group_snapshots_view.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
-    "tab_groups_commands.h",
   ]
   deps = [
     ":tab_group_consumer",
     ":tab_group_mutator",
-    ":tab_groups_constant",
+    ":tab_groups_commands",
     "//base",
     "//base:i18n",
-    "//components/strings",
-    "//components/tab_groups",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
@@ -63,6 +77,36 @@ source_set("tab_groups_ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+}
+
+source_set("tab_group_creation_ui") {
+  sources = [
+    "create_tab_group_view_controller.h",
+    "create_tab_group_view_controller.mm",
+    "tab_group_snapshots_view.h",
+    "tab_group_snapshots_view.mm",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_mutator",
+    ":tab_groups_commands",
+    ":tab_groups_constant",
+    ":tab_groups_ui",
+    "//base",
+    "//components/strings",
+    "//components/tab_groups",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("tab_groups_commands") {
+  sources = [ "tab_groups_commands.h" ]
 }
 
 source_set("tab_group_consumer") {
@@ -94,6 +138,7 @@ source_set("unit_tests") {
   sources = [ "tab_group_coordinator_unittest.mm" ]
   deps = [
     ":tab_groups",
+    ":tab_groups_commands",
     ":tab_groups_ui",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

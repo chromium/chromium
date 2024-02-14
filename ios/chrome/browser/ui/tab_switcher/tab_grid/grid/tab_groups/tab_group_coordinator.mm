@@ -37,12 +37,13 @@
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
            lightTheme:!self.browser->GetBrowserState()->IsOffTheRecord()];
-  _viewController.mutator = _mediator;
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController];
+
+  _viewController.mutator = _mediator;
 
   // TODO(crbug.com/1501837): Add the tab group animation when user tap on a tab
   // group cell in the tab grid.
