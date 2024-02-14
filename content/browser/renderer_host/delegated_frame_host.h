@@ -209,6 +209,11 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  // This is used to evict also the UI compositor if native occlusion is
+  // enabled. This only makes sense on desktop platforms where the UI compositor
+  // corresponds to a browser window, and native occlusion is supported.
+  static bool ShouldIncludeUiCompositorForEviction();
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
