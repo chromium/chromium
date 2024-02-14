@@ -657,4 +657,5 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    execution_timeout = 8 * time.hour,
 )
