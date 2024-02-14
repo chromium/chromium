@@ -39,7 +39,7 @@ bool StructTraits<network::mojom::URLLoaderCompletionStatusDataView,
   out->encoded_data_length = data.encoded_data_length();
   out->encoded_body_length = data.encoded_body_length();
   out->decoded_body_length = data.decoded_body_length();
-  out->should_report_corb_blocking = data.should_report_corb_blocking();
+  out->should_report_orb_blocking = data.should_report_orb_blocking();
   out->should_collapse_initiator = data.should_collapse_initiator();
   return true;
 }

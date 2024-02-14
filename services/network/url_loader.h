@@ -539,7 +539,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void CompleteBlockedResponse(
       int error_code,
-      bool should_report_corb_blocking,
+      bool should_report_orb_blocking,
       std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
 
   enum BlockResponseForCorbResult {

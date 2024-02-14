@@ -297,7 +297,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     // Send a dummy OnComplete message.
     network::URLLoaderCompletionStatus status =
         network::URLLoaderCompletionStatus(net::OK);
-    status.should_report_corb_blocking =
+    status.should_report_orb_blocking =
         result == CrossOriginReadBlockingChecker::Result::kBlocked_ShouldReport;
     client_->OnComplete(status);
   }

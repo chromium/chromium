@@ -102,9 +102,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // net::ERR_BLOCKED_BY_RESPONSE |error_code|.
   std::optional<mojom::BlockedByResponseReason> blocked_by_response_reason;
 
-  // Set when response blocked by CORB needs to be reported to the DevTools
+  // Set when response blocked by ORB needs to be reported to the DevTools
   // console.
-  bool should_report_corb_blocking = false;
+  bool should_report_orb_blocking = false;
 
   // Host resolution error info for this request.
   net::ResolveErrorInfo resolve_error_info;

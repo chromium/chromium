@@ -105,9 +105,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.blocked_by_response_reason;
   }
 
-  static bool should_report_corb_blocking(
+  static bool should_report_orb_blocking(
       const network::URLLoaderCompletionStatus& status) {
-    return status.should_report_corb_blocking;
+    return status.should_report_orb_blocking;
   }
 
   static const net::ResolveErrorInfo& resolve_error_info(

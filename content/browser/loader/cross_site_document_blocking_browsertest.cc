@@ -171,7 +171,7 @@ class RequestInterceptor {
       EXPECT_EQ(0, completion_status().decoded_body_length);
 
       // Verify that the console message would have been printed.
-      EXPECT_TRUE(completion_status().should_report_corb_blocking);
+      EXPECT_TRUE(completion_status().should_report_orb_blocking);
 
       // Verify the response code & headers, which depends on whether the
       // response is blocked as an error, or as an empty response.
@@ -193,7 +193,7 @@ class RequestInterceptor {
       }
     } else {
       ASSERT_EQ(net::OK, completion_status().error_code);
-      EXPECT_FALSE(completion_status().should_report_corb_blocking);
+      EXPECT_FALSE(completion_status().should_report_orb_blocking);
       EXPECT_EQ(expected_resource_body, response_body());
     }
   }

@@ -1141,7 +1141,7 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   // ORB "v0.2" (and later) use a network error code. We should always report
   // the error-code style error to DevTools, since it has a less spammy
   // way of displaying them compared to just dumping them on the console.
-  if (devtools_observer_ && (status.should_report_corb_blocking ||
+  if (devtools_observer_ && (status.should_report_orb_blocking ||
                              status.error_code == net::ERR_BLOCKED_BY_ORB)) {
     ReportCorbErrorToDevTools();
   }
