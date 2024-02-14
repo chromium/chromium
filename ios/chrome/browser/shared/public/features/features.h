@@ -577,4 +577,10 @@ extern const char kIOSTipsNotificationsEnabledParam[];
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 
+// Feature flag to use a UICollectionView for the Magic Stack.
+BASE_DECLARE_FEATURE(kIOSMagicStackCollectionView);
+
+// Returns true if the MagicStack UICollectionView implementation is enabled.
+bool IsIOSMagicStackCollectionViewEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

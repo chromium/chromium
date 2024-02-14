@@ -450,6 +450,11 @@ extern const char kIOSIncognitoDownloadsWarningDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
+// Title and description for the flag to use a UICollectionView for the Magic
+// Stack.
+extern const char kIOSMagicStackCollectionViewName[];
+extern const char kIOSMagicStackCollectionViewDescription[];
+
 // Title and description for the flag to enable parcel tracking.
 extern const char kIOSParcelTrackingName[];
 extern const char kIOSParcelTrackingDescription[];

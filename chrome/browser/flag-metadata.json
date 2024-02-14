@@ -4995,6 +4995,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "ios-magic-stack-collection-view",
+    "owners": [ "thegreenfrog@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "ios-magic-stack-segmentation-ranking",
     "owners": [ "thegreenfrog@google.com", "ritikagup@google.com" ],
     "expiry_milestone": 126
