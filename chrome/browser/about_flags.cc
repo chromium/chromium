@@ -3267,7 +3267,6 @@ const FeatureEntry::FeatureVariation kWebRtcApmDownmixMethodVariations[] = {
     {"- Use first channel", kWebRtcApmDownmixMethodFirstChannel,
      std::size(kWebRtcApmDownmixMethodFirstChannel), nullptr}};
 
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
     kSafetyCheckUnusedSitePermissionsNoDelayParam[] = {
         {"unused-site-permissions-no-delay-for-testing", "true"}};
@@ -3284,7 +3283,6 @@ const FeatureEntry::FeatureVariation
          kSafetyCheckUnusedSitePermissionsWithDelayParam,
          std::size(kSafetyCheckUnusedSitePermissionsWithDelayParam), nullptr},
 };
-#endif
 
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
@@ -9623,26 +9621,22 @@ const FeatureEntry kFeatureEntries[] = {
          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
     {"safety-check-notification-permissions",
      flag_descriptions::kSafetyCheckNotificationPermissionsName,
-     flag_descriptions::kSafetyCheckNotificationPermissionsDescription,
-     kOsDesktop,
+     flag_descriptions::kSafetyCheckNotificationPermissionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSafetyCheckNotificationPermissions)},
 
     {"safety-check-unused-site-permissions",
      flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
-     flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription,
-     kOsDesktop,
+     flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          content_settings::features::kSafetyCheckUnusedSitePermissions,
          kSafetyCheckUnusedSitePermissionsVariations,
          "SafetyCheckUnusedSitePermissions")},
 
     {"safety-hub", flag_descriptions::kSafetyHubName,
-     flag_descriptions::kSafetyHubDescription, kOsDesktop,
+     flag_descriptions::kSafetyHubDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSafetyHub)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
