@@ -1,6 +1,4 @@
 This is a wdspec test.
 [FAIL] test_no_parent_browsing_context
   webdriver.error.NoSuchElementException: no such element (404): no such element: Unable to locate element: {"method":"css selector","selector":"#remove-top"}
-[FAIL] test_switch_from_iframe
-  webdriver.error.StaleElementReferenceException: stale element reference (404): stale element reference: stale element not found
 Harness: the test ran to completion.

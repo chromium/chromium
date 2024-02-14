@@ -1,8 +1,4 @@
 This is a wdspec test.
 [FAIL] test_clip_box_scroll_to
   assert False
-[FAIL] test_clip_box_outside_of_window_viewport[document]
-  TypeError: capture_screenshot() got an unexpected keyword argument 'origin'
-[FAIL] test_clip_element_outside_of_window_viewport[document]
-  TypeError: capture_screenshot() got an unexpected keyword argument 'origin'
 Harness: the test ran to completion.

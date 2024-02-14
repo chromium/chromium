@@ -1,12 +1,4 @@
 This is a wdspec test.
-[FAIL] test_response_payload
-  assert False
-[FAIL] test_restore_from_fullscreen
-  assert False
 [FAIL] test_restore_from_maximized
   assert not True
-[FAIL] test_minimize_from_normal_window
-  assert False
-[FAIL] test_minimize_twice_is_idempotent
-  assert False
 Harness: the test ran to completion.

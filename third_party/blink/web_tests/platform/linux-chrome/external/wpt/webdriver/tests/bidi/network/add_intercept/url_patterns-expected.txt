@@ -1,24 +1,4 @@
 This is a wdspec test.
-[FAIL] test_pattern_patterns_matching[patterns0-https://{wpt_host}]
-  AssertionError
-[FAIL] test_pattern_patterns_matching[patterns1-https://{wpt_host}/]
-  AssertionError
-[FAIL] test_pattern_patterns_matching[patterns2-https://{wpt_host}:1234/]
-  AssertionError
-[FAIL] test_pattern_patterns_matching[patterns3-https://{wpt_host}/path]
-  AssertionError
-[FAIL] test_pattern_patterns_matching[patterns4-https://{wpt_host}/?search]
-  AssertionError
-[FAIL] test_pattern_patterns_matching[patterns5-https://{wpt_host}]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
-[FAIL] test_pattern_patterns_matching[patterns6-https://{wpt_host}/]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
-[FAIL] test_pattern_patterns_matching[patterns7-https://{wpt_host}:1234/]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
-[FAIL] test_pattern_patterns_matching[patterns8-https://{wpt_host}/path]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
-[FAIL] test_pattern_patterns_matching[patterns9-https://{wpt_host}/?search]
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
 [FAIL] test_pattern_patterns_matching[patterns10-https://{wpt_host}/]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
 [FAIL] test_pattern_patterns_matching[patterns11-https://{wpt_host}:1234/]
@@ -81,38 +61,20 @@ This is a wdspec test.
   webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
 [FAIL] test_pattern_patterns_not_matching[pattern12-https://{wpt_host}/?other]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (TypeError: Failed to construct 'URL': Invalid URL)
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-https://{wpt_host}/]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host}-https://{wpt_host}/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-https://{wpt_host}]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[HTTPS://{wpt_host}/-https://{wpt_host}/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-HTTPS://{wpt_host}/]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host_upper}/-https://{wpt_host}/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-https://{wpt_host_upper}/]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://user:password@{wpt_host}/-https://{wpt_host}/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-https://{wpt_host}:443/]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host}:443/-https://{wpt_host}/]
   AssertionError
 [FAIL] test_string_patterns_matching[https://{wpt_host}:443/-https://{wpt_host}:443/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}:1234/-https://{wpt_host}:1234/]
-  KeyError: 'intercepts'
-[FAIL] test_string_patterns_matching[https://{wpt_host}/path-https://{wpt_host}/path]
-  KeyError: 'intercepts'
-[FAIL] test_string_patterns_matching[https://{wpt_host}/?search-https://{wpt_host}/?search]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host}/#ref-https://{wpt_host}/]
   AssertionError
-[FAIL] test_string_patterns_matching[https://{wpt_host}/-https://{wpt_host}/#ref]
-  KeyError: 'intercepts'
 [FAIL] test_string_patterns_matching[https://{wpt_host}/#ref1-https://{wpt_host}/#ref2]
   AssertionError
 [FAIL] test_string_patterns_not_matching[https://{wpt_host}/??-https://{wpt_host}/?]

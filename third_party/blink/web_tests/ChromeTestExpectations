@@ -7,7 +7,7 @@
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
 
 # `wdspec` tests
-external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure ]  # Flaky output
+external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Timeout ]  # Flaky output
 external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Failure Timeout ]  # Flaky output
@@ -35,7 +35,7 @@ external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ F
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/create/user_context.py [ Failure ]
-crbug.com/324436866 external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure Pass ]
+crbug.com/324436866 external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/bidi/script/call_function/remote_values.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_element_from_element/find.py [ Failure Pass Timeout ]
 crbug.com/1507773 external/wpt/webdriver/tests/classic/find_elements/find.py [ Failure Pass Timeout ]
@@ -50,8 +50,9 @@ crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_node
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/max_node_count.py [ Failure ]
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/ownership.py [ Failure ]
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/start_nodes.py [ Failure ]
-crbug.com/1499775 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure ]
+crbug.com/1499775 external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/print/context.py [ Failure Pass Timeout ]
+crbug.com/324436866 external/wpt/webdriver/tests/classic/get_current_url/file.py [ Failure Pass Timeout ]
 
 # Gardener 2024-02-08
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/context_destroyed.py [ Failure Timeout ]

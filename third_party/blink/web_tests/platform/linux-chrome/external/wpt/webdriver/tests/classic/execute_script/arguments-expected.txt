@@ -1,22 +1,6 @@
 This is a wdspec test.
-[FAIL] test_no_such_element_from_other_window_handle[open]
-  AssertionError: assert 'stale element reference' == 'no such element'
-[FAIL] test_no_such_element_from_other_window_handle[closed]
-  AssertionError: assert 'stale element reference' == 'no such element'
-[FAIL] test_no_such_element_from_other_frame[open]
-  AssertionError: assert 'stale element reference' == 'no such element'
-[FAIL] test_no_such_element_from_other_frame[closed]
-  AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_shadow_root_with_unknown_id
   AssertionError: assert 'no such element' == 'no such shadow root'
-[FAIL] test_no_such_shadow_root_from_other_window_handle[open]
-  AssertionError: assert 'detached shadow root' == 'no such shadow root'
-[FAIL] test_no_such_shadow_root_from_other_window_handle[closed]
-  AssertionError: assert 'detached shadow root' == 'no such shadow root'
-[FAIL] test_no_such_shadow_root_from_other_frame[open]
-  AssertionError: assert 'detached shadow root' == 'no such shadow root'
-[FAIL] test_no_such_shadow_root_from_other_frame[closed]
-  AssertionError: assert 'detached shadow root' == 'no such shadow root'
 [FAIL] test_invalid_argument_for_window_with_invalid_type[None-frame]
   assert 200 == 400
 [FAIL] test_invalid_argument_for_window_with_invalid_type[None-window]

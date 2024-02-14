@@ -1,8 +1,4 @@
 This is a wdspec test.
-[FAIL] test_restore_from_fullscreen
-  assert False
-[FAIL] test_restore_from_minimized
-  assert False
 [FAIL] test_restore_from_maximized
   assert not True
 [FAIL] test_set_smaller_than_minimum_browser_size

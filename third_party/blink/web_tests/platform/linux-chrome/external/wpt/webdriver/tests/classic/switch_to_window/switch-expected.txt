@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_element_not_found_after_tab_switch
-  webdriver.error.StaleElementReferenceException: stale element reference (404): stale element reference: stale element not found
-Harness: the test ran to completion.
