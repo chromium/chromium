@@ -13,11 +13,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -26,6 +28,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using testing::_;
 using testing::Eq;
 using testing::Not;
 using testing::ResultOf;
@@ -569,6 +572,53 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   EXPECT_EQ(*filled_fields->back().GetDict().FindStringByDottedPath(
                 "fillingStrategy"),
             "autofillInferred");
+}
+
+// This test guards the assumption that autofill events in iframes are routed to
+// the main frame on the browser side. It's implicitly assumed in tests that
+// make direct `AutofillManager::Observer` calls on `main_autofill_manager()`
+// while testing iframes.
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill_address_form_in_oopif.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormWithNFields(6));
+  ASSERT_EQ(main_autofill_manager().form_structures().size(), 1u);
+
+  FormData form =
+      main_autofill_manager().form_structures().begin()->second->ToFormData();
+
+  autofill::MockAutofillManagerObserver observer;
+  main_autofill_manager().AddObserver(&observer);
+
+  // Expect the `AskForValuesToFill()` call below to be routed to the main
+  // frame `AutofillManager`.
+  EXPECT_CALL(observer,
+              OnBeforeAskForValuesToFill(_, form.global_id(),
+                                         form.fields[0].global_id(), _));
+
+  std::vector<const FormFieldData* const> filled_fields_by_autofill = {
+      {&form.fields[0], &form.fields[1]}};
+  web_contents()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    // Call the driver of the field host iframe.
+    if (rfh->GetFrameToken().ToString() ==
+        form.fields[0].host_frame->ToString()) {
+      ASSERT_NE(rfh->GetFrameToken(), main_frame()->GetFrameToken());
+      auto* driver = static_cast<mojom::AutofillDriver*>(
+          autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
+      driver->AskForValuesToFill(
+          form, form.fields[0], ::gfx::RectF(10, 10),
+          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
+    }
+  });
+
+  main_autofill_manager().RemoveObserver(&observer);
 }
 
 // Tests that only the handler associated with the root frame (page) handles
