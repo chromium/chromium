@@ -160,6 +160,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithEnabledOriginTrials(const OriginTrialsMap& origin_to_trials);
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppLaunchWithUrl();
+
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppNotShownInLauncher();
 

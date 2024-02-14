@@ -126,7 +126,8 @@ namespace {
 void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
                                      const SystemWebAppType type,
                                      const SystemAppLaunchParams& params,
-                                     apps::WindowInfoPtr window_info) {
+                                     apps::WindowInfoPtr window_info,
+                                     apps::LaunchCallback callback) {
   if (profile_for_launch->ShutdownStarted()) {
     return;
   }
@@ -154,7 +155,8 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
   if (params.url) {
     DCHECK(params.url->is_valid());
     app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
-                                  params.launch_source, std::move(window_info));
+                                  params.launch_source, std::move(window_info),
+                                  std::move(callback));
     return;
   }
 
@@ -166,10 +168,13 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
 void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemWebAppType type,
                              const SystemAppLaunchParams& params,
-                             apps::WindowInfoPtr window_info) {
+                             apps::WindowInfoPtr window_info,
+                             std::optional<apps::LaunchCallback> callback) {
   DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemWebAppType::TERMINAL);
+  // Callback is only supported when launching with an URL.
+  DCHECK(!callback || params.url.has_value());
 
   // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
   // changing to a different profile.
@@ -210,7 +215,9 @@ void LaunchSystemWebAppAsync(Profile* profile,
   manager->on_apps_synchronized().Post(
       FROM_HERE,
       base::BindOnce(&LaunchSystemWebAppAsyncContinue, profile_for_launch, type,
-                     params, std::move(window_info)));
+                     params, std::move(window_info),
+                     callback.has_value() ? std::move(callback.value())
+                                          : base::DoNothing()));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,
