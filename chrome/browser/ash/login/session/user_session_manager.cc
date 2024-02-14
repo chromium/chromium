@@ -1246,7 +1246,7 @@ void UserSessionManager::ChildAccountStatusReceivedCallback(Profile* profile) {
 void UserSessionManager::StopChildStatusObserving(Profile* profile) {
   if (waiting_for_child_account_status_ &&
       !SessionStartupPref::TypeIsManaged(profile->GetPrefs())) {
-    MaybeLaunchHelpApp(profile);
+    MaybeLaunchHelpAppForFirstRun(profile);
   }
   waiting_for_child_account_status_ = false;
 }
@@ -1922,7 +1922,7 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   }
 }
 
-void UserSessionManager::MaybeLaunchHelpApp(Profile* profile) const {
+void UserSessionManager::MaybeLaunchHelpAppForFirstRun(Profile* profile) const {
   if (first_run::ShouldLaunchHelpApp(profile)) {
     // Don't open default Chrome window if we're going to launch the first-run
     // app. Because we don't want the first-run app to be hidden in the
@@ -1951,7 +1951,7 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
   // start URLs via policy.
   if (!SessionStartupPref::TypeIsManaged(prefs)) {
     if (child_service->IsChildAccountStatusKnown())
-      MaybeLaunchHelpApp(profile);
+      MaybeLaunchHelpAppForFirstRun(profile);
     else
       waiting_for_child_account_status_ = true;
   }

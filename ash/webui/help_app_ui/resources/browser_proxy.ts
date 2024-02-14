@@ -35,7 +35,7 @@ const searchHandlerRemote = SearchHandler.getRemote();
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const MAX_STRING_LEN = 9999;
 const guestFrame = document.createElement('iframe');
-guestFrame.src = `${GUEST_ORIGIN}${location.pathname}`;
+guestFrame.src = `${GUEST_ORIGIN}${location.pathname}${location.search}`;
 document.body.appendChild(guestFrame);
 
 // Cached result whether Local Search Service is enabled.

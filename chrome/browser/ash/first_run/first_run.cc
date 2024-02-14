@@ -103,6 +103,7 @@ class AppLauncher final : public ProfileObserver {
 
   void LaunchHelpApp() {
     ash::SystemAppLaunchParams params;
+    params.url = GURL("chrome://help-app?launchSource=first-run");
     params.launch_source = apps::LaunchSource::kFromFirstRun;
     LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP, params);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);

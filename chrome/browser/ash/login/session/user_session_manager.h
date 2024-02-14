@@ -439,8 +439,10 @@ class UserSessionManager
   // profile is ready.
   void InitializeBrowser(Profile* profile);
 
-  // Launches the Help App depending on flags / prefs / user.
-  void MaybeLaunchHelpApp(Profile* profile) const;
+  // Launches the Help App depending on flags / prefs / user. This should only
+  // be used for the first run experience, i.e. after the user completed the
+  // OOBE setup.
+  void MaybeLaunchHelpAppForFirstRun(Profile* profile) const;
 
   // Start user onboarding if the user is new.
   bool MaybeStartNewUserOnboarding(Profile* profile);

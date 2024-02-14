@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/webui/help_app_ui/buildflags.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
@@ -14,6 +15,7 @@
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_discover_tab_notification.h"
@@ -122,6 +125,18 @@ class HelpAppIntegrationTestWithAutoTriggerDisabled
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class HelpAppIntegrationTestWithFirstRunEnabled
+    : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationTestWithFirstRunEnabled() = default;
+
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HelpAppIntegrationTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kForceFirstRunUI);
+  }
 };
 
 }  // namespace
@@ -244,6 +259,41 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
             GetActiveWebContents()->GetVisibleURL());
+#endif
+}
+
+// Test that first run experience opens Help App with launch source query param.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithFirstRunEnabled,
+                       HelpAppV2FirstRunLaunch) {
+  WaitForTestSystemAppInstall();
+  base::HistogramTester histogram_tester;
+  GURL expected_trusted_frame_url =
+      GURL("chrome://help-app?launchSource=first-run");
+  content::TestNavigationObserver navigation_observer(
+      expected_trusted_frame_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Then call the launch method used by the first run experience.
+  ash::first_run::LaunchHelpApp(profile());
+
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  // The Help app trusted frame should have opened at the expected page.
+  EXPECT_EQ(expected_trusted_frame_url,
+            GetActiveWebContents()->GetVisibleURL());
+
+  // The Help app untrusted frame should contain the same query param.
+  EXPECT_EQ("chrome-untrusted://help-app/?launchSource=first-run",
+            SandboxedWebUiAppTestBase::EvalJsInAppFrame(
+                GetActiveWebContents(), "window.location.href"));
+
+  // The HELP app is 18, see DefaultAppName in
+  // src/chrome/browser/apps/app_service/app_service_metrics.cc
+  histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromFirstRun", 18,
+                                      1);
+#else
+  // We just have the original browser. No new app opens.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 #endif
 }
 
@@ -1049,6 +1099,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithAutoTriggerDisabled);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithFirstRunEnabled);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
