@@ -1137,12 +1137,6 @@
                   'chrome/browser/feed/|' \
                   'components/feed/'
     },
-    'feedback': {
-      'filepath': 'chrome/browser/extensions/api/feedback_private/|' \
-                  'chrome/browser/feedback/|' \
-                  'components/feedback/|' \
-                  'extensions/browser/api/feedback_private/'
-    },
     'fileapi': {
       'filepath': 'file_system/|' \
                   'fileapi/'
@@ -1253,9 +1247,6 @@
     },
     'hashprefix_realtime': {
       'filepath': 'components/safe_browsing/core/browser/hashprefix_realtime/'
-    },
-    'hats': {
-      'filepath': 'chrome/browser/ash/hats/',
     },
     'headless': {
       'filepath': 'headless/'
@@ -2883,7 +2874,6 @@
              'harringtond+watch@chromium.org',
              'petewil+watch@chromium.org',
              'iwells+watch@chromium.org'],
-    'feedback': ['cros-telemetry+feedback@google.com'],
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
     'filesapp': ['filesapp-reviews@chromium.org',
@@ -2915,7 +2905,6 @@
     'guest_view': ['mcnee@chromium.org',
                    'wjmaclean@chromium.org'],
     'hashprefix_realtime': ['thefrog+watch@chromium.org'],
-    'hats': ['cros-telemetry+hats@google.com'],
     'headless': ['headless-reviews@chromium.org'],
     'heap_mojo': ['chikamune+watch@chromium.org'],
     'holding_space': ['tote-eng+reviews@google.com'],
