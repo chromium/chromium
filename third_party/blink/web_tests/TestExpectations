@@ -6778,3 +6778,4 @@ crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wp
 
 # Gardener: 2024-02-14
 b/325227176 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history-cross-origin.html [ Failure Pass ]
+b/325255315 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history.html [ Failure Pass ]
