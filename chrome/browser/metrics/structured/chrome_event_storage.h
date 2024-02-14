@@ -8,13 +8,14 @@
 #include "components/metrics/structured/event_storage.h"
 #include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
 // Storage for Structured Metrics events on Chrome (Windows, Linux, and Mac).
 //
 // The events are stored in-memory and are lost on crash.
-class ChromeEventStorage : public EventStorage {
+class ChromeEventStorage : public EventStorage<StructuredEventProto> {
  public:
   ChromeEventStorage();
 

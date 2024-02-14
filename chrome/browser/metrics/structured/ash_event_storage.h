@@ -13,6 +13,7 @@
 #include "components/metrics/structured/event_storage.h"
 #include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
@@ -22,7 +23,7 @@ namespace metrics::structured {
 // disk on a cadence. Before a user has logged in, these events will be stored
 // in the shared partition. The events after a user has logged in, events will
 // be stored in the user cryptohome.
-class AshEventStorage : public EventStorage {
+class AshEventStorage : public EventStorage<StructuredEventProto> {
  public:
   // The delay period for the PersistentProto.
   constexpr static base::TimeDelta kSaveDelay = base::Seconds(1);

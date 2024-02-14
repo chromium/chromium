@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
@@ -15,6 +16,7 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
@@ -42,7 +44,7 @@ AshStructuredMetricsRecorder::AshStructuredMetricsRecorder(
 
 AshStructuredMetricsRecorder::AshStructuredMetricsRecorder(
     std::unique_ptr<KeyDataProvider> key_provider,
-    std::unique_ptr<EventStorage> event_storage,
+    std::unique_ptr<EventStorage<StructuredEventProto>> event_storage,
     metrics::MetricsProvider* system_profile_provider)
     : StructuredMetricsRecorder(std::move(key_provider),
                                 std::move(event_storage)),

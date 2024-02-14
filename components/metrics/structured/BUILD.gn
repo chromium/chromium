@@ -10,7 +10,6 @@ import("//third_party/protobuf/proto_library.gni")
 # events with several attached metrics.
 static_library("structured") {
   sources = [
-    "event_storage.cc",
     "event_storage.h",
     "key_data_prefs_delegate.cc",
     "key_data_prefs_delegate.h",

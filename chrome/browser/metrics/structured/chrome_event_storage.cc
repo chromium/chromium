@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/chrome_event_storage.h"
-
 #include "components/metrics/structured/histogram_util.h"
 
 namespace metrics::structured {

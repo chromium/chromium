@@ -5,18 +5,24 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
 #define COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
 
-#include "base/files/file_path.h"
-#include "third_party/metrics_proto/structured_data.pb.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics {
 class StructuredEventProto;
 }  // namespace metrics
+
+namespace base {
+class FilePath;
+}
 
 namespace metrics::structured {
 
 class EventsProto;
 
 // Abstraction for how events are stored in Structured Metrics.
+template <typename T,
+          template <class> class Container =
+              ::google::protobuf::RepeatedPtrField>
 class EventStorage {
  public:
   EventStorage() = default;
@@ -26,18 +32,17 @@ class EventStorage {
   EventStorage(const EventStorage&) = delete;
   EventStorage& operator=(const EventStorage&) = delete;
 
-  virtual bool IsReady();
+  virtual bool IsReady() { return true; }
 
   // A callback to be run when the storage is ready.
   virtual void OnReady() {}
 
   // Add a new StructuredEventProto to be stored.
-  virtual void AddEvent(StructuredEventProto event) = 0;
+  virtual void AddEvent(T event) = 0;
 
   // External API for removing events from the storage.
   // Intended to be used with a Swap for improved performance.
-  virtual ::google::protobuf::RepeatedPtrField<StructuredEventProto>
-  TakeEvents() = 0;
+  virtual Container<T> TakeEvents() = 0;
 
   // The number of events that have been recorded.
   virtual int RecordedEventsCount() const = 0;
@@ -55,8 +60,7 @@ class EventStorage {
   virtual void CopyEvents(EventsProto* events_proto) const {}
 
   // Temporary API for external metrics.
-  virtual void AddBatchEvents(
-      const google::protobuf::RepeatedPtrField<StructuredEventProto>& events) {}
+  virtual void AddBatchEvents(const Container<T>& events) {}
 };
 
 }  // namespace metrics::structured

@@ -7,11 +7,15 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace metrics::structured {
 
@@ -59,7 +63,7 @@ class AshStructuredMetricsRecorder : public StructuredMetricsRecorder {
 
   AshStructuredMetricsRecorder(
       std::unique_ptr<KeyDataProvider> key_provider,
-      std::unique_ptr<EventStorage> event_storage,
+      std::unique_ptr<EventStorage<StructuredEventProto>> event_storage,
       metrics::MetricsProvider* system_profile_provider);
 
   void OnProfileAdded(const base::FilePath& profile_path) override;

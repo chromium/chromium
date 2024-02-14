@@ -7,11 +7,12 @@
 
 #include "components/metrics/structured/event_storage.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
 // Simple in-memory event storage for unit and some browser tests.
-class TestEventStorage final : public EventStorage {
+class TestEventStorage final : public EventStorage<StructuredEventProto> {
  public:
   TestEventStorage();
 

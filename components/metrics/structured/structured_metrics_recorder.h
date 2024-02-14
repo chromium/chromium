@@ -20,6 +20,7 @@
 #include "components/metrics/structured/lib/key_data_provider.h"
 #include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/recorder.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
@@ -44,8 +45,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
     virtual void OnEventRecorded(const StructuredEventProto& event) = 0;
   };
 
-  StructuredMetricsRecorder(std::unique_ptr<KeyDataProvider> key_data_provider,
-                            std::unique_ptr<EventStorage> event_storage);
+  StructuredMetricsRecorder(
+      std::unique_ptr<KeyDataProvider> key_data_provider,
+      std::unique_ptr<EventStorage<StructuredEventProto>> event_storage);
   ~StructuredMetricsRecorder() override;
   StructuredMetricsRecorder(const StructuredMetricsRecorder&) = delete;
   StructuredMetricsRecorder& operator=(const StructuredMetricsRecorder&) =
@@ -82,7 +84,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   void AddEventsObserver(Observer* watcher);
   void RemoveEventsObserver(Observer* watcher);
 
-  EventStorage* event_storage() { return event_storage_.get(); }
+  EventStorage<StructuredEventProto>* event_storage() {
+    return event_storage_.get();
+  }
 
   KeyDataProvider* key_data_provider() { return key_data_provider_.get(); }
 
@@ -209,7 +213,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   std::unique_ptr<KeyDataProvider> key_data_provider_;
 
   // Storage for events while on device.
-  std::unique_ptr<EventStorage> event_storage_;
+  std::unique_ptr<EventStorage<StructuredEventProto>> event_storage_;
 
   // Whether the metrics provider has completed initialization. Initialization
   // occurs across OnProfileAdded and OnKeyReady. No incoming
