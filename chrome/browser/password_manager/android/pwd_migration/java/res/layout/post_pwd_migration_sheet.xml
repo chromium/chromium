@@ -36,6 +36,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+            android:layout_marginBottom="24dp"
             android:clipToPadding="false"
             android:divider="@null"
             android:orientation="vertical">
@@ -63,6 +64,7 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
                 android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
@@ -72,7 +74,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/pwd_migration_warning_button_spacing"
                 android:minHeight="@dimen/pwd_migration_warning_button_height"
                 android:ellipsize="end"
                 android:singleLine="true"
