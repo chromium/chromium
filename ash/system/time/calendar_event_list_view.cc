@@ -100,6 +100,8 @@ class CalendarEmptyEventListView : public PillButton {
   void OpenCalendarDefault() {
     controller_->OnCalendarEventWillLaunch();
 
+    calendar_metrics::RecordCalendarLaunchedFromEmptyEventList();
+
     GURL finalized_url;
     bool opened_pwa = false;
     DCHECK(controller_->selected_date().has_value());

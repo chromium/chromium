@@ -365,6 +365,8 @@ void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
     return;
   }
 
+  calendar_metrics::RecordScrollEventInUpNext();
+
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);
   views::View* first_visible_child = event_views[first_visible_child_index];
@@ -401,6 +403,8 @@ void CalendarUpNextView::OnScrollRightButtonPressed(const ui::Event& event) {
   if (event_views.empty()) {
     return;
   }
+
+  calendar_metrics::RecordScrollEventInUpNext();
 
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);

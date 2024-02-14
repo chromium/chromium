@@ -1461,6 +1461,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.UserAction" enum="CalendarUserAction"
+    expires_after="2024-12-01">
+  <owner>jiamingc@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    User actions recorded when the user interacts with Calendar in Chrome OS
+    System UI.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.UserActionToOpenCalendarWebUi"
+    enum="CalendarUserAction" expires_after="2024-12-01">
+  <owner>jiamingc@google.com</owner>
+  <owner>tbarzic@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    User actions in Chrome OS Calendar System UI that result in Google Calendar
+    web UI being opened. Recorded when the user interacts with the Chrome OS
+    Calendar System UI.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.UserJourneyTime.{EventLaunchState}" units="ms"
     expires_after="2024-09-04">
   <owner>newcomer@google.com</owner>

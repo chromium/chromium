@@ -44,6 +44,61 @@ constexpr char kCalendarEventListEventDisplayedCount[] =
     "Ash.Calendar.EventListViewJelly.EventDisplayedCount";
 constexpr char kCalendarEventsDisplayedToUser[] =
     "Ash.Calendar.EventsDisplayedToUser";
+constexpr char kCalendarUserAction[] = "Ash.Calendar.UserAction";
+constexpr char kCalendarWebUiOpened[] =
+    "Ash.Calendar.UserActionToOpenCalendarWebUi";
+
+// This enum is used in histograms. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused, only add
+// at the end and. Also remember to update the CalendarUserAction enum in
+// tools/metrics/histograms/metadata/ash/enums.xml.
+enum class CalendarUserActionType {
+  kDateCellActivated = 0,
+  kMonthDownArrowActivated = 1,
+  kMonthUpArrowActivated = 2,
+  kScrolled = 3,
+  kKeyboardNavigation = 4,
+  kEventListItemPressed = 5,
+  kUpNextItemPressed = 6,
+  kEventListItemJoinButtonPressed = 7,
+  kUpNextJoinButtonPressed = 8,
+  kResetToTodayPressed = 9,
+  kTodaysEventsInUpNextPressed = 10,
+  kScrollInUpNext = 11,
+  kCalendarLaunchedFromEmptyEventList = 12,
+  kEventListClosed = 13,
+  kSettingsButtonPressed = 14,
+  kMaxValue = kSettingsButtonPressed,
+};
+
+bool ActionOpensCalendarWebUi(CalendarUserActionType action) {
+  switch (action) {
+    case CalendarUserActionType::kDateCellActivated:
+    case CalendarUserActionType::kMonthDownArrowActivated:
+    case CalendarUserActionType::kMonthUpArrowActivated:
+    case CalendarUserActionType::kScrolled:
+    case CalendarUserActionType::kKeyboardNavigation:
+    case CalendarUserActionType::kResetToTodayPressed:
+    case CalendarUserActionType::kTodaysEventsInUpNextPressed:
+    case CalendarUserActionType::kScrollInUpNext:
+    case CalendarUserActionType::kEventListClosed:
+    case CalendarUserActionType::kSettingsButtonPressed:
+      return false;
+    case CalendarUserActionType::kEventListItemPressed:
+    case CalendarUserActionType::kUpNextItemPressed:
+    case CalendarUserActionType::kEventListItemJoinButtonPressed:
+    case CalendarUserActionType::kUpNextJoinButtonPressed:
+    case CalendarUserActionType::kCalendarLaunchedFromEmptyEventList:
+      return true;
+  }
+}
+
+void RecordCalendarUserAction(CalendarUserActionType action) {
+  if (ActionOpensCalendarWebUi(action)) {
+    base::UmaHistogramEnumeration(kCalendarWebUiOpened, action);
+  }
+  base::UmaHistogramEnumeration(kCalendarUserAction, action);
+}
 
 }  // namespace
 
@@ -84,26 +139,45 @@ void RecordCalendarShowMetrics(
 }
 
 void RecordCalendarDateCellActivated(const ui::Event& event) {
+  RecordCalendarUserAction(CalendarUserActionType::kDateCellActivated);
+
   base::UmaHistogramEnumeration(kCalendarDateCellActivated,
                                 GetEventType(event));
 }
 
 void RecordMonthArrowButtonActivated(bool up, const ui::Event& event) {
+  RecordCalendarUserAction(
+      up ? CalendarUserActionType::kMonthUpArrowActivated
+         : CalendarUserActionType::kMonthDownArrowActivated);
+
   base::UmaHistogramEnumeration(up ? kCalendarMonthUpArrowButtonActivated
                                    : kCalendarMonthDownArrowButtonActivated,
                                 GetEventType(event));
 }
 
 void RecordEventListItemActivated(const ui::Event& event) {
+  RecordCalendarUserAction(CalendarUserActionType::kEventListItemPressed);
+
   base::UmaHistogramEnumeration(kCalendarEventListItemActivated,
                                 GetEventType(event));
+}
+
+void RecordEventListForTodayActivated() {
+  RecordCalendarUserAction(
+      CalendarUserActionType::kTodaysEventsInUpNextPressed);
 }
 
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time) {
   base::UmaHistogramMediumTimes(kCalendarMonthDwellTime, dwell_time);
 }
 
+void RecordResetToTodayPressed() {
+  RecordCalendarUserAction(CalendarUserActionType::kResetToTodayPressed);
+}
+
 void RecordScrollSource(CalendarViewScrollSource source) {
+  RecordCalendarUserAction(CalendarUserActionType::kScrolled);
+
   base::UmaHistogramEnumeration(kCalendarScrollSource, source);
 }
 
@@ -122,10 +196,14 @@ ui::AnimationThroughputReporter CreateAnimationReporter(
 
 void RecordCalendarKeyboardNavigation(
     const CalendarKeyboardNavigationSource key_source) {
+  RecordCalendarUserAction(CalendarUserActionType::kKeyboardNavigation);
+
   base::UmaHistogramEnumeration(kCalendarKeyboardNavigation, key_source);
 }
 
 void RecordEventListItemInUpNextLaunched(const ui::Event& event) {
+  RecordCalendarUserAction(CalendarUserActionType::kUpNextItemPressed);
+
   base::UmaHistogramEnumeration(kCalendarEventListItemInUpNextPressed,
                                 GetEventType(event));
 }
@@ -135,11 +213,16 @@ void RecordUpNextEventCount(const int event_count) {
 }
 
 void RecordJoinButtonPressedFromEventListView(const ui::Event& event) {
+  RecordCalendarUserAction(
+      CalendarUserActionType::kEventListItemJoinButtonPressed);
+
   base::UmaHistogramEnumeration(kCalendarEventListItemJoinButtonPressed,
                                 GetEventType(event));
 }
 
 void RecordJoinButtonPressedFromUpNextView(const ui::Event& event) {
+  RecordCalendarUserAction(CalendarUserActionType::kUpNextJoinButtonPressed);
+
   base::UmaHistogramEnumeration(kCalendarUpNextJoinButtonPressed,
                                 GetEventType(event));
 }
@@ -151,6 +234,23 @@ void RecordEventListEventCount(const int event_count) {
 
 void RecordEventsDisplayedToUser() {
   base::UmaHistogramBoolean(kCalendarEventsDisplayedToUser, true);
+}
+
+void RecordScrollEventInUpNext() {
+  RecordCalendarUserAction(CalendarUserActionType::kScrollInUpNext);
+}
+
+void RecordCalendarLaunchedFromEmptyEventList() {
+  RecordCalendarUserAction(
+      CalendarUserActionType::kCalendarLaunchedFromEmptyEventList);
+}
+
+void RecordEventListClosed() {
+  RecordCalendarUserAction(CalendarUserActionType::kEventListClosed);
+}
+
+void RecordSettingsButtonPressed() {
+  RecordCalendarUserAction(CalendarUserActionType::kSettingsButtonPressed);
 }
 
 }  // namespace calendar_metrics

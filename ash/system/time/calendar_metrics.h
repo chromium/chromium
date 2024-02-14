@@ -85,7 +85,11 @@ void RecordMonthArrowButtonActivated(bool up, const ui::Event& event);
 
 void RecordEventListItemActivated(const ui::Event& event);
 
+void RecordEventListForTodayActivated();
+
 void RecordMonthDwellTime(const base::TimeDelta& dwell_time);
+
+void RecordResetToTodayPressed();
 
 void RecordScrollSource(CalendarViewScrollSource source);
 
@@ -107,6 +111,14 @@ void RecordJoinButtonPressedFromUpNextView(const ui::Event& event);
 void RecordEventListEventCount(const int event_count);
 
 void RecordEventsDisplayedToUser();
+
+void RecordScrollEventInUpNext();
+
+void RecordCalendarLaunchedFromEmptyEventList();
+
+void RecordEventListClosed();
+
+void RecordSettingsButtonPressed();
 
 }  // namespace calendar_metrics
 

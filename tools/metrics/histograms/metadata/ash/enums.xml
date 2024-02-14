@@ -349,6 +349,24 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Arrow Keys"/>
 </enum>
 
+<enum name="CalendarUserAction">
+  <int value="0" label="Date cell"/>
+  <int value="1" label="Month down arrow"/>
+  <int value="2" label="Month up arrow"/>
+  <int value="3" label="Scrolled"/>
+  <int value="4" label="Keyboard navigation"/>
+  <int value="5" label="Event list item"/>
+  <int value="6" label="Item in up next list"/>
+  <int value="7" label="Join button in event list"/>
+  <int value="8" label="Join button in up next"/>
+  <int value="9" label="Reset to today button"/>
+  <int value="10" label="Open today's events from up next list"/>
+  <int value="11" label="Scrolled within up next list"/>
+  <int value="12" label="Launched calendar from empty event list"/>
+  <int value="13" label="Event list closed"/>
+  <int value="14" label="Settings button pressed"/>
+</enum>
+
 <enum name="CalendarViewScrollSource">
   <int value="0" label="By Mouse Wheel"/>
   <int value="1" label="By Gesture"/>
