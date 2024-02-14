@@ -5,6 +5,7 @@
 import {EventGenerator} from '/common/event_generator.js';
 import {EventHandler} from '/common/event_handler.js';
 import {KeyCodeData} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
@@ -363,3 +364,5 @@ export class TextNavigationManager {
 export namespace TextNavigationManager {
   export const NO_SELECT_INDEX = -1;
 }
+
+TestImportManager.exportForTesting(TextNavigationManager);

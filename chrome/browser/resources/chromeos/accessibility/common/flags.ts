@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Manages fetching and checking command line flags. */
+import {TestImportManager} from './testing/test_import_manager.js';
 
 export enum FlagName {
   CHROMEVOX_Q1_FAST_TRACK = 'enable-chromevox-q1-fast-track-features',
@@ -42,3 +43,5 @@ export class Flags {
     return Promise.all(promises);
   }
 }
+
+TestImportManager.exportForTesting(Flags);

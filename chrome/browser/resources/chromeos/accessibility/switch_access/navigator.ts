@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {ItemScanManager} from './item_scan_manager.js';
 import {ItemNavigatorInterface, PointNavigatorInterface} from './navigator_interfaces.js';
 import {PointScanManager} from './point_scan_manager.js';
@@ -37,3 +39,5 @@ export class Navigator {
     return Navigator.pointManager_;
   }
 }
+
+TestImportManager.exportForTesting(Navigator);

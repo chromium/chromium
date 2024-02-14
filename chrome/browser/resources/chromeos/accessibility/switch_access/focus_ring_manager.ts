@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {MenuManager} from './menu_manager.js';
 import {SAChildNode, SANode} from './nodes/switch_access_node.js';
@@ -256,3 +257,5 @@ const PREVIEW_COLOR = '#8AB4F880';  // Google Blue 300, 50% opacity
 
 /** The inner color of the primary focus ring. */
 const PRIMARY_COLOR = '#8AB4F8';  // Google Blue 300
+
+TestImportManager.exportForTesting(FocusRingManager, ['RingId', RingId]);

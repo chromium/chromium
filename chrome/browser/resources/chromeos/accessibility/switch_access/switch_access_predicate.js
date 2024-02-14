@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutomationPredicate} from '../common/automation_predicate.js';
-import {RectUtil} from '../common/rect_util.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {SACache} from './cache.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
@@ -283,3 +284,6 @@ export const SwitchAccessPredicate = {
         SwitchAccessPredicate.isInteresting(node, scope, cache);
   },
 };
+
+TestImportManager.exportForTesting(
+    ['SwitchAccessPredicate', SwitchAccessPredicate]);

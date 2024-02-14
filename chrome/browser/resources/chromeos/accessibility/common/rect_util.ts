@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Equivalent to chrome.accessibilityPrivate.ScreenRect.
- */
-interface ScreenRect {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
+import {TestImportManager} from './testing/test_import_manager.js';
+
+type ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 
 /** A collection of helper functions when dealing with rects. */
 export const RectUtil = {
@@ -321,3 +315,5 @@ export const RectUtil = {
     return result;
   },
 };
+
+TestImportManager.exportForTesting(['RectUtil', RectUtil]);

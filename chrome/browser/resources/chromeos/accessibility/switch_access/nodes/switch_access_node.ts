@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ActionResponse, ErrorType} from '../switch_access_constants.js';
@@ -377,4 +379,6 @@ export class SARootNode {
   }
 }
 
-export type SANode = SAChildNode | SARootNode;
+export type SANode = SAChildNode|SARootNode;
+
+TestImportManager.exportForTesting(SARootNode);

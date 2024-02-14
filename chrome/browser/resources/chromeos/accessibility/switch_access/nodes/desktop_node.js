@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ErrorType} from '../switch_access_constants.js';
@@ -99,3 +101,5 @@ export class DesktopNode extends BasicRootNode {
     root.children = interestingChildren.map(childConstructor);
   }
 }
+
+TestImportManager.exportForTesting(DesktopNode);

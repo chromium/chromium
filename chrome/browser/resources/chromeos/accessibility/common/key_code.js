@@ -8,6 +8,7 @@
  * ui/events/keycodes/keyboard_codes_posix.h, but with specific edits for Chrome
  * OS and accessibility.
  */
+import {TestImportManager} from './testing/test_import_manager.js';
 
 /** @type {!Object<{code: !Key.Code, name: !Key.Name}>} */
 export const KeyCodeData = {
@@ -239,3 +240,5 @@ KeyCode.fromName = function(name) {
   const key = Object.entries(KeyName).find(([k, n]) => n === name)[0];
   return KeyCode[key];
 };
+
+TestImportManager.exportForTesting(['KeyCode', KeyCode]);

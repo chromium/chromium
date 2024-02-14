@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Key} from './key_code.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 export interface MouseClickParams {
   delayMs?: number;
@@ -97,3 +98,5 @@ export class EventGenerator {
         {type, x, y, touchAccessibility});
   }
 }
+
+TestImportManager.exportForTesting(EventGenerator);

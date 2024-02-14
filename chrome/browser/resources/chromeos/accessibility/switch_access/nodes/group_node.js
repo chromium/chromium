@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RectUtil} from '../../common/rect_util.js';
+import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Navigator} from '../navigator.js';
 import {ActionResponse} from '../switch_access_constants.js';
 
@@ -160,3 +162,5 @@ export class GroupNode extends SAChildNode {
     return result;
   }
 }
+
+TestImportManager.exportForTesting(GroupNode);

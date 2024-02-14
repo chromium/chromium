@@ -9,24 +9,6 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js'),
-      importModule(
-          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule(
-          ['KeyboardNode', 'KeyboardRootNode'],
-          '/switch_access/nodes/keyboard_node.js'),
-      importModule('ItemScanManager', '/switch_access/item_scan_manager.js'),
-      importModule('Navigator', '/switch_access/navigator.js'),
-      importModule('SACache', '/switch_access/cache.js'),
-      importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('AutomationTreeWalker', '/common/tree_walker.js'),
-    ]);
-
     globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
     BackButtonNode

@@ -5,18 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the Switch Access predicates. */
-SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
-      importModule('SACache', '/switch_access/cache.js'),
-      importModule('SARootNode', '/switch_access/nodes/switch_access_node.js'),
-      importModule('AutomationTreeWalker', '/common/tree_walker.js'),
-    ]);
-  }
-};
+SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {};
 
 function fakeLoc(x) {
   return {left: x, top: x, width: x, height: x};

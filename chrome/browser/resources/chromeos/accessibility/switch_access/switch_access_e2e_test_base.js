@@ -47,7 +47,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('SwitchAccess', '/switch_access/switch_access.js');
     await SwitchAccess.ready();
   }
 

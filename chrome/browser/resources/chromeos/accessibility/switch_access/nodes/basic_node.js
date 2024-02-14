@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {constants} from '../../common/constants.js';
-import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
-import {AutomationTreeWalker} from '../../common/tree_walker.js';
+import {constants} from '/common/constants.js';
+import {RepeatedEventHandler} from '/common/repeated_event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+import {AutomationTreeWalker} from '/common/tree_walker.js';
+
 import {SACache} from '../cache.js';
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {Navigator} from '../navigator.js';
@@ -439,3 +441,5 @@ export class BasicRootNode extends SARootNode {
 }
 
 BasicRootNode.builders_ = [];
+
+TestImportManager.exportForTesting(BasicNode, BasicRootNode);

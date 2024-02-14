@@ -6,15 +6,6 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the SwitchAccess class. */
 SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      importModule('Flags', '/common/flags.js'),
-      importModule('SwitchAccess', '/switch_access/switch_access.js'),
-    ]);
-  }
-
   async waitForCallback() {
     return new Promise(resolve => this.promiseCallback = resolve);
   }
