@@ -89,6 +89,7 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
                                                  uint32_t status) = 0;
   virtual void TriggerSuccessfulUpdateForTesting() = 0;
   virtual bool HasUpdateStartedForTesting() = 0;
+  virtual void EmitDeviceRequestForTesting(uint32_t device_request_id) = 0;
 
  protected:
   friend class FwupdClientTest;

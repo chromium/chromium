@@ -238,6 +238,9 @@ class FwupdClientImpl : public FwupdClient {
     // This only returns a real value when called with FakeFwupdClient.
     return false;
   }
+  void EmitDeviceRequestForTesting(uint32_t device_request_id) override {
+    // No-op, this only has an effect when called with FakeFwupdClient.
+  }
 
  private:
   // Pops a string-to-variant-string dictionary from the reader.

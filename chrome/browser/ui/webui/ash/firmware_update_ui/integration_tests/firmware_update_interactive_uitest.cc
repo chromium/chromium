@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
@@ -17,6 +19,8 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
   FirmwareUpdateInteractiveUiTest() {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirmwareUpdatesAppWebContentsId);
     webcontents_id_ = kFirmwareUpdatesAppWebContentsId;
+
+    feature_list_.InitAndEnableFeature(features::kFirmwareUpdateUIV2);
   }
 
   auto LaunchFirmwareUpdatesApp() {
@@ -59,10 +63,20 @@ class FirmwareUpdateInteractiveUiTest : public InteractiveAshTest {
     }));
   }
 
+  auto TriggerDeviceRequestToUnplugReplug() {
+    return Steps(Do([this]() {
+      DCHECK(fwupd_client());
+      // A device_request_id of 1 corresponds to FWUPD_REQUEST_ID_REMOVE_REPLUG
+      // in firmware_update.mojom.
+      fwupd_client()->EmitDeviceRequestForTesting(/*device_request_id=*/1);
+    }));
+  }
+
   FwupdClient* fwupd_client() const { return fwupd_client_; }
 
  protected:
   ui::ElementIdentifier webcontents_id_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   raw_ptr<FwupdClient> fwupd_client_ = nullptr;
@@ -104,6 +118,12 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
       "#progress",
   };
 
+  const DeepQuery kUpdateDialogBodyQuery{
+      "firmware-update-app",
+      "firmware-update-dialog",
+      "#updateDialogBody",
+  };
+
   RunTestSequence(
       InstrumentNextTab(webcontents_id_, AnyBrowser()),
       LaunchFirmwareUpdatesApp(),
@@ -131,6 +151,19 @@ IN_PROC_BROWSER_TEST_F(FirmwareUpdateInteractiveUiTest,
           WaitForElementTextContains(webcontents_id_,
                                      kUpdateDialogProgressQuery,
                                      "Updating (50% complete)"),
+          Log("Triggering device request."),
+          TriggerDeviceRequestToUnplugReplug(),
+          Log("Triggering Fwupd properties change to WaitingForUser."),
+          TriggerFwupdPropertiesChange(/*percentage=*/60,
+                                       /*status=*/FwupdStatus::kWaitingForUser),
+          Log("Waiting for update dialog progress to match expected value..."),
+          WaitForElementTextContains(webcontents_id_,
+                                     kUpdateDialogProgressQuery,
+                                     "Paused (60% complete)"),
+          Log("Waiting for update dialog body to match expected value..."),
+          WaitForElementTextContains(
+              webcontents_id_, kUpdateDialogBodyQuery,
+              "Unplug and replug the device to continue the update process."),
           Log("Triggering successful update."), TriggerSuccessfulUpdate(),
           Log("Verifying existence of update done button."),
           WaitForElementExists(webcontents_id_,

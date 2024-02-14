@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
                                          uint32_t status) override;
   void TriggerSuccessfulUpdateForTesting() override;
   bool HasUpdateStartedForTesting() override;
+  void EmitDeviceRequestForTesting(uint32_t device_request_id) override;
 
  private:
   void SetFwupdFeatureFlags() override;

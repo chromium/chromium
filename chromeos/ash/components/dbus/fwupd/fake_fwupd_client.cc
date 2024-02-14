@@ -89,6 +89,13 @@ bool FakeFwupdClient::HasUpdateStartedForTesting() {
   return has_update_started_;
 }
 
+void FakeFwupdClient::EmitDeviceRequestForTesting(uint32_t device_request_id) {
+  for (auto& observer : observers_) {
+    FwupdRequest request(/*id=*/device_request_id, /*kind=*/2);
+    observer.OnDeviceRequestResponse(request);
+  }
+}
+
 // Implement stub method to satisfy interface.
 void FakeFwupdClient::SetFwupdFeatureFlags() {}
 
