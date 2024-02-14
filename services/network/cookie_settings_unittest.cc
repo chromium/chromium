@@ -1036,9 +1036,6 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   // still be allowed.
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
-      ContentSettingsType::COOKIES,
-      {CreateSetting(kURL, kURL, CONTENT_SETTING_ALLOW)});
-  settings.set_content_settings(
       ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
   EXPECT_TRUE(settings.IsCookieAccessible(
@@ -1052,6 +1049,67 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
   EXPECT_FALSE(status.HasExclusionReason(
       net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT));
+}
+
+TEST_P(CookieSettingsTest, IsCookieAccessible_NoneExemptionReason) {
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+  settings.set_block_third_party_cookies(true);
+  if (IsTrackingProtectionEnabledFor3pcd()) {
+    settings.set_tracking_protection_enabled_for_3pcd(true);
+  }
+
+  std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
+      MakeCanonicalSameSiteNoneCookie(
+          "__Host-partitioned", kURL,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kOtherURL)));
+  std::unique_ptr<net::CanonicalCookie> samesitelax_cookie =
+      MakeCanonicalCookie("samesite_lax", kURL);
+
+  // Precautionary - partitioned cookies should be allowed with no exemption
+  // reason.
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
+      GetCookieSettingOverrides(), &status));
+  EXPECT_TRUE(status.exemption_reason() ==
+              net::CookieInclusionStatus::ExemptionReason::kNone);
+
+  // Sets exemptions
+  if (IsStorageAccessGrantEligible()) {
+    // Sets the storage access granted by Storage Access API.
+    settings.set_content_settings(
+        ContentSettingsType::STORAGE_ACCESS,
+        {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+  } else if (IsTopLevelStorageAccessGrantEligible()) {
+    // Sets the storage access granted by Top-Level Storage Access API.
+    settings.set_content_settings(
+        ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+        {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+  } else {
+    // Sets a site-specific setting
+    settings.set_content_settings(
+        ContentSettingsType::COOKIES,
+        {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+  }
+  // Partitioned cookies should be allowed with no exemption reason even with
+  // the exemptions.
+  status.ResetForTesting();
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
+      GetCookieSettingOverrides(), &status));
+  EXPECT_TRUE(status.exemption_reason() ==
+              net::CookieInclusionStatus::ExemptionReason::kNone);
+
+  // non-SameSite=None cookies should have no exemption reason.
+  status.ResetForTesting();
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *samesitelax_cookie, GURL(kURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kOtherURL)), net::FirstPartySetMetadata(),
+      GetCookieSettingOverrides(), &status));
+  EXPECT_TRUE(status.exemption_reason() ==
+              net::CookieInclusionStatus::ExemptionReason::kNone);
 }
 
 TEST_P(CookieSettingsTest, IsCookieAccessible_SitesInFirstPartySets) {
@@ -1313,7 +1371,9 @@ TEST_P(CookieSettingsTest,
   }
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalSameSiteNoneCookie("cookie", kDomainURL), {}}};
+      {*MakeCanonicalSameSiteNoneCookie("cookie", kDomainURL), {}},
+      {*MakeCanonicalCookie("samesite_lax", kDomainURL), {}},
+  };
   net::CookieAccessResultList excluded_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("excluded_other", kDomainURL),
        // The ExclusionReason below is irrelevant, as long as there is one.
@@ -1336,18 +1396,31 @@ TEST_P(CookieSettingsTest,
             expected_any_allowed);
 
   if (expected_any_allowed) {
-    EXPECT_THAT(maybe_included_cookies,
-                ElementsAre(MatchesCookieWithAccessResult(
-                    net::MatchesCookieWithName("cookie"),
-                    MatchesCookieAccessResult(
-                        AllOf(net::IsInclude(),
-                              Not(net::HasWarningReason(
-                                  net::CookieInclusionStatus::WarningReason::
-                                      WARN_THIRD_PARTY_PHASEOUT)),
-                              net::HasExactlyExemptionReason(
-                                  net::CookieInclusionStatus::ExemptionReason::
-                                      kStorageAccess)),
-                        _, _, _))));
+    EXPECT_THAT(
+        maybe_included_cookies,
+        ElementsAre(
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("cookie"),
+                MatchesCookieAccessResult(
+                    AllOf(net::IsInclude(),
+                          Not(net::HasWarningReason(
+                              net::CookieInclusionStatus::WarningReason::
+                                  WARN_THIRD_PARTY_PHASEOUT)),
+                          net::HasExactlyExemptionReason(
+                              net::CookieInclusionStatus::ExemptionReason::
+                                  kStorageAccess)),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("samesite_lax"),
+                MatchesCookieAccessResult(
+                    AllOf(net::IsInclude(),
+                          Not(net::HasWarningReason(
+                              net::CookieInclusionStatus::WarningReason::
+                                  WARN_THIRD_PARTY_PHASEOUT)),
+                          net::HasExactlyExemptionReason(
+                              net::CookieInclusionStatus::ExemptionReason::
+                                  kNone)),
+                    _, _, _))));
     EXPECT_THAT(
         excluded_cookies,
         UnorderedElementsAre(MatchesCookieWithAccessResult(
@@ -1375,6 +1448,15 @@ TEST_P(CookieSettingsTest,
                                       EXCLUDE_THIRD_PARTY_PHASEOUT
                                 : net::CookieInclusionStatus::
                                       EXCLUDE_USER_PREFERENCES}),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                net::MatchesCookieWithName("samesite_lax"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<
+                            net::CookieInclusionStatus::ExclusionReason>{
+                            net::CookieInclusionStatus::
+                                EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
                 net::MatchesCookieWithName("excluded_other"),
