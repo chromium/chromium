@@ -25,6 +25,7 @@
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_profiles_button.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -1285,6 +1286,9 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
       // comes later in the focus order (See documentation of
       // `OnViewDestroyingOrDisabling()`).
       focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
+      if (auto* desk_profiles_button = (*iter)->desk_profiles_button()) {
+        focus_cycler->OnViewDestroyingOrDisabling(desk_profiles_button);
+      }
       focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_preview());
     }
   }
