@@ -629,6 +629,7 @@ _CONFIG = [
             'net::CanonicalCookie',
             'net::CookieInclusionStatus',
             'net::CookiePriority',
+            'net::CookiePartitionKey',
             'net::CookieSameSite',
             'net::CookieSourceScheme',
 
