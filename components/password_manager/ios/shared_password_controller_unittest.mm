@@ -446,13 +446,11 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
   web::WebFrame* frame = web_frame.get();
   AddWebFrame(std::move(web_frame));
 
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[]);
   OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
-                retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                              fieldIdentifier:form_query.uniqueFieldID
-                                   forFrameId:""
-                                    fieldType:form_query.fieldType])
-      .andReturn(@[])
-      .andCompareStringAtIndex(web_frame_id, 2);
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
@@ -486,13 +484,11 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfFrameDestroyed) {
   web::WebFrame* frame = nullptr;
   const std::string frame_id = "";
 
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[]);
   OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
-                retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                              fieldIdentifier:form_query.uniqueFieldID
-                                   forFrameId:""
-                                    fieldType:form_query.fieldType])
-      .andReturn(@[])
-      .andCompareStringAtIndex(frame_id, 2);
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
 
@@ -537,13 +533,11 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
   web::WebFrame* frame = web_frame.get();
   AddWebFrame(std::move(web_frame));
 
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[ suggestion ]);
   OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
-                retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                              fieldIdentifier:form_query.uniqueFieldID
-                                   forFrameId:""
-                                    fieldType:form_query.fieldType])
-      .andReturn(@[ suggestion ])
-      .andCompareStringAtIndex(web_frame_id, 2);
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
@@ -586,13 +580,11 @@ TEST_F(SharedPasswordControllerTest,
   web::WebFrame* frame = web_frame.get();
   AddWebFrame(std::move(web_frame));
 
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[]);
   OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
-                retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                              fieldIdentifier:form_query.uniqueFieldID
-                                   forFrameId:""
-                                    fieldType:form_query.fieldType])
-      .andReturn(@[])
-      .andCompareStringAtIndex(web_frame_id, 2);
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
 
   autofill::PasswordFormGenerationData form_generation_data = {
       form_query.uniqueFormID, form_query.uniqueFieldID,
@@ -1355,13 +1347,11 @@ TEST_F(SharedPasswordControllerTest,
             typedValue:@""
                frameID:kTestFrameID];
 
+  OCMExpect([suggestion_helper_ retrieveSuggestionsWithForm:form_query])
+      .andReturn(@[]);
   OCMExpect([[suggestion_helper_ ignoringNonObjectArgs]
-                retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                              fieldIdentifier:form_query.uniqueFieldID
-                                   forFrameId:""
-                                    fieldType:form_query.fieldType])
-      .andReturn(@[])
-      .andCompareStringAtIndex(web_frame_id, 2);
+      isPasswordFieldOnForm:form_query
+                   webFrame:frame]);
 
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
       .WillOnce(Return(false));

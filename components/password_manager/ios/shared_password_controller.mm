@@ -508,14 +508,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     completion({}, self);
     return;
   }
-  NSArray<FormSuggestion*>* rawSuggestions = [self.suggestionHelper
-      retrieveSuggestionsWithFormID:formQuery.uniqueFormID
-                    fieldIdentifier:formQuery.uniqueFieldID
-                         forFrameId:frameId
-                          fieldType:formQuery.fieldType];
+  NSArray<FormSuggestion*>* rawSuggestions =
+      [self.suggestionHelper retrieveSuggestionsWithForm:formQuery];
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
-  bool isPasswordField = [formQuery isOnPasswordField];
+  bool isPasswordField = [self.suggestionHelper isPasswordFieldOnForm:formQuery
+                                                             webFrame:frame];
   for (FormSuggestion* rawSuggestion in rawSuggestions) {
     // 1) If this is a focus event or the field is empty show all suggestions.
     // Otherwise:

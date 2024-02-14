@@ -135,27 +135,27 @@ enum class FormExtractionStatus {
 
 #pragma mark - Public methods
 
-- (NSArray<FormSuggestion*>*)
-    retrieveSuggestionsWithFormID:(FormRendererId)formIdentifier
-                  fieldIdentifier:(FieldRendererId)fieldIdentifier
-                       forFrameId:(const std::string&)frameId
-                        fieldType:(NSString*)fieldType {
+- (NSArray<FormSuggestion*>*)retrieveSuggestionsWithForm:
+    (FormSuggestionProviderQuery*)formQuery {
+  const std::string frameId = SysNSStringToUTF8(formQuery.frameID);
   AccountSelectFillData* fillData = [self fillDataForFrameId:frameId];
 
-  BOOL isPasswordField = [fieldType isEqual:kPasswordFieldType];
+  BOOL isPasswordField =
+      [self isPasswordFieldOnForm:formQuery
+                         webFrame:[self frameWithId:frameId]];
 
   NSMutableArray<FormSuggestion*>* results = [NSMutableArray array];
 
-  if (fillData->IsSuggestionsAvailable(formIdentifier, fieldIdentifier,
-                                       isPasswordField)) {
-    const password_manager::FormInfo* formInfo =
-        fillData->GetFormInfo(formIdentifier, fieldIdentifier, isPasswordField);
+  if (fillData->IsSuggestionsAvailable(
+          formQuery.uniqueFormID, formQuery.uniqueFieldID, isPasswordField)) {
+    const password_manager::FormInfo* formInfo = fillData->GetFormInfo(
+        formQuery.uniqueFormID, formQuery.uniqueFieldID, isPasswordField);
     bool is_single_username_form = formInfo && formInfo->username_element_id &&
                                    !formInfo->password_element_id;
 
     std::vector<password_manager::UsernameAndRealm> usernameAndRealms =
-        fillData->RetrieveSuggestions(formIdentifier, fieldIdentifier,
-                                      isPasswordField);
+        fillData->RetrieveSuggestions(formQuery.uniqueFormID,
+                                      formQuery.uniqueFieldID, isPasswordField);
 
     for (const auto& usernameAndRealm : usernameAndRealms) {
       NSString* username = SysUTF16ToNSString(usernameAndRealm.username);
@@ -285,7 +285,7 @@ enum class FormExtractionStatus {
 
 - (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
                      webFrame:(web::WebFrame*)webFrame {
-  if (![formQuery isOnPasswordField]) {
+  if (![formQuery.fieldType isEqual:kPasswordFieldType]) {
     return NO;
   }
 

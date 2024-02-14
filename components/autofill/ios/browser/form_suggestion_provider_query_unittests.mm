@@ -38,7 +38,6 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
             typedValue:kTestTypedValue
                frameID:kTestFrameID];
 
-  EXPECT_TRUE([formQuery isOnPasswordField]);
   EXPECT_TRUE([formQuery hasFocusType]);
 }
 
@@ -55,6 +54,5 @@ TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
             typedValue:kTestTypedValue
                frameID:kTestFrameID];
 
-  EXPECT_FALSE([formQuery isOnPasswordField]);
   EXPECT_FALSE([formQuery hasFocusType]);
 }

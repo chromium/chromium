@@ -56,9 +56,6 @@ NSString* const kPasswordFieldType = @"password";
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns true if a query comes from a password field.
-- (BOOL)isOnPasswordField;
-
 // Returns true if a query comes from a focus on a field.
 - (BOOL)hasFocusType;
 
