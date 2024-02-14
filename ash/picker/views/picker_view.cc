@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
@@ -22,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -39,6 +41,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -164,6 +167,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
       SystemShadow::CreateShadowOnNinePatchLayerForView(this, kShadowType);
   shadow_->SetRoundedCornerRadius(kBorderRadius);
   SetPreferredSize(kPickerSize);
+  SetProperty(views::kElementIdentifierKey, kPickerElementId);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);

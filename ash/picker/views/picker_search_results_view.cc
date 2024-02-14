@@ -9,6 +9,7 @@
 #include <utility>
 #include <variant>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -40,6 +42,7 @@ PickerSearchResultsView::PickerSearchResultsView(
       asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+  SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
