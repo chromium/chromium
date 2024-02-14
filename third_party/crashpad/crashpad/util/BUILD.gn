@@ -604,6 +604,10 @@ crashpad_static_library("util") {
     ]
   }
 
+  if (crashpad_is_ios) {
+    configs += [ "../build:crashpad_is_ios_app_extension" ]
+  }
+
   if (crashpad_is_win) {
     libs = [
       "user32.lib",

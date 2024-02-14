@@ -174,6 +174,7 @@ source_set("client_test") {
     "annotation_list_test.cc",
     "annotation_test.cc",
     "crash_report_database_test.cc",
+    "crashpad_info_test.cc",
     "length_delimited_ring_buffer_test.cc",
     "prune_crash_reports_test.cc",
     "ring_buffer_annotation_test.cc",
