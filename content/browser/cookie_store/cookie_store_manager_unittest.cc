@@ -1843,8 +1843,7 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
 // cookies with third-party cookie blocking on.
 TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
+  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
                                 {});
 
   // Register 1P worker.
@@ -1906,8 +1905,7 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
 // cookies with third-party cookie blocking on.
 TEST_P(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
+  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
                                 {});
 
   // Register 3P partitioned worker.
@@ -1985,8 +1983,7 @@ TEST_P(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
 
 TEST_F(CookieStoreManagerTest, PartitionedWorker_NoncedPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
+  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
                                 {});
 
   // Register nonced partitioned worker.
