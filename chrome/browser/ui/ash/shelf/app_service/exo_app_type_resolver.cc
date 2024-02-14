@@ -76,9 +76,6 @@ void ExoAppTypeResolver::PopulateProperties(
   if (IsLacrosAppId(params.app_id)) {
     out_properties_container.SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
-    // Make sure Lacros is treated as opaque for occlusion tracking purposes.
-    out_properties_container.SetProperty(
-        chromeos::kWindowManagerManagesOpacityKey, true);
     // Lacros is trusted not to abuse window activation, so grant it a
     // non-expiring permission to activate.
     out_properties_container.SetProperty(

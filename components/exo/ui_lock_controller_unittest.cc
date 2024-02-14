@@ -197,7 +197,7 @@ class UILockControllerTest : public test::ExoTestBase {
 };
 
 TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
-  std::unique_ptr<ShellSurface> test_surface = BuildSurface(1024, 768);
+  std::unique_ptr<ShellSurface> test_surface = BuildSurface(600, 400);
   test_surface->SetUseImmersiveForFullscreen(false);
   test_surface->SetFullscreen(true, display::kInvalidDisplayId);
   test_surface->surface_for_testing()->Commit();
