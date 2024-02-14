@@ -1120,7 +1120,15 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
 
 // Test that an "a.test" iframe in a "b.test" frame cannot set
 // `sameSiteCookies: 'all'` option when starting a shared worker.
-IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
+// TODO(b/325207698): Disabled on Mac due to flakiness.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SameSiteCookiesSharedWorkerCrossAll \
+  DISABLED_SameSiteCookiesSharedWorkerCrossAl
+#else
+#define MAYBE_SameSiteCookiesSharedWorkerCrossAll \
+  SameSiteCookiesSharedWorkerCrossAl
+#endif
+IN_PROC_BROWSER_TEST_P(WorkerTest, MAYBE_SameSiteCookiesSharedWorkerCrossAll) {
   if (!SupportsSharedWorker()) {
     return;
   }
