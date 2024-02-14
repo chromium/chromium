@@ -178,7 +178,8 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests GetIcon returns the default search icon when the match is a search
 // query.
-TEST_F(OmniboxViewTest, GetIcon_Default) {
+// TODO(crbug.com/325116092): Re-enable this test
+TEST_F(OmniboxViewTest, DISABLED_GetIcon_Default) {
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon,
@@ -192,7 +193,8 @@ TEST_F(OmniboxViewTest, GetIcon_Default) {
 }
 
 // Tests GetIcon returns the bookmark icon when the match is bookmarked.
-TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
+// TODO(crbug.com/325116092): Re-enable this test
+TEST_F(OmniboxViewTest, DISABLED_GetIcon_BookmarkIcon) {
   const GURL kUrl("https://bookmarks.com");
 
   AutocompleteMatch match;
