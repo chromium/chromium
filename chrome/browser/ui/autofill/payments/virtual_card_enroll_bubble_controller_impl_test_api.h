@@ -35,8 +35,9 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
     controller_->ui_model_.enrollment_fields = fields;
   }
 #else
-  void SetIsEnrollmentInProgress(bool is_enrollment_in_progress) {
-    controller_->is_enrollment_in_progress_ = is_enrollment_in_progress;
+  VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus
+  GetEnrollmentStatus() {
+    return controller_->enrollment_status_;
   }
 #endif  // IS_ANDROID
 

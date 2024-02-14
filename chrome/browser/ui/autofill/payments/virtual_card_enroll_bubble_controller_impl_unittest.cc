@@ -211,17 +211,50 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
 TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingState) {
   base::HistogramTester histogram_tester;
-  test_api(controller())
-      .SetIsEnrollmentInProgress(/*is_enrollment_in_progress=*/true);
   ShowBubble();
-  EXPECT_TRUE(GetBubbleViews() != nullptr);
-  controller()->OnAcceptButton();
+  EXPECT_NE(GetBubbleViews(), nullptr);
+  controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
   controller()->HideIconAndBubble();
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
       VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
       1);
+}
+
+// Tests virtual card enrollment flow with loading and confirmation.
+TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+       ShowBubbleInLoadingAndConfirmationState) {
+  base::HistogramTester histogram_tester;
+  ShowBubble();
+  EXPECT_NE(GetBubbleViews(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+  EXPECT_EQ(test_api(controller()).GetEnrollmentStatus(),
+            VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::kNone);
+
+  controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
+  EXPECT_EQ(test_api(controller()).GetEnrollmentStatus(),
+            VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::
+                kPaymentsServerRequestInFlight);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+      1);
+
+  controller()->ShowConfirmationBubbleView(/*is_vcn_enrolled=*/true);
+  EXPECT_EQ(
+      test_api(controller()).GetEnrollmentStatus(),
+      VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::kCompleted);
+  EXPECT_NE(GetBubbleViews(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  // Expect the metric for virtual card enroll bubble to not change after
+  // showing the confirmation bubble.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow", 1);
 }
 }  // namespace
 }  // namespace autofill

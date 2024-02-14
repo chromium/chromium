@@ -77,6 +77,10 @@ class AutofillBubbleHandler {
       VirtualCardEnrollBubbleController* controller,
       bool is_user_gesture) = 0;
 
+  virtual AutofillBubbleBase* ShowVirtualCardEnrollConfirmationBubble(
+      content::WebContents* web_contents,
+      VirtualCardEnrollBubbleController* controller) = 0;
+
   virtual AutofillBubbleBase* ShowMandatoryReauthBubble(
       content::WebContents* web_contents,
       MandatoryReauthBubbleController* controller,

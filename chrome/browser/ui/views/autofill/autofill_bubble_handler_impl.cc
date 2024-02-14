@@ -277,6 +277,24 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
   return bubble;
 }
 
+AutofillBubbleBase*
+AutofillBubbleHandlerImpl::ShowVirtualCardEnrollConfirmationBubble(
+    content::WebContents* web_contents,
+    VirtualCardEnrollBubbleController* controller) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kVirtualCardEnroll);
+  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+      controller->GetOnBubbleClosedCallback();
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kVirtualCardEnroll);
+  const SaveCardAndVirtualCardEnrollConfirmationUiParams& ui_params =
+      controller->GetConfirmationUiParams();
+
+  return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+      anchor_view, web_contents, std::move(callback), icon_view, ui_params);
+}
+
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
     content::WebContents* web_contents,
     MandatoryReauthBubbleController* controller,

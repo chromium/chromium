@@ -22,6 +22,9 @@ SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
       controller_hide_callback_(std::move(controller_hide_callback)),
       ui_params_(std::move(ui_params)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetShowCloseButton(true);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Hide() {

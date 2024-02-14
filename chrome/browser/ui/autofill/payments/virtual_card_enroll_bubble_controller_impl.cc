@@ -102,12 +102,27 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollBubbleView() const {
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
   HideBubble();
   bubble_state_ = BubbleState::kHidden;
-  is_enrollment_in_progress_ = false;
+  enrollment_status_ = EnrollmentStatus::kNone;
   UpdatePageActionIcon();
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::IsEnrollmentInProgress() const {
-  return is_enrollment_in_progress_;
+  return enrollment_status_ == EnrollmentStatus::kPaymentsServerRequestInFlight;
+}
+
+void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
+    bool is_vcn_enrolled) {
+  HideIconAndBubble();
+  enrollment_status_ = EnrollmentStatus::kCompleted;
+  confirmation_ui_params_ =
+      is_vcn_enrolled ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                            CreateForVirtualCardSuccess()
+                      : SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                            CreateForVirtualCardFailure(
+                                /*card_label=*/ui_model_.enrollment_fields
+                                    .credit_card.NetworkAndLastFourDigits());
+  // Show enrollment confirmation bubble.
+  Show();
 }
 #endif
 
@@ -120,7 +135,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
   if (did_switch_to_loading_state) {
     // When user clicks "Accept", the bubble closing is delayed since we wait
     // for the enrollment to finish on the server.
-    is_enrollment_in_progress_ = true;
+    enrollment_status_ = EnrollmentStatus::kPaymentsServerRequestInFlight;
   } else {
     bubble_state_ = BubbleState::kHidden;
   }
@@ -179,6 +194,12 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
   if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
     return;
   }
+  // TODO(crbug.com/40287758) Record metrics for closing the loading and
+  // confirmation view.
+  if (enrollment_status_ == EnrollmentStatus::kCompleted ||
+      enrollment_status_ == EnrollmentStatus::kPaymentsServerRequestInFlight) {
+    return;
+  }
 #endif
 
   VirtualCardEnrollmentBubbleResult result;
@@ -223,6 +244,18 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
           ui_model_.enrollment_fields.previously_declined);
     }
   }
+}
+
+base::OnceCallback<void(PaymentsBubbleClosedReason)>
+VirtualCardEnrollBubbleControllerImpl::GetOnBubbleClosedCallback() {
+  return base::BindOnce(&VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
+const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+VirtualCardEnrollBubbleControllerImpl::GetConfirmationUiParams() const {
+  CHECK(confirmation_ui_params_.has_value());
+  return confirmation_ui_params_.value();
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
@@ -284,12 +317,23 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  // For reprompts after link clicks, |is_user_gesture| is set to false.
-  bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
-  set_bubble_view(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowVirtualCardEnrollBubble(web_contents(), this,
-                                                    user_gesture_reprompt));
+
+  if (enrollment_status_ == EnrollmentStatus::kCompleted &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    set_bubble_view(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
+  } else {
+    // For reprompts after link clicks, `is_user_gesture` is set to false.
+    bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
+
+    set_bubble_view(browser->window()
+                        ->GetAutofillBubbleHandler()
+                        ->ShowVirtualCardEnrollBubble(web_contents(), this,
+                                                      user_gesture_reprompt));
+  }
   DCHECK(bubble_view());
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
   // we display the bubble if the the state is kShowingIconAndBubble. Once we

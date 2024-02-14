@@ -84,7 +84,7 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     VirtualCardEnrollBubbleControllerImpl* controller =
         VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
     if (controller && controller->IsIconVisible()) {
-      controller->HideIconAndBubble();
+      controller->ShowConfirmationBubbleView(is_vcn_enrolled);
     }
   }
 }
