@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -20,11 +22,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -46,7 +51,7 @@ import java.util.Set;
 
 /** Unit tests for {@link TabListEditorGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
 public class TabListEditorGroupActionUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -98,6 +103,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void testGroupActionDisabled() {
         configure(false);
         List<Integer> tabIds = new ArrayList<>();
@@ -113,6 +119,57 @@ public class TabListEditorGroupActionUnitTest {
                 false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    @SmallTest
+    public void testGroupActionDisabled_SingleTabGroupSupport() {
+        configure(false);
+        List<Integer> tabIds = new ArrayList<>();
+        mAction.onSelectionStateChange(tabIds);
+        Assert.assertEquals(
+                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        int tabId = 1;
+        Tab tab = mTabModel.addTab(tabId);
+        tabIds.add(tabId);
+        tab.setTabGroupId(new Token(1L, 2L));
+
+        mAction.onSelectionStateChange(tabIds);
+        Assert.assertEquals(
+                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    @SmallTest
+    public void testSingleTabToGroup() {
+        configure(false);
+        List<Integer> tabIds = new ArrayList<>();
+
+        int tabId = 1;
+        Tab tab = mTabModel.addTab(tabId);
+        tabIds.add(tabId);
+        tab.setTabGroupId(null);
+        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+
+        mAction.onSelectionStateChange(tabIds);
+        Assert.assertEquals(
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+
+        Assert.assertTrue(mAction.perform());
+        verify(mGroupFilter).createSingleTabGroup(tab, true);
+
+        tab.setTabGroupId(new Token(1L, 2L));
+        Assert.assertTrue(mAction.perform());
+        verify(mGroupFilter, atLeastOnce()).getTabModel();
+        verifyNoMoreInteractions(mGroupFilter);
     }
 
     @Test
