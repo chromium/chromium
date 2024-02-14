@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -24,6 +26,8 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String MANAGE_TOPICS_PREFERENCE = "topics_list";
 
     private PreferenceCategory mTopicsCategory;
+
+    private Dialog mConfirmationDialog;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -59,9 +63,46 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private boolean onToggleChange(Preference preference, Object newValue) {
         var topicPreference = (TopicSwitchPreference) (preference);
-        PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), (boolean) newValue);
+        if (!((boolean) newValue)) {
+            return handleBlockTopic(topicPreference);
+        }
+        PrivacySandboxBridge.setTopicAllowed(topicPreference.getTopic(), true);
         // When a topic is unblocked, display the snackbar if it's not in active topics.
-        if ((boolean) newValue) maybeDisplaySnackbar(topicPreference.getTopic());
+        maybeDisplaySnackbar(topicPreference.getTopic());
+        return true;
+    }
+
+    private boolean handleBlockTopic(TopicSwitchPreference preference) {
+        Topic topic = preference.getTopic();
+        // Check if a child level topic is assigned.
+        List<Topic> childTopics = PrivacySandboxBridge.getChildTopicsCurrentlyAssigned(topic);
+        if (childTopics.isEmpty()) {
+            PrivacySandboxBridge.setTopicAllowed(topic, false);
+            return true;
+        }
+        // There are assigned child topics - display a confirmation prompt.
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(
+                                getString(
+                                        R.string.settings_manage_topics_dialog_clank_title,
+                                        topic.getName()))
+                        .setMessage(
+                                getString(
+                                        R.string.settings_manage_topics_dialog_clank_body,
+                                        topic.getName()))
+                        .setPositiveButton(
+                                R.string.continue_button,
+                                (dialog, which) -> {
+                                    PrivacySandboxBridge.setTopicAllowed(topic, false);
+                                })
+                        .setNegativeButton(
+                                R.string.cancel,
+                                (dialog, which) -> {
+                                    preference.setChecked(true);
+                                    mConfirmationDialog = null;
+                                })
+                        .show();
         return true;
     }
 

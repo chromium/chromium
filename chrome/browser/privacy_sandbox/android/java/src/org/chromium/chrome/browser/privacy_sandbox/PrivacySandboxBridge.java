@@ -37,6 +37,14 @@ public class PrivacySandboxBridge {
         return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getFirstLevelTopics()));
     }
 
+    public static List<Topic> getChildTopicsCurrentlyAssigned(Topic topic) {
+        return sortTopics(
+                Arrays.asList(
+                        PrivacySandboxBridgeJni.get()
+                                .getChildTopicsCurrentlyAssigned(
+                                        topic.getTopicId(), topic.getTaxonomyVersion())));
+    }
+
     public static void setTopicAllowed(Topic topic, boolean allowed) {
         PrivacySandboxBridgeJni.get()
                 .setTopicAllowed(topic.getTopicId(), topic.getTaxonomyVersion(), allowed);
@@ -134,6 +142,8 @@ public class PrivacySandboxBridge {
         Topic[] getBlockedTopics();
 
         Topic[] getFirstLevelTopics();
+
+        Topic[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion);
 
         void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
 

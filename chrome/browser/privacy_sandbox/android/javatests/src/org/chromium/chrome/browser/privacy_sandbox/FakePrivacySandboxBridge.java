@@ -116,6 +116,11 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
+    public Topic[] getChildTopicsCurrentlyAssigned(int topicId, int taxonomyVersion) {
+        return new Topic[] {};
+    }
+
+    @Override
     public void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed) {
         Topic topic = null;
         for (Topic t : mTopics.values()) {

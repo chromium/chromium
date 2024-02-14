@@ -80,6 +80,17 @@ JNI_PrivacySandboxBridge_GetFirstLevelTopics(JNIEnv* env) {
                            GetPrivacySandboxService()->GetFirstLevelTopics());
 }
 
+static ScopedJavaLocalRef<jobjectArray>
+JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
+    JNIEnv* env,
+    jint topic_id,
+    jint taxonomy_version) {
+  return ToJavaTopicsArray(
+      env, GetPrivacySandboxService()->GetChildTopicsCurrentlyAssigned(
+               privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
+                                               taxonomy_version)));
+}
+
 static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
                                                      jint topic_id,
                                                      jint taxonomy_version,
