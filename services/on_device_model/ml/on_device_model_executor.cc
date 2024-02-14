@@ -365,7 +365,7 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
 
   auto weights = std::make_unique<base::MemoryMappedFile>();
   if (!assets.weights.IsValid() ||
-      !weights->Initialize(std::move(assets.weights),
+      !weights->Initialize(assets.weights.Duplicate(),
                            base::MemoryMappedFile::READ_WRITE_COPY)) {
     LOG(ERROR) << "Unable to load weights";
     return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
@@ -377,6 +377,7 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
       .model_proto_size = model_proto->length(),
       .weights_data = weights->mutable_bytes().data(),
       .weights_size = weights->length(),
+      .weights_file = assets.weights.TakePlatformFile(),
   };
   ChromeMLAdaptationDescriptor descriptor = {
       .model_data = &data,
@@ -412,7 +413,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
 
   weights_ = std::make_unique<base::MemoryMappedFile>();
   if (!assets.weights.IsValid() ||
-      !weights_->Initialize(std::move(assets.weights),
+      !weights_->Initialize(assets.weights.Duplicate(),
                             base::MemoryMappedFile::READ_WRITE_COPY)) {
     LOG(ERROR) << "Unable to load weights";
     return LoadModelResult::kFailedToLoadLibrary;
@@ -447,6 +448,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .weights_data = weights_->mutable_bytes().data(),
       .weights_size = weights_->length(),
       .weights_dispose = &weights_dispose,
+      .weights_file = assets.weights.TakePlatformFile(),
   };
   auto sentencepiece_model_proto_dispose =
       CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeSentencepiece, this);

@@ -32,6 +32,12 @@ enum ContextMode {
   kIgnoreContext = 1 << 2,
 };
 
+#if defined(_WIN32)
+using PlatformFile = void*;
+#else
+using PlatformFile = int;
+#endif
+
 // Opaque handle to an instance of a ChromeML model.
 using ChromeMLModel = uintptr_t;
 
@@ -49,15 +55,14 @@ struct ChromeMLModelData {
   // Called when the model_proto data is no longer needed.
   const ChromeMLDisposeFn* model_proto_dispose;
 
-  // Points to raw tensor weight data, indexed by fields encoded in the above
-  // proto. This memory must be mutable.
+  // DEPRECATED: Use weights_file instead.
   void* weights_data;
-
-  // The size in bytes of the data at `weights_data`.
   size_t weights_size;
-
-  // Called when the weights data is no longer needed.
   const ChromeMLDisposeFn* weights_dispose;
+
+  // File holding the weights data. The file will be owned by the inference
+  // library and closed once weight loading is complete.
+  PlatformFile weights_file;
 };
 
 // Describes a model to use with ChromeML.
