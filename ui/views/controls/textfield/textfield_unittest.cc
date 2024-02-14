@@ -5202,6 +5202,41 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsElidedTail) {
                 ax::mojom::IntListAttribute::kCharacterOffsets),
             expected_offsets);
 }
+
+TEST_F(TextfieldTest, AccessibleGraphemeOffsetsIndependentOfDisplayOffset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+
+  // Size the textfield wide enough to hold 10 characters.
+  gfx::test::RenderTextTestApi render_text_test_api(
+      GetTextfieldTestApi().GetRenderText());
+  constexpr int kGlyphWidth = 10;
+  render_text_test_api.SetGlyphWidth(kGlyphWidth);
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(kGlyphWidth * 10, 20));
+  textfield_->SetTextWithoutCaretBoundsChangeNotification(
+      u"3.141592653589793238462", 0);
+  GetTextfieldTestApi().SetDisplayOffsetX(0);
+
+  ui::AXNodeData node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {
+      0,   10,  20,  30,  40,  50,  60,  70,  80,  90,  100, 110,
+      120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+  GetTextfieldTestApi().SetDisplayOffsetX(-100);
+  EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), -100);
+
+  ui::AXNodeData node_data_2;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  // The offsets should be the same.
+  EXPECT_EQ(node_data_2.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+}
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 }  // namespace views::test

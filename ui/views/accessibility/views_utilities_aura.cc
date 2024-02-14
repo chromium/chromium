@@ -67,6 +67,11 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
   // TODO(https://crbug.com/1505805): Add a maximum length check to avoid hangs.
   size_t begin_position = 0;
   int last_x = 0;
+
+  // Subtract the display offset to get the offsets relative to the origin. The
+  // display offset will be applied later, in `ViewAXPlatformNodeDelegate`.
+  int offset = render_text->GetUpdatedDisplayOffset().x();
+
   while (begin_position < render_text->text().length()) {
     size_t end_position = render_text->IndexOfAdjacentGrapheme(
         begin_position, gfx::CURSOR_FORWARD);
@@ -80,9 +85,9 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
       // This is a fallback for when the text is elided or truncated. We must
       // always have a valid offset for each grapheme in the text backing the
       // display text.
-      offsets.push_back(last_x);
+      offsets.push_back(last_x - offset);
     } else {
-      offsets.push_back(bounds.x());
+      offsets.push_back(bounds.x() - offset);
       last_x = bounds.right();
     }
 
