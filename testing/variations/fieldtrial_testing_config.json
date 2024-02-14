@@ -3962,6 +3962,29 @@
             ]
         }
     ],
+    "ChromeWallpaperSearchHaTS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "foo",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForWallpaperSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWallpaperSearchLaunch": [
         {
             "platforms": [
