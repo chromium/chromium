@@ -284,9 +284,19 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 
       Browser* browser = browser_view_->browser();
       TabStripModel* model = browser->tab_strip_model();
+
+      auto has_tab_in_direction = [model](int delta) {
+        for (int index = model->active_index() + delta;
+             model->ContainsIndex(index); index += delta) {
+          if (!model->IsTabCollapsed(index)) {
+            return true;
+          }
+        }
+        return false;
+      };
+
       // Switch to the next tab only if not at the end of the tab-strip.
-      if (whole_scroll_offset < 0 &&
-          model->active_index() + 1 < model->count()) {
+      if (whole_scroll_offset < 0 && has_tab_in_direction(1)) {
         chrome::SelectNextTab(
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
@@ -296,7 +306,7 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 
       // Switch to the previous tab only if not at the beginning of the
       // tab-strip.
-      if (whole_scroll_offset > 0 && model->active_index() > 0) {
+      if (whole_scroll_offset > 0 && has_tab_in_direction(-1)) {
         chrome::SelectPreviousTab(
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
