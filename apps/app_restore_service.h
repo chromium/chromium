@@ -5,13 +5,11 @@
 #ifndef APPS_APP_RESTORE_SERVICE_H_
 #define APPS_APP_RESTORE_SERVICE_H_
 
-#include <string>
-#include <vector>
-
 #include "apps/app_lifetime_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 class Extension;
@@ -41,7 +39,7 @@ class AppRestoreService : public KeyedService,
 
   // Returns whether this extension is running or, at startup, whether it was
   // running when Chrome was last terminated.
-  bool IsAppRestorable(const std::string& extension_id);
+  bool IsAppRestorable(const extensions::ExtensionId& extension_id);
 
   // Called to notify that the application has begun to exit.
   void OnApplicationTerminating();
@@ -51,20 +49,21 @@ class AppRestoreService : public KeyedService,
  private:
   // AppLifetimeMonitor::Observer.
   void OnAppStart(content::BrowserContext* context,
-                  const std::string& app_id) override;
+                  const extensions::ExtensionId& extension_id) override;
   void OnAppActivated(content::BrowserContext* context,
-                      const std::string& app_id) override;
+                      const extensions::ExtensionId& extension_id) override;
   void OnAppDeactivated(content::BrowserContext* context,
-                        const std::string& app_id) override;
+                        const extensions::ExtensionId& extension_id) override;
   void OnAppStop(content::BrowserContext* context,
-                 const std::string& app_id) override;
+                 const extensions::ExtensionId& extension_id) override;
 
   // KeyedService.
   void Shutdown() override;
 
-  void RecordAppStart(const std::string& extension_id);
-  void RecordAppStop(const std::string& extension_id);
-  void RecordAppActiveState(const std::string& id, bool is_active);
+  void RecordAppStart(const extensions::ExtensionId& extension_id);
+  void RecordAppStop(const extensions::ExtensionId& extension_id);
+  void RecordAppActiveState(const extensions::ExtensionId& extension_id,
+                            bool is_active);
 
   void RestoreApp(const extensions::Extension* extension);
 
