@@ -2907,9 +2907,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
 // `data:` URLs do not inherit their navigation initiator's origin, so they
 // should not inherit deprecation trials.
-// TODO (crbug.com/324679506) : Fix the test.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       DISABLED_DeprecationTrialSettingNotInheritedByDataURL) {
+                       DeprecationTrialSettingNotInheritedByDataURL) {
   DeprecationTrialURLLoaderInterceptor interceptor;
 
   EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
