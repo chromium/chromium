@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
@@ -56,7 +57,7 @@ void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
   std::move(callback).Run(error, std::string(), std::string(), std::string());
 }
 
-std::string GetKeyName(base::StringPiece request_origin) {
+std::string GetKeyName(std::string_view request_origin) {
   return base::StrCat(
       {ash::attestation::kContentProtectionKeyPrefix, request_origin});
 }
