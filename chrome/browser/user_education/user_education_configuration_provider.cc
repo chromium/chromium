@@ -151,6 +151,15 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     config.used.storage = config.used.window;
   }
 
+  // In V2, since trigger config is overwritten, also remove additional
+  // references in the existing event configs.
+  if (use_v2_behavior_) {
+    std::erase_if(config.event_configs, [&trigger_name = config.trigger.name](
+                                            const auto& event_config) {
+      return event_config.name == trigger_name;
+    });
+  }
+
   // Set up additional constraints, if specified and not overridden in the
   // existing config.
   std::vector<feature_engagement::EventConfig> new_event_configs;

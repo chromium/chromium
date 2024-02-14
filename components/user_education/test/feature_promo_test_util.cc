@@ -40,8 +40,7 @@ bool WaitForStartupPromo(feature_engagement::Tracker* tracker,
   const bool fe_init_succeeded = WaitForFeatureEngagementReady(tracker);
   EXPECT_TRUE(fe_init_succeeded);
   return fe_init_succeeded &&
-         tracker->GetTriggerState(iph_feature) ==
-             feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED;
+         tracker->HasEverTriggered(iph_feature, /*from_window=*/false);
 }
 
 bool WaitForStartupPromo(FeaturePromoControllerCommon* controller,

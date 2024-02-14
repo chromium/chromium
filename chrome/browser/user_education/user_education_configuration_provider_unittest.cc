@@ -653,3 +653,28 @@ TEST_F(UserEducationConfigurationProviderTest, v2_SessionRate) {
   EXPECT_EQ(feature_engagement::SessionRateImpact::Type::ALL,
             config.session_rate_impact.type);
 }
+
+TEST_F(UserEducationConfigurationProviderTest, V1AllowsDuplicateTrigger) {
+  SetEnableV2(false);
+  feature_engagement::FeatureConfig config;
+  config.trigger.name = kToastTrigger;
+  config.used.name = kToastUsed;
+  config.event_configs.emplace(kToastTrigger, kLessThan5, 10, 10);
+  config.event_configs.emplace(kToastUsed, kAtLeast7, 10, 10);
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kToastIphFeature, config, kKnownFeatures, kKnownGroups));
+  EXPECT_EQ(2U, config.event_configs.size());
+}
+
+TEST_F(UserEducationConfigurationProviderTest, V2RemovesDuplicateTrigger) {
+  SetEnableV2(true);
+  feature_engagement::FeatureConfig config;
+  config.trigger.name = kToastTrigger;
+  config.used.name = kToastUsed;
+  config.event_configs.emplace(kToastTrigger, kLessThan5, 10, 10);
+  config.event_configs.emplace(kToastUsed, kAtLeast7, 10, 10);
+  EXPECT_TRUE(CreateProvider()->MaybeProvideFeatureConfiguration(
+      kToastIphFeature, config, kKnownFeatures, kKnownGroups));
+  EXPECT_EQ(1U, config.event_configs.size());
+  EXPECT_EQ(kToastUsed, config.event_configs.begin()->name);
+}

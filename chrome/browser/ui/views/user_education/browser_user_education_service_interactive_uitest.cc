@@ -9,9 +9,8 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,24 +32,16 @@ constexpr char kGetActiveElementJs[] = R"(
 )";
 }  // namespace
 
-class BrowserUserEducationServiceUiTest : public InteractiveBrowserTest {
+class BrowserUserEducationServiceUiTest : public InteractiveFeaturePromoTest {
  public:
-  BrowserUserEducationServiceUiTest() = default;
+  BrowserUserEducationServiceUiTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHWebUiHelpBubbleTestFeature})) {}
   ~BrowserUserEducationServiceUiTest() override = default;
 
   UserEducationService* GetUserEducationService() {
     return UserEducationServiceFactory::GetForBrowserContext(
         browser()->profile());
-  }
-
-  void SetUp() override {
-    feature_list_.InitForDemo(
-        feature_engagement::kIPHWebUiHelpBubbleTestFeature);
-    InteractiveBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
   }
 
   auto DoSetup() {
@@ -88,9 +79,6 @@ class BrowserUserEducationServiceUiTest : public InteractiveBrowserTest {
         },
         user_education::FeaturePromoResult::Success(), "ShowHelpBubble()");
   }
-
- private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceUiTest,

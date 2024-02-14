@@ -20,9 +20,12 @@ namespace feature_engagement::test {
 //
 // Use to test the functionality of your feature engagement features in tests.
 //
-// Note that nested ScopedIphFeatureList objects are additive; you can create
-// an empty scope (using InitWithNoFeaturesAllowed()) and then create a nested
-// scope that enables a single IPH.
+// Nested ScopedIphFeatureList objects are additive; you can create an empty
+// scope (using InitWithNoFeaturesAllowed()) and then create a nested scope that
+// enables a single IPH.
+//
+// USAGE NOTE: for browser-based tests, prefer using
+// `InteractiveFeaturePromoTest[T]` instead of directly using this class.
 class ScopedIphFeatureList {
  public:
   ScopedIphFeatureList();

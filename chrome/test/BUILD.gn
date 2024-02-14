@@ -10323,6 +10323,11 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util.h",
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
+      "user_education/interactive_feature_promo_test.cc",
+      "user_education/interactive_feature_promo_test.h",
+      "user_education/interactive_feature_promo_test_common.h",
+      "user_education/interactive_feature_promo_test_internal.cc",
+      "user_education/interactive_feature_promo_test_internal.h",
     ]
 
     if (enable_supervised_users) {
@@ -10410,6 +10415,7 @@ if (!is_android) {
       "//components/storage_monitor:test_support",
       "//components/supervised_user/core/browser/proto",
       "//components/sync:test_support",
+      "//components/user_education/test:test",
       "//components/user_education/views:views",
       "//components/user_manager",
       "//components/webapps/browser",

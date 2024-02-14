@@ -84,7 +84,7 @@ class BrowserFeaturePromoController
                            GetAcceleratorProvider);
   FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerTest,
                            GetFocusHelpBubbleScreenReaderHint);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerUiTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerActivationUiTest,
                            CanShowPromoForElement);
 
   // FeaturePromoController:

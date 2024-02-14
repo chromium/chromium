@@ -10,6 +10,9 @@
 #include "content/public/browser/browser_context.h"
 
 class UserEducationService;
+namespace internal {
+class InteractiveFeaturePromoTestPrivate;
+}
 
 class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
  public:
@@ -27,6 +30,12 @@ class UserEducationServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend base::NoDestructor<UserEducationServiceFactory>;
+  friend internal::InteractiveFeaturePromoTestPrivate;
+
+  // Used internally and by some test code.
+  static std::unique_ptr<UserEducationService>
+  BuildServiceInstanceForBrowserContextImpl(content::BrowserContext* context,
+                                            bool disable_idle_polling);
 
   // BrowserContextKeyedServiceFactory overrides.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

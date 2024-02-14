@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_SESSION_TEST_UTIL_H_
 #define COMPONENTS_USER_EDUCATION_TEST_FEATURE_PROMO_SESSION_TEST_UTIL_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -19,30 +22,38 @@ namespace user_education::test {
 
 // Class which seizes control of a `FeaturePromoSessionManager` and its
 // associated session data, and gives a test fine control over the clock and the
-// active state of the current session, simulating active and inactive periods
-// as well as .
+// active state of the current session, simulating active and inactive periods.
 //
 // This object should not outlive the session manager itself. Also, once this
 // object has been attached to a session manager, it will no longer receive
 // normal session updated, even after this object is destroyed, to avoid
 // spurious events occurring at the end of a test or during teardown.
+//
+// USAGE NOTE: for browser-based tests, prefer using
+// `InteractiveFeaturePromoTest[T]` instead of directly using this class.
 class FeaturePromoSessionTestUtil {
  public:
+  // Creates the util object and seizes control of the session manager.
+  // If `new_now` is set, also replaces the system clock with a test clock.
   FeaturePromoSessionTestUtil(FeaturePromoSessionManager& session_manager,
                               const FeaturePromoSessionData& session_data,
                               const FeaturePromoPolicyData& policy_data,
-                              base::Time new_now);
+                              std::optional<base::Time> new_now = std::nullopt);
   virtual ~FeaturePromoSessionTestUtil();
 
   FeaturePromoSessionTestUtil(const FeaturePromoSessionTestUtil&) = delete;
   void operator=(const FeaturePromoSessionTestUtil&) = delete;
 
+  // Returns the current time, whether from the test or "real" clock.
+  base::Time Now() const { return clock_ ? clock_->Now() : base::Time::Now(); }
+
+  // Sets the current time if using a test clock; fails if using the real clock.
   void SetNow(base::Time new_now);
   void UpdateIdleState(base::Time last_active_time, bool screen_locked);
 
  private:
   const raw_ref<FeaturePromoSessionManager> session_manager_;
-  base::SimpleTestClock clock_;
+  std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
 }  // namespace user_education::test

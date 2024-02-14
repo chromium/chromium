@@ -30,6 +30,7 @@
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/tutorial_identifier.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -350,6 +351,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
         feature_engagement::SessionRateImpact::Type::ALL;
     const bool is_session_limited =
         IsComparatorLimited(feature_config->session_rate, 1);
+    const bool is_v2 = user_education::features::IsUserEducationV2();
 
     switch (spec.promo_type()) {
       case user_education::FeaturePromoSpecification::PromoType::kToast:
@@ -368,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
           case user_education::FeaturePromoSpecification::PromoSubtype::kNormal:
             // Standard promos should be session-limited and should limit other
             // IPH.
-            if (!is_session_limited) {
+            if (is_v2 == is_session_limited) {
               MaybeAddFailure(failures, exceptions, feature,
                               IPHFailureReason::kWrongSessionRate,
                               feature_config);
@@ -538,15 +540,19 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest, AutoConfigure) {
                 feature_engagement::kMaxStoragePeriod,
                 feature_engagement::kMaxStoragePeriod),
             config.used);
-  EXPECT_EQ(
-      feature_engagement::EventConfig(
-          "WebUiHelpBubbleTest_trigger",
-          feature_engagement::Comparator(feature_engagement::LESS_THAN, 5),
-          feature_engagement::kMaxStoragePeriod,
-          feature_engagement::kMaxStoragePeriod),
-      config.trigger);
+  EXPECT_EQ(feature_engagement::EventConfig(
+                "WebUiHelpBubbleTest_trigger",
+                user_education::features::IsUserEducationV2()
+                    ? feature_engagement::Comparator(feature_engagement::ANY, 0)
+                    : feature_engagement::Comparator(
+                          feature_engagement::LESS_THAN, 5),
+                feature_engagement::kMaxStoragePeriod,
+                feature_engagement::kMaxStoragePeriod),
+            config.trigger);
   EXPECT_TRUE(config.event_configs.empty());
-  EXPECT_EQ(feature_engagement::Comparator(feature_engagement::EQUAL, 0),
+  EXPECT_EQ(user_education::features::IsUserEducationV2()
+                ? feature_engagement::Comparator(feature_engagement::ANY, 0)
+                : feature_engagement::Comparator(feature_engagement::EQUAL, 0),
             config.session_rate);
   EXPECT_EQ(feature_engagement::SessionRateImpact::Type::ALL,
             config.session_rate_impact.type);

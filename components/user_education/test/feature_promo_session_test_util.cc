@@ -17,10 +17,13 @@ FeaturePromoSessionTestUtil::FeaturePromoSessionTestUtil(
     FeaturePromoSessionManager& session_manager,
     const FeaturePromoSessionData& session_data,
     const FeaturePromoPolicyData& policy_data,
-    base::Time new_now)
+    std::optional<base::Time> new_now)
     : session_manager_(session_manager) {
-  clock_.SetNow(new_now);
-  session_manager_->storage_service_->set_clock_for_testing(&clock_);
+  if (new_now) {
+    clock_ = std::make_unique<base::SimpleTestClock>();
+    clock_->SetNow(*new_now);
+    session_manager_->storage_service_->set_clock_for_testing(clock_.get());
+  }
   session_manager_->storage_service_->SaveSessionData(session_data);
   session_manager_->storage_service_->SavePolicyData(policy_data);
   session_manager_->is_locked_ = false;
@@ -38,7 +41,7 @@ FeaturePromoSessionTestUtil::~FeaturePromoSessionTestUtil() {
 }
 
 void FeaturePromoSessionTestUtil::SetNow(base::Time new_now) {
-  clock_.SetNow(new_now);
+  clock_->SetNow(new_now);
 }
 
 void FeaturePromoSessionTestUtil::UpdateIdleState(base::Time last_active_time,

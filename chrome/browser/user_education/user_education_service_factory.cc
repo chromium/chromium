@@ -38,19 +38,28 @@ UserEducationServiceFactory::UserEducationServiceFactory()
 
 UserEducationServiceFactory::~UserEducationServiceFactory() = default;
 
-std::unique_ptr<KeyedService>
-UserEducationServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
+// static
+std::unique_ptr<UserEducationService>
+UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
+    content::BrowserContext* context,
+    bool disable_idle_polling) {
   auto result = std::make_unique<UserEducationService>(
       std::make_unique<BrowserFeaturePromoStorageService>(
           Profile::FromBrowserContext(context)));
   result->feature_promo_session_manager().Init(
       &result->feature_promo_storage_service(),
-      disable_idle_polling_
+      disable_idle_polling
           ? std::make_unique<
                 user_education::FeaturePromoSessionManager::IdleObserver>()
           : std::make_unique<user_education::PollingIdleObserver>(),
       std::make_unique<
           user_education::FeaturePromoSessionManager::IdlePolicy>());
   return result;
+}
+
+std::unique_ptr<KeyedService>
+UserEducationServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return BuildServiceInstanceForBrowserContextImpl(context,
+                                                   disable_idle_polling_);
 }

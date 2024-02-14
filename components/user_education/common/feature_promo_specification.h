@@ -386,8 +386,10 @@ class FeaturePromoSpecification {
   }
 
   // Force the subtype to a particular value, bypassing permission checks.
-  void set_promo_subtype_for_testing(PromoSubtype promo_subtype) {
+  FeaturePromoSpecification& set_promo_subtype_for_testing(
+      PromoSubtype promo_subtype) {
     promo_subtype_ = promo_subtype;
+    return *this;
   }
 
  private:
