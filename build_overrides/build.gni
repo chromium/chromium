@@ -14,6 +14,10 @@ import("//build/config/gclient_args.gni")
 # Some non-Chromium builds don't support building java targets.
 enable_java_templates = true
 
+# Variable that can be used to support multiple build scenarios, like when
+# V8 is embedded within a target.
+build_with_v8_embedder = build_with_chromium
+
 # Enables assertions on safety checks in libc++.
 #
 # This should be set to true whenever building with Chrome's custom libc++ in
