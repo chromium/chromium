@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -959,6 +960,65 @@ TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
                                     false);
 
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
+}
+
+TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
+       ReportArcAllowedForAffiliatedUser_WhenPolicyValueFalse) {
+  base::HistogramTester tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported"});
+  ScopedLogIn login(true, GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        profile()->GetProfileUserName(), kTestGaiaId));
+  SetProfileIsManagedForTesting(profile());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(true));
+  profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
+                                    false);
+
+  RecordArcStatusBasedOnDeviceAffiliationUMA(profile());
+  tester.ExpectBucketCount("Arc.Provisioning.DeviceAffiliationAction", 0, 1);
+}
+
+TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
+       ReportArcAllowedForUnAffiliatedUser_WhenPolicyValueTrue) {
+  base::HistogramTester tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported"});
+  ScopedLogIn login(false, GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        profile()->GetProfileUserName(), kTestGaiaId));
+  SetProfileIsManagedForTesting(profile());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(true));
+  profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed, true);
+  RecordArcStatusBasedOnDeviceAffiliationUMA(profile());
+  tester.ExpectBucketCount("Arc.Provisioning.DeviceAffiliationAction", 1, 1);
+}
+
+TEST_F(ChromeUnaffiliatedDevicesArcRestrictionTest,
+       ReportArcNotAllowedForUnAffiliatedUser_WhenPolicyValueFalse) {
+  base::HistogramTester tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kUnaffiliatedDeviceArcRestriction);
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported"});
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(true));
+  ScopedLogIn login(false, GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        profile()->GetProfileUserName(), kTestGaiaId));
+  SetProfileIsManagedForTesting(profile());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kArcEnabled, std::make_unique<base::Value>(true));
+  profile()->GetPrefs()->SetBoolean(prefs::kUnaffiliatedDeviceArcAllowed,
+                                    false);
+  RecordArcStatusBasedOnDeviceAffiliationUMA(profile());
+  tester.ExpectBucketCount("Arc.Provisioning.DeviceAffiliationAction", 2, 1);
 }
 
 }  // namespace util

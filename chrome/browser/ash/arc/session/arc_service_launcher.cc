@@ -227,6 +227,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   // disables ARC during a session, the swap configuration will also be updated.
   ash::ConfigureSwap(IsArcPlayStoreEnabledForProfile(profile));
 
+  // Record metrics for ARC status based on device affiliation
+  if (base::FeatureList::IsEnabled(kUnaffiliatedDeviceArcRestriction)) {
+    RecordArcStatusBasedOnDeviceAffiliationUMA(profile);
+  }
+
   if (arc_session_manager_->profile() != profile) {
     // Profile is not matched, so the given |profile| is not allowed to use
     // ARC.

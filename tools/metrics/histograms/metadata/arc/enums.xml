@@ -896,6 +896,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="PREVIEW_EVENT_INITIATED"/>
 </enum>
 
+<enum name="UnaffiliatedDeviceArcAllowedStatus">
+  <int value="0" label="Enabled on affiliated device"/>
+  <int value="1" label="Enabled on unaffiliated device"/>
+  <int value="2" label="Disabled on unaffiliated device"/>
+</enum>
+
 <enum name="UninstallCounterReasonEnum">
   <int value="0" label="User"/>
 </enum>
