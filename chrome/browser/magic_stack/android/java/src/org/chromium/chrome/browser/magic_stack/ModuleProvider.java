@@ -48,6 +48,6 @@ public interface ModuleProvider {
     /** Called when a context menu is created and shown. */
     void onContextMenuCreated();
 
-    /** Returns the title of the module. */
-    String getModuleTitle(Context context);
+    /** Returns the text shown on the context menu to hide the module. */
+    String getModuleContextMenuHideText(Context context);
 }

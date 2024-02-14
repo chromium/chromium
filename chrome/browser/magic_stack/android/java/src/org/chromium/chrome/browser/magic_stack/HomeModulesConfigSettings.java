@@ -33,7 +33,7 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
             currentSwitch.setKey(homeModulesConfigManager.getPreferenceKey(moduleType));
-            currentSwitch.setTitle(getTitleForModuleType(moduleType));
+            currentSwitch.setTitle(getTitleResIdForModuleType(moduleType));
 
             // Set up listeners and update the page.
             boolean isModuleTypeEnabled =
@@ -53,11 +53,11 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         return getPreferenceManager().getContext();
     }
 
-    /** Returns the switch title of the module type. */
-    private Integer getTitleForModuleType(@ModuleType int moduleType) {
+    /** Returns the resources id of switch title for the module type. */
+    private Integer getTitleResIdForModuleType(@ModuleType int moduleType) {
         switch (moduleType) {
             case PRICE_CHANGE:
-                return R.string.price_change_module_context_menu_item;
+                return R.string.price_change_module_name;
             default:
                 assert false : "Module type not supported!";
                 return null;

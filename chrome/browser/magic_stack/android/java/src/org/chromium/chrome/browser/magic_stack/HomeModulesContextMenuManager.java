@@ -91,11 +91,9 @@ public class HomeModulesContextMenuManager {
                         .setOnMenuItemClickListener(listener);
             } else {
                 Context context = associatedView.getContext();
-                String item =
-                        context.getString(
-                                R.string.home_modules_context_menu_hide_module,
-                                moduleProvider.getModuleTitle(context));
-                contextMenu.add(item).setOnMenuItemClickListener(listener);
+                contextMenu
+                        .add(moduleProvider.getModuleContextMenuHideText(context))
+                        .setOnMenuItemClickListener(listener);
             }
             hasItems = true;
         }

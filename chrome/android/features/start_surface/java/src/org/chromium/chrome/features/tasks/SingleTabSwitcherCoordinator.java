@@ -397,8 +397,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     public void onContextMenuCreated() {}
 
     @Override
-    public String getModuleTitle(Context context) {
-        return context.getString(org.chromium.chrome.tab_ui.R.string.single_tab_module_title);
+    public String getModuleContextMenuHideText(Context context) {
+        return null;
     }
 
     @VisibleForTesting

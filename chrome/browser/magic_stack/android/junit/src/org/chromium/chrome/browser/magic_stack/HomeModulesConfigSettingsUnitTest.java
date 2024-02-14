@@ -98,8 +98,7 @@ public class HomeModulesConfigSettingsUnitTest {
 
         ChromeSwitchPreference switchExisted = fragment.findPreference(priceChangePreferenceKey);
         Assert.assertEquals(
-                mActivity.getString(R.string.price_change_module_context_menu_item),
-                switchExisted.getTitle());
+                mActivity.getString(R.string.price_change_module_name), switchExisted.getTitle());
         Assert.assertTrue(switchExisted.isChecked());
     }
 
