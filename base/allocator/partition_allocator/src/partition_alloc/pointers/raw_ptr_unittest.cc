@@ -451,10 +451,6 @@ TEST_F(RawPtrTest, ClearAndDelete) {
   CountingRawPtr<int> ptr(new int);
   ptr.ClearAndDelete();
 
-  // TODO(crbug.com/1346513): clang-format has a difficult time making
-  // sense of preprocessor arms mixed with designated initializers.
-  //
-  // clang-format off
   EXPECT_THAT((CountingRawPtrExpectations{
                 .wrap_raw_ptr_cnt = 1,
                 .release_wrapped_ptr_cnt = 1,
@@ -463,7 +459,6 @@ TEST_F(RawPtrTest, ClearAndDelete) {
                 .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
-  // clang-format on
   EXPECT_EQ(ptr.get(), nullptr);
 }
 
@@ -471,10 +466,6 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
   CountingRawPtr<int> ptr(new int[8]);
   ptr.ClearAndDeleteArray();
 
-  // TODO(crbug.com/1346513): clang-format has a difficult time making
-  // sense of preprocessor arms mixed with designated initializers.
-  //
-  // clang-format off
   EXPECT_THAT((CountingRawPtrExpectations{
                 .wrap_raw_ptr_cnt = 1,
                 .release_wrapped_ptr_cnt = 1,
@@ -483,7 +474,6 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
                 .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
-  // clang-format on
   EXPECT_EQ(ptr.get(), nullptr);
 }
 
