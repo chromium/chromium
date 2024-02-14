@@ -45,7 +45,7 @@ class PrivacySandboxInternalsHandler
   void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   // It seems like the handler is supposed to retain ownership even though we
   // don't need to reference the mojo::Receiver.
   mojo::Receiver<privacy_sandbox_internals::mojom::PageHandler> receiver_{this};

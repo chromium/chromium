@@ -78,9 +78,9 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
   }
 
   UniqueWidgetPtr widget_;
-  raw_ptr<Label> label1_ = nullptr;
-  raw_ptr<Label> label2_ = nullptr;
-  raw_ptr<Textfield> textfield_ = nullptr;
+  raw_ptr<Label, AcrossTasksDanglingUntriaged> label1_ = nullptr;
+  raw_ptr<Label, AcrossTasksDanglingUntriaged> label2_ = nullptr;
+  raw_ptr<Textfield, AcrossTasksDanglingUntriaged> textfield_ = nullptr;
 };
 
 TEST_F(AXTreeSourceViewsTest, Basics) {

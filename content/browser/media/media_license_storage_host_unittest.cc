@@ -46,7 +46,8 @@ const char kTestOrigin[] = "http://www.test.com";
 
 // Helper functions to manipulate RenderFrameHosts.
 
-void SimulateNavigation(raw_ptr<RenderFrameHost>* rfh, const GURL& url) {
+void SimulateNavigation(raw_ptr<RenderFrameHost, DanglingUntriaged>* rfh,
+                        const GURL& url) {
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(url, *rfh);
   navigation_simulator->Commit();
@@ -174,7 +175,7 @@ class CdmStorageTest
     return cdm_storage_manager;
   }
 
-  raw_ptr<RenderFrameHost> rfh_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> rfh_ = nullptr;
   mojo::Remote<CdmStorage> cdm_storage_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

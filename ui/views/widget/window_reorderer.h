@@ -51,7 +51,7 @@ class WindowReorderer : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       parent_window_observation_{this};
   // The root view of the native widget that owns `this`.
-  raw_ptr<View> root_view_;
+  raw_ptr<View, DanglingUntriaged> root_view_;
 
   // Reorders windows as a result of the kHostViewKey being set on a child of
   // |parent_window_|.

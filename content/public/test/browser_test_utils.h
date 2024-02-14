@@ -594,7 +594,7 @@ class ToRenderFrameHost {
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 };
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);

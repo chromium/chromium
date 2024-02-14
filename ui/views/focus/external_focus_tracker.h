@@ -66,7 +66,7 @@ class VIEWS_EXPORT ExternalFocusTracker : public FocusChangeListener {
 
   // The parent view of views which we should not track focus changes to. We
   // also do not track changes to parent_view_ itself.
-  const raw_ptr<View> parent_view_;
+  const raw_ptr<View, DanglingUntriaged> parent_view_;
 
   // Holds the last focused view.
   std::unique_ptr<ViewTracker> last_focused_view_tracker_;

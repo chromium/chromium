@@ -470,7 +470,7 @@ class PopupAutomaticFullscreenTest : public PopupFullscreenTestBase,
   void TearDownOnMainThread() override { frame_ = nullptr; }
 
  protected:
-  raw_ptr<content::RenderFrameHost> frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;

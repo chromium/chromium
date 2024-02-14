@@ -157,7 +157,7 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> web_contents_;
 
   WidgetAutoclosePtr anchor_widget_;
-  raw_ptr<views::View> anchor_view_;
+  raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   WidgetAutoclosePtr bubble_widget_;
   raw_ptr<QRCodeGeneratorBubble> bubble_;
 };

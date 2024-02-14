@@ -90,7 +90,7 @@ class BackForwardCacheSubframeNavigationThrottleTestWithoutUrlLoaderTest
         std::unique_ptr<TestNavigationThrottle>(std::move(throttle)));
   }
 
-  raw_ptr<TestRenderFrameHost> subframe_rfh_;
+  raw_ptr<TestRenderFrameHost, DanglingUntriaged> subframe_rfh_;
 };
 
 TEST_F(BackForwardCacheSubframeNavigationThrottleTestWithoutUrlLoaderTest,

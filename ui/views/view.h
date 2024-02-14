@@ -118,9 +118,9 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
       : is_add(is_add), parent(parent), child(child), move_view(move_view) {}
   const bool is_add;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  const raw_ptr<View> parent;
+  const raw_ptr<View, DanglingUntriaged> parent;
   // The view being added or removed.
-  const raw_ptr<View> child;
+  const raw_ptr<View, DanglingUntriaged> child;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
   // existing parent, then a notification for the remove is sent first,
   // followed by one for the add.  This case can be distinguished by a
@@ -129,7 +129,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  const raw_ptr<View> move_view;
+  const raw_ptr<View, DanglingUntriaged> move_view;
 };
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
@@ -2434,7 +2434,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  raw_ptr<ContextMenuController> context_menu_controller_ = nullptr;
+  raw_ptr<ContextMenuController, DanglingUntriaged> context_menu_controller_ =
+      nullptr;
 
   // Drag and drop -------------------------------------------------------------
 

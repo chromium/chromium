@@ -285,7 +285,7 @@ struct TableLayout::ViewState {
     DCHECK_GT(row_span, 0u);
   }
 
-  raw_ptr<View> view = nullptr;
+  raw_ptr<View, DanglingUntriaged> view = nullptr;
   size_t start_col = 0;
   size_t start_row = 0;
   size_t col_span = 0;

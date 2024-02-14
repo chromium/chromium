@@ -255,7 +255,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
   }
 
  private:
-  raw_ptr<AccountSelectionModalView> dialog_;
+  raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;

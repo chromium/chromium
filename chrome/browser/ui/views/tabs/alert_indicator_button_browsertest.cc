@@ -61,7 +61,7 @@ class AlertIndicatorButtonBrowserTest
                                         result);
   }
 
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   raw_ptr<AlertIndicatorButton> alert_indicator_button_ = nullptr;
 };
 

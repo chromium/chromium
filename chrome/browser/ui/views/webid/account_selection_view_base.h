@@ -296,7 +296,7 @@ class AccountSelectionViewBase {
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Web contents which the dialog is rendered on.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // The images for the IDP icons. Stored so that they can be reused upon
   // pressing the back button after choosing an account on the multi IDP

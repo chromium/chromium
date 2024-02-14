@@ -318,7 +318,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
-  raw_ptr<ExtensionsRequestAccessButton> request_access_button_ = nullptr;
+  raw_ptr<ExtensionsRequestAccessButton, DanglingUntriaged>
+      request_access_button_ = nullptr;
 
   DisplayMode display_mode_;
 

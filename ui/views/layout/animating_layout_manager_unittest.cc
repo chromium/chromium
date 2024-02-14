@@ -259,7 +259,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
   const bool enable_animations_;
   ProposedLayout layout1_;
   ProposedLayout layout2_;
-  raw_ptr<View> view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> view_ = nullptr;
   std::vector<raw_ptr<TestView, VectorExperimental>> children_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
@@ -4396,7 +4396,7 @@ class AnimatingLayoutManagerInFlexLayoutTest
  private:
   raw_ptr<FlexLayout> root_layout_;
   raw_ptr<FlexLayout> target_layout_;
-  raw_ptr<TestView> other_view_;
+  raw_ptr<TestView, DanglingUntriaged> other_view_;
 };
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
@@ -5194,9 +5194,9 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
 
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
-  raw_ptr<View> child_view_ = nullptr;
-  raw_ptr<View> parent_view_ = nullptr;
-  raw_ptr<View> layout_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> parent_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> layout_view_ = nullptr;
   std::unique_ptr<View> parent_view_ptr_;
   std::unique_ptr<View> layout_view_ptr_;
   WidgetAutoclosePtr widget_;

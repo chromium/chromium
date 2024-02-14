@@ -200,7 +200,7 @@ class VIEWS_EXPORT RootView : public View,
   // Tree operations -----------------------------------------------------------
 
   // The host Widget
-  const raw_ptr<Widget> widget_;
+  const raw_ptr<Widget, DanglingUntriaged> widget_;
 
   // Input ---------------------------------------------------------------------
 
@@ -249,14 +249,16 @@ class VIEWS_EXPORT RootView : public View,
   // bool activated_;
 
   // The parent FocusTraversable, used for focus traversal.
-  raw_ptr<FocusTraversable> focus_traversable_parent_ = nullptr;
+  raw_ptr<FocusTraversable, AcrossTasksDanglingUntriaged>
+      focus_traversable_parent_ = nullptr;
 
   // The View that contains this RootView. This is used when we have RootView
   // wrapped inside native components, and is used for the focus traversal.
-  raw_ptr<View> focus_traversable_parent_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> focus_traversable_parent_view_ =
+      nullptr;
 
-  raw_ptr<View> event_dispatch_target_ = nullptr;
-  raw_ptr<View> old_dispatch_target_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> event_dispatch_target_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> old_dispatch_target_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
@@ -267,7 +269,8 @@ class VIEWS_EXPORT RootView : public View,
 
   // Hidden view used to make announcements to the screen reader via an alert or
   // live region update.
-  raw_ptr<AnnounceTextView> announce_view_ = nullptr;
+  raw_ptr<AnnounceTextView, AcrossTasksDanglingUntriaged> announce_view_ =
+      nullptr;
 };
 
 }  // namespace internal

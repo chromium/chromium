@@ -149,7 +149,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
    private:
     friend class TaskSource;
 
-    raw_ptr<TaskSource> task_source_;
+    raw_ptr<TaskSource, LeakedDanglingUntriaged> task_source_;
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
@@ -339,7 +339,7 @@ class BASE_EXPORT RegisteredTaskSource {
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<TaskSource> task_source_;
-  raw_ptr<TaskTracker> task_tracker_ = nullptr;
+  raw_ptr<TaskTracker, LeakedDanglingUntriaged> task_tracker_ = nullptr;
 };
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a

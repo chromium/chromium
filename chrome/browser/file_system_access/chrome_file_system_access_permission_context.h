@@ -485,7 +485,7 @@ class ChromeFileSystemAccessPermissionContext
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
-  const raw_ptr<content::BrowserContext> profile_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> profile_;
 
   // Permission state per origin.
   struct OriginState;

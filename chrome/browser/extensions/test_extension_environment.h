@@ -141,7 +141,7 @@ class TestExtensionEnvironment {
 
   // Unowned pointer of Profile for this test environment. May be the pointer
   // to `profile_`, or may be injected by SetProfile().
-  raw_ptr<TestingProfile> profile_ptr_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ptr_;
 
   raw_ptr<ExtensionService, DanglingUntriaged> extension_service_ = nullptr;
 };

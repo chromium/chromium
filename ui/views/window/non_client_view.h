@@ -235,7 +235,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // A ClientView object or subclass, responsible for sizing the contents view
   // of the window, hit testing and perhaps other tasks depending on the
   // implementation.
-  const raw_ptr<ClientView> client_view_;
+  const raw_ptr<ClientView, DanglingUntriaged> client_view_;
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.

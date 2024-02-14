@@ -323,7 +323,7 @@ class Combobox::ComboboxEventHandler : public ui::EventHandler {
     }
   }
 
-  const raw_ptr<Combobox> combobox_;
+  const raw_ptr<Combobox, DanglingUntriaged> combobox_;
 };
 
 //------------------------------------------------------------------------------

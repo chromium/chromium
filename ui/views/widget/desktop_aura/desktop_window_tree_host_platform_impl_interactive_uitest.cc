@@ -208,7 +208,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  raw_ptr<HitTestNonClientFrameView> frame_view_ = nullptr;
+  raw_ptr<HitTestNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
 };
 
 // Test host that can intercept calls to the real host.

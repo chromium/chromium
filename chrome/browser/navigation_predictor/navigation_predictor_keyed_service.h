@@ -55,7 +55,7 @@ class NavigationPredictorKeyedService : public KeyedService {
     // The WebContents from where the navigation may happen. Do not use this
     // pointer outside the observer's call stack unless its destruction is also
     // observed.
-    raw_ptr<content::WebContents> web_contents_;
+    raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
     // TODO(spelchat): this no longer needs to be optional. Optionality was
     // required because external app predictions didn't provide this field, but

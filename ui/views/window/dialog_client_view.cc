@@ -321,8 +321,9 @@ void DialogClientView::UpdateDialogButtons() {
   InvalidateLayout();
 }
 
-void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
-                                          ui::DialogButton type) {
+void DialogClientView::UpdateDialogButton(
+    raw_ptr<MdTextButton, DanglingUntriaged>* member,
+    ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!(delegate->GetDialogButtons() & type)) {
     if (*member) {

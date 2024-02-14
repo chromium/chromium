@@ -119,8 +119,8 @@ class TrackedRef {
     factory_->live_tracked_refs_.Increment();
   }
 
-  raw_ptr<T> ptr_;
-  raw_ptr<TrackedRefFactory<T>> factory_;
+  raw_ptr<T, LeakedDanglingUntriaged> ptr_;
+  raw_ptr<TrackedRefFactory<T>, LeakedDanglingUntriaged> factory_;
 };
 
 // TrackedRefFactory<T> should be the last member of T.
