@@ -168,7 +168,8 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
   }
 
   if (unused_swap_buffers_.empty()) {
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_WEBGPU |
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                     gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                      gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
                      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     if (usage_ & WGPUTextureUsage_StorageBinding) {

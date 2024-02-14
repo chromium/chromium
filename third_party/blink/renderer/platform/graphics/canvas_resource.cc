@@ -418,9 +418,10 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       // GL_TEXTURE_2D. Setting |is_overlay_candidate_| both allows overlays,
       // and causes |texture_target_| to take the value returned from
       // gpu::GetBufferTextureTarget.
-      is_overlay_candidate_(
-          shared_image_usage_flags &
-          (gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_WEBGPU)),
+      is_overlay_candidate_(shared_image_usage_flags &
+                            (gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)),
 #else
       is_overlay_candidate_(shared_image_usage_flags &
                             gpu::SHARED_IMAGE_USAGE_SCANOUT),

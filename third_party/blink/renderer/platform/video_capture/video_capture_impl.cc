@@ -583,7 +583,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+  usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 #endif
 
   // The feature flags here are a little subtle:

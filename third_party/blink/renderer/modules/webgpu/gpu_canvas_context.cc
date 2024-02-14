@@ -721,7 +721,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   DCHECK(resource_provider);
   DCHECK_EQ(resource_provider->Size(), size);
   DCHECK(resource_provider->GetSharedImageUsageFlags() &
-         gpu::SHARED_IMAGE_USAGE_WEBGPU);
+         (gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   DCHECK(resource_provider->IsOriginTopLeft());
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =

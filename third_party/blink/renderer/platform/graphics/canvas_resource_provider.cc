@@ -1000,7 +1000,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // Overriding the info to use RGBA instead of N32 is needed because code
   // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
   // somewhere in the later pipeline but for offscreen canvas only.
-  if (!(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_WEBGPU)) {
+  if (!(shared_image_usage_flags & (gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                    gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
     adjusted_info = adjusted_info.makeColorType(
         is_accelerated && info.colorType() != kRGBA_F16_SkColorType
             ? kRGBA_8888_SkColorType
@@ -1061,7 +1062,9 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU,
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU, resource_host);
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
+      resource_host);
 }
 
 std::unique_ptr<CanvasResourceProvider>
