@@ -105,6 +105,15 @@ class VIEWS_EXPORT ViewAccessibility {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
+  void SetRole(const ax::mojom::Role role);
+  // This function cannot follow the established pattern and be named GetRole()
+  // because of a function of the same name in AXPlatformNodeDelegate.
+  // ViewAXPlatformNodeDelegate extends both ViewAccessibility and
+  // AXPlatformNodeDelegate, which would lead to conflicts and confusion.
+  // TODO(accessibility): Rename to GetRole once the ViewsAX project is
+  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  ax::mojom::Role GetViewAccessibilityRole() const;
+
   void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.

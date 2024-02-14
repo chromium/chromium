@@ -387,6 +387,28 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
+void ViewAccessibility::SetRole(const ax::mojom::Role role) {
+  if (role == GetViewAccessibilityRole()) {
+    return;
+  }
+
+  data_.role = role;
+  if (role != ax::mojom::Role::kUnknown && role != ax::mojom::Role::kNone) {
+    // TODO(javiercon): This is to temporarily work around the DCHECK
+    // that wants to have a role to calculate a name-from: As of right now,
+    // OverrideRole is getting migrated before OverrideName. This means that
+    // when views call both in sequence and since OverrideRole is replaced by
+    // this func data_ will have the role but override_data_ will have the name
+    // (and not the role) so make sure to remove this once OverrideName is also
+    // migrated.
+    override_data_.role = role;
+  }
+}
+
+ax::mojom::Role ViewAccessibility::GetViewAccessibilityRole() const {
+  return data_.role;
+}
+
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   override_data_.role = role;
