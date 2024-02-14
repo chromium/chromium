@@ -211,6 +211,19 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 #pragma mark - UITableViewDelegate
 
+// It is called when the table view is about to draw a cell for a particular
+// row.
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_creditCardData.count > 1) {
+    cell.userInteractionEnabled = YES;
+    return;
+  }
+  // If only one item exists, the item should not be selectable.
+  cell.userInteractionEnabled = NO;
+}
+
 // Long press open context menu.
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath

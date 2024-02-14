@@ -238,20 +238,17 @@ CGFloat const kSpacingAfterTitle = 4;
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
 }
 
-- (NSIndexPath*)tableView:(UITableView*)tableView
-    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  BOOL singleSuggestion = (_suggestions.count <= 1);
-  if (singleSuggestion ||
-      (!_tableViewIsMinimized && (indexPath.row == [self selectedRow]))) {
-    // Record how many useless taps users do.
-    // If we have a single suggestion, tapping on it does nothing.
-    // If we have multiple suggestions currently visible, tapping on the already
-    // selected one also does nothing.
-    base::UmaHistogramBoolean(
-        "IOS.PasswordBottomSheet.UsernameTapped.MinimizedState",
-        singleSuggestion);
+// It is called when the table view is about to draw a cell for a particular
+// row.
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_suggestions.count > 1) {
+    cell.userInteractionEnabled = YES;
+    return;
   }
-  return indexPath;
+  // If only one suggestion exists, the item should not be selectable.
+  cell.userInteractionEnabled = NO;
 }
 
 // Long press open context menu.

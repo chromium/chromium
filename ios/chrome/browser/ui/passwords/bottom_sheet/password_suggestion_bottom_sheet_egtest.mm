@@ -750,17 +750,9 @@ id<GREYMatcher> OpenKeyboardButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
+  // Tapping the single item doesn't change anything.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user")]
       performAction:grey_tap()];
-
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:YES
-          forHistogram:
-              @"IOS.PasswordBottomSheet.UsernameTapped.MinimizedState"],
-      @"Unexpected histogram error for password bottom sheet username tapped "
-      @"minimized state");
 
   [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
@@ -786,20 +778,9 @@ id<GREYMatcher> OpenKeyboardButton() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user2")];
 
+  // Select the second item.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
       performAction:grey_tap()];
-  // Tap again on the same credential, to trigger the UsernameTapped metric.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user2")]
-      performAction:grey_tap()];
-
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:1
-             forBucket:NO
-          forHistogram:
-              @"IOS.PasswordBottomSheet.UsernameTapped.MinimizedState"],
-      @"Unexpected histogram error for password bottom sheet username tapped "
-      @"minimized state");
 
   [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
