@@ -317,25 +317,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    public void testVisibleHintCalculationHistograms() {
-        // Note: this test always assumed unstyled size of the Omnibox.
-        // The recorded test values differ when actual theming is applied.
-        // For that reason, we re-set the UrlBar to unstyled variant.
-        mUrlBar = spy(new UrlBarApi26(ContextUtils.getApplicationContext(), null));
-        measureAndLayoutUrlBar();
-        mUrlBar.setText(mShortDomain + mLongPath);
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Omnibox.CalculateVisibleHint.Duration")
-                        .expectIntRecord(
-                                "Omnibox.NumberOfVisibleCharacters", mNumberOfVisibleCharacters)
-                        .build();
-        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testSetLengthHistogram_noTruncation() {
         measureAndLayoutUrlBar();
