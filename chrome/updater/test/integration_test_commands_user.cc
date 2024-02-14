@@ -100,8 +100,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetMachineManaged(is_managed_device);
   }
 
-  void ExpectUninstallPing(ScopedServer* test_server) const override {
-    updater::test::ExpectUninstallPing(updater_scope_, test_server);
+  void ExpectPing(ScopedServer* test_server, int event_type) const override {
+    updater::test::ExpectPing(updater_scope_, test_server, event_type);
   }
 
   void ExpectUpdateCheckRequest(ScopedServer* test_server) const override {

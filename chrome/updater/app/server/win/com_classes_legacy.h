@@ -262,7 +262,8 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   // invalid formatting, or if the type information could not be initialized.
   HRESULT RuntimeClassInitialize(UpdaterScope scope,
                                  const std::wstring& app_id,
-                                 const std::wstring& command_id);
+                                 const std::wstring& command_id,
+                                 bool send_pings = true);
 
   // Overrides for IAppCommandWeb.
   IFACEMETHODIMP get_status(UINT* status) override;
@@ -292,6 +293,8 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   base::Process process_;
   HResultOr<AppCommandRunner> app_command_runner_;
+  std::string app_id_;
+  bool send_pings_ = true;
 
   friend class LegacyAppCommandWebImplTest;
 };

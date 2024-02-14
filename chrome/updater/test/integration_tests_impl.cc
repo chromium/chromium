@@ -952,10 +952,11 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   ASSERT_TRUE(succeeded);
 }
 
-void ExpectUninstallPing(UpdaterScope scope, ScopedServer* test_server) {
+void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type) {
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetUpdaterUserAgentMatcher(),
-                           request::GetContentMatcher({R"(.*"eventtype":4.*)"}),
+                           request::GetContentMatcher({base::StringPrintf(
+                               R"(.*"eventtype":%d,.*)", event_type)}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }

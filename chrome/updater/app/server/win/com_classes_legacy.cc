@@ -52,6 +52,8 @@
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "components/update_client/protocol_definition.h"
+#include "components/update_client/update_client.h"
 
 namespace {
 
@@ -1039,9 +1041,12 @@ LegacyAppCommandWebImpl::~LegacyAppCommandWebImpl() = default;
 HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     UpdaterScope scope,
     const std::wstring& app_id,
-    const std::wstring& command_id) {
+    const std::wstring& command_id,
+    bool send_pings) {
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
+  app_id_ = base::WideToUTF8(app_id);
+  send_pings_ = send_pings;
   return app_command_runner_.error_or(S_OK);
 }
 
@@ -1077,6 +1082,57 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
   return E_NOTIMPL;
 }
 
+namespace {
+
+void SendPing(const std::string& app_id, HRESULT hr, int event_type) {
+  struct SendPingResult : public base::RefCountedThreadSafe<SendPingResult> {
+    base::WaitableEvent completion_event;
+
+   private:
+    friend class base::RefCountedThreadSafe<SendPingResult>;
+    virtual ~SendPingResult() = default;
+  };
+
+  auto result = base::MakeRefCounted<SendPingResult>();
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](const std::string& app_id, const HRESULT hr, int event_type,
+         scoped_refptr<SendPingResult> result) {
+        const base::ScopedClosureRunner signal_event(base::BindOnce(
+            [](scoped_refptr<SendPingResult> result) {
+              result->completion_event.Signal();
+            },
+            result));
+
+        scoped_refptr<Configurator> config =
+            GetAppServerWinInstance()->config();
+        scoped_refptr<PersistedData> persisted_data =
+            config->GetUpdaterPersistedData();
+        if (!persisted_data->GetUsageStatsEnabled()) {
+          return;
+        }
+
+        update_client::CrxComponent app_command_data;
+        app_command_data.ap = persisted_data->GetAP(app_id);
+        app_command_data.app_id = app_id;
+        app_command_data.brand = persisted_data->GetBrandCode(app_id);
+        app_command_data.requires_network_encryption = false;
+        app_command_data.version = persisted_data->GetProductVersion(app_id);
+
+        update_client::UpdateClientFactory(config)->SendPing(
+            app_command_data,
+            {.event_type = event_type,
+             .result = SUCCEEDED(hr),
+             .error_code = hr,
+             .extra_code1 = 0},
+            base::DoNothing());
+      },
+      app_id, hr, event_type, result));
+
+  result->completion_event.TimedWait(base::Seconds(60));
+}
+
+}  // namespace
+
 STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution2,
                                               VARIANT substitution3,
@@ -1104,7 +1160,12 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  return app_command_runner_->Run(substitutions, process_);
+  const HRESULT hr = app_command_runner_->Run(substitutions, process_);
+  if (send_pings_) {
+    SendPing(app_id_, hr,
+             update_client::protocol_request::kEventAppCommandBegin);
+  }
+  return hr;
 }
 
 PolicyStatusImpl::PolicyStatusImpl()

@@ -51,6 +51,8 @@
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/update_client/protocol_definition.h"
+#include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -477,8 +479,12 @@ class IntegrationTest : public ::testing::Test {
                                               from_version, to_version);
   }
 
+  void ExpectPing(ScopedServer* test_server, int event_type) {
+    test_commands_->ExpectPing(test_server, event_type);
+  }
+
   void ExpectUninstallPing(ScopedServer* test_server) {
-    test_commands_->ExpectUninstallPing(test_server);
+    ExpectPing(test_server, update_client::protocol_request::kEventUninstall);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
@@ -1370,7 +1376,8 @@ TEST_F(IntegrationTest, LegacyProcessLauncher) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacyAppCommandWeb) {
+TEST_F(IntegrationTest, LegacyAppCommandWeb_NoUsageStats_NoPing) {
+  ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
 
   const char kAppId[] = "test1";
@@ -1381,6 +1388,46 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb) {
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
 
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  const std::string kAppId("test");
+  // Enable usagestats.
+  InstallApp(kAppId, base::Version("0.1"), [&] {
+    ASSERT_EQ(
+        base::win::RegKey(
+            UpdaterScopeToHKeyRoot(GetTestScope()),
+            base::StrCat({CLIENT_STATE_KEY, base::UTF8ToWide(kAppId)}).c_str(),
+            Wow6432(KEY_WRITE))
+            .WriteValue(L"usagestats", 1),
+        ERROR_SUCCESS);
+  });
+
+  base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1));
+
+  // Run wake to pick up the usage stats.
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  // The test runs the appcommand twice, so two pings.
+  ASSERT_NO_FATAL_FAILURE(ExpectPing(
+      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+  ASSERT_NO_FATAL_FAILURE(ExpectPing(
+      &test_server, update_client::protocol_request::kEventAppCommandBegin));
+  base::Value::List parameters;
+  parameters.Append("5432");
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
