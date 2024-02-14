@@ -16,45 +16,6 @@ namespace gpu {
 class OzoneImageBacking;
 class OzoneImageGLTexturesHolder;
 
-class GLOzoneImageRepresentationShared {
- public:
-  static bool BeginAccess(GLenum mode,
-                          OzoneImageBacking* ozone_backing,
-                          bool& need_end_fence);
-  static void EndAccess(bool need_end_fence,
-                        GLenum mode,
-                        OzoneImageBacking* ozone_backing);
-};
-
-// Representation of an Ozone-backed SharedImage that can be accessed as a GL
-// texture.
-class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
- public:
-  GLTextureOzoneImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      scoped_refptr<OzoneImageGLTexturesHolder> textures_holder,
-      bool should_mark_context_lost_textures_holder);
-  ~GLTextureOzoneImageRepresentation() override;
-
-  // GLTextureImageRepresentation implementation.
-  gles2::Texture* GetTexture(int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
-                           MarksContextLostOnContextLost2);
-
-  OzoneImageBacking* GetOzoneBacking();
-
-  scoped_refptr<OzoneImageGLTexturesHolder> textures_holder_;
-  const bool should_mark_context_lost_textures_holder_ = false;
-  GLenum current_access_mode_ = 0;
-  bool need_end_fence_;
-};
-
 // Representation of an Ozone-backed SharedImage that can be accessed as a
 // GL texture with passthrough.
 class GLTexturePassthroughOzoneImageRepresentation
@@ -81,9 +42,9 @@ class GLTexturePassthroughOzoneImageRepresentation
   OzoneImageBacking* GetOzoneBacking();
 
   scoped_refptr<OzoneImageGLTexturesHolder> textures_holder_;
-  const bool should_mark_context_lost_textures_holder_ = false;
+  const bool should_mark_context_lost_textures_holder_;
   GLenum current_access_mode_ = 0;
-  bool need_end_fence_;
+  bool need_end_fence_ = false;
 };
 
 }  // namespace gpu

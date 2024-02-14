@@ -366,8 +366,8 @@ SharedImageFactory::SharedImageFactory(
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_native_pixmaps) {
-    auto ozone_factory = std::make_unique<OzoneImageBackingFactory>(
-        context_state, workarounds, gpu_preferences);
+    auto ozone_factory =
+        std::make_unique<OzoneImageBackingFactory>(context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
   }
 #if BUILDFLAG(ENABLE_VULKAN)

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -24,37 +25,6 @@
 namespace gpu {
 
 namespace {
-// Converts a value that is aligned with glTexImage{2|3}D's |internalformat|
-// parameter to the value that is correspondingly aligned with
-// glTexImage{2|3}D's |format| parameter. |internalformat| is mostly an unsized
-// format that can be used both as internal format and data format. However,
-// GL_EXT_texture_norm16 follows ES3 semantics and only exposes a sized
-// internalformat.
-unsigned GetDataFormatFromInternalFormat(unsigned internalformat) {
-  switch (internalformat) {
-    case GL_R16_EXT:
-      return GL_RED_EXT;
-    case GL_RG16_EXT:
-      return GL_RG_EXT;
-    case GL_RGB10_A2_EXT:
-      return GL_RGBA;
-    case GL_RGB_YCRCB_420_CHROMIUM:
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCBCR_P010_CHROMIUM:
-      return GL_RGB;
-    case GL_RGBA16F_EXT:
-      return GL_RGBA;
-    case GL_RED:
-    case GL_RG:
-    case GL_RGB:
-    case GL_RGBA:
-    case GL_BGRA_EXT:
-      return internalformat;
-    default:
-      NOTREACHED();
-      return GL_NONE;
-  }
-}
 
 // Returns BufferFormat for given `format` and `plane_index`.
 gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
@@ -173,18 +143,16 @@ scoped_refptr<OzoneImageGLTexturesHolder>
 OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
     SharedImageBacking* backing,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferPlane plane,
-    bool is_passthrough) {
+    gfx::BufferPlane plane) {
   scoped_refptr<OzoneImageGLTexturesHolder> holder =
-      base::WrapRefCounted(new OzoneImageGLTexturesHolder(is_passthrough));
+      base::WrapRefCounted(new OzoneImageGLTexturesHolder());
   if (!holder->Initialize(backing, std::move(pixmap), plane)) {
     holder.reset();
   }
   return holder;
 }
 
-OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder(bool is_passthrough)
-    : is_passthrough_(is_passthrough) {}
+OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder() = default;
 
 OzoneImageGLTexturesHolder::~OzoneImageGLTexturesHolder() = default;
 
@@ -194,7 +162,7 @@ void OzoneImageGLTexturesHolder::MarkContextLost() {
   }
 
   context_lost_ = true;
-  for (auto& texture : textures_passthrough_) {
+  for (auto& texture : textures_) {
     texture->MarkContextLost();
   }
 }
@@ -216,17 +184,11 @@ size_t OzoneImageGLTexturesHolder::GetCacheCount() const {
 }
 
 void OzoneImageGLTexturesHolder::DestroyTextures() {
-  textures_passthrough_.clear();
   textures_.clear();
   bindings_.clear();
 }
 
 size_t OzoneImageGLTexturesHolder::GetNumberOfTextures() const {
-  if (is_passthrough_) {
-    DCHECK(textures_.empty());
-    return textures_passthrough_.size();
-  }
-  DCHECK(textures_passthrough_.empty());
   return textures_.size();
 }
 
@@ -290,28 +252,10 @@ bool OzoneImageGLTexturesHolder::CreateAndStoreTexture(
     return false;
   }
 
-  if (is_passthrough()) {
-    textures_passthrough_.emplace_back(
-        base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-            gl_texture_service_id, target));
-  } else {
-    gles2::Texture* texture =
-        gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
+  textures_.push_back(base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
+      gl_texture_service_id, target));
 
-    // TODO(crbug.com/1468989): Make sure these match with corresponding formats
-    // from ToGLFormatDesc{ExternalSampler}.
-    GLuint internal_format = np_gl_binding->GetInternalFormat();
-    GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
-    GLenum gl_type = np_gl_binding->GetDataType();
-    texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
-                          backing->size().height(), 1, 0, gl_format, gl_type,
-                          backing->ClearedRect());
-    texture->SetImmutable(true, true);
-
-    textures_.emplace_back(texture);
-  }
-
-  bindings_.emplace_back(std::move(np_gl_binding));
+  bindings_.push_back(std::move(np_gl_binding));
   return true;
 }
 

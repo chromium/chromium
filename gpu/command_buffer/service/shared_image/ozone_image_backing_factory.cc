@@ -72,13 +72,10 @@ constexpr uint32_t kSupportedUsage =
 
 OzoneImageBackingFactory::OzoneImageBackingFactory(
     SharedContextState* shared_context_state,
-    const GpuDriverBugWorkarounds& workarounds,
-    const GpuPreferences& gpu_preferences)
+    const GpuDriverBugWorkarounds& workarounds)
     : SharedImageBackingFactory(kSupportedUsage),
       shared_context_state_(shared_context_state),
-      workarounds_(workarounds),
-      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gles2::PassthroughCommandDecoderSupported()) {}
+      workarounds_(workarounds) {}
 
 OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
 
@@ -125,7 +122,7 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),
       shared_context_state_.get(), std::move(pixmap), workarounds_,
-      use_passthrough_, std::move(buffer_usage));
+      std::move(buffer_usage));
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
@@ -208,7 +205,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, plane_format, plane, plane_size, color_space, surface_origin,
       alpha_type, usage, std::move(debug_label), shared_context_state_.get(),
-      std::move(pixmap), workarounds_, use_passthrough_);
+      std::move(pixmap), workarounds_);
   backing->SetCleared();
 
   return backing;
@@ -239,8 +236,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<OzoneImageBacking>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, std::move(debug_label),
-      shared_context_state_.get(), std::move(pixmap), workarounds_,
-      use_passthrough_);
+      shared_context_state_.get(), std::move(pixmap), workarounds_);
   backing->SetCleared();
 
   return backing;

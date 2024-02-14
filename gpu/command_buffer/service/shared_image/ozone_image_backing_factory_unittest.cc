@@ -52,7 +52,7 @@ class OzoneImageBackingFactoryTest : public SharedImageTestBase {
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
 
     backing_factory_ = std::make_unique<OzoneImageBackingFactory>(
-        context_state_.get(), gpu_workarounds_, gpu_preferences_);
+        context_state_.get(), gpu_workarounds_);
 
     shared_image_representation_factory_ =
         std::make_unique<SharedImageRepresentationFactory>(
@@ -278,7 +278,7 @@ TEST_F(OzoneImageBackingFactoryTest, MarksContextLostOnContextLost) {
   // Manually destroy the glTexture to avoid leaking it.
   EXPECT_EQ(1u, textures_holder_ref->GetNumberOfTextures());
   const GLuint service_id =
-      textures_holder_ref->texture_passthrough(/*plane_index=*/0)->service_id();
+      textures_holder_ref->texture(/*plane_index=*/0)->service_id();
   glDeleteTextures(1, &service_id);
 }
 
@@ -317,30 +317,6 @@ TEST_F(OzoneImageBackingFactoryTest, MarksContextLostOnContextLost2) {
   ASSERT_TRUE(make_current_result);
 
   {
-    // gles2::Texture
-    auto gl_representation =
-        shared_image_representation_factory_->ProduceGLTexture(mailbox);
-    EXPECT_TRUE(gl_representation);
-    EXPECT_EQ(0u, backing_ptr->per_context_cached_textures_holders_.size());
-
-    auto* ozone_reprensentation =
-        static_cast<GLTextureOzoneImageRepresentation*>(
-            gl_representation.get());
-    auto textures_holder_ref = ozone_reprensentation->textures_holder_;
-
-    gl_representation->OnContextLost();
-    gl_representation.reset();
-
-    EXPECT_TRUE(textures_holder_ref->WasContextLost());
-
-    // Manually destroy the glTexture to avoid leaking it.
-    EXPECT_EQ(1u, textures_holder_ref->GetNumberOfTextures());
-    const GLuint service_id =
-        textures_holder_ref->texture(/*plane_index=*/0)->service_id();
-    glDeleteTextures(1, &service_id);
-  }
-
-  {
     // gles2::TexturePassthrough
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
@@ -361,8 +337,7 @@ TEST_F(OzoneImageBackingFactoryTest, MarksContextLostOnContextLost2) {
     // Manually destroy the glTexture to avoid leaking it.
     EXPECT_EQ(1u, textures_holder_ref->GetNumberOfTextures());
     const GLuint service_id =
-        textures_holder_ref->texture_passthrough(/*plane_index=*/0)
-            ->service_id();
+        textures_holder_ref->texture(/*plane_index=*/0)->service_id();
     glDeleteTextures(1, &service_id);
   }
 }

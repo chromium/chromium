@@ -28,21 +28,18 @@ namespace gpu {
 class SharedImageBacking;
 
 namespace gles2 {
-class Texture;
 class TexturePassthrough;
 }  // namespace gles2
 
-// Stores gles2::Texture(Passthrough)s for OzoneImageBacking.
+// Stores gles2::TexturePassthroughs for OzoneImageBacking.
 class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
     : public base::RefCounted<OzoneImageGLTexturesHolder> {
  public:
-  // Creates an OzoneImageGLTexturesHolder with gles2::Textures or a
-  // gles2::TexturePassthroughs.
+  // Creates an OzoneImageGLTexturesHolder with gles2::TexturePassthroughs.
   static scoped_refptr<OzoneImageGLTexturesHolder> CreateAndInitTexturesHolder(
       SharedImageBacking* backing,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferPlane plane,
-      bool is_passthrough);
+      gfx::BufferPlane plane);
 
   void MarkContextLost();
   bool WasContextLost();
@@ -58,39 +55,30 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
   // holder.
   void DestroyTextures();
 
-  gles2::Texture* texture(int plane_index) { return textures_[plane_index]; }
-  const scoped_refptr<gles2::TexturePassthrough>& texture_passthrough(
-      int plane_index) {
-    return textures_passthrough_[plane_index];
+  const scoped_refptr<gles2::TexturePassthrough>& texture(int plane_index) {
+    return textures_[plane_index];
   }
-
-  bool is_passthrough() const { return is_passthrough_; }
 
   size_t GetNumberOfTextures() const;
 
  private:
   friend class base::RefCounted<OzoneImageGLTexturesHolder>;
 
-  explicit OzoneImageGLTexturesHolder(bool is_passthrough);
+  explicit OzoneImageGLTexturesHolder();
   ~OzoneImageGLTexturesHolder();
 
-  // Initializes this holder with gles2::Textures or a
-  // gles2::TexturePassthroughs (depends on the |is_passthrough|). On failure,
+  // Initializes this holder with gles2::TexturePassthroughs. On failure,
   // returns false.
   bool Initialize(SharedImageBacking* backing,
                   scoped_refptr<gfx::NativePixmap> pixmap,
                   gfx::BufferPlane plane);
 
-  // Creates and stores a gles2::Texture or a gles2::TexturePassthrough (depends
-  // on the |is_passthrough|). On failure, returns false.
+  // Creates and stores a gles2::TexturePassthrough. On failure, returns false.
   bool CreateAndStoreTexture(SharedImageBacking* backing,
                              scoped_refptr<gfx::NativePixmap> pixmap,
                              gfx::BufferFormat buffer_format,
                              gfx::BufferPlane buffer_plane,
                              const gfx::Size& size);
-
-  // Helps to identify this holder.
-  const bool is_passthrough_;
 
   // A counter that is used by OzoneImageBacking to identify how many times this
   // holder has been cached.
@@ -98,8 +86,7 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
 
   bool context_lost_ = false;
   std::vector<std::unique_ptr<ui::NativePixmapGLBinding>> bindings_;
-  std::vector<raw_ptr<gles2::Texture>> textures_;
-  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_passthrough_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
 };
 
 }  // namespace gpu
