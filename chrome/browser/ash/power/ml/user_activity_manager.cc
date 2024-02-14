@@ -30,6 +30,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -157,7 +158,7 @@ UserActivityManager::UserActivityManager(
     chromeos::PowerManagerClient* power_manager_client,
     session_manager::SessionManager* session_manager,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-    const ChromeUserManager* user_manager)
+    const user_manager::UserManager* user_manager)
     : ukm_logger_(ukm_logger),
       session_manager_(session_manager),
       receiver_(this, std::move(receiver)),

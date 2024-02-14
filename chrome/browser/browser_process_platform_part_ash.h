@@ -14,13 +14,17 @@
 
 class BrowserProcessPlatformPartTestApi;
 class Profile;
+class ScopedKeepAlive;
+
+namespace app_list {
+class EssentialSearchManager;
+}  // namespace app_list
 
 namespace ash {
 class AccountManagerFactory;
 class AshProxyMonitor;
 class BrowserContextFlusher;
 class ChromeSessionManager;
-class ChromeUserManager;
 class InSessionPasswordChangeManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
@@ -38,13 +42,11 @@ class SystemClock;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
-}
+}  // namespace policy
 
-namespace app_list {
-class EssentialSearchManager;
-}
-
-class ScopedKeepAlive;
+namespace user_manager {
+class UserManager;
+}  // namespace user_manager
 
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
  public:
@@ -59,8 +61,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   void InitializeAutomaticRebootManager();
   void ShutdownAutomaticRebootManager();
 
-  void InitializeChromeUserManager();
-  void DestroyChromeUserManager();
+  void InitializeUserManager();
+  void DestroyUserManager();
 
   void InitializeDeviceDisablingManager();
   void ShutdownDeviceDisablingManager();
@@ -106,7 +108,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
     return session_manager_.get();
   }
 
-  ash::ChromeUserManager* user_manager() { return chrome_user_manager_.get(); }
+  user_manager::UserManager* user_manager() { return user_manager_.get(); }
 
   ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
@@ -167,7 +169,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   std::unique_ptr<ash::system::AutomaticRebootManager>
       automatic_reboot_manager_;
 
-  std::unique_ptr<ash::ChromeUserManager> chrome_user_manager_;
+  std::unique_ptr<user_manager::UserManager> user_manager_;
 
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
 

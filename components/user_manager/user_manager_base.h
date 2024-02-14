@@ -131,6 +131,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   bool IsEphemeralUser(const User* user) const override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const final;
+  void SetIsCurrentUserNew(bool is_new) override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
@@ -183,10 +184,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   const User* AddKioskAppUserForTesting(const AccountId& account_id,
                                         const std::string& username_hash);
 
-  // This method updates "User was added to the device in this session nad is
-  // not full initialized yet" flag.
-  void SetIsCurrentUserNew(bool is_new);
-
   // Helper function that converts users from |users_list| to |users_vector| and
   // |users_set|. Duplicates and users already present in |existing_users| are
   // skipped.
@@ -194,9 +191,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                      const std::set<AccountId>& existing_users,
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
-
-  // Returns true if device is enterprise managed.
-  virtual bool IsEnterpriseManaged() const = 0;
 
  protected:
   // Adds |user| to users list, and adds it to front of LRU list. It is assumed

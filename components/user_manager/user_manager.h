@@ -359,6 +359,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if current user is not existing one (hasn't signed in before).
   virtual bool IsCurrentUserNew() const = 0;
 
+  // This method updates "User was added to the device in this session and is
+  // not full initialized yet" flag.
+  virtual void SetIsCurrentUserNew(bool is_new) = 0;
+
   // Returns true if data stored or cached for the current user outside that
   // user's cryptohome (wallpaper, avatar, OAuth token status, display name,
   // display email) is ephemeral.
@@ -411,6 +415,9 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const = 0;
+
+  // Returns true if device is enterprise managed.
+  virtual bool IsEnterpriseManaged() const = 0;
 
   virtual void AddObserver(Observer* obs) = 0;
   virtual void RemoveObserver(Observer* obs) = 0;

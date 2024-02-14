@@ -37,10 +37,10 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -193,7 +193,7 @@ std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
     const user_manager::User* user) {
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   user_manager::MultiUserSignInPolicyController* controller =
-      ChromeUserManager::Get()->GetMultiUserSignInPolicyController();
+      user_manager::UserManager::Get()->GetMultiUserSignInPolicyController();
   return {
       controller->IsUserAllowedInSession(user_id),
       controller->GetCachedValue(user_id),

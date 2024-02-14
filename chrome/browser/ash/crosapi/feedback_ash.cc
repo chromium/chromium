@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
 

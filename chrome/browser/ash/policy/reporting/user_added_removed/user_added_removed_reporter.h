@@ -41,7 +41,7 @@ class UserAddedRemovedReporter
 
   ~UserAddedRemovedReporter() override;
 
-  // Check the ChromeUserManager removed user cache for users removed before
+  // Check the UserManager removed user cache for users removed before
   // the reporter is created.
   void ProcessRemoveUserCache();
 

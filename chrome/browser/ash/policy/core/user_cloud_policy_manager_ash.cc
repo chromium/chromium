@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
@@ -453,7 +452,7 @@ void UserCloudPolicyManagerAsh::OnClientError(
     RegistrationResultUMA(RegistrationResult::kReregistrationUnsuccessful);
     LOG(ERROR) << "Re-registration failed, requiring the user to perform an "
                   "online sign-in.";
-    ash::ChromeUserManager::Get()->SaveForceOnlineSignin(account_id_, true);
+    user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id_, true);
   }
 }
 
@@ -494,7 +493,7 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
     enforcement_type_ = PolicyEnforcement::kPolicyOptional;
 
     DCHECK(policy_data->has_username());
-    ash::ChromeUserManager::Get()->SetUserAffiliation(
+    user_manager::UserManager::Get()->SetUserAffiliation(
         account_id_,
         base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
                                     policy_data->user_affiliation_ids().end()));
@@ -502,7 +501,7 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 }
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
-  auto* user_manager = ash::ChromeUserManager::Get();
+  auto* user_manager = user_manager::UserManager::Get();
   user_manager::KnownUser known_user(local_state_);
   known_user.SetProfileRequiresPolicy(
       account_id_,

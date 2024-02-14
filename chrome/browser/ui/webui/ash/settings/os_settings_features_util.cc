@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,16 +20,17 @@
 namespace ash::settings {
 
 bool IsGuestModeActive() {
-  return ash::ChromeUserManager::Get()->IsLoggedInAsGuest() ||
-         ash::ChromeUserManager::Get()->IsLoggedInAsManagedGuestSession();
+  auto* user_manager = user_manager::UserManager::Get();
+  return user_manager->IsLoggedInAsGuest() ||
+         user_manager->IsLoggedInAsManagedGuestSession();
 }
 
 bool IsChildUser() {
-  return ash::ChromeUserManager::Get()->IsLoggedInAsChildUser();
+  return user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 }
 
 bool IsDeviceEnterpriseManaged() {
-  return ash::ChromeUserManager::Get()->IsEnterpriseManaged();
+  return user_manager::UserManager::Get()->IsEnterpriseManaged();
 }
 
 bool IsPowerwashAllowed() {

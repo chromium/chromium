@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -191,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   base::flat_set<std::string> user_affiliation_ids;
   user_affiliation_ids.insert(kFakeAffilationID);
 
-  ash::ChromeUserManager::Get()->SetUserAffiliation(user->GetAccountId(),
-                                                    user_affiliation_ids);
+  user_manager::UserManager::Get()->SetUserAffiliation(user->GetAccountId(),
+                                                       user_affiliation_ids);
 
   // Test for no network
   {

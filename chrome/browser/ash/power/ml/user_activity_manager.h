@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
@@ -34,6 +33,10 @@
 #include "ui/aura/window.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
+
+namespace user_manager {
+class UserManager;
+}  // namespace user_manager
 
 namespace ash {
 namespace power {
@@ -93,7 +96,7 @@ class UserActivityManager : public ui::UserActivityObserver,
       chromeos::PowerManagerClient* power_manager_client,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-      const ChromeUserManager* user_manager);
+      const user_manager::UserManager* user_manager);
 
   UserActivityManager(const UserActivityManager&) = delete;
   UserActivityManager& operator=(const UserActivityManager&) = delete;
@@ -234,7 +237,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
-  const raw_ptr<const ChromeUserManager> user_manager_;
+  const raw_ptr<const user_manager::UserManager> user_manager_;
 
   const raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
 

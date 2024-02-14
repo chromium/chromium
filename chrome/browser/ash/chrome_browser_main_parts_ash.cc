@@ -113,7 +113,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/memory_metrics.h"
 #include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
@@ -857,7 +856,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- just before CreateProfile().
 
-  g_browser_process->platform_part()->InitializeChromeUserManager();
+  g_browser_process->platform_part()->InitializeUserManager();
 
   if (base::FeatureList::IsEnabled(features::kPerUserMetrics)) {
     // Enable per-user metrics support as soon as user_manager is created.
@@ -1708,7 +1707,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   g_browser_process->platform_part()->ShutdownSessionManager();
   // Ash needs to be closed before UserManager is destroyed.
-  g_browser_process->platform_part()->DestroyChromeUserManager();
+  g_browser_process->platform_part()->DestroyUserManager();
 
   // Shutdown mojo service manager. This should be called before the
   // |mojo_ipc_support_| in |content::BrowserMainLoop| being reset. It is reset

@@ -101,38 +101,37 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
   automatic_reboot_manager_.reset();
 }
 
-void BrowserProcessPlatformPart::InitializeChromeUserManager() {
-  DCHECK(!chrome_user_manager_);
-  chrome_user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
+void BrowserProcessPlatformPart::InitializeUserManager() {
+  DCHECK(!user_manager_);
+  user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
   user_image_manager_registry_ =
-      std::make_unique<ash::UserImageManagerRegistry>(
-          chrome_user_manager_.get());
+      std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
   // LoginState and DeviceCloudPolicyManager outlives UserManager, so on
   // their initialization, there's no way to start observing UserManager.
   // This is the earliest timing to do so.
   if (auto* login_state = ash::LoginState::Get()) {
-    login_state->OnUserManagerCreated(chrome_user_manager_.get());
+    login_state->OnUserManagerCreated(user_manager_.get());
   }
   if (auto* policy_manager =
           browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
-    policy_manager->OnUserManagerCreated(chrome_user_manager_.get());
+    policy_manager->OnUserManagerCreated(user_manager_.get());
   }
 
-  chrome_user_manager_->Initialize();
+  user_manager_->Initialize();
 }
 
-void BrowserProcessPlatformPart::DestroyChromeUserManager() {
-  chrome_user_manager_->Destroy();
+void BrowserProcessPlatformPart::DestroyUserManager() {
+  user_manager_->Destroy();
   if (auto* policy_manager =
           browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
-    policy_manager->OnUserManagerWillBeDestroyed(chrome_user_manager_.get());
+    policy_manager->OnUserManagerWillBeDestroyed(user_manager_.get());
   }
   if (auto* login_state = ash::LoginState::Get()) {
-    login_state->OnUserManagerWillBeDestroyed(chrome_user_manager_.get());
+    login_state->OnUserManagerWillBeDestroyed(user_manager_.get());
   }
 
   user_image_manager_registry_.reset();
-  chrome_user_manager_.reset();
+  user_manager_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
