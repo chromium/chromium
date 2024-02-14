@@ -33,6 +33,13 @@ class RasterContextProvider;
 namespace exo {
 class LayerTreeFrameSinkHolder;
 
+// Notifies viz that exo doesn't want to throttle sending
+// `DidReceiveCompositorFrameAck` and `ReclaimResources`. We don't want exo to
+// merge those into OnBeginFrame as that makes clients of exo to throttle as
+// well given frame callbacks as well as buffers are sent/released in a late
+// manner.
+BASE_DECLARE_FEATURE(kExoDisableBeginFrameAcks);
+
 // This class provides functionality for hosting a surface tree. The surface
 // tree is hosted in the |host_window_|.
 class SurfaceTreeHost : public SurfaceDelegate,

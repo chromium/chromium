@@ -94,6 +94,15 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // Note: SetNeedsBeginFrame(false) IPCs are sent regardless what value
     // `auto_needs_begin_frame` is.
     bool auto_needs_begin_frame = false;
+
+    // Notifies the client wants to throttle sending
+    // `DidReceiveCompositorFrameAck` and `ReclaimResources`. Instead merging
+    // them into OnBeginFrame. This is set to `true` by default. Users of
+    // |this| can optionally opt out from this by setting this to `false`.
+    //
+    // Note: on the server side, this throttle is also controlled with the
+    // `features::kOnBeginFrameAcks` in addition to this control variable.
+    bool wants_begin_frame_acks = true;
   };
 
   AsyncLayerTreeFrameSink(
@@ -192,6 +201,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   // Please see comment of `InitParams::auto_needs_begin_frame`.
   const bool auto_needs_begin_frame_;
+  // Please see comment of `InitParams::wants_begin_frame_acks`.
+  const bool wants_begin_frame_acks_;
 
   viz::HitTestRegionList last_hit_test_data_;
 

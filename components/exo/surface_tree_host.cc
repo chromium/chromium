@@ -56,6 +56,10 @@
 
 namespace exo {
 
+BASE_FEATURE(kExoDisableBeginFrameAcks,
+             "ExoDisableBeginFrameAcks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -554,6 +558,12 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
         << "Feature ExoAutoNeedsBeginFrame is ignored because "
            "ExoReactiveFrameSubmission is not enabled.";
     logged_once = true;
+  }
+
+  // Disable merge of frame acks with begin frame so that clients of exo can
+  // get frame callbacks and resources reclaimed as soon as possible.
+  if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
+    params.wants_begin_frame_acks = false;
   }
 
   params.auto_needs_begin_frame =
