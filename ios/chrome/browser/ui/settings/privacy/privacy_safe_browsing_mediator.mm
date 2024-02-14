@@ -289,7 +289,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (notifyConsumer) {
-    [self.consumer reloadCellsForItems];
+    [self.consumer reconfigureCellsForItems];
     [self selectItem];
   }
 }
