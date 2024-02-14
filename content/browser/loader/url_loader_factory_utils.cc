@@ -40,14 +40,16 @@ TerminalParams::TerminalParams(
     FactoryOverrideOption factory_override_option,
     DisableSecureDnsOption disable_secure_dns_option,
     StoragePartitionImpl* storage_partition,
-    std::optional<URLLoaderFactoryTypes> url_loader_factory)
+    std::optional<URLLoaderFactoryTypes> url_loader_factory,
+    int process_id)
     : network_context_(network_context),
       factory_params_(std::move(factory_params)),
       header_client_option_(header_client_option),
       factory_override_option_(factory_override_option),
       disable_secure_dns_option_(disable_secure_dns_option),
       storage_partition_(storage_partition),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      process_id_(process_id) {}
 
 TerminalParams::~TerminalParams() = default;
 TerminalParams::TerminalParams(TerminalParams&&) = default;
@@ -62,10 +64,12 @@ TerminalParams TerminalParams::ForNetworkContext(
     DisableSecureDnsOption disable_secure_dns_option) {
   CHECK(network_context);
   CHECK(factory_params);
-  return TerminalParams(
-      network_context, std::move(factory_params), header_client_option,
-      factory_override_option, disable_secure_dns_option,
-      /*storage_partition=*/nullptr, /*url_loader_factory=*/std::nullopt);
+  int process_id = factory_params->process_id;
+  return TerminalParams(network_context, std::move(factory_params),
+                        header_client_option, factory_override_option,
+                        disable_secure_dns_option,
+                        /*storage_partition=*/nullptr,
+                        /*url_loader_factory=*/std::nullopt, process_id);
 }
 
 // static
@@ -77,17 +81,19 @@ TerminalParams TerminalParams::ForBrowserProcess(
                         storage_partition->CreateURLLoaderFactoryParams(),
                         header_client_option, FactoryOverrideOption::kDisallow,
                         DisableSecureDnsOption::kDisallow, storage_partition,
-                        /*url_loader_factory=*/std::nullopt);
+                        /*url_loader_factory=*/std::nullopt,
+                        network::mojom::kBrowserProcessId);
 }
 
 // static
 TerminalParams TerminalParams::ForNonNetwork(
-    URLLoaderFactoryTypes url_loader_factory) {
+    URLLoaderFactoryTypes url_loader_factory,
+    int process_id) {
   return TerminalParams(
       /*network_context=*/nullptr, /*factory_params=*/nullptr,
       HeaderClientOption::kDisallow, FactoryOverrideOption::kDisallow,
       DisableSecureDnsOption::kDisallow,
-      /*storage_partition=*/nullptr, std::move(url_loader_factory));
+      /*storage_partition=*/nullptr, std::move(url_loader_factory), process_id);
 }
 
 network::mojom::NetworkContext* TerminalParams::network_context() const {
@@ -104,6 +110,9 @@ DisableSecureDnsOption TerminalParams::disable_secure_dns_option() const {
 }
 StoragePartitionImpl* TerminalParams::storage_partition() const {
   return storage_partition_.get();
+}
+int TerminalParams::process_id() const {
+  return process_id_;
 }
 network::mojom::URLLoaderFactoryParamsPtr TerminalParams::TakeFactoryParams() {
   return std::move(factory_params_);
@@ -224,8 +233,7 @@ template <typename OutType, typename... FinishArgs>
   if (auto terminal_url_loader_factory =
           terminal_params.TakeURLLoaderFactory()) {
     if (GetTestingInterceptor()) {
-      // TODO(crbug.com/324458368): Plumb a process ID here.
-      GetTestingInterceptor().Run(network::mojom::kInvalidProcessId,
+      GetTestingInterceptor().Run(terminal_params.process_id(),
                                   factory_builder);
     }
 
@@ -258,7 +266,7 @@ template <typename OutType, typename... FinishArgs>
   factory_params->disable_secure_dns = disable_secure_dns;
 
   if (GetTestingInterceptor()) {
-    GetTestingInterceptor().Run(factory_params->process_id, factory_builder);
+    GetTestingInterceptor().Run(terminal_params.process_id(), factory_builder);
   }
 
   return std::move(factory_builder)

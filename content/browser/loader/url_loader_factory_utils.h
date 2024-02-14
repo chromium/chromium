@@ -121,10 +121,13 @@ class CONTENT_EXPORT TerminalParams final {
   // caches. For requests served by the network service, use
   // `ForNetworkContext()` or `ForBrowserProcess()` as they should have
   // corresponding `NetworkContext`s.
+  //
+  // See the `process_id_` comment below for `process_id`.
   using URLLoaderFactoryTypes =
       absl::variant<mojo::PendingRemote<network::mojom::URLLoaderFactory>,
                     scoped_refptr<network::SharedURLLoaderFactory>>;
-  static TerminalParams ForNonNetwork(URLLoaderFactoryTypes url_loader_factory);
+  static TerminalParams ForNonNetwork(URLLoaderFactoryTypes url_loader_factory,
+                                      int process_id);
 
   TerminalParams(TerminalParams&&);
   TerminalParams& operator=(TerminalParams&&);
@@ -135,6 +138,7 @@ class CONTENT_EXPORT TerminalParams final {
   FactoryOverrideOption factory_override_option() const;
   DisableSecureDnsOption disable_secure_dns_option() const;
   StoragePartitionImpl* storage_partition() const;
+  int process_id() const;
   network::mojom::URLLoaderFactoryParamsPtr TakeFactoryParams();
   std::optional<URLLoaderFactoryTypes> TakeURLLoaderFactory();
 
@@ -145,7 +149,8 @@ class CONTENT_EXPORT TerminalParams final {
                  FactoryOverrideOption factory_override_option,
                  DisableSecureDnsOption disable_secure_dns_option,
                  StoragePartitionImpl* storage_partition,
-                 std::optional<URLLoaderFactoryTypes> url_loader_factory);
+                 std::optional<URLLoaderFactoryTypes> url_loader_factory,
+                 int process_id);
 
   raw_ptr<network::mojom::NetworkContext> network_context_;
   network::mojom::URLLoaderFactoryParamsPtr factory_params_;
@@ -154,6 +159,14 @@ class CONTENT_EXPORT TerminalParams final {
   DisableSecureDnsOption disable_secure_dns_option_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
   std::optional<URLLoaderFactoryTypes> url_loader_factory_;
+
+  // The process ID plumbed to URLLoaderInterceptor. This can be
+  // - a renderer process, or
+  // - `network::mojom::kBrowserProcessId` for browser process.
+  // TODO(crbug.com/324458368): This is different from
+  // `ContentClientParams::render_process_id_`. Clarify the meaning of
+  // `process_id_` here if needed.
+  int process_id_;
 };
 
 // Creates a URLLoaderFactory, intercepted by:

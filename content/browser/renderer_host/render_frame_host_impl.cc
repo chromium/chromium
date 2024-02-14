@@ -10487,7 +10487,8 @@ void RenderFrameHostImpl::CommitNavigation(
           url_loader_factory::CreatePendingRemote(
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
               url_loader_factory::TerminalParams::ForNonNetwork(
-                  CreateWebUIURLLoaderFactory(this, effective_scheme, {})),
+                  CreateWebUIURLLoaderFactory(this, effective_scheme, {}),
+                  GetProcess()->GetID()),
               url_loader_factory::ContentClientParams(
                   browser_context, this, GetProcess()->GetID(),
                   subresource_loader_factories_config.origin(),
@@ -10599,7 +10600,7 @@ void RenderFrameHostImpl::CommitNavigation(
           pending_factory_proxy.InitWithNewPipeAndPassReceiver(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
           url_loader_factory::TerminalParams::ForNonNetwork(
-              std::move(original_pending_factory)),
+              std::move(original_pending_factory), GetProcess()->GetID()),
           url_loader_factory::ContentClientParams(
               GetBrowserContext(), this, GetProcess()->GetID(),
               subresource_loader_factories_config.origin(),

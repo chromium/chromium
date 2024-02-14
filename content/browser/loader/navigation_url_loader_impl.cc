@@ -1410,7 +1410,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         ContentBrowserClient::URLLoaderFactoryType::kNavigation,
         url_loader_factory::TerminalParams::ForNonNetwork(
             CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
-                                        scheme, {})),
+                                        scheme, {}),
+            network::mojom::kBrowserProcessId),
         url_loader_factory::ContentClientParams(
             browser_context_, frame_tree_node->current_frame_host(),
             frame_tree_node->current_frame_host()->GetProcess()->GetID(),
@@ -1726,7 +1727,8 @@ void NavigationURLLoaderImpl::
   url_loader_factory::CreateAndConnectToPendingReceiver(
       std::move(factory_receiver),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-      url_loader_factory::TerminalParams::ForNonNetwork(std::move(terminal)),
+      url_loader_factory::TerminalParams::ForNonNetwork(
+          std::move(terminal), network::mojom::kBrowserProcessId),
       url_loader_factory::ContentClientParams(
           frame->GetSiteInstance()->GetBrowserContext(), frame,
           frame->GetProcess()->GetID(), url::Origin(),

@@ -207,7 +207,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
           url_loader_factory::Create(
               ContentBrowserClient::URLLoaderFactoryType::kNavigation,
               url_loader_factory::TerminalParams::ForNonNetwork(
-                  std::move(single_request_url_loader_factory)),
+                  std::move(single_request_url_loader_factory),
+                  network::mojom::kBrowserProcessId),
               url_loader_factory::ContentClientParams(
                   BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
                   render_frame_host, render_frame_host->GetProcess()->GetID(),

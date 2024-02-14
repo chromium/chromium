@@ -95,8 +95,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, InterceptFrameWithFileScheme) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         EXPECT_EQ(params->url_request.url, url);
-        // TODO(crbug.com/324458368): Plumb a process ID here.
-        EXPECT_EQ(params->process_id, network::mojom::kInvalidProcessId);
+        EXPECT_EQ(params->process_id, network::mojom::kBrowserProcessId);
         seen = true;
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_FAILED;
