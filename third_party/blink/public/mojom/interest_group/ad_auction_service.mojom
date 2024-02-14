@@ -13,10 +13,6 @@ import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct AdKeywordReplacement {
-  string match;
-  string replacement;
-};
 
 // Represents which AuctionConfig is getting concrete value filled in after a
 // promise param resolved --- either the top-level auction (if `main_auction`)
@@ -82,6 +78,12 @@ interface AbortableAdAuction {
   ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
       AuctionAdConfigAuctionId auction,
       string? direct_from_seller_signals_header_ad_slot);
+
+  // Used to provide result of resolving a promise specifying
+  // `deprecated_render_url_replacements` field of an AuctionConfig.
+  ResolvedDeprecatedRenderURLReplacementsPromise(
+    AuctionAdConfigAuctionId auction,
+    array<AdKeywordReplacement> deprecated_render_url_replacements);
 
   // Used to provide result of resolving a promise specifying the Server
   // Response for an AuctionConfig that uses AuctionAdServerResponseConfig.

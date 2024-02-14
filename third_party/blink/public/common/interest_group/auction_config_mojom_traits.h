@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 
 class GURL;
@@ -197,6 +198,33 @@ struct BLINK_COMMON_EXPORT UnionTraits<
               AuctionAdConfigMaybePromiseDirectFromSellerSignalsDataView,
           blink::AuctionConfig::MaybePromiseDirectFromSellerSignals> {};
 
+template <>
+struct BLINK_COMMON_EXPORT UnionTraits<
+    blink::mojom::
+        AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+    blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements>
+    : public AdConfigMaybePromiseTraitsHelper<
+          blink::mojom::
+              AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+          blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements> {};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AdKeywordReplacementDataView,
+                 blink::AuctionConfig::AdKeywordReplacement> {
+  static std::string match(
+      const blink::AuctionConfig::AdKeywordReplacement& params) {
+    return params.match;
+  }
+
+  static std::string replacement(
+      const blink::AuctionConfig::AdKeywordReplacement& params) {
+    return params.replacement;
+  }
+
+  static bool Read(blink::mojom::AdKeywordReplacementDataView data,
+                   blink::AuctionConfig::AdKeywordReplacement* out);
+};
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<
     blink::mojom::AuctionReportBuyersConfigDataView,
@@ -441,6 +469,12 @@ struct BLINK_COMMON_EXPORT
   static const base::flat_map<url::Origin, uint16_t>&
   per_buyer_experiment_group_ids(const blink::AuctionConfig& config) {
     return config.per_buyer_experiment_group_ids;
+  }
+
+  static const blink::AuctionConfig::
+      MaybePromiseDeprecatedRenderURLReplacements&
+      deprecated_render_url_replacements(const blink::AuctionConfig& config) {
+    return config.deprecated_render_url_replacements;
   }
 
   static bool expects_additional_bids(const blink::AuctionConfig& config) {

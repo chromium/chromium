@@ -435,6 +435,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableMojoJSProtectedMemory);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEnableDeprecatedRenderURLReplacements);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEventTimingFallbackToModalDialogStart);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);

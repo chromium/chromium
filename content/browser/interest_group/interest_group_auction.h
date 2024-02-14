@@ -385,6 +385,12 @@ class CONTENT_EXPORT InterestGroupAuction
     // `blink::AdDescriptor`.
     std::vector<GURL> GetAdComponentUrls() const;
 
+    // These getters are necessary for handling the replacements within the
+    // interest group auction.
+    blink::AdDescriptor GetAdDescriptorWithReplacements();
+    std::vector<blink::AdDescriptor>
+    GetComponentAdDescriptorsWithReplacements();
+
     // Which auctions the bid participates in.
     auction_worklet::mojom::BidRole bid_role;
 
@@ -725,6 +731,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // join the k-anon sets if it's informed the winning ad has been navigated to,
   // so there's no need for anything else to invoke this method.
   base::flat_set<std::string> GetKAnonKeysToJoin() const;
+
+  // Gets GetDeprecatedRenderURLReplacements in order to handle the
+  // ad render url replacements within the interest group auction.
+  const std::vector<blink::AuctionConfig::AdKeywordReplacement>&
+  GetDeprecatedRenderURLReplacements();
 
   BiddingAndAuctionResponse TakeBiddingAndAuctionResponse() {
     return std::move(saved_response_).value();

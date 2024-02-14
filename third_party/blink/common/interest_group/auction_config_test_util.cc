@@ -33,6 +33,9 @@ AuctionConfig CreateFullAuctionConfig() {
   const url::Origin buyer = url::Origin::Create(GURL("https://buyer.test"));
   auction_config.per_buyer_experiment_group_ids[buyer] = 3;
 
+  auction_config.deprecated_render_url_replacements = blink::AuctionConfig::
+      MaybePromiseDeprecatedRenderURLReplacements::FromValue({});
+
   AuctionConfig::NonSharedParams& non_shared_params =
       auction_config.non_shared_params;
   non_shared_params.interest_group_buyers.emplace();

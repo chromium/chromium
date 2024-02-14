@@ -66,6 +66,13 @@ struct AuctionServerRequestFlags {
   bool include_full_ads = false;
 };
 
+// A container used for making changes to ad render URLs. 'match' is what we use
+// to find a match within the url, and 'replacement' is what we replace it with.
+struct AdKeywordReplacement {
+  string match;
+  string replacement;
+};
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
@@ -318,6 +325,12 @@ union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
   DirectFromSellerSignals? value;
 };
 
+// See blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements
+union AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements {
+  uint32 promise;  // value unused
+  array<AdKeywordReplacement> value;
+};
+
 struct AuctionAdServerResponseConfig {
   // The response will be filled in later when a promise resolves.
   mojo_base.mojom.Uuid request_id;
@@ -521,6 +534,10 @@ struct AuctionAdConfig {
   // `auction_signals`, but the signals' contents are not revealed to the
   // renderer process. See details in the DirectFromSellerSignals comment.
   AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
+
+  // The ad render url replacements for their respective ad URL. If promise is
+  // never given, this will resolve to a empty vector.
+  AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
 
   // Like `direct_from_seller_signals`, but passed from the page via a different
   // mechanism. `direct_from_seller_signals` searches for the contents of

@@ -45,6 +45,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/additional_bids_util.h"
@@ -976,6 +977,44 @@ std::vector<GURL> InterestGroupAuction::Bid::GetAdComponentUrls() const {
         return ad_component_descriptor.url;
       });
   return ad_component_urls;
+}
+
+// If the auction config specified 'deprecatedRenderURLReplacements', this will
+// return the ad descriptor with the proper replacements.
+blink::AdDescriptor
+InterestGroupAuction::Bid::GetAdDescriptorWithReplacements() {
+  std::vector<std::pair<std::string, std::string>> local_replacements;
+  // Convert `replacements` into a vector of pairs to use within
+  // `SubstituteMappedStrings`.
+  for (const auto& replacement :
+       auction->GetDeprecatedRenderURLReplacements()) {
+    local_replacements.emplace_back(replacement.match, replacement.replacement);
+  }
+  return blink::AdDescriptor(GURL(SubstituteMappedStrings(
+                                 ad_descriptor.url.spec(), local_replacements)),
+                             ad_descriptor.size);
+}
+
+// If the auction config specified 'deprecatedRenderURLReplacements', this will
+// return the ad descriptors with the proper replacements.
+std::vector<blink::AdDescriptor>
+InterestGroupAuction::Bid::GetComponentAdDescriptorsWithReplacements() {
+  std::vector<blink::AdDescriptor> local_component_ad_descriptors;
+  std::vector<std::pair<std::string, std::string>> local_replacements;
+  // Convert `replacements` into a vector of pairs to use within
+  // `SubstituteMappedStrings`.
+  for (const auto& replacement :
+       auction->GetDeprecatedRenderURLReplacements()) {
+    local_replacements.emplace_back(replacement.match, replacement.replacement);
+  }
+
+  for (auto& ad_component_descriptor : ad_component_descriptors) {
+    local_component_ad_descriptors.emplace_back(
+        GURL(SubstituteMappedStrings(ad_component_descriptor.url.spec(),
+                                     local_replacements)),
+        ad_component_descriptor.size);
+  }
+  return local_component_ad_descriptors;
 }
 
 InterestGroupAuction::ScoredBid::ScoredBid(
@@ -3746,6 +3785,11 @@ std::optional<std::string>
 InterestGroupAuction::GetDirectFromSellerSellerSignalsHeaderAdSlot(
     const HeaderDirectFromSellerSignals::Result& signals) {
   return signals.seller_signals();
+}
+
+const std::vector<blink::AuctionConfig::AdKeywordReplacement>&
+InterestGroupAuction::GetDeprecatedRenderURLReplacements() {
+  return config_->deprecated_render_url_replacements.value();
 }
 
 InterestGroupAuction::LeaderInfo::LeaderInfo() = default;

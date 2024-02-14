@@ -131,6 +131,29 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   using MaybePromiseDirectFromSellerSignals =
       MaybePromise<std::optional<DirectFromSellerSignals>>;
 
+  struct BLINK_COMMON_EXPORT AdKeywordReplacement {
+    // Represents the match within the url that we are looking to replace.
+    std::string match;
+    // Represents the replacement for the match.
+    std::string replacement;
+
+    // Validity check to ensure the match coming from the renderer is properly
+    // formatted.
+    bool IsValid() {
+      return ((match.starts_with("${") && match.ends_with("}")) ||
+              (match.starts_with("%%") && match.ends_with("%%")));
+    }
+
+    bool operator==(const AdKeywordReplacement& other) const {
+      return std::tie(match, replacement) ==
+             std::tie(other.match, other.replacement);
+    }
+  };
+
+  // Typemapped to
+  // blink::mojom::AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements
+  using MaybePromiseDeprecatedRenderURLReplacements =
+      MaybePromise<std::vector<AdKeywordReplacement>>;
   // Representation of bidder timeouts, including optional global and per-origin
   // timeouts.
   //
@@ -382,6 +405,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   std::optional<GURL> decision_logic_url;
   std::optional<GURL> trusted_scoring_signals_url;
 
+  // Opaque map object, representing the replacements for ad creative urls.
+  MaybePromiseDeprecatedRenderURLReplacements
+      deprecated_render_url_replacements;
+
   // The maximum length limit for the trusted scoring signal fetch URL. Can
   // only be set as either 0 or a positive number. A value of 0 indicates that
   // there is no limit.
@@ -420,7 +447,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 423, R"(
+  static_assert(__LINE__ == 450, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

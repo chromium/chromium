@@ -65,6 +65,17 @@ bool SerializeAndDeserialize(
   return success;
 }
 
+bool SerializeAndDeserialize(const AuctionConfig::AdKeywordReplacement& in) {
+  AuctionConfig::AdKeywordReplacement out;
+  bool success =
+      mojo::test::SerializeAndDeserialize<blink::mojom::AdKeywordReplacement>(
+          in, out);
+  if (success) {
+    EXPECT_EQ(in, out);
+  }
+  return success;
+}
+
 bool SerializeAndDeserialize(const AuctionConfig::BuyerTimeouts& in) {
   AuctionConfig::BuyerTimeouts out;
   bool success = mojo::test::SerializeAndDeserialize<
@@ -430,6 +441,78 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromisePerBuyerSignals) {
     EXPECT_TRUE(
         SerializeAndDeserialize<
             blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals>(signals));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest,
+     MaybePromiseDeprecatedRenderURLReplacements) {
+  {
+    std::vector<blink::AuctionConfig::AdKeywordReplacement> value;
+    value.push_back(blink::AuctionConfig::AdKeywordReplacement(
+        "${INTEREST_GROUP_NAME}", "cars"));
+    AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements replacements =
+        AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::FromValue(
+            std::move(value));
+    EXPECT_TRUE(SerializeAndDeserialize<
+                blink::mojom::
+                    AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements>(
+        replacements));
+  }
+
+  {
+    AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements replacements =
+        AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+            FromPromise();
+    EXPECT_TRUE(SerializeAndDeserialize<
+                blink::mojom::
+                    AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements>(
+        replacements));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest, DeprecatedRenderURLReplacements) {
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "${INTEREST_GROUP_NAME}";
+    value.replacement = "cars";
+    EXPECT_TRUE(SerializeAndDeserialize(value));
+  }
+
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "%%INTEREST_GROUP_NAME%%";
+    value.replacement = "BOATS";
+    EXPECT_TRUE(SerializeAndDeserialize(value));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest,
+     DeprecatedRenderURLReplacementsBadFormatting) {
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "${NO_END_BRACKET";
+    value.replacement = "cars";
+    EXPECT_FALSE(SerializeAndDeserialize(value));
+  }
+
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "%%NO_END_PERCENT";
+    value.replacement = "cars";
+    EXPECT_FALSE(SerializeAndDeserialize(value));
+  }
+
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "%SINGLE_START_PERCENT%%";
+    value.replacement = "cars";
+    EXPECT_FALSE(SerializeAndDeserialize(value));
+  }
+  {
+    AuctionConfig::AdKeywordReplacement value;
+    value.match = "{NO_DOLLAR_SIGN}";
+    value.replacement = "cars";
+    EXPECT_FALSE(SerializeAndDeserialize(value));
   }
 }
 

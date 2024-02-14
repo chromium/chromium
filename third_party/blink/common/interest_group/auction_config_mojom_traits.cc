@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -105,6 +106,11 @@ template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignalsDataView,
     blink::AuctionConfig::MaybePromiseDirectFromSellerSignals>;
 
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::
+        AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+    blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements>;
+
 bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
                   blink::AuctionConfig::BuyerTimeouts>::
     Read(blink::mojom::AuctionAdConfigBuyerTimeoutsDataView data,
@@ -114,6 +120,17 @@ bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
     return false;
   }
   return true;
+}
+
+bool StructTraits<blink::mojom::AdKeywordReplacementDataView,
+                  blink::AuctionConfig::AdKeywordReplacement>::
+    Read(blink::mojom::AdKeywordReplacementDataView data,
+         blink::AuctionConfig::AdKeywordReplacement* out) {
+  if (!data.ReadMatch(&out->match) ||
+      !data.ReadReplacement(&out->replacement)) {
+    return false;
+  }
+  return out->IsValid();
 }
 
 bool StructTraits<blink::mojom::AdCurrencyDataView, blink::AdCurrency>::Read(
@@ -280,7 +297,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
       !data.ReadPerBuyerExperimentGroupIds(
           &out->per_buyer_experiment_group_ids) ||
       !data.ReadAggregationCoordinatorOrigin(
-          &out->aggregation_coordinator_origin)) {
+          &out->aggregation_coordinator_origin) ||
+      !data.ReadDeprecatedRenderUrlReplacements(
+          &out->deprecated_render_url_replacements)) {
     return false;
   }
 

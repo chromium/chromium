@@ -10,6 +10,7 @@
 
 #include "base/strings/to_string.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 
 namespace blink {
 
@@ -74,6 +75,15 @@ base::Value SerializeIntoValue(const base::TimeDelta& value) {
 template <>
 base::Value SerializeIntoValue(const absl::uint128& value) {
   return base::Value(base::ToString(value));
+}
+
+template <>
+base::Value SerializeIntoValue(
+    const blink::AuctionConfig::AdKeywordReplacement& value) {
+  base::Value::Dict result;
+  result.Set("match", SerializeIntoValue(value.match));
+  result.Set("replacement", SerializeIntoValue(value.replacement));
+  return base::Value(std::move(result));
 }
 
 template <>
@@ -390,6 +400,9 @@ int AuctionConfig::NumPromises() const {
   if (expects_additional_bids) {
     ++total;
   }
+  if (deprecated_render_url_replacements.is_promise()) {
+    ++total;
+  }
   for (const blink::AuctionConfig& sub_auction :
        non_shared_params.component_auctions) {
     total += sub_auction.NumPromises();
@@ -460,6 +473,8 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
                     result);
   SerializeIntoDict("maxTrustedScoringSignalsURLLength",
                     max_trusted_scoring_signals_url_length, result);
+  SerializeIntoDict("deprecatedRenderURLReplacements",
+                    deprecated_render_url_replacements, result);
   SerializeIntoDict("interestGroupBuyers",
                     non_shared_params.interest_group_buyers, result);
   SerializeIntoDict("auctionSignals", non_shared_params.auction_signals,

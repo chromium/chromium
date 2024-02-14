@@ -213,6 +213,32 @@ void AuctionRunner::ResolvedBuyerTimeoutsPromise(
   NotifyPromiseResolved(auction_id.get(), config);
 }
 
+void AuctionRunner::ResolvedDeprecatedRenderURLReplacementsPromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    const std::vector<::blink::AuctionConfig::AdKeywordReplacement>&
+        deprecated_render_url_replacements) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedDeprecatedRenderURLReplacementsPromise");
+    return;
+  }
+  if (!config->deprecated_render_url_replacements.is_promise()) {
+    mojo::ReportBadMessage(
+        "ResolvedDeprecatedRenderURLReplacementsPromise updating non-promise");
+    return;
+  }
+
+  config->deprecated_render_url_replacements =
+      blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+          FromValue(deprecated_render_url_replacements);
+  NotifyPromiseResolved(auction_id.get(), config);
+}
+
 void AuctionRunner::ResolvedBuyerCurrenciesPromise(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
     const blink::AuctionConfig::BuyerCurrencies& buyer_currencies) {
@@ -573,9 +599,13 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
   UpdateInterestGroupsPostAuction();
 
   auto errors = auction_.TakeErrors();
-  // Need this before `CreateReporter()` since the reporter takes over
-  // AuctonConfig.
+  // Need these before `CreateReporter()` since the reporter takes over
+  // AuctionConfig and sets it to null, even for all component auctions.
   auto requested_ad_size = auction_.RequestedAdSize();
+  auto ad_descriptor_with_replacements =
+      auction_.top_bid()->bid->GetAdDescriptorWithReplacements();
+  auto component_ad_descriptors_with_replacements =
+      auction_.top_bid()->bid->GetComponentAdDescriptorsWithReplacements();
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
@@ -593,8 +623,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
   state_ = State::kSucceeded;
   std::move(callback_).Run(
       this, /*aborted_by_script=*/false, std::move(winning_group_key),
-      std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
-      auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
+      std::move(requested_ad_size), std::move(ad_descriptor_with_replacements),
+      std::move(component_ad_descriptors_with_replacements), std::move(errors),
       std::move(reporter));
 }
 
