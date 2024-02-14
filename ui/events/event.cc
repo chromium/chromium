@@ -1081,7 +1081,10 @@ DomKey KeyEvent::GetDomKey() const {
 }
 
 void KeyEvent::OnFlagsUpdated() {
+  // TODO(https://crbug.com/324462727): this is problematic on windows.
+#if BUILDFLAG(IS_CHROMEOS)
   key_ = DomKey::NONE;
+#endif
 }
 
 char16_t KeyEvent::GetCharacter() const {
