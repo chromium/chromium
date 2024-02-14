@@ -256,47 +256,42 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-#endif
-
   webui::LocalizedString kLocalizedStrings[] = {
-    {"secureDns", IDS_SETTINGS_SECURE_DNS},
-    {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDns", IDS_SETTINGS_SECURE_DNS},
+      {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"secureDnsOsSettingsTitle", kIsRevampEnabled
-                                     ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS
-                                     : IDS_SETTINGS_SECURE_DNS},
-    {"secureDnsOsSettingsDescription",
-     kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION
-                      : IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
-    {"secureDnsWithIdentifiersDescription",
-     IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
-    {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-    {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-    {"secureDnsDialogCancel", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-    {"secureDnsDialogTurnOff",
-     IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
+      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
+      {"secureDnsOsSettingsDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDnsWithIdentifiersDescription",
+       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+      {"secureDnsDialogCancel",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+      {"secureDnsDialogTurnOff",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
 #endif
-    {"secureDnsDisabledForManagedEnvironment",
-     IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
-    {"secureDnsDisabledForParentalControl",
-     IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
-    {"secureDnsAutomaticModeDescription",
-     IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
-    {"secureDnsCustomProviderDescription",
-     IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION},
-    {"secureDnsDropdownA11yLabel",
-     IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
-    {"secureDnsSecureDropdownModeDescription",
-     IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION},
-    {"secureDnsSecureDropdownModePrivacyPolicy",
-     IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY},
-    {"secureDnsCustomPlaceholder", IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER},
-    {"secureDnsCustomFormatError", IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
-    {"secureDnsCustomConnectionError",
-     IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
+      {"secureDnsDisabledForManagedEnvironment",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
+      {"secureDnsDisabledForParentalControl",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
+      {"secureDnsAutomaticModeDescription",
+       IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsCustomProviderDescription",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION},
+      {"secureDnsDropdownA11yLabel",
+       IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
+      {"secureDnsSecureDropdownModeDescription",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModePrivacyPolicy",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY},
+      {"secureDnsCustomPlaceholder",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER},
+      {"secureDnsCustomFormatError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
+      {"secureDnsCustomConnectionError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

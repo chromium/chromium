@@ -142,7 +142,7 @@ suite('SettingsSecureDns', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
-      secureDnsDescription: defaultDescription,
+      secureDnsOsSettingsDescription: defaultDescription,
       secureDnsDisabledForManagedEnvironment: managedEnvironmentDescription,
       secureDnsDisabledForParentalControl: parentalControlDescription,
       isRevampWayfindingEnabled: false,

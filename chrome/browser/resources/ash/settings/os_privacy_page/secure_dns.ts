@@ -333,11 +333,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // hashed with a salt and hex encoded), then the message will contain the
     // template URI for display in which the identifiers are shown in plain
     // text.
-    let secureDescription = loadTimeData.getString('secureDnsDescription');
-    if (this.isRevampWayfindingEnabled_) {
-      secureDescription =
-          loadTimeData.getString('secureDnsOsSettingsDescription');
-    }
+    let secureDescription =
+        loadTimeData.getString('secureDnsOsSettingsDescription');
 
     if (setting.dohWithIdentifiersActive) {
       secureDescription = loadTimeData.substituteString(

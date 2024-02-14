@@ -6497,11 +6497,11 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT" translateable="false" desc="The text displayed in the Apps section of the location subpage when location is not allowed.">
     No app is allowed to use your location
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
-    Encrypt URLs entered into the browser
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_TITLE" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
+    Use secure connections to look up sites
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options for ChromeOS">
-    Use secure Domain Name Servers (DNS) to prevent those with access to your internet traffic from seeing which web pages you visit
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Description of secure DNS in Privacy options for ChromeOS">
+    Make it harder for people with access to your internet traffic to see which sites you visit. ChromeOS uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE" desc="Text for secure DNS dialog title in Privacy options for ChromeOS">
     Turn off URL encryption?
