@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -17,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -30,8 +32,10 @@ using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
+using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
+using testing::IsSupersetOf;
 using testing::NiceMock;
 using testing::Not;
 using testing::Property;
@@ -45,6 +49,9 @@ class MockPickerClient : public PickerClient {
     // `WillRepeatedly`.
     ON_CALL(*this, StartCrosSearch)
         .WillByDefault(SaveArg<1>(cros_search_callback()));
+    ON_CALL(*this, FetchGifSearch)
+        .WillByDefault(
+            Invoke(this, &MockPickerClient::FetchGifSearchToSetCallback));
   }
 
   std::unique_ptr<AshWebView> CreateWebView(
@@ -74,8 +81,26 @@ class MockPickerClient : public PickerClient {
     return &cros_search_callback_;
   }
 
+  // Set by the default `FetchGifSearch` behaviour. If the behaviour is
+  // overridden, this may not be set on a `FetchGifSearch` callback.
+  FetchGifsCallback* gif_search_callback() { return &gif_search_callback_; }
+
+  // Use `Invoke(&client, &MockPickerClient::FetchGifSearchToSetCallback)` as a
+  // `FetchGifSearch` action to set `gif_search_callback_` when `FetchGifSearch`
+  // is called.
+  // This is already done by default in the constructor, but provided here for
+  // convenience if a test requires this action when overriding the default
+  // action.
+  // TODO: b/73967242 - Use a gMock action for this once gMock supports
+  // move-only arguments in `SaveArg`.
+  void FetchGifSearchToSetCallback(const std::string& query,
+                                   FetchGifsCallback callback) {
+    gif_search_callback_ = std::move(callback);
+  }
+
  private:
   CrosSearchResultsCallback cros_search_callback_;
+  FetchGifsCallback gif_search_callback_;
 };
 
 using MockSearchResultsCallback =
@@ -203,6 +228,161 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
       Property("sections", &PickerSearchResults::sections,
                Each(Property("results", &PickerSearchResults::Section::results,
                              Not(IsEmpty())))));
+}
+
+TEST_F(PickerSearchControllerTest, SendsQueryToGifSearch) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  NiceMock<MockSearchResultsCallback> search_results_callback;
+  EXPECT_CALL(client, FetchGifSearch(Eq("cat"), _)).Times(1);
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+}
+
+TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Contains(AllOf(
+              Property("heading", &PickerSearchResults::Section::heading,
+                       u"Matching expressions"),
+              Property(
+                  "results", &PickerSearchResults::Section::results,
+                  Contains(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::GifData>(AllOf(
+                          Field("url", &PickerSearchResult::GifData::url,
+                                Property(
+                                    "spec", &GURL::spec,
+                                    "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                    "plink-cat-plink.gif")),
+                          Field(
+                              "content_description",
+                              &PickerSearchResult::GifData::content_description,
+                              u"cat blink")))))))))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          gfx::Size(480, 480), u"cat blink")});
+}
+
+TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Contains(AllOf(
+              Property("heading", &PickerSearchResults::Section::heading,
+                       u"Matching expressions"),
+              Property(
+                  "results", &PickerSearchResults::Section::results,
+                  Contains(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::GifData>(AllOf(
+                          Field("url", &PickerSearchResult::GifData::url,
+                                Property(
+                                    "spec", &GURL::spec,
+                                    "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                    "plink-cat-plink.gif")),
+                          Field(
+                              "content_description",
+                              &PickerSearchResult::GifData::content_description,
+                              u"cat blink")))))))))))
+      .Times(0);
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  PickerClient::FetchGifsCallback first_callback =
+      std::move(*client.gif_search_callback());
+  controller.StartSearch(
+      u"dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  std::move(first_callback)
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          gfx::Size(480, 480), u"cat blink")});
+}
+
+TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          IsSupersetOf({
+              AllOf(Property("heading", &PickerSearchResults::Section::heading,
+                             u"Matching expressions"),
+                    Property(
+                        "results", &PickerSearchResults::Section::results,
+                        Contains(Property(
+                            "data", &PickerSearchResult::data,
+                            VariantWith<PickerSearchResult::GifData>(AllOf(
+                                Field("url", &PickerSearchResult::GifData::url,
+                                      Property("spec", &GURL::spec,
+                                               "https://media.tenor.com/"
+                                               "GOabrbLMl4AAAAAd/"
+                                               "plink-cat-plink.gif")),
+                                Field("content_description",
+                                      &PickerSearchResult::GifData::
+                                          content_description,
+                                      u"cat blink"))))))),
+              AllOf(
+                  Property("heading", &PickerSearchResults::Section::heading,
+                           u"Matching links"),
+                  Property(
+                      "results", &PickerSearchResults::Section::results,
+                      ElementsAre(Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<
+                              PickerSearchResult::BrowsingHistoryData>(Field(
+                              "url",
+                              &PickerSearchResult::BrowsingHistoryData::url,
+                              Property(
+                                  "spec", &GURL::spec,
+                                  "https://www.google.com/search?q=cat"))))))),
+
+          }))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          gfx::Size(480, 480), u"cat blink")});
 }
 
 }  // namespace

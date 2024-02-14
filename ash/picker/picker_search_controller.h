@@ -37,10 +37,14 @@ class ASH_EXPORT PickerSearchController {
   void RunCallback();
   void HandleSearchResults(ash::AppListSearchResultType type,
                            std::vector<PickerSearchResult> results);
+  void HandleGifSearchResults(std::u16string query,
+                              std::vector<PickerSearchResult> results);
 
   const raw_ref<PickerClient> client_;
 
   std::vector<PickerSearchResult> omnibox_results_;
+  std::vector<PickerSearchResult> gif_results_;
+  std::u16string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };

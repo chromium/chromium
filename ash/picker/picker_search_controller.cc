@@ -17,7 +17,9 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -32,16 +34,18 @@ namespace {
 // TODO: b/316936687 - Use the icons from real search results.
 const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
 
-PickerSearchResults::Section GetFakeExpressionsSection() {
-  return PickerSearchResults::Section(
-      u"Matching expressions",
-      {{PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),
-        PickerSearchResult::Symbol(u"⊃"), PickerSearchResult::Symbol(u"⊇"),
-        PickerSearchResult::Symbol(u"♬"),
-        PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯"),
-        PickerSearchResult::Gif(
-            GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
-            gfx::Size(140, 140), u"gif")}});
+PickerSearchResults::Section GetFakeExpressionsSection(
+    base::span<const PickerSearchResult> gif_results) {
+  std::vector<PickerSearchResult> results = {
+      PickerSearchResult::Emoji(u"👍"),
+      PickerSearchResult::Emoji(u"😊"),
+      PickerSearchResult::Symbol(u"⊃"),
+      PickerSearchResult::Symbol(u"⊇"),
+      PickerSearchResult::Symbol(u"♬"),
+      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")};
+  results.insert(results.end(), gif_results.begin(), gif_results.end());
+  return PickerSearchResults::Section(u"Matching expressions",
+                                      std::move(results));
 }
 
 PickerSearchResults::Section GetFakeFilesSection() {
@@ -64,11 +68,16 @@ void PickerSearchController::StartSearch(
   client_->StopCrosQuery();
   ResetResults();
   current_callback_ = std::move(callback);
+  current_query_ = query;
   client_->StartCrosSearch(
       query, base::BindRepeating(&PickerSearchController::HandleSearchResults,
                                  weak_ptr_factory_.GetWeakPtr()));
+  client_->FetchGifSearch(
+      base::UTF16ToUTF8(query),
+      base::BindOnce(&PickerSearchController::HandleGifSearchResults,
+                     weak_ptr_factory_.GetWeakPtr(), query));
 
-  // Show fake results while we wait for a response from CrOS Search.
+  // Show fake results while we wait for responses.
   // TODO: b/324154537 - Show a loading animation instead.
   RunCallback();
 }
@@ -82,12 +91,15 @@ void PickerSearchController::ResetResults() {
           GURL("http://crbug.com"), u"Crbug",
           ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
   });
+  gif_results_ = std::vector({PickerSearchResult::Gif(
+      GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
+      gfx::Size(140, 140), u"gif")});
 }
 
 void PickerSearchController::RunCallback() {
   CHECK(current_callback_);
   current_callback_.Run(PickerSearchResults({{
-      GetFakeExpressionsSection(),
+      GetFakeExpressionsSection(gif_results_),
       PickerSearchResults::Section(u"Matching links", omnibox_results_),
       GetFakeFilesSection(),
   }}));
@@ -100,4 +112,16 @@ void PickerSearchController::HandleSearchResults(
   RunCallback();
 }
 
+void PickerSearchController::HandleGifSearchResults(
+    std::u16string query,
+    std::vector<PickerSearchResult> results) {
+  // As we cannot stop GIF search result callbacks, check whether the query for
+  // this request is the current query to prevent showing results from an
+  // outdated query.
+  // TODO: b/324992789 - Allow stopping GIF search results.
+  if (query == current_query_) {
+    gif_results_ = std::move(results);
+    RunCallback();
+  }
+}
 }  // namespace ash
