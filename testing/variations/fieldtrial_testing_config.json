@@ -17325,6 +17325,21 @@
             ]
         }
     ],
+    "ScreenCaptureKitPickerScreen": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenCaptureKitPickerScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenCaptureKitStreamPickerSonoma": [
         {
             "platforms": [
