@@ -107,6 +107,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:ios_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/favicon/core:database",
