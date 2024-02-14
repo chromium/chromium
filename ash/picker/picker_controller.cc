@@ -14,6 +14,7 @@
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
+#include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_search_controller.h"
 #include "ash/picker/views/picker_view.h"
@@ -125,6 +126,13 @@ PickerInsertMediaRequest::MediaData ResultToInsertMediaData(
       result.data());
 }
 
+void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
+  if (const auto* gif =
+          std::get_if<PickerSearchResult::GifData>(&result.data())) {
+    CopyGifMediaToClipboard(gif->url, gif->content_description);
+  }
+}
+
 }  // namespace
 
 PickerController::PickerController() {
@@ -213,7 +221,8 @@ void PickerController::InsertResultOnNextFocus(
 
   // This cancels the previous request if there was one.
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-      input_method, ResultToInsertMediaData(result), kInsertMediaTimeout);
+      input_method, ResultToInsertMediaData(result), kInsertMediaTimeout,
+      base::BindOnce(&MaybeCopyMediaToClipboard, result));
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

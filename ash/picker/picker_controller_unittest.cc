@@ -6,12 +6,14 @@
 
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
@@ -19,6 +21,16 @@
 
 namespace ash {
 namespace {
+
+std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard) {
+  std::u16string data;
+  std::string url;
+  uint32_t fragment_start, fragment_end;
+
+  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, nullptr, &data, &url,
+                      &fragment_start, &fragment_end);
+  return data;
+}
 
 class PickerControllerTest : public AshTestBase {
  public:
@@ -159,12 +171,36 @@ TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
       PickerSearchResult::Gif(GURL("http://foo.com/fake.gif"), gfx::Size(),
                               /*content_description=*/u""));
   controller.widget_for_testing()->CloseNow();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  ui::FakeTextInputClient input_field(
+      input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.last_inserted_image_url(),
             GURL("http://foo.com/fake.gif"));
+}
+
+TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
+  PickerController controller;
+  TestPickerClient client(&controller);
+  controller.ToggleWidget();
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  controller.InsertResultOnNextFocus(
+      PickerSearchResult::Gif(GURL("http://foo.com"), gfx::Size(),
+                              /*content_description=*/u"a gif"));
+  controller.widget_for_testing()->CloseNow();
+  ui::FakeTextInputClient input_field(
+      input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(
+      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
+      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif"/>)html");
+  EXPECT_TRUE(
+      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
 }
 
 TEST_F(PickerControllerTest,

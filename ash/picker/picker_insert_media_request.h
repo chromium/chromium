@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -37,7 +38,8 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
     ~MediaData();
 
     // Inserts this media data into `client`.
-    void Insert(ui::TextInputClient* client);
+    // Returns whether the insertion was successful.
+    [[nodiscard]] bool Insert(ui::TextInputClient* client);
 
    private:
     enum class Type { kText, kImage, kLink };
@@ -50,13 +52,19 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
     Data data_;
   };
 
+  using InsertFailedCallback = base::OnceClosure;
+
   // Creates a request to insert `data` in the next focused input field.
   // If there's no focus change within `insert_timeout`, then this
   // request is cancelled. If this request is destroyed before insertion could
   // happen, the request is cancelled.
-  explicit PickerInsertMediaRequest(ui::InputMethod* input_method,
-                                    const MediaData& data_to_insert,
-                                    base::TimeDelta insert_timeout);
+  // If `insert_failed_callback` is valid, it is called if the input field does
+  // not support inserting `data`, or no insertion happened before the timeout.
+  explicit PickerInsertMediaRequest(
+      ui::InputMethod* input_method,
+      const MediaData& data_to_insert,
+      base::TimeDelta insert_timeout,
+      InsertFailedCallback insert_failed_callback = {});
   ~PickerInsertMediaRequest() override;
 
   // ui::InputMethodObserver:
@@ -75,6 +83,7 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer insert_timeout_timer_;
+  InsertFailedCallback insert_failed_callback_;
 };
 
 }  // namespace ash

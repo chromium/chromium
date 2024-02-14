@@ -16,12 +16,16 @@ namespace ui {
 FakeTextInputClient::FakeTextInputClient(TextInputType text_input_type)
     : text_input_type_(text_input_type) {}
 
+FakeTextInputClient::FakeTextInputClient(Options options)
+    : FakeTextInputClient(/*input_method=*/nullptr, std::move(options)) {}
+
 FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
                                          Options options)
     : input_method_(input_method),
       text_input_type_(options.type),
       mode_(options.mode),
-      flags_(options.flags) {}
+      flags_(options.flags),
+      can_insert_image_(options.can_insert_image) {}
 
 FakeTextInputClient::~FakeTextInputClient() {
   Blur();
@@ -86,6 +90,10 @@ void FakeTextInputClient::InsertText(
 }
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
+
+bool FakeTextInputClient::CanInsertImage() {
+  return can_insert_image_;
+}
 
 void FakeTextInputClient::InsertImage(const GURL& src) {
   last_inserted_image_url_ = src;

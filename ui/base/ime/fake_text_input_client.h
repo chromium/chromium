@@ -25,9 +25,11 @@ class FakeTextInputClient : public TextInputClient {
     TextInputType type = TEXT_INPUT_TYPE_NONE;
     TextInputMode mode = TEXT_INPUT_MODE_NONE;
     TextInputFlags flags = TEXT_INPUT_FLAG_NONE;
+    bool can_insert_image = false;
   };
 
   explicit FakeTextInputClient(TextInputType text_input_type);
+  explicit FakeTextInputClient(Options options);
   explicit FakeTextInputClient(InputMethod* input_method, Options options);
   FakeTextInputClient(const FakeTextInputClient& other) = delete;
   FakeTextInputClient& operator=(const FakeTextInputClient& other) = delete;
@@ -63,6 +65,7 @@ class FakeTextInputClient : public TextInputClient {
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const KeyEvent& event) override;
+  bool CanInsertImage() override;
   void InsertImage(const GURL& src) override;
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
@@ -130,6 +133,7 @@ class FakeTextInputClient : public TextInputClient {
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
   int flags_ = TEXT_INPUT_FLAG_NONE;
   GURL url_;
+  bool can_insert_image_ = false;
   std::optional<GURL> last_inserted_image_url_;
 };
 

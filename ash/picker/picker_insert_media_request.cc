@@ -39,24 +39,25 @@ PickerInsertMediaRequest::MediaData::operator=(const MediaData&) = default;
 
 PickerInsertMediaRequest::MediaData::~MediaData() = default;
 
-void PickerInsertMediaRequest::MediaData::Insert(ui::TextInputClient* client) {
+bool PickerInsertMediaRequest::MediaData::Insert(ui::TextInputClient* client) {
   switch (type_) {
     case MediaData::Type::kText:
       client->InsertText(
           std::get<std::u16string>(data_),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      break;
+      return true;
     case MediaData::Type::kImage:
-      // TODO(b/322729192): Implement fallback behavior when `client` doesn't
-      // support image insertion.
+      if (!client->CanInsertImage()) {
+        return false;
+      }
       client->InsertImage(std::get<GURL>(data_));
-      break;
+      return true;
     case MediaData::Type::kLink:
       // TODO(b/322729192): Insert a real hyperlink.
       client->InsertText(
           base::UTF8ToUTF16(std::get<GURL>(data_).spec()),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      break;
+      return true;
   }
 }
 
@@ -66,8 +67,10 @@ PickerInsertMediaRequest::MediaData::MediaData(Type type, Data data)
 PickerInsertMediaRequest::PickerInsertMediaRequest(
     ui::InputMethod* input_method,
     const MediaData& data_to_insert,
-    const base::TimeDelta insert_timeout)
-    : data_to_insert(data_to_insert) {
+    const base::TimeDelta insert_timeout,
+    InsertFailedCallback insert_failed_callback)
+    : data_to_insert(data_to_insert),
+      insert_failed_callback_(std::move(insert_failed_callback)) {
   observation_.Observe(input_method);
   insert_timeout_timer_.Start(FROM_HERE, insert_timeout, this,
                               &PickerInsertMediaRequest::CancelPendingInsert);
@@ -87,7 +90,11 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
   }
 
   DCHECK_EQ(mutable_client, client);
-  data_to_insert->Insert(mutable_client);
+  if (!data_to_insert->Insert(mutable_client)) {
+    if (!insert_failed_callback_.is_null()) {
+      std::move(insert_failed_callback_).Run();
+    }
+  }
 
   data_to_insert = std::nullopt;
   observation_.Reset();
@@ -103,6 +110,10 @@ void PickerInsertMediaRequest::OnInputMethodDestroyed(
 void PickerInsertMediaRequest::CancelPendingInsert() {
   data_to_insert = std::nullopt;
   observation_.Reset();
+
+  if (!insert_failed_callback_.is_null()) {
+    std::move(insert_failed_callback_).Run();
+  }
 }
 
 }  // namespace ash
