@@ -368,10 +368,18 @@ chromium-metrics-reviews@google.com.
   <owner>feuunk@chromium.org</owner>
   <summary>
     Counts the number of profiles on a user's machine every 24 hours while
-    Chrome is running.
+    Chrome is running. This is intended to count only profiles that have been
+    used in the last 28 days. As such, it differs Profile.NumberOfProfiles.
 
-    As opposed to Profile.NumberOfProfiles, this counts only profiles that have
-    been used in the last 28 days.
+    However, as of Feb 2024 intention is not reality. Chrome on Android assumes
+    the (sole) profile is active, even if it is not, and Chrome on iOS assumes
+    the (sole) profile is inactive, even if it is active. On desktop platforms
+    the activity detection is believed to work reliably.
+
+    Also of note: ChromeOS has a notion of &quot;users&quot;. A ChromeOS device
+    may have multiple users. Users are an entirely different concept than
+    profiles. ChromeOS may allow a user to have and use multiple profiles
+    someday. As of Feb 2024, it does not.
   </summary>
 </histogram>
 
