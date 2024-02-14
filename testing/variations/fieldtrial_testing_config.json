@@ -1055,6 +1055,32 @@
             ]
         }
     ],
+    "AsyncScriptScheduling": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LowPriAsyncExec_1_03_20230914",
+                    "params": {
+                        "low_pri_async_exec_cross_site_only": "true",
+                        "low_pri_async_exec_feature_limit": "3s",
+                        "low_pri_async_exec_main_frame_only": "true",
+                        "low_pri_async_exec_timeout": "1s"
+                    },
+                    "enable_features": [
+                        "LowPriorityAsyncScriptExecution"
+                    ]
+                }
+            ]
+        }
+    ],
     "AttributionReportingSourceDeactivationAfterFilterMatching": [
         {
             "platforms": [
@@ -7722,15 +7748,16 @@
             ],
             "experiments": [
                 {
-                    "name": "LowPriAsyncExec_1_03_20230914",
+                    "name": "HighPriority_20230818",
                     "params": {
-                        "low_pri_async_exec_cross_site_only": "true",
-                        "low_pri_async_exec_feature_limit": "3s",
-                        "low_pri_async_exec_main_frame_only": "true",
-                        "low_pri_async_exec_timeout": "1s"
+                        "lcpp_dry_run": "false",
+                        "lcpp_enable_perf_improvements": "true",
+                        "lcpp_image_load_priority": "high",
+                        "lcpp_max_element_locator_length": "1024",
+                        "lcpp_max_hosts_to_track": "100"
                     },
                     "enable_features": [
-                        "LowPriorityAsyncScriptExecution"
+                        "LCPCriticalPathPredictor"
                     ]
                 }
             ]
@@ -10573,33 +10600,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LCPAnimatedImagesReporting"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LCPCriticalPathPredictor": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "HighPriority_20230818",
-                    "params": {
-                        "lcpp_dry_run": "false",
-                        "lcpp_enable_perf_improvements": "true",
-                        "lcpp_image_load_priority": "high",
-                        "lcpp_max_element_locator_length": "1024",
-                        "lcpp_max_hosts_to_track": "100"
-                    },
-                    "enable_features": [
-                        "LCPCriticalPathPredictor"
                     ]
                 }
             ]
