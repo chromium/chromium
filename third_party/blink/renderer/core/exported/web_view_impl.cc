@@ -1794,6 +1794,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
   settings->SetWebXRImmersiveArAllowed(prefs.webxr_immersive_ar_allowed);
   settings->SetModalContextMenu(prefs.modal_context_menu);
+  settings->SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
+      prefs.subapps_apis_require_user_gesture_and_authorization);
 
 #if BUILDFLAG(IS_MAC)
   web_view_impl->SetMaximumLegibleScale(

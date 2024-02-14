@@ -792,4 +792,12 @@ void WebSettingsImpl::SetWebXRImmersiveArAllowed(
 void WebSettingsImpl::SetModalContextMenu(bool is_available) {
   settings_->SetModalContextMenu(is_available);
 }
+
+void WebSettingsImpl::
+    SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
+        bool is_required) {
+  settings_->SetRequireTransientActivationAndAuthorizationForSubAppsAPI(
+      is_required);
+}
+
 }  // namespace blink

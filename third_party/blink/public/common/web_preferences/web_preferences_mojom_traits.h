@@ -777,6 +777,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.modal_context_menu;
   }
 
+  static bool
+  require_transient_activation_and_user_confirmation_for_subapps_api(
+      const blink::web_pref::WebPreferences& r) {
+    return r.subapps_apis_require_user_gesture_and_authorization;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

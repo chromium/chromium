@@ -1215,5 +1215,11 @@
       invalidate: ["Style"],
       type: "bool",
     },
+    // SubApps APIs transient activation requirement can be bypassed via
+    // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
+    {
+      name: "requireTransientActivationAndAuthorizationForSubAppsAPI",
+      initial: true,
+    },
   ],
 }

@@ -345,6 +345,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // requirement can be bypassed via the "Automatic Fullscreen" content setting.
   bool require_transient_activation_for_html_fullscreen = true;
 
+  // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
+  // can be bypassed via
+  // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
+  bool subapps_apis_require_user_gesture_and_authorization = true;
+
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.

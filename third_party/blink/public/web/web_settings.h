@@ -277,6 +277,8 @@ class WebSettings {
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
   virtual void SetWebXRImmersiveArAllowed(bool) = 0;
   virtual void SetModalContextMenu(bool) = 0;
+  virtual void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
+      bool) = 0;
 
  protected:
   ~WebSettings() = default;

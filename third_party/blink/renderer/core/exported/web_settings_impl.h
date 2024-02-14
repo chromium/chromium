@@ -231,6 +231,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAccessibilityIncludeSvgGElement(bool) override;
   void SetWebXRImmersiveArAllowed(bool webxr_immersive_ar_allowed) override;
   void SetModalContextMenu(bool) override;
+  void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
+      bool) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;
