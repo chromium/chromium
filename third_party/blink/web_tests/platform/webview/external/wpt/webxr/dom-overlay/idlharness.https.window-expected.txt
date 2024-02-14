@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] XRSession interface: attribute domOverlayState
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+Harness: the test ran to completion.

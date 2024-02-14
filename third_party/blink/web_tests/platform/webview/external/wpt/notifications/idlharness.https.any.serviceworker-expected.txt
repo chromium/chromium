@@ -1,0 +1,89 @@
+This is a testharness.js-based test.
+Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Notification interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface object length
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface object name
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute permission
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: member requestPermission
+  Cannot use 'in' operator to search for 'requestPermission' in undefined
+[FAIL] Notification interface: attribute maxActions
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onclick
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onshow
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onerror
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute onclose
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute title
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute dir
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute lang
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute body
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute tag
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute image
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute icon
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute badge
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute vibrate
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute timestamp
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute renotify
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute silent
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute requireInteraction
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute data
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: attribute actions
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] Notification interface: operation close()
+  assert_own_property: self does not have own property "Notification" expected property "Notification" missing
+[FAIL] NotificationEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface object length
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface object name
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface: attribute notification
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] NotificationEvent interface: attribute action
+  assert_own_property: self does not have own property "NotificationEvent" expected property "NotificationEvent" missing
+[FAIL] ServiceWorkerRegistration interface: operation showNotification(DOMString, optional NotificationOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "showNotification" missing
+[FAIL] ServiceWorkerRegistration interface: operation getNotifications(optional GetNotificationOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "getNotifications" missing
+[FAIL] ServiceWorkerGlobalScope interface: attribute onnotificationclick
+  assert_own_property: The global object must have a property "onnotificationclick" expected property "onnotificationclick" missing
+[FAIL] ServiceWorkerGlobalScope interface: attribute onnotificationclose
+  assert_own_property: The global object must have a property "onnotificationclose" expected property "onnotificationclose" missing
+[FAIL] ServiceWorkerGlobalScope interface: self must inherit property "onnotificationclick" with the proper type
+  assert_own_property: expected property "onnotificationclick" missing
+[FAIL] ServiceWorkerGlobalScope interface: self must inherit property "onnotificationclose" with the proper type
+  assert_own_property: expected property "onnotificationclose" missing
+Harness: the test ran to completion.

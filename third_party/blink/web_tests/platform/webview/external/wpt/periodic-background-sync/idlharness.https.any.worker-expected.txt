@@ -1,0 +1,48 @@
+This is a testharness.js-based test.
+[FAIL] PeriodicSyncManager interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface object length
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface object name
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: operation register(DOMString, optional BackgroundSyncOptions)
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: operation getTags()
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager interface: operation unregister(DOMString)
+  assert_own_property: self does not have own property "PeriodicSyncManager" expected property "PeriodicSyncManager" missing
+[FAIL] PeriodicSyncManager must be primary interface of registration.periodicSync
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] Stringification of registration.periodicSync
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncManager interface: registration.periodicSync must inherit property "register(DOMString, optional BackgroundSyncOptions)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncManager interface: calling register(DOMString, optional BackgroundSyncOptions) on registration.periodicSync with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncManager interface: registration.periodicSync must inherit property "getTags()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncManager interface: registration.periodicSync must inherit property "unregister(DOMString)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncManager interface: calling unregister(DOMString) on registration.periodicSync with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] PeriodicSyncEvent must be primary interface of new PeriodicSyncEvent("tag")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+[FAIL] Stringification of new PeriodicSyncEvent("tag")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+[FAIL] PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "undefined"
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+[FAIL] PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "tag"
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+[FAIL] ServiceWorkerRegistration interface: attribute periodicSync
+  assert_true: The prototype object must have a property "periodicSync" expected true got false
+[FAIL] ServiceWorkerRegistration interface: registration must inherit property "periodicSync" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+[FAIL] ServiceWorkerGlobalScope interface: onperiodicsync must not have property "onperiodicsync"
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: onperiodicsync is not defined"
+Harness: the test ran to completion.

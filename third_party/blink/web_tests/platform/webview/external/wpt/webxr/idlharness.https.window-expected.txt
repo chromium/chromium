@@ -1,0 +1,553 @@
+This is a testharness.js-based test.
+Found 275 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'requestSession')"
+[FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
+  assert_true: member bufferData is unique expected true got false
+[FAIL] XRSystem interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface object length
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface object name
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: operation isSessionSupported(XRSessionMode)
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: operation requestSession(XRSessionMode, optional XRSessionInit)
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSystem interface: attribute ondevicechange
+  assert_own_property: self does not have own property "XRSystem" expected property "XRSystem" missing
+[FAIL] XRSession interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface object length
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface object name
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute visibilityState
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute frameRate
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute supportedFrameRates
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute renderState
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute inputSources
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute enabledFeatures
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute isSystemKeyboardSupported
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation updateRenderState(optional XRRenderStateInit)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation updateTargetFrameRate(float)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation requestReferenceSpace(XRReferenceSpaceType)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation requestAnimationFrame(XRFrameRequestCallback)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation cancelAnimationFrame(unsigned long)
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: operation end()
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onend
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute oninputsourceschange
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onselect
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onselectstart
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onselectend
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onsqueeze
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onsqueezestart
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onsqueezeend
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onvisibilitychange
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession interface: attribute onframeratechange
+  assert_own_property: self does not have own property "XRSession" expected property "XRSession" missing
+[FAIL] XRSession must be primary interface of xrSession
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] Stringification of xrSession
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "visibilityState" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "frameRate" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "supportedFrameRates" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "renderState" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "inputSources" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "enabledFeatures" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "isSystemKeyboardSupported" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "updateRenderState(optional XRRenderStateInit)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling updateRenderState(optional XRRenderStateInit) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "updateTargetFrameRate(float)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling updateTargetFrameRate(float) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "requestReferenceSpace(XRReferenceSpaceType)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling requestReferenceSpace(XRReferenceSpaceType) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "requestAnimationFrame(XRFrameRequestCallback)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling requestAnimationFrame(XRFrameRequestCallback) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "cancelAnimationFrame(unsigned long)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: calling cancelAnimationFrame(unsigned long) on xrSession with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "end()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onend" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "oninputsourceschange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onselect" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onselectstart" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onselectend" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onsqueeze" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onsqueezestart" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onsqueezeend" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onvisibilitychange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRSession interface: xrSession must inherit property "onframeratechange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSession is not defined"
+[FAIL] XRRenderState interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface object length
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface object name
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: attribute depthNear
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: attribute depthFar
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: attribute inlineVerticalFieldOfView
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState interface: attribute baseLayer
+  assert_own_property: self does not have own property "XRRenderState" expected property "XRRenderState" missing
+[FAIL] XRRenderState must be primary interface of xrRenderState
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] Stringification of xrRenderState
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] XRRenderState interface: xrRenderState must inherit property "depthNear" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] XRRenderState interface: xrRenderState must inherit property "depthFar" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] XRRenderState interface: xrRenderState must inherit property "inlineVerticalFieldOfView" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] XRRenderState interface: xrRenderState must inherit property "baseLayer" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrRenderState is not defined"
+[FAIL] XRFrame interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface object length
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface object name
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: attribute session
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: attribute predictedDisplayTime
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: operation getViewerPose(XRReferenceSpace)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRFrame interface: operation getPose(XRSpace, XRSpace)
+  assert_own_property: self does not have own property "XRFrame" expected property "XRFrame" missing
+[FAIL] XRSpace interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRSpace interface object length
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRSpace interface object name
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRSpace interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRSpace interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRSpace interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRSpace" expected property "XRSpace" missing
+[FAIL] XRReferenceSpace interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface object length
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface object name
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface: operation getOffsetReferenceSpace(XRRigidTransform)
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace interface: attribute onreset
+  assert_own_property: self does not have own property "XRReferenceSpace" expected property "XRReferenceSpace" missing
+[FAIL] XRReferenceSpace must be primary interface of xrReferenceSpace
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrReferenceSpace is not defined"
+[FAIL] Stringification of xrReferenceSpace
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrReferenceSpace is not defined"
+[FAIL] XRReferenceSpace interface: xrReferenceSpace must inherit property "getOffsetReferenceSpace(XRRigidTransform)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrReferenceSpace is not defined"
+[FAIL] XRReferenceSpace interface: calling getOffsetReferenceSpace(XRRigidTransform) on xrReferenceSpace with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrReferenceSpace is not defined"
+[FAIL] XRReferenceSpace interface: xrReferenceSpace must inherit property "onreset" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrReferenceSpace is not defined"
+[FAIL] XRBoundedReferenceSpace interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface object length
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface object name
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRBoundedReferenceSpace interface: attribute boundsGeometry
+  assert_own_property: self does not have own property "XRBoundedReferenceSpace" expected property "XRBoundedReferenceSpace" missing
+[FAIL] XRView interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface object length
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface object name
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: attribute eye
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: attribute projectionMatrix
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: attribute transform
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: attribute recommendedViewportScale
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRView interface: operation requestViewportScale(double?)
+  assert_own_property: self does not have own property "XRView" expected property "XRView" missing
+[FAIL] XRViewport interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface object length
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface object name
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: attribute x
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: attribute y
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: attribute width
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRViewport interface: attribute height
+  assert_own_property: self does not have own property "XRViewport" expected property "XRViewport" missing
+[FAIL] XRRigidTransform interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface object length
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface object name
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: attribute position
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: attribute orientation
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: attribute matrix
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform interface: attribute inverse
+  assert_own_property: self does not have own property "XRRigidTransform" expected property "XRRigidTransform" missing
+[FAIL] XRRigidTransform must be primary interface of new XRRigidTransform()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] Stringification of new XRRigidTransform()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] XRRigidTransform interface: new XRRigidTransform() must inherit property "position" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] XRRigidTransform interface: new XRRigidTransform() must inherit property "orientation" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] XRRigidTransform interface: new XRRigidTransform() must inherit property "matrix" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] XRRigidTransform interface: new XRRigidTransform() must inherit property "inverse" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: XRRigidTransform is not defined"
+[FAIL] XRPose interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface object length
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface object name
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: attribute transform
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: attribute linearVelocity
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: attribute angularVelocity
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRPose interface: attribute emulatedPosition
+  assert_own_property: self does not have own property "XRPose" expected property "XRPose" missing
+[FAIL] XRViewerPose interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface object length
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface object name
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRViewerPose interface: attribute views
+  assert_own_property: self does not have own property "XRViewerPose" expected property "XRViewerPose" missing
+[FAIL] XRInputSource interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface object length
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface object name
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: attribute handedness
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: attribute targetRayMode
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: attribute targetRaySpace
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: attribute gripSpace
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSource interface: attribute profiles
+  assert_own_property: self does not have own property "XRInputSource" expected property "XRInputSource" missing
+[FAIL] XRInputSourceArray interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface object length
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface object name
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray interface: iterable<XRInputSource>
+  Cannot read properties of undefined (reading 'prototype')
+[FAIL] XRInputSourceArray interface: attribute length
+  assert_own_property: self does not have own property "XRInputSourceArray" expected property "XRInputSourceArray" missing
+[FAIL] XRInputSourceArray must be primary interface of xrInputSourceArray
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourceArray is not defined"
+[FAIL] Stringification of xrInputSourceArray
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourceArray is not defined"
+[FAIL] XRInputSourceArray interface: xrInputSourceArray must inherit property "length" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourceArray is not defined"
+[FAIL] XRWebGLLayer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface object length
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface object name
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute antialias
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute ignoreDepthValues
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute fixedFoveation
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute framebuffer
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute framebufferWidth
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: attribute framebufferHeight
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: operation getViewport(XRView)
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer interface: operation getNativeFramebufferScaleFactor(XRSession)
+  assert_own_property: self does not have own property "XRWebGLLayer" expected property "XRWebGLLayer" missing
+[FAIL] XRWebGLLayer must be primary interface of xrWebGLLayer
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] Stringification of xrWebGLLayer
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "antialias" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "ignoreDepthValues" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "fixedFoveation" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "framebuffer" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "framebufferWidth" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "framebufferHeight" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "getViewport(XRView)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: calling getViewport(XRView) on xrWebGLLayer with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "getNativeFramebufferScaleFactor(XRSession)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRWebGLLayer interface: calling getNativeFramebufferScaleFactor(XRSession) on xrWebGLLayer with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrWebGLLayer is not defined"
+[FAIL] XRSessionEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface object length
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface object name
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent interface: attribute session
+  assert_own_property: self does not have own property "XRSessionEvent" expected property "XRSessionEvent" missing
+[FAIL] XRSessionEvent must be primary interface of xrSessionEvent
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSessionEvent is not defined"
+[FAIL] Stringification of xrSessionEvent
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSessionEvent is not defined"
+[FAIL] XRSessionEvent interface: xrSessionEvent must inherit property "session" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrSessionEvent is not defined"
+[FAIL] XRInputSourceEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface object length
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface object name
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface: attribute frame
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourceEvent interface: attribute inputSource
+  assert_own_property: self does not have own property "XRInputSourceEvent" expected property "XRInputSourceEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface object length
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface object name
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: attribute session
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: attribute added
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent interface: attribute removed
+  assert_own_property: self does not have own property "XRInputSourcesChangeEvent" expected property "XRInputSourcesChangeEvent" missing
+[FAIL] XRInputSourcesChangeEvent must be primary interface of xrInputSourcesChangeEvent
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourcesChangeEvent is not defined"
+[FAIL] Stringification of xrInputSourcesChangeEvent
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourcesChangeEvent is not defined"
+[FAIL] XRInputSourcesChangeEvent interface: xrInputSourcesChangeEvent must inherit property "session" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourcesChangeEvent is not defined"
+[FAIL] XRInputSourcesChangeEvent interface: xrInputSourcesChangeEvent must inherit property "added" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourcesChangeEvent is not defined"
+[FAIL] XRInputSourcesChangeEvent interface: xrInputSourcesChangeEvent must inherit property "removed" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: xrInputSourcesChangeEvent is not defined"
+[FAIL] XRReferenceSpaceEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface object length
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface object name
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface: attribute referenceSpace
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRReferenceSpaceEvent interface: attribute transform
+  assert_own_property: self does not have own property "XRReferenceSpaceEvent" expected property "XRReferenceSpaceEvent" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface object length
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface object name
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: attribute granted
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] WebGLRenderingContextBase interface: webGLRenderingContextBase must inherit property "makeXRCompatible()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webGLRenderingContextBase is not defined"
+[FAIL] WebGLRenderingContext interface: operation makeXRCompatible()
+  assert_own_property: interface prototype object missing non-static operation expected property "makeXRCompatible" missing
+[FAIL] Navigator interface: attribute xr
+  assert_true: The prototype object must have a property "xr" expected true got false
+[FAIL] Navigator interface: navigator must inherit property "xr" with the proper type
+  assert_inherits: property "xr" not found in prototype chain
+Harness: the test ran to completion.

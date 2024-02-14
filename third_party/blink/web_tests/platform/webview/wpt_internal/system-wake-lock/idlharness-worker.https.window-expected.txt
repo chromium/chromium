@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Run idlharness tests in a worker.
+  promise_test: Unhandled rejection with value: "error: Action set_permission failed"
+Harness: the test ran to completion.

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Viewport Segments: visualViewport.segments tentative
+  assert_true: `segments` must be a property of visualViewport. expected true got false
+Harness: the test ran to completion.

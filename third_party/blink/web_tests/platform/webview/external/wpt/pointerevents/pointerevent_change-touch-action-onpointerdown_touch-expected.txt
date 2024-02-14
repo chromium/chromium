@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] scroll should be received before the test finishes
+  assert_true: scroll should be received before the test finishes expected true got false
+Harness: the test ran to completion.

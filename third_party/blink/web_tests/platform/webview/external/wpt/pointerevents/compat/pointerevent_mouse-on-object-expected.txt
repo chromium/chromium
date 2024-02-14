@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Normal click event sequence within object
+  promise_test: Unhandled rejection with value: "error: Action action_sequence failed"
+[FAIL] Click and drag outside of object event sequence
+  promise_test: Unhandled rejection with value: "error: Action action_sequence failed"
+Harness: the test ran to completion.

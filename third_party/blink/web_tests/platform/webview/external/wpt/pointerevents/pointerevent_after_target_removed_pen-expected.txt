@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] pointer events from pen received before/after child removal at pointerdown
+  assert_equals: events received expected "pointerover@child,pointerenter@parent,pointerenter@child,pointerdown@child,(child-removed),pointerover@parent,pointerup@parent,pointerdown@parent,pointerup@parent,pointerout@parent,pointerleave@parent" but got "pointerover@child,pointerenter@parent,pointerenter@child,pointerdown@child,(child-removed),pointerover@parent,pointerenter@parent,pointerover@parent,pointerup@parent,pointerdown@parent,pointerup@parent,pointerout@parent,pointerleave@parent"
+[FAIL] pointer events from pen received before/after child removal at pointerup
+  assert_equals: events received expected "pointerover@child,pointerenter@parent,pointerenter@child,pointerdown@child,pointerup@child,(child-removed),pointerover@parent,pointerdown@parent,pointerup@parent,pointerout@parent,pointerleave@parent" but got "pointerover@child,pointerenter@parent,pointerenter@child,pointerout@parent,pointerover@child,pointerenter@child,pointerdown@child,pointerup@child,(child-removed),pointerover@parent,pointerover@parent,pointerdown@parent,pointerup@parent,pointerout@parent,pointerleave@parent"
+Harness: the test ran to completion.

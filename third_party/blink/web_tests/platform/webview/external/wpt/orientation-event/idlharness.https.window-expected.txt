@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] DeviceOrientationEvent interface: operation requestPermission(optional boolean)
+  assert_own_property: interface object missing static operation expected property "requestPermission" missing
+[FAIL] DeviceOrientationEvent interface: calling requestPermission(optional boolean) on new DeviceOrientationEvent("foo") with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "requestPermission" missing
+[FAIL] DeviceMotionEvent interface: operation requestPermission()
+  assert_own_property: interface object missing static operation expected property "requestPermission" missing
+Harness: the test ran to completion.

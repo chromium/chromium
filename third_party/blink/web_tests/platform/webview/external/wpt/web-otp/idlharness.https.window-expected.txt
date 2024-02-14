@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+[FAIL] OTPCredential interface: existence and properties of interface object
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface object length
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface object name
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+[FAIL] OTPCredential interface: attribute code
+  assert_own_property: self does not have own property "OTPCredential" expected property "OTPCredential" missing
+Harness: the test ran to completion.

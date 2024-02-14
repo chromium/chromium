@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] touch-action attribute test
+  assert_less_than: scroll x offset should be less than 200 in the end of the test expected a number less than 200 but got 200
+Harness: the test ran to completion.

@@ -1,0 +1,56 @@
+This is a testharness.js-based test.
+[FAIL] Permissions interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface object length
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface object name
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions interface: operation query(object)
+  assert_own_property: self does not have own property "Permissions" expected property "Permissions" missing
+[FAIL] Permissions must be primary interface of navigator.permissions
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.permissions
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Permissions interface: navigator.permissions must inherit property "query(object)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Permissions interface: calling query(object) on navigator.permissions with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PermissionStatus interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface object length
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface object name
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: attribute state
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: attribute name
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus interface: attribute onchange
+  assert_own_property: self does not have own property "PermissionStatus" expected property "PermissionStatus" missing
+[FAIL] PermissionStatus must be primary interface of permissionStatus
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: permissionStatus is not defined"
+[FAIL] Stringification of permissionStatus
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: permissionStatus is not defined"
+[FAIL] PermissionStatus interface: permissionStatus must inherit property "state" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: permissionStatus is not defined"
+[FAIL] PermissionStatus interface: permissionStatus must inherit property "name" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: permissionStatus is not defined"
+[FAIL] PermissionStatus interface: permissionStatus must inherit property "onchange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: permissionStatus is not defined"
+[FAIL] WorkerNavigator interface: attribute permissions
+  assert_true: The prototype object must have a property "permissions" expected true got false
+[FAIL] WorkerNavigator interface: navigator must inherit property "permissions" with the proper type
+  assert_inherits: property "permissions" not found in prototype chain
+Harness: the test ran to completion.

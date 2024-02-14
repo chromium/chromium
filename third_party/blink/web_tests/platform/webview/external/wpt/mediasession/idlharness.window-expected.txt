@@ -1,0 +1,87 @@
+This is a testharness.js-based test.
+Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MediaSession interface: existence and properties of interface object
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface object length
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface object name
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: attribute metadata
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: attribute playbackState
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: operation setActionHandler(MediaSessionAction, MediaSessionActionHandler?)
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: operation setPositionState(optional MediaPositionState)
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: operation setMicrophoneActive(boolean)
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession interface: operation setCameraActive(boolean)
+  assert_own_property: self does not have own property "MediaSession" expected property "MediaSession" missing
+[FAIL] MediaSession must be primary interface of navigator.mediaSession
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.mediaSession
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "metadata" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "playbackState" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "setActionHandler(MediaSessionAction, MediaSessionActionHandler?)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: calling setActionHandler(MediaSessionAction, MediaSessionActionHandler?) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "setPositionState(optional MediaPositionState)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: calling setPositionState(optional MediaPositionState) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "setMicrophoneActive(boolean)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: calling setMicrophoneActive(boolean) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: navigator.mediaSession must inherit property "setCameraActive(boolean)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaSession interface: calling setCameraActive(boolean) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] MediaMetadata interface: existence and properties of interface object
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface object length
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface object name
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: attribute title
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: attribute artist
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: attribute album
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata interface: attribute artwork
+  assert_own_property: self does not have own property "MediaMetadata" expected property "MediaMetadata" missing
+[FAIL] MediaMetadata must be primary interface of new MediaMetadata()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] Stringification of new MediaMetadata()
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] MediaMetadata interface: new MediaMetadata() must inherit property "title" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] MediaMetadata interface: new MediaMetadata() must inherit property "artist" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] MediaMetadata interface: new MediaMetadata() must inherit property "album" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] MediaMetadata interface: new MediaMetadata() must inherit property "artwork" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: MediaMetadata is not defined"
+[FAIL] Navigator interface: attribute mediaSession
+  assert_true: The prototype object must have a property "mediaSession" expected true got false
+[FAIL] Navigator interface: navigator must inherit property "mediaSession" with the proper type
+  assert_inherits: property "mediaSession" not found in prototype chain
+Harness: the test ran to completion.

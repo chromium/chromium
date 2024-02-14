@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Window interface: attribute navigation
+  assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set navigation() { [native code] }"
+[FAIL] Window interface: attribute oncopy
+  assert_own_property: The global object must have a property "oncopy" expected property "oncopy" missing
+[FAIL] Window interface: attribute oncut
+  assert_own_property: The global object must have a property "oncut" expected property "oncut" missing
+[FAIL] Window interface: attribute onpaste
+  assert_own_property: The global object must have a property "onpaste" expected property "onpaste" missing
+[FAIL] Window interface: attribute onpagereveal
+  assert_own_property: The global object must have a property "onpagereveal" expected property "onpagereveal" missing
+[FAIL] Window interface: window must inherit property "oncopy" with the proper type
+  assert_own_property: expected property "oncopy" missing
+[FAIL] Window interface: window must inherit property "oncut" with the proper type
+  assert_own_property: expected property "oncut" missing
+[FAIL] Window interface: window must inherit property "onpaste" with the proper type
+  assert_own_property: expected property "onpaste" missing
+[FAIL] Window interface: window must inherit property "onpagereveal" with the proper type
+  assert_own_property: expected property "onpagereveal" missing
+[FAIL] Document interface: operation parseHTMLUnsafe(DOMString)
+  assert_own_property: interface object missing static operation expected property "parseHTMLUnsafe" missing
+[FAIL] Document interface: calling parseHTMLUnsafe(DOMString) on iframe.contentDocument with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
+[FAIL] Document interface: calling parseHTMLUnsafe(DOMString) on new Document() with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
+[FAIL] Document interface: calling parseHTMLUnsafe(DOMString) on documentWithHandlers with too few arguments must throw TypeError
+  assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
+Harness: the test ran to completion.
