@@ -2886,6 +2886,7 @@ source_set("browser") {
       "__ATLHOST_H__",
     ]
     deps += [
+      "//components/app_launch_prefetch",
       "//components/services/screen_ai/public/cpp:utilities",
       "//content/utility:delegate_data",
       "//third_party/blink/public/common:font_unique_name_table_proto",

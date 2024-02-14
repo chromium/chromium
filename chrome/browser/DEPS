@@ -40,11 +40,11 @@ include_rules = [
   "+components/account_id",
   "+components/allocation_recorder",
   "+components/app_constants/constants.h",
-  "+components/federated_learning",
-  # TODO(b/129295708): Remove after move is complete.
-  "+components/arc",
   "+components/access_code_cast",
   "+components/account_manager_core",
+  # TODO(b/129295708): Remove after move is complete.
+  "+components/arc",
+  "+components/app_launch_prefetch",
   "+components/app_restore",
   "+components/assist_ranker",
   "+components/autofill/android",
@@ -146,6 +146,7 @@ include_rules = [
   "+components/favicon/content",
   "+components/favicon/core",
   "+components/feature_engagement",
+  "+components/federated_learning",
   "+components/feed",
   "+components/feedback",
   "+components/file_access",
