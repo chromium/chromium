@@ -465,9 +465,6 @@ class WizardController : public OobeUI::Observer {
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);
 
-  // Callback function after setting MetricsReporting.
-  void OnChangedMetricsReportingState(bool enabled);
-
   // Shows update screen and starts update process.
   void InitiateOOBEUpdate();
   void StartOOBEUpdate();

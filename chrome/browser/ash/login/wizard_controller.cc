@@ -2599,11 +2599,6 @@ void WizardController::OnResetScreenExit() {
   OnDeviceModificationCanceled();
 }
 
-void WizardController::OnChangedMetricsReportingState(bool enabled) {
-  StatsReportingController::Get()->SetEnabled(
-      ProfileManager::GetActiveUserProfile(), enabled);
-}
-
 void WizardController::OnDeviceModificationCanceled() {
   BaseScreen* previous_screen = nullptr;
   if (base::Contains(previous_screens_, current_screen_)) {
