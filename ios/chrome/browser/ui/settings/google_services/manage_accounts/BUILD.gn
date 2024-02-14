@@ -4,23 +4,64 @@
 
 source_set("manage_accounts") {
   sources = [
-    "accounts_table_view_controller.h",
-    "accounts_table_view_controller.mm",
+    "accounts_coordinator.h",
+    "accounts_coordinator.mm",
   ]
   deps = [
     ":constants",
+    ":manage_accounts_ui",
     "//base",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/sync",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/third_party/material_components_ios",
+  ]
+}
+
+source_set("manage_accounts_ui") {
+  sources = [
+    "accounts_table_view_controller.h",
+    "accounts_table_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/strings",
+    "//components/sync/base:features",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -39,16 +80,13 @@ source_set("manage_accounts") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet:signout_action_sheet",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/sync",
-    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements",
-    "//ios/chrome/common/ui/reauthentication",
-    "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }
@@ -90,6 +128,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "accounts_table_view_controller_unittest.mm" ]
   deps = [
+    ":manage_accounts_ui",
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

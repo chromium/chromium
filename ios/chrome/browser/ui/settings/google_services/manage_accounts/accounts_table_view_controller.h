@@ -17,20 +17,15 @@ class Browser;
 @interface AccountsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// ApplicationCommands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-
-// If YES, AccountsTableViewController should not dismiss itself only for a
-// sign-out reason. The parent coordinator is responsible to dismiss this
-// coordinator when a sign-out happens.
-@property(nonatomic, assign) BOOL signoutDismissalByParentCoordinator;
-
 // `browser` must not be nil.
 // If `closeSettingsOnAddAccount` is YES, then this account table view
 // controller will close the settings view when an account is added.
 - (instancetype)initWithBrowser:(Browser*)browser
-      closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
-    NS_DESIGNATED_INITIALIZER;
+              closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+             applicationCommandsHandler:
+                 (id<ApplicationCommands>)applicationCommandsHandler
+    signoutDismissalByParentCoordinator:
+        (BOOL)signoutDismissalByParentCoordinator NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

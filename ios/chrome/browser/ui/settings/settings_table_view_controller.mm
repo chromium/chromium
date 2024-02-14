@@ -114,6 +114,7 @@
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
@@ -238,6 +239,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Passwords coordinator.
   PasswordsCoordinator* _passwordsCoordinator;
+
+  // Accounts coordinator.
+  AccountsCoordinator* _accountsCoordinator;
 
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
@@ -1284,12 +1288,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         break;
       }
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-      AccountsTableViewController* accountsTableViewController =
-          [[AccountsTableViewController alloc] initWithBrowser:_browser
-                                     closeSettingsOnAddAccount:NO];
-      accountsTableViewController.applicationCommandsHandler =
-          self.applicationHandler;
-      controller = accountsTableViewController;
+
+      AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:_browser
+                 closeSettingsOnAddAccount:NO];
+      _accountsCoordinator = accountsCoordinator;
+      [accountsCoordinator start];
       break;
     }
     case SettingsItemTypeGoogleServices:
@@ -2103,6 +2108,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_passwordsCoordinator stop];
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
+
+  [_accountsCoordinator stop];
+  _accountsCoordinator = nil;
 
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;

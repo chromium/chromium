@@ -137,6 +137,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
   // The type of actionable the syncing user needs to take to resolve the error.
   AccountErrorUserActionableType _accountErrorUserActionableType;
+
+  // ApplicationCommands handler.
+  id<ApplicationCommands> _applicationHandler;
+
+  // If YES, AccountsTableViewController should not dismiss itself only for a
+  // sign-out reason. The parent coordinator is responsible to dismiss this
+  // coordinator when a sign-out happens.
+  BOOL _signoutDismissalByParentCoordinator;
 }
 
 // Modal alert to choose between remove an identity and show MyGoogle UI.
@@ -163,7 +171,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-      closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount {
+              closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+             applicationCommandsHandler:
+                 (id<ApplicationCommands>)applicationCommandsHandler
+    signoutDismissalByParentCoordinator:
+        (BOOL)signoutDismissalByParentCoordinator {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -186,6 +198,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
         SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState());
     DCHECK(syncService);
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
+
+    _applicationHandler = applicationCommandsHandler;
+    _signoutDismissalByParentCoordinator = signoutDismissalByParentCoordinator;
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
     _accountErrorUserActionableType = AccountErrorUserActionableType::kNoAction;
   }
@@ -656,7 +671,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                  BOOL success = result == SigninCoordinatorResultSuccess;
                  [weakSelf handleDidAddAccount:success];
                }];
-  [self.applicationCommandsHandler showSignin:command baseViewController:self];
+  [_applicationHandler showSignin:command baseViewController:self];
 }
 
 - (void)handleDidAddAccount:(BOOL)success {
@@ -665,7 +680,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self allowUserInteraction];
   [self handleAuthenticationOperationDidFinish];
   if (success && _closeSettingsOnAddAccount) {
-    [self.applicationCommandsHandler closeSettingsUI];
+    [_applicationHandler closeSettingsUI];
   }
 }
 
@@ -830,7 +845,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     // Don't pop this view based on intermediary values.
     return;
   }
-  if (_isBeingDismissed || self.signoutDismissalByParentCoordinator) {
+  if (_isBeingDismissed || _signoutDismissalByParentCoordinator) {
     return;
   }
   _isBeingDismissed = YES;
@@ -929,7 +944,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
+  [_applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - Internal
@@ -957,7 +972,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)openTrustedVaultReauthForFetchKeys {
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  [self.applicationCommandsHandler
+  [_applicationHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
                                                    trigger:trigger
                                                accessPoint:
@@ -969,7 +984,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)openTrustedVaultReauthForDegradedRecoverability {
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
-  [self.applicationCommandsHandler
+  [_applicationHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
                                                                 trigger:trigger
                                                             accessPoint:

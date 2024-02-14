@@ -92,9 +92,11 @@ class AccountsTableViewControllerTest
                              forProtocol:@protocol(ApplicationCommands)];
 
     AccountsTableViewController* controller =
-        [[AccountsTableViewController alloc] initWithBrowser:browser_.get()
-                                   closeSettingsOnAddAccount:NO];
-    controller.applicationCommandsHandler = mock_application_handler;
+        [[AccountsTableViewController alloc]
+                                initWithBrowser:browser_.get()
+                      closeSettingsOnAddAccount:NO
+                     applicationCommandsHandler:mock_application_handler
+            signoutDismissalByParentCoordinator:NO];
     return controller;
   }
 

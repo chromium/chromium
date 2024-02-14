@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -74,6 +75,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   BOOL _settingsAreDismissed;
   // The coordinator for the view Save in Account.
   BulkUploadCoordinator* _bulkUploadCoordinator;
+  // The coordinator for the Accounts view.
+  AccountsCoordinator* _accountsCoordinator;
 }
 
 // View controller.
@@ -215,6 +218,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [super stop];
   [self.mediator disconnect];
   [self stopBulkUpload];
+  [_accountsCoordinator stop];
+  _accountsCoordinator = nil;
   self.mediator = nil;
   self.viewController = nil;
   // This coordinator displays the main view and it is in charge to enable sync
@@ -415,18 +420,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showAccountsPage {
-  AccountsTableViewController* accountsTableViewController =
-      [[AccountsTableViewController alloc] initWithBrowser:self.browser
-                                 closeSettingsOnAddAccount:NO];
-
-  accountsTableViewController.applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  accountsTableViewController.signoutDismissalByParentCoordinator = YES;
-  accountsTableViewController.navigationItem.rightBarButtonItem =
-      self.viewController.navigationItem.rightBarButtonItem;
-  [self.navigationControllerForChildPages
-      pushViewController:accountsTableViewController
-                animated:YES];
+  AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationControllerForChildPages
+                               browser:self.browser
+             closeSettingsOnAddAccount:NO];
+  accountsCoordinator.signoutDismissalByParentCoordinator = YES;
+  _accountsCoordinator = accountsCoordinator;
+  [accountsCoordinator start];
 }
 
 - (void)showManageYourGoogleAccount {

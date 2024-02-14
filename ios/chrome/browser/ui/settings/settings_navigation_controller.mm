@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
@@ -140,6 +141,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Coordinator for the Notifications settings.
 @property(nonatomic, strong) NotificationsCoordinator* notificationsCoordinator;
 
+// Accounts coordinator.
+@property(nonatomic, strong) AccountsCoordinator* accountsCoordinator;
+
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
@@ -184,14 +188,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     accountsControllerForBrowser:(Browser*)browser
                         delegate:
                             (id<SettingsNavigationControllerDelegate>)delegate {
-  AccountsTableViewController* controller =
-      [[AccountsTableViewController alloc] initWithBrowser:browser
-                                 closeSettingsOnAddAccount:YES];
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
-          initWithRootViewController:controller
+          initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
+  navigationController.accountsCoordinator = [[AccountsCoordinator alloc]
+      initWithBaseNavigationController:navigationController
+                               browser:browser
+             closeSettingsOnAddAccount:YES];
+  [navigationController.accountsCoordinator start];
   return navigationController;
 }
 
@@ -664,6 +670,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // GoogleServicesSettingsCoordinator and PasswordsCoordinator must be stopped
   // before dismissing the sync settings view.
+  [self.accountsCoordinator stop];
+  self.accountsCoordinator = nil;
   [self stopSyncSettingsCoordinator];
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
@@ -1095,11 +1103,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // This command should only be triggered by the settinsg, therefore there is
   // no issue for the UI to be available or not.
   CHECK(!skipIfUINotAvailable);
-  AccountsTableViewController* controller =
-      [[AccountsTableViewController alloc] initWithBrowser:self.browser
-                                 closeSettingsOnAddAccount:NO];
-  ConfigureHandlers(controller, _browser->GetCommandDispatcher());
-  [self pushViewController:controller animated:YES];
+  AccountsCoordinator* accountsCoordinator =
+      [[AccountsCoordinator alloc] initWithBaseNavigationController:self
+                                                            browser:self.browser
+                                          closeSettingsOnAddAccount:NO];
+  [accountsCoordinator start];
+  self.accountsCoordinator = accountsCoordinator;
 }
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
