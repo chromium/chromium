@@ -23,6 +23,7 @@
 #include <wbemidl.h>
 #include <wrl/client.h>
 
+#include <string>
 #include <string_view>
 
 #include "base/base_export.h"
