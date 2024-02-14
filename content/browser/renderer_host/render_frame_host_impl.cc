@@ -11419,9 +11419,6 @@ void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
 
 void RenderFrameHostImpl::UpdatePermissionsForNavigation(
     NavigationRequest* request) {
-  // Browser plugin guests are not allowed to navigate outside web-safe schemes,
-  // so do not grant them the ability to commit additional URLs.
-  if (!GetProcess()->IsForGuestsOnly()) {
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
         GetProcess()->GetID(), request->common_params().url);
     if (request->IsLoadDataWithBaseURL()) {
@@ -11433,7 +11430,6 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
           GetProcess()->GetID(),
           request->common_params().base_url_for_data_url);
     }
-  }
 
   // We may be returning to an existing NavigationEntry that had been granted
   // file access.  If this is a different process, we will need to grant the

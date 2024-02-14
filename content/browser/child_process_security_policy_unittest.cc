@@ -398,7 +398,6 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   const std::vector<std::string> kCommitURLs({
       "http://www.google.com/",
       "https://www.paypal.com/",
-      "data:text/html,<b>Hi</b>",
       "filesystem:http://localhost/temporary/a.gif",
   });
   for (const auto& url_string : kCommitURLs) {
@@ -411,6 +410,9 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
       EXPECT_TRUE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
     }
   }
+
+  // A data URL can commit in any process, even with Citadel enabled.
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
 
   // Dangerous to request, commit, or set as origin header.
   EXPECT_FALSE(p->CanRequestURL(kRendererID,

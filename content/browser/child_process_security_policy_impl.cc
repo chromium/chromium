@@ -63,6 +63,14 @@
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
+namespace features {
+// TODO(https://crbug.com/324934416): Remove this killswitch once the new
+// CanCommitURL restrictions finish rolling out.
+BASE_FEATURE(kAdditionalNavigationCommitChecks,
+             "AdditionalNavigationCommitChecks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 namespace content {
 
 namespace {
@@ -1318,6 +1326,12 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     return origin.opaque() || CanCommitURL(child_id, GURL(origin.Serialize()));
   }
 
+  // Allow data URLs to commit in any process. Note that the precursor origin
+  // should be checked separately.
+  if (url.SchemeIs(url::kDataScheme)) {
+    return true;
+  }
+
   // With site isolation, a URL from a site may only be committed in a process
   // dedicated to that site.  This check will ensure that |url| can't commit if
   // the process is locked to a different site.
@@ -1599,6 +1613,15 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
+  // First check whether the URL is allowed to commit, without considering the
+  // origin. This involves scheme checks as well as CanAccessDataForOrigin.
+  if (base::FeatureList::IsEnabled(
+          features::kAdditionalNavigationCommitChecks) &&
+      !CanCommitURL(child_id, url_info.url)) {
+    return CanCommitStatus::CANNOT_COMMIT_URL;
+  }
+
+  // Next check whether the origin resolved from the URL is allowed to commit.
   DCHECK(url_info.origin.has_value());
   const url::Origin url_origin =
       url::Origin::Resolve(url_info.url, *url_info.origin);
@@ -1618,6 +1641,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
 
+  // Finally check the origin on its own.
   if (!CanAccessDataForOrigin(child_id, *url_info.origin))
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
 
