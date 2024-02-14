@@ -31,37 +31,6 @@ const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
 const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
 const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
 
-template <typename T>
-bool CompareElements(T* a, T* b) {
-  return a->Compare(*b) < 0;
-}
-
-template <typename T>
-bool ElementsEqual(T* a, T* b) {
-  return a->Compare(*b) == 0;
-}
-
-// Verifies that two vectors have the same elements (according to T::Compare)
-// while ignoring order. This is useful because multiple profiles or credit
-// cards that are added to the SQLite DB within the same second will be returned
-// in GUID (aka random) order.
-template <typename T>
-void ExpectSameElements(const std::vector<T*>& expectations,
-                        const std::vector<T*>& results) {
-  ASSERT_EQ(expectations.size(), results.size());
-
-  std::vector<T*> expectations_copy = expectations;
-  std::sort(expectations_copy.begin(), expectations_copy.end(),
-            CompareElements<T>);
-  std::vector<T*> results_copy = results;
-  std::sort(results_copy.begin(), results_copy.end(), CompareElements<T>);
-
-  EXPECT_EQ(
-      base::ranges::mismatch(results_copy, expectations_copy, ElementsEqual<T>)
-          .first,
-      results_copy.end());
-}
-
 class AddressDataManagerTest : public PersonalDataManagerTestBase,
                                public testing::Test {
  protected:
@@ -151,10 +120,8 @@ TEST_F(AddressDataManagerTest, AddProfile) {
   ResetPersonalDataManager();
 
   // Verify the addition.
-  std::vector<AutofillProfile*> profiles;
-  profiles.push_back(&profile0);
-  profiles.push_back(&profile1);
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile1)));
 }
 
 TEST_F(AddressDataManagerTest, UpdateProfile_ModificationDate) {
@@ -487,10 +454,8 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
-  std::vector<AutofillProfile*> profiles;
-  profiles.push_back(&profile0);
-  profiles.push_back(&profile1);
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile1)));
 
   // Update, remove, and add.
   profile0.SetRawInfo(NAME_FIRST, u"John");
@@ -498,10 +463,8 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
   RemoveByGUIDFromPersonalDataManager(profile1.guid());
   AddProfileToPersonalDataManager(profile2);
 
-  profiles.clear();
-  profiles.push_back(&profile0);
-  profiles.push_back(&profile2);
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile2)));
 
   // Reset the PersonalDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the profiles from the web
@@ -509,7 +472,8 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
   ResetPersonalDataManager();
 
   // Verify that we've loaded the profiles from the web database.
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile2)));
 }
 
 // Tests that `UpdateProfile()` takes changes in the `ProfileTokenQuality`
@@ -656,10 +620,8 @@ TEST_F(AddressDataManagerTest, Refresh) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
-  std::vector<AutofillProfile*> profiles;
-  profiles.push_back(&profile0);
-  profiles.push_back(&profile1);
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile1)));
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Josephine", "Alicia", "Saenz",
@@ -672,11 +634,9 @@ TEST_F(AddressDataManagerTest, Refresh) {
 
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
-  profiles.clear();
-  profiles.push_back(&profile0);
-  profiles.push_back(&profile1);
-  profiles.push_back(&profile2);
-  ExpectSameElements(profiles, personal_data_->GetProfiles());
+  EXPECT_THAT(personal_data_->GetProfiles(),
+              UnorderedElementsAre(Pointee(profile0), Pointee(profile1),
+                                   Pointee(profile2)));
 
   profile_database_service_->RemoveAutofillProfile(
       profile1.guid(), AutofillProfile::Source::kLocalOrSyncable);
