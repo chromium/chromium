@@ -113,7 +113,6 @@ found in the LICENSE file.
     <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
 
     <!-- Tile view dimensions -->
-    <dimen name="tile_view_bg_corner_radius">2dp</dimen>
     <dimen name="tile_view_width">80dp</dimen>
     <dimen name="tile_view_width_condensed">64dp</dimen>
     <dimen name="tile_view_min_height">86dp</dimen>
