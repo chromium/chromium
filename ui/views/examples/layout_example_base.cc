@@ -103,16 +103,21 @@ void LayoutExampleBase::ChildPanel::Layout(PassKey) {
   constexpr int kSpacing = 2;
   if (selected_) {
     const gfx::Rect client = GetContentsBounds();
+    margin_.top->SizeToPreferredSize();
     margin_.top->SetPosition(
         gfx::Point((client.width() - margin_.top->width()) / 2, kSpacing));
+    margin_.left->SizeToPreferredSize();
     margin_.left->SetPosition(
         gfx::Point(kSpacing, (client.height() - margin_.left->height()) / 2));
+    margin_.bottom->SizeToPreferredSize();
     margin_.bottom->SetPosition(
         gfx::Point((client.width() - margin_.bottom->width()) / 2,
                    client.height() - margin_.bottom->height() - kSpacing));
+    margin_.right->SizeToPreferredSize();
     margin_.right->SetPosition(
         gfx::Point(client.width() - margin_.right->width() - kSpacing,
                    (client.height() - margin_.right->height()) / 2));
+    flex_->SizeToPreferredSize();
     flex_->SetPosition(gfx::Point((client.width() - flex_->width()) / 2,
                                   (client.height() - flex_->height()) / 2));
   }
