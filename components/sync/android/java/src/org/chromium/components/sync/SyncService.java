@@ -186,6 +186,7 @@ public interface SyncService {
      * Returns the time the current explicit passphrase was set (if any). Null if no explicit
      * passphrase is in use, or no time is available.
      */
+    // TODO(crbug.com/1503649): Remove this method since no usage exists anymore.
     public @Nullable Date getExplicitPassphraseTime();
 
     /**

@@ -32,25 +32,18 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 /** Dialog to ask to user to enter their sync passphrase. */
 public class PassphraseDialogFragment extends DialogFragment
-        implements OnClickListener, ProfileDependentSetting, FragmentHelpAndFeedbackLauncher {
+        implements OnClickListener, ProfileDependentSetting {
     private static final String TAG = "Sync_UI";
 
     /** A listener for passphrase events. */
@@ -64,7 +57,6 @@ public class PassphraseDialogFragment extends DialogFragment
     }
 
     private Profile mProfile;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private EditText mPassphraseEditText;
     private TextView mVerifyingTextView;
@@ -84,11 +76,6 @@ public class PassphraseDialogFragment extends DialogFragment
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     @Override
@@ -147,7 +134,7 @@ public class PassphraseDialogFragment extends DialogFragment
                                     }
                                 })
                         .setNegativeButton(R.string.cancel, this)
-                        .setTitle(R.string.sign_in_google_account)
+                        .setTitle(R.string.sync_enter_passphrase_title)
                         .create();
 
         d.getDelegate().setHandleNativeActionModesEnabled(false);
@@ -181,63 +168,22 @@ public class PassphraseDialogFragment extends DialogFragment
         super.onResume();
     }
 
-    private SpannableString applyInProductHelpSpan(
-            String stringWithLearnMoreTag, String helpContext) {
-        return SpanApplier.applySpans(
-                stringWithLearnMoreTag,
-                new SpanInfo(
-                        "<learnmore>",
-                        "</learnmore>",
-                        new ClickableSpan() {
-                            @Override
-                            public void onClick(View view) {
-                                mHelpAndFeedbackLauncher.show(getActivity(), helpContext, null);
-                            }
-                        }));
-    }
-
     private SpannableString getPromptText() {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         String accountName =
                 getString(R.string.sync_account_info, syncService.getAccountInfo().getEmail())
                         + "\n\n";
-        Date passphraseTime = syncService.getExplicitPassphraseTime();
-        if (passphraseTime != null) {
-            String syncPassphraseHelpContext =
-                    getString(R.string.help_context_change_sync_passphrase);
-            String passphraseTimeString =
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(passphraseTime);
-            @PassphraseType int passphraseType = syncService.getPassphraseType();
-            switch (passphraseType) {
-                case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                case PassphraseType.CUSTOM_PASSPHRASE:
-                    return applyInProductHelpSpan(
-                            accountName
-                                    + getString(
-                                            R.string.sync_enter_passphrase_body_with_date_android,
-                                            passphraseTimeString),
-                            syncPassphraseHelpContext);
-                case PassphraseType.IMPLICIT_PASSPHRASE:
-                case PassphraseType.KEYSTORE_PASSPHRASE:
-                case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
-                default:
-                    Log.w(
-                            TAG,
-                            "Found incorrect passphrase type "
-                                    + passphraseType
-                                    + ". Falling back to default string.");
-            }
-        }
-        return new SpannableString(accountName + getString(R.string.sync_enter_passphrase_body));
+        return new SpannableString(
+                accountName + getString(R.string.sync_enter_passphrase_body_with_email));
     }
 
     private SpannableString getResetText() {
         final Context context = getActivity();
         return SpanApplier.applySpans(
-                getString(R.string.sync_passphrase_reset_instructions),
+                getString(R.string.sync_passphrase_recover),
                 new SpanInfo(
-                        "<resetlink>",
-                        "</resetlink>",
+                        "BEGIN_LINK",
+                        "END_LINK",
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {

@@ -2183,8 +2183,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_PASSPHRASE_TYPE_CUSTOM_DIALOG_TITLE" desc="Dialog title for custom passphrase creation.">
         Create passphrase
       </message>
-      <message name="IDS_SIGN_IN_GOOGLE_ACCOUNT" desc="Title of sign in account selection dialog. [CHAR_LIMIT=32]">
-        Google Account
+      <message name="IDS_SYNC_ENTER_PASSPHRASE_TITLE" desc="Title of dialog to ask user to enter their passphrase. [CHAR_LIMIT=32]">
+        Enter passphrase
       </message>
       <message name="IDS_NEW_SYNC_CUSTOM_PASSPHRASE" desc="Prompt user to create a custom sync password.">
         Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
@@ -2196,8 +2196,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_ENTER_CUSTOM_PASSPHRASE_HINT_CONFIRM" desc="Hint for the passphrase confirmation field when user is to type in a passphrase. [CHAR_LIMIT=30]">
         Confirm passphrase
       </message>
-      <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
-        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
+      <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters their Sync passphrase.">
+        Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.
       </message>
       <message name="IDS_SYNC_ACCOUNT_INFO"  desc="The message that appears in the options dialog indicating that the user is signed in with the given email address.">
         Signed in as <ph name="USER_EMAIL_ADDRESS">%1$s<ex>foo@gmail.com</ex></ph>.
@@ -2205,8 +2205,8 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_PASSPHRASE_CANNOT_BE_BLANK" desc="Inform user that they cannot use a blank password [CHAR_LIMIT=40]">
         This field cannot be blank
       </message>
-      <message name="IDS_SYNC_PASSPHRASE_RESET_INSTRUCTIONS" desc="Inform the user how they can reset their passphrase if they have forgotten it." meaning="Android">
-        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<ph name="END_LINK">&lt;/resetlink&gt;</ph>
+      <message name="IDS_SYNC_PASSPHRASE_RECOVER" desc="Inform the user how they can reset their passphrase if they have forgotten it." meaning="Android">
+        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_PASSPHRASES_DO_NOT_MATCH" desc="Inform user that their sync password does not match.">
         Passphrases do not match
