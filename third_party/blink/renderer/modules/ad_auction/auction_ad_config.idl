@@ -67,6 +67,9 @@ dictionary AuctionAdConfig {
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
 
+  [RuntimeEnabled=FledgeMultiBid]
+  record<USVString, unsigned short> perBuyerMultiBidLimits;
+
   // `auctionReportBuyerKeys`, `auctionReportBuyers`, and
   // `requiredSellerCapabilities` are described in:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md

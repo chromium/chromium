@@ -498,6 +498,11 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
   SerializeIntoDict("requestedSize", non_shared_params.requested_size, result);
   SerializeIntoDict("allSlotsRequestedSizes",
                     non_shared_params.all_slots_requested_sizes, result);
+  SerializeIntoDict(
+      "perBuyerMultiBidLimit",
+      SerializeSplitMapHelper(non_shared_params.all_buyers_multi_bid_limit,
+                              non_shared_params.per_buyer_multi_bid_limits),
+      result);
   SerializeIntoDict("auctionNonce", non_shared_params.auction_nonce, result);
 
   // For component auctions, we only serialize the seller names to give a

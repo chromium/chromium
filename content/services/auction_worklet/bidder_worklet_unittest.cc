@@ -694,7 +694,7 @@ class BidderWorkletTest : public testing::Test {
             : direct_from_seller_auction_signals_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1, std::move(generate_bid_client), std::move(finalizer));
     bidder_worklet->SendPendingSignalsRequests();
   }
@@ -734,7 +734,7 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes(),
         bid_finalizer.BindNewEndpointAndPassReceiver());
     bidder_worklet->SendPendingSignalsRequests();
@@ -930,6 +930,9 @@ class BidderWorkletTest : public testing::Test {
   // logic. It's piped through to the browserSignals JS object in the
   // buyer's generateBid() function if it is present.
   std::optional<blink::AdSize> requested_ad_size_;
+
+  // How many bids can be returned from multi bid (if on).
+  uint16_t multi_bid_limit_ = 1;
 
   // Reusable run loop for loading the script. It's always populated after
   // creating the worklet, to cause a crash if the callback is invoked
@@ -3479,7 +3482,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           direct_from_seller_auction_signals_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
           browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-          auction_start_time_, requested_ad_size_,
+          auction_start_time_, requested_ad_size_, multi_bid_limit_,
           /*trace_id=*/1,
           GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -3598,7 +3601,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -3725,7 +3728,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -3858,7 +3861,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -3970,7 +3973,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_, requested_ad_size_,
+        auction_start_time_, requested_ad_size_, multi_bid_limit_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -4363,6 +4366,22 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest,
        GenerateBidBrowserSignalsAdComponentsLimit) {
   RunGenerateBidExpectingExpressionIsTrue(
       "browserSignals.adComponentsLimit === 25");
+}
+
+TEST_F(BidderWorkletTest, GenerateBidMultiBidLimit) {
+  // If feature not enabled.
+  RunGenerateBidExpectingExpressionIsTrue(
+      "!('multiBidLimit' in browserSignals)");
+}
+
+TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBidLimit) {
+  multi_bid_limit_ = 143;
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.multiBidLimit === 143");
+
+  multi_bid_limit_ = 10;
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.multiBidLimit === 10");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {

@@ -433,6 +433,11 @@ interface BidderWorklet {
   //  because requested size is optional in the originating auction
   //  configuration, and therefore not required to generate bids.
   //
+  // `multi_bid_limit` Limit on how many bids can be returned at once from
+  //  generateBid().  This is always at least 1.  It has no effect if the
+  //  support for returning more than one bid at once is disabled; and if it's
+  //  1, 2 bids can still be produced because of k-anon re-run.
+  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -453,6 +458,7 @@ interface BidderWorklet {
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
       blink.mojom.AdSize? requested_ad_size,
+      uint16 multi_bid_limit,
       uint64 trace_id,
       pending_associated_remote<GenerateBidClient> generate_bid_client,
       pending_associated_receiver<GenerateBidFinalizer> bid_finalizer);

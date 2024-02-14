@@ -6619,6 +6619,8 @@ data/interest_group/bidding_logic_invalid_ad_url.js
 data/interest_group/bidding_logic_invalid_ad_url.js.mock-http-headers
 data/interest_group/bidding_logic_loop_forever.js
 data/interest_group/bidding_logic_loop_forever.js.mock-http-headers
+data/interest_group/bidding_logic_multibid_feature.js
+data/interest_group/bidding_logic_multibid_feature.js.mock-http-headers
 data/interest_group/bidding_logic_register_ad_beacon.js
 data/interest_group/bidding_logic_register_ad_beacon.js.mock-http-headers
 data/interest_group/bidding_logic_register_ad_macro.js

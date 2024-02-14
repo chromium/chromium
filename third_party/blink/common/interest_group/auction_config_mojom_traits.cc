@@ -196,6 +196,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
           &out->required_seller_capabilities) ||
       !data.ReadRequestedSize(&out->requested_size) ||
       !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
+      !data.ReadPerBuyerMultiBidLimits(&out->per_buyer_multi_bid_limits) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
@@ -231,6 +232,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !AreBuyerPrioritySignalsValid(*out->all_buyers_priority_signals)) {
     return false;
   }
+
+  out->all_buyers_multi_bid_limit = data.all_buyers_multi_bid_limit();
 
   for (const auto& component_auction : out->component_auctions) {
     // TODO(1457241): Add support for multi-level auctions including server-side

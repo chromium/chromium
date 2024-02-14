@@ -1526,6 +1526,7 @@ class InterestGroupAuction::BuyerHelper
       bid_state->handled_direct_from_seller_signals_in_begin_generate_bid =
           true;
     }
+    const url::Origin& owner = bid_state->bidder->interest_group.owner;
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -1538,8 +1539,7 @@ class InterestGroupAuction::BuyerHelper
             interest_group.ad_components,
             KAnonKeysToMojom(bid_state->kanon_keys)),
         kanon_mode, bid_state->bidder->joining_origin,
-        GetDirectFromSellerPerBuyerSignals(
-            url_builder, bid_state->bidder->interest_group.owner),
+        GetDirectFromSellerPerBuyerSignals(url_builder, owner),
         GetDirectFromSellerAuctionSignals(url_builder),
         auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
@@ -1548,7 +1548,8 @@ class InterestGroupAuction::BuyerHelper
             .RoundToMultiple(base::Milliseconds(100)),
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, auction_->RequestedAdSize(),
-        *bid_state->trace_id, std::move(pending_remote),
+        auction_->GetBuyerMultiBidLimit(owner), *bid_state->trace_id,
+        std::move(pending_remote),
         bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // TODO(morlovich): This should arguably be merged into BeginGenerateBid
@@ -3616,6 +3617,15 @@ void InterestGroupAuction::ComputePostAuctionSignals(
         top_level_signals_out->winning_bid,
         top_level_signals_out->winning_bid_currency);
   }
+}
+
+uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
+  uint16_t val = config_->non_shared_params.all_buyers_multi_bid_limit;
+  auto it = config_->non_shared_params.per_buyer_multi_bid_limits.find(buyer);
+  if (it != config_->non_shared_params.per_buyer_multi_bid_limits.end()) {
+    val = it->second;
+  }
+  return std::max(val, uint16_t{1});
 }
 
 std::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(

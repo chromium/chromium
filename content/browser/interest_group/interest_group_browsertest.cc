@@ -2200,6 +2200,16 @@ class InterestGroupRestrictedPermissionsPolicyBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+class InterestGroupMultiBidBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupMultiBidBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        SameOriginJoinLeaveInterestGroup) {
   GURL test_url_a = embedded_https_test_server().GetURL("a.test", "/echo");
@@ -6021,6 +6031,26 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       perBuyerPrioritySignals: {
           'https://foo.com/':{"browserSignals.thisPrefixIsReserved": 1}
       }
+  })"));
+  WaitForAccessObserved({});
+}
+
+// Test for invalid origin in perBuyerMultiBidLimits.
+IN_PROC_BROWSER_TEST_F(InterestGroupMultiBidBrowserTest,
+                       RunAdAuctionInvalidPerBuyerMultiBidLimits) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_https_test_server().GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "perBuyerMultiBidLimits buyer 'https://invalid^&' for AuctionAdConfig "
+      "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
+      "https origin.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
+      perBuyerMultiBidLimits: {'https://invalid^&': 100}
   })"));
   WaitForAccessObserved({});
 }
@@ -14714,6 +14744,90 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForUrl(embedded_https_test_server().GetURL(
       "/interest_group/trusted_bidding_signals.json?hostname=a.test&keys=key2"
       "&interestGroupNames=cars_and_trucks&experimentGroupId=1203"));
+}
+
+// Test that the active multi-bid limit is properly passed all the way through
+// to the bidder worklet's browserSignals.
+IN_PROC_BROWSER_TEST_F(InterestGroupMultiBidBrowserTest,
+                       RunAdAuctionWithPerBuyerMultiBidLimit) {
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kBidder2[] = "d.test";
+  const char kSeller[] = "c.test";
+
+  GURL bidder_url = embedded_https_test_server().GetURL(kBidder, "/echo");
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  GURL bidder2_url = embedded_https_test_server().GetURL(kBidder2, "/echo");
+  url::Origin bidder2_origin = url::Origin::Create(bidder2_url);
+
+  GURL ad1_url = embedded_https_test_server().GetURL(kBidder, "/ad1");
+  GURL ad2_url = embedded_https_test_server().GetURL(kBidder2, "/ad2");
+
+  // Navigate to bidder site, and add an interest group.
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/bidder_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  kBidder, "/interest_group/bidding_logic_multibid_feature.js"))
+              .SetAds({{{ad1_url, /*metadata=*/std::nullopt}}})
+              .Build()));
+
+  // Navigate to publisher and run an ad auction.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 kPublisher, "/page_with_iframe.html")));
+  GURL seller_logic_url = embedded_https_test_server().GetURL(
+      kSeller, "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3, $4],
+    perBuyerMultiBidLimits: {'*': 2, $4: 10},
+  })";
+
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url, bidder_origin, bidder2_origin),
+      ad1_url);
+
+  // Check that reporting routed the proper multiBidLimit --- kBidder should
+  // get the *, so 2.
+  WaitForUrl(
+      embedded_https_test_server().GetURL(kBidder, "/echoall?report_bidder2"));
+
+  // Now navigate to bidder2 and add its interest group.
+  ASSERT_TRUE(NavigateToURL(shell(), bidder2_url));
+
+  content_browser_client_->AddToAllowList({bidder2_origin});
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/bidder2_origin,
+                    /*name=*/"cars_and_trucks")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        kBidder2,
+                        "/interest_group/bidding_logic_multibid_feature.js"))
+                    .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // Navigate to publisher and run auction again.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 kPublisher, "/page_with_iframe.html")));
+
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(kAuctionConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url, bidder_origin, bidder2_origin),
+      ad2_url);
+
+  // Expect kBidder2 to win and its limit is 10.
+  WaitForUrl(embedded_https_test_server().GetURL(kBidder2,
+                                                 "/echoall?report_bidder10"));
 }
 
 // Validate that createAdRequest is available and be successfully called as part

@@ -46,6 +46,9 @@ TEST(AuctionConfigTest, SerializeComponents) {
    "perBuyerGroupLimits": {
       "*": 65535
    },
+   "perBuyerMultiBidLimit": {
+       "*": 1
+   },
    "perBuyerPrioritySignals": {
    },
    "perBuyerSignals": {
@@ -130,6 +133,10 @@ TEST(AuctionConfigTest, FullConfig) {
    "perBuyerGroupLimits": {
       "*": 11,
       "https://buyer.test": 10
+   },
+   "perBuyerMultiBidLimit": {
+       "*": 5,
+       "https://buyer.test": 10
    },
    "perBuyerPrioritySignals": {
       "*": {

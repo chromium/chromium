@@ -329,6 +329,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // groups can request this be included in trusted seller signals fetches.
     std::optional<std::vector<blink::AdSize>> all_slots_requested_sizes;
 
+    // Limits on how many bids generateBid() can return at once. 0 counts as 1.
+    base::flat_map<url::Origin, uint16_t> per_buyer_multi_bid_limits;
+    uint16_t all_buyers_multi_bid_limit = 1;
+
     // A unique identifier associated with this and only this invocation of
     // runAdAuction. This must come from a prior call to createAuctionNonce.
     // This is only required for auctions that provide additional bids, and each
@@ -416,7 +420,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 419, R"(
+  static_assert(__LINE__ == 423, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

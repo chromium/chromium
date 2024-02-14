@@ -104,6 +104,8 @@ AuctionConfig CreateFullAuctionConfig() {
       AdSize(55.5, AdSize::LengthUnit::kScreenWidth, 50.5,
              AdSize::LengthUnit::kPixels),
   };
+  non_shared_params.per_buyer_multi_bid_limits[buyer] = 10;
+  non_shared_params.all_buyers_multi_bid_limit = 5;
   non_shared_params.required_seller_capabilities = {
       SellerCapabilities::kLatencyStats};
 

@@ -462,6 +462,11 @@ struct AuctionAdConfigNonSharedParams {
   // groups can request this be included in trusted seller signals fetches.
   array<AdSize>? all_slots_requested_sizes;
 
+  // Limits on how many bids generateBid() can return at once.
+  // Every entry should be at least 1.
+  map<url.mojom.Origin, uint16> per_buyer_multi_bid_limits;
+  uint16 all_buyers_multi_bid_limit;
+
   // A unique identifier associated with this and only this invocation of
   // runAdAuction. This must come from a prior call to createAuctionNonce.
   // This is only required for auctions that provide additional bids, and each

@@ -2232,6 +2232,35 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
   return true;
 }
 
+bool CopyPerBuyerMultiBidsLimitsFromIdlToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerMultiBidLimits()) {
+    return true;
+  }
+  for (const auto& per_buyer_multibid_limit : input.perBuyerMultiBidLimits()) {
+    if (per_buyer_multibid_limit.first == "*") {
+      output.auction_ad_config_non_shared_params->all_buyers_multi_bid_limit =
+          per_buyer_multibid_limit.second;
+      continue;
+    }
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_multibid_limit.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerMultiBidLimits buyer", per_buyer_multibid_limit.first,
+          "must be \"*\" (wildcard) or a valid https origin."));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->per_buyer_multi_bid_limits
+        .insert(buyer, per_buyer_multibid_limit.second);
+  }
+
+  return true;
+}
+
 bool CopyAuctionNonceFromIdlToMojo(const ExecutionContext& execution_context,
                                    ExceptionState& exception_state,
                                    const AuctionAdConfig& input,
@@ -2312,6 +2341,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                       *mojo_config) ||
       !CopyAllSlotsRequestedSizesFromIdlToMojo(context, exception_state, config,
                                                *mojo_config) ||
+      !CopyPerBuyerMultiBidsLimitsFromIdlToMojo(script_state, exception_state,
+                                                config, *mojo_config) ||
       !CopyAuctionNonceFromIdlToMojo(context, exception_state, config,
                                      *mojo_config) ||
       !CopyAdditionalBidsFromIdlToMojo(auction_handle, auction_id.get(),

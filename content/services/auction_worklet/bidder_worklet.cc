@@ -317,6 +317,7 @@ void BidderWorklet::BeginGenerateBid(
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
+    uint16_t multi_bid_limit,
     uint64_t trace_id,
     mojo::PendingAssociatedRemote<mojom::GenerateBidClient> generate_bid_client,
     mojo::PendingAssociatedReceiver<mojom::GenerateBidFinalizer>
@@ -338,6 +339,7 @@ void BidderWorklet::BeginGenerateBid(
       std::move(bidding_browser_signals);
   generate_bid_task->auction_start_time = auction_start_time;
   generate_bid_task->requested_ad_size = requested_ad_size;
+  generate_bid_task->multi_bid_limit = multi_bid_limit;
   generate_bid_task->trace_id = trace_id;
   generate_bid_task->generate_bid_client.Bind(std::move(generate_bid_client));
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
@@ -904,6 +906,7 @@ void BidderWorklet::V8State::GenerateBid(
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
+    uint16_t multi_bid_limit,
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_generate_bid_task,
@@ -927,7 +930,8 @@ void BidderWorklet::V8State::GenerateBid(
       expected_buyer_currency, browser_signal_seller_origin,
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
       browser_signal_recency, bidding_browser_signals, auction_start_time,
-      requested_ad_size, trusted_bidding_signals_result, trace_id,
+      requested_ad_size, multi_bid_limit, trusted_bidding_signals_result,
+      trace_id,
       /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
   if (!result.has_value()) {
@@ -967,7 +971,7 @@ void BidderWorklet::V8State::GenerateBid(
               browser_signal_seller_origin,
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
               browser_signal_recency, bidding_browser_signals,
-              auction_start_time, requested_ad_size,
+              auction_start_time, requested_ad_size, multi_bid_limit,
               trusted_bidding_signals_result, trace_id,
               std::move(result->context_recycler_for_rerun),
               /*restrict_to_kanon_ads=*/true);
@@ -1039,6 +1043,7 @@ BidderWorklet::V8State::GenerateSingleBid(
     const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
     base::Time auction_start_time,
     const std::optional<blink::AdSize>& requested_ad_size,
+    uint16_t multi_bid_limit,
     const scoped_refptr<TrustedSignals::Result>& trusted_bidding_signals_result,
     uint64_t trace_id,
     std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
@@ -1264,6 +1269,10 @@ BidderWorklet::V8State::GenerateSingleBid(
            "adComponentsLimit",
            // Cast to help gin on mac.
            static_cast<uint64_t>(blink::MaxAdAuctionAdComponents()))) ||
+      // Report the multi-bid limit if the corresponding feature on.
+      (base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid) &&
+       !browser_signals_dict.Set("multiBidLimit",
+                                 static_cast<uint32_t>(multi_bid_limit))) ||
       (base::FeatureList::IsEnabled(
            blink::features::kFledgePassRecencyToGenerateBid) &&
        !browser_signals_dict.Set("recency",
@@ -1863,7 +1872,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->browser_signal_recency),
           std::move(task->bidding_browser_signals), task->auction_start_time,
-          std::move(task->requested_ad_size),
+          std::move(task->requested_ad_size), task->multi_bid_limit,
           std::move(task->trusted_bidding_signals_result), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,

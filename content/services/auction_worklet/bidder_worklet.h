@@ -140,6 +140,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
+      uint16_t multi_bid_limit,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
           generate_bid_client,
@@ -214,6 +215,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::TimeDelta browser_signal_recency;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     std::optional<blink::AdSize> requested_ad_size;
+    uint16_t multi_bid_limit;
     base::Time auction_start_time;
     uint64_t trace_id;
 
@@ -473,6 +475,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
+        uint16_t multi_bid_limit,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_generate_bid_task,
@@ -510,6 +513,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
         base::Time auction_start_time,
         const std::optional<blink::AdSize>& requested_ad_size,
+        uint16_t multi_bid_limit,
         const scoped_refptr<TrustedSignals::Result>&
             trusted_bidding_signals_result,
         uint64_t trace_id,

@@ -361,6 +361,17 @@ struct BLINK_COMMON_EXPORT
     return params.all_slots_requested_sizes;
   }
 
+  static const base::flat_map<url::Origin, uint16_t>&
+  per_buyer_multi_bid_limits(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_multi_bid_limits;
+  }
+
+  static uint16_t all_buyers_multi_bid_limit(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.all_buyers_multi_bid_limit;
+  }
+
   static const std::optional<base::Uuid>& auction_nonce(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.auction_nonce;

@@ -1070,6 +1070,10 @@ class CONTENT_EXPORT InterestGroupAuction
       PostAuctionSignals& signals_out,
       std::optional<PostAuctionSignals>& top_level_signals_out);
 
+  // Returns the multi-bid limit configured for `buyer` by `config_`,
+  // ensuring that it's at least 1.
+  uint16_t GetBuyerMultiBidLimit(const url::Origin& buyer);
+
   // -----------------------------------
   // Methods not associated with a phase
   // -----------------------------------
