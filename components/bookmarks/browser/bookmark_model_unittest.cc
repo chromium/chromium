@@ -2414,6 +2414,55 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
                          node_uuid, NodeTypeForUuidLookup::kAccountNodes));
 }
 
+TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {
+  base::test::ScopedFeatureList features{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
+
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  // Create one local-or-syncable bookmark.
+  const BookmarkNode* local_or_syncable_node = model->AddURL(
+      model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
+  EXPECT_TRUE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  EXPECT_FALSE(model->AccountStorageHasPendingWriteForTest());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  ASSERT_FALSE(model->AccountStorageHasPendingWriteForTest());
+
+  // Create account permanent folders.
+  model->CreateAccountPermanentFolders();
+  EXPECT_FALSE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  EXPECT_TRUE(model->AccountStorageHasPendingWriteForTest());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  ASSERT_FALSE(model->AccountStorageHasPendingWriteForTest());
+
+  // Save one account bookmark.
+  model->AddURL(model->account_bookmark_bar_node(), 0, u"Bar",
+                GURL("http://bar.com"));
+  EXPECT_FALSE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  EXPECT_TRUE(model->AccountStorageHasPendingWriteForTest());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  ASSERT_FALSE(model->AccountStorageHasPendingWriteForTest());
+
+  // Edit the local-or-syncable bookmark.
+  model->SetTitle(local_or_syncable_node, u"Foo2",
+                  metrics::BookmarkEditSource::kOther);
+  EXPECT_TRUE(model->LocalOrSyncableStorageHasPendingWriteForTest());
+  EXPECT_FALSE(model->AccountStorageHasPendingWriteForTest());
+}
+
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   GURL url;
   BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
