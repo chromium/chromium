@@ -206,6 +206,8 @@ export class AcceleratorEditDialogElement extends
 
   private onAcceleratorCapturingEnded(): void {
     this.isAcceleratorCapturing = false;
+    // Focus on the next logical step after the user is done editing.
+    this.focusAddOrDone();
   }
 
   private onDefaultConflictResolved(
@@ -235,6 +237,16 @@ export class AcceleratorEditDialogElement extends
         accelItem.shadowRoot!.querySelector<HTMLElement>('#container');
     assert(container);
     container!.focus();
+  }
+
+  private focusAddOrDone(): void {
+    const selector = this.acceleratorLimitNotReached() ?
+        '#addAcceleratorButton' :
+        '#doneButton';
+    const buttonToFocus =
+        this.$.editDialog.querySelector<HTMLButtonElement>(selector);
+    assert(buttonToFocus);
+    buttonToFocus.focus();
   }
 
   protected onAddAcceleratorClicked(): void {
