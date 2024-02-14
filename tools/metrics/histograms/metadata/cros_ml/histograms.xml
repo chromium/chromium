@@ -22,13 +22,47 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<!-- Federated Learning and Analytics histograms -->
+<variants name="BuiltinModelName">
+  <variant name="SmartDimModel"/>
+  <variant name="TestModel"/>
+</variants>
 
 <variants name="FederatedPopulationName">
   <variant name="launcher_query_analytics_v1"
       summary="for launcher query analytics task"/>
   <variant name="timezone_code_phh" summary="for timezone PHH task"/>
 </variants>
+
+<variants name="PerformanceMetricsRequestName">
+  <variant name="DocumentScanner.DetectCornersFromJPEG"/>
+  <variant name="DocumentScanner.DetectCornersFromNV12"/>
+  <variant name="DocumentScanner.DoPostProcessing"/>
+  <variant name="DocumentScanner.LoadModelResult"/>
+  <variant name="HandwritingModel.LoadModelResult"/>
+  <variant name="HandwritingModel.Recognize"/>
+  <variant name="ImageAnnotator.AnnotateEncodedImage"/>
+  <variant name="ImageAnnotator.AnnotateRawImage"/>
+  <variant name="ImageAnnotator.LoadModelResult"/>
+  <variant name="SmartDimModel.CreateGraphExecutorResult"/>
+  <variant name="SmartDimModel.ExecuteResult"/>
+  <variant name="SmartDimModel.LoadModelResult"/>
+  <variant name="TestModel.CreateGraphExecutorResult"/>
+  <variant name="TestModel.ExecuteResult"/>
+  <variant name="TestModel.LoadModelResult"/>
+  <variant name="TextClassifier.Annotate"/>
+  <variant name="TextClassifier.FindLanguages"/>
+  <variant name="TextClassifier.LoadModelResult"/>
+  <variant name="TextClassifier.SuggestSelection"/>
+  <variant name="TextSuggester.LoadModelResult"/>
+  <variant name="TextSuggester.Suggest"/>
+  <variant name="WebPlatformHandwritingModel.GetPrediction"/>
+  <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+  <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
+  <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
+  <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
+</variants>
+
+<!-- Federated Learning and Analytics histograms -->
 
 <histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
     expires_after="2024-06-30">
@@ -402,6 +436,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MachineLearningService.{ModelName}.CreateGraphExecutorResult.Event"
+    enum="MachineLearningServiceCreateGraphExecutorResultEvent"
+    expires_after="2024-06-30">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of CreateGraphExecutor request for model {ModelName}, which can
+    be OK or some specific error.
+  </summary>
+  <token key="ModelName" variants="BuiltinModelName"/>
+</histogram>
+
+<histogram name="MachineLearningService.{ModelName}.ExecuteResult.Event"
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2024-06-30">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    The result of Execute request for model {ModelName}, which can be OK or some
+    specific error.
+  </summary>
+  <token key="ModelName" variants="BuiltinModelName"/>
+</histogram>
+
 <histogram name="MachineLearningService.{RequestName}.CpuTimeMicrosec"
     units="microseconds" expires_after="2024-06-30">
   <owner>amoylan@chromium.org</owner>
@@ -411,64 +469,7 @@ chromium-metrics-reviews@google.com.
     users; users without high-resolution clocks will report 0 for short
     requests.
   </summary>
-  <token key="RequestName">
-    <variant name="DocumentScanner.DetectCornersFromJPEG"/>
-    <variant name="DocumentScanner.DetectCornersFromNV12"/>
-    <variant name="DocumentScanner.DoPostProcessing"/>
-    <variant name="DocumentScanner.LoadModelResult"/>
-    <variant name="HandwritingModel.LoadModelResult"/>
-    <variant name="HandwritingModel.Recognize"/>
-    <variant name="ImageAnnotator.AnnotateEncodedImage"/>
-    <variant name="ImageAnnotator.AnnotateRawImage"/>
-    <variant name="ImageAnnotator.LoadModelResult"/>
-    <variant name="SmartDimModel.CreateGraphExecutorResult"/>
-    <variant name="SmartDimModel.ExecuteResult"/>
-    <variant name="SmartDimModel.LoadModelResult"/>
-    <variant name="TestModel.CreateGraphExecutorResult"/>
-    <variant name="TestModel.ExecuteResult"/>
-    <variant name="TestModel.LoadModelResult"/>
-    <variant name="TextClassifier.Annotate"/>
-    <variant name="TextClassifier.FindLanguages"/>
-    <variant name="TextClassifier.LoadModelResult"/>
-    <variant name="TextClassifier.SuggestSelection"/>
-    <variant name="TextSuggester.LoadModelResult"/>
-    <variant name="TextSuggester.Suggest"/>
-    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
-    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
-  </token>
-</histogram>
-
-<histogram
-    name="MachineLearningService.{RequestName}.CreateGraphExecutorResult.Event"
-    enum="MachineLearningServiceCreateGraphExecutorResultEvent"
-    expires_after="2024-06-30">
-  <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
-  <summary>
-    The result of {RequestName} CreateGraphExecutor request, which can be OK or
-    some specific error.
-  </summary>
-  <token key="RequestName">
-    <variant name="SmartDimModel"/>
-    <variant name="TestModel"/>
-  </token>
-</histogram>
-
-<histogram name="MachineLearningService.{RequestName}.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2024-06-30">
-  <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
-  <summary>
-    The result of {RequestName} Execute request, which can be OK or some
-    specific error.
-  </summary>
-  <token key="RequestName">
-    <variant name="SmartDimModel"/>
-    <variant name="TestModel"/>
-  </token>
+  <token key="RequestName" variants="PerformanceMetricsRequestName"/>
 </histogram>
 
 <histogram name="MachineLearningService.{RequestName}.LoadModelResult.Event"
@@ -495,34 +496,7 @@ chromium-metrics-reviews@google.com.
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>Memory usage increase caused by {RequestName} request.</summary>
-  <token key="RequestName">
-    <variant name="DocumentScanner.DetectCornersFromJPEG"/>
-    <variant name="DocumentScanner.DetectCornersFromNV12"/>
-    <variant name="DocumentScanner.DoPostProcessing"/>
-    <variant name="DocumentScanner.LoadModelResult"/>
-    <variant name="HandwritingModel.LoadModelResult"/>
-    <variant name="HandwritingModel.Recognize"/>
-    <variant name="ImageAnnotator.AnnotateEncodedImage"/>
-    <variant name="ImageAnnotator.AnnotateRawImage"/>
-    <variant name="ImageAnnotator.LoadModelResult"/>
-    <variant name="SmartDimModel.CreateGraphExecutorResult"/>
-    <variant name="SmartDimModel.ExecuteResult"/>
-    <variant name="SmartDimModel.LoadModelResult"/>
-    <variant name="TestModel.CreateGraphExecutorResult"/>
-    <variant name="TestModel.ExecuteResult"/>
-    <variant name="TestModel.LoadModelResult"/>
-    <variant name="TextClassifier.Annotate"/>
-    <variant name="TextClassifier.FindLanguages"/>
-    <variant name="TextClassifier.LoadModelResult"/>
-    <variant name="TextClassifier.SuggestSelection"/>
-    <variant name="TextSuggester.LoadModelResult"/>
-    <variant name="TextSuggester.Suggest"/>
-    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
-    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
-    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
-  </token>
+  <token key="RequestName" variants="PerformanceMetricsRequestName"/>
 </histogram>
 
 </histograms>
