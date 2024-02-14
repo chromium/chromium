@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
-// @ts-ignore: error TS4111: Property 'installLinuxPackageDialog' comes from an
-// index signature, so it must be accessed with ['installLinuxPackageDialog'].
-testcase.installLinuxPackageDialog = async () => {
+export async function installLinuxPackageDialog() {
   // The dialog has an INSTALL and OK button, both as .cr-dialog-ok, but only
   // one is visible at a time.
   const dialog = '#install-linux-package-dialog';
@@ -39,7 +37,7 @@ testcase.installLinuxPackageDialog = async () => {
   await remoteCall.waitForElement(appId, dialog);
   const caller = getCaller();
   await repeatUntil(async () => {
-    const elements = await remoteCall.callRemoteTestUtil(
+    const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', appId, ['.install-linux-package-details-frame']);
     // The details are in separate divs on multiple lines, which the test api
     // returns as a single string. These values come from
@@ -59,7 +57,7 @@ testcase.installLinuxPackageDialog = async () => {
   // Wait for the installation to start (under test, we use a fake D-Bus
   // client, so it doesn't actually install anything).
   await repeatUntil(async () => {
-    const elements = await remoteCall.callRemoteTestUtil(
+    const elements = await remoteCall.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', appId, ['.cr-dialog-text']);
     return elements[0] &&
         elements[0].text === 'Installation successfully started.' ||
@@ -71,4 +69,4 @@ testcase.installLinuxPackageDialog = async () => {
 
   // Ensure dialog closes
   await remoteCall.waitForElementLost(appId, dialog);
-};
+}
