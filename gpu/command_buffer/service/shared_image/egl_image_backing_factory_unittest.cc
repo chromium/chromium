@@ -437,8 +437,9 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU_READ |
+                         SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                         SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Note that this backing is always thread safe by default even if it is not
   // requested to be.
@@ -527,7 +528,8 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     const auto format = viz::SinglePlaneFormat::kRGBA_8888;
     const gfx::Size size(1, 1);
     const auto color_space = gfx::ColorSpace::CreateSRGB();
-    const uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU;
+    const uint32_t usage =
+        SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
     std::vector<uint8_t> pixel_data = {0x80, 0x40, 0x20, 0x10};
 
