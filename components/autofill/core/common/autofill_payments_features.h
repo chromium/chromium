@@ -45,6 +45,11 @@ BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation);
 BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback);
 BASE_DECLARE_FEATURE(kAutofillEnableServerIban);
 BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts);
+#endif
+
 BASE_DECLARE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter);
 BASE_DECLARE_FEATURE(kAutofillEnableVcn3dsAuthentication);

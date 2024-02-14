@@ -190,6 +190,14 @@ BASE_FEATURE(kAutofillEnableStickyManualFallbackForCards,
              "AutofillEnableStickyManualFallbackForCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Pix bank accounts are synced from Chrome Sync backend and
+// stored in the local db.
+BASE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts,
+             "AutofillEnableSyncingOfPixBankAccounts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, the user will have the ability to update the virtual card
 // enrollment of a credit card through their chrome browser after certain
 // autofill flows (for example, downstream and upstream), and from the settings
