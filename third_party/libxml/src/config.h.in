@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
 
+/* Define to 1 if you have the `getentropy' function. */
+#undef HAVE_GETENTROPY
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
@@ -91,6 +94,9 @@
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
+
+/* Define to 1 if you have the <sys/random.h> header file. */
+#undef HAVE_SYS_RANDOM_H
 
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H

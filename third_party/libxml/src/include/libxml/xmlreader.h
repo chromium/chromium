@@ -127,6 +127,8 @@ XMLPUBFUN int
 XMLPUBFUN void
             xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader,
                    unsigned maxAmpl);
+XMLPUBFUN const xmlError *
+            xmlTextReaderGetLastError(xmlTextReaderPtr reader);
 
 /*
  * Iterators

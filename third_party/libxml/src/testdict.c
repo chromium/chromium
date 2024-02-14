@@ -7,9 +7,14 @@
 /**** dictionary tests ****/
 
 #ifdef __clang__
-  #define ATTRIBUTE_NO_SANITIZE_INTEGER \
-    __attribute__ ((no_sanitize("unsigned-integer-overflow"))) \
-    __attribute__ ((no_sanitize("unsigned-shift-base")))
+  #if __clang_major__ >= 12
+    #define ATTRIBUTE_NO_SANITIZE_INTEGER \
+      __attribute__ ((no_sanitize("unsigned-integer-overflow"))) \
+      __attribute__ ((no_sanitize("unsigned-shift-base")))
+  #else
+    #define ATTRIBUTE_NO_SANITIZE_INTEGER \
+      __attribute__ ((no_sanitize("unsigned-integer-overflow")))
+  #endif
 #else
   #define ATTRIBUTE_NO_SANITIZE_INTEGER
 #endif

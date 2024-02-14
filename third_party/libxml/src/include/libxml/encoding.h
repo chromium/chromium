@@ -167,6 +167,7 @@ XMLPUBFUN int
 					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN int
 	xmlOpenCharEncodingHandler	(const char *name,
+					 int output,
 					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN xmlCharEncodingHandlerPtr
 	xmlGetCharEncodingHandler	(xmlCharEncoding enc);

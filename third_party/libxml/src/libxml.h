@@ -55,9 +55,14 @@
 #endif
 
 #ifdef __clang__
-  #define ATTRIBUTE_NO_SANITIZE_INTEGER \
-    ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow") \
-    ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
+  #if __clang_major__ >= 12
+    #define ATTRIBUTE_NO_SANITIZE_INTEGER \
+      ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow") \
+      ATTRIBUTE_NO_SANITIZE("unsigned-shift-base")
+  #else
+    #define ATTRIBUTE_NO_SANITIZE_INTEGER \
+      ATTRIBUTE_NO_SANITIZE("unsigned-integer-overflow")
+  #endif
 #else
   #define ATTRIBUTE_NO_SANITIZE_INTEGER
 #endif

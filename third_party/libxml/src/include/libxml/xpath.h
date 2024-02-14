@@ -515,6 +515,10 @@ XMLPUBFUN xmlXPathContextPtr
 		    xmlXPathNewContext		(xmlDocPtr doc);
 XMLPUBFUN void
 		    xmlXPathFreeContext		(xmlXPathContextPtr ctxt);
+XMLPUBFUN void
+		    xmlXPathSetErrorHandler(xmlXPathContextPtr ctxt,
+					    xmlStructuredErrorFunc handler,
+					    void *context);
 XMLPUBFUN int
 		    xmlXPathContextSetCache(xmlXPathContextPtr ctxt,
 				            int active,

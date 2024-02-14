@@ -1324,6 +1324,7 @@ static const xmlCharEncodingHandler defaultHandlers[] = {
 static const xmlCharEncodingHandler *xmlUTF16LEHandler = &defaultHandlers[1];
 static const xmlCharEncodingHandler *xmlUTF16BEHandler = &defaultHandlers[2];
 static const xmlCharEncodingHandler *xmlLatin1Handler = &defaultHandlers[4];
+static const xmlCharEncodingHandler *xmlAsciiHandler = &defaultHandlers[5];
 
 /* the size should be growable, but it's not a big deal ... */
 #define MAX_ENCODING_HANDLERS 50
@@ -1658,6 +1659,7 @@ error:
 /**
  * xmlFindExtraHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to resulting handler
  *
  * Search the non-default handlers for an exact match.
@@ -1666,7 +1668,8 @@ error:
  * allocation failed.
  */
 static int
-xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlFindExtraHandler(const char *name, int output,
+                    xmlCharEncodingHandler **out) {
     int ret;
     int i;
 
@@ -1674,10 +1677,21 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
 
     if (handlers != NULL) {
         for (i = 0; i < nbCharEncodingHandler; i++) {
+            xmlCharEncodingHandler *handler = handlers[i];
+
             if (!xmlStrcasecmp((const xmlChar *) name,
-                               (const xmlChar *) handlers[i]->name)) {
-                *out = handlers[i];
-                return(0);
+                               (const xmlChar *) handler->name)) {
+                if (output) {
+                    if (handler->output != NULL) {
+                        *out = handler;
+                        return(0);
+                    }
+                } else {
+                    if (handler->input != NULL) {
+                        *out = handler;
+                        return(0);
+                    }
+                }
             }
         }
     }
@@ -1704,6 +1718,7 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
 /**
  * xmlFindHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to resulting handler
  *
  * Search all handlers for an exact match.
@@ -1712,24 +1727,37 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
  * allocation failed.
  */
 static int
-xmlFindHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlFindHandler(const char *name, int output, xmlCharEncodingHandler **out) {
     int i;
 
     /*
      * Check for default handlers
      */
     for (i = 0; i < (int) NUM_DEFAULT_HANDLERS; i++) {
+        xmlCharEncodingHandler *handler;
+
+        handler = (xmlCharEncodingHandler *) &defaultHandlers[i];
+
         if (xmlStrcasecmp((const xmlChar *) name,
-                          (const xmlChar *) defaultHandlers[i].name) == 0) {
-            *out = (xmlCharEncodingHandler *) &defaultHandlers[i];
-            return(0);
+                          (const xmlChar *) handler->name) == 0) {
+            if (output) {
+                if (handler->output != NULL) {
+                    *out = handler;
+                    return(0);
+                }
+            } else {
+                if (handler->input != NULL) {
+                    *out = handler;
+                    return(0);
+                }
+            }
         }
     }
 
     /*
      * Check for other handlers
      */
-    return(xmlFindExtraHandler(name, out));
+    return(xmlFindExtraHandler(name, output, out));
 }
 
 /**
@@ -1803,6 +1831,9 @@ xmlLookupCharEncodingHandler(xmlCharEncoding enc,
             numNames = sizeof(ucs2Names) / sizeof(ucs2Names[0]);
 	    break;
 
+        case XML_CHAR_ENCODING_ASCII:
+	    *out = (xmlCharEncodingHandler *) xmlAsciiHandler;
+            return(0);
         case XML_CHAR_ENCODING_8859_1:
 	    *out = (xmlCharEncodingHandler *) xmlLatin1Handler;
             return(0);
@@ -1846,11 +1877,11 @@ xmlLookupCharEncodingHandler(xmlCharEncoding enc,
     }
 
     if (name != NULL)
-        return(xmlFindExtraHandler(name, out));
+        return(xmlFindExtraHandler(name, 0, out));
 
     if (names != NULL) {
         for (i = 0; i < numNames; i++) {
-            ret = xmlFindExtraHandler(names[i], out);
+            ret = xmlFindExtraHandler(names[i], 0, out);
             if (*out != NULL)
                 return(0);
             if (ret != XML_ERR_UNSUPPORTED_ENCODING)
@@ -1882,6 +1913,7 @@ xmlGetCharEncodingHandler(xmlCharEncoding enc) {
 /**
  * xmlOpenCharEncodingHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to result
  *
  * Find or create a handler matching the encoding. If no default or
@@ -1895,7 +1927,8 @@ xmlGetCharEncodingHandler(xmlCharEncoding enc) {
  * Returns an xmlParserErrors error code.
  */
 int
-xmlOpenCharEncodingHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlOpenCharEncodingHandler(const char *name, int output,
+                           xmlCharEncodingHandler **out) {
     const char *nalias;
     const char *norig;
     xmlCharEncoding enc;
@@ -1916,7 +1949,7 @@ xmlOpenCharEncodingHandler(const char *name, xmlCharEncodingHandler **out) {
     if (nalias != NULL)
 	name = nalias;
 
-    ret = xmlFindHandler(name, out);
+    ret = xmlFindHandler(name, output, out);
     if (*out != NULL)
         return(0);
     if (ret != XML_ERR_UNSUPPORTED_ENCODING)
@@ -1943,7 +1976,7 @@ xmlCharEncodingHandlerPtr
 xmlFindCharEncodingHandler(const char *name) {
     xmlCharEncodingHandler *ret;
 
-    xmlOpenCharEncodingHandler(name, &ret);
+    xmlOpenCharEncodingHandler(name, 0, &ret);
     return(ret);
 }
 

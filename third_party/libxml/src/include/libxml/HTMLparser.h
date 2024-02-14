@@ -247,6 +247,9 @@ XMLPUBFUN htmlDocPtr
 					 const char *encoding,
 					 int options);
 XMLPUBFUN htmlDocPtr
+		htmlCtxtParseDocument	(htmlParserCtxtPtr ctxt,
+					 xmlParserInputPtr input);
+XMLPUBFUN htmlDocPtr
 		htmlCtxtReadDoc		(xmlParserCtxtPtr ctxt,
 					 const xmlChar *cur,
 					 const char *URL,

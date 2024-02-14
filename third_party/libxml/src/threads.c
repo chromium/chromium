@@ -30,6 +30,7 @@
 #include "private/dict.h"
 #include "private/enc.h"
 #include "private/globals.h"
+#include "private/io.h"
 #include "private/memory.h"
 #include "private/threads.h"
 #include "private/xpath.h"
@@ -498,9 +499,8 @@ xmlGlobalInitMutexLock(void) {
     if (global_init_lock == NULL) {
         cs = malloc(sizeof(CRITICAL_SECTION));
         if (cs == NULL) {
-            xmlGenericError(xmlGenericErrorContext,
-                            "xmlGlobalInitMutexLock: out of memory\n");
-            return;
+            fprintf(stderr, "libxml2: xmlInitParser: out of memory\n");
+            abort();
         }
         InitializeCriticalSection(cs);
 
@@ -583,19 +583,15 @@ xmlInitParser(void) {
             atexit(xmlCleanupParser);
 #endif
 
-        xmlInitMemoryInternal(); /* Should come second */
+        xmlInitRandom(); /* Required by xmlInitGlobalsInternal */
+        xmlInitMemoryInternal();
         xmlInitGlobalsInternal();
-        xmlInitRandom();
         xmlInitDictInternal();
         xmlInitEncodingInternal();
 #if defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
         xmlInitXPathInternal();
 #endif
-
-        xmlRegisterDefaultInputCallbacks();
-#ifdef LIBXML_OUTPUT_ENABLED
-        xmlRegisterDefaultOutputCallbacks();
-#endif /* LIBXML_OUTPUT_ENABLED */
+        xmlInitIOCallbacks();
 
         xmlParserInnerInitialized = 1;
     }
@@ -643,11 +639,6 @@ xmlCleanupParser(void) {
 #endif
 
     /* These functions should never call xmlFree. */
-
-    xmlCleanupInputCallbacks();
-#ifdef LIBXML_OUTPUT_ENABLED
-    xmlCleanupOutputCallbacks();
-#endif
 
     xmlCleanupDictInternal();
     xmlCleanupRandom();

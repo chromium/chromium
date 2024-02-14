@@ -19,11 +19,19 @@
 #define IN_LIBXML
 #include "libxml.h"
 
+#include <errno.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include "private/dict.h"
+#include "private/globals.h"
 #include "private/threads.h"
 
 #include <libxml/parser.h>
@@ -908,24 +916,21 @@ static xmlMutex xmlRngMutex;
 
 static unsigned globalRngState[2];
 
-#ifdef XML_THREAD_LOCAL
-static XML_THREAD_LOCAL int localRngInitialized = 0;
-static XML_THREAD_LOCAL unsigned localRngState[2];
-#endif
-
 ATTRIBUTE_NO_SANITIZE_INTEGER
 void
 xmlInitRandom(void) {
-    int var;
-
     xmlInitMutex(&xmlRngMutex);
 
-    /* TODO: Get seed values from system PRNG */
+    {
+        int var;
 
-    globalRngState[0] = (unsigned) time(NULL) ^
-                        HASH_ROL((unsigned) ((size_t) &xmlInitRandom & 0xFFFFFFFF), 8);
-    globalRngState[1] = HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
-                        HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);
+        globalRngState[0] =
+                (unsigned) time(NULL) ^
+                HASH_ROL((unsigned) ((size_t) &xmlInitRandom & 0xFFFFFFFF), 8);
+        globalRngState[1] =
+                HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
+                HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);
+    }
 }
 
 void
@@ -948,18 +953,7 @@ xoroshiro64ss(unsigned *s) {
 }
 
 unsigned
-xmlRandom(void) {
-#ifdef XML_THREAD_LOCAL
-    if (!localRngInitialized) {
-        xmlMutexLock(&xmlRngMutex);
-        localRngState[0] = xoroshiro64ss(globalRngState);
-        localRngState[1] = xoroshiro64ss(globalRngState);
-        localRngInitialized = 1;
-        xmlMutexUnlock(&xmlRngMutex);
-    }
-
-    return(xoroshiro64ss(localRngState));
-#else
+xmlGlobalRandom(void) {
     unsigned ret;
 
     xmlMutexLock(&xmlRngMutex);
@@ -967,6 +961,14 @@ xmlRandom(void) {
     xmlMutexUnlock(&xmlRngMutex);
 
     return(ret);
+}
+
+unsigned
+xmlRandom(void) {
+#ifdef LIBXML_THREAD_ENABLED
+    return(xoroshiro64ss(xmlGetLocalRngState()));
+#else
+    return(xmlGlobalRandom());
 #endif
 }
 

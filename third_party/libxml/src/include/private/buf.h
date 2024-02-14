@@ -56,8 +56,6 @@ XML_HIDDEN xmlBufPtr
 xmlBufFromBuffer(xmlBufferPtr buffer);
 XML_HIDDEN xmlBufferPtr
 xmlBufBackToBuffer(xmlBufPtr buf);
-XML_HIDDEN int
-xmlBufMergeBuffer(xmlBufPtr buf, xmlBufferPtr buffer);
 
 XML_HIDDEN int
 xmlBufResetInput(xmlBufPtr buf, xmlParserInputPtr input);

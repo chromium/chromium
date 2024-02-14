@@ -126,7 +126,7 @@ static void debugmem_list_delete(MEMHDR *);
 
 void
 xmlMallocBreakpoint(void) {
-    xmlGenericError(xmlGenericErrorContext,
+    fprintf(stderr,
 	    "xmlMallocBreakpoint reached on block %d\n", xmlMemStopAtBlock);
 }
 
@@ -152,7 +152,7 @@ xmlMallocLoc(size_t size, const char * file, int line)
     TEST_POINT
 
     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlMallocLoc : Unsigned overflow\n");
 	return(NULL);
     }
@@ -160,7 +160,7 @@ xmlMallocLoc(size_t size, const char * file, int line)
     p = (MEMHDR *) malloc(RESERVE_SIZE+size);
 
     if (!p) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlMallocLoc : Out of free space\n");
 	return(NULL);
     }
@@ -184,7 +184,7 @@ xmlMallocLoc(size_t size, const char * file, int line)
     ret = HDR_2_CLIENT(p);
 
     if (xmlMemTraceBlockAt == ret) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 			"%p : Malloc(%lu) Ok\n", xmlMemTraceBlockAt,
 			(long unsigned)size);
 	xmlMallocBreakpoint();
@@ -217,7 +217,7 @@ xmlMallocAtomicLoc(size_t size, const char * file, int line)
     TEST_POINT
 
     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlMallocAtomicLoc : Unsigned overflow\n");
 	return(NULL);
     }
@@ -225,7 +225,7 @@ xmlMallocAtomicLoc(size_t size, const char * file, int line)
     p = (MEMHDR *) malloc(RESERVE_SIZE+size);
 
     if (!p) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlMallocAtomicLoc : Out of free space\n");
 	return(NULL);
     }
@@ -249,7 +249,7 @@ xmlMallocAtomicLoc(size_t size, const char * file, int line)
     ret = HDR_2_CLIENT(p);
 
     if (xmlMemTraceBlockAt == ret) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 			"%p : Malloc(%lu) Ok\n", xmlMemTraceBlockAt,
 			(long unsigned)size);
 	xmlMallocBreakpoint();
@@ -315,7 +315,7 @@ xmlReallocLoc(void *ptr,size_t size, const char * file, int line)
     xmlMutexUnlock(&xmlMemMutex);
 
     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlReallocLoc : Unsigned overflow\n");
 	return(NULL);
     }
@@ -327,7 +327,7 @@ xmlReallocLoc(void *ptr,size_t size, const char * file, int line)
     }
     p = tmp;
     if (xmlMemTraceBlockAt == ptr) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 			"%p : Realloced(%lu -> %lu) Ok\n",
 			xmlMemTraceBlockAt, (long unsigned)p->mh_size,
 			(long unsigned)size);
@@ -387,13 +387,13 @@ xmlMemFree(void *ptr)
 	return;
 
     if (ptr == (void *) -1) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 	    "trying to free pointer from freed area\n");
         goto error;
     }
 
     if (xmlMemTraceBlockAt == ptr) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 			"%p : Freed()\n", xmlMemTraceBlockAt);
 	xmlMallocBreakpoint();
     }
@@ -425,7 +425,7 @@ xmlMemFree(void *ptr)
     return;
 
 error:
-    xmlGenericError(xmlGenericErrorContext,
+    fprintf(stderr,
 	    "xmlMemFree(%p) error\n", ptr);
     xmlMallocBreakpoint();
     return;
@@ -453,7 +453,7 @@ xmlMemStrdupLoc(const char *str, const char *file, int line)
     TEST_POINT
 
     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 		"xmlMemStrdupLoc : Unsigned overflow\n");
 	return(NULL);
     }
@@ -486,7 +486,7 @@ xmlMemStrdupLoc(const char *str, const char *file, int line)
     TEST_POINT
 
     if (xmlMemTraceBlockAt == s) {
-	xmlGenericError(xmlGenericErrorContext,
+	fprintf(stderr,
 			"%p : Strdup() Ok\n", xmlMemTraceBlockAt);
 	xmlMallocBreakpoint();
     }
@@ -733,7 +733,7 @@ static void debugmem_list_delete(MEMHDR *p)
 
 static void debugmem_tag_error(void *p)
 {
-     xmlGenericError(xmlGenericErrorContext,
+     fprintf(stderr,
 	     "Memory tag error occurs :%p \n\t bye\n", p);
 #ifdef MEM_LIST
      if (stderr)

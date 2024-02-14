@@ -1,0 +1,63 @@
+This patch removes calls to getentropy() and BCryptGetRandom() because they
+aren't implemented or supported on certain platforms based on the trybot
+results I saw. I will try upstreaming a configure script flag soon to replace
+this patch file. This patch is safe because it reverts the random number
+generation behavior before a recent libxml upstream patch.
+
+diff --git a/dict.c b/dict.c
+index 5c9f3aa2..7a492895 100644
+--- a/dict.c
++++ b/dict.c
+@@ -24,14 +24,10 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+-#ifdef HAVE_SYS_RANDOM_H
+-#include <sys/random.h>
+-#endif
+ 
+ #ifdef _WIN32
+ #define WIN32_LEAN_AND_MEAN
+ #include <windows.h>
+-#include <bcrypt.h>
+ #endif
+ 
+ #include "private/dict.h"
+@@ -926,29 +922,6 @@ xmlInitRandom(void) {
+     xmlInitMutex(&xmlRngMutex);
+ 
+     {
+-#ifdef _WIN32
+-        NTSTATUS status;
+-
+-        status = BCryptGenRandom(NULL, (unsigned char *) globalRngState,
+-                                 sizeof(globalRngState),
+-                                 BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+-        if (!BCRYPT_SUCCESS(status)) {
+-            fprintf(stderr, "libxml2: BCryptGenRandom failed with "
+-                    "error code %lu\n", GetLastError());
+-            abort();
+-        }
+-#elif defined(HAVE_GETENTROPY)
+-        while (1) {
+-            if (getentropy(globalRngState, sizeof(globalRngState)) == 0)
+-                break;
+-
+-            if (errno != EINTR) {
+-                fprintf(stderr, "libxml2: getentropy failed with "
+-                        "error code %d\n", errno);
+-                abort();
+-            }
+-        }
+-#else
+         int var;
+ 
+         globalRngState[0] =
+@@ -957,7 +930,6 @@ xmlInitRandom(void) {
+         globalRngState[1] =
+                 HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
+                 HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);
+-#endif
+     }
+ }
+ 

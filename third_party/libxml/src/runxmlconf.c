@@ -163,7 +163,6 @@ initializeLibxml2(void) {
     */
     if (ctxtXPath->cache != NULL)
 	xmlXPathContextSetCache(ctxtXPath, 0, -1, 0);
-    xmlSetStructuredErrorFunc(NULL, testErrorHandler);
 }
 
 /************************************************************************
@@ -184,6 +183,7 @@ xmlconfTestInvalid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s invalid document turned not well-formed too\n",
@@ -214,6 +214,7 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse a valid document\n",
@@ -236,14 +237,17 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 
 static int
 xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     /*
      * In case of Namespace errors, libxml2 will still parse the document
      * but log a Namespace error.
      */
-    doc = xmlReadFile(filename, NULL, options);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse the XML\n",
 	         id, filename);
@@ -261,15 +265,19 @@ xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
 	}
 	xmlFreeDoc(doc);
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 
 static int
 xmlconfTestNotWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
-    doc = xmlReadFile(filename, NULL, options);
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc != NULL) {
         test_log("test %s : %s failed to detect not well formedness\n",
 	         id, filename);
@@ -277,6 +285,7 @@ xmlconfTestNotWF(const char *id, const char *filename, int options) {
 	xmlFreeDoc(doc);
 	ret = 0;
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 

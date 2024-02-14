@@ -1,5 +1,26 @@
 NEWS file for libxml2
 
+v2.13.0: not released yet
+
+### Major changes
+
+Most of the core code should now report malloc failures reliably.
+
+New API functions for error handling were added:
+
+- xmlCtxtSetErrorHandler
+- xmlXPathSetErrorHandler
+- xmlXIncludeSetErrorHandler
+
+This makes it possible to register per-context error handlers without
+resorting to global handlers.
+
+A few error messages were improved and consolidated. Please update
+downstream test suites accordingly.
+
+Support for HTTP POST was removed.
+
+
 v2.12.0: Nov 16 2023
 
 ### Major changes

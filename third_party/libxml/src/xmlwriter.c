@@ -15,6 +15,7 @@
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
+#include <libxml/parserInternals.h>
 #include <libxml/uri.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/SAX2.h>
@@ -4236,6 +4237,35 @@ xmlTextWriterFlush(xmlTextWriterPtr writer)
 }
 
 /**
+ * xmlTextWriterClose:
+ * @writer:  the xmlTextWriterPtr
+ *
+ * Flushes and closes the output buffer.
+ *
+ * Available since 2.13.0.
+ *
+ * Returns an xmlParserErrors code.
+ */
+int
+xmlTextWriterClose(xmlTextWriterPtr writer)
+{
+    int result;
+
+    if ((writer == NULL) || (writer->out == NULL))
+        return XML_ERR_ARGUMENT;
+
+    result = xmlOutputBufferClose(writer->out);
+    writer->out = NULL;
+
+    if (result >= 0)
+        result = XML_ERR_OK;
+    else
+        result = -result;
+
+    return result;
+}
+
+/**
  * misc
  */
 
@@ -4503,28 +4533,17 @@ xmlTextWriterStartDocumentCallback(void *ctx)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlDocPtr doc;
 
-    if (ctxt->html) {
 #ifdef LIBXML_HTML_ENABLED
+    if (ctxt->html) {
         if (ctxt->myDoc == NULL)
             ctxt->myDoc = htmlNewDocNoDtD(NULL, NULL);
         if (ctxt->myDoc == NULL) {
-            if ((ctxt->sax != NULL) && (ctxt->sax->error != NULL))
-                ctxt->sax->error(ctxt->userData,
-                                 "SAX.startDocument(): out of memory\n");
-            ctxt->errNo = XML_ERR_NO_MEMORY;
-            ctxt->instate = XML_PARSER_EOF;
-            ctxt->disableSAX = 1;
+            xmlCtxtErrMemory(ctxt);
             return;
         }
-#else
-        xmlWriterErrMsg(NULL, XML_ERR_INTERNAL_ERROR,
-                        "libxml2 built without HTML support\n");
-        ctxt->errNo = XML_ERR_INTERNAL_ERROR;
-        ctxt->instate = XML_PARSER_EOF;
-        ctxt->disableSAX = 1;
-        return;
+    } else
 #endif
-    } else {
+    {
         doc = ctxt->myDoc;
         if (doc == NULL)
             doc = ctxt->myDoc = xmlNewDoc(ctxt->version);
@@ -4537,12 +4556,7 @@ xmlTextWriterStartDocumentCallback(void *ctx)
                 doc->standalone = ctxt->standalone;
             }
         } else {
-            if ((ctxt->sax != NULL) && (ctxt->sax->error != NULL))
-                ctxt->sax->error(ctxt->userData,
-                                 "SAX.startDocument(): out of memory\n");
-            ctxt->errNo = XML_ERR_NO_MEMORY;
-            ctxt->instate = XML_PARSER_EOF;
-            ctxt->disableSAX = 1;
+            xmlCtxtErrMemory(ctxt);
             return;
         }
     }

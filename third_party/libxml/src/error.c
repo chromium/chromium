@@ -11,69 +11,169 @@
 
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <libxml/parser.h>
 #include <libxml/xmlerror.h>
 #include <libxml/xmlmemory.h>
 
 #include "private/error.h"
+#include "private/string.h"
 
-#ifndef va_copy
-  #ifdef __va_copy
-    #define va_copy(dest, src) __va_copy(dest, src)
-  #else
-    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
-  #endif
-#endif
+/************************************************************************
+ *									*
+ *			Error struct					*
+ *									*
+ ************************************************************************/
 
-#define XML_MAX_ERRORS 100
+static int
+xmlVSetError(xmlError *err,
+             void *ctxt, xmlNodePtr node,
+             int domain, int code, xmlErrorLevel level,
+             const char *file, int line,
+             const char *str1, const char *str2, const char *str3,
+             int int1, int col,
+             const char *fmt, va_list ap)
+{
+    char *message = NULL;
+    char *fileCopy = NULL;
+    char *str1Copy = NULL;
+    char *str2Copy = NULL;
+    char *str3Copy = NULL;
 
-#define XML_GET_VAR_STR(msg, str) \
-    do { \
-        va_list ap; \
-        va_start(ap, msg); \
-        str = xmlVsnprintf(msg, ap); \
-        va_end(ap); \
-    } while (0);
-
-static char *
-xmlVsnprintf(const char *msg, va_list ap) {
-    int size, prev_size = -1;
-    int chars;
-    char *larger;
-    char *str;
-
-    str = (char *) xmlMalloc(150);
-    if (str == NULL)
-        return(NULL);
-
-    size = 150;
-
-    while (size < 64000) {
-        va_list copy;
-
-        va_copy(copy, ap);
-        chars = vsnprintf(str, size, msg, copy);
-        va_end(copy);
-        if ((chars > -1) && (chars < size)) {
-            if (prev_size == chars) {
-                break;
-            } else {
-                prev_size = chars;
-            }
-        }
-        if (chars > -1)
-            size += chars + 1;
-        else
-            size += 100;
-        larger = (char *) xmlRealloc(str, size);
-        if (larger == NULL) {
-            xmlFree(str);
-            return(NULL);
-        }
-        str = larger;
+    if (code == XML_ERR_OK) {
+        xmlResetError(err);
+        return(0);
     }
 
-    return(str);
+    /*
+     * Formatting the message
+     */
+    if (fmt == NULL) {
+        message = xmlMemStrdup("No error message provided");
+    } else {
+        xmlChar *tmp;
+        int res;
+
+        res = xmlStrVASPrintf(&tmp, MAX_ERR_MSG_SIZE, fmt, ap);
+        if (res < 0)
+            goto err_memory;
+        message = (char *) tmp;
+    }
+    if (message == NULL)
+        goto err_memory;
+
+    if (file != NULL) {
+        fileCopy = (char *) xmlStrdup((const xmlChar *) file);
+        if (fileCopy == NULL)
+            goto err_memory;
+    }
+    if (str1 != NULL) {
+        str1Copy = (char *) xmlStrdup((const xmlChar *) str1);
+        if (str1Copy == NULL)
+            goto err_memory;
+    }
+    if (str2 != NULL) {
+        str2Copy = (char *) xmlStrdup((const xmlChar *) str2);
+        if (str2Copy == NULL)
+            goto err_memory;
+    }
+    if (str3 != NULL) {
+        str3Copy = (char *) xmlStrdup((const xmlChar *) str3);
+        if (str3Copy == NULL)
+            goto err_memory;
+    }
+
+    xmlResetError(err);
+
+    err->domain = domain;
+    err->code = code;
+    err->message = message;
+    err->level = level;
+    err->file = fileCopy;
+    err->line = line;
+    err->str1 = str1Copy;
+    err->str2 = str2Copy;
+    err->str3 = str3Copy;
+    err->int1 = int1;
+    err->int2 = col;
+    err->node = node;
+    err->ctxt = ctxt;
+
+    return(0);
+
+err_memory:
+    xmlFree(message);
+    xmlFree(fileCopy);
+    xmlFree(str1Copy);
+    xmlFree(str2Copy);
+    xmlFree(str3Copy);
+    return(-1);
+}
+
+static int LIBXML_ATTR_FORMAT(14,15)
+xmlSetError(xmlError *err,
+            void *ctxt, xmlNodePtr node,
+            int domain, int code, xmlErrorLevel level,
+            const char *file, int line,
+            const char *str1, const char *str2, const char *str3,
+            int int1, int col,
+            const char *fmt, ...)
+{
+    va_list ap;
+    int res;
+
+    va_start(ap, fmt);
+    res = xmlVSetError(err, ctxt, node, domain, code, level, file, line,
+                       str1, str2, str3, int1, col, fmt, ap);
+    va_end(ap);
+
+    return(res);
+}
+
+static int
+xmlVUpdateError(xmlError *err,
+                void *ctxt, xmlNodePtr node,
+                int domain, int code, xmlErrorLevel level,
+                const char *file, int line,
+                const char *str1, const char *str2, const char *str3,
+                int int1, int col,
+                const char *fmt, va_list ap)
+{
+    int res;
+
+    /*
+     * Find first element parent.
+     */
+    if (node != NULL) {
+        int i;
+
+        for (i = 0; i < 10; i++) {
+            if ((node->type == XML_ELEMENT_NODE) ||
+                (node->parent == NULL))
+                break;
+            node = node->parent;
+        }
+    }
+
+    /*
+     * Get file and line from node.
+     */
+    if (node != NULL) {
+        if ((file == NULL) && (node->doc != NULL))
+            file = (const char *) node->doc->URL;
+
+        if (line == 0) {
+            if (node->type == XML_ELEMENT_NODE)
+                line = node->line;
+            if ((line == 0) || (line == 65535))
+                line = xmlGetLineNo(node);
+        }
+    }
+
+    res = xmlVSetError(err, ctxt, node, domain, code, level, file, line,
+                       str1, str2, str3, int1, col, fmt, ap);
+
+    return(res);
 }
 
 /************************************************************************
@@ -125,14 +225,21 @@ initGenericErrorDefaultFunc(xmlGenericErrorFunc * handler)
  * @ctx:  the new error handling context
  * @handler:  the new handler function
  *
- * Function to reset the handler and the error context for out of
- * context error messages.
- * This simply means that @handler will be called for subsequent
- * error messages while not parsing nor validating. And @ctx will
- * be passed as first argument to @handler
- * One can simply force messages to be emitted to another FILE * than
- * stderr by setting @ctx to this file handle and @handler to NULL.
- * For multi-threaded applications, this must be set separately for each thread.
+ * DEPRECATED: See xmlSetStructuredErrorFunc for alternatives.
+ *
+ * Set the global "generic" handler and context for error messages.
+ * The generic error handler will only receive fragments of error
+ * messages which should be concatenated or printed to a stream.
+ *
+ * If handler is NULL, use the built-in default handler which prints
+ * to stderr.
+ *
+ * Since this is a global setting, it's a good idea to reset the
+ * error handler to its default value after collecting the errors
+ * you're interested in.
+ *
+ * For multi-threaded applications, this must be set separately for
+ * each thread.
  */
 void
 xmlSetGenericErrorFunc(void *ctx, xmlGenericErrorFunc handler) {
@@ -148,12 +255,30 @@ xmlSetGenericErrorFunc(void *ctx, xmlGenericErrorFunc handler) {
  * @ctx:  the new error handling context
  * @handler:  the new handler function
  *
- * Function to reset the handler and the error context for out of
- * context structured error messages.
- * This simply means that @handler will be called for subsequent
- * error messages while not parsing nor validating. And @ctx will
- * be passed as first argument to @handler
- * For multi-threaded applications, this must be set separately for each thread.
+ * DEPRECATED: Use a per-context error handler.
+ *
+ * It's recommended to use the per-context error handlers instead:
+ *
+ * - xmlCtxtSetErrorHandler (since 2.13.0)
+ * - xmlTextReaderSetStructuredErrorHandler
+ * - xmlXPathSetErrorHandler (since 2.13.0)
+ * - xmlXIncludeSetErrorHandler (since 2.13.0)
+ * - xmlSchemaSetParserStructuredErrors
+ * - xmlSchemaSetValidStructuredErrors
+ * - xmlRelaxNGSetParserStructuredErrors
+ * - xmlRelaxNGSetValidStructuredErrors
+ *
+ * Set the global "structured" handler and context for error messages.
+ * If handler is NULL, the error handler is deactivated.
+ *
+ * The structured error handler takes precedence over "generic"
+ * handlers, even per-context generic handlers.
+ *
+ * Since this is a global setting, it's a good idea to deactivate the
+ * error handler after collecting the errors you're interested in.
+ *
+ * For multi-threaded applications, this must be set separately for
+ * each thread.
  */
 void
 xmlSetStructuredErrorFunc(void *ctx, xmlStructuredErrorFunc handler) {
@@ -170,6 +295,8 @@ xmlSetStructuredErrorFunc(void *ctx, xmlStructuredErrorFunc handler) {
 /**
  * xmlParserPrintFileInfo:
  * @input:  an xmlParserInputPtr input
+ *
+ * DEPRECATED: Use xmlFormatError.
  *
  * Displays the associated file and line information for the current input
  */
@@ -262,6 +389,8 @@ xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
  * xmlParserPrintFileContext:
  * @input:  an xmlParserInputPtr input
  *
+ * DEPRECATED: Use xmlFormatError.
+ *
  * Displays current context within the input content for error tracking
  */
 void
@@ -271,35 +400,35 @@ xmlParserPrintFileContext(xmlParserInputPtr input) {
 }
 
 /**
- * xmlReportError:
- * @err: the error
- * @ctx: the parser context or NULL
- * @str: the formatted error message
+ * xmlFormatError:
+ * @err:  the error
+ * @channel:  callback
+ * @data:  user data for callback
  *
- * Report an error with its context, replace the 4 old error/warning
- * routines.
+ * Report a formatted error to a printf-like callback.
+ *
+ * This can result in a verbose multi-line report including additional
+ * information from the parser context.
  */
-static void
-xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
-               xmlGenericErrorFunc channel, void *data)
+void
+xmlFormatError(const xmlError *err, xmlGenericErrorFunc channel, void *data)
 {
-    char *file = NULL;
-    int line = 0;
-    int code = -1;
+    const char *message;
+    const char *file;
+    int line;
+    int code;
     int domain;
     const xmlChar *name = NULL;
     xmlNodePtr node;
     xmlErrorLevel level;
+    xmlParserCtxtPtr ctxt = NULL;
     xmlParserInputPtr input = NULL;
     xmlParserInputPtr cur = NULL;
 
-    if (err == NULL)
+    if ((err == NULL) || (channel == NULL))
         return;
 
-    if (channel == NULL) {
-	channel = xmlGenericError;
-	data = xmlGenericErrorContext;
-    }
+    message = err->message;
     file = err->file;
     line = err->line;
     code = err->code;
@@ -310,7 +439,14 @@ xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
     if (code == XML_ERR_OK)
         return;
 
-    if ((node != NULL) && (node->type == XML_ELEMENT_NODE))
+    if ((domain == XML_FROM_PARSER) || (domain == XML_FROM_HTML) ||
+        (domain == XML_FROM_DTD) || (domain == XML_FROM_NAMESPACE) ||
+	(domain == XML_FROM_IO) || (domain == XML_FROM_VALID)) {
+	ctxt = err->ctxt;
+    }
+
+    if ((node != NULL) && (node->type == XML_ELEMENT_NODE) &&
+        (domain != XML_FROM_SCHEMASV))
         name = node->name;
 
     /*
@@ -427,19 +563,35 @@ xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
             channel(data, "error : ");
             break;
     }
-    if (str != NULL) {
+    if (message != NULL) {
         int len;
-	len = xmlStrlen((const xmlChar *)str);
-	if ((len > 0) && (str[len - 1] != '\n'))
-	    channel(data, "%s\n", str);
+	len = xmlStrlen((const xmlChar *) message);
+	if ((len > 0) && (message[len - 1] != '\n'))
+	    channel(data, "%s\n", message);
 	else
-	    channel(data, "%s", str);
+	    channel(data, "%s", message);
     } else {
-        channel(data, "%s\n", "out of memory error");
+        channel(data, "%s\n", "No error message provided");
     }
 
     if (ctxt != NULL) {
+        if ((input != NULL) &&
+            ((input->buf == NULL) || (input->buf->encoder == NULL)) &&
+            (code == XML_ERR_INVALID_ENCODING) &&
+            (input->cur < input->end)) {
+            int i;
+
+            channel(data, "Bytes:");
+            for (i = 0; i < 4; i++) {
+                if (input->cur + i >= input->end)
+                    break;
+                channel(data, " 0x%02X", input->cur[i]);
+            }
+            channel(data, "\n");
+        }
+
         xmlParserPrintFileContextInternal(input, channel, data);
+
         if (cur != NULL) {
             if (cur->filename)
                 channel(data, "%s:%d: \n", cur->filename, cur->line);
@@ -460,6 +612,47 @@ xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
 	buf[i++] = '^';
 	buf[i] = 0;
 	channel(data, "%s\n", buf);
+    }
+}
+
+/**
+ * xmlRaiseMemoryError:
+ * @schannel: the structured callback channel
+ * @channel: the old callback channel
+ * @data: the callback data
+ * @domain: the domain for the error
+ * @error: optional error struct to be filled
+ *
+ * Update the global and optional error structure, then forward the
+ * error to an error handler.
+ *
+ * This function doesn't make memory allocations which are likely
+ * to fail after an OOM error.
+ */
+void
+xmlRaiseMemoryError(xmlStructuredErrorFunc schannel, xmlGenericErrorFunc channel,
+                    void *data, int domain, xmlError *error)
+{
+    xmlError *lastError = &xmlLastError;
+
+    xmlResetLastError();
+    lastError->domain = domain;
+    lastError->code = XML_ERR_NO_MEMORY;
+    lastError->level = XML_ERR_FATAL;
+
+    if (error != NULL) {
+        xmlResetError(error);
+        error->domain = domain;
+        error->code = XML_ERR_NO_MEMORY;
+        error->level = XML_ERR_FATAL;
+    }
+
+    if (schannel != NULL) {
+        schannel(data, lastError);
+    } else if (xmlStructuredError != NULL) {
+        xmlStructuredError(xmlStructuredErrorContext, lastError);
+    } else if (channel != NULL) {
+        channel(data, "libxml2: out of memory\n");
     }
 }
 
@@ -492,233 +685,58 @@ xmlReportError(xmlErrorPtr err, xmlParserCtxtPtr ctxt, const char *str,
 int
 xmlVRaiseError(xmlStructuredErrorFunc schannel,
                xmlGenericErrorFunc channel, void *data, void *ctx,
-               void *nod, int domain, int code, xmlErrorLevel level,
+               xmlNode *node, int domain, int code, xmlErrorLevel level,
                const char *file, int line, const char *str1,
                const char *str2, const char *str3, int int1, int col,
                const char *msg, va_list ap)
 {
     xmlParserCtxtPtr ctxt = NULL;
-    xmlNodePtr node = (xmlNodePtr) nod;
-    char *str = NULL;
-    xmlParserInputPtr input = NULL;
-
     /* xmlLastError is a macro retrieving the per-thread global. */
     xmlErrorPtr lastError = &xmlLastError;
     xmlErrorPtr to = lastError;
-    xmlNodePtr baseptr = NULL;
 
     if (code == XML_ERR_OK)
         return(0);
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+    if ((code == XML_ERR_INTERNAL_ERROR) ||
+        (code == XML_ERR_ARGUMENT)) {
+        fprintf(stderr, "Unexpected error: %d\n", code);
+        abort();
+    }
+#endif
     if ((xmlGetWarningsDefaultValue == 0) && (level == XML_ERR_WARNING))
         return(0);
+
     if ((domain == XML_FROM_PARSER) || (domain == XML_FROM_HTML) ||
         (domain == XML_FROM_DTD) || (domain == XML_FROM_NAMESPACE) ||
 	(domain == XML_FROM_IO) || (domain == XML_FROM_VALID)) {
 	ctxt = (xmlParserCtxtPtr) ctx;
 
-        if (ctxt != NULL) {
-            if (level == XML_ERR_WARNING) {
-                if (ctxt->nbWarnings >= XML_MAX_ERRORS)
-                    return(0);
-                ctxt->nbWarnings += 1;
-            } else {
-                if (ctxt->nbErrors >= XML_MAX_ERRORS)
-                    return(0);
-                ctxt->nbErrors += 1;
-            }
-
-            if ((schannel == NULL) && (ctxt->sax != NULL) &&
-                (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
-                (ctxt->sax->serror != NULL)) {
-                schannel = ctxt->sax->serror;
-                data = ctxt->userData;
-            }
-        }
-    }
-    /*
-     * Check if structured error handler set
-     */
-    if (schannel == NULL) {
-	schannel = xmlStructuredError;
-	/*
-	 * if user has defined handler, change data ptr to user's choice
-	 */
-	if (schannel != NULL)
-	    data = xmlStructuredErrorContext;
-    }
-    /*
-     * Formatting the message
-     */
-    if (msg == NULL) {
-        str = (char *) xmlStrdup(BAD_CAST "No error message provided");
-    } else {
-        str = xmlVsnprintf(msg, ap);
-    }
-    if (str == NULL)
-        goto err_memory;
-
-    /*
-     * specific processing if a parser context is provided
-     */
-    if ((ctxt != NULL) && (ctxt->input != NULL)) {
-        if (file == NULL) {
-            input = ctxt->input;
-            if ((input->filename == NULL) && (ctxt->inputNr > 1)) {
-                input = ctxt->inputTab[ctxt->inputNr - 2];
-            }
-            file = input->filename;
-            line = input->line;
-            col = input->col;
-        }
-        to = &ctxt->lastError;
-    } else if ((node != NULL) && (file == NULL)) {
-	int i;
-
-	if ((node->doc != NULL) && (node->doc->URL != NULL)) {
-	    baseptr = node;
-/*	    file = (const char *) node->doc->URL; */
-	}
-	for (i = 0;
-	     ((i < 10) && (node != NULL) && (node->type != XML_ELEMENT_NODE));
-	     i++)
-	     node = node->parent;
-        if ((baseptr == NULL) && (node != NULL) &&
-	    (node->doc != NULL) && (node->doc->URL != NULL))
-	    baseptr = node;
-
-	if ((node != NULL) && (node->type == XML_ELEMENT_NODE))
-	    line = node->line;
-	if ((line == 0) || (line == 65535))
-	    line = xmlGetLineNo(node);
+        if (ctxt != NULL)
+            to = &ctxt->lastError;
     }
 
-    /*
-     * Save the information about the error
-     */
-    xmlResetError(to);
-    to->domain = domain;
-    to->code = code;
-    to->message = str;
-    to->level = level;
-    if (file != NULL) {
-        to->file = (char *) xmlStrdup((const xmlChar *) file);
-        if (to->file == NULL)
-            goto err_memory;
-    }
-    else if (baseptr != NULL) {
-#ifdef LIBXML_XINCLUDE_ENABLED
-	/*
-	 * We check if the error is within an XInclude section and,
-	 * if so, attempt to print out the href of the XInclude instead
-	 * of the usual "base" (doc->URL) for the node (bug 152623).
-	 */
-        xmlNodePtr prev = baseptr;
-        xmlChar *href = NULL;
-	int inclcount = 0;
-	while (prev != NULL) {
-	    if (prev->prev == NULL)
-	        prev = prev->parent;
-	    else {
-	        prev = prev->prev;
-		if (prev->type == XML_XINCLUDE_START) {
-		    if (inclcount > 0) {
-                        --inclcount;
-                    } else {
-                        if (xmlNodeGetAttrValue(prev, BAD_CAST "href", NULL,
-                                                &href) < 0)
-                            goto err_memory;
-                        if (href != NULL)
-		            break;
-                    }
-		} else if (prev->type == XML_XINCLUDE_END)
-		    inclcount++;
-	    }
-	}
-        if (href != NULL) {
-            to->file = (char *) href;
-        } else
-#endif
-        if (baseptr->doc->URL != NULL) {
-	    to->file = (char *) xmlStrdup(baseptr->doc->URL);
-            if (to->file == NULL)
-                goto err_memory;
-        }
-    }
-    to->line = line;
-    if (str1 != NULL) {
-        to->str1 = (char *) xmlStrdup((const xmlChar *) str1);
-        if (to->str1 == NULL)
-            goto err_memory;
-    }
-    if (str2 != NULL) {
-        to->str2 = (char *) xmlStrdup((const xmlChar *) str2);
-        if (to->str2 == NULL)
-            goto err_memory;
-    }
-    if (str3 != NULL) {
-        to->str3 = (char *) xmlStrdup((const xmlChar *) str3);
-        if (to->str3 == NULL)
-            goto err_memory;
-    }
-    to->int1 = int1;
-    to->int2 = col;
-    to->node = node;
-    to->ctxt = ctx;
+    if (xmlVUpdateError(to, ctxt, node, domain, code, level, file, line,
+                        str1, str2, str3, int1, col, msg, ap))
+        return(-1);
 
     if (to != lastError) {
         if (xmlCopyError(to, lastError) < 0)
-            goto err_memory;
+            return(-1);
     }
 
     if (schannel != NULL) {
 	schannel(data, to);
-	return(0);
-    }
-
-    /*
-     * Find the callback channel if channel param is NULL
-     */
-    if ((ctxt != NULL) && (channel == NULL) &&
-        (xmlStructuredError == NULL) && (ctxt->sax != NULL)) {
-        if (level == XML_ERR_WARNING)
-	    channel = ctxt->sax->warning;
+    } else if (xmlStructuredError != NULL) {
+        xmlStructuredError(xmlStructuredErrorContext, to);
+    } else if (channel != NULL) {
+        if ((ctxt == NULL) && (channel == xmlGenericErrorDefaultFunc))
+            xmlFormatError(to, xmlGenericError, xmlGenericErrorContext);
         else
-	    channel = ctxt->sax->error;
-	data = ctxt->userData;
-    } else if (channel == NULL) {
-	channel = xmlGenericError;
-	data = xmlGenericErrorContext;
+	    channel(data, "%s", to->message);
     }
-    if (channel == NULL)
-        return(0);
-
-    if ((channel == xmlParserError) ||
-        (channel == xmlParserWarning) ||
-	(channel == xmlParserValidityError) ||
-	(channel == xmlParserValidityWarning))
-	xmlReportError(to, ctxt, str, NULL, NULL);
-    else if (((void(*)(void)) channel == (void(*)(void)) fprintf) ||
-             (channel == xmlGenericErrorDefaultFunc))
-	xmlReportError(to, ctxt, str, channel, data);
-    else
-	channel(data, "%s", str);
 
     return(0);
-
-err_memory:
-    xmlResetError(to);
-    to->domain = domain;
-    to->code = XML_ERR_NO_MEMORY;
-    to->level = XML_ERR_FATAL;
-
-    if (to != lastError) {
-        xmlResetError(lastError);
-        lastError->domain = domain;
-        lastError->code = XML_ERR_NO_MEMORY;
-        lastError->level = XML_ERR_FATAL;
-    }
-
-    return(-1);
 }
 
 /**
@@ -750,7 +768,7 @@ err_memory:
 int
 __xmlRaiseError(xmlStructuredErrorFunc schannel,
                 xmlGenericErrorFunc channel, void *data, void *ctx,
-                void *nod, int domain, int code, xmlErrorLevel level,
+                xmlNode *node, int domain, int code, xmlErrorLevel level,
                 const char *file, int line, const char *str1,
                 const char *str2, const char *str3, int int1, int col,
                 const char *msg, ...)
@@ -759,7 +777,7 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
     int res;
 
     va_start(ap, msg);
-    res = xmlVRaiseError(schannel, channel, data, ctx, nod, domain, code,
+    res = xmlVRaiseError(schannel, channel, data, ctx, node, domain, code,
                          level, file, line, str1, str2, str3, int1, col, msg,
                          ap);
     va_end(ap);
@@ -767,36 +785,6 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
     return(res);
 }
 
-/**
- * __xmlSimpleError:
- * @domain: where the error comes from
- * @code: the error code
- * @node: the context node
- * @extra:  extra information
- *
- * Handle an out of memory condition
- */
-void
-__xmlSimpleError(int domain, int code, xmlNodePtr node,
-                 const char *msg, const char *extra)
-{
-
-    if (code == XML_ERR_NO_MEMORY) {
-	if (extra)
-	    __xmlRaiseError(NULL, NULL, NULL, NULL, node, domain,
-			    XML_ERR_NO_MEMORY, XML_ERR_FATAL, NULL, 0, extra,
-			    NULL, NULL, 0, 0,
-			    "Memory allocation failed : %s\n", extra);
-	else
-	    __xmlRaiseError(NULL, NULL, NULL, NULL, node, domain,
-			    XML_ERR_NO_MEMORY, XML_ERR_FATAL, NULL, 0, NULL,
-			    NULL, NULL, 0, 0, "Memory allocation failed\n");
-    } else {
-	__xmlRaiseError(NULL, NULL, NULL, NULL, node, domain,
-			code, XML_ERR_ERROR, NULL, 0, extra,
-			NULL, NULL, 0, 0, msg, extra);
-    }
-}
 /**
  * xmlParserError:
  * @ctx:  an XML parser context
@@ -807,37 +795,11 @@ __xmlSimpleError(int domain, int code, xmlNodePtr node,
  * extra parameters.
  */
 void
-xmlParserError(void *ctx, const char *msg, ...)
+xmlParserError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlParserInputPtr input = NULL;
-    xmlParserInputPtr cur = NULL;
-    char * str;
+    xmlParserCtxtPtr ctxt = ctx;
 
-    if (ctxt != NULL) {
-	input = ctxt->input;
-	if ((input != NULL) && (input->filename == NULL) &&
-	    (ctxt->inputNr > 1)) {
-	    cur = input;
-	    input = ctxt->inputTab[ctxt->inputNr - 2];
-	}
-	xmlParserPrintFileInfo(input);
-    }
-
-    xmlGenericError(xmlGenericErrorContext, "error: ");
-    XML_GET_VAR_STR(msg, str);
-    xmlGenericError(xmlGenericErrorContext, "%s", str);
-    if (str != NULL)
-	xmlFree(str);
-
-    if (ctxt != NULL) {
-	xmlParserPrintFileContext(input);
-	if (cur != NULL) {
-	    xmlParserPrintFileInfo(cur);
-	    xmlGenericError(xmlGenericErrorContext, "\n");
-	    xmlParserPrintFileContext(cur);
-	}
-    }
+    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
 }
 
 /**
@@ -850,44 +812,12 @@ xmlParserError(void *ctx, const char *msg, ...)
  * extra parameters.
  */
 void
-xmlParserWarning(void *ctx, const char *msg, ...)
+xmlParserWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlParserInputPtr input = NULL;
-    xmlParserInputPtr cur = NULL;
-    char * str;
+    xmlParserCtxtPtr ctxt = ctx;
 
-    if (ctxt != NULL) {
-	input = ctxt->input;
-	if ((input != NULL) && (input->filename == NULL) &&
-	    (ctxt->inputNr > 1)) {
-	    cur = input;
-	    input = ctxt->inputTab[ctxt->inputNr - 2];
-	}
-	xmlParserPrintFileInfo(input);
-    }
-
-    xmlGenericError(xmlGenericErrorContext, "warning: ");
-    XML_GET_VAR_STR(msg, str);
-    xmlGenericError(xmlGenericErrorContext, "%s", str);
-    if (str != NULL)
-	xmlFree(str);
-
-    if (ctxt != NULL) {
-	xmlParserPrintFileContext(input);
-	if (cur != NULL) {
-	    xmlParserPrintFileInfo(cur);
-	    xmlGenericError(xmlGenericErrorContext, "\n");
-	    xmlParserPrintFileContext(cur);
-	}
-    }
+    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
 }
-
-/************************************************************************
- *									*
- *			Handling of validation errors			*
- *									*
- ************************************************************************/
 
 /**
  * xmlParserValidityError:
@@ -899,38 +829,11 @@ xmlParserWarning(void *ctx, const char *msg, ...)
  * line, position and extra parameters.
  */
 void
-xmlParserValidityError(void *ctx, const char *msg, ...)
+xmlParserValidityError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlParserInputPtr input = NULL;
-    char * str;
-    int len = xmlStrlen((const xmlChar *) msg);
-    static int had_info = 0;
+    xmlParserCtxtPtr ctxt = ctx;
 
-    if ((len > 1) && (msg[len - 2] != ':')) {
-	if (ctxt != NULL) {
-	    input = ctxt->input;
-	    if ((input->filename == NULL) && (ctxt->inputNr > 1))
-		input = ctxt->inputTab[ctxt->inputNr - 2];
-
-	    if (had_info == 0) {
-		xmlParserPrintFileInfo(input);
-	    }
-	}
-	xmlGenericError(xmlGenericErrorContext, "validity error: ");
-	had_info = 0;
-    } else {
-	had_info = 1;
-    }
-
-    XML_GET_VAR_STR(msg, str);
-    xmlGenericError(xmlGenericErrorContext, "%s", str);
-    if (str != NULL)
-	xmlFree(str);
-
-    if ((ctxt != NULL) && (input != NULL)) {
-	xmlParserPrintFileContext(input);
-    }
+    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
 }
 
 /**
@@ -943,30 +846,11 @@ xmlParserValidityError(void *ctx, const char *msg, ...)
  * position and extra parameters.
  */
 void
-xmlParserValidityWarning(void *ctx, const char *msg, ...)
+xmlParserValidityWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlParserInputPtr input = NULL;
-    char * str;
-    int len = xmlStrlen((const xmlChar *) msg);
+    xmlParserCtxtPtr ctxt = ctx;
 
-    if ((ctxt != NULL) && (len != 0) && (msg[len - 1] != ':')) {
-	input = ctxt->input;
-	if ((input->filename == NULL) && (ctxt->inputNr > 1))
-	    input = ctxt->inputTab[ctxt->inputNr - 2];
-
-	xmlParserPrintFileInfo(input);
-    }
-
-    xmlGenericError(xmlGenericErrorContext, "validity warning: ");
-    XML_GET_VAR_STR(msg, str);
-    xmlGenericError(xmlGenericErrorContext, "%s", str);
-    if (str != NULL)
-	xmlFree(str);
-
-    if (ctxt != NULL) {
-	xmlParserPrintFileContext(input);
-    }
+    xmlFormatError(&ctxt->lastError, xmlGenericError, xmlGenericErrorContext);
 }
 
 
@@ -1084,75 +968,349 @@ xmlCtxtResetLastError(void *ctx)
  */
 int
 xmlCopyError(const xmlError *from, xmlErrorPtr to) {
-    char *message = NULL;
-    char *file = NULL;
-    char *str1 = NULL;
-    char *str2 = NULL;
-    char *str3 = NULL;
+    const char *fmt = NULL;
 
     if ((from == NULL) || (to == NULL))
         return(-1);
 
-    if (from->message != NULL) {
-        message = (char *) xmlStrdup((xmlChar *) from->message);
-        if (message == NULL)
-            goto err_memory;
-    }
-    if (from->file != NULL) {
-        file = (char *) xmlStrdup ((xmlChar *) from->file);
-        if (file == NULL)
-            goto err_memory;
-    }
-    if (from->str1 != NULL) {
-        str1 = (char *) xmlStrdup ((xmlChar *) from->str1);
-        if (str1 == NULL)
-            goto err_memory;
-    }
-    if (from->str2 != NULL) {
-        str2 = (char *) xmlStrdup ((xmlChar *) from->str2);
-        if (str2 == NULL)
-            goto err_memory;
-    }
-    if (from->str3 != NULL) {
-        str3 = (char *) xmlStrdup ((xmlChar *) from->str3);
-        if (str3 == NULL)
-            goto err_memory;
-    }
+    if (from->message != NULL)
+        fmt = "%s";
 
-    if (to->message != NULL)
-        xmlFree(to->message);
-    if (to->file != NULL)
-        xmlFree(to->file);
-    if (to->str1 != NULL)
-        xmlFree(to->str1);
-    if (to->str2 != NULL)
-        xmlFree(to->str2);
-    if (to->str3 != NULL)
-        xmlFree(to->str3);
-    to->domain = from->domain;
-    to->code = from->code;
-    to->level = from->level;
-    to->line = from->line;
-    to->node = from->node;
-    to->int1 = from->int1;
-    to->int2 = from->int2;
-    to->node = from->node;
-    to->ctxt = from->ctxt;
-    to->message = message;
-    to->file = file;
-    to->str1 = str1;
-    to->str2 = str2;
-    to->str3 = str3;
-
-    return 0;
-
-err_memory:
-    xmlFree(message);
-    xmlFree(file);
-    xmlFree(str1);
-    xmlFree(str2);
-    xmlFree(str3);
-
-    return -1;
+    return(xmlSetError(to, from->ctxt, from->node,
+                       from->domain, from->code, from->level,
+                       from->file, from->line,
+                       from->str1, from->str2, from->str3,
+                       from->int1, from->int2,
+                       fmt, from->message));
 }
 
+/**
+ * xmlErrString:
+ * @code:  an xmlParserErrors code
+ *
+ * Returns an error message for a code.
+ */
+const char *
+xmlErrString(xmlParserErrors code) {
+    const char *errmsg;
+
+    switch (code) {
+        case XML_ERR_INVALID_HEX_CHARREF:
+            errmsg = "CharRef: invalid hexadecimal value";
+            break;
+        case XML_ERR_INVALID_DEC_CHARREF:
+            errmsg = "CharRef: invalid decimal value";
+            break;
+        case XML_ERR_INVALID_CHARREF:
+            errmsg = "CharRef: invalid value";
+            break;
+        case XML_ERR_INTERNAL_ERROR:
+            errmsg = "internal error";
+            break;
+        case XML_ERR_PEREF_AT_EOF:
+            errmsg = "PEReference at end of document";
+            break;
+        case XML_ERR_PEREF_IN_PROLOG:
+            errmsg = "PEReference in prolog";
+            break;
+        case XML_ERR_PEREF_IN_EPILOG:
+            errmsg = "PEReference in epilog";
+            break;
+        case XML_ERR_PEREF_NO_NAME:
+            errmsg = "PEReference: no name";
+            break;
+        case XML_ERR_PEREF_SEMICOL_MISSING:
+            errmsg = "PEReference: expecting ';'";
+            break;
+        case XML_ERR_ENTITY_LOOP:
+            errmsg = "Detected an entity reference loop";
+            break;
+        case XML_ERR_ENTITY_NOT_STARTED:
+            errmsg = "EntityValue: \" or ' expected";
+            break;
+        case XML_ERR_ENTITY_PE_INTERNAL:
+            errmsg = "PEReferences forbidden in internal subset";
+            break;
+        case XML_ERR_ENTITY_NOT_FINISHED:
+            errmsg = "EntityValue: \" or ' expected";
+            break;
+        case XML_ERR_ATTRIBUTE_NOT_STARTED:
+            errmsg = "AttValue: \" or ' expected";
+            break;
+        case XML_ERR_LT_IN_ATTRIBUTE:
+            errmsg = "Unescaped '<' not allowed in attributes values";
+            break;
+        case XML_ERR_LITERAL_NOT_STARTED:
+            errmsg = "SystemLiteral \" or ' expected";
+            break;
+        case XML_ERR_LITERAL_NOT_FINISHED:
+            errmsg = "Unfinished System or Public ID \" or ' expected";
+            break;
+        case XML_ERR_MISPLACED_CDATA_END:
+            errmsg = "Sequence ']]>' not allowed in content";
+            break;
+        case XML_ERR_URI_REQUIRED:
+            errmsg = "SYSTEM or PUBLIC, the URI is missing";
+            break;
+        case XML_ERR_PUBID_REQUIRED:
+            errmsg = "PUBLIC, the Public Identifier is missing";
+            break;
+        case XML_ERR_HYPHEN_IN_COMMENT:
+            errmsg = "Comment must not contain '--' (double-hyphen)";
+            break;
+        case XML_ERR_PI_NOT_STARTED:
+            errmsg = "xmlParsePI : no target name";
+            break;
+        case XML_ERR_RESERVED_XML_NAME:
+            errmsg = "Invalid PI name";
+            break;
+        case XML_ERR_NOTATION_NOT_STARTED:
+            errmsg = "NOTATION: Name expected here";
+            break;
+        case XML_ERR_NOTATION_NOT_FINISHED:
+            errmsg = "'>' required to close NOTATION declaration";
+            break;
+        case XML_ERR_VALUE_REQUIRED:
+            errmsg = "Entity value required";
+            break;
+        case XML_ERR_URI_FRAGMENT:
+            errmsg = "Fragment not allowed";
+            break;
+        case XML_ERR_ATTLIST_NOT_STARTED:
+            errmsg = "'(' required to start ATTLIST enumeration";
+            break;
+        case XML_ERR_NMTOKEN_REQUIRED:
+            errmsg = "NmToken expected in ATTLIST enumeration";
+            break;
+        case XML_ERR_ATTLIST_NOT_FINISHED:
+            errmsg = "')' required to finish ATTLIST enumeration";
+            break;
+        case XML_ERR_MIXED_NOT_STARTED:
+            errmsg = "MixedContentDecl : '|' or ')*' expected";
+            break;
+        case XML_ERR_PCDATA_REQUIRED:
+            errmsg = "MixedContentDecl : '#PCDATA' expected";
+            break;
+        case XML_ERR_ELEMCONTENT_NOT_STARTED:
+            errmsg = "ContentDecl : Name or '(' expected";
+            break;
+        case XML_ERR_ELEMCONTENT_NOT_FINISHED:
+            errmsg = "ContentDecl : ',' '|' or ')' expected";
+            break;
+        case XML_ERR_PEREF_IN_INT_SUBSET:
+            errmsg =
+                "PEReference: forbidden within markup decl in internal subset";
+            break;
+        case XML_ERR_GT_REQUIRED:
+            errmsg = "expected '>'";
+            break;
+        case XML_ERR_CONDSEC_INVALID:
+            errmsg = "XML conditional section '[' expected";
+            break;
+        case XML_ERR_INT_SUBSET_NOT_FINISHED:
+            errmsg = "Content error in the internal subset";
+            break;
+        case XML_ERR_EXT_SUBSET_NOT_FINISHED:
+            errmsg = "Content error in the external subset";
+            break;
+        case XML_ERR_CONDSEC_INVALID_KEYWORD:
+            errmsg =
+                "conditional section INCLUDE or IGNORE keyword expected";
+            break;
+        case XML_ERR_CONDSEC_NOT_FINISHED:
+            errmsg = "XML conditional section not closed";
+            break;
+        case XML_ERR_XMLDECL_NOT_STARTED:
+            errmsg = "Text declaration '<?xml' required";
+            break;
+        case XML_ERR_XMLDECL_NOT_FINISHED:
+            errmsg = "parsing XML declaration: '?>' expected";
+            break;
+        case XML_ERR_EXT_ENTITY_STANDALONE:
+            errmsg = "external parsed entities cannot be standalone";
+            break;
+        case XML_ERR_ENTITYREF_SEMICOL_MISSING:
+            errmsg = "EntityRef: expecting ';'";
+            break;
+        case XML_ERR_DOCTYPE_NOT_FINISHED:
+            errmsg = "DOCTYPE improperly terminated";
+            break;
+        case XML_ERR_LTSLASH_REQUIRED:
+            errmsg = "EndTag: '</' not found";
+            break;
+        case XML_ERR_EQUAL_REQUIRED:
+            errmsg = "expected '='";
+            break;
+        case XML_ERR_STRING_NOT_CLOSED:
+            errmsg = "String not closed expecting \" or '";
+            break;
+        case XML_ERR_STRING_NOT_STARTED:
+            errmsg = "String not started expecting ' or \"";
+            break;
+        case XML_ERR_ENCODING_NAME:
+            errmsg = "Invalid XML encoding name";
+            break;
+        case XML_ERR_STANDALONE_VALUE:
+            errmsg = "standalone accepts only 'yes' or 'no'";
+            break;
+        case XML_ERR_DOCUMENT_EMPTY:
+            errmsg = "Document is empty";
+            break;
+        case XML_ERR_DOCUMENT_END:
+            errmsg = "Extra content at the end of the document";
+            break;
+        case XML_ERR_NOT_WELL_BALANCED:
+            errmsg = "chunk is not well balanced";
+            break;
+        case XML_ERR_EXTRA_CONTENT:
+            errmsg = "extra content at the end of well balanced chunk";
+            break;
+        case XML_ERR_VERSION_MISSING:
+            errmsg = "Malformed declaration expecting version";
+            break;
+        case XML_ERR_NAME_TOO_LONG:
+            errmsg = "Name too long";
+            break;
+        case XML_ERR_INVALID_ENCODING:
+            errmsg = "Invalid bytes in character encoding";
+            break;
+        case XML_ERR_RESOURCE_LIMIT:
+            errmsg = "Resource limit exceeded";
+            break;
+        case XML_ERR_ARGUMENT:
+            errmsg = "Invalid argument";
+            break;
+        case XML_ERR_SYSTEM:
+            errmsg = "Out of system resources";
+            break;
+        case XML_ERR_REDECL_PREDEF_ENTITY:
+            errmsg = "Invalid redeclaration of predefined entity";
+            break;
+        case XML_ERR_UNSUPPORTED_ENCODING:
+            errmsg = "Unsupported encoding";
+            break;
+        case XML_ERR_INVALID_CHAR:
+            errmsg = "Invalid character";
+            break;
+
+        case XML_IO_UNKNOWN:
+            errmsg = "Unknown IO error"; break;
+        case XML_IO_EACCES:
+            errmsg = "Permission denied"; break;
+        case XML_IO_EAGAIN:
+            errmsg = "Resource temporarily unavailable"; break;
+        case XML_IO_EBADF:
+            errmsg = "Bad file descriptor"; break;
+        case XML_IO_EBADMSG:
+            errmsg = "Bad message"; break;
+        case XML_IO_EBUSY:
+            errmsg = "Resource busy"; break;
+        case XML_IO_ECANCELED:
+            errmsg = "Operation canceled"; break;
+        case XML_IO_ECHILD:
+            errmsg = "No child processes"; break;
+        case XML_IO_EDEADLK:
+            errmsg = "Resource deadlock avoided"; break;
+        case XML_IO_EDOM:
+            errmsg = "Domain error"; break;
+        case XML_IO_EEXIST:
+            errmsg = "File exists"; break;
+        case XML_IO_EFAULT:
+            errmsg = "Bad address"; break;
+        case XML_IO_EFBIG:
+            errmsg = "File too large"; break;
+        case XML_IO_EINPROGRESS:
+            errmsg = "Operation in progress"; break;
+        case XML_IO_EINTR:
+            errmsg = "Interrupted function call"; break;
+        case XML_IO_EINVAL:
+            errmsg = "Invalid argument"; break;
+        case XML_IO_EIO:
+            errmsg = "Input/output error"; break;
+        case XML_IO_EISDIR:
+            errmsg = "Is a directory"; break;
+        case XML_IO_EMFILE:
+            errmsg = "Too many open files"; break;
+        case XML_IO_EMLINK:
+            errmsg = "Too many links"; break;
+        case XML_IO_EMSGSIZE:
+            errmsg = "Inappropriate message buffer length"; break;
+        case XML_IO_ENAMETOOLONG:
+            errmsg = "Filename too long"; break;
+        case XML_IO_ENFILE:
+            errmsg = "Too many open files in system"; break;
+        case XML_IO_ENODEV:
+            errmsg = "No such device"; break;
+        case XML_IO_ENOENT:
+            errmsg = "No such file or directory"; break;
+        case XML_IO_ENOEXEC:
+            errmsg = "Exec format error"; break;
+        case XML_IO_ENOLCK:
+            errmsg = "No locks available"; break;
+        case XML_IO_ENOMEM:
+            errmsg = "Not enough space"; break;
+        case XML_IO_ENOSPC:
+            errmsg = "No space left on device"; break;
+        case XML_IO_ENOSYS:
+            errmsg = "Function not implemented"; break;
+        case XML_IO_ENOTDIR:
+            errmsg = "Not a directory"; break;
+        case XML_IO_ENOTEMPTY:
+            errmsg = "Directory not empty"; break;
+        case XML_IO_ENOTSUP:
+            errmsg = "Not supported"; break;
+        case XML_IO_ENOTTY:
+            errmsg = "Inappropriate I/O control operation"; break;
+        case XML_IO_ENXIO:
+            errmsg = "No such device or address"; break;
+        case XML_IO_EPERM:
+            errmsg = "Operation not permitted"; break;
+        case XML_IO_EPIPE:
+            errmsg = "Broken pipe"; break;
+        case XML_IO_ERANGE:
+            errmsg = "Result too large"; break;
+        case XML_IO_EROFS:
+            errmsg = "Read-only file system"; break;
+        case XML_IO_ESPIPE:
+            errmsg = "Invalid seek"; break;
+        case XML_IO_ESRCH:
+            errmsg = "No such process"; break;
+        case XML_IO_ETIMEDOUT:
+            errmsg = "Operation timed out"; break;
+        case XML_IO_EXDEV:
+            errmsg = "Improper link"; break;
+        case XML_IO_NETWORK_ATTEMPT:
+            errmsg = "Attempt to load network entity"; break;
+        case XML_IO_ENCODER:
+            errmsg = "encoder error"; break;
+        case XML_IO_FLUSH:
+            errmsg = "flush error"; break;
+        case XML_IO_WRITE:
+            errmsg = "write error"; break;
+        case XML_IO_NO_INPUT:
+            errmsg = "no input"; break;
+        case XML_IO_BUFFER_FULL:
+            errmsg = "buffer full"; break;
+        case XML_IO_LOAD_ERROR:
+            errmsg = "loading error"; break;
+        case XML_IO_ENOTSOCK:
+            errmsg = "not a socket"; break;
+        case XML_IO_EISCONN:
+            errmsg = "already connected"; break;
+        case XML_IO_ECONNREFUSED:
+            errmsg = "connection refused"; break;
+        case XML_IO_ENETUNREACH:
+            errmsg = "unreachable network"; break;
+        case XML_IO_EADDRINUSE:
+            errmsg = "address in use"; break;
+        case XML_IO_EALREADY:
+            errmsg = "already in use"; break;
+        case XML_IO_EAFNOSUPPORT:
+            errmsg = "unknown address family"; break;
+
+        default:
+            errmsg = "Unregistered error message";
+    }
+
+    return(errmsg);
+}

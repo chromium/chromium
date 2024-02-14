@@ -697,10 +697,6 @@ rollback:
  *									*
  ************************************************************************/
 
-#define TODO								\
-    xmlGenericError(xmlGenericErrorContext,				\
-	    "Unimplemented block at %s:%d\n",				\
-            __FILE__, __LINE__);
 #define CUR (*ctxt->cur)
 #define SKIP(val) ctxt->cur += (val)
 #define NXT(val) ctxt->cur[(val)]

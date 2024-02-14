@@ -73,6 +73,7 @@ import tempfile
 
 PATCHES = [
     'undo-sax-deprecation.patch',
+    'remove-getentropy.patch',
 ]
 
 

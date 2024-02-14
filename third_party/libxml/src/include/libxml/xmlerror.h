@@ -215,6 +215,7 @@ typedef enum {
     XML_ERR_ARGUMENT, /* 115 */
     XML_ERR_SYSTEM, /* 116 */
     XML_ERR_REDECL_PREDEF_ENTITY, /* 117 */
+    XML_ERR_INT_SUBSET_NOT_FINISHED, /* 118 */
     XML_NS_ERR_XML_NAMESPACE = 200,
     XML_NS_ERR_UNDEFINED_NAMESPACE, /* 201 */
     XML_NS_ERR_QNAME, /* 202 */
@@ -928,6 +929,10 @@ XMLPUBFUN void
     xmlParserPrintFileInfo	(struct _xmlParserInput *input);
 XMLPUBFUN void
     xmlParserPrintFileContext	(struct _xmlParserInput *input);
+XMLPUBFUN void
+xmlFormatError			(const xmlError *err,
+				 xmlGenericErrorFunc channel,
+				 void *data);
 
 /*
  * Extended error information routines

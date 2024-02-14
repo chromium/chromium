@@ -19,7 +19,7 @@ typedef void *xzFile;           /* opaque lzma file descriptor */
 XML_HIDDEN xzFile
 __libxml2_xzopen(const char *path, const char *mode);
 XML_HIDDEN xzFile
-__libxml2_xzdopen(int fd, const char *mode);
+__libxml2_xzdopen(const char *path, int fd, const char *mode);
 XML_HIDDEN int
 __libxml2_xzread(xzFile file, void *buf, unsigned len);
 XML_HIDDEN int

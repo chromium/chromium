@@ -24,6 +24,7 @@
 #include <libxml/parserInternals.h>
 #include <libxml/xmlerror.h>
 #include <libxml/dict.h>
+#include <libxml/xmlsave.h>
 
 #include "private/entities.h"
 #include "private/error.h"
@@ -83,7 +84,7 @@ xmlFreeEntity(xmlEntityPtr entity)
         dict = entity->doc->dict;
 
 
-    if ((entity->children) && (entity->owner == 1) &&
+    if ((entity->children) &&
         (entity == (xmlEntityPtr) entity->children->parent))
         xmlFreeNodeList(entity->children);
     if ((entity->name != NULL) &&
@@ -152,7 +153,6 @@ xmlCreateEntity(xmlDocPtr doc, const xmlChar *name, int type,
     ret->URI = NULL; /* to be computed by the layer knowing
 			the defining entity */
     ret->orig = NULL;
-    ret->owner = 0;
 
     return(ret);
 
@@ -653,13 +653,18 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
 
                 l = 4;
                 val = xmlGetUTF8Char(cur, &l);
-                if ((val < 0) || (!IS_CHAR(val))) {
-		    snprintf(buf, sizeof(buf), "&#%d;", *cur);
-		    buf[sizeof(buf) - 1] = 0;
-		    ptr = buf;
-		    while (*ptr != 0) *out++ = *ptr++;
-		    cur++;
-		    continue;
+                if (val < 0) {
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+                    fprintf(stderr, "xmlEncodeEntitiesInternal: "
+                            "invalid UTF-8\n");
+                    abort();
+#endif
+                    val = 0xFFFD;
+                    cur++;
+                } else {
+                    if (!IS_CHAR(val))
+                        val = 0xFFFD;
+                    cur += l;
 		}
 		/*
 		 * We could do multiple things here. Just save as a char ref
@@ -668,7 +673,6 @@ xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
 		buf[sizeof(buf) - 1] = 0;
 		ptr = buf;
 		while (*ptr != 0) *out++ = *ptr++;
-		cur += l;
 		continue;
 	    }
 	} else if (IS_BYTE_CHAR(*cur)) {
@@ -918,46 +922,6 @@ xmlCopyEntitiesTable(xmlEntitiesTablePtr table) {
 #ifdef LIBXML_OUTPUT_ENABLED
 
 /**
- * xmlDumpEntityContent:
- * @buf:  An XML buffer.
- * @content:  The entity content.
- *
- * This will dump the quoted string value, taking care of the special
- * treatment required by %
- */
-static void
-xmlDumpEntityContent(xmlBufferPtr buf, const xmlChar *content) {
-    if (xmlStrchr(content, '%')) {
-        const xmlChar * base, *cur;
-
-	xmlBufferCCat(buf, "\"");
-	base = cur = content;
-	while (*cur != 0) {
-	    if (*cur == '"') {
-		if (base != cur)
-		    xmlBufferAdd(buf, base, cur - base);
-		xmlBufferAdd(buf, BAD_CAST "&quot;", 6);
-		cur++;
-		base = cur;
-	    } else if (*cur == '%') {
-		if (base != cur)
-		    xmlBufferAdd(buf, base, cur - base);
-		xmlBufferAdd(buf, BAD_CAST "&#x25;", 6);
-		cur++;
-		base = cur;
-	    } else {
-		cur++;
-	    }
-	}
-	if (base != cur)
-	    xmlBufferAdd(buf, base, cur - base);
-	xmlBufferCCat(buf, "\"");
-    } else {
-        xmlBufferWriteQuotedString(buf, content);
-    }
-}
-
-/**
  * xmlDumpEntityDecl:
  * @buf:  An XML buffer.
  * @ent:  An entity table
@@ -966,80 +930,14 @@ xmlDumpEntityContent(xmlBufferPtr buf, const xmlChar *content) {
  */
 void
 xmlDumpEntityDecl(xmlBufferPtr buf, xmlEntityPtr ent) {
-    if ((buf == NULL) || (ent == NULL)) return;
-    switch (ent->etype) {
-	case XML_INTERNAL_GENERAL_ENTITY:
-	    xmlBufferWriteChar(buf, "<!ENTITY ");
-	    xmlBufferWriteCHAR(buf, ent->name);
-	    xmlBufferWriteChar(buf, " ");
-	    if (ent->orig != NULL)
-		xmlBufferWriteQuotedString(buf, ent->orig);
-	    else
-		xmlDumpEntityContent(buf, ent->content);
-	    xmlBufferWriteChar(buf, ">\n");
-	    break;
-	case XML_EXTERNAL_GENERAL_PARSED_ENTITY:
-	    xmlBufferWriteChar(buf, "<!ENTITY ");
-	    xmlBufferWriteCHAR(buf, ent->name);
-	    if (ent->ExternalID != NULL) {
-		 xmlBufferWriteChar(buf, " PUBLIC ");
-		 xmlBufferWriteQuotedString(buf, ent->ExternalID);
-		 xmlBufferWriteChar(buf, " ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    } else {
-		 xmlBufferWriteChar(buf, " SYSTEM ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    }
-	    xmlBufferWriteChar(buf, ">\n");
-	    break;
-	case XML_EXTERNAL_GENERAL_UNPARSED_ENTITY:
-	    xmlBufferWriteChar(buf, "<!ENTITY ");
-	    xmlBufferWriteCHAR(buf, ent->name);
-	    if (ent->ExternalID != NULL) {
-		 xmlBufferWriteChar(buf, " PUBLIC ");
-		 xmlBufferWriteQuotedString(buf, ent->ExternalID);
-		 xmlBufferWriteChar(buf, " ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    } else {
-		 xmlBufferWriteChar(buf, " SYSTEM ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    }
-	    if (ent->content != NULL) { /* Should be true ! */
-		xmlBufferWriteChar(buf, " NDATA ");
-		if (ent->orig != NULL)
-		    xmlBufferWriteCHAR(buf, ent->orig);
-		else
-		    xmlBufferWriteCHAR(buf, ent->content);
-	    }
-	    xmlBufferWriteChar(buf, ">\n");
-	    break;
-	case XML_INTERNAL_PARAMETER_ENTITY:
-	    xmlBufferWriteChar(buf, "<!ENTITY % ");
-	    xmlBufferWriteCHAR(buf, ent->name);
-	    xmlBufferWriteChar(buf, " ");
-	    if (ent->orig == NULL)
-		xmlDumpEntityContent(buf, ent->content);
-	    else
-		xmlBufferWriteQuotedString(buf, ent->orig);
-	    xmlBufferWriteChar(buf, ">\n");
-	    break;
-	case XML_EXTERNAL_PARAMETER_ENTITY:
-	    xmlBufferWriteChar(buf, "<!ENTITY % ");
-	    xmlBufferWriteCHAR(buf, ent->name);
-	    if (ent->ExternalID != NULL) {
-		 xmlBufferWriteChar(buf, " PUBLIC ");
-		 xmlBufferWriteQuotedString(buf, ent->ExternalID);
-		 xmlBufferWriteChar(buf, " ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    } else {
-		 xmlBufferWriteChar(buf, " SYSTEM ");
-		 xmlBufferWriteQuotedString(buf, ent->SystemID);
-	    }
-	    xmlBufferWriteChar(buf, ">\n");
-	    break;
-	default:
-            break;
-    }
+    xmlSaveCtxtPtr save;
+
+    if ((buf == NULL) || (ent == NULL))
+        return;
+
+    save = xmlSaveToBuffer(buf, NULL, 0);
+    xmlSaveTree(save, (xmlNodePtr) ent);
+    xmlSaveClose(save);
 }
 
 /**

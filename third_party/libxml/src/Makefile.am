@@ -110,8 +110,8 @@ if WITH_XPTR_SOURCES
 libxml2_la_SOURCES += xlink.c xpointer.c
 endif
 
-DEPS = $(top_builddir)/libxml2.la
-LDADDS = $(top_builddir)/libxml2.la
+DEPS = libxml2.la
+LDADDS = libxml2.la
 
 
 m4datadir = $(datadir)/aclocal
@@ -182,10 +182,6 @@ testapi_LDADD= $(LDADDS)
 runxmlconf_SOURCES=runxmlconf.c
 runxmlconf_DEPENDENCIES = $(DEPS)
 runxmlconf_LDADD= $(LDADDS)
-
-#testOOM_SOURCES=testOOM.c testOOMlib.h testOOMlib.c
-#testOOM_DEPENDENCIES = $(DEPS)
-#testOOM_LDADD= $(LDADDS)
 
 check-local:
 	[ -d test   ] || $(LN_S) $(srcdir)/test   .

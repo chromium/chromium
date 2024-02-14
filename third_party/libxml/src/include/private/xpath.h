@@ -8,9 +8,9 @@ xmlInitXPathInternal(void);
 
 #ifdef LIBXML_XPATH_ENABLED
 XML_HIDDEN void
-xmlXPathErrMemory(xmlXPathContextPtr ctxt, const char *extra);
+xmlXPathErrMemory(xmlXPathContextPtr ctxt);
 XML_HIDDEN void
-xmlXPathPErrMemory(xmlXPathParserContextPtr ctxt, const char *extra);
+xmlXPathPErrMemory(xmlXPathParserContextPtr ctxt);
 #endif
 
 #endif /* XML_XPATH_H_PRIVATE__ */

@@ -2,9 +2,15 @@
 #define XML_SAVE_H_PRIVATE__
 
 #include <libxml/tree.h>
+#include <libxml/xmlsave.h>
 #include <libxml/xmlversion.h>
 
 #ifdef LIBXML_OUTPUT_ENABLED
+
+XML_HIDDEN int
+xmlSaveNotationDecl(xmlSaveCtxtPtr ctxt, xmlNotationPtr cur);
+XML_HIDDEN int
+xmlSaveNotationTable(xmlSaveCtxtPtr ctxt, xmlNotationTablePtr cur);
 
 XML_HIDDEN void
 xmlBufAttrSerializeTxtContent(xmlBufPtr buf, xmlDocPtr doc,
