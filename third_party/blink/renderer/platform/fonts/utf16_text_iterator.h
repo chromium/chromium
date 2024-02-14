@@ -38,7 +38,11 @@ class PLATFORM_EXPORT UTF16TextIterator {
   // the range [offset, endOffset].
   // 'length' denotes the maximum length of the UChar array, which might exceed
   // 'endOffset'.
-  UTF16TextIterator(const UChar*, int length);
+  UTF16TextIterator(const UChar* characters, int length)
+      : characters_(characters),
+        characters_end_(characters + length),
+        length_(length) {}
+
   UTF16TextIterator(const UTF16TextIterator&) = delete;
   UTF16TextIterator& operator=(const UTF16TextIterator&) = delete;
 
@@ -69,10 +73,10 @@ class PLATFORM_EXPORT UTF16TextIterator {
   void ConsumeMultipleUChar();
 
   const UChar* characters_;
-  const UChar* characters_end_;
-  int offset_;
-  int length_;
-  unsigned current_glyph_length_;
+  const UChar* const characters_end_;
+  int offset_ = 0;
+  const int length_;
+  unsigned current_glyph_length_ = 0;
 };
 
 }  // namespace blink

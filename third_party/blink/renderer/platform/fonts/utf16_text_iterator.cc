@@ -25,13 +25,6 @@
 
 namespace blink {
 
-UTF16TextIterator::UTF16TextIterator(const UChar* characters, int length)
-    : characters_(characters),
-      characters_end_(characters + length),
-      offset_(0),
-      length_(length),
-      current_glyph_length_(0) {}
-
 bool UTF16TextIterator::IsValidSurrogatePair(UChar32& character) {
   // If we have a surrogate pair, make sure it starts with the high part.
   if (!U16_IS_SURROGATE_LEAD(character))

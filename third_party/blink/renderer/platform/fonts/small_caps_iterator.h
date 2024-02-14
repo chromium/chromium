@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SMALL_CAPS_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SMALL_CAPS_ITERATOR_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
@@ -15,7 +13,7 @@
 namespace blink {
 
 class PLATFORM_EXPORT SmallCapsIterator {
-  USING_FAST_MALLOC(SmallCapsIterator);
+  STACK_ALLOCATED();
 
  public:
   enum SmallCapsBehavior {
@@ -31,7 +29,7 @@ class PLATFORM_EXPORT SmallCapsIterator {
   bool Consume(unsigned* caps_limit, SmallCapsBehavior*);
 
  private:
-  std::unique_ptr<UTF16TextIterator> utf16_iterator_;
+  UTF16TextIterator utf16_iterator_;
   unsigned buffer_size_;
   UChar32 next_u_char32_;
   bool at_end_;

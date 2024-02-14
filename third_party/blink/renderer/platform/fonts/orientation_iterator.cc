@@ -11,7 +11,7 @@ namespace blink {
 OrientationIterator::OrientationIterator(const UChar* buffer,
                                          unsigned buffer_size,
                                          FontOrientation run_orientation)
-    : utf16_iterator_(std::make_unique<UTF16TextIterator>(buffer, buffer_size)),
+    : utf16_iterator_(buffer, buffer_size),
       buffer_size_(buffer_size),
       at_end_(buffer_size == 0) {
   // There's not much point in segmenting by isUprightInVertical if the text
@@ -26,7 +26,7 @@ bool OrientationIterator::Consume(unsigned* orientation_limit,
 
   RenderOrientation current_render_orientation = kOrientationInvalid;
   UChar32 next_u_char32;
-  while (utf16_iterator_->Consume(next_u_char32)) {
+  while (utf16_iterator_.Consume(next_u_char32)) {
     if (current_render_orientation == kOrientationInvalid ||
         !Character::IsGraphemeExtended(next_u_char32)) {
       RenderOrientation previous_render_orientation =
@@ -37,12 +37,12 @@ bool OrientationIterator::Consume(unsigned* orientation_limit,
               : kOrientationRotateSideways;
       if (previous_render_orientation != current_render_orientation &&
           previous_render_orientation != kOrientationInvalid) {
-        *orientation_limit = utf16_iterator_->Offset();
+        *orientation_limit = utf16_iterator_.Offset();
         *render_orientation = previous_render_orientation;
         return true;
       }
     }
-    utf16_iterator_->Advance();
+    utf16_iterator_.Advance();
   }
   *orientation_limit = buffer_size_;
   *render_orientation = current_render_orientation;
