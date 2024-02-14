@@ -133,15 +133,13 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
         verify(mTabListEditorController).configureToolbarWithMenuItems(any(), any());
-        verify(mTabListEditorController)
-                .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
+        verify(mTabListEditorController).show(eq(Arrays.asList(mTab1, mTab2)), eq(2), eq(null));
 
         tabSuggestion =
                 prepareTabSuggestion(
                         Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.CLOSE);
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabListEditorController)
-                .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
+        verify(mTabListEditorController).show(eq(Arrays.asList(mTab1, mTab3)), eq(2), eq(null));
     }
 
     @Test

@@ -37,9 +37,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * One of the concrete {@link MessageService} that only serve {@link MessageType#TAB_SUGGESTION}.
@@ -231,7 +229,6 @@ public class TabSuggestionMessageService extends MessageService
     private List<Tab> getTabListFromSuggestion(TabSuggestion tabSuggestion) {
         List<Tab> tabs = new ArrayList<>();
 
-        Set<Integer> suggestedTabIds = new HashSet<>();
         List<TabContext.TabInfo> suggestedTabInfo = tabSuggestion.getTabsInfo();
         TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
         for (int i = 0; i < suggestedTabInfo.size(); i++) {
@@ -239,22 +236,7 @@ public class TabSuggestionMessageService extends MessageService
             Tab tab = TabModelUtils.getTabById(model, tabId);
             if (tab == null) continue;
 
-            suggestedTabIds.add(tabId);
             tabs.add(tab);
-        }
-
-        tabs.addAll(getNonSuggestedTabs(suggestedTabIds));
-        return tabs;
-    }
-
-    private List<Tab> getNonSuggestedTabs(Set<Integer> suggestedTabIds) {
-        List<Tab> tabs = new ArrayList<>();
-        List<Tab> filteredTab =
-                mCurrentTabModelFilterSupplier.get().getTabsWithNoOtherRelatedTabs();
-
-        for (int i = 0; i < filteredTab.size(); i++) {
-            Tab tab = filteredTab.get(i);
-            if (!suggestedTabIds.contains(tab.getId())) tabs.add(tab);
         }
         return tabs;
     }

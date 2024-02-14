@@ -124,22 +124,6 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     /**
-     * @return An unmodifiable list of {@link Tab}s that are not related to any tabs
-     */
-    @NonNull
-    public final List<Tab> getTabsWithNoOtherRelatedTabs() {
-        List<Tab> tabs = new ArrayList<>();
-        TabModel tabModel = getTabModel();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
-            if (!hasOtherRelatedTabs(tab)) {
-                tabs.add(tab);
-            }
-        }
-        return Collections.unmodifiableList(tabs);
-    }
-
-    /**
      * Any of the concrete class that defined a relationship between tabs should override this
      * method. By default, the given {@link Tab} has no related tabs, other than itself.
      * @param tab A {@link Tab}.

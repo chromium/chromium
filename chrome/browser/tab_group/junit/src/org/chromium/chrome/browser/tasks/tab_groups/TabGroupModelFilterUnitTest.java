@@ -1204,30 +1204,6 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
-    public void getNonGroupedTab() {
-        Tab[] expectedNonGroupedTabs = new Tab[] {mTab1, mTab4};
-        List<Tab> nonGroupedTabs = mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
-        assertArrayEquals(expectedNonGroupedTabs, nonGroupedTabs.toArray());
-
-        // Group mTab4 with mTab2 and mTab3
-        mTabGroupModelFilter.mergeTabsToGroup(mTab4.getId(), mTab2.getId());
-
-        Tab[] expectedNonGroupedTabs_AfterGrouping = new Tab[] {mTab1};
-        List<Tab> nonGroupedTabs_AfterGrouping =
-                mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
-        assertArrayEquals(
-                expectedNonGroupedTabs_AfterGrouping, nonGroupedTabs_AfterGrouping.toArray());
-
-        // UnGroup mTab3 for its group.
-        mTabGroupModelFilter.moveTabOutOfGroup(TAB3_ID);
-        Tab[] expectedNonGroupedTabs_AfterUnGrouping = new Tab[] {mTab1, mTab3};
-        List<Tab> nonGroupedTabs_AfterUnGrouping =
-                mTabGroupModelFilter.getTabsWithNoOtherRelatedTabs();
-        assertArrayEquals(
-                expectedNonGroupedTabs_AfterUnGrouping, nonGroupedTabs_AfterUnGrouping.toArray());
-    }
-
-    @Test
     public void resetFilterStateTest() {
         assertThat(mTab3.getRootId(), equalTo(TAB2_ROOT_ID));
         mTab3.setRootId(TAB1_ROOT_ID);
