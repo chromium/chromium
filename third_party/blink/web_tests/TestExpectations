@@ -219,6 +219,7 @@ crbug.com/324053529 [ Linux ] css3/filters/effect-all-on-background-hw.html [ Fa
 crbug.com/324053529 [ Linux ] css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
 crbug.com/324053529 [ Mac ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
 crbug.com/324053529 [ Win ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
+crbug.com/324053529 [ Linux ] virtual/scalefactor200/css3/filters/effect-drop-shadow-hw.html [ Failure Pass ]
 
 # --- END Skia roll test suppresions
 
