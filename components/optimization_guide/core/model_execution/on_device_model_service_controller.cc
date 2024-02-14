@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -203,6 +204,13 @@ OnDeviceModelServiceController::CreateSession(
     return nullptr;
   }
 
+  if (feature == proto::MODEL_EXECUTION_FEATURE_COMPOSE &&
+      !base::FeatureList::IsEnabled(
+          features::kOptimizationGuideComposeOnDeviceEval)) {
+    logger.set_reason(
+        OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
+    return nullptr;
+  }
   OnDeviceModelEligibilityReason reason =
       access_controller_->ShouldStartNewSession();
   logger.set_reason(reason);

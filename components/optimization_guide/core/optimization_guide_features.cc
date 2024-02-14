@@ -290,6 +290,12 @@ BASE_FEATURE(kOptimizationGuideOnDeviceModel,
              "OptimizationGuideOnDeviceModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to allow on device model evaluation for Compose. This has no effect
+// if OptimizationGuideOnDeviceModel is off.
+BASE_FEATURE(kOptimizationGuideComposeOnDeviceEval,
+             "OptimizationGuideComposeOnDeviceEval",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether the on device service is launched after a delay on startup to log
 // metrics.
 BASE_FEATURE(kLogOnDeviceMetricsOnStartup,

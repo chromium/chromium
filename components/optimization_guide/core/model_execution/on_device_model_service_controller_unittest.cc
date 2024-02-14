@@ -561,6 +561,25 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
       OnDeviceModelEligibilityReason::kSuccess, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelExecutionFeatureExecutionNotEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {features::kOptimizationGuideComposeOnDeviceEval});
+
+  Initialize();
+
+  base::HistogramTester histogram_tester;
+  auto session = test_controller_->CreateSession(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
+      base::DoNothing(), &logger_);
+  EXPECT_FALSE(session);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
+      OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled, 1);
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   Initialize();
   auto session =

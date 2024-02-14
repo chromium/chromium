@@ -276,12 +276,14 @@ enum class OnDeviceModelEligibilityReason {
   kSafetyConfigNotAvailableForFeature = 9,
   // The on-device language detection model was required but not available.
   kLanguageDetectionModelNotAvailable = 10,
+  // On-device model execution for this feature was not enabled.
+  kFeatureExecutionNotEnabled = 11,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kLanguageDetectionModelNotAvailable,
+  kMaxValue = kFeatureExecutionNotEnabled,
 };
 
 // Status of the on-device model.

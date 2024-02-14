@@ -361,6 +361,10 @@ chromium-metrics-reviews@google.com.
     The on-device safety model is available, but it requires specific output
     languages and the language detection model is unavailable.
   </int>
+  <int value="11" label="On-device execution is not enabled for this feature">
+    The feature is enabled, and on-device execution is available, but it is not
+    enabled for this feature.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelStatus">
