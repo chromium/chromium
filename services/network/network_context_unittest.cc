@@ -233,7 +233,7 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
   if (!params)
     params = mojom::URLLoaderFactoryParams::New();
   params->process_id = process_id;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
 
   // If |site_for_cookies| is null, any non-empty NIK is fine. Otherwise, the
   // NIK must be consistent with |site_for_cookies|.
@@ -591,7 +591,7 @@ TEST_F(NetworkContextTest, DestroyContextWithLiveRequest) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -731,7 +731,7 @@ TEST_F(NetworkContextTest, UnhandedProtocols) {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     network_context->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -1354,7 +1354,7 @@ TEST_F(NetworkContextTest, HostResolutionFailure) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -5051,7 +5051,7 @@ TEST_F(NetworkContextTest, TrustedParams) {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     // URLLoaderFactories should not be trusted by default.
     EXPECT_FALSE(params->is_trusted);
     params->is_trusted = trusted_factory;
@@ -5114,7 +5114,7 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
@@ -5171,7 +5171,7 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     params->disable_secure_dns = disable_secure_dns;
     network_context.CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
@@ -5813,7 +5813,7 @@ TEST_F(NetworkContextTest, HeaderClientModifiesHeaders) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   TestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -5879,7 +5879,7 @@ TEST_F(NetworkContextTest, HeaderClientFailsRequest) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   TestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -6035,7 +6035,7 @@ TEST_F(NetworkContextTest, HangingHeaderClientModifiesHeadersAsynchronously) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -6085,7 +6085,7 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnBeforeSendHeaders) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -6129,7 +6129,7 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -6259,7 +6259,7 @@ TEST_F(NetworkContextTest, MaximumCount) {
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   network_context->CreateURLLoaderFactory(
       loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -6804,7 +6804,7 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
     auto params = mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     if (isolation_info.request_type() ==
         net::IsolationInfo::RequestType::kOther) {
       params->isolation_info = isolation_info;

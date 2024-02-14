@@ -79,10 +79,10 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
         network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
         network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
         net::CookieSettingOverrides(), "DevtoolsNetworkResourceLoaderTest");
-    // Let DevTools fetch resources without CORS and CORB. Source maps are valid
+    // Let DevTools fetch resources without CORS and ORB. Source maps are valid
     // JSON and would otherwise require a CORS fetch + correct response headers.
     // See BUG(chromium:1076435) for more context.
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     return mojo::Remote<network::mojom::URLLoaderFactory>(
         url_loader_factory::CreatePendingRemote(
             ContentBrowserClient::URLLoaderFactoryType::kDevTools,

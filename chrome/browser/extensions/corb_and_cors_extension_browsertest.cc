@@ -1664,11 +1664,11 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
         CreateFetchScript(cross_site_resource2, std::move(request_init)));
     std::string fetch_result = PopString(&queue);
 
-    // Verify that the fetch was blocked by CORB.
+    // Verify that the fetch was blocked by ORB.
     //
     // This is the main verification in the test.  This verifies that the
     // extension background page uses a URLLoaderFactory created with
-    // URLLoaderFactoryParams::is_corb_enabled set to the default, secure value
+    // URLLoaderFactoryParams::is_orb_enabled set to the default, secure value
     // of `true`.
     //
     // ORB ErrorsForAllFetches: Error message, because the fetch failed.

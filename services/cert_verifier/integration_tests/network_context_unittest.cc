@@ -130,7 +130,7 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
   if (!params)
     params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = process_id;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
 
   // If |site_for_cookies| is null, any non-empty NIK is fine. Otherwise, the
   // NIK must be consistent with |site_for_cookies|.

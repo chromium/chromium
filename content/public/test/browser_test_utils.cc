@@ -3888,7 +3888,7 @@ int LoadBasicRequest(network::mojom::NetworkContext* network_context,
   network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
       network::mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_corb_enabled = false;
+  url_loader_factory_params->is_orb_enabled = false;
   url::Origin origin = url::Origin::Create(url);
   url_loader_factory_params->isolation_info =
       net::IsolationInfo::CreateForInternalRequest(origin);

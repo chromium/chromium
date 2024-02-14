@@ -3267,10 +3267,10 @@ CreateNetworkFactoryForDevTools(
   // Don't allow trust token issuance.
   params->trust_token_issuance_policy =
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
-  // Let DevTools fetch resources without CORS and CORB. Source maps are valid
+  // Let DevTools fetch resources without CORS and ORB. Source maps are valid
   // JSON and would otherwise require a CORS fetch + correct response headers.
   // See BUG(chromium:1076435) for more context.
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
 
   if (scheme == url::kHttpScheme || scheme == url::kHttpsScheme) {
     return url_loader_factory::CreatePendingRemote(

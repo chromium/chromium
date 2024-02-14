@@ -121,7 +121,7 @@ void OverrideFactoryParams(const Extension& extension,
   if (!ShouldRelaxCors(extension, factory_user))
     return;
 
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   switch (factory_user) {
     case FactoryUser::kContentScript:
       // Requests from content scripts set

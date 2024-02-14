@@ -454,7 +454,7 @@ class PreflightControllerTest : public testing::Test {
     // used by the PreflightController. Hence here we disable CORS as otherwise
     // the URLLoader would create a CORS-preflight for the preflight request.
     params->disable_web_security = true;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     // Allow setting TrustedParams on requests, specifically to pass
     // ClientSecurityState to the underlying URLLoader.
     params->is_trusted = true;

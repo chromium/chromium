@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->automatically_assign_isolation_info = true;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
   network_context->CreateURLLoaderFactory(

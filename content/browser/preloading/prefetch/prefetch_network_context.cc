@@ -179,7 +179,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
   factory_params->process_id = network::mojom::kBrowserProcessId;
   factory_params->is_trusted = true;
-  factory_params->is_corb_enabled = false;
+  factory_params->is_orb_enabled = false;
   return url_loader_factory::Create(
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url_loader_factory::TerminalParams::ForNetworkContext(

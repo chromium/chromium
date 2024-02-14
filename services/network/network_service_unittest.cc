@@ -1273,7 +1273,7 @@ class NetworkServiceTestWithService : public testing::Test {
     params->process_id = process_id;
     params->request_initiator_origin_lock =
         url::Origin::Create(GURL("https://initiator.example.com"));
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
 
@@ -1689,7 +1689,7 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = process_id;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     params->url_loader_network_observer =
         std::move(url_loader_network_observer);
     network_context_->CreateURLLoaderFactory(

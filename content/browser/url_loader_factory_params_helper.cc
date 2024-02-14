@@ -105,17 +105,17 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->coep_reporter = std::move(coep_reporter);
 
   if (params->disable_web_security) {
-    // --disable-web-security also disables Cross-Origin Read Blocking (CORB).
-    params->is_corb_enabled = false;
+    // --disable-web-security also disables Opaque Response Blocking (ORB).
+    params->is_orb_enabled = false;
   } else if (allow_universal_access_from_file_urls &&
              origin.scheme() == url::kFileScheme) {
-    // allow_universal_access_from_file_urls disables CORB (via
-    // |is_corb_enabled|) and CORS (via |disable_web_security|) for requests
+    // allow_universal_access_from_file_urls disables ORB (via
+    // `is_orb_enabled`) and CORS (via `disable_web_security`) for requests
     // made from a file: |origin|.
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     params->disable_web_security = true;
   } else {
-    params->is_corb_enabled = true;
+    params->is_orb_enabled = true;
   }
 
   params->trust_token_issuance_policy = trust_token_issuance_policy;

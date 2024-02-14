@@ -3368,7 +3368,7 @@ StoragePartitionImpl::CreateURLLoaderFactoryParams() {
   // is no corresponding RenderProcessHost.
   params->process_id = network::mojom::kBrowserProcessId;
   params->automatically_assign_isolation_info = true;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   params->url_loader_network_observer =
       CreateAuthCertObserverForServiceWorker(params->process_id);

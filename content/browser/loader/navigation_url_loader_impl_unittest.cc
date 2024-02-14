@@ -87,7 +87,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
 
     url_loader_context_.mutable_factory_params().process_id =
         network::mojom::kBrowserProcessId;
-    url_loader_context_.mutable_factory_params().is_corb_enabled = false;
+    url_loader_context_.mutable_factory_params().is_orb_enabled = false;
   }
 
   ~TestNavigationLoaderInterceptor() override {

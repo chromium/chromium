@@ -755,8 +755,8 @@ struct URLLoaderFactoryParams {
   // the Browser process.
   url.mojom.Origin? request_initiator_origin_lock;
 
-  // Cross-origin read blocking (CORB) configuration.
-  bool is_corb_enabled = true;
+  // Opaque Response Blocking (ORB) configuration.
+  bool is_orb_enabled = true;
 
   // Whether |isolated_world_origin| from network::ResourceRequest should be
   // ignored.  Set |ignore_isolated_world_origin| to |false| to allow isolated

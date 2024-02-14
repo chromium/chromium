@@ -1773,9 +1773,9 @@ void URLLoader::ContinueOnResponseStarted() {
     return;
   }
 
-  // Figure out if we need to sniff (for MIME type detection or for Cross-Origin
-  // Read Blocking / CORB).
-  if (factory_params_->is_corb_enabled) {
+  // Figure out if we need to sniff (for MIME type detection or for Opaque
+  // Response Blocking / ORB)
+  if (factory_params_->is_orb_enabled) {
     corb_analyzer_ = corb::ResponseAnalyzer::Create(*per_factory_corb_state_);
     is_more_corb_sniffing_needed_ = true;
     auto decision =

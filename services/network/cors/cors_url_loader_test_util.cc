@@ -286,7 +286,7 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
   }
   factory_params->is_trusted = params.is_trusted;
   factory_params->process_id = process_id;
-  factory_params->is_corb_enabled = (process_id != mojom::kBrowserProcessId);
+  factory_params->is_orb_enabled = (process_id != mojom::kBrowserProcessId);
   factory_params->ignore_isolated_world_origin =
       params.ignore_isolated_world_origin;
   factory_params->factory_override = mojom::URLLoaderFactoryOverride::New();

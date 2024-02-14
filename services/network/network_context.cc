@@ -858,7 +858,7 @@ void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
   url_loader_factory_params->is_trusted = true;
   url_loader_factory_params->process_id = mojom::kBrowserProcessId;
   url_loader_factory_params->automatically_assign_isolation_info = true;
-  url_loader_factory_params->is_corb_enabled = false;
+  url_loader_factory_params->is_orb_enabled = false;
   CreateURLLoaderFactory(std::move(factory_receiver),
                          std::move(url_loader_factory_params));
 }

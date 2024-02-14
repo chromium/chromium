@@ -103,7 +103,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
       network::mojom::URLLoaderFactoryParamsPtr params =
           network::mojom::URLLoaderFactoryParams::New();
       params->process_id = network::mojom::kBrowserProcessId;
-      params->is_corb_enabled = false;
+      params->is_orb_enabled = false;
       params->is_trusted = true;
       GetNetworkContext()->CreateURLLoaderFactory(
           url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));

@@ -1680,7 +1680,7 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
   params->header_client = std::move(header_client);
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_trusted = true;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);

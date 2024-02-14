@@ -85,7 +85,7 @@ Protection techniques:
   `network::mojom::URLLoaderFactory` objects that handle HTTP requests.
   This lets the browser process carefully control security-sensitive
   `network::mojom::URLLoaderFactoryParams` of such factories (such as
-  `request_initiator_origin_lock`, `is_corb_enabled`, `disable_web_security` or
+  `request_initiator_origin_lock`, `is_orb_enabled`, `disable_web_security` or
   `isolation_info`).
 
 **Known gaps in protection**:

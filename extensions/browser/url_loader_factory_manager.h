@@ -26,7 +26,7 @@ namespace extensions {
 class ScriptInjectionTracker;
 
 // This class manages URLLoaderFactory objects that handle network requests that
-// require extension-specific permissions (related to relaxed CORB and CORS).
+// require extension-specific permissions (related to relaxed ORB and CORS).
 //
 // See also https://crbug.com/846346 for motivation for having separate
 // URLLoaderFactory objects for content scripts.
@@ -90,7 +90,7 @@ class URLLoaderFactoryManager {
   // URLLoaderFactoryParams:         |           |             |
   // - request_initiator_origin_lock |    web    |  extension  |     web
   // - overridden properties?        |    no     |     yes     |  if needed
-  //    - is_corb_enabled            | secure-   |  ext-based  | ext-based for
+  //    - is_orb_enabled             | secure-   |  ext-based  | ext-based for
   //    - ..._access_patterns        |  -default |             | platform apps
   static void OverrideURLLoaderFactoryParams(
       content::BrowserContext* browser_context,
