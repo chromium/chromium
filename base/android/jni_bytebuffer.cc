@@ -34,7 +34,9 @@ absl::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
   void* data = env->GetDirectBufferAddress(buffer);
   jlong size = env->GetDirectBufferCapacity(buffer);
 
-  if (!data || size < 0) {
+  // !data && size == 0 is allowed - this is how a 0-length Buffer is
+  // represented.
+  if (size < 0 || (!data && size > 0)) {
     return absl::nullopt;
   }
 

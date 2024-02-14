@@ -53,4 +53,15 @@ TEST(JniByteBuffer, DISABLED_ConversionFromNonBuffer) {
   EXPECT_FALSE(maybe_span.has_value());
 }
 
+TEST(JniByteBuffer, ZeroByteConversionSucceeds) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jbuffer(env,
+                                      env->NewDirectByteBuffer(nullptr, 0));
+  ASSERT_TRUE(jbuffer);
+
+  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer.obj());
+  EXPECT_EQ(span.data(), nullptr);
+  EXPECT_EQ(span.size(), 0u);
+}
+
 }  // namespace base::android
