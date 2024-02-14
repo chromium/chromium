@@ -50,7 +50,6 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_job_factory.h"
-#include "net/url_request/url_request_throttler_manager.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -426,11 +425,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     context->set_quic_context(std::move(quic_context_));
   } else {
     context->set_quic_context(std::make_unique<QuicContext>());
-  }
-
-  if (throttling_enabled_) {
-    context->set_throttler_manager(
-        std::make_unique<URLRequestThrottlerManager>());
   }
 
   if (!proxy_resolution_service_) {

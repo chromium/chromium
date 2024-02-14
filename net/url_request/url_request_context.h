@@ -53,7 +53,6 @@ class TransportSecurityPersister;
 class TransportSecurityState;
 class URLRequest;
 class URLRequestJobFactory;
-class URLRequestThrottlerManager;
 class URLRequestContextBuilder;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -173,11 +172,6 @@ class NET_EXPORT URLRequestContext final {
 
   const URLRequestJobFactory* job_factory() const { return job_factory_; }
 
-  // May return nullptr.
-  URLRequestThrottlerManager* throttler_manager() const {
-    return throttler_manager_.get();
-  }
-
   QuicContext* quic_context() const { return quic_context_.get(); }
 
   // Gets the URLRequest objects that hold a reference to this
@@ -273,8 +267,6 @@ class NET_EXPORT URLRequestContext final {
       std::unique_ptr<TransportSecurityState> state);
   void set_sct_auditing_delegate(std::unique_ptr<SCTAuditingDelegate> delegate);
   void set_job_factory(std::unique_ptr<const URLRequestJobFactory> job_factory);
-  void set_throttler_manager(
-      std::unique_ptr<URLRequestThrottlerManager> throttler_manager);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
   void set_http_user_agent_settings(
       std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings);
@@ -332,8 +324,6 @@ class NET_EXPORT URLRequestContext final {
   // unique_ptr similarly to the other fields.
   std::unique_ptr<const URLRequestJobFactory> job_factory_storage_;
   raw_ptr<const URLRequestJobFactory> job_factory_ = nullptr;
-
-  std::unique_ptr<URLRequestThrottlerManager> throttler_manager_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
   // Must precede |reporting_service_| and |network_error_logging_service_|

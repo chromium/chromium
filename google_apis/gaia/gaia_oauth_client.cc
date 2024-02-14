@@ -27,7 +27,6 @@
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request_throttler_entry.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -52,18 +51,12 @@ class GaiaOAuthClient::Core
         url_loader_factory_(url_loader_factory),
         delegate_(nullptr),
         request_type_(NO_PENDING_REQUEST) {
-    backoff_policy_.num_errors_to_ignore =
-        net::URLRequestThrottlerEntry::kDefaultNumErrorsToIgnore;
-    backoff_policy_.initial_delay_ms =
-        net::URLRequestThrottlerEntry::kDefaultInitialDelayMs;
-    backoff_policy_.multiply_factor =
-        net::URLRequestThrottlerEntry::kDefaultMultiplyFactor;
-    backoff_policy_.jitter_factor =
-        net::URLRequestThrottlerEntry::kDefaultJitterFactor;
-    backoff_policy_.maximum_backoff_ms =
-        net::URLRequestThrottlerEntry::kDefaultMaximumBackoffMs;
-    backoff_policy_.entry_lifetime_ms =
-        net::URLRequestThrottlerEntry::kDefaultEntryLifetimeMs;
+    backoff_policy_.num_errors_to_ignore = 2;
+    backoff_policy_.initial_delay_ms = 700;
+    backoff_policy_.multiply_factor = 1.4;
+    backoff_policy_.jitter_factor = 0.4;
+    backoff_policy_.maximum_backoff_ms = 15 * 60 * 1000;
+    backoff_policy_.entry_lifetime_ms = 2 * 60 * 1000;
     backoff_policy_.always_use_initial_delay = false;
   }
 

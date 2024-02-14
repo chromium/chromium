@@ -94,7 +94,6 @@
 #include "net/url_request/url_request_error_job.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_redirect_job.h"
-#include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -325,10 +324,6 @@ URLRequestHttpJob::URLRequestHttpJob(
     const HttpUserAgentSettings* http_user_agent_settings)
     : URLRequestJob(request),
       http_user_agent_settings_(http_user_agent_settings) {
-  URLRequestThrottlerManager* manager = request->context()->throttler_manager();
-  if (manager)
-    throttling_entry_ = manager->RegisterRequestUrl(request->url());
-
   ResetTimer();
 }
 
@@ -527,9 +522,6 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
     response_info_ = transaction_->GetResponseInfo();
   }
 
-  if (!response_info_->was_cached && throttling_entry_.get())
-    throttling_entry_->UpdateWithResponse(GetResponseCode());
-
   ProcessStrictTransportSecurityHeader();
 
   // Clear |set_cookie_access_result_list_| after any processing in case
@@ -668,18 +660,12 @@ void URLRequestHttpJob::StartTransactionInternal() {
             is_shared_dictionary_read_allowed_callback_);
       }
 
-      if (!throttling_entry_.get() ||
-          !throttling_entry_->ShouldRejectRequest(*request_)) {
-        rv = transaction_->Start(
-            &request_info_,
-            base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
-                           base::Unretained(this)),
-            request_->net_log());
-        start_time_ = base::TimeTicks::Now();
-      } else {
-        // Special error code for the exponential back-off module.
-        rv = ERR_TEMPORARILY_THROTTLED;
-      }
+      rv = transaction_->Start(
+          &request_info_,
+          base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
+                         base::Unretained(this)),
+          request_->net_log());
+      start_time_ = base::TimeTicks::Now();
     }
   }
 

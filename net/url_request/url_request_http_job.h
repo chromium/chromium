@@ -29,7 +29,6 @@
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_throttler_entry_interface.h"
 
 namespace net {
 
@@ -250,10 +249,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // itself owned by one of those, so `response_info_` needs to be destroyed
   // first.
   raw_ptr<const HttpResponseInfo> response_info_ = nullptr;
-
-  // This is used to supervise traffic and enforce exponential
-  // back-off. May be NULL.
-  scoped_refptr<URLRequestThrottlerEntryInterface> throttling_entry_;
 
   base::Time request_creation_time_;
 

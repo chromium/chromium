@@ -276,10 +276,6 @@ class NET_EXPORT URLRequestContextBuilder {
 
   void SetSpdyAndQuicEnabled(bool spdy_enabled, bool quic_enabled);
 
-  void set_throttling_enabled(bool throttling_enabled) {
-    throttling_enabled_ = throttling_enabled;
-  }
-
   void set_sct_auditing_delegate(
       std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
@@ -413,7 +409,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::optional<std::string> cookie_deprecation_label_;
 
   bool http_cache_enabled_ = true;
-  bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
 
