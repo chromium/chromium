@@ -2811,7 +2811,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean lastTabIsInGroup =
                 mTabGroupModelFilter.hasOtherRelatedTabs(
                         getTabById(mStripTabs[mStripTabs.length - 1].getId()));
-        float startMargin = (firstTabIsInGroup || mReorderingForTabDrop) ? mTabMarginWidth : 0f;
+        float startMargin = firstTabIsInGroup ? mTabMarginWidth : 0f;
         float startMarginDelta = startMargin - mStripStartMarginForReorder;
         mStripStartMarginForReorder = startMargin;
         mStripTabs[mStripTabs.length - 1].setTrailingMargin(
@@ -3177,12 +3177,17 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         ? x > mStripTabs[0].getTouchTargetRight()
                         : x < mStripTabs[0].getTouchTargetLeft();
         if (inStartGap && mInteractingTab != null) {
-            finishAnimations();
+            float delta = mTabMarginWidth - mStripStartMarginForReorder;
+            mStripStartMarginForReorder = mTabMarginWidth;
+            if (delta != 0.f) {
+                mReorderExtraMinScrollOffset += delta;
+                mScrollOffset -= delta;
+            }
 
+            finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
             setTrailingMarginForTab(mInteractingTab, mLastTrailingMargin, animationList);
             mInteractingTab = null;
-
             startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
 
             // 2.a. Early-out if we just entered the start gap.
