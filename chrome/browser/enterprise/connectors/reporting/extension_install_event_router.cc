@@ -24,12 +24,16 @@ constexpr char kKeyName[] = "name";
 constexpr char kKeyDescription[] = "description";
 constexpr char kKeyAction[] = "extension_action_type";
 constexpr char kKeyVersion[] = "extension_version";
-constexpr char kKeyFromWebstore[] = "from_webstore";
+constexpr char kKeySource[] = "extension_source";
 
 // Extension action types
 constexpr char kInstallAction[] = "INSTALL";
 constexpr char kUpdateAction[] = "UPDATE";
 constexpr char kUninstallAction[] = "UNINSTALL";
+
+// Extension sources
+constexpr char kChromeWebstoreSource[] = "CHROME_WEBSTORE";
+constexpr char kExternalSource[] = "EXTERNAL";
 
 }  // namespace
 
@@ -70,7 +74,8 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   event.Set(kKeyDescription, extension->description());
   event.Set(kKeyAction, extension_action);
   event.Set(kKeyVersion, extension->GetVersionForDisplay());
-  event.Set(kKeyFromWebstore, extension->from_webstore());
+  event.Set(kKeySource, extension->from_webstore() ? kChromeWebstoreSource
+                                                   : kExternalSource);
 
   reporting_client_->ReportRealtimeEvent(
       ReportingServiceSettings::kExtensionInstallEvent,
