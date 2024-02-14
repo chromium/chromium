@@ -576,8 +576,10 @@ class BuildConfigGenerator extends DefaultTask {
                   info_path = "${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
             """.stripIndent(/* forceGroovyBehavior */ true))
         } else if (dependency.extension == 'group') {
+            String targetType = (targetName.startsWith('androidx') ?
+                    'androidx_java_group' : 'java_group')
             sb.append("""\
-                java_group("${targetName}") {
+                ${targetType}("${targetName}") {
             """.stripIndent(/* forceGroovyBehavior */ true))
         } else {
             throw new IllegalStateException('Dependency type should be JAR or AAR or group')

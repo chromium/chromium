@@ -8,7 +8,10 @@ template("_androidx_prebuilt") {
   target(invoker.target_type, target_name) {
     forward_variables_from(invoker, "*", [ "target_type" ])
 
-    if (target_name == "androidx_annotation_annotation_jvm_java") {
+    if (target_name == "androidx_annotation_annotation_java") {
+      # Ensure this dep is the suggested one when targets are missing it.
+      preferred_dep = true
+    } else if (target_name == "androidx_annotation_annotation_jvm_java") {
       # https://crbug.com/989505
       jar_excluded_patterns = [ "META-INF/proguard/*" ]
       proguard_configs = [ "androidx_annotations.flags" ]
@@ -47,9 +50,6 @@ template("_androidx_prebuilt") {
       proguard_configs = [ "androidx_fragment.flags" ]
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
-      ignore_proguard_configs = true
-    } else if (target_name == "androidx_lifecycle_lifecycle_runtime_java") {
-      # https://crbug.com/887942#c1
       ignore_proguard_configs = true
     } else if (target_name == "androidx_media_media_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
@@ -123,5 +123,12 @@ template("androidx_android_aar_prebuilt") {
     # The libraries have duplicate resources such as
     # "primary_text_default_material_dark".
     resource_overlay = true
+  }
+}
+
+template("androidx_java_group") {
+  _androidx_prebuilt(target_name) {
+    forward_variables_from(invoker, "*")
+    target_type = "java_group"
   }
 }
