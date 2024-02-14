@@ -45,7 +45,8 @@ class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
   // Please keep in sync with BackForwardCacheNotRestoredReason in
-  // tools/metrics/histograms/enums.xml. These values should not be renumbered.
+  // tools/metrics/histograms/metadata/navigation/enums.xml. These values should
+  // not be renumbered.
   enum class NotRestoredReason : uint8_t {
     kMinValue = 0,
     kNotPrimaryMainFrame = 0,
