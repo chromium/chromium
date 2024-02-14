@@ -146,7 +146,15 @@ suite('<timezone-subpage> with logged-in user', () => {
             'ash.user.geolocation_access_level',
             GeolocationAccessLevel.DISALLOWED);
         await flushTasks();
-        assertTrue(!!timezoneSubpage.shadowRoot!.querySelector('#warningText'));
+
+        const warningText =
+            timezoneSubpage.shadowRoot!.querySelector('#warningText');
+        assertTrue(!!warningText);
+        // Check that warning contains the link anchor.
+        assertTrue(
+            warningText?.getAttribute('warning-text-with-anchor')
+                ?.includes('<a href="#">') ??
+            false);
       });
 });
 

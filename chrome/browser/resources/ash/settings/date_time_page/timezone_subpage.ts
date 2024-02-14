@@ -135,7 +135,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   private computedGeolocationWarningText(): string {
-    return this.i18n(
+    return loadTimeData.getStringF(
         'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
   }
 
