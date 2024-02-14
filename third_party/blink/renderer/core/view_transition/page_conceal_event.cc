@@ -16,6 +16,27 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+namespace {
+
+String TypeToString(mojom::blink::NavigationTypeForNavigationApi type) {
+  static_assert(static_cast<int>(
+                    mojom::blink::NavigationTypeForNavigationApi::kPush) == 0);
+  static_assert(static_cast<int>(
+                    mojom::blink::NavigationTypeForNavigationApi::kTraverse) ==
+                1);
+  static_assert(static_cast<int>(
+                    mojom::blink::NavigationTypeForNavigationApi::kReplace) ==
+                2);
+  static_assert(
+      static_cast<int>(mojom::blink::NavigationTypeForNavigationApi::kReload) ==
+      3);
+
+  DEFINE_STATIC_LOCAL(Vector<String>, names,
+                      ({"push", "traverse", "replace", "reload"}));
+  return names[static_cast<int>(type)];
+}
+
+}  // namespace
 
 PageConcealEvent::PageConcealEvent(
     Document& document,
@@ -44,14 +65,11 @@ PageConcealEvent::PageConcealEvent(
     CHECK(from);
 
     NavigationHistoryEntry* entry = nullptr;
-    String nav_type;
     switch (page_conceal_event_params->navigation_type) {
       case mojom::blink::NavigationTypeForNavigationApi::kReload:
-        nav_type = "reload";
         entry = from;
         break;
       case mojom::blink::NavigationTypeForNavigationApi::kTraverse: {
-        nav_type = "traverse";
         // This shouldn't be null but we can't assert because that may happen in
         // rare race conditions.
         Member<HistoryItem> destination_item =
@@ -63,10 +81,6 @@ PageConcealEvent::PageConcealEvent(
       } break;
       case mojom::blink::NavigationTypeForNavigationApi::kPush:
       case mojom::blink::NavigationTypeForNavigationApi::kReplace:
-        nav_type = page_conceal_event_params->navigation_type ==
-                           mojom::blink::NavigationTypeForNavigationApi::kPush
-                       ? "push"
-                       : "replace";
         entry = MakeGarbageCollected<NavigationHistoryEntry>(
             document.domWindow(),
             /*key=*/WTF::CreateCanonicalUUIDString(),
@@ -77,7 +91,8 @@ PageConcealEvent::PageConcealEvent(
     }
 
     activation_ = MakeGarbageCollected<NavigationActivation>();
-    activation_->Update(entry, from, nav_type);
+    activation_->Update(
+        entry, from, TypeToString(page_conceal_event_params->navigation_type));
   }
 }
 
