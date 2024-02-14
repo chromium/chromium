@@ -3782,7 +3782,7 @@ void NavigatorAuction::FinalizeAdComplete(
     ScriptPromiseResolver* resolver,
     const std::optional<KURL>& creative_url) {
   if (creative_url) {
-    resolver->Resolve(creative_url);
+    resolver->Resolve(*creative_url);
   } else {
     // TODO(https://crbug.com/1249186): Add full impl of methods.
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(

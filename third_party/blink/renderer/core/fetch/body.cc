@@ -90,6 +90,11 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
     resolver_->Resolve(object);
   }
 
+  template <>
+  void ResolveNow(const Persistent<DisallowNewWrapper<ScriptValue>>& object) {
+    resolver_->Resolve(object->Value());
+  }
+
   const Member<ScriptPromiseResolver> resolver_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

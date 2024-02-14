@@ -394,17 +394,6 @@ class CORE_EXPORT ScriptPromiseResolver
                           base::checked_cast<int>(converted_sequence.size()));
   }
 
-  // Nullable
-  template <typename InnerType>
-  static v8::Local<v8::Value> ToV8(const std::optional<InnerType>& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    if (!value) {
-      return v8::Null(isolate);
-    }
-    return ToV8(*value, creation_context, isolate);
-  }
-
   // Promise
   static v8::Local<v8::Value> ToV8(const ScriptPromise& value,
                                    v8::Local<v8::Object> creation_context,
@@ -421,15 +410,6 @@ class CORE_EXPORT ScriptPromiseResolver
       return v8::Undefined(isolate);
     }
     return value.V8Value();
-  }
-
-  static v8::Local<v8::Value> ToV8(const DisallowNewWrapper<ScriptValue>* value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    if (value->Value().IsEmpty()) {
-      return v8::Undefined(isolate);
-    }
-    return value->Value().V8Value();
   }
 
   ResolutionState state_;
