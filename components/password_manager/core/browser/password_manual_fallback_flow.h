@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
@@ -26,6 +27,7 @@ class PasswordManagerClient;
 // Displays all available passwords password suggestions on password and
 // non-password forms for all available passwords.
 class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
+                                   public PasswordSuggestionFlow,
                                    public SavedPasswordsPresenter::Observer {
  public:
   PasswordManualFallbackFlow(
@@ -44,7 +46,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // already read from disk. Otherwise, saves the input parameters to run the
   // flow when the passwords are read from disk.
   void RunFlow(const gfx::RectF& bounds,
-               base::i18n::TextDirection text_direction);
+               base::i18n::TextDirection text_direction) override;
 
   // AutofillPopupDelegate:
   void OnPopupShown() override;
