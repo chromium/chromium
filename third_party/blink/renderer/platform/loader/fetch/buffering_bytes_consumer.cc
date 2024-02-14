@@ -216,7 +216,6 @@ void BufferingBytesConsumer::OnTimerFired(TimerBase*) {
 
 void BufferingBytesConsumer::OnStateChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SCOPED_CRASH_KEY_BOOL("BBC_OnStateChange", "client", client_ != nullptr);
   BytesConsumer::Client* client = client_;
   BufferData();
   if (client)
@@ -224,8 +223,6 @@ void BufferingBytesConsumer::OnStateChange() {
 }
 
 void BufferingBytesConsumer::BufferData() {
-  SCOPED_CRASH_KEY_NUMBER("BBC_BufferData", "buffering_state",
-                          static_cast<int>(buffering_state_));
   if (buffering_state_ != BufferingState::kStarted)
     return;
 
