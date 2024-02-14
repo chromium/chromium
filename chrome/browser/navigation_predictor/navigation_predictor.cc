@@ -203,6 +203,9 @@ void NavigationPredictor::ReportNewAnchorElements(
       GetNavigationPredictorMetricsDocumentData().GetAnchorsData();
   const GURL document_url =
       render_frame_host().GetLastCommittedURL().GetWithoutRef();
+  if (!document_url.is_valid()) {
+    return;
+  }
   std::vector<GURL> new_predictions;
   for (auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
