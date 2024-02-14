@@ -21,9 +21,6 @@ extern const base::FilePath::CharType kNssCertDbPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssKeyDbPath[];
 
-// Background color used for the Chrome OS boot splash screen.
-constexpr SkColor kChromeOsBootColor = SkColorSetRGB(0xfe, 0xfe, 0xfe);
-
 // The border thickness of keyboard focus for launcher items and system tray.
 constexpr int kFocusBorderThickness = 2;
 

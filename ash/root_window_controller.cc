@@ -70,7 +70,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
-#include "ash/wm/system_wallpaper_controller.h"
 #include "ash/wm/window_parenting_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -722,7 +721,6 @@ void RootWindowController::Shutdown(aura::Window* destination_root) {
     ash_host_->PrepareForShutdown();
   }
   window_parenting_controller_.reset();
-  system_wallpaper_.reset();
   security_curtain_widget_controller_.reset();
   lock_screen_action_background_controller_.reset();
   aura::client::SetScreenPositionClient(root_window, nullptr);
@@ -1088,7 +1086,6 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   root_window_layout_manager_ = root_window_layout_manager.get();
 
   CreateContainers();
-  CreateSystemWallpaper(root_window_type);
 
   InitLayoutManagers(std::move(root_window_layout_manager));
   InitTouchHuds();
@@ -1469,23 +1466,6 @@ aura::Window* RootWindowController::CreateContainer(int window_id,
   }
   root_window_layout_manager_->AddContainer(window);
   return window;
-}
-
-void RootWindowController::CreateSystemWallpaper(
-    RootWindowType root_window_type) {
-  SkColor color = SK_ColorBLACK;
-  // The splash screen appears on the primary display at boot. If this is a
-  // secondary monitor (either connected at boot or connected later) or if the
-  // browser restarted for a second login then don't use the boot color.
-  const bool is_boot_splash_screen =
-      root_window_type == RootWindowType::PRIMARY &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kFirstExecAfterBoot);
-  if (is_boot_splash_screen) {
-    color = kChromeOsBootColor;
-  }
-  system_wallpaper_ =
-      std::make_unique<SystemWallpaperController>(GetRootWindow(), color);
 }
 
 AccessibilityPanelLayoutManager*
