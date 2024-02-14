@@ -72,8 +72,8 @@ export async function showGridViewButtonSwitches() {
   const appId = await showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
 
   // Check that a11y message for switching to grid view.
-  let a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  let a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', appId, []);
   chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq(
       'File list has changed to thumbnail view.', a11yMessages[0]);

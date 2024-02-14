@@ -4,6 +4,10 @@
 
 interface Window {
   chooseEntryResult?: Entry|null;
+  step: (() => void)|null;
+  autoStep(): void;
+  autostep: boolean;
+  currentStep: Promise<void>|null;
 }
 
 
@@ -14,4 +18,14 @@ interface FileTaskDescriptor {
   appId: string;
   taskType: string;
   actionId: string;
+}
+
+
+// TODO(b/319189127): Remove this when the integration tests extension is
+// migrated to manifest v3 and can use the Promise version of this API.
+declare namespace chrome {
+  export namespace commandLinePrivate {
+    export function hasSwitch(
+        name: string, callback: (result: boolean) => void): void;
+  }
 }

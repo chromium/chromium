@@ -4,7 +4,7 @@
 
 import {DialogType, type ElementObject} from '../prod/file_manager/shared_types.js';
 import {ExecuteScriptError} from '../remote_call.js';
-import {ENTRIES, EntryType, RootPath, TestEntryInfo, addEntries, getCaller, getHistogramCount, pending, repeatUntil, sanitizeDate, sendTestMessage, wait} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 
 import {mountCrostini, mountGuestOs, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -152,14 +152,14 @@ async function openQuickViewViaContextMenu(appId: string, name: string) {
  */
 async function openQuickViewMultipleSelection(appId: string, names: string[]) {
   // Get the file-list rows that are check-selected (multi-selected).
-  const selectedRows = await remoteCall.callRemoteTestUtil(
+  const selectedRows = await remoteCall.callRemoteTestUtil<ElementObject[]>(
       'deepQueryAllElements', appId, ['#file-list li[selected]']);
 
   // Check: the selection should contain the given file names.
   chrome.test.assertEq(names.length, selectedRows.length);
   for (let i = 0; i < names.length; i++) {
     chrome.test.assertTrue(
-        selectedRows[i].attributes['file-name'].includes(names[i]));
+        selectedRows[i]?.attributes['file-name']?.includes(names[i]!)!);
   }
 
   // Open Quick View via its keyboard shortcut.
@@ -284,10 +284,10 @@ async function getQuickViewMetadataBoxField(
  * @param statement Javascript statement to be executed within the
  *     <preview-tag>.
  */
-async function executeJsInPreviewTagAndCatchErrors(
-    appId: string, query: string[], statement: string): Promise<unknown> {
+async function executeJsInPreviewTagAndCatchErrors<T>(
+    appId: string, query: string[], statement: string): Promise<T|undefined> {
   try {
-    return await remoteCall.executeJsInPreviewTag(appId, query, statement);
+    return await remoteCall.executeJsInPreviewTag<T>(appId, query, statement);
   } catch (e) {
     if (e instanceof ExecuteScriptError) {
       return undefined;
@@ -921,9 +921,9 @@ export async function openQuickViewScrollText() {
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
-    const scrollY =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
-    return checkQuickViewTextScrollY(scrollY);
+    const scrollY = await remoteCall.executeJsInPreviewTag<string>(
+        appId, preview, getScrollY);
+    return checkQuickViewTextScrollY(scrollY!);
   });
 }
 
@@ -1186,8 +1186,8 @@ export async function openQuickViewScrollHtml() {
 
   // The initial preview scrollY should be 0.
   await repeatUntil(async () => {
-    const scrollY =
-        await executeJsInPreviewTagAndCatchErrors(appId, preview, getScrollY);
+    const scrollY = await executeJsInPreviewTagAndCatchErrors<string>(
+        appId, preview, getScrollY);
     if (String(scrollY) !== '0') {
       return pending(caller, `Waiting for preview text to load.`);
     }
@@ -1196,9 +1196,9 @@ export async function openQuickViewScrollHtml() {
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
-    const scrollY =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
-    return checkQuickViewHtmlScrollY(scrollY);
+    const scrollY = await remoteCall.executeJsInPreviewTag<string>(
+        appId, preview, getScrollY);
+    return checkQuickViewHtmlScrollY(scrollY!);
   });
 
   // Check: the mimeType field should not be displayed.
@@ -1246,8 +1246,9 @@ export async function openQuickViewBackgroundColorHtml() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
 }
@@ -1303,9 +1304,9 @@ export async function openQuickViewAudio() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -1358,8 +1359,9 @@ export async function openQuickViewAudioOnDrive() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -1467,8 +1469,9 @@ export async function openQuickViewImageJpg() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -1521,8 +1524,9 @@ export async function openQuickViewImageJpeg() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -1896,8 +1900,9 @@ export async function openQuickViewVideo() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -1957,8 +1962,9 @@ export async function openQuickViewVideoOnDrive() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   if (await isDarkModeEnabled()) {
     // Check: the preview body backgroundColor should be black.
@@ -2614,8 +2620,8 @@ export async function openQuickViewWithMultipleFilesKeyboardLeftRight() {
   // Wait until the preview displays that file's content.
   await repeatUntil(async () => {
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text = await executeJsInPreviewTagAndCatchErrors(
-                     appId, preview, getTextContent) as string[];
+    const text = await executeJsInPreviewTagAndCatchErrors<string>(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.tallText should be shown.
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
@@ -2855,8 +2861,9 @@ export async function openQuickViewTabIndexAudio() {
 
     // Check: back should eventually get the focus again.
     const activeElement =
-        await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === 'Back') {
+        await remoteCall.callRemoteTestUtil<ElementObject|null>(
+            'deepGetActiveElement', appId, []);
+    if (activeElement && activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -2911,8 +2918,9 @@ export async function openQuickViewTabIndexVideo() {
 
     // Check: back should eventually get the focus again.
     const activeElement =
-        await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === 'Back') {
+        await remoteCall.callRemoteTestUtil<ElementObject|null>(
+            'deepGetActiveElement', appId, []);
+    if (activeElement && activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -3418,8 +3426,8 @@ export async function openQuickViewUmaViaSelectionMenuKeyboard() {
     chrome.test.assertEq(
         'tabKeyDispatched', result, 'Tab key dispatch failure');
 
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
 
     if (element && element.attributes['id'] === 'selection-menu-button') {
       return true;
@@ -3435,8 +3443,8 @@ export async function openQuickViewUmaViaSelectionMenuKeyboard() {
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, keyDown));
 
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
 
     if (element && element.attributes['command'] === '#get-info') {
       return true;

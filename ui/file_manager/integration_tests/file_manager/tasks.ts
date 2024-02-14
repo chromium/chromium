@@ -330,12 +330,13 @@ export async function noActionBarOpenForDirectories() {
       appId, 'cr-menu-item[command="#open-with"]:not([hidden])');
   // Ensure apps are shown.
   await remoteCall.waitForElement(appId, '#tasks-menu:not([hidden])');
-  const appOptions = await remoteCall.callRemoteTestUtil(
+  const appOptions = await remoteCall.callRemoteTestUtil<ElementObject[]>(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
+  chrome.test.assertTrue(!!appOptions);
   chrome.test.assertEq(3, appOptions.length);
-  chrome.test.assertEq('DirTask1 (default)', appOptions[0].text);
-  chrome.test.assertEq('DirTask2', appOptions[1].text);
-  chrome.test.assertEq('Change default…', appOptions[2].text);
+  chrome.test.assertEq('DirTask1 (default)', appOptions[0]?.text);
+  chrome.test.assertEq('DirTask2', appOptions[1]?.text);
+  chrome.test.assertEq('Change default…', appOptions[2]?.text);
 }
 
 export async function executeViaDblClick() {

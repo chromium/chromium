@@ -38,20 +38,22 @@ async function keyboardCopy(path: string) {
 
   // Copy the file into the same file list.
   chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('copyFile', appId, ['world.ogv']),
+      (await remoteCall.callRemoteTestUtil<boolean>(
+          'copyFile', appId, ['world.ogv'])),
       'copyFile failed');
   // Check: the copied file should appear in the file list.
   const expectedEntryRows = [ENTRIES.world.getExpectedRow()].concat(
       [['world (1).ogv', '56 KB', 'OGG video']]);
   await remoteCall.waitForFiles(
       appId, expectedEntryRows, {ignoreLastModifiedTime: true});
-  const files = await remoteCall.callRemoteTestUtil('getFileList', appId, []);
+  const files =
+      await remoteCall.callRemoteTestUtil<string[]>('getFileList', appId, []);
   if (path === RootPath.DRIVE) {
     // DriveFs doesn't preserve mtimes so they shouldn't match.
-    chrome.test.assertTrue(files[0][3] !== files[1][3], files[0][3]);
+    chrome.test.assertTrue(files[0]![3] !== files[1]![3], files[0]![3]);
   } else {
     // The mtimes should match for Local files.
-    chrome.test.assertTrue(files[0][3] === files[1][3], files[0][3]);
+    chrome.test.assertTrue(files[0]![3] === files[1]![3], files[0]![3]);
   }
 }
 

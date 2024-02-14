@@ -53,7 +53,7 @@ async function getExecutedTask(
 
   // Wait until a task has been executed.
   await repeatUntil(async () => {
-    const executeTaskCount = await remoteCall.callRemoteTestUtil(
+    const executeTaskCount = await remoteCall.callRemoteTestUtil<number>(
         'staticFakeCounter', appId, ['chrome.fileManagerPrivate.executeTask']);
     if (executeTaskCount === expectedCount) {
       return true;
@@ -63,12 +63,13 @@ async function getExecutedTask(
   });
 
   // Arguments provided for the last call to executeTask().
-  const executeTaskArgs = (await remoteCall.callRemoteTestUtil(
-      'staticFakeCalledArgs', appId,
-      ['chrome.fileManagerPrivate.executeTask']))[expectedCount - 1];
+  const executeTaskArgs =
+      (await remoteCall.callRemoteTestUtil<FileTaskDescriptor[][]>(
+          'staticFakeCalledArgs', appId,
+          ['chrome.fileManagerPrivate.executeTask']))[expectedCount - 1]!;
 
   // The task descriptor is the first argument.
-  return executeTaskArgs[0];
+  return executeTaskArgs[0]!;
 }
 
 export async function openOfficeWordFile() {

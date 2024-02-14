@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -237,8 +238,9 @@ export async function toolbarAltACommand() {
 
   // Check that a menu-button should be focused.
   const focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-  const cssClasses = focusedElement.attributes['class'] || '';
+      await remoteCall.callRemoteTestUtil<ElementObject|null>(
+          'getActiveElement', appId, []);
+  const cssClasses = focusedElement?.attributes['class'] || '';
   chrome.test.assertTrue(cssClasses.includes('menu-button'));
 }
 

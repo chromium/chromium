@@ -123,8 +123,8 @@ export async function formatDialogIsModal() {
   await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
 
   // Check: the file-list should have nothing selected.
-  const selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  const selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
 }
 

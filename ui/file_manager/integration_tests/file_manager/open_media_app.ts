@@ -29,8 +29,8 @@ export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   // Wait for the expected 1 a11y announce.
   const caller = getCaller();
   await repeatUntil(async () => {
-    const a11yMessages =
-        await remoteCall.callRemoteTestUtil('getA11yAnnounces', filesAppId, []);
+    const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+        'getA11yAnnounces', filesAppId, []);
     return a11yMessages.length === 1 ?
         true :
         pending(
@@ -39,8 +39,8 @@ export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   });
 
   // Fetch A11y messages.
-  const a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', filesAppId, []);
+  const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', filesAppId, []);
 
   // Check that opening the file was announced to screen reader.
   chrome.test.assertEq(1, a11yMessages.length);

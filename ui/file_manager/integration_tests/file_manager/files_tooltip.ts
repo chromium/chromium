@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, wait} from '../test_util.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -29,8 +30,8 @@ const tooltipShowTimeout = 500;  // ms
 function getActiveElementById(appId: string, id: string): Promise<void> {
   const caller = getCaller();
   return repeatUntil(async () => {
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
     if (!element || element.attributes['id'] !== id) {
       return pending(caller, 'Waiting for active element by id #%s.', id);
     }

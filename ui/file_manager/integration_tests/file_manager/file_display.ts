@@ -137,23 +137,22 @@ export async function fileDisplayDriveOffline() {
   // children elements.
   const offlineEntry =
       '#file-list .table-row.file.dim-offline > div:first-child';
-  let elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, [offlineEntry, ['opacity']]);
+  let elements =
+      await remoteCall.queryElements(appId, offlineEntry, ['opacity']);
 
   // Check: the hello.txt file only should be rendered 'offline'.
   chrome.test.assertEq(1, elements.length);
-  chrome.test.assertEq(0, elements[0]!.text.indexOf('hello.txt'));
+  chrome.test.assertEq(0, elements[0]!.text?.indexOf('hello.txt'));
 
   // Check: hello.txt must have 'offline' CSS render style (opacity).
-  chrome.test.assertEq('0.38', elements[0]!.styles.opacity);
+  chrome.test.assertEq('0.38', elements[0]!.styles?.['opacity']);
 
   // Retrieve file entries that are 'available offline' (not dimmed).
   // Use "first-child" here because opacity for offline only applies on the
   // children elements.
   const availableEntry =
       '#file-list .table-row:not(.dim-offline) > div:first-child';
-  elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, [availableEntry, ['opacity']]);
+  elements = await remoteCall.queryElements(appId, availableEntry, ['opacity']);
 
   // Check: these files should have 'available offline' CSS style.
   chrome.test.assertEq(3, elements.length);
@@ -165,13 +164,13 @@ export async function fileDisplayDriveOffline() {
   }
 
   // Directories are shown as 'available offline'.
-  checkRenderedInAvailableOfflineStyle(elements[0], 'photos');
+  checkRenderedInAvailableOfflineStyle(elements[0]!, 'photos');
 
   // Hosted documents are shown as 'available offline'.
-  checkRenderedInAvailableOfflineStyle(elements[1], 'Test Document.gdoc');
+  checkRenderedInAvailableOfflineStyle(elements[1]!, 'Test Document.gdoc');
 
   // Pinned files are shown as 'available offline'.
-  checkRenderedInAvailableOfflineStyle(elements[2], 'pinned');
+  checkRenderedInAvailableOfflineStyle(elements[2]!, 'pinned');
 }
 
 /**
@@ -181,13 +180,13 @@ export async function fileDisplayDriveOffline() {
 async function checkDriveOnlineDisplay(appId: string) {
   // Retrieve all file list row entries.
   const fileEntry = '#file-list .table-row';
-  const elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, [fileEntry, ['opacity']]);
+  const elements =
+      await remoteCall.queryElements(appId, fileEntry, ['opacity']);
 
   // Check: all files must have 'online' CSS style (not dimmed).
   chrome.test.assertEq(BASIC_DRIVE_ENTRY_SET.length, elements.length);
-  for (let i = 0; i < elements.length; ++i) {
-    chrome.test.assertEq('1', elements[i].styles.opacity);
+  for (const element of elements) {
+    chrome.test.assertEq('1', element.styles?.['opacity']);
   }
 }
 

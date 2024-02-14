@@ -21,8 +21,8 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  */
 async function tabUntilFileSelected(appId: string) {
   // Check: the file-list should have nothing selected.
-  const selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  const selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
 
   // Press the tab until file-list gets focus and select some file.
@@ -32,8 +32,8 @@ async function tabUntilFileSelected(appId: string) {
     chrome.test.assertEq(result, 'tabKeyDispatched', 'Tab key dispatch failed');
 
     // Check if there is a file selected, and return if so.
-    const selectedRows = await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, ['#file-list li[selected]']);
+    const selectedRows =
+        await remoteCall.queryElements(appId, ['#file-list li[selected]']);
     if (selectedRows.length > 0) {
       return;
     }
@@ -51,8 +51,8 @@ export async function fileListAriaAttributes() {
 
   // Fetch column header.
   const columnHeadersQuery = ['#detail-table .table-header [aria-describedby]'];
-  const columnHeaders = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, [columnHeadersQuery, ['display']]);
+  const columnHeaders =
+      await remoteCall.queryElements(appId, columnHeadersQuery, ['display']);
 
   chrome.test.assertTrue(columnHeaders.length > 0);
   for (const header of columnHeaders) {
@@ -76,8 +76,8 @@ export async function fileListFocusFirstItem() {
   await tabUntilFileSelected(appId);
 
   // Check: The first file only is selected in the file entry rows.
-  const fileRows: ElementObject[] = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li']);
+  const fileRows: ElementObject[] =
+      await remoteCall.queryElements(appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
   const selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
@@ -93,8 +93,8 @@ export async function fileListSelectLastFocusedItem() {
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Check: the file-list should have nothing selected.
-  let selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  let selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
 
   // Move to item 2.
@@ -121,8 +121,8 @@ export async function fileListSelectLastFocusedItem() {
       'Ctrl+Space failed');
 
   // Check that items 2 and 3 are selected.
-  selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(2, selectedRows.length);
 
   // Cancel the selection.
@@ -135,12 +135,12 @@ export async function fileListSelectLastFocusedItem() {
   await tabUntilFileSelected(appId);
 
   // Check: The 3rd item only is selected.
-  const fileRows: ElementObject[] = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li']);
+  const fileRows: ElementObject[] =
+      await remoteCall.queryElements(appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
   selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
-  chrome.test.assertEq(2, fileRows.indexOf(selectedRows[0]));
+  chrome.test.assertEq(2, fileRows.indexOf(selectedRows[0]!));
 }
 
 /**
@@ -155,8 +155,9 @@ export async function fileListSortWithKeyboard() {
   const result = await sendTestMessage({name: 'dispatchTabKey', shift: true});
   chrome.test.assertEq(result, 'tabKeyDispatched', 'Tab key dispatch failed');
   // Check: sort button has focus.
-  let focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+  let focusedElement = await remoteCall.callRemoteTestUtil<ElementObject>(
+      'getActiveElement', appId, []);
+  chrome.test.assertTrue(!!focusedElement);
   // Check: button is showing down arrow.
   chrome.test.assertTrue(
       focusedElement['attributes']['iron-icon'] === 'files16:arrow_down_small');
@@ -202,8 +203,8 @@ export async function fileListSortWithKeyboard() {
 async function countAndCheckLatestA11yMessage(
     appId: string, expectedCount: number,
     expectedMessage?: null|string): Promise<string> {
-  const a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', appId, []);
   if (expectedMessage === null || expectedMessage === undefined) {
     return '';
   }
@@ -214,7 +215,7 @@ async function countAndCheckLatestA11yMessage(
       `Wrong number of a11y messages: latest message: ${
           latestMessage} \nAll messages:\n ${a11yMessages.join('\n-')}`);
   chrome.test.assertEq(expectedMessage, latestMessage);
-  return latestMessage;
+  return latestMessage!;
 }
 
 /**

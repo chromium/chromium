@@ -8,7 +8,6 @@ preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
 js_files = [
-  "remote_call.js",
   "test_util.js",
 
   # File Manager.
@@ -39,9 +38,8 @@ js_files = [
 ]
 
 ts_files = [
+  "remote_call.ts",
   "testcase.ts",
-
-  # "remote_call.ts",
 
   # "test_util.ts",
 
@@ -98,6 +96,7 @@ ts_files = [
 
   "file_manager/keyboard_operations.ts",
   "file_manager/manage_dialog.ts",
+
   "file_manager/metadata.ts",
 
   # "file_manager/metrics.ts",
@@ -176,8 +175,6 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/file_system.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
     "definitions.d.ts",
-
-    # "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
   ]
 
   extra_deps = [
