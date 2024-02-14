@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
@@ -97,6 +100,20 @@ public class PostPasswordMigrationSheetViewTest {
         // The sheet is hidden.
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+
+        // The dismiss callback was called.
+        verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+    }
+
+    @Test
+    @MediumTest
+    public void testAcknowledgingTheNoticeClosesTheSheet() {
+        // The sheet is shown.
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The notice is acknowledged.
+        onView(withId(R.id.acknowledge_button)).perform(click());
 
         // The dismiss callback was called.
         verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);

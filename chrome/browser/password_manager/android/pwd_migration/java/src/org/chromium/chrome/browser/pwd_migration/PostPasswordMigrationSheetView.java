@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.pwd_migration;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -64,6 +65,12 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
                         .replace("%1$s", PasswordMigrationWarningUtil.getChannelString(context));
         TextViewWithLeading subtitleView = mContentView.findViewById(R.id.sheet_subtitle);
         subtitleView.setText(subtitleText);
+        Button acknowledgeButton = mContentView.findViewById(R.id.acknowledge_button);
+        acknowledgeButton.setOnClickListener(
+                (unusedView) -> {
+                    assert mDismissHandler != null;
+                    mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+                });
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {
