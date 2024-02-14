@@ -72,13 +72,6 @@ enum FinalStatus {
   STATUS_FINISHED_WITHOUT_INSERT = 3;
 }
 
-// How the user used their clipboard with the feature.
-enum ClipboardUse {
-  CLIPBOARD_UNSPECIFIED = 0;
-  // User copied the compose response to the clipboard.
-  CLIPBOARD_RESPONSE_COPIED = 1;
-}
-
 // Stores all data associated with a single call to the model execution run for
 // compose.
 message ComposeRequest {
@@ -126,9 +119,9 @@ message Int128 {
 // This includes user feedback, and metrics about feature usage.
 // Next Id: 8
 message ComposeQuality {
+  reserved 3;
   FinalStatus final_status = 1;
   UserFeedback user_feedback = 2;
-  ClipboardUse clipboard_use = 3;
   // How long the user had to wait before seeing the model response.
   int64 request_latency_ms = 4;
   // How much was the text modified before commit only valid iff
