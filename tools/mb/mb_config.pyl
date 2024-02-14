@@ -827,6 +827,7 @@
 
     'official_reclient_lacros_include_unwind_tables': [
       'official', 'reclient', 'lacros', 'minimal_symbols', 'include_unwind_tables',
+      'also_build_ash_chrome',
     ],
 
     'official_reclient_linux_perf_pgo': [
@@ -966,6 +967,10 @@
   # This is a dict mapping a given 'mixin' name to a dict of settings that
   # mb should use. See //tools/mb/docs/user_guide.md for more information.
   'mixins': {
+    'also_build_ash_chrome': {
+      'gn_args': 'also_build_ash_chrome=true'
+    },
+
     'also_build_lacros_chrome': {
       'gn_args': 'also_build_lacros_chrome=true'
     },
