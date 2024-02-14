@@ -50,18 +50,7 @@ namespace {
 // SetHeightAndShowWidget().
 constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
-
-// The Chrome Signin bubble width is expected to be 320px; since the default
-// x-margins are different with CR2023, then the fixed width must be adapted in
-// order to have the same bubble total size. The padding is also adapted in the
-// web UI in order to have the same spacing with the border elements.
-//
-// Total width = bubble_margin + fixed_width
-//      320    =     20 * 2    +     280
-constexpr int kInterceptionChromeSigninBubbleWidthCR2023 = 280;
-// Total width = bubble_margin + fixed_width
-//      320    =     16 * 2    +     288
-constexpr int kInterceptionChromeSigninBubbleWidth = 288;
+constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
 AvatarToolbarButton* GetAvatarToolbarButton(const Browser& browser) {
   return BrowserView::GetBrowserViewForBrowser(&browser)
@@ -104,9 +93,7 @@ int GetBubbleFixedWidthForInterceptionType(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   return interception_type ==
                  WebSigninInterceptor::SigninInterceptionType::kChromeSignin
-             ? features::IsChromeRefresh2023()
-                   ? kInterceptionChromeSigninBubbleWidthCR2023
-                   : kInterceptionChromeSigninBubbleWidth
+             ? kInterceptionChromeSigninBubbleWidth
              : kInterceptionBubbleWidth;
 }
 
@@ -291,12 +278,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   web_view_ = web_view.get();
   AddChildView(std::move(web_view));
 
-  // Keep the default margin, so that the rounded corners take proper effect.
-  // Currently only affects Chrome Signin intercept as it's padding got adapted.
-  if (bubble_parameters.interception_type !=
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-    set_margins(gfx::Insets());
-  }
+  set_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -319,6 +301,16 @@ void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
                 height));
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
   GetWidget()->Show();
+
+  if (ShouldUseExplicitBrowserSigninDesignUpdates(
+          bubble_parameters_.interception_type)) {
+    // Explicitly add corners to the inner web view to match the bubble corners.
+    // This has to be done since we removed the margins of the bubble view,
+    // which would create an overlap of the web view on top of the bubble empty
+    // corners.
+    web_view_->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(GetCornerRadius()));
+  }
 
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {

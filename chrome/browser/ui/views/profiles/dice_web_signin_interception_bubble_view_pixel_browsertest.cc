@@ -63,6 +63,7 @@ struct TestParam {
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
   bool enable_webui_refresh = false;
+  bool with_explicit_browser_signin_design = false;
   NameFormat name_format = NameFormat::Regular;
 };
 
@@ -77,96 +78,138 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 const TestParam kTestParams[] = {
     // Common consumer user case: regular account signing in to a profile having
     // a regular account on a non-managed device.
-    {"ConsumerSimple", WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false,
-     /*use_dark_theme=*/false,
-     /*intercepted_profile_color=*/SkColors::kMagenta},
+    {
+        .test_suffix = "ConsumerSimple",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .intercepted_profile_color = SkColors::kMagenta,
+    },
+
+    // Ditto, with ChromeRefresh2023.
+    {
+        .test_suffix = "ConsumerSimpleChromeRefresh2023",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .intercepted_profile_color = SkColors::kMagenta,
+        .enable_webui_refresh = true,
+        .with_explicit_browser_signin_design = true,
+    },
 
     // Ditto, with a different color scheme
-    {"ConsumerDark", WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false,
-     /*use_dark_theme=*/true,
-     /*intercepted_profile_color=*/SkColors::kMagenta},
+    {
+        .test_suffix = "ConsumerDark",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .use_dark_theme = true,
+        .intercepted_profile_color = SkColors::kMagenta,
+    },
 
     // Regular account signing in to a profile having a regular account on a
     // managed device (having policies configured locally for example).
-    {"ConsumerManagedDevice",
-     WebSigninInterceptor::SigninInterceptionType::kMultiUser,
-     policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
-     /*is_intercepted_account_managed=*/false,
-     /*use_dark_theme=*/false,
-     /*intercepted_profile_color=*/SkColors::kYellow,
-     /*primary_profile_color=*/SkColors::kMagenta},
+    {
+        .test_suffix = "ConsumerManagedDevice",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        .management_authority =
+            policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
+        .intercepted_profile_color = SkColors::kYellow,
+        .primary_profile_color = SkColors::kMagenta,
+    },
 
     // Regular account signing in to a profile having a managed account on a
     // non-managed device.
-    {"EnterpriseSimple",
-     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false},
+    {
+        .test_suffix = "EnterpriseSimple",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+    },
 
     // Managed account signing in to a profile having a regular account on a
     // non-managed device.
-    {"EnterpriseManagedIntercepted",
-     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/true},
+    {
+        .test_suffix = "EnterpriseManagedIntercepted",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        .is_intercepted_account_managed = true,
+    },
 
     // Ditto, with a different color scheme
-    {"EnterpriseManagedInterceptedDark",
-     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/true,
-     /*use_dark_theme=*/true},
+    {
+        .test_suffix = "EnterpriseManagedInterceptedDark",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        .is_intercepted_account_managed = true,
+        .use_dark_theme = true,
+    },
 
     // Regular account signing in to a profile having a managed account on a
     // managed device.
-    {"EntepriseManagedDevice",
-     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
-     policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
-     /*is_intercepted_account_managed=*/false},
+    {
+        .test_suffix = "EntepriseManagedDevice",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        .management_authority =
+            policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
+    },
 
     // Profile switch bubble: the account used for signing in is already
     // associated with another profile.
-    {"ProfileSwitch",
-     WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false},
+    {
+        .test_suffix = "ProfileSwitch",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+    },
+
+    // Ditto with ChromeRefresh2023.
+    {
+        .test_suffix = "ProfileSwitchChromeRefresh2023",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        .enable_webui_refresh = true,
+        .with_explicit_browser_signin_design = true,
+    },
 
     // Chrome Signin bubble: no accounts in chrome, and signing triggers this
     // intercept bubble.
-    {"ChromeSignin",
-     WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false,
-     /*use_dark_theme=*/false},
-    {"ChromeSigninDarkMode",
-     WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     policy::EnterpriseManagementAuthority::NONE,
-     /*is_intercepted_account_managed=*/false,
-     /*use_dark_theme=*/true},
-    {.test_suffix = "ChromeSigninWebUIRefresh",
-     .interception_type =
-         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     .enable_webui_refresh = true},
+    {
+        .test_suffix = "ChromeSignin",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+    },
+    {
+        .test_suffix = "ChromeSigninDarkMode",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .use_dark_theme = true,
+    },
+    {
+        .test_suffix = "ChromeSigninWebUIRefresh",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .enable_webui_refresh = true,
+    },
 
-    {.test_suffix = "ChromeSigninDarkModeWebUIRefresh",
-     .interception_type =
-         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     .use_dark_theme = true,
-     .enable_webui_refresh = true},
+    {
+        .test_suffix = "ChromeSigninDarkModeWebUIRefresh",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .use_dark_theme = true,
+        .enable_webui_refresh = true,
+    },
 
-    {.test_suffix = "ChromeSigninLongName",
-     .interception_type =
-         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     .name_format = NameFormat::LongName},
+    {
+        .test_suffix = "ChromeSigninLongName",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .name_format = NameFormat::LongName,
+    },
 
-    {.test_suffix = "ChromeSigninLongNameSingleWord",
-     .interception_type =
-         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-     .name_format = NameFormat::LongNameSingleWord},
+    {
+        .test_suffix = "ChromeSigninLongNameSingleWord",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        .name_format = NameFormat::LongNameSingleWord,
+    },
 };
 
 }  // namespace
@@ -176,11 +219,18 @@ class DiceWebSigninInterceptionBubblePixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   DiceWebSigninInterceptionBubblePixelTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
     if (GetParam().enable_webui_refresh) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023},
-          {});
+      enabled_features.push_back(features::kChromeRefresh2023);
+      enabled_features.push_back(features::kChromeWebuiRefresh2023);
     }
+
+    if (GetParam().with_explicit_browser_signin_design) {
+      enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          /*disabled_features=*/{});
   }
 
   // DialogBrowserTest:
