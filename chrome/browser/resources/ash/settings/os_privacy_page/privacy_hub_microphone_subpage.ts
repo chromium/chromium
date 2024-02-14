@@ -207,7 +207,7 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     const microphoneAllowed =
         this.getPref<string>('ash.user.microphone_allowed').value;
     return microphoneAllowed ?
-        this.i18n('microphoneToggleSubtext') :
+        this.i18n('privacyHubMicrophoneSubpageMicrophoneToggleSubtext') :
         this.i18n('privacyHubMicrophoneAccessBlockedText');
   }
 

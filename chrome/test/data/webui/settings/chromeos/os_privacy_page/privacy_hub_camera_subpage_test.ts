@@ -105,7 +105,9 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     assertTrue(cameraToggle.checked);
     assertEquals(privacyHubCameraSubpage.i18n('deviceOn'), getOnOffText());
     assertEquals(
-        privacyHubCameraSubpage.i18n('cameraToggleSubtext'), getOnOffSubtext());
+        privacyHubCameraSubpage.i18n(
+            'privacyHubCameraSubpageCameraToggleSubtext'),
+        getOnOffSubtext());
     assertTrue(isCameraListSectionVisible());
     assertFalse(isBlockedSuffixDisplayedAfterCameraName());
   });

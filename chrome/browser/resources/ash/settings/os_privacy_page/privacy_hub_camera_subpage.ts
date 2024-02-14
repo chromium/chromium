@@ -238,8 +238,8 @@ export class SettingsPrivacyHubCameraSubpage extends
   private computeCameraAccessStateText_(): string {
     if (this.isCameraAllowed_()) {
       return this.cameraFallbackMechanismEnabled_ ?
-          this.i18n('cameraToggleFallbackSubtext') :
-          this.i18n('cameraToggleSubtext');
+          this.i18n('privacyHubCameraSubpageCameraToggleFallbackSubtext') :
+          this.i18n('privacyHubCameraSubpageCameraToggleSubtext');
     } else {
       return this.i18n('privacyHubCameraAccessBlockedText');
     }

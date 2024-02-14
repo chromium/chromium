@@ -6384,34 +6384,49 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Privacy controls
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SUBTEXT" desc="Sub-label elaborating on the contents of the Privacy controls(aka Privacy Hub) os-settings page.">
-    Control device access to microphone, camera, and more
+    Manage your privacy by controlling access to microphone, camera, and more
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_TITLE" desc="The title of the toggle to enable/disable camera from the privacy hub.">
     Camera access
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the camera permission and system services
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle button in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Allow access for apps and websites with the camera permission
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the camera permission and system services. To use the camera, you may need to restart the app or refresh the page.
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle button in the Privacy controls (aka Privacy Hub) os-settings page when the camera led fallback mechanism is enabled.">
+    Allow access for apps and websites with the camera permission. To use the camera, you may need to restart the app or refresh the page.
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Apps and websites with the camera permissions, and system services can use your camera
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page when camera access is allowed.">
+    Apps and websites with the camera permission, as well as system services, can use your camera
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_FALLBACK_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Apps and websites with the camera permissions, and system services can use your camera. To use the camera, you may need to restart the app or refresh the page.
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_FALLBACK_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page when camera access is enabled and also the camera led fallback mechanism is enabled.">
+    Apps and websites with the camera permission, as well as system services, can use your camera. To use the camera, you may need to restart the app or refresh the page.
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT" desc="Sub-label for the microphone access row in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Apps and websites with the microphone permissions, and system services can use your microphone
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_SUBPAGE_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle in the privacy hub camera subpage when camera access is allowed.">
+    Camera access is allowed for apps, websites with the camera permission, and system services
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
-    No camera
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_SUBPAGE_CAMERA_TOGGLE_FALLBACK_SUBTEXT" desc="Sub-label for the camera access toggle in the privacy hub camera subpage when camera access is allowed and also the camera led fallback mechanism is enabled.">
+    Camera access is allowed for apps, websites with the camera permission, and system services. To use the camera, you may need to restart the app or refresh the page.
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the camera subpage when camera access is disabled.">
+    Camera access is blocked
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
     Microphone access
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the microphone permission and system services
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle button in the Privacy controls (aka Privacy Hub) os-settings page.">
+    Allow access for apps and websites with the microphone permission
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT" desc="Sub-label for the microphone access row in the Privacy controls (aka Privacy Hub) os-settings page when microphone access is allowed.">
+    Apps and websites with the microphone permission, as well as system services, can use your microphone
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_SUBPAGE_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the privacy hub microphone subpage when microphone access is allowed.">
+    Microphone access is allowed for apps, websites with the microphone permission, and system services
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the microphone subpage when microphone access is disabled.">
+    Microphone access is blocked
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no camera is connected to the device.">
+    No camera
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_MICROPHONE_CONNECTED_TEXT" desc="Text to display in the Privacy Hub subpage when no microphone is connected to the device.">
     No microphone
@@ -6478,12 +6493,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT" translateable="false" desc="The text displayed in the Apps section of the location subpage when location is not allowed.">
     No app is allowed to use your location
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the camera subpage when camera access is disabled.">
-    Camera access is blocked
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_ACCESS_BLOCKED_TEXT" desc="The text displayed as a sublabel in the privacy hub page and in the microphone subpage when microphone access is disabled.">
-    Microphone access is blocked
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Encrypt URLs entered into the browser

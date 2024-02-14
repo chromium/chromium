@@ -120,7 +120,8 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         privacyHubMicrophoneSubpage.prefs.ash.user.microphone_allowed.value);
     assertEquals(privacyHubMicrophoneSubpage.i18n('deviceOn'), getOnOffText());
     assertEquals(
-        privacyHubMicrophoneSubpage.i18n('microphoneToggleSubtext'),
+        privacyHubMicrophoneSubpage.i18n(
+            'privacyHubMicrophoneSubpageMicrophoneToggleSubtext'),
         getOnOffSubtext());
     assertTrue(isMicrophoneListSectionVisible());
     assertFalse(isBlockedSuffixDisplayedAfterMicrophoneName());
