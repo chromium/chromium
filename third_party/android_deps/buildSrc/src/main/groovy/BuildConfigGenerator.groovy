@@ -786,6 +786,7 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  ]\n')
                 }
                 break
+            case 'com_google_android_gms_play_services_tflite_java':
             case 'com_google_ar_core':
                 // Target .aar file contains .so libraries that need to be extracted,
                 // and android_aar_prebuilt template will fail if it's not set explictly.
