@@ -83,8 +83,10 @@
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -251,6 +253,10 @@ class TestTabDialogs : public TabDialogs {
   raw_ptr<base::RunLoop> run_loop_;
 };
 
+std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
+  return feature_engagement::CreateTestTracker();
+}
+
 class PageNonEmptyPaintObserver : public content::WebContentsObserver {
  public:
   explicit PageNonEmptyPaintObserver(const GURL& url,
@@ -354,12 +360,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
   EXPECT_TRUE(navigation_finished_future.IsReady());
 }
 
-class ProfilePickerCreationFlowBrowserTest
-    : public InteractiveFeaturePromoTestT<ProfilePickerTestBase> {
+class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
-  ProfilePickerCreationFlowBrowserTest()
-      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHProfileSwitchFeature})) {
+  ProfilePickerCreationFlowBrowserTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        feature_engagement::kIPHProfileSwitchFeature};
+    feature_list_.InitAndEnableFeatures(enabled_features);
 #if BUILDFLAG(IS_MAC)
     // Ensure the platform is unmanaged
     platform_management_ =
@@ -370,7 +376,7 @@ class ProfilePickerCreationFlowBrowserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InteractiveFeaturePromoTestT::SetUpInProcessBrowserTestFixture();
+    ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -380,7 +386,7 @@ class ProfilePickerCreationFlowBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTestT::SetUpOnMainThread();
+    ProfilePickerTestBase::SetUpOnMainThread();
 
     // Avoid showing the What's New page. These tests assume this isn't the
     // first update and the NTP opens after sign in.
@@ -393,6 +399,8 @@ class ProfilePickerCreationFlowBrowserTest
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
         context,
         base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestTracker));
 
     // Clear the previous cookie responses (if any) before using it for a new
     // profile (as test_url_loader_factory() is shared across profiles).
@@ -679,6 +687,7 @@ class ProfilePickerCreationFlowBrowserTest
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kForceSigninFlowInProfilePicker};
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       platform_management_;
@@ -1915,6 +1924,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   base::HistogramTester histogram_tester;
 
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();

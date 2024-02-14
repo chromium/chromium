@@ -20139,25 +20139,6 @@
             ]
         }
     ],
-    "UserEducationV2Study": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UserEducationExperienceVersion2"
-                    ]
-                }
-            ]
-        }
-    ],
     "UserInteractiveCompositingMac": [
         {
             "platforms": [
