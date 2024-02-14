@@ -94,22 +94,38 @@ struct ScrollSnapAlign {
 class SnapSearchResult {
  public:
   SnapSearchResult() {}
-  SnapSearchResult(float offset, const gfx::RangeF& range);
-  // Clips the |snap_offset| between 0 and |max_snap|. And clips the
-  // |visible_range| between 0 and |max_visible|.
-  void Clip(float max_snap, float max_visible);
+  SnapSearchResult(float offset,
+                   SearchAxis axis,
+                   gfx::RangeF snapport_visible_range,
+                   float max_visible);
+  // Clips the |snap_offset| between 0 and |max_snap|.
+  void Clip(float max_snap);
 
-  // Union the visible_range of the two SnapSearchResult if they represent two
-  // snap areas that are both covering the snapport at the current offset.
-  // The |element_id_| of this is arbitrarily chosen because both snap areas
-  // cover the snapport and are therefore both valid.
+  // Union the rect of the two SnapSearchResult if they represent two snap areas
+  // that are both covering the snapport at the current offset. The
+  // |element_id_| of this is arbitrarily chosen because both snap areas cover
+  // the snapport and are therefore both valid.
   void Union(const SnapSearchResult& other);
 
   float snap_offset() const { return snap_offset_; }
   void set_snap_offset(float offset) { snap_offset_ = offset; }
 
-  gfx::RangeF visible_range() const { return visible_range_; }
-  void set_visible_range(const gfx::RangeF& range);
+  // |visible_range()| returns the range of scroll positions at which the area
+  // generating this SnapSearchResult intersects (i.e is visible within)
+  // its snapport in the cross axis for this result.
+  gfx::RangeF visible_range() const {
+    if (!rect_) {
+      return gfx::RangeF(0, snapport_max_visible_);
+    }
+    const float rect_start =
+        axis_ == SearchAxis::kX ? rect_.value().y() : rect_.value().x();
+    const float rect_end = axis_ == SearchAxis::kX ? rect_.value().bottom()
+                                                   : rect_.value().right();
+    return gfx::RangeF(std::clamp(rect_start - snapport_visible_range_.end(),
+                                  0.0f, snapport_max_visible_),
+                       std::clamp(rect_end - snapport_visible_range_.start(),
+                                  0.0f, snapport_max_visible_));
+  }
 
   ElementId element_id() const { return element_id_; }
   void set_element_id(ElementId id) { element_id_ = id; }
@@ -122,6 +138,17 @@ class SnapSearchResult {
     has_focus_within_ = has_focus_within;
   }
 
+  void set_axis(const SearchAxis& axis) { axis_ = axis; }
+  void set_snapport_visible_range(const gfx::RangeF& range) {
+    snapport_visible_range_ = range;
+  }
+  void set_snapport_max_visible(float position) {
+    snapport_max_visible_ = position;
+  }
+
+  std::optional<gfx::RectF> rect() const { return rect_; }
+  void set_rect(const gfx::RectF& rect) { rect_ = rect; }
+
  private:
   // Scroll offset corresponding to this snap position. If covered_range_ is set
   // then this will be a position inside the range. In the covered case, the
@@ -131,10 +158,6 @@ class SnapSearchResult {
   // snap_offset_ and covered_range_ with a single range field with start == end
   // for "aligned" snap positions.
   float snap_offset_;
-  // This is the range on the cross axis, within which the SnapArea generating
-  // this |snap_offset| is visible. We expect the range to be in order (as
-  // opposed to reversed), i.e., start() < end().
-  gfx::RangeF visible_range_;
 
   // The ElementId of the snap area that corresponds to this SnapSearchResult.
   ElementId element_id_;
@@ -151,6 +174,21 @@ class SnapSearchResult {
   // If set, indicates the range of scroll offsets for which the snap area
   // covers the viewport. The snap_offset_ will be a point within this range.
   std::optional<gfx::RangeF> covered_range_;
+
+  // The axis for which the result was generated.
+  SearchAxis axis_;
+
+  // The range (in the cross axis of this result) of the rect of the snap
+  // container which snaps to the area generating this search result .
+  gfx::RangeF snapport_visible_range_;
+
+  // The max scroll offset (in the cross axis of this result) of the snap
+  // container which snaps to the area generating this search result .
+  float snapport_max_visible_;
+
+  // This is the rect of the SnapArea generating this result relative to its
+  // snap container.
+  std::optional<gfx::RectF> rect_;
 };
 
 // Snap area is a bounding box that could be snapped to when a scroll happens in
