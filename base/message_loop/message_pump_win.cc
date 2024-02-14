@@ -300,9 +300,13 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       wait_flags = 0;
     } else {
       last_wakeup_was_spurious = true;
-      TRACE_EVENT_INSTANT("base",
-                          "MessagePumpForUI::WaitForWork Spurious Wakeup",
-                          "reason: ", result);
+      TRACE_EVENT_INSTANT(
+          "base", "MessagePumpForUI::WaitForWork Spurious Wakeup",
+          [&](perfetto::EventContext ctx) {
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_chrome_message_pump_for_ui()
+                ->set_wait_for_object_result(result);
+          });
     }
 
     DCHECK_NE(WAIT_FAILED, result) << GetLastError();

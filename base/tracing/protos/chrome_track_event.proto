@@ -87,6 +87,8 @@ message ChromeRasterTask {
 message ChromeMessagePumpForUI {
   // The MSG defined in winuser.h.
   optional uint32 message_id = 1;
+  // The result of the Win32 API call WaitForMultipleObjectsEx().
+  optional uint32 wait_for_object_result = 2;
 }
 
 // An enumeration specifying the reason of the RenderFrame deletion.
