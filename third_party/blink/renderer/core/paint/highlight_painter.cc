@@ -330,8 +330,7 @@ HighlightPainter::HighlightPainter(
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
-    SelectionPaintState* selection,
-    bool is_printing)
+    SelectionPaintState* selection)
     : fragment_paint_info_(fragment_paint_info),
       text_painter_(text_painter),
       decoration_painter_(decoration_painter),
@@ -349,10 +348,7 @@ HighlightPainter::HighlightPainter(
                             DarkModeFilter::ElementRole::kForeground)),
       background_auto_dark_mode_(
           PaintAutoDarkMode(originating_style_,
-                            DarkModeFilter::ElementRole::kBackground)),
-      skip_backgrounds_(is_printing ||
-                        paint_info.phase == PaintPhase::kTextClip ||
-                        paint_info.phase == PaintPhase::kSelectionDragImage) {
+                            DarkModeFilter::ElementRole::kBackground)) {
   // Custom highlights and marker-based highlights are defined in terms of
   // DOM ranges in a Text node. Generated text either has no Text node or does
   // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
@@ -448,9 +444,6 @@ HighlightPainter::HighlightPainter(
 
 void HighlightPainter::Paint(Phase phase) {
   if (markers_.empty())
-    return;
-
-  if (skip_backgrounds_ && phase == kBackground)
     return;
 
   DCHECK(fragment_item_.GetNode());

@@ -401,9 +401,6 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
-  const bool paint_marker_backgrounds =
-      paint_info.phase != PaintPhase::kSelectionDragImage &&
-      paint_info.phase != PaintPhase::kTextClip && !is_printing;
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   LineRelativeOffset text_origin{
@@ -420,7 +417,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   HighlightPainter highlight_painter(fragment_paint_info, text_painter,
                                      decoration_painter, paint_info, cursor_,
                                      text_item, rotation, physical_box.offset,
-                                     style, text_style, selection, is_printing);
+                                     style, text_style, selection);
   if (paint_info.phase == PaintPhase::kForeground) {
     if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
@@ -455,10 +452,16 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
+  const bool paint_marker_backgrounds =
+      paint_info.phase != PaintPhase::kSelectionDragImage &&
+      paint_info.phase != PaintPhase::kTextClip && !is_printing;
+
   // 1. Paint backgrounds for document markers that don’t participate in the CSS
   // highlight overlay system, such as composition highlights. They use physical
   // coordinates, so are painted before GraphicsContext rotation.
-  highlight_painter.Paint(HighlightPainter::kBackground);
+  if (paint_marker_backgrounds) {
+    highlight_painter.Paint(HighlightPainter::kBackground);
+  }
 
   if (rotation) {
     state_saver.SaveIfNeeded();

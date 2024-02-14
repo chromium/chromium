@@ -136,8 +136,7 @@ class CORE_EXPORT HighlightPainter {
                    const PhysicalOffset& box_origin,
                    const ComputedStyle& style,
                    const TextPaintStyle& text_style,
-                   SelectionPaintState*,
-                   bool is_printing);
+                   SelectionPaintState*);
 
   enum Phase { kBackground, kForeground };
 
@@ -308,7 +307,6 @@ class CORE_EXPORT HighlightPainter {
   HeapVector<LayerPaintState> layers_;
   Vector<HighlightOverlay::HighlightPart> parts_;
   Vector<HighlightEdgeInfo> edges_info_;
-  const bool skip_backgrounds_;
   Case paint_case_;
 };
 
