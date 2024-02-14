@@ -10,6 +10,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
+#include "base/functional/bind.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
 #include "base/strings/sys_string_conversions.h"
@@ -305,8 +306,32 @@ void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     ShowSharingServicePickerCallback callback) {
-  ShowSharingServicePickerForView(cocoa_view_, title, text, url, file_paths,
-                                  std::move(callback));
+  NSString* ns_title = base::SysUTF8ToNSString(title);
+  NSString* ns_url = base::SysUTF8ToNSString(url);
+  NSString* ns_text = base::SysUTF8ToNSString(text);
+
+  NSMutableArray* items = [@[ ns_title, ns_url, ns_text ] mutableCopy];
+
+  for (const auto& file_path : file_paths) {
+    NSString* ns_file_path = base::SysUTF8ToNSString(file_path);
+    NSURL* file_url = [NSURL fileURLWithPath:ns_file_path];
+    [items addObject:file_url];
+  }
+
+  sharing_service_picker_ = [[SharingServicePicker alloc]
+      initWithItems:items
+           callback:base::BindOnce(
+                        &RenderWidgetHostNSViewBridge::OnSharingServiceInvoked,
+                        weak_factory_.GetWeakPtr(), std::move(callback))
+               view:cocoa_view_];
+  [sharing_service_picker_ show];
+}
+
+void RenderWidgetHostNSViewBridge::OnSharingServiceInvoked(
+    ShowSharingServicePickerCallback callback,
+    blink::mojom::ShareError error) {
+  std::move(callback).Run(error);
+  sharing_service_picker_ = nil;
 }
 
 void RenderWidgetHostNSViewBridge::Destroy() {

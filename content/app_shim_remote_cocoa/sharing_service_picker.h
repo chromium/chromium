@@ -7,20 +7,17 @@
 
 #include <AppKit/AppKit.h>
 
-#include <string>
-
 #include "content/common/render_widget_host_ns_view.mojom.h"
 
-namespace remote_cocoa {
-
-void ShowSharingServicePickerForView(
-    NSView* owning_view,
-    const std::string& title,
-    const std::string& text,
-    const std::string& url,
-    const std::vector<std::string>& file_paths,
-    mojom::RenderWidgetHostNSView::ShowSharingServicePickerCallback callback);
-
-}  // namespace remote_cocoa
+@interface SharingServicePicker
+    : NSObject <NSSharingServiceDelegate, NSSharingServicePickerDelegate>
+// Displays the NSSharingServicePicker which is positioned next to the mouse
+// cursor.
+- (instancetype)initWithItems:(NSArray*)items
+                     callback:(remote_cocoa::mojom::RenderWidgetHostNSView::
+                                   ShowSharingServicePickerCallback)cb
+                         view:(NSView*)view;
+- (void)show;
+@end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_SHARING_SERVICE_PICKER_H_
