@@ -31,6 +31,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -1326,6 +1327,22 @@ void ContentSecurityPolicy::ReportBlockedScriptExecutionToInspector(
 bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
   return RuntimeEnabledFeatures::
       ExperimentalContentSecurityPolicyFeaturesEnabled();
+}
+
+bool ContentSecurityPolicy::IsStrictPolicyEnforced() const {
+  return base::ranges::any_of(policies_, [](const auto& policy) {
+    return !CSPDirectiveListIsReportOnly(*policy) &&
+           CSPDirectiveListIsObjectRestrictionReasonable(*policy) &&
+           CSPDirectiveListIsBaseRestrictionReasonable(*policy) &&
+           CSPDirectiveListIsScriptRestrictionReasonable(*policy);
+  });
+}
+
+bool ContentSecurityPolicy::RequiresTrustedTypes() const {
+  return base::ranges::any_of(policies_, [](const auto& policy) {
+    return !CSPDirectiveListIsReportOnly(*policy) &&
+           CSPDirectiveListRequiresTrustedTypes(*policy);
+  });
 }
 
 // static

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -577,6 +578,38 @@ ScriptPromiseTyped<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
+    return promise;
+  }
+
+  const ContentSecurityPolicy* content_security_policy =
+      context->GetContentSecurityPolicy();
+  if (!content_security_policy) {
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotAllowedError,
+        "This document's Content Security Policy does not meet the "
+        "requirements to use this API. See https://web.dev/articles/strict-csp "
+        "for more information.",
+        UserMediaRequestResult::kInsecureContext);
+    return promise;
+  }
+
+  if (!content_security_policy->IsStrictPolicyEnforced()) {
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotAllowedError,
+        "This document's Content Security Policy does not meet the "
+        "requirements to use this API. See https://web.dev/articles/strict-csp "
+        "for more information.",
+        UserMediaRequestResult::kInsecureContext);
+    return promise;
+  }
+
+  if (!content_security_policy->RequiresTrustedTypes()) {
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotAllowedError,
+        "This document's Content Security Policy does not meet the "
+        "requirements to use this API. See "
+        "https://web.dev/articles/trusted-types for more information.",
+        UserMediaRequestResult::kInsecureContext);
     return promise;
   }
 

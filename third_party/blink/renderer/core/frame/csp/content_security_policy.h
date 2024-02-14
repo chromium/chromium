@@ -357,6 +357,16 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool ExperimentalFeaturesEnabled() const;
 
+  // Returns true if `CSPDirectiveListIsReportOnly` returns false
+  // and `CSPDirectiveListIsBaseRestrictionReasonable`,
+  // `CSPDirectiveListIsObjectRestrictionReasonable` and
+  // `CSPDirectiveListIsScriptRestrictionReasonable` return true.
+  // See also: https://web.dev/articles/strict-csp
+  bool IsStrictPolicyEnforced() const;
+
+  // Returns true if trusted types are required.
+  bool RequiresTrustedTypes() const;
+
   // Whether the main world's CSP should be bypassed based on the current
   // javascript world we are in.
   // Note: This is deprecated. New usages should not be added. Operations in an

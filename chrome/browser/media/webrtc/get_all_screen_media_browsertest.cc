@@ -50,6 +50,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
+struct GetAllScreensMediaTestParameters {
+  std::string base_page;
+  bool expected_csp_acceptable;
+};
+
 std::string ExtractError(const std::string& message) {
   const std::vector<std::string> split_components = base::SplitString(
       message, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -120,9 +125,10 @@ class ContentBrowserClientMock : public ChromeContentBrowserClient {
 
 }  // namespace
 
-class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
+class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
  public:
-  GetAllScreensMediaBrowserTest() {
+  explicit GetAllScreensMediaBrowserTestBase(const std::string& base_page)
+      : base_page_(base_page) {
     scoped_feature_list_.InitFromCommandLine(
         /*enable_features=*/
         "GetAllScreensMedia",
@@ -134,8 +140,7 @@ class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
     browser_client_ = std::make_unique<ContentBrowserClientMock>();
     content::SetBrowserClientForTesting(browser_client_.get());
     ASSERT_TRUE(embedded_test_server()->Start());
-    contents_ =
-        OpenTestPageInNewTab("/webrtc/webrtc_getallscreensmedia_test.html");
+    contents_ = OpenTestPageInNewTab(base_page_);
     DCHECK(contents_);
   }
 
@@ -163,76 +168,123 @@ class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
   std::unique_ptr<ContentBrowserClientMock> browser_client_;
 
  private:
+  std::string base_page_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
 };
 
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       GetAllScreensMediaSingleScreenSuccess) {
+class GetAllScreensMediaBrowserTest
+    : public GetAllScreensMediaBrowserTestBase,
+      public ::testing::WithParamInterface<GetAllScreensMediaTestParameters> {
+ public:
+  GetAllScreensMediaBrowserTest()
+      : GetAllScreensMediaBrowserTestBase(GetParam().base_page) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetAllScreensMediaBrowserTest,
+    ::testing::ValuesIn(std::vector<GetAllScreensMediaTestParameters>{
+        {/*base_page=*/"/webrtc/webrtc_getallscreensmedia_valid_csp_test.html",
+         /*expected_csp_acceptable=*/true},
+        {/*base_page=*/"/webrtc/"
+                       "webrtc_getallscreensmedia_no_object_source_test.html",
+         /*expected_csp_acceptable=*/false},
+        {/*base_page=*/"/webrtc/"
+                       "webrtc_getallscreensmedia_no_base_uri_test.html",
+         /*expected_csp_acceptable=*/false},
+        {/*base_page=*/"/webrtc/"
+                       "webrtc_getallscreensmedia_no_script_source_test.html",
+         /*expected_csp_acceptable=*/false},
+        {/*base_page=*/"/webrtc/"
+                       "webrtc_getallscreensmedia_no_trusted_types_test.html",
+         /*expected_csp_acceptable=*/false},
+    }));
+
+IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
+                       GetAllScreensMediaSingleScreenAccessBasedOnCSP) {
   SetScreens(/*screen_count=*/1u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
-  EXPECT_EQ(1u, track_ids.size());
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
+                                                     track_ids, &error_name);
+  if (GetParam().expected_csp_acceptable) {
+    EXPECT_TRUE(result);
+    EXPECT_EQ(1u, track_ids.size());
+  } else {
+    EXPECT_FALSE(result);
+    EXPECT_EQ("NotAllowedError", error_name);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       GetAllScreensMediaNoScreenSuccess) {
+IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
+                       GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
   SetScreens(/*screen_count=*/0u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
-  // If no screen is attached to a device, the |DisplayManager| will add a
-  // default device. This same behavior is used in other places in Chrome that
-  // handle multiple screens (e.g. in JS window.getScreenDetails() API) and
-  // getAllScreensMedia will follow the same convention.
-  EXPECT_EQ(1u, stream_ids.size());
-  EXPECT_EQ(1u, track_ids.size());
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
+                                                     track_ids, &error_name);
+  if (GetParam().expected_csp_acceptable) {
+    EXPECT_TRUE(result);
+    // If no screen is attached to a device, the |DisplayManager| will add a
+    // default device. This same behavior is used in other places in Chrome that
+    // handle multiple screens (e.g. in JS window.getScreenDetails() API) and
+    // getAllScreensMedia will follow the same convention.
+    EXPECT_EQ(1u, stream_ids.size());
+    EXPECT_EQ(1u, track_ids.size());
+  } else {
+    EXPECT_FALSE(result);
+    EXPECT_EQ("NotAllowedError", error_name);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       GetAllScreensMediaMultipleScreensSuccess) {
+IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
+                       GetAllScreensMediaMultipleScreensSuccessIfStrictCSP) {
   base::AddTagToTestResult("feature_id",
                            "screenplay-f3601ae4-bff7-495a-a51f-3c0997a46445");
   SetScreens(/*screen_count=*/5u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
-  // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
-  // stream ids shall be shared or unique.
-  EXPECT_EQ(1u, stream_ids.size());
-  EXPECT_EQ(5u, track_ids.size());
-}
-
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       TrackContainsScreenDetailed) {
-  SetScreens(/*screen_count=*/1u);
-  std::set<std::string> stream_ids;
-  std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
-  ASSERT_EQ(1u, stream_ids.size());
-  ASSERT_EQ(1u, track_ids.size());
-
-  EXPECT_TRUE(CheckScreenDetailedExists(contents_, *track_ids.begin()));
-}
-
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       MultipleTracksContainScreenDetailed) {
-  SetScreens(/*screen_count=*/5u);
-  std::set<std::string> stream_ids;
-  std::set<std::string> track_ids;
-  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids));
-  EXPECT_EQ(1u, stream_ids.size());
-  EXPECT_EQ(5u, track_ids.size());
-
-  for (const std::string& track_id : track_ids) {
-    std::string screen_detailed_attributes;
-    EXPECT_TRUE(CheckScreenDetailedExists(contents_, track_id));
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
+                                                     track_ids, &error_name);
+  if (GetParam().expected_csp_acceptable) {
+    EXPECT_TRUE(result);
+    // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
+    // stream ids shall be shared or unique.
+    EXPECT_EQ(1u, stream_ids.size());
+    EXPECT_EQ(5u, track_ids.size());
+  } else {
+    EXPECT_FALSE(result);
+    EXPECT_EQ("NotAllowedError", error_name);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
-                       AutoSelectAllScreensNotAllowed) {
+IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
+                       TrackContainsScreenDetailedIfStrictCSP) {
+  SetScreens(/*screen_count=*/1u);
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
+  std::string error_name;
+  const bool result = RunGetAllScreensMediaAndGetIds(contents_, stream_ids,
+                                                     track_ids, &error_name);
+  if (GetParam().expected_csp_acceptable) {
+    EXPECT_TRUE(result);
+    EXPECT_TRUE(result);
+    ASSERT_EQ(1u, stream_ids.size());
+    ASSERT_EQ(1u, track_ids.size());
+
+    EXPECT_TRUE(CheckScreenDetailedExists(contents_, *track_ids.begin()));
+  } else {
+    EXPECT_FALSE(result);
+    EXPECT_EQ("NotAllowedError", error_name);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
+                       AutoSelectAllScreensNotAllowedByAdminPolicy) {
   SetScreens(/*screen_count=*/1u);
   browser_client_->SetIsGetAllScreensMediaAllowed(
       /*is_allowed=*/false);
@@ -247,11 +299,14 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,
 // Test that getDisplayMedia and getAllScreensMedia are independent,
 // so stopping one will not stop the other.
 class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
-    : public GetAllScreensMediaBrowserTest,
+    : public GetAllScreensMediaBrowserTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
   InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest()
-      : method1_(GetParam() ? "getDisplayMedia" : "getAllScreensMedia"),
+      : GetAllScreensMediaBrowserTestBase(
+            /*base_page=*/
+            "/webrtc/webrtc_getallscreensmedia_valid_csp_test.html"),
+        method1_(GetParam() ? "getDisplayMedia" : "getAllScreensMedia"),
         method2_(GetParam() ? "getAllScreensMedia" : "getDisplayMedia") {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
