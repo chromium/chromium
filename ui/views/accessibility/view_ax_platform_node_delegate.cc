@@ -623,15 +623,19 @@ gfx::Rect ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenDIPs: {
-      if (offscreen_result) {
-        // TODO(accessibility): This is probably not always true, but we'll need
-        // to investigate if scrolling in Views is possible and, if so, adjust
-        // the condition.
-        *offscreen_result = ui::AXOffscreenResult::kOnscreen;
-      }
       gfx::Rect content_bounds = view()->GetContentsBounds();
       View::ConvertRectToScreen(view(), &content_bounds);
       gfx::RectF bounds = GetInlineTextRect(start_offset, end_offset);
+
+      if (ui::IsTextField(data_.role)) {
+        bounds = RelativeToContainerBounds(bounds, offscreen_result);
+      } else if (offscreen_result) {
+        // TODO(accessibility): This is probably not always true, but we'll need
+        // to investigate if scrolling in Views -- other than TextFields -- is
+        // possible and, if so, adjust the condition.
+        *offscreen_result = ui::AXOffscreenResult::kOnscreen;
+      }
+
       // Ensure we have a non-zero minimum width when in a text field so that
       // the text cursor indicator will be represented correctly.
       if (bounds.IsEmpty() && ui::IsTextField(data_.role)) {
@@ -681,6 +685,30 @@ gfx::RectF ViewAXPlatformNodeDelegate::GetInlineTextRect(
 
   return gfx::RectF(left_most_offset, 0, right_most_offset - left_most_offset,
                     view()->GetContentsBounds().height());
+}
+
+gfx::RectF ViewAXPlatformNodeDelegate::RelativeToContainerBounds(
+    const gfx::RectF& bounds,
+    ui::AXOffscreenResult* offscreen_result) const {
+  if (!data_.HasIntAttribute(ax::mojom::IntAttribute::kScrollX)) {
+    return bounds;
+  }
+
+  int scroll_x = data_.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  gfx::RectF relative_bounds = bounds;
+  relative_bounds.Offset(scroll_x, 0);
+
+  if (offscreen_result) {
+    gfx::RectF container_bounds = data_.relative_bounds.bounds;
+    container_bounds.set_origin(gfx::PointF());
+    gfx::RectF intersection = relative_bounds;
+    intersection.Intersect(container_bounds);
+
+    *offscreen_result = !bounds.IsEmpty() && intersection.IsEmpty()
+                            ? ui::AXOffscreenResult::kOffscreen
+                            : ui::AXOffscreenResult::kOnscreen;
+  }
+  return relative_bounds;
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(

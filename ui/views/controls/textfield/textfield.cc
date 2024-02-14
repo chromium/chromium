@@ -1055,6 +1055,11 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
 
+  // TODO(ViewsAX): In order to update the cache whenever the offset changes,
+  // we could set this attribute in Textfield::UpdateCursorViewPosition.
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
+                             GetRenderText()->GetUpdatedDisplayOffset().x());
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   std::u16string ax_value =
       node_data->GetString16Attribute(ax::mojom::StringAttribute::kValue);

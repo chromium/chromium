@@ -85,10 +85,10 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
       // This is a fallback for when the text is elided or truncated. We must
       // always have a valid offset for each grapheme in the text backing the
       // display text.
-      offsets.push_back(last_x - offset);
+      offsets.push_back(last_x);
     } else {
       offsets.push_back(bounds.x() - offset);
-      last_x = bounds.right();
+      last_x = bounds.right() - offset;
     }
 
     begin_position = end_position;
