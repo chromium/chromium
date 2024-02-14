@@ -28,7 +28,6 @@
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "third_party/sqlite/sqlite3.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_APPLE)
