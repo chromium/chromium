@@ -6,17 +6,16 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTest
 import {testcase} from '../testcase.js';
 
 import {createShortcut, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {TREEITEM_DRIVE} from './create_new_folder.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Directory tree path constants.
  */
-const TREEITEM_A = `/${TREEITEM_DRIVE}/A`;
+const TREEITEM_A = `/My Drive/A`;
 const TREEITEM_B = `${TREEITEM_A}/B`;
 const TREEITEM_C = `${TREEITEM_B}/C`;
 
-const TREEITEM_D = `/${TREEITEM_DRIVE}/D`;
+const TREEITEM_D = `/My Drive/D`;
 const TREEITEM_E = `${TREEITEM_D}/E`;
 
 /**
@@ -59,7 +58,7 @@ const DIRECTORY = {
       ENTRIES.directoryD.getExpectedRow(),
     ],
     name: 'My Drive',
-    treeItem: TREEITEM_DRIVE,
+    treeItem: 'My Drive',
   },
   A: {
     // @ts-ignore: error TS4111: Property 'directoryB' comes from an index

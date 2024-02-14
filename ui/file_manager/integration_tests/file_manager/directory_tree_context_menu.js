@@ -6,7 +6,6 @@ import {addEntries, ENTRIES, EntryType, getCaller, pending, REPEAT_UNTIL_INTERVA
 import {testcase} from '../testcase.js';
 
 import {createShortcut, IGNORE_APP_ERRORS, isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {TREEITEM_DOWNLOADS} from './create_new_folder.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, COMPUTERS_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
@@ -733,7 +732,7 @@ testcase.dirCreateMultipleFolders = async () => {
   const createNewFolder = async (name) => {
     // Ctrl+E to create a new folder in downloads.
     await directoryTree.focusTree();
-    await directoryTree.selectItemByLabel(TREEITEM_DOWNLOADS);
+    await directoryTree.selectItemByLabel('Downloads');
     await remoteCall.fakeKeyDown(appId, 'body', 'e', true, false, false);
 
     // Rename folder.
