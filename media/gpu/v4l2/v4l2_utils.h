@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
@@ -153,6 +154,9 @@ base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval);
 // Translates a Chrome |time_delta| to a POSIX struct timeval.
 struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta);
 
+// Return a set of all the codecs supported by the hardware as well as
+// their capabilities
+std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs();
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

@@ -554,52 +554,6 @@ std::pair<gfx::Size, gfx::Size> Device::GetFrameResolutionRange(
   return std::make_pair(kDefaultMinCodedSize, kDefaultMaxCodedSize);
 }
 
-// VIDIOC_QUERYCTRL, VIDIOC_QUERYMENU
-std::vector<VideoCodecProfile> Device::ProfilesForVideoCodec(VideoCodec codec) {
-  const uint32_t pix_fmt = VideoCodecToV4L2PixFmt(codec);
-
-  if (!base::Contains(kV4L2CodecPixFmtToProfileCID, pix_fmt)) {
-    // This is OK: there are many codecs that are not supported by Chrome.
-    DVLOGF(2) << "Unsupported codec: " << FourccToString(pix_fmt);
-    return {};
-  }
-
-  const auto profile_cid = kV4L2CodecPixFmtToProfileCID.at(pix_fmt);
-  v4l2_queryctrl query_ctrl = {.id = base::strict_cast<__u32>(profile_cid)};
-  if (IoctlDevice(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
-    return {};
-  }
-
-  std::vector<VideoCodecProfile> profiles;
-
-  v4l2_querymenu query_menu = {
-      .id = query_ctrl.id,
-      .index = base::checked_cast<__u32>(query_ctrl.minimum)};
-  for (; query_menu.index <= base::checked_cast<__u32>(query_ctrl.maximum);
-       query_menu.index++) {
-    if (IoctlDevice(VIDIOC_QUERYMENU, &query_menu) != kIoctlOk) {
-      continue;
-    }
-    const VideoCodecProfile profile =
-        V4L2ProfileToVideoCodecProfile(profile_cid, query_menu.index);
-    DVLOGF_IF(3, profile == VIDEO_CODEC_PROFILE_UNKNOWN)
-        << "Profile: " << query_menu.name << " for " << FourccToString(pix_fmt)
-        << " not supported by Chrome, skipping.";
-
-    if (profile != VIDEO_CODEC_PROFILE_UNKNOWN) {
-      profiles.push_back(profile);
-      DVLOGF(2) << FourccToString(pix_fmt) << " profile " << query_menu.name
-                << " supported.";
-    }
-  }
-
-  // Erase duplicated profiles. This is needed because H264PROFILE_BASELINE maps
-  // to both V4L2_MPEG_VIDEO_H264_PROFILE__BASELINE/CONSTRAINED_BASELINE
-  base::ranges::sort(profiles);
-  profiles.erase(base::ranges::unique(profiles), profiles.end());
-  return profiles;
-}
-
 bool Device::OpenDevice() {
   DVLOGF(3);
   static const std::string kDecoderDevicePrefix = "/dev/video-dec";

@@ -128,23 +128,6 @@ V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
       << "|decode_request_queue_| is not empty, it should have been flushed.";
 }
 
-// static
-std::optional<SupportedVideoDecoderConfigs>
-V4L2StatelessVideoDecoder::GetSupportedConfigs() {
-  const scoped_refptr<StatelessDevice> device =
-      base::MakeRefCounted<StatelessDevice>();
-  if (device->Open()) {
-    const auto configs = GetSupportedDecodeProfiles(device.get());
-    if (configs.empty()) {
-      return std::nullopt;
-    }
-
-    return ConvertFromSupportedProfiles(configs, false);
-  }
-
-  return std::nullopt;
-}
-
 void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                            bool low_delay,
                                            CdmContext* cdm_context,

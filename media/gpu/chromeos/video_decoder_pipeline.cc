@@ -263,13 +263,7 @@ VideoDecoderPipeline::GetSupportedConfigs(
       break;
 #elif BUILDFLAG(USE_V4L2_CODEC)
     case VideoDecoderType::kV4L2:
-      if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
-        configs = V4L2StatelessVideoDecoder::GetSupportedConfigs();
-      } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
-        configs = V4L2StatefulVideoDecoder::GetSupportedConfigs();
-      } else {
-        configs = V4L2VideoDecoder::GetSupportedConfigs();
-      }
+      configs = GetSupportedV4L2DecoderConfigs();
       break;
 #endif
     default:

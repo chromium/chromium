@@ -4,6 +4,9 @@
 
 #include "media/gpu/v4l2/v4l2_utils.h"
 
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
 #include <map>
 #include <sstream>
 
@@ -16,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -40,6 +44,11 @@
 #define MAKE_V4L2_CODEC_PAIR(codec, suffix) \
   std::make_pair(codec##_##suffix, codec)
 
+namespace {
+int HandledIoctl(int fd, int request, void* arg) {
+  return HANDLE_EINTR(ioctl(fd, request, arg));
+}
+}  // namespace
 namespace media {
 
 void RecordMediaIoctlUMA(MediaIoctlRequests function) {
@@ -487,6 +496,48 @@ struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
                                                  kMicrosecondsPerSecond),
           .tv_usec = base::checked_cast<__suseconds_t>(time_delta_linear %
                                                        kMicrosecondsPerSecond)};
+}
+
+std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
+  SupportedVideoDecoderConfigs supported_media_configs;
+
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return std::nullopt;
+  }
+
+  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+      base::BindRepeating(&HandledIoctl, device_fd.get()),
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+  for (const uint32_t v4l2_codec : v4l2_codecs) {
+    const std::vector<VideoCodecProfile> media_codec_profiles =
+        EnumerateSupportedProfilesForV4L2Codec(
+            base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
+
+    gfx::Size min_coded_size;
+    gfx::Size max_coded_size;
+    GetSupportedResolution(base::BindRepeating(&HandledIoctl, device_fd.get()),
+                           v4l2_codec, &min_coded_size, &max_coded_size);
+
+    for (const auto& profile : media_codec_profiles) {
+      supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
+          profile, profile, min_coded_size, max_coded_size,
+          /*allow_encrypted=*/false, /*require_encrypted=*/false));
+    }
+  }
+
+#if DCHECK_IS_ON()
+  for (const auto& config : supported_media_configs) {
+    DVLOGF(3) << "Enumerated " << GetProfileName(config.profile_min) << " ("
+              << config.coded_size_min.ToString() << "-"
+              << config.coded_size_max.ToString() << ")";
+  }
+#endif
+
+  return supported_media_configs;
 }
 
 }  // namespace media
