@@ -754,9 +754,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             int widthMeasureSpec = calcWidthMeasure(childLayoutParams);
             int heightMeasureSpec = calcHeightMeasure(childLayoutParams);
             childView.measure(widthMeasureSpec, heightMeasureSpec);
-            startMargin += childView.getMeasuredWidth();
+            int width = childView.getMeasuredWidth();
+            // close_minimize_layout is the first child view in the toolbar.
+            // It includes two buttons when minimized is enabled, but when they are positioned at
+            // the end our start margin is doubly large.
+            if (mMinimizeButtonEnabled
+                    && mCloseButtonPosition == CLOSE_BUTTON_POSITION_END
+                    && i == 0) {
+                width /= 2;
+            }
+            startMargin += width;
         }
-
         updateStartMarginOfLocationBarFrameLayout(startMargin);
     }
 
