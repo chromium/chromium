@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.Experimental.Counts2"
-    enum="IOSStabilityUserVisibleTerminationType" expires_after="2024-03-20">
+    enum="IOSStabilityUserVisibleTerminationType" expires_after="2025-02-12">
   <owner>ajuma@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

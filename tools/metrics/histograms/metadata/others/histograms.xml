@@ -11415,7 +11415,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"
-    enum="BooleanCacheHit" expires_after="2024-03-20">
+    enum="BooleanCacheHit" expires_after="2025-02-12">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
