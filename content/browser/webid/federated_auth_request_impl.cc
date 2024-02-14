@@ -1008,11 +1008,11 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
     return;
   }
   // We only allow setting the IDP signin status when the subresource is loaded
-  // from the same origin as the document, and the document is same-origin with
+  // from the same site as the document, and the document is same site with
   // all ancestors. This is to protect from an RP embedding a tracker resource
   // that would set this signin status for the tracker, enabling the FedCM
   // request.
-  if (!webid::IsSameOriginWithAncestors(idp_origin, &render_frame_host())) {
+  if (!webid::IsSameSiteWithAncestors(idp_origin, &render_frame_host())) {
     RecordSetLoginStatusIgnoredReason(
         FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
     return;

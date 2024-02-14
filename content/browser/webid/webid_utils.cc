@@ -35,14 +35,14 @@ constexpr net::registry_controlled_domains::PrivateRegistryFilter
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
 }  // namespace
 
-bool IsSameOriginWithAncestors(const url::Origin& origin,
-                               RenderFrameHost* render_frame_host) {
+bool IsSameSiteWithAncestors(const url::Origin& origin,
+                             RenderFrameHost* render_frame_host) {
   while (render_frame_host) {
-    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
-      if (!IsFedCmSameSiteLoginStatusEnabled() ||
-          !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
-        return false;
-      }
+    // Many cases are same-origin, so check that first to speed up the cases
+    // where the check passes, as IsSameSite() is slower.
+    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin()) &&
+        !IsSameSite(origin, render_frame_host->GetLastCommittedOrigin())) {
+      return false;
     }
     render_frame_host = render_frame_host->GetParent();
   }
@@ -74,7 +74,7 @@ void SetIdpSigninStatus(content::BrowserContext* context,
       return;
     }
 
-    if (!IsSameOriginWithAncestors(origin, frame_tree_node->parent())) {
+    if (!IsSameSiteWithAncestors(origin, frame_tree_node->parent())) {
       RecordSetLoginStatusIgnoredReason(
           FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
       return;
