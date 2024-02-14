@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] setRemoteDescription(offer) with invalid SDP should reject with RTCError
+  assert_equals: Expect error detail field to set to sdp-syntax-error expected (string) "sdp-syntax-error" but got (undefined) undefined
+[FAIL] setRemoteDescription(offer) from have-local-offer fires signalingstatechange twice
+  assert_equals: expected null but got object "[object RTCSessionDescription]"
+[FAIL] setRemoteDescription(offer) in have-local-offer should update internal state with a queued task, in the right order
+  assert_equals: pendingRemoteDescription should be updated before the signalingstatechange event expected null but got object "[object RTCSessionDescription]"
+[FAIL] Naive rollback approach is not glare-proof (control)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] setRemoteDescription(invalidOffer) from have-local-offer does not undo rollback
+  assert_unreached: State should have changed Reached unreachable code
+Harness: the test ran to completion.
+
