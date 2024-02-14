@@ -38,7 +38,7 @@
       ]
     },
     "e2e:headful": {
-      "command": "pipenv run python -m pytest --ignore=tests/input",
+      "command": "pipenv run python -m pytest --verbose --ignore=tests/input",
       "dependencies": [
         "server:headful"
       ],
@@ -48,7 +48,7 @@
       ]
     },
     "e2e:headless": {
-      "command": "pipenv run python -m pytest",
+      "command": "pipenv run python -m pytest --verbose",
       "dependencies": [
         "server:headless"
       ],
