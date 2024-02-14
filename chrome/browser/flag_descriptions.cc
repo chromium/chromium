@@ -6529,6 +6529,10 @@ const char kFederatedServiceName[] =
 const char kFederatedServiceDescription[] =
     "If disalbed, all federated service activities are stopped.";
 
+const char kFileNotificationRevampName[] = "File notification revamp";
+const char kFileNotificationRevampDescription[] =
+    "Enable the new notifications for downloaded files and screen captures.";
+
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =

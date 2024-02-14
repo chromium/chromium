@@ -3756,6 +3756,9 @@ extern const char kExposeOutOfProcessVideoDecodingToLacrosDescription[];
 extern const char kFederatedServiceName[];
 extern const char kFederatedServiceDescription[];
 
+extern const char kFileNotificationRevampName[];
+extern const char kFileNotificationRevampDescription[];
+
 extern const char kFileTransferEnterpriseConnectorName[];
 extern const char kFileTransferEnterpriseConnectorDescription[];
 
