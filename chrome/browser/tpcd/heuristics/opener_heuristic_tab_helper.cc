@@ -350,10 +350,12 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
       GetClock()->Now() - value->last_popup_time, base::Days(30),
       base::BindRepeating(&base::TimeDelta::InHours)
           .Then(base::BindRepeating([](int64_t t) { return t; })));
+  OptionalBool is_ad_tagged_cookie = IsAdTaggedCookieForHeuristics(details);
 
   ukm::builders::OpenerHeuristic_PostPopupCookieAccess(source_id)
       .SetAccessId(value->access_id)
       .SetAccessSucceeded(!details.blocked_by_policy)
+      .SetIsAdTagged(static_cast<int64_t>(is_ad_tagged_cookie))
       .SetHoursSincePopupOpened(hours_since_opener)
       .Record(ukm::UkmRecorder::Get());
 }
