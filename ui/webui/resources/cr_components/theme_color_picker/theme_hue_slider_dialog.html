@@ -70,10 +70,14 @@
   }
 
   cr-slider::part(container) {
-    background: var(--hue-gradient_);
+    background: linear-gradient(to right, var(--hue-gradient_));
     border-radius: 4px;
     border: 0;
     height: 8px;
+  }
+
+  :host-context([dir=rtl]) cr-slider::part(container) {
+    background: linear-gradient(to left, var(--hue-gradient_));
   }
 
   cr-slider::part(knob) {

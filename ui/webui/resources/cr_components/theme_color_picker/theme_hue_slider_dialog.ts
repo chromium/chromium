@@ -25,7 +25,7 @@ for (let i = 0; i <= hueDivisions; i++) {
   const hsl = `hsl(${minHue + (maxHue - minHue) * percentage}, 100%, 50%)`;
   hueGradientParts.push(`${hsl} ${percentage * 100}%`);
 }
-const hueGradient = `linear-gradient(to right, ${hueGradientParts.join(',')})`;
+const hueGradient = `${hueGradientParts.join(',')}`;
 
 export interface ThemeHueSliderDialogElement {
   $: {
