@@ -145,7 +145,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   raw_ptr<ChromeAccountManagerService> _chromeAccountManagerService;
   // Chrome account manager service observer bridge.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountAccountManagerServiceObserver;
+      _accountManagerServiceObserver;
   // The pref service.
   raw_ptr<PrefService> _prefService;
   // Signed-in identity. Note: may be nil while signing out.
@@ -170,7 +170,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                                                                 self);
     _authenticationService = authenticationService;
     _chromeAccountManagerService = accountManagerService;
-    _accountAccountManagerServiceObserver =
+    _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _chromeAccountManagerService);
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
@@ -187,7 +187,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _chromeAccountManagerService = nullptr;
-  _accountAccountManagerServiceObserver.reset();
+  _accountManagerServiceObserver.reset();
   _prefService = nullptr;
   _signedInIdentity = nil;
 }
