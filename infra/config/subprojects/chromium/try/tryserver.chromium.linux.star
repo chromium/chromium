@@ -436,6 +436,9 @@ try_.builder(
     tryjob = try_.job(
         location_filters = [
             "ui/ozone/platform/wayland/.+",
+            "chrome/browser/.+(ui|browser)test.+",
+            "chrome/browser/ui/views/.+test.+",
+            "ui/views/widget/.+test.+",
         ],
     ),
     use_clang_coverage = True,
