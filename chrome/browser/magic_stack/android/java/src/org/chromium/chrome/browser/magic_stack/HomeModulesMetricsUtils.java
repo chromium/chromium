@@ -81,6 +81,20 @@ public class HomeModulesMetricsUtils {
         }
     }
 
+    public static Integer convertLabelToModuleType(String label) {
+        switch (label) {
+            case "SingleTab":
+                return ModuleType.SINGLE_TAB;
+            case "PriceChange":
+                return ModuleType.PRICE_CHANGE;
+            case "TabResumption":
+                return ModuleType.TAB_RESUMPTION;
+            default:
+                assert false : "Module type not supported!";
+                return ModuleType.NUM_ENTRIES;
+        }
+    }
+
     /**
      * Records a module is shown.
      *
