@@ -1098,7 +1098,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
 
   EXPECT_CALL(observer1, WebStateDestroyed(web_state1))
       .WillOnce([&](web::WebState*) {
-        // All webstates should be dettached before invoking WebStateDestroyed
+        // All webstates should be detached before invoking WebStateDestroyed
         // for any of them.
         EXPECT_EQ(0, web_state_list_.count());
         EXPECT_TRUE(observer_.web_state_detached());
@@ -1109,7 +1109,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
 
   EXPECT_CALL(observer2, WebStateDestroyed(web_state2))
       .WillOnce([&](web::WebState*) {
-        // All webstates should be dettached before invoking WebStateDestroyed
+        // All webstates should be detached before invoking WebStateDestroyed
         // for any of them.
         EXPECT_EQ(0, web_state_list_.count());
         EXPECT_TRUE(observer_.web_state_detached());
