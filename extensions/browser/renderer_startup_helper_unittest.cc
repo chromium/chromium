@@ -6,8 +6,10 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -19,6 +21,14 @@
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#endif
 
 namespace extensions {
 
@@ -516,5 +526,49 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, helper_->num_loaded_extensions_in_incognito());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class RendererStartupHelperTestCaptivePortalPopupWindow
+    : public RendererStartupHelperTest {
+ public:
+  RendererStartupHelperTestCaptivePortalPopupWindow() = default;
+  ~RendererStartupHelperTestCaptivePortalPopupWindow() override = default;
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kCaptivePortalPopupWindow);
+    RendererStartupHelperTest::SetUp();
+    static_cast<TestingPrefServiceSimple*>(pref_service())
+        ->registry()
+        ->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that only incognito-enabled extensions are loaded in an incognito
+// context.
+TEST_F(RendererStartupHelperTestCaptivePortalPopupWindow,
+       ExtensionInCaptivePortalSigninRenderer) {
+  // Set prefs::kCaptivePortalSignin to true in the shared PerfService instance.
+  ASSERT_TRUE(pref_service());
+  pref_service()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
+  extensions_browser_client()->set_pref_service_for_context(incognito_context(),
+                                                            pref_service());
+
+  // Initialize the incognito renderer.
+  EXPECT_FALSE(IsProcessInitialized(incognito_render_process_host_.get()));
+  SimulateRenderProcessCreated(incognito_render_process_host_.get());
+  EXPECT_TRUE(IsProcessInitialized(incognito_render_process_host_.get()));
+
+  // Enable the extension. With the pref set it *should* be loaded in the
+  // initialized incognito renderer.
+  helper_->clear_extensions();
+  AddExtensionToRegistry(extension_);
+  helper_->OnExtensionLoaded(*extension_);
+  EXPECT_TRUE(util::IsIncognitoEnabled(extension_->id(), incognito_context()));
+  EXPECT_TRUE(IsExtensionLoaded(*extension_));
+}
+#endif
 
 }  // namespace extensions

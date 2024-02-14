@@ -185,7 +185,8 @@ bool TestExtensionsBrowserClient::AllowCrossRendererResourceLoad(
 
 PrefService* TestExtensionsBrowserClient::GetPrefServiceForContext(
     BrowserContext* context) {
-  return nullptr;
+  auto iter = set_pref_service_for_context_.find(context);
+  return iter != set_pref_service_for_context_.end() ? iter->second : nullptr;
 }
 
 void TestExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(

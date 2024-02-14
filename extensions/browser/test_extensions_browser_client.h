@@ -176,6 +176,11 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
     return extension_system_factory_;
   }
 
+  void set_pref_service_for_context(content::BrowserContext* context,
+                                    PrefService* pref_service) {
+    set_pref_service_for_context_[context] = pref_service;
+  }
+
  private:
   // Not owned.
   raw_ptr<content::BrowserContext> main_context_ = nullptr;
@@ -192,6 +197,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Not owned.
+  std::map<content::BrowserContext*, raw_ptr<PrefService>>
+      set_pref_service_for_context_;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

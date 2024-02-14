@@ -1008,6 +1008,10 @@ source_set("unit_tests") {
     "//third_party/zlib/google:zip",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
