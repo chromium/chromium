@@ -109,7 +109,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     private String mPreviousScrollText;
     private int mPreviousScrollViewWidth;
     private int mPreviousScrollResultXPosition;
-    private int mPreviousScrollOriginEndIndex;
     private float mPreviousScrollFontSize;
     private boolean mPreviousScrollWasRtl;
     private CharSequence mVisibleTextPrefixHint;
@@ -716,7 +715,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         mPreviousScrollFontSize = currentTextSize;
         mPreviousScrollResultXPosition = getScrollX();
         mPreviousScrollWasRtl = currentIsRtl;
-        mPreviousScrollOriginEndIndex = mOriginEndIndex;
     }
 
     /** Scrolls the omnibox text to show the very beginning of the text entered. */
@@ -755,8 +753,7 @@ public abstract class UrlBar extends AutocompleteEditText {
      *
      * @return A prefix of getText(), up to and including the last visible character.
      */
-    @VisibleForTesting
-    CharSequence calculateVisibleHint() {
+    private CharSequence calculateVisibleHint() {
         try (TimingMetric t = TimingMetric.shortUptime("Omnibox.CalculateVisibleHint.Duration")) {
             Editable url = getText();
             int measuredWidth = getVisibleMeasuredViewportWidth();
@@ -865,18 +862,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // padding.
                     mVisibleTextPrefixHint = null;
                 } else {
-                    if (OmniboxFeatures.shouldOmitVisibleHintCalculationForDifferentTLD()) {
-                        String previousTLD =
-                                mPreviousScrollText.substring(0, mPreviousScrollOriginEndIndex);
-                        if (!TextUtils.isEmpty(previousTLD)
-                                && TextUtils.indexOf(url, previousTLD) == 0) {
-                            mVisibleTextPrefixHint = calculateVisibleHint();
-                        } else {
-                            mVisibleTextPrefixHint = null;
-                        }
-                    } else {
-                        mVisibleTextPrefixHint = calculateVisibleHint();
-                    }
+                    mVisibleTextPrefixHint = calculateVisibleHint();
                 }
             }
         } else {

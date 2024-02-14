@@ -508,21 +508,6 @@
             ]
         }
     ],
-    "AndroidNoVisibleHintForDifferentTLD": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidNoVisibleHintForDifferentTLD"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidOmniboxUxRevampPhase3": [
         {
             "platforms": [

@@ -162,7 +162,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidHatsRefactor,
     &kAndroidHub,
     &kAndroidImprovedBookmarks,
-    &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidTabGroupStableIds,
     &kAndroidVisibleUrlTruncationV2,
     &kAnimatedImageDragShadow,
@@ -424,10 +423,6 @@ BASE_FEATURE(kAndroidHub, "AndroidHub", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidImprovedBookmarks,
              "AndroidImprovedBookmarks",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
-             "AndroidNoVisibleHintForDifferentTLD",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabGroupStableIds,
              "AndroidTabGroupStableIds",

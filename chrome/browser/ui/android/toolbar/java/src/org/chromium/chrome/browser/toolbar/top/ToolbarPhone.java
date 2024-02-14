@@ -1841,9 +1841,7 @@ public class ToolbarPhone extends ToolbarLayout
         } else {
             PhoneCaptureStateToken newSnapshotState = generateToolbarSnapshotState();
             @ToolbarSnapshotDifference
-            int snapshotDifference =
-                    PhoneCaptureStateToken.getAnyDifference(
-                            mPhoneCaptureStateToken, newSnapshotState);
+            int snapshotDifference = newSnapshotState.getAnyDifference(mPhoneCaptureStateToken);
             if (snapshotDifference == ToolbarSnapshotDifference.NONE) {
                 return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
             } else {
