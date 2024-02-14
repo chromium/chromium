@@ -67,20 +67,22 @@ class CORE_EXPORT ScriptPromiseResolver
     ResolveOrReject<IDLType, BlinkType>(value, kRejecting);
   }
 
+  // These are shorthand helpers for rejecting the promise with a common type.
+  // Use the templated Reject<IDLType>() variant for uncommon types.
+  void Reject(DOMException*);
+  void Reject(v8::Local<v8::Value>);
+  void Reject(const ScriptValue&);
+  void Reject(const char*);
+  void Reject(bool);
+
   // Anything that can be passed to toV8 can be passed to this function.
   template <typename T>
   void Resolve(T value) {
     ResolveOrReject(value, kResolving);
   }
 
-  // Anything that can be passed to toV8 can be passed to this function.
-  template <typename T>
-  void Reject(T value) {
-    ResolveOrReject(value, kRejecting);
-  }
-
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
-  void Reject() { Reject(ToV8UndefinedGenerator()); }
+  void Reject() { Reject<IDLUndefined>(ToV8UndefinedGenerator()); }
 
   // Returns a callback that will run |callback| with the Entry realm
   // and the Current realm set to the resolver's ScriptState. Note |callback|

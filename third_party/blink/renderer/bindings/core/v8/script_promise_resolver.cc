@@ -92,6 +92,26 @@ void ScriptPromiseResolver::Dispose() {
   deferred_resolve_task_.Cancel();
 }
 
+void ScriptPromiseResolver::Reject(DOMException* value) {
+  Reject<DOMException>(value);
+}
+
+void ScriptPromiseResolver::Reject(v8::Local<v8::Value> value) {
+  Reject<IDLAny>(value);
+}
+
+void ScriptPromiseResolver::Reject(const ScriptValue& value) {
+  Reject<IDLAny>(value);
+}
+
+void ScriptPromiseResolver::Reject(const char* value) {
+  Reject<IDLString>(value);
+}
+
+void ScriptPromiseResolver::Reject(bool value) {
+  Reject<IDLBoolean>(value);
+}
+
 void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
   DCHECK(exception_state.HadException());
   Reject(exception_state.GetException());

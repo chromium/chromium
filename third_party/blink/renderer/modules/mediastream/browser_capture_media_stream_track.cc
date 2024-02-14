@@ -53,7 +53,7 @@ void RaiseApplySubCaptureTargetException(
     DOMExceptionCode exception_code,
     const WTF::String& exception_text,
     ApplySubCaptureTargetResult result) {
-  resolver->Reject(
+  resolver->Reject<DOMException>(
       MakeGarbageCollected<DOMException>(exception_code, exception_text),
       result);
 }
@@ -256,7 +256,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
-  resolver->Reject(
+  resolver->Reject<DOMException>(
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
                                          "Not supported on Android."),
       ApplySubCaptureTargetResult::kUnsupportedPlatform);
@@ -266,9 +266,10 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   const std::optional<base::Token> token =
       IdStringToToken(target ? target->GetId() : String());
   if (!token.has_value()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-                         DOMExceptionCode::kUnknownError, "Invalid token."),
-                     ApplySubCaptureTargetResult::kInvalidTarget);
+    resolver->Reject<DOMException>(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
+                                           "Invalid token."),
+        ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
 
@@ -287,7 +288,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   MediaStreamTrackPlatform* const native_track =
       MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component));
   if (!native_source || !native_track) {
-    resolver->Reject(
+    resolver->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
                                            "Native/platform track missing."),
         ApplySubCaptureTargetResult::kRejectedWithErrorGeneric);
@@ -300,10 +301,11 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   const std::optional<uint32_t> optional_sub_capture_target_version =
       native_source->GetNextSubCaptureTargetVersion();
   if (!optional_sub_capture_target_version.has_value()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-                         DOMExceptionCode::kOperationError,
-                         "Can't change target while clones exist."),
-                     ApplySubCaptureTargetResult::kInvalidTarget);
+    resolver->Reject<DOMException>(
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError,
+            "Can't change target while clones exist."),
+        ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
   const uint32_t sub_capture_target_version =

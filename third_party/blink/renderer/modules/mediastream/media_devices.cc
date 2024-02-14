@@ -140,7 +140,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
     if (capture_controller) {
       capture_controller->FinalizeFocusDecision();
     }
-    resolver_->Reject(error, result);
+    resolver_->template Reject<V8MediaStreamError>(error, result);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -1122,7 +1122,7 @@ void MediaDevices::OnDispatcherHostConnectionError() {
   for (ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
                                         IDLSequence<MediaDeviceInfo>>*
            result_tracker : enumerate_device_requests_) {
-    result_tracker->Reject(
+    result_tracker->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "enumerateDevices() failed."),
         EnumerateDevicesResult::kErrorMediaDevicesDispatcherHostDisconnected);

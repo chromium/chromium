@@ -119,8 +119,8 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, resolve) {
 TEST_F(ScriptPromiseResolverWithTrackerTest, reject) {
   String on_fulfilled, on_rejected;
   auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
-  result_tracker->Reject(/*value=*/"hello",
-                         /*result=*/TestEnum::kFailedWithReason);
+  result_tracker->Reject<IDLString>(/*value=*/"hello",
+                                    /*result=*/TestEnum::kFailedWithReason);
   PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -132,8 +132,8 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, reject) {
 TEST_F(ScriptPromiseResolverWithTrackerTest, resolve_reject_again) {
   String on_fulfilled, on_rejected;
   auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
-  result_tracker->Reject(/*value=*/"hello",
-                         /*result=*/TestEnum::kFailedWithReason);
+  result_tracker->Reject<IDLString>(/*value=*/"hello",
+                                    /*result=*/TestEnum::kFailedWithReason);
   PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -144,8 +144,8 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, resolve_reject_again) {
   // Resolve/Reject on already resolved/rejected promise doesn't log new values
   // in the histogram.
   result_tracker->Resolve(/*value=*/"bye", /*result=*/TestEnum::kOk);
-  result_tracker->Reject(/*value=*/"bye",
-                         /*result=*/TestEnum::kFailedWithReason);
+  result_tracker->Reject<IDLString>(/*value=*/"bye",
+                                    /*result=*/TestEnum::kFailedWithReason);
   PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
@@ -173,8 +173,8 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, timeout) {
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
-  result_tracker->Reject(/*value=*/"hello",
-                         /*result=*/TestEnum::kFailedWithReason);
+  result_tracker->Reject<IDLString>(/*value=*/"hello",
+                                    /*result=*/TestEnum::kFailedWithReason);
   PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", on_rejected);

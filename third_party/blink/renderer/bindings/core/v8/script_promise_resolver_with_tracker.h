@@ -74,10 +74,10 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->Resolve(value);
   }
 
-  template <typename T>
+  template <typename IDLRejectType, typename T>
   void Reject(T value, ResultEnumType result) {
     RecordResultAndLatency(result);
-    resolver_->Reject(value);
+    resolver_->template Reject<IDLRejectType>(value);
   }
 
   void SetResultSuffix(std::string result_suffix) {
