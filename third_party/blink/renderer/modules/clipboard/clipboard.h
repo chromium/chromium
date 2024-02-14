@@ -29,11 +29,11 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   Clipboard(const Clipboard&) = delete;
   Clipboard& operator=(const Clipboard&) = delete;
 
-  ScriptPromise read(ScriptState*,
-                     ClipboardUnsanitizedFormats* formats,
-                     ExceptionState&);
-  ScriptPromise read(ScriptState* script_state,
-                     ExceptionState& exception_state) {
+  ScriptPromiseTyped<IDLSequence<ClipboardItem>>
+  read(ScriptState*, ClipboardUnsanitizedFormats* formats, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<ClipboardItem>> read(
+      ScriptState* script_state,
+      ExceptionState& exception_state) {
     return read(script_state, nullptr, exception_state);
   }
   ScriptPromise readText(ScriptState*, ExceptionState&);

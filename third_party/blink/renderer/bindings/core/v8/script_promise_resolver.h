@@ -32,6 +32,9 @@
 
 namespace blink {
 
+template <typename IDLResolvedType>
+class ScriptPromiseResolverTyped;
+
 // This class wraps v8::Promise::Resolver and provides the following
 // functionalities.
 //  - A ScriptPromiseResolver retains a ScriptState. A caller
@@ -142,6 +145,15 @@ class CORE_EXPORT ScriptPromiseResolver
     return resolver_.Promise();
   }
 
+  template <typename IDLResolvedType>
+  ScriptPromiseResolverTyped<IDLResolvedType>* DowncastTo() {
+#if DCHECK_IS_ON()
+    DCHECK_EQ(runtime_type_id_,
+              GetTypeId<ScriptPromiseResolverTyped<IDLResolvedType>>());
+#endif
+    return static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(this);
+  }
+
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override { Detach(); }
 
@@ -171,9 +183,20 @@ class CORE_EXPORT ScriptPromiseResolver
   ScriptPromiseResolver(ScriptState*, const ExceptionContext&, Resolver);
 
   Resolver resolver_;
+
 #if DCHECK_IS_ON()
+  template <typename T>
+  struct FastTypeTag {
+    constexpr static char type = 0;
+  };
+  template <typename T>
+  constexpr inline const void* GetTypeId() {
+    return &FastTypeTag<T>::type;
+  }
+
   // True if promise() is called.
   bool is_promise_called_ = false;
+  const void* runtime_type_id_ = 0;
 #endif
 
   class ExceptionStateScope;
@@ -372,30 +395,6 @@ class CORE_EXPORT ScriptPromiseResolver
     return v8::Undefined(isolate);
   }
 
-  // Array
-  template <typename T, wtf_size_t inlineCapacity>
-  static v8::Local<v8::Array> ToV8(
-      const HeapVector<T, inlineCapacity>& sequence,
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate* isolate) {
-    RUNTIME_CALL_TIMER_SCOPE(
-        isolate, RuntimeCallStats::CounterId::kToV8SequenceInternal);
-
-    v8::LocalVector<v8::Value> converted_sequence(
-        isolate, base::checked_cast<wtf_size_t>(sequence.size()));
-    base::ranges::transform(
-        sequence, converted_sequence.begin(), [&](const auto& item) {
-          v8::Local<v8::Value> value = ToV8(item, creation_context, isolate);
-          if (value.IsEmpty()) {
-            value = v8::Undefined(isolate);
-          }
-          return value;
-        });
-
-    return v8::Array::New(isolate, converted_sequence.data(),
-                          base::checked_cast<int>(converted_sequence.size()));
-  }
-
   // Promise
   static v8::Local<v8::Value> ToV8(const ScriptPromise& value,
                                    v8::Local<v8::Object> creation_context,
@@ -446,7 +445,11 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
                              const ExceptionContext& context)
       : ScriptPromiseResolver(script_state,
                               context,
-                              TypedResolver(script_state)) {}
+                              TypedResolver(script_state)) {
+#if DCHECK_IS_ON()
+    runtime_type_id_ = GetTypeId<ScriptPromiseResolverTyped<IDLResolvedType>>();
+#endif
+  }
 
   // Anything that can be passed to ToV8Traits<IDLResolvedType> can be passed to
   // this function.

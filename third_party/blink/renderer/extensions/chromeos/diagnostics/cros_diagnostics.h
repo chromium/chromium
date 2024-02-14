@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/chromeos/diagnostics/cros_diagnostics.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -14,7 +15,7 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
+class CrosNetworkInterface;
 
 class CrosDiagnostics : public ScriptWrappable,
                         public Supplement<ExecutionContext>,
@@ -30,7 +31,8 @@ class CrosDiagnostics : public ScriptWrappable,
 
   ScriptPromise getCpuInfo(ScriptState* script_state);
 
-  ScriptPromise getNetworkInterfaces(ScriptState* script_state);
+  ScriptPromiseTyped<IDLSequence<CrosNetworkInterface>> getNetworkInterfaces(
+      ScriptState* script_state);
 
   void Trace(Visitor*) const override;
 
@@ -43,7 +45,7 @@ class CrosDiagnostics : public ScriptWrappable,
                             mojom::blink::GetCpuInfoResultPtr result);
 
   void OnGetNetworkInterfacesResponse(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>* resolver,
       mojom::blink::GetNetworkInterfacesResultPtr result);
 
   HeapMojoRemote<mojom::blink::CrosDiagnostics> cros_diagnostics_remote_;

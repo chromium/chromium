@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
-
+class DetectedBarcode;
 class ExecutionContext;
 class BarcodeDetectorOptions;
 
@@ -36,6 +36,9 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
   static String BarcodeFormatToString(
       const shape_detection::mojom::BarcodeFormat format);
 
+  ScriptPromiseTyped<IDLSequence<DetectedBarcode>>
+  detect(ScriptState*, const V8ImageBitmapSource*, ExceptionState&);
+
   explicit BarcodeDetector(ExecutionContext*,
                            const BarcodeDetectorOptions*,
                            ExceptionState&);
@@ -44,9 +47,8 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) override;
   void OnDetectBarcodes(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<IDLSequence<DetectedBarcode>>*,
       Vector<shape_detection::mojom::blink::BarcodeDetectionResultPtr>);
 
   void OnConnectionError();

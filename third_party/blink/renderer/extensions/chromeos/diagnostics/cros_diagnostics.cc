@@ -127,8 +127,11 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
   resolver->Resolve(std::move(cpu_info_blink));
 }
 
-ScriptPromise CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLSequence<CrosNetworkInterface>>
+CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>>(
+      script_state);
   auto* cros_diagnostics = GetCrosDiagnosticsOrNull();
 
   if (cros_diagnostics) {
@@ -141,7 +144,7 @@ ScriptPromise CrosDiagnostics::getNetworkInterfaces(ScriptState* script_state) {
 }
 
 void CrosDiagnostics::OnGetNetworkInterfacesResponse(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<CrosNetworkInterface>>* resolver,
     mojom::blink::GetNetworkInterfacesResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

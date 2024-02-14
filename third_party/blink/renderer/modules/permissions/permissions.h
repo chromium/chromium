@@ -21,6 +21,7 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorBase;
+class PermissionStatus;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
@@ -42,9 +43,8 @@ class Permissions final : public ScriptWrappable,
   ScriptPromise query(ScriptState*, const ScriptValue&, ExceptionState&);
   ScriptPromise request(ScriptState*, const ScriptValue&, ExceptionState&);
   ScriptPromise revoke(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise requestAll(ScriptState*,
-                           const HeapVector<ScriptValue>&,
-                           ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<PermissionStatus>>
+  requestAll(ScriptState*, const HeapVector<ScriptValue>&, ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
   void ContextDestroyed() override;

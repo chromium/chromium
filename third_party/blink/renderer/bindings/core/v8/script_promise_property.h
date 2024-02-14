@@ -103,31 +103,11 @@ class ScriptPromiseProperty final
     HeapVector<Member<ScriptPromiseResolver>> resolvers;
     resolvers.swap(resolvers_);
     for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(resolver.Get())
-          ->Resolve(value);
+      resolver->DowncastTo<IDLResolvedType>()->Resolve(value);
     }
   }
 
-  void ResolveWithUndefined() {
-    CHECK(!ScriptForbiddenScope::IsScriptForbidden());
-    if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-      CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-    } else {
-      DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-    }
-    DCHECK_EQ(GetState(), kPending);
-    if (!GetExecutionContext()) {
-      return;
-    }
-    state_ = kResolved;
-    resolved_ = ToV8UndefinedGenerator();
-    HeapVector<Member<ScriptPromiseResolver>> resolvers;
-    resolvers.swap(resolvers_);
-    for (const Member<ScriptPromiseResolver>& resolver : resolvers) {
-      static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(resolver.Get())
-          ->Resolve(resolved_);
-    }
-  }
+  void ResolveWithUndefined() { Resolve(ToV8UndefinedGenerator()); }
 
   template <typename PassRejectedType>
   void Reject(PassRejectedType value) {

@@ -1136,68 +1136,71 @@ void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                  media::kNoTransformation, context_provider.get());
 }
 
-ScriptPromiseResolver* VideoFrame::CopyToAsync(
-    ScriptState* script_state,
+bool VideoFrame::CopyToAsync(
+    ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>* resolver,
     scoped_refptr<media::VideoFrame> frame,
     gfx::Rect src_rect,
     const AllowSharedBufferSource* destination,
     const VideoFrameLayout& dest_layout) {
-  auto* background_readback =
-      BackgroundReadback::From(*ExecutionContext::From(script_state));
+  auto* background_readback = BackgroundReadback::From(
+      *ExecutionContext::From(resolver->GetScriptState()));
   if (!background_readback)
-    return nullptr;
+    return false;
 
   ArrayBufferContents contents = PinArrayBufferContent(destination);
   if (!contents.DataLength())
-    return nullptr;
+    return false;
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto readback_done_handler = [](ArrayBufferContents contents,
-                                  ScriptPromiseResolver* resolver,
-                                  VideoFrameLayout dest_layout, bool success) {
-    auto* script_state = resolver->GetScriptState();
-    if (success && script_state->ContextIsValid()) {
-      resolver->Resolve(ConvertLayout(dest_layout));
-    } else {
-      resolver->Reject();
-    }
-  };
+  auto readback_done_handler =
+      [](ArrayBufferContents contents,
+         ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>* resolver,
+         VideoFrameLayout dest_layout, bool success) {
+        if (success) {
+          resolver->Resolve(ConvertLayout(dest_layout));
+        } else {
+          resolver->Reject();
+        }
+      };
   auto done_cb = WTF::BindOnce(readback_done_handler, std::move(contents),
                                WrapPersistent(resolver), dest_layout);
 
   auto buffer = AsSpan<uint8_t>(destination);
   background_readback->ReadbackTextureBackedFrameToBuffer(
       std::move(frame), src_rect, dest_layout, buffer, std::move(done_cb));
-  return resolver;
+  return true;
 }
 
-ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
-                                 const AllowSharedBufferSource* destination,
-                                 VideoFrameCopyToOptions* options,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
+    ScriptState* script_state,
+    const AllowSharedBufferSource* destination,
+    VideoFrameCopyToOptions* options,
+    ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<PlaneLayout>>>(script_state);
+  auto promise = resolver->Promise();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot copy closed VideoFrame.");
-    return ScriptPromise();
+    return promise;
   }
 
   VideoFrameLayout dest_layout;
   gfx::Rect src_rect;
   if (!ParseCopyToOptions(*local_frame, options, exception_state, &dest_layout,
                           &src_rect)) {
-    return ScriptPromise();
+    return promise;
   }
 
   // Validate destination buffer.
   auto buffer = AsSpan<uint8_t>(destination);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("destination is detached.");
-    return ScriptPromise();
+    return promise;
   }
   if (buffer.size() < dest_layout.Size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
-    return ScriptPromise();
+    return promise;
   }
 
   if (RuntimeEnabledFeatures::WebCodecsCopyToRGBEnabled() &&
@@ -1211,28 +1214,26 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     if (!mapped_frame) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
-      return ScriptPromise();
+      return promise;
     }
     CopyMappablePlanes(*mapped_frame, src_rect, dest_layout, buffer);
   } else {
     DCHECK(local_frame->HasTextures());
 
-    if (auto* resolver = CopyToAsync(script_state, local_frame, src_rect,
-                                     destination, dest_layout)) {
-      return resolver->Promise();
+    if (CopyToAsync(resolver, local_frame, src_rect, destination,
+                    dest_layout)) {
+      return promise;
     }
 
     if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
-      return ScriptPromise();
+      return promise;
     }
   }
 
-  auto result = ConvertLayout(dest_layout);
-  return ScriptPromise::Cast(
-      script_state,
-      ToV8Traits<IDLSequence<PlaneLayout>>::ToV8(script_state, result));
+  resolver->Resolve(ConvertLayout(dest_layout));
+  return promise;
 }
 
 void VideoFrame::close() {

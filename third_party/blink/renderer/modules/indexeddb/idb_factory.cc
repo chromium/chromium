@@ -130,10 +130,12 @@ scoped_refptr<base::SingleThreadTaskRunner> IDBFactory::GetTaskRunner() {
   return GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess);
 }
 
-ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<IDBDatabaseInfo>> IDBFactory::GetDatabaseInfo(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   ExecutionContext* context = GetValidContext(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>>(
       script_state, exception_state.GetContext());
   if (!context) {
     resolver->Reject();
@@ -158,7 +160,8 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
   return resolver->Promise();
 }
 
-void IDBFactory::GetDatabaseInfoImpl(ScriptPromiseResolver* resolver) {
+void IDBFactory::GetDatabaseInfoImpl(
+    ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>* resolver) {
   if (!allowed_.value()) {
     ScriptState* script_state = resolver->GetScriptState();
     ScriptState::Scope scope(script_state);
@@ -174,7 +177,7 @@ void IDBFactory::GetDatabaseInfoImpl(ScriptPromiseResolver* resolver) {
 }
 
 void IDBFactory::DidGetDatabaseInfo(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<IDBDatabaseInfo>>* resolver,
     Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
     mojom::blink::IDBErrorPtr error) {
   ScriptState* script_state = resolver->GetScriptState();

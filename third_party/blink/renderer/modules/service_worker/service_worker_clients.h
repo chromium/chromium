@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_CLIENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_CLIENTS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_client_query_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class ScriptPromise;
 class ScriptState;
+class ServiceWorkerClient;
 
 class ServiceWorkerClients final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,7 +24,9 @@ class ServiceWorkerClients final : public ScriptWrappable {
 
   // Clients.idl
   ScriptPromise get(ScriptState*, const String& id);
-  ScriptPromise matchAll(ScriptState*, const ClientQueryOptions*);
+  ScriptPromiseTyped<IDLSequence<ServiceWorkerClient>> matchAll(
+      ScriptState*,
+      const ClientQueryOptions*);
   ScriptPromise openWindow(ScriptState*, const String& url);
   ScriptPromise claim(ScriptState*);
 };

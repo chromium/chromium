@@ -190,16 +190,18 @@ USB::~USB() {
   DCHECK(get_permission_requests_.empty());
 }
 
-ScriptPromise USB::getDevices(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<USBDevice>> USB::getDevices(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (ShouldBlockUsbServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<USBDevice>>();
   }
 
   EnsureServiceConnection();
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<USBDevice>>>(
+          script_state, exception_state.GetContext());
   get_devices_requests_.insert(resolver);
   service_->GetDevices(WTF::BindOnce(&USB::OnGetDevices, WrapPersistent(this),
                                      WrapPersistent(resolver)));
@@ -298,8 +300,9 @@ void USB::ForgetDevice(
   service_->ForgetDevice(device_guid, std::move(callback));
 }
 
-void USB::OnGetDevices(ScriptPromiseResolver* resolver,
-                       Vector<UsbDeviceInfoPtr> device_infos) {
+void USB::OnGetDevices(
+    ScriptPromiseResolverTyped<IDLSequence<USBDevice>>* resolver,
+    Vector<UsbDeviceInfoPtr> device_infos) {
   DCHECK(get_devices_requests_.Contains(resolver));
 
   HeapVector<Member<USBDevice>> devices;
@@ -356,7 +359,8 @@ void USB::OnServiceConnectionError() {
   // script to be executed in the process of determining if the value is a
   // thenable. Move the set to a local variable to prevent such execution from
   // invalidating the iterator used by the loop.
-  HeapHashSet<Member<ScriptPromiseResolver>> get_devices_requests;
+  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<USBDevice>>>>
+      get_devices_requests;
   get_devices_requests.swap(get_devices_requests_);
   for (auto& resolver : get_devices_requests)
     resolver->Resolve(HeapVector<Member<USBDevice>>(0));

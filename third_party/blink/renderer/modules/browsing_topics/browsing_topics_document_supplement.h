@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
+class BrowsingTopic;
 class BrowsingTopicsOptions;
 
 // Provides the implementation for the Topics API.
@@ -26,21 +26,24 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
 
   // Supplement functionality.
   static BrowsingTopicsDocumentSupplement* From(Document&);
-  static ScriptPromise browsingTopics(ScriptState* script_state,
-                                      Document& document,
-                                      ExceptionState& exception_state);
-  static ScriptPromise browsingTopics(ScriptState* script_state,
-                                      Document& document,
-                                      const BrowsingTopicsOptions* options,
-                                      ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLSequence<BrowsingTopic>> browsingTopics(
+      ScriptState* script_state,
+      Document& document,
+      ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLSequence<BrowsingTopic>> browsingTopics(
+      ScriptState* script_state,
+      Document& document,
+      const BrowsingTopicsOptions* options,
+      ExceptionState& exception_state);
 
   explicit BrowsingTopicsDocumentSupplement(Document&);
 
   // Implements the document.browsingTopics().
-  ScriptPromise GetBrowsingTopics(ScriptState* script_state,
-                                  Document& document,
-                                  const BrowsingTopicsOptions* options,
-                                  ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLSequence<BrowsingTopic>> GetBrowsingTopics(
+      ScriptState* script_state,
+      Document& document,
+      const BrowsingTopicsOptions* options,
+      ExceptionState& exception_state);
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;

@@ -32,10 +32,10 @@ dictionary ClipboardUnsanitizedFormats {
     [MeasureAs=AsyncClipboardAPIWrite,
      CallWith=ScriptState,
      RaisesException
-    ] Promise<void> write(sequence<ClipboardItem> data);
+    ] Promise<undefined> write(sequence<ClipboardItem> data);
 
     [MeasureAs=AsyncClipboardAPIWriteText,
      CallWith=ScriptState,
      RaisesException
-    ] Promise<void> writeText(DOMString data);
+    ] Promise<undefined> writeText(DOMString data);
 };

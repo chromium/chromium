@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -199,10 +200,23 @@ class ScriptPromiseTyped : public ScriptPromise {
   static ScriptPromiseTyped<IDLResolvedType> RejectWithDOMException(
       ScriptState* script_state,
       DOMException* exception) {
-    DCHECK(script_state->GetIsolate()->InContext());
+    return Reject(script_state, exception->ToV8(script_state));
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Reject(ScriptState* script_state,
+                                                    const ScriptValue& value) {
+    return Reject(script_state, value.V8Value());
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Reject(
+      ScriptState* script_state,
+      v8::Local<v8::Value> value) {
+    if (value.IsEmpty()) {
+      return ScriptPromiseTyped<IDLResolvedType>();
+    }
     InternalResolverTyped resolver(script_state);
     ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
-    resolver.Reject(exception->ToV8(script_state));
+    resolver.Reject(value);
     return promise;
   }
 };

@@ -219,15 +219,18 @@ ScriptPromise FileSystemHandle::getUniqueId(ScriptState* script_state,
   return result;
 }
 
-ScriptPromise FileSystemHandle::getCloudIdentifiers(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromiseTyped<IDLSequence<FileSystemCloudIdentifier>>
+FileSystemHandle::getCloudIdentifiers(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<FileSystemCloudIdentifier>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto result = resolver->Promise();
 
   GetCloudIdentifiersImpl(WTF::BindOnce(
-      [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+      [](FileSystemHandle*,
+         ScriptPromiseResolverTyped<IDLSequence<FileSystemCloudIdentifier>>*
+             resolver,
          FileSystemAccessErrorPtr result,
          Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>
              cloud_identifiers) {

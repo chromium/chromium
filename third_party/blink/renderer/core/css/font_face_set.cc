@@ -181,21 +181,21 @@ void FontFaceSet::LoadFontPromiseResolver::LoadFonts() {
   }
 }
 
-ScriptPromise FontFaceSet::load(ScriptState* script_state,
-                                const String& font_string,
-                                const String& text) {
+ScriptPromiseTyped<IDLSequence<FontFace>> FontFaceSet::load(
+    ScriptState* script_state,
+    const String& font_string,
+    const String& text) {
   if (!InActiveContext()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<FontFace>>();
   }
 
   Font font;
   if (!ResolveFontStyle(font_string, font)) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    ScriptPromise promise = resolver->Promise();
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSyntaxError,
-        "Could not resolve '" + font_string + "' as a font."));
-    return promise;
+    return ScriptPromiseTyped<IDLSequence<FontFace>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSyntaxError,
+            "Could not resolve '" + font_string + "' as a font."));
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
@@ -214,7 +214,7 @@ ScriptPromise FontFaceSet::load(ScriptState* script_state,
 
   auto* resolver =
       MakeGarbageCollected<LoadFontPromiseResolver>(faces, script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   // After this, resolver->promise() may return null.
   resolver->LoadFonts();
   return promise;

@@ -30,9 +30,10 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromise Clipboard::read(ScriptState* script_state,
-                              ClipboardUnsanitizedFormats* formats,
-                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<ClipboardItem>> Clipboard::read(
+    ScriptState* script_state,
+    ClipboardUnsanitizedFormats* formats,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
                                          formats, exception_state);
 }

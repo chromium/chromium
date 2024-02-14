@@ -24,6 +24,7 @@ namespace blink {
 class SmartCardReaderStateIn;
 
 class SmartCardGetStatusChangeOptions;
+class SmartCardReaderStateOut;
 class SmartCardConnection;
 class SmartCardConnectOptions;
 
@@ -40,7 +41,7 @@ class SmartCardContext final : public ScriptWrappable,
       ScriptState* script_state,
       ExceptionState& exception_state);
 
-  ScriptPromise getStatusChange(
+  ScriptPromiseTyped<IDLSequence<SmartCardReaderStateOut>> getStatusChange(
       ScriptState* script_state,
       const HeapVector<Member<SmartCardReaderStateIn>>& reader_states,
       SmartCardGetStatusChangeOptions* options,
@@ -83,7 +84,8 @@ class SmartCardContext final : public ScriptWrappable,
       ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
       device::mojom::blink::SmartCardListReadersResultPtr);
   void OnGetStatusChangeDone(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLSequence<SmartCardReaderStateOut>>*
+          resolver,
       AbortSignal* signal,
       AbortSignal::AlgorithmHandle* abort_handle,
       device::mojom::blink::SmartCardStatusChangeResultPtr result);

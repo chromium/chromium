@@ -162,16 +162,17 @@ ScriptPromise CookieStoreManager::unsubscribe(
   return resolver->Promise();
 }
 
-ScriptPromise CookieStoreManager::getSubscriptions(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<CookieStoreGetOptions>>
+CookieStoreManager::getSubscriptions(ScriptState* script_state,
+                                     ExceptionState& exception_state) {
   if (!backend_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<CookieStoreGetOptions>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>>(
       script_state, exception_state.GetContext());
   backend_->GetSubscriptions(
       registration_->RegistrationId(),
@@ -204,7 +205,7 @@ void CookieStoreManager::OnSubscribeResult(ScriptPromiseResolver* resolver,
 }
 
 void CookieStoreManager::OnGetSubscriptionsResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>* resolver,
     Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,
     bool backend_success) {
   ScriptState* script_state = resolver->GetScriptState();

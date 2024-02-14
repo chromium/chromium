@@ -53,27 +53,40 @@ FaceDetector::FaceDetector(ExecutionContext* context,
       &FaceDetector::OnFaceServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-ScriptPromise FaceDetector::DoDetect(ScriptState* script_state,
-                                     SkBitmap bitmap,
-                                     ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<DetectedFace>> FaceDetector::detect(
+    ScriptState* script_state,
+    const V8ImageBitmapSource* image_source,
+    ExceptionState& exception_state) {
+  std::optional<SkBitmap> bitmap =
+      GetBitmapFromSource(script_state, image_source, exception_state);
+  if (!bitmap) {
+    return ScriptPromiseTyped<IDLSequence<DetectedFace>>();
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<DetectedFace>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  if (bitmap->isNull()) {
+    resolver->Resolve(HeapVector<Member<DetectedFace>>());
+    return promise;
+  }
+
   if (!face_service_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Face detection service unavailable.");
-    return ScriptPromise();
+    return promise;
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
   face_service_requests_.insert(resolver);
   face_service_->Detect(
-      std::move(bitmap),
+      std::move(*bitmap),
       WTF::BindOnce(&FaceDetector::OnDetectFaces, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return promise;
 }
 
 void FaceDetector::OnDetectFaces(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<DetectedFace>>* resolver,
     Vector<shape_detection::mojom::blink::FaceDetectionResultPtr>
         face_detection_results) {
   DCHECK(face_service_requests_.Contains(resolver));

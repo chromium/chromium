@@ -274,45 +274,63 @@ CookieStore::CookieStore(
 
 CookieStore::~CookieStore() = default;
 
-ScriptPromise CookieStore::getAll(ScriptState* script_state,
-                                  const String& name,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<CookieListItem>> CookieStore::getAll(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   CookieStoreGetOptions* options = CookieStoreGetOptions::Create();
   options->setName(name);
   return getAll(script_state, options, exception_state);
 }
 
-ScriptPromise CookieStore::getAll(ScriptState* script_state,
-                                  const CookieStoreGetOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<CookieListItem>> CookieStore::getAll(
+    ScriptState* script_state,
+    const CookieStoreGetOptions* options,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
-  return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetAllResult,
-                exception_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<CookieListItem>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  DoRead(script_state, options,
+         WTF::BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
+                       WrapPersistent(resolver)),
+         exception_state);
+  return promise;
 }
 
-ScriptPromise CookieStore::get(ScriptState* script_state,
-                               const String& name,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<CookieListItem>> CookieStore::get(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   CookieStoreGetOptions* options = CookieStoreGetOptions::Create();
   options->setName(name);
   return get(script_state, options, exception_state);
 }
 
-ScriptPromise CookieStore::get(ScriptState* script_state,
-                               const CookieStoreGetOptions* options,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLNullable<CookieListItem>> CookieStore::get(
+    ScriptState* script_state,
+    const CookieStoreGetOptions* options,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
   if (!options->hasName() && !options->hasUrl()) {
     exception_state.ThrowTypeError("CookieStoreGetOptions must not be empty");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLNullable<CookieListItem>>();
   }
 
-  return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetResult,
-                exception_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLNullable<CookieListItem>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  DoRead(script_state, options,
+         WTF::BindOnce(&CookieStore::GetAllForUrlToGetResult,
+                       WrapPersistent(resolver)),
+         exception_state);
+  return promise;
 }
 
 ScriptPromise CookieStore::set(ScriptState* script_state,
@@ -409,16 +427,15 @@ void CookieStore::RemovedEventListener(
     StopObserving();
 }
 
-ScriptPromise CookieStore::DoRead(
-    ScriptState* script_state,
-    const CookieStoreGetOptions* options,
-    DoReadBackendResultConverter backend_result_converter,
-    ExceptionState& exception_state) {
+void CookieStore::DoRead(ScriptState* script_state,
+                         const CookieStoreGetOptions* options,
+                         GetAllForUrlCallback backend_result_converter,
+                         ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessCookies()) {
     exception_state.ThrowSecurityError(
         "Access to the CookieStore API is denied in this context.");
-    return ScriptPromise();
+    return;
   }
 
   network::mojom::blink::CookieManagerGetOptionsPtr backend_options =
@@ -427,13 +444,13 @@ ScriptPromise CookieStore::DoRead(
                                      exception_state);
   if (backend_options.is_null() || cookie_url.IsNull()) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return;
   }
 
   if (!backend_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromise();
+    return;
   }
 
   bool is_ad_tagged = false;
@@ -442,19 +459,15 @@ ScriptPromise CookieStore::DoRead(
       is_ad_tagged = local_frame->IsAdFrame();
     }
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  backend_->GetAllForUrl(
-      cookie_url, default_site_for_cookies_, default_top_frame_origin_,
-      context->HasStorageAccess(), std::move(backend_options), is_ad_tagged,
-      WTF::BindOnce(backend_result_converter, WrapPersistent(resolver)));
-  return resolver->Promise();
+  backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
+                         default_top_frame_origin_, context->HasStorageAccess(),
+                         std::move(backend_options), is_ad_tagged,
+                         std::move(backend_result_converter));
 }
 
 // static
 void CookieStore::GetAllForUrlToGetAllResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<CookieListItem>>* resolver,
     const Vector<network::mojom::blink::CookieWithAccessResultPtr>
         backend_cookies) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -476,7 +489,7 @@ void CookieStore::GetAllForUrlToGetAllResult(
 
 // static
 void CookieStore::GetAllForUrlToGetResult(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLNullable<CookieListItem>>* resolver,
     const Vector<network::mojom::blink::CookieWithAccessResultPtr>
         backend_cookies) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -485,7 +498,7 @@ void CookieStore::GetAllForUrlToGetResult(
   ScriptState::Scope scope(script_state);
 
   if (backend_cookies.empty()) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+    resolver->Resolve(nullptr);
     return;
   }
 

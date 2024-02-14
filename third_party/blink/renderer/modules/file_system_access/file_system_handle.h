@@ -21,6 +21,7 @@
 namespace blink {
 class ExceptionState;
 class ExecutionContext;
+class FileSystemCloudIdentifier;
 class FileSystemHandlePermissionDescriptor;
 class FileSystemRemoveOptions;
 class FileSystemDirectoryHandle;
@@ -67,7 +68,8 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
                             FileSystemHandle* other,
                             ExceptionState&);
   ScriptPromise getUniqueId(ScriptState*, ExceptionState&);
-  ScriptPromise getCloudIdentifiers(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<FileSystemCloudIdentifier>>
+  getCloudIdentifiers(ScriptState*, ExceptionState&);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote
   // if the context is already destroyed.

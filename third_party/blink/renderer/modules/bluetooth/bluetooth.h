@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_advertising_event.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
@@ -24,7 +25,6 @@ class BluetoothLEScanOptions;
 class ExceptionState;
 class RequestDeviceOptions;
 class Navigator;
-class ScriptPromise;
 class ScriptState;
 
 class Bluetooth final : public EventTarget,
@@ -44,7 +44,8 @@ class Bluetooth final : public EventTarget,
 
   // IDL exposed bluetooth interface:
   ScriptPromise getAvailability(ScriptState*, ExceptionState&);
-  ScriptPromise getDevices(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<BluetoothDevice>> getDevices(ScriptState*,
+                                                              ExceptionState&);
   ScriptPromise requestDevice(ScriptState*,
                               const RequestDeviceOptions*,
                               ExceptionState&);
@@ -82,8 +83,9 @@ class Bluetooth final : public EventTarget,
       mojom::blink::WebBluetoothDevicePtr,
       ExecutionContext*);
 
-  void GetDevicesCallback(ScriptPromiseResolver*,
-                          Vector<mojom::blink::WebBluetoothDevicePtr>);
+  void GetDevicesCallback(
+      ScriptPromiseResolverTyped<IDLSequence<BluetoothDevice>>*,
+      Vector<mojom::blink::WebBluetoothDevicePtr>);
 
   void RequestDeviceCallback(ScriptPromiseResolver*,
                              mojom::blink::WebBluetoothResult,

@@ -46,10 +46,11 @@ void FontAccess::Trace(blink::Visitor* visitor) const {
 }
 
 // static
-ScriptPromise FontAccess::queryLocalFonts(ScriptState* script_state,
-                                          LocalDOMWindow& window,
-                                          const QueryOptions* options,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<FontMetadata>> FontAccess::queryLocalFonts(
+    ScriptState* script_state,
+    LocalDOMWindow& window,
+    const QueryOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(ExecutionContext::From(script_state)->IsContextThread());
   return From(&window)->QueryLocalFontsImpl(script_state, options,
                                             exception_state);
@@ -65,25 +66,26 @@ FontAccess* FontAccess::From(LocalDOMWindow* window) {
   return supplement;
 }
 
-ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
-                                              const QueryOptions* options,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
+    ScriptState* script_state,
+    const QueryOptions* options,
+    ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kFontAccess)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Font Access feature is not supported.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<FontMetadata>>();
   }
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<FontMetadata>>();
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kLocalFonts,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<FontMetadata>>();
   }
 
   // Connect to font access manager remote if not bound already.
@@ -96,9 +98,10 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
   }
   DCHECK(remote_.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<FontMetadata>>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,
                     WrapWeakPersistent(this), WrapPersistent(options))));
@@ -108,7 +111,7 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
 
 void FontAccess::DidGetEnumerationResponse(
     const QueryOptions* options,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<FontMetadata>>* resolver,
     FontEnumerationStatus status,
     base::ReadOnlySharedMemoryRegion region) {
   if (!resolver->GetScriptState()->ContextIsValid())

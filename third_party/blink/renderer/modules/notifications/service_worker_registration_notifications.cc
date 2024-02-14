@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_get_notification_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/notifications/notification.h"
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 #include "third_party/blink/renderer/modules/notifications/notification_manager.h"
 #include "third_party/blink/renderer/modules/notifications/notification_metrics.h"
@@ -89,12 +90,14 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   return promise;
 }
 
-ScriptPromise ServiceWorkerRegistrationNotifications::getNotifications(
+ScriptPromiseTyped<IDLSequence<Notification>>
+ServiceWorkerRegistrationNotifications::getNotifications(
     ScriptState* script_state,
     ServiceWorkerRegistration& registration,
     const GetNotificationOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<Notification>>>(script_state);
+  auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   NotificationManager::From(execution_context)

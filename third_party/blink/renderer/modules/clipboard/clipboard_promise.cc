@@ -110,18 +110,20 @@ class ClipboardPromise::BlobPromiseResolverFunction final
 };
 
 // static
-ScriptPromise ClipboardPromise::CreateForRead(
+ScriptPromiseTyped<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
     ExecutionContext* context,
     ScriptState* script_state,
     ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLSequence<ClipboardItem>>();
   }
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLSequence<ClipboardItem>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
-      context, script_state, exception_state);
-  ScriptPromise promise =
-      clipboard_promise->script_promise_resolver_->Promise();
+      context, resolver, exception_state);
   clipboard_promise->HandleRead(formats);
   return promise;
 }
@@ -179,10 +181,17 @@ ScriptPromise ClipboardPromise::CreateForWriteText(
 ClipboardPromise::ClipboardPromise(ExecutionContext* context,
                                    ScriptState* script_state,
                                    ExceptionState& exception_state)
+    : ClipboardPromise(context,
+                       MakeGarbageCollected<ScriptPromiseResolver>(
+                           script_state,
+                           exception_state.GetContext()),
+                       exception_state) {}
+
+ClipboardPromise::ClipboardPromise(ExecutionContext* context,
+                                   ScriptPromiseResolver* resolver,
+                                   ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(context),
-      script_promise_resolver_(MakeGarbageCollected<ScriptPromiseResolver>(
-          script_state,
-          exception_state.GetContext())),
+      script_promise_resolver_(resolver),
       permission_service_(context) {}
 
 ClipboardPromise::~ClipboardPromise() = default;
@@ -381,7 +390,8 @@ void ClipboardPromise::ResolveRead() {
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {
       MakeGarbageCollected<ClipboardItem>(items)};
-  script_promise_resolver_->Resolve(clipboard_items);
+  script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
+      clipboard_items);
 }
 
 void ClipboardPromise::OnReadAvailableFormatNames(

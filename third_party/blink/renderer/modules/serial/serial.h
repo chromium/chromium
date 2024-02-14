@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -24,7 +25,6 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorBase;
-class ScriptPromiseResolver;
 class ScriptState;
 class SerialPort;
 class SerialPortRequestOptions;
@@ -65,7 +65,8 @@ class MODULES_EXPORT Serial final : public EventTarget,
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
-  ScriptPromise getPorts(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<SerialPort>> getPorts(ScriptState*,
+                                                       ExceptionState&);
   ScriptPromise requestPort(ScriptState*,
                             const SerialPortRequestOptions*,
                             ExceptionState&);
@@ -88,13 +89,14 @@ class MODULES_EXPORT Serial final : public EventTarget,
   void EnsureServiceConnection();
   void OnServiceConnectionError();
   SerialPort* GetOrCreatePort(mojom::blink::SerialPortInfoPtr);
-  void OnGetPorts(ScriptPromiseResolver*,
+  void OnGetPorts(ScriptPromiseResolverTyped<IDLSequence<SerialPort>>*,
                   Vector<mojom::blink::SerialPortInfoPtr>);
   void OnRequestPort(ScriptPromiseResolver*, mojom::blink::SerialPortInfoPtr);
 
   HeapMojoRemote<mojom::blink::SerialService> service_;
   HeapMojoReceiver<mojom::blink::SerialServiceClient, Serial> receiver_;
-  HeapHashSet<Member<ScriptPromiseResolver>> get_ports_promises_;
+  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<SerialPort>>>>
+      get_ports_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_port_promises_;
   HeapHashMap<String, WeakMember<SerialPort>> port_cache_;
 };

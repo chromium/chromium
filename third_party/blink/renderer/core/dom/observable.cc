@@ -103,8 +103,9 @@ class ScriptCallbackInternalObserver final : public ObservableInternalObserver {
 
 class ToArrayInternalObserver final : public ObservableInternalObserver {
  public:
-  ToArrayInternalObserver(ScriptPromiseResolver* resolver,
-                          AbortSignal::AlgorithmHandle* handle)
+  ToArrayInternalObserver(
+      ScriptPromiseResolverTyped<IDLSequence<IDLAny>>* resolver,
+      AbortSignal::AlgorithmHandle* handle)
       : resolver_(resolver), abort_algorithm_handle_(handle) {}
 
   void Next(ScriptValue value) override {
@@ -133,7 +134,7 @@ class ToArrayInternalObserver final : public ObservableInternalObserver {
   }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLSequence<IDLAny>>> resolver_;
   HeapVector<ScriptValue> values_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
 };
@@ -490,20 +491,22 @@ Observable* Observable::takeUntil(ScriptState*, Observable* notifier) {
   return return_observable;
 }
 
-ScriptPromise Observable::toArray(ScriptState* script_state,
-                                  SubscribeOptions* options) {
+ScriptPromiseTyped<IDLSequence<IDLAny>> Observable::toArray(
+    ScriptState* script_state,
+    SubscribeOptions* options) {
   if (!script_state->ContextIsValid()) {
     CHECK(!GetExecutionContext());
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLSequence<IDLAny>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "toArray() cannot be used unless document is fully active."));
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLAny>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   AbortSignal::AlgorithmHandle* algorithm_handle = nullptr;
 

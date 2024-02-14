@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -23,7 +24,6 @@
 namespace blink {
 
 class ClipboardWriter;
-class ScriptPromiseResolver;
 class LocalFrame;
 class ExceptionState;
 class ExecutionContext;
@@ -43,10 +43,11 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // `formats`: Unsanitized formats to be read from the clipboard.
   // Spec:
   // https://w3c.github.io/clipboard-apis/#dom-clipboardunsanitizedformats-unsanitized
-  static ScriptPromise CreateForRead(ExecutionContext* execution_context,
-                                     ScriptState* script_state,
-                                     ClipboardUnsanitizedFormats* formats,
-                                     ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLSequence<ClipboardItem>> CreateForRead(
+      ExecutionContext* execution_context,
+      ScriptState* script_state,
+      ClipboardUnsanitizedFormats* formats,
+      ExceptionState& exception_state);
 
   // Creates a promise for reading plain text from the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-readtext
@@ -74,6 +75,9 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // `MakeGarbageCollected<>`.
   ClipboardPromise(ExecutionContext* execution_context,
                    ScriptState* script_state,
+                   ExceptionState& exception_state);
+  ClipboardPromise(ExecutionContext* execution_context,
+                   ScriptPromiseResolver*,
                    ExceptionState& exception_state);
   ClipboardPromise(const ClipboardPromise&) = delete;
   ClipboardPromise& operator=(const ClipboardPromise&) = delete;

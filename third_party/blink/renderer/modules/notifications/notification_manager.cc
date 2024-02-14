@@ -227,7 +227,7 @@ void NotificationManager::GetNotifications(
     int64_t service_worker_registration_id,
     const WebString& filter_tag,
     bool include_triggered,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLSequence<Notification>>* resolver) {
   GetNotificationService()->GetNotifications(
       service_worker_registration_id, filter_tag, include_triggered,
       WTF::BindOnce(&NotificationManager::DidGetNotifications,
@@ -235,7 +235,7 @@ void NotificationManager::GetNotifications(
 }
 
 void NotificationManager::DidGetNotifications(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLSequence<Notification>>* resolver,
     const Vector<String>& notification_ids,
     Vector<mojom::blink::NotificationDataPtr> notification_datas) {
   DCHECK_EQ(notification_ids.size(), notification_datas.size());

@@ -147,7 +147,7 @@ class CallbackPromiseAdapterInternal {
         ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
         : Base<S, T>(resolver) {}
     void OnSuccess(typename S::WebType result) override {
-      ScriptPromiseResolver* resolver = this->Resolver();
+      auto* resolver = this->Resolver();
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
@@ -161,7 +161,7 @@ class CallbackPromiseAdapterInternal {
     explicit OnSuccessAdapter(ScriptPromiseResolver* resolver)
         : Base<CallbackPromiseAdapterTrivialWebTypeHolder<void>, T>(resolver) {}
     void OnSuccess() override {
-      ScriptPromiseResolver* resolver = this->Resolver();
+      auto* resolver = this->Resolver();
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
@@ -175,12 +175,13 @@ class CallbackPromiseAdapterInternal {
         ScriptPromiseResolverTyped<typename S::IDLType>* resolver)
         : OnSuccessAdapter<S, T>(resolver) {}
     void OnError(typename T::WebType e) override {
-      ScriptPromiseResolver* resolver = this->Resolver();
+      auto* resolver = this->Resolver();
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
       ScriptState::Scope scope(resolver->GetScriptState());
-      resolver->Reject<typename T::IDLType>(T::Take(resolver, std::move(e)));
+      resolver->template Reject<typename T::IDLType>(
+          T::Take(resolver, std::move(e)));
     }
   };
   template <typename S>
@@ -194,7 +195,7 @@ class CallbackPromiseAdapterInternal {
         : OnSuccessAdapter<S, CallbackPromiseAdapterTrivialWebTypeHolder<void>>(
               resolver) {}
     void OnError() override {
-      ScriptPromiseResolver* resolver = this->Resolver();
+      auto* resolver = this->Resolver();
       if (!resolver->GetExecutionContext() ||
           resolver->GetExecutionContext()->IsContextDestroyed())
         return;
