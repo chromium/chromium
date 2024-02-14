@@ -147,8 +147,7 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
 // won't be overridden by heuristics or server predictions, up to a few
 // exceptions. Check function `ComputedType` for more details.
 DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
-                                          FieldType server_prediction,
-                                          bool is_credit_card_prediction) {
+                                          FieldType server_prediction) {
   DenseSet<HtmlFieldType> believed_html_types = {};
   constexpr auto kMin = base::to_underlying(HtmlFieldType::kMinValue);
   constexpr auto kMax = base::to_underlying(HtmlFieldType::kMaxValue);
@@ -350,8 +349,7 @@ AutofillType AutofillField::ComputedType() const {
     return AutofillType(heuristic_type());
   }
 
-  if (BelievedHtmlTypes(heuristic_type(), server_type(),
-                        IsCreditCardPrediction())
+  if (BelievedHtmlTypes(heuristic_type(), server_type())
           .contains(html_type())) {
     return AutofillType(html_type_);
   }
