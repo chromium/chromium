@@ -5164,6 +5164,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ThumbnailCapturerMac.ShareableContentErrorPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>kron@google.com</owner>
+  <owner>eladalon@google.com</owner>
+  <summary>
+    This histogram tracks the percentage of callbacks where there was no
+    shareable content returned from the OS. This is recorded in the destructor
+    of ThumbnailCapturerMac. The metric is rounded upwards so that a single
+    error shows up as at least 1%.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.TimeToFirstFrame" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
