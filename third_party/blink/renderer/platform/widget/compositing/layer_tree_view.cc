@@ -43,6 +43,7 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/raster_dark_mode_filter_impl.h"
@@ -478,6 +479,12 @@ void LayerTreeView::RunPaintBenchmark(int repeat_count,
                                       cc::PaintBenchmarkResult& result) {
   if (delegate_)
     delegate_->RunPaintBenchmark(repeat_count, result);
+}
+
+std::string LayerTreeView::GetPausedDebuggerLocalizedMessage() {
+  return Platform::Current()
+      ->QueryLocalizedString(IDS_DEBUGGER_PAUSED_IN_ANOTHER_TAB)
+      .Utf8();
 }
 
 void LayerTreeView::DidRunBeginMainFrame() {

@@ -6,8 +6,10 @@
 #define CC_TREES_LAYER_TREE_HOST_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/time/time.h"
+#include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
@@ -90,7 +92,7 @@ struct PaintBenchmarkResult {
 // maintains a pipeline of frames, it can be ambiguous which frame the callback
 // is associated with. We rely on `source_frame_number` to tie the callback to
 // its associated frame. See LayerTreeHost::SourceFrameNumber for details.
-class LayerTreeHostClient {
+class CC_EXPORT LayerTreeHostClient {
  public:
   virtual void WillBeginMainFrame() = 0;
   // Marks finishing compositing-related tasks on the main thread. In threaded
@@ -208,6 +210,10 @@ class LayerTreeHostClient {
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  PaintBenchmarkResult& result) {}
+
+  // Return a string that is the paused debugger message for the heads-up
+  // display overlay.
+  virtual std::string GetPausedDebuggerLocalizedMessage();
 
  protected:
   virtual ~LayerTreeHostClient() = default;

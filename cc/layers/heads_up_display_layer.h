@@ -33,6 +33,7 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
 
+  void SetLayerTreeHost(LayerTreeHost* host) override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
@@ -53,6 +54,7 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
 
   ProtectedSequenceWritable<std::unique_ptr<WebVitalMetrics>>
       web_vital_metrics_;
+  std::string paused_debugger_message_;
 };
 
 }  // namespace cc

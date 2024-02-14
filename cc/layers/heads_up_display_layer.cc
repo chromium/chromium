@@ -31,6 +31,14 @@ HeadsUpDisplayLayer::HeadsUpDisplayLayer()
 
 HeadsUpDisplayLayer::~HeadsUpDisplayLayer() = default;
 
+void HeadsUpDisplayLayer::SetLayerTreeHost(LayerTreeHost* host) {
+  if (host && host != layer_tree_host()) {
+    paused_debugger_message_ =
+        host->client()->GetPausedDebuggerLocalizedMessage();
+  }
+  Layer::SetLayerTreeHost(host);
+}
+
 void HeadsUpDisplayLayer::UpdateLocationAndSize(
     const gfx::Size& device_viewport,
     float device_scale_factor) {
@@ -73,7 +81,8 @@ bool HeadsUpDisplayLayer::HasDrawableContent() const {
 
 std::unique_ptr<LayerImpl> HeadsUpDisplayLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return HeadsUpDisplayLayerImpl::Create(tree_impl, id());
+  return HeadsUpDisplayLayerImpl::Create(tree_impl, id(),
+                                         paused_debugger_message_);
 }
 
 const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {

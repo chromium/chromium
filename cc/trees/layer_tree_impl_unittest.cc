@@ -195,7 +195,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleLayerAndHud) {
   root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // Create hud and add it as a child of root.
-  auto* hud = AddLayer<HeadsUpDisplayLayerImpl>();
+  auto* hud = AddLayer<HeadsUpDisplayLayerImpl>(std::string());
   hud->SetBounds(gfx::Size(200, 200));
   hud->SetDrawsContent(true);
   hud->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);

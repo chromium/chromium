@@ -131,9 +131,12 @@ constexpr int ComputeTotalHeight(int num_of_lines) {
 }
 }  // namespace
 
-HeadsUpDisplayLayerImpl::HeadsUpDisplayLayerImpl(LayerTreeImpl* tree_impl,
-                                                 int id)
-    : LayerImpl(tree_impl, id) {}
+HeadsUpDisplayLayerImpl::HeadsUpDisplayLayerImpl(
+    LayerTreeImpl* tree_impl,
+    int id,
+    const std::string& paused_localized_message)
+    : LayerImpl(tree_impl, id),
+      paused_localized_message_(paused_localized_message) {}
 
 HeadsUpDisplayLayerImpl::~HeadsUpDisplayLayerImpl() {
   ReleaseResources();
@@ -141,7 +144,8 @@ HeadsUpDisplayLayerImpl::~HeadsUpDisplayLayerImpl() {
 
 std::unique_ptr<LayerImpl> HeadsUpDisplayLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return HeadsUpDisplayLayerImpl::Create(tree_impl, id());
+  return HeadsUpDisplayLayerImpl::Create(tree_impl, id(),
+                                         paused_localized_message_);
 }
 
 class HudGpuBacking : public ResourcePool::GpuBacking {
@@ -672,11 +676,6 @@ void HeadsUpDisplayLayerImpl::DrawDebuggerPaused(PaintCanvas* canvas) {
   SkColor4f background{0.0f, 0.0f, 0.0f, 0.35f};
   canvas->clear(background);
 
-  // TODO(dtapuska): Make this string internationalized after feedback
-  // on feature has been provided.
-  std::string label_text =
-      "Debugger paused in another tab, switch to that tab to continue.";
-
   const int kPadding = 4;
   const int kFontHeight = 12;
 
@@ -685,7 +684,8 @@ void HeadsUpDisplayLayerImpl::DrawDebuggerPaused(PaintCanvas* canvas) {
   SkFont label_font(typeface_, kFontHeight);
 
   const SkScalar label_text_width = label_font.measureText(
-      label_text.c_str(), label_text.length(), SkTextEncoding::kUTF8);
+      paused_localized_message_.c_str(), paused_localized_message_.length(),
+      SkTextEncoding::kUTF8);
 
   canvas->save();
 
@@ -697,8 +697,8 @@ void HeadsUpDisplayLayerImpl::DrawDebuggerPaused(PaintCanvas* canvas) {
                    label_flags);
 
   label_flags.setColor(SkColorSetARGB(255, 50, 50, 50));
-  DrawText(canvas, label_flags, label_text, TextAlign::kLeft, kFontHeight,
-           kPadding, kFontHeight * 0.8f + kPadding);
+  DrawText(canvas, label_flags, paused_localized_message_, TextAlign::kLeft,
+           kFontHeight, kPadding, kFontHeight * 0.8f + kPadding);
   canvas->restore();
 }
 

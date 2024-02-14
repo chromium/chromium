@@ -601,6 +601,10 @@ below:
         <ph name="accName">$1<ex>Hazelnuts</ex></ph> not selected
       </message>
 
+      <message name="IDS_DEBUGGER_PAUSED_IN_ANOTHER_TAB" desc="Short phrase for the telling the user the devtools debugger is paused in another tab and clicking will focus that debugger.">
+        Debugger paused in another tab, click to switch to that tab.
+      </message>
+
       <message name="IDS_VIEW_SOURCE_LINE_WRAP" desc="Short phrase for the label describing the checkbox at the top of the view-source page. This checkbox controls whether long source lines are line-wrapped to fit on the screen, or not.">
         Line wrap
       </message>
