@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties_dbus.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -68,8 +69,8 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
   static void Shutdown();
 
   void SetPropertiesForTesting(uint32_t percentage, uint32_t status) {
-    properties_->percentage.ReplaceValue(percentage);
-    properties_->status.ReplaceValue(status);
+    properties_->SetPercentage(percentage);
+    properties_->SetStatus(status);
   }
 
   // Query fwupd for updates that are available for a particular device.
@@ -100,7 +101,7 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
   int device_signal_call_count_for_testing_ = 0;
 
   // Holds the Fwupd Dbus properties for percentage and status.
-  std::unique_ptr<FwupdProperties> properties_;
+  std::unique_ptr<FwupdDbusProperties> properties_;
 
   base::ObserverList<Observer> observers_;
 };

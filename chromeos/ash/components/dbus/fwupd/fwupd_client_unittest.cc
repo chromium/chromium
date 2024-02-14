@@ -95,7 +95,7 @@ class FwupdClientTest : public testing::Test {
     EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
-    expected_properties_ = std::make_unique<FwupdProperties>(
+    expected_properties_ = std::make_unique<FwupdDbusProperties>(
         bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
         base::DoNothing());
 
@@ -263,14 +263,13 @@ class FwupdClientTest : public testing::Test {
   void SetExpectNoUpdates(bool no_updates) { expect_no_updates_ = no_updates; }
 
   void CheckPropertyChanged(FwupdProperties* properties) {
-    if (properties->percentage.is_valid()) {
-      CHECK_EQ(expected_properties_->percentage.value(),
-               properties->percentage.value());
+    if (properties->IsPercentageValid()) {
+      CHECK_EQ(expected_properties_->GetPercentage(),
+               properties->GetPercentage());
     }
 
-    if (properties->status.is_valid()) {
-      CHECK_EQ(expected_properties_->status.value(),
-               properties->status.value());
+    if (properties->IsStatusValid()) {
+      CHECK_EQ(expected_properties_->GetStatus(), properties->GetStatus());
     }
   }
 
@@ -666,8 +665,8 @@ TEST_F(FwupdClientTest, PropertiesChanged) {
   const uint32_t expected_percentage = 50u;
   const uint32_t expected_status = 1u;
 
-  expected_properties_->percentage.ReplaceValue(expected_percentage);
-  expected_properties_->status.ReplaceValue(expected_status);
+  expected_properties_->SetPercentage(expected_percentage);
+  expected_properties_->SetStatus(expected_status);
 
   MockObserver observer;
   EXPECT_CALL(observer, OnPropertiesChangedResponse(_))
@@ -675,8 +674,8 @@ TEST_F(FwupdClientTest, PropertiesChanged) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckPropertyChanged));
   fwupd_client_->AddObserver(&observer);
 
-  GetProperties()->percentage.ReplaceValue(expected_percentage);
-  GetProperties()->status.ReplaceValue(expected_status);
+  GetProperties()->SetPercentage(expected_percentage);
+  GetProperties()->SetStatus(expected_status);
 }
 
 TEST_F(FwupdClientTest, NoDescription) {

@@ -730,10 +730,11 @@ void FirmwareUpdateManager::OnDeviceRequestResponse(FwupdRequest request) {
 
 void FirmwareUpdateManager::OnPropertiesChangedResponse(
     FwupdProperties* properties) {
-  if (!properties || !update_progress_observer_.is_bound()) {
+  if (!properties || !update_progress_observer_.is_bound() ||
+      !properties->IsStatusValid() || !properties->IsPercentageValid()) {
     return;
   }
-  const auto status = FwupdStatus(properties->status.value());
+  const auto status = FwupdStatus(properties->GetStatus());
 
   // If the FwupdStatus just switched from WaitingForUser to anything else,
   // consider the request successful and record a metric.
@@ -753,7 +754,7 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
   }
 
   last_fwupd_status_ = status;
-  const auto percentage = properties->percentage.value();
+  const auto percentage = properties->GetPercentage();
   VLOG(1) << "fwupd: OnPropertiesChangedResponse called with Status: "
           << GetFwupdStatusString(static_cast<FwupdStatus>(status))
           << " | Percentage: " << percentage;
