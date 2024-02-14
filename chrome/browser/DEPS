@@ -500,6 +500,9 @@ include_rules = [
   "+storage/browser",
   "+storage/common",
 
+  # Ensure flags are usable anywhere.
+  "+chrome/browser/flags",
+
   # chrome/browser/ui/views/ is an implementation, not a public interface.
   # Parent directories should not depend on it directly.
   # TODO(crbug.com/1112591): Remove the exceptions below.
