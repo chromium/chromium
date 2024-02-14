@@ -47,11 +47,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      nameColumnHeader: {
-        type: String,
-        reflectToAttribute: true,
-      },
-
       /**
        * The number of engines visible when the list is collapsed.
        */
@@ -104,7 +99,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  nameColumnHeader: string;
   expandListText: string;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;

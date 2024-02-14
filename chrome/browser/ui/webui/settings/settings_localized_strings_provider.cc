@@ -2471,7 +2471,6 @@ void AddSearchStrings(content::WebUIDataSource* html_source
 #endif  // BUILDFLAG(IS_CHROMEOS)
 ) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"searchEnginesManage", IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES},
       {"searchEnginesManageSiteSearch",
        IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
       {"searchPageTitle", IDS_SETTINGS_SEARCH},
@@ -2512,12 +2511,14 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"searchEnginesPageExplanation",
        IDS_SETTINGS_SEARCH_ENGINES_PAGE_EXPLANATION},
-      {"searchEnginesAddSearchEngine",
-       IDS_SETTINGS_SEARCH_ENGINES_ADD_SEARCH_ENGINE},
+      {"searchEnginesAddSiteSearch",
+       IDS_SETTINGS_SEARCH_ENGINES_ADD_SITE_SEARCH},
       {"searchEnginesEditSearchEngine",
        IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE},
-      {"searchEnginesViewSearchEngine",
-       IDS_SETTINGS_SEARCH_ENGINES_VIEW_SEARCH_ENGINE},
+      {"searchEnginesEditSiteSearch",
+       IDS_SETTINGS_SEARCH_ENGINES_EDIT_SITE_SEARCH},
+      {"searchEnginesViewSiteSearch",
+       IDS_SETTINGS_SEARCH_ENGINES_VIEW_SITE_SEARCH},
       {"searchEnginesDeleteConfirmationTitle",
        IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_TITLE},
       {"searchEnginesDeleteConfirmationDescription",
@@ -2539,8 +2540,7 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
       {"searchEnginesExtensionExplanation",
        IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES_EXPLANATION},
       {"searchEnginesSearch", IDS_SETTINGS_SEARCH_ENGINES_SEARCH},
-      {"searchEnginesSearchEngine", IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINE},
-      {"searchEnginesSiteOrPage", IDS_SETTINGS_SEARCH_ENGINES_SITE_OR_PAGE},
+      {"searchEnginesName", IDS_SETTINGS_SEARCH_ENGINES_NAME},
       {"searchEnginesShortcut", IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT},
       {"searchEnginesQueryURL", IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL},
       {"searchEnginesQueryURLExplanation",

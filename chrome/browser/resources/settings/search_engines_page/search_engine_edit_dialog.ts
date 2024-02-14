@@ -91,9 +91,15 @@ export class SettingsSearchEngineEditDialogElement extends
     super.ready();
 
     if (this.model) {
-      this.dialogTitle_ = loadTimeData.getString(
-          this.model.isManaged ? 'searchEnginesViewSearchEngine' :
-                                 'searchEnginesEditSearchEngine');
+      if (this.model.isPrepopulated || this.model.default) {
+        this.dialogTitle_ =
+            loadTimeData.getString('searchEnginesEditSearchEngine');
+      } else {
+        this.dialogTitle_ = loadTimeData.getString(
+            this.model.isManaged ? 'searchEnginesViewSiteSearch' :
+                                   'searchEnginesEditSiteSearch');
+      }
+
       this.actionButtonText_ =
           loadTimeData.getString(this.model.isManaged ? 'done' : 'save');
       this.cancelButtonHidden_ = this.model.isManaged;
@@ -104,8 +110,7 @@ export class SettingsSearchEngineEditDialogElement extends
       this.queryUrl_ = this.model.url;
       this.readonly_ = this.model.isManaged;
     } else {
-      this.dialogTitle_ =
-          loadTimeData.getString('searchEnginesAddSearchEngine');
+      this.dialogTitle_ = loadTimeData.getString('searchEnginesAddSiteSearch');
       this.actionButtonText_ = loadTimeData.getString('add');
       this.readonly_ = false;
     }

@@ -28,6 +28,7 @@ export interface SearchEngine {
   id: number;
   isManaged: boolean;
   isOmniboxExtension: boolean;
+  isPrepopulated: boolean;
   keyword: string;
   modelIndex: number;
   name: string;
