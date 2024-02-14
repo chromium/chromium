@@ -23,7 +23,7 @@ class UI_CHROMEOS_EXPORT AnnouncementView
   METADATA_HEADER(AnnouncementView, views::BubbleDialogDelegateView)
 
  public:
-  explicit AnnouncementView(gfx::NativeView parent);
+  explicit AnnouncementView(gfx::NativeView parent, const std::u16string& name);
   AnnouncementView(const AnnouncementView&) = delete;
   AnnouncementView& operator=(const AnnouncementView&) = delete;
   ~AnnouncementView() override;

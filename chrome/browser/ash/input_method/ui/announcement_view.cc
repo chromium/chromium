@@ -14,7 +14,8 @@ const gfx::Rect kWindowAnchorRect = gfx::Rect(-100000, -100000, 0, 0);
 
 }  // namespace
 
-AnnouncementView::AnnouncementView(gfx::NativeView parent) {
+AnnouncementView::AnnouncementView(gfx::NativeView parent,
+                                   const std::u16string& name) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
@@ -23,8 +24,7 @@ AnnouncementView::AnnouncementView(gfx::NativeView parent) {
   set_title_margins(gfx::Insets());
   set_shadow(views::BubbleBorder::NO_SHADOW);
 
-  announcement_label_ =
-      AddChildView(std::make_unique<AnnouncementLabel>());
+  announcement_label_ = AddChildView(std::make_unique<AnnouncementLabel>(name));
   announcement_label_->SetLineHeight(0);
 
   views::Widget* const widget =

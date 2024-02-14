@@ -23,6 +23,7 @@ namespace ash {
 namespace input_method {
 namespace {
 
+constexpr char16_t kAnnouncementViewName[] = u"Assistive Input";
 constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kShowSuggestionDelay = base::Milliseconds(5);
 
@@ -100,7 +101,8 @@ void AssistiveWindowController::InitAnnouncementView() {
   }
 
   // accessibility_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  announcement_view_ = new ui::ime::AnnouncementView(GetParentView());
+  announcement_view_ =
+      new ui::ime::AnnouncementView(GetParentView(), kAnnouncementViewName);
   announcement_view_->GetWidget()->AddObserver(this);
 }
 

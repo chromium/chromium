@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_ANNOUNCEMENT_LABEL_H_
 
 #include <memory>
+#include <string>
+
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -20,7 +22,7 @@ class AnnouncementLabel : public views::Label {
   METADATA_HEADER(AnnouncementLabel, views::Label)
 
  public:
-  AnnouncementLabel();
+  explicit AnnouncementLabel(const std::u16string& name);
   ~AnnouncementLabel() override;
 
   // views::Label overrides
@@ -32,7 +34,7 @@ class AnnouncementLabel : public views::Label {
 
  private:
   // Callback used for delaying announcements
-  void DoAnnouncement();
+  void DoAnnouncement(const std::u16string text);
 
   // Used to delay the ChromeVox announcements. A delay is required as
   // announcements can "override" each other if they are triggered at
@@ -41,6 +43,9 @@ class AnnouncementLabel : public views::Label {
   // pressing a key will trigger an announcement of the letter found
   // on that key).
   std::unique_ptr<base::OneShotTimer> delay_timer_;
+
+  const std::u16string label_name_;
+  std::u16string announcement_text_;
 };
 
 }  // namespace ime

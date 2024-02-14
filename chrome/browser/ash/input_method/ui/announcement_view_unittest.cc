@@ -24,7 +24,7 @@ class AnnouncementViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    announcement_view_ = new AnnouncementView(GetContext());
+    announcement_view_ = new AnnouncementView(GetContext(), u"TestView");
   }
 
   void TearDown() override {

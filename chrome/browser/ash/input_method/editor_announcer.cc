@@ -11,6 +11,8 @@
 namespace ash::input_method {
 namespace {
 
+constexpr char16_t kAnnouncementViewName[] = u"Orca";
+
 gfx::NativeView GetParentViewFromRootWindow() {
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   return ash::Shell::GetContainer(
@@ -45,8 +47,8 @@ void EditorLiveRegionAnnouncer::LiveRegion::OnWidgetDestroying(
 void EditorLiveRegionAnnouncer::LiveRegion::CreateAnnouncementView() {
   // This view's lifetime is handled by DialogDelegateView which it inherits
   // from and thus will not leak here without a corresponding delete.
-  announcement_view_ =
-      new ui::ime::AnnouncementView(GetParentViewFromRootWindow());
+  announcement_view_ = new ui::ime::AnnouncementView(
+      GetParentViewFromRootWindow(), kAnnouncementViewName);
   announcement_view_->GetWidget()->AddObserver(this);
 }
 
