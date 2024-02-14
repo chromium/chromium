@@ -10690,8 +10690,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Changed" enum="BooleanEnabled"
-    expires_after="2024-06-30">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2025-02-11">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting changes by the user. Only reported on
@@ -10703,8 +10703,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.TapDragging.Started" enum="BooleanEnabled"
-    expires_after="2024-02-11">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2025-02-11">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapDragging setting on startup. Only reported on Chrome OS.
@@ -10715,8 +10715,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Changed" enum="BooleanEnabled"
-    expires_after="2024-02-11">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2025-02-11">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapToClick setting changes by the user. Only reported on
@@ -10728,8 +10728,8 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Touchpad.TapToClick.Started" enum="BooleanEnabled"
-    expires_after="2024-02-11">
-  <owner>zentaro@chromium.org</owner>
+    expires_after="2025-02-11">
+  <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Tracks touchpad TapToClick setting changes by the user. Only reported on
