@@ -215,6 +215,7 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -247,6 +248,7 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
     # TODO(crbug.com/1471166) Enable on CQ.
     tryjob = try_.job(
         equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
@@ -284,6 +286,7 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         omit_from_luci_cv = True,
     ),
@@ -305,6 +308,7 @@ try_.compilator_builder(
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.compilator_builder(
@@ -321,6 +325,7 @@ try_.compilator_builder(
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -366,6 +371,7 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
