@@ -18,6 +18,10 @@ import json5
 # Set to True to break all unknown orgs out using their domain name
 SPLIT_OTHERS = False
 
+# For getting specific directories / repositories
+FIXED_DIRS = None
+#FIXED_DIRS = [["./third_party/blink", "blink"]]
+
 # Paths to necessary files
 topdir = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
                         capture_output=True,
@@ -39,15 +43,20 @@ botpatterns = [
 domain_to_org = {}
 with open(org_list_file, 'r') as file:
     for line in file:
-        parts = line.strip().split(',')
-        domain_to_org[parts[1]] = parts[0]
+        line = line.strip()
+        if line:
+            parts = line.split(',')
+            domain_to_org[parts[1].strip()] = parts[0].strip()
 
 # Read git-dirs.txt and create a list of directories
 repos = []
-with open(git_dirs_file, 'r') as file:
-    for line in file:
-        parts = line.strip().split(',')
-        repos.append(parts)
+if FIXED_DIRS:
+    repos = FIXED_DIRS
+else:
+    with open(git_dirs_file, 'r') as file:
+        for line in file:
+            parts = line.strip().split(',')
+            repos.append(parts)
 
 contributors = {}
 with open(contributors_file, 'r') as f:
@@ -84,11 +93,15 @@ def get_commit_distribution(start_date, end_date):
             raise Exception("Duplicate repository directory: " + repo_dir)
         dirs_processed.add(git_base)
 
-        log_output = subprocess.run([
+        runcmd = [
             'git', 'log', '--after={}'.format(start_date),
             '--before={}'.format(end_date), '--pretty=format:%ae;%as'
-        ],
-                                    capture_output=True,
+        ]
+        if FIXED_DIRS:
+            # Specifying a directory (even the root one) makes log take about 5x
+            # longer! So do it only when we know we're using non-repo dirs.
+            runcmd.append('.')
+        log_output = subprocess.run(runcmd, capture_output=True,
                                     text=True).stdout
 
         for line in log_output.splitlines():
