@@ -19,9 +19,7 @@ void MediaControlOverlayEnclosureElement::DefaultEventHandler(Event& event) {
   // When the user interacts with the media element, the Cast overlay button
   // needs to be shown.
   if (event.type() == event_type_names::kGesturetap ||
-      event.type() == event_type_names::kClick ||
-      event.type() == event_type_names::kPointerover ||
-      event.type() == event_type_names::kPointermove) {
+      event.type() == event_type_names::kClick) {
     GetMediaControls().ShowOverlayCastButtonIfNeeded();
   }
 

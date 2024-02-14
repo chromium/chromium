@@ -200,6 +200,12 @@ bool ShouldShowCastButton(HTMLMediaElement& media_element) {
   return RemotePlayback::From(media_element).RemotePlaybackAvailable();
 }
 
+bool ShouldShowCastOverlayButton(HTMLMediaElement& media_element) {
+  return !media_element.ShouldShowControls() &&
+         RuntimeEnabledFeatures::MediaCastOverlayButtonEnabled() &&
+         ShouldShowCastButton(media_element);
+}
+
 bool PreferHiddenVolumeControls(const Document& document) {
   return !document.GetSettings() ||
          document.GetSettings()->GetPreferHiddenVolumeControls();
@@ -1210,16 +1216,15 @@ void MediaControlsImpl::RefreshCastButtonVisibilityWithoutUpdate() {
     return;
   }
 
-  // The reason for the autoplay muted test is that some pages (e.g. vimeo.com)
-  // have an autoplay background video which has to be muted on Android to play.
-  // In such cases we don't want to automatically show the cast button, since
-  // it looks strange and is unlikely to correspond with anything the user wants
-  // to do.  If a user does want to cast a muted autoplay video then they can
-  // still do so by touching or clicking on the video, which will cause the cast
-  // button to appear. Note that this concerns various animated images websites
-  // too.
-  if (!MediaElement().ShouldShowControls() &&
-      !MediaElement().GetAutoplayPolicy().IsOrWillBeAutoplayingMuted()) {
+  cast_button_->SetIsWanted(MediaElement().ShouldShowControls());
+
+  // On sites with muted autoplaying videos as background, it's unlikely that
+  // users want to cast such content and showing a Cast overlay button is
+  // distracting.  If a user does want to cast a muted autoplay video then they
+  // can still do so by touching or clicking on the video, which will cause the
+  // cast button to appear.
+  if (!MediaElement().GetAutoplayPolicy().IsOrWillBeAutoplayingMuted() &&
+      ShouldShowCastOverlayButton(MediaElement())) {
     // Note that this is a case where we add the overlay cast button
     // without wanting the panel cast button.  We depend on the fact
     // that computeWhichControlsFit() won't change overlay cast button
@@ -1228,19 +1233,15 @@ void MediaControlsImpl::RefreshCastButtonVisibilityWithoutUpdate() {
     // non-cast changes (e.g., resize) occur.  If the panel button
     // is shown, however, compute...() will take control of the
     // overlay cast button if it needs to hide it from the panel.
-    if (RuntimeEnabledFeatures::MediaCastOverlayButtonEnabled())
       overlay_cast_button_->TryShowOverlay();
-    cast_button_->SetIsWanted(false);
-  } else if (MediaElement().ShouldShowControls()) {
+  } else {
     overlay_cast_button_->SetIsWanted(false);
-    cast_button_->SetIsWanted(true);
   }
 }
 
 void MediaControlsImpl::ShowOverlayCastButtonIfNeeded() {
-  if (MediaElement().ShouldShowControls() ||
-      !ShouldShowCastButton(MediaElement()) ||
-      !RuntimeEnabledFeatures::MediaCastOverlayButtonEnabled()) {
+  if (!ShouldShowCastOverlayButton(MediaElement())) {
+    overlay_cast_button_->SetIsWanted(false);
     return;
   }
 
