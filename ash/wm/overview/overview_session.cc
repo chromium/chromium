@@ -1411,6 +1411,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   const bool is_control_down = event->IsControlDown();
+  const bool is_command_down = event->IsCommandDown();
 
   switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
@@ -1472,6 +1473,12 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       }
       break;
     }
+    case ui::VKEY_SPACE:
+      // Allow activating the view via Search (Command) + Space.
+      if (is_command_down && !focus_cycler_->MaybeActivateFocusedView()) {
+        return;
+      }
+      break;
     default: {
       // Window activation change happens after overview start animation is
       // finished for performance reasons. During the animation, the focused
@@ -1480,23 +1487,6 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       if (OverviewController::Get()->IsInStartAnimation()) {
         break;
       }
-
-        // If we are in partial overview and an unsupported key is pressed, e.g.
-        // alt + tab, escape the pairing session.
-        for (auto& grid : grid_list_) {
-          auto* root_window = grid->root_window();
-          if (window_util::IsInFasterSplitScreenSetupSession(root_window)) {
-            // There may be at most one `SplitViewOverviewSession` per root
-            // window; if any is active we end overview for simplicity.
-            // TODO(b/314022922): Consider moving `SplitViewOverviewSession` to
-            // `OverviewGrid`.
-            // `this` will be destroyed after this line.
-            RootWindowController::ForWindow(root_window)
-                ->split_view_overview_session()
-                ->OnKeyEvent();
-            return;
-          }
-        }
 
       return;
     }

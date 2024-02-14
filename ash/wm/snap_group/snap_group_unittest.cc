@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/ash_features.h"
@@ -1251,7 +1252,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
                                      WindowSnapActionSource::kTest);
   WindowState::Get(window1.get())->OnWMEvent(&snap_event);
-  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+  ASSERT_TRUE(IsInOverviewSession());
 
   // Tab until we get to the first overview item.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
@@ -1264,13 +1265,77 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
 
   // Tab to the toast dismiss button.
   PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_TRUE(IsInOverviewSession());
   EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
             focus_cycler->focused_view()->GetView());
 
   // Tab to the settings button.
   PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_TRUE(IsInOverviewSession());
   EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
             focus_cycler->focused_view());
+
+  // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
+  // to simulate real user input.
+
+  // Shift + Tab reverse tabs to the dismiss button.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+            focus_cycler->focused_view()->GetView());
+
+  // Shift + Tab reverse tabs to the overview item.
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+}
+
+// Tests that the chromevox keys work as expected.
+TEST_F(FasterSplitScreenTest, TabbingChromevox) {
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY,
+                                     WindowSnapActionSource::kTest);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_event);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
+  // to simulate real user input.
+
+  // Search + Right moves to the first overview item.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+      GetOverviewItemsForRoot(0);
+  EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
+
+  // Search + Right moves to the dismiss button.
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+            focus_cycler->focused_view()->GetView());
+
+  // Search + Right moves to the settings button.
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
+            focus_cycler->focused_view());
+
+  // Search + Left moves back to the dismiss button.
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(grid->GetFasterSplitView()->toast()->dismiss_button(),
+            focus_cycler->focused_view()->GetView());
+
+  // Search + Space activates the dismiss button.
+  event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(IsInOverviewSession());
+
+  // TODO(sophiewen): `TestShellDelegate::OpenMultitaskingSettings()` can't open
+  // the settings page so we wouldn't end overview. See how we can test this.
 }
 
 TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
