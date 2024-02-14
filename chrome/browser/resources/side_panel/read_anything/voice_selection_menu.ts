@@ -27,8 +27,12 @@ export interface VoiceSelectionMenuElement {
 export function voiceToHtmlTestId(voice: SpeechSynthesisVoice): string {
   return voice.name.replace(/\s/g, '-');
 }
+interface VoiceDropdownGroup {
+  language: string;
+  voices: VoiceDropdownItem[];
+}
 
-interface VoiceDropdown {
+interface VoiceDropdownItem {
   title: string;
   voice: SpeechSynthesisVoice;
   selected: boolean;
@@ -75,15 +79,32 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private computeVoiceDropdown_(
       selectedVoice: SpeechSynthesisVoice,
       availableVoices: SpeechSynthesisVoice[],
-      previewVoicePlaying: SpeechSynthesisVoice|null): VoiceDropdown[] {
-    return availableVoices.map(
-        voice => ({
-          title: voice.name,
-          voice,
-          id: voiceToHtmlTestId(voice),
-          selected: voicesAreEqual(selectedVoice, voice),
-          previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
-        }));
+      previewVoicePlaying: SpeechSynthesisVoice|null): VoiceDropdownGroup[] {
+    const languageToVoices =
+        availableVoices.reduce((languageToDropdownItems, voice) => {
+          const dropdownItem: VoiceDropdownItem = {
+            title: voice.name,
+            voice,
+            id: voiceToHtmlTestId(voice),
+            selected: voicesAreEqual(selectedVoice, voice),
+            previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
+          };
+
+          if (languageToDropdownItems[voice.lang]) {
+            languageToDropdownItems[voice.lang].push(dropdownItem);
+          } else {
+            languageToDropdownItems[voice.lang] = [dropdownItem];
+          }
+
+          return languageToDropdownItems;
+        }, {} as {[language: string]: VoiceDropdownItem[]});
+
+    // TODO(crbug.com/1474951) Use readable language instead of ISO language
+    // codes (e.g. en-US)
+    return Object.entries(languageToVoices).map(([
+                                                  language,
+                                                  voices,
+                                                ]) => ({language, voices}));
   }
 
   private onVoiceSelectionMenuClick_(event: MouseEvent) {
@@ -100,7 +121,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     });
   }
 
-  private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdown>) {
+  private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
     const selectedVoice = event.model.item.voice;
 
     this.dispatchEvent(new CustomEvent('select-voice', {
@@ -112,7 +133,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     }));
   }
 
-  private onVoicePreviewClick_(event: DomRepeatEvent<VoiceDropdown>) {
+  private onVoicePreviewClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
     // Because the preview button is layered onto the voice-selection button,
     // the onVoiceSelectClick_() listener is also subscribed to this event. This
     // line is to make sure that the voice-selection callback is not triggered.

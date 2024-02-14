@@ -100,13 +100,15 @@ suite('VoiceSelectionMenuElement', () => {
     let previewVoice: SpeechSynthesisVoice;
 
     setup(() => {
-      selectedVoice = {name: 'test voice 3'} as SpeechSynthesisVoice;
-      previewVoice = {name: 'test voice 1'} as SpeechSynthesisVoice;
+      selectedVoice = {name: 'test voice 3', lang: 'en-US'} as
+          SpeechSynthesisVoice;
+      previewVoice = {name: 'test voice 1', lang: 'en-US'} as
+          SpeechSynthesisVoice;
 
       availableVoices = [
-        {name: 'test voice 0'} as SpeechSynthesisVoice,
+        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
         previewVoice,
-        {name: 'test voice 2'} as SpeechSynthesisVoice,
+        {name: 'test voice 2', lang: 'it-IT'} as SpeechSynthesisVoice,
         selectedVoice,
       ];
       setAvailableVoices();
@@ -127,6 +129,55 @@ suite('VoiceSelectionMenuElement', () => {
 
       assertFalse(isHiddenWithCss(checkMarkSelectedVoice));
       assertTrue(isHiddenWithCss(checkMarkVoice0));
+    });
+
+    test('it groups voices by language', () => {
+      const englishGroup: HTMLElement =
+          voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+              'div#group-en-US')!;
+      const italianGroup: HTMLElement =
+          voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+              'div#group-it-IT')!;
+
+      const englishDropdownItems: NodeListOf<HTMLElement> =
+          englishGroup.querySelectorAll<HTMLButtonElement>(
+              '.dropdown-voice-selection-button');
+      const italianDropdownItems: NodeListOf<HTMLElement> =
+          italianGroup.querySelectorAll<HTMLButtonElement>(
+              '.dropdown-voice-selection-button');
+
+      assertEquals(englishDropdownItems.length, 3);
+      assertEquals(italianDropdownItems.length, 1);
+    });
+
+    suite('when voices have duplicate names', () => {
+      setup(() => {
+        availableVoices = [
+          {name: 'English', lang: 'en-US'} as SpeechSynthesisVoice,
+          {name: 'English', lang: 'en-US'} as SpeechSynthesisVoice,
+          {name: 'English', lang: 'en-UK'} as SpeechSynthesisVoice,
+        ];
+        setAvailableVoices();
+      });
+
+      test('it groups the duplicate languages correctly', () => {
+        const usEnglishGroup: HTMLElement =
+            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+                'div#group-en-US')!;
+        const ukEnglishGroup: HTMLElement =
+            voiceSelectionMenu.$.voiceSelectionMenu.querySelector<HTMLElement>(
+                'div#group-en-UK')!;
+
+        const usEnglishDropdownItems: NodeListOf<HTMLElement> =
+            usEnglishGroup.querySelectorAll<HTMLButtonElement>(
+                '.dropdown-voice-selection-button');
+        const ukEnglishDropdownItems: NodeListOf<HTMLElement> =
+            ukEnglishGroup.querySelectorAll<HTMLButtonElement>(
+                '.dropdown-voice-selection-button');
+
+        assertEquals(usEnglishDropdownItems.length, 2);
+        assertEquals(ukEnglishDropdownItems.length, 1);
+      });
     });
 
     suite('when preview starts playing', () => {
