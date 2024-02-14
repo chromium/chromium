@@ -212,9 +212,7 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   if (!CanApplyObjectViewBox())
     return std::nullopt;
 
-  DCHECK(object_view_box->GetType() == BasicShape::kBasicShapeRectType ||
-         object_view_box->GetType() == BasicShape::kBasicShapeInsetType ||
-         object_view_box->GetType() == BasicShape::kBasicShapeXYWHType);
+  DCHECK_EQ(object_view_box->GetType(), BasicShape::kBasicShapeInsetType);
 
   Path path;
   gfx::RectF bounding_box(0, 0, intrinsic_size.width.ToFloat(),

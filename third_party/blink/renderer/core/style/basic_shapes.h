@@ -62,8 +62,6 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
     kBasicShapePolygonType,
     kBasicShapeCircleType,
     kBasicShapeInsetType,
-    kBasicShapeRectType,
-    kBasicShapeXYWHType,
     kStyleRayType,
     kStylePathType
   };
@@ -298,8 +296,15 @@ struct DowncastTraits<BasicShapePolygon> {
   }
 };
 
-class BasicShapeRectCommon : public BasicShape {
+class BasicShapeInset final : public BasicShape {
  public:
+  static scoped_refptr<BasicShapeInset> Create() {
+    return base::AdoptRef(new BasicShapeInset);
+  }
+
+  ShapeType GetType() const override { return kBasicShapeInsetType; }
+  void GetPath(Path&, const gfx::RectF&, float) const override;
+
   const Length& Top() const { return top_; }
   const Length& Right() const { return right_; }
   const Length& Bottom() const { return bottom_; }
@@ -326,10 +331,9 @@ class BasicShapeRectCommon : public BasicShape {
     bottom_left_radius_ = radius;
   }
 
- protected:
-  BasicShapeRectCommon() = default;
+ private:
+  BasicShapeInset() = default;
 
- protected:
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
   Length right_;
@@ -343,105 +347,10 @@ class BasicShapeRectCommon : public BasicShape {
   LengthSize bottom_left_radius_;
 };
 
-class BasicShapeInset final : public BasicShapeRectCommon {
- public:
-  static scoped_refptr<BasicShapeInset> Create() {
-    return base::AdoptRef(new BasicShapeInset);
-  }
-
-  ShapeType GetType() const override { return kBasicShapeInsetType; }
-  void GetPath(Path&, const gfx::RectF&, float) const override;
-};
-
 template <>
 struct DowncastTraits<BasicShapeInset> {
   static bool AllowFrom(const BasicShape& value) {
     return value.GetType() == BasicShape::kBasicShapeInsetType;
-  }
-};
-
-class BasicShapeRect final : public BasicShapeRectCommon {
- public:
-  static scoped_refptr<BasicShapeRect> Create() {
-    return base::AdoptRef(new BasicShapeRect);
-  }
-
-  ShapeType GetType() const override { return kBasicShapeRectType; }
-  void GetPath(Path&, const gfx::RectF&, float) const override;
-};
-
-template <>
-struct DowncastTraits<BasicShapeRect> {
-  static bool AllowFrom(const BasicShape& value) {
-    return value.GetType() == BasicShape::kBasicShapeRectType;
-  }
-};
-
-template <>
-struct DowncastTraits<BasicShapeRectCommon> {
-  static bool AllowFrom(const BasicShape& value) {
-    return value.GetType() == BasicShape::kBasicShapeRectType ||
-           value.GetType() == BasicShape::kBasicShapeInsetType;
-  }
-};
-
-class BasicShapeXYWH : public BasicShape {
- public:
-  static scoped_refptr<BasicShapeXYWH> Create() {
-    return base::AdoptRef(new BasicShapeXYWH);
-  }
-
-  const Length& X() const { return x_; }
-  const Length& Y() const { return y_; }
-  const Length& Width() const { return width_; }
-  const Length& Height() const { return height_; }
-
-  const LengthSize& TopLeftRadius() const { return top_left_radius_; }
-  const LengthSize& TopRightRadius() const { return top_right_radius_; }
-  const LengthSize& BottomRightRadius() const { return bottom_right_radius_; }
-  const LengthSize& BottomLeftRadius() const { return bottom_left_radius_; }
-
-  void SetX(const Length& x) { x_ = x; }
-  void SetY(const Length& y) { y_ = y; }
-  void SetWidth(const Length& width) { width_ = width; }
-  void SetHeight(const Length& height) { height_ = height; }
-
-  void SetTopLeftRadius(const LengthSize& radius) { top_left_radius_ = radius; }
-  void SetTopRightRadius(const LengthSize& radius) {
-    top_right_radius_ = radius;
-  }
-  void SetBottomRightRadius(const LengthSize& radius) {
-    bottom_right_radius_ = radius;
-  }
-  void SetBottomLeftRadius(const LengthSize& radius) {
-    bottom_left_radius_ = radius;
-  }
-
-  void GetPath(Path&, const gfx::RectF&, float) const override;
-  ShapeType GetType() const override { return kBasicShapeXYWHType; }
-
- protected:
-  BasicShapeXYWH() = default;
-
- protected:
-  bool IsEqualAssumingSameType(const BasicShape&) const override;
-
- private:
-  Length x_;
-  Length y_;
-  Length width_;
-  Length height_;
-
-  LengthSize top_left_radius_;
-  LengthSize top_right_radius_;
-  LengthSize bottom_right_radius_;
-  LengthSize bottom_left_radius_;
-};
-
-template <>
-struct DowncastTraits<BasicShapeXYWH> {
-  static bool AllowFrom(const BasicShape& value) {
-    return value.GetType() == BasicShape::kBasicShapeXYWHType;
   }
 };
 
