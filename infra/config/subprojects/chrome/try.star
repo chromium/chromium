@@ -211,6 +211,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-chromeos-chrome-with-lacros",
+)
+
+chrome_internal_verifier(
+    builder = "linux-lacros-chrome",
+)
+
+chrome_internal_verifier(
     builder = "linux-nearby-chrome-fyi",
 )
 
