@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -86,7 +87,7 @@ class SupervisedUserExtensionsParentalControlsUiTest
   }
 
  protected:
-  // Parenr navigates to FL control page and waits for it to load.
+  // Parent navigates to FL control page and waits for it to load.
   auto ParentOpensControlPage(ui::ElementIdentifier kParentTab,
                               const GURL& gurl) {
     return Steps(NavigateWebContents(kParentTab, gurl),
@@ -110,6 +111,10 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   if (!container) {
                     throw Error("Path to container element is invalid.");
                   }
+                  const count = container.querySelectorAll("extensions-item").length;
+                  if (count !== 1) {
+                    throw Error("Encountered unexpected number of extensions: " + count);
+                  }
                   const extn = container.querySelectorAll("extensions-item")[0];
                   if (!extn) {
                     throw Error("Path to extension element is invalid.");
@@ -120,7 +125,8 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   }
                   toggle.click();
                 }
-              )js"));
+              )js"),
+                 Log("Child clicked extension toggle."));
   }
 
   // Installs programmatically (not through the UI) an extension for the given
@@ -177,6 +183,8 @@ class SupervisedUserExtensionsParentalControlsUiTest
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
                        ChildTogglesExtensionMissingParentApproval) {
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
   int child_tab_index = 0;
@@ -204,13 +212,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       PollPermissionsPreference(kBoolPermissionsPreferenceObserver),
       ParentSetsPermissionsSwitch(kParentControlsTab,
                                   FamilyLinkSwitchState::kEnabled),
-      WaitForState(kBoolPermissionsPreferenceObserver, true)));
+      WaitForState(kBoolPermissionsPreferenceObserver, true),
+      Log("Given parental configuration that allows extensions.")));
+
+  InstallExtension("A Extension", child().browser()->profile());
 
   RunTestSequence(InAnyContext(Steps(
-      // Install programmatically an extension. It is pending parent approval.
-      Do([this]() -> void {
-        InstallExtension("A Extension", child().browser()->profile());
-      }),
+      Log("Given an installed disabled exetension."),
       // Parent sets the FL Permissions switch.
       ParentSetsPermissionsSwitch(kParentControlsTab, switch_target_state),
       WaitForState(kBoolPermissionsPreferenceObserver,
@@ -220,13 +228,20 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
 
       // Child navigates to the extensions page and tries to enable the
       // extension.
+      Log("When child visits the extensions management page."),
       InstrumentTab(kChildElementId, child_tab_index, child().browser()),
       NavigateWebContents(kChildElementId, GURL(kChromeManageExternsionsUrl)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Extensions")),
+      Log("When child tries to enable the extension."),
       ChildClicksEnableExtension(kChildElementId),
       // The parent approval dialog or the Blocked extensions error message
       // appears.
-      WaitForShow(target_ui_element_id))));
+      WaitForShow(target_ui_element_id),
+      Log(base::StringPrintf("The %s appears.",
+                             (target_ui_element_id ==
+                              ParentPermissionDialog::kDialogViewIdForTesting)
+                                 ? "parent approval dialog"
+                                 : "blocked extension message")))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
