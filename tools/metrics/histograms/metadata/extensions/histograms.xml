@@ -956,6 +956,21 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeveloperModeEnabled" enum="Boolean"
+    expires_after="2024-08-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged once on profile open for &quot;user profiles&quot; (profiles where
+    people can install extensions, specifically profiles that can have
+    non-component extensions installed). This emits true if the user has
+    extension developer mode enabled. Note: this is only on profile open, so if
+    a user either 1) later enables dev mode or 2) enables dev mode after profile
+    start and disables it before the next profile start we emit false once in
+    either scenario.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DevTools.UserIsInDeveloperMode"
     enum="InDeveloperMode" expires_after="2023-07-02">
   <owner>ghazale@chromium.org</owner>

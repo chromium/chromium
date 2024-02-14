@@ -50,6 +50,7 @@
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -574,6 +575,13 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
             "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled",
             location);
       }
+    }
+
+    if (is_user_profile) {
+      bool dev_mode_enabled =
+          GetCurrentDeveloperMode(util::GetBrowserContextId(profile));
+      base::UmaHistogramBoolean("Extensions.DeveloperModeEnabled",
+                                dev_mode_enabled);
     }
 
     if (Manifest::IsExternalLocation(location)) {
