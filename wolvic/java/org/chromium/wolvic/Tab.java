@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -93,9 +94,37 @@ public class Tab {
         return ImeAdapter.fromWebContents(mWebContents);
     }
 
+    public void pageZoomIn() {
+        ThreadUtils.runOnUiThread(() -> {
+            TabJni.get().pageZoomIn(mWebContents);
+        });
+    }
+
+    public void pageZoomOut() {
+        ThreadUtils.runOnUiThread(() -> {
+            TabJni.get().pageZoomOut(mWebContents);
+        });
+    }
+
+    public void pageZoomReset() {
+        ThreadUtils.runOnUiThread(() -> {
+            TabJni.get().pageZoomReset(mWebContents);
+        });
+    }
+
+    public int getCurrentZoomLevel() {
+        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return TabJni.get().getCurrentZoomLevel(mWebContents);
+        });
+    }
+
     @NativeMethods
     public interface Natives {
         WebContents createWebContents(boolean is_off_the_record);
         void setWebContentsDelegate(WebContents webContents, WolvicWebContentsDelegate delegate);
+        void pageZoomIn(WebContents webContents);
+        void pageZoomOut(WebContents webContents);
+        void pageZoomReset(WebContents webContents);
+        int getCurrentZoomLevel(WebContents webContents);
     }
 }

@@ -4,9 +4,12 @@
 
 #include "wolvic/jni_headers/Tab_jni.h"
 
+#include "components/zoom/page_zoom.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/page_zoom.h"
 #include "url/gurl.h"
 #include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/browser/wolvic_web_contents_delegate.h"
@@ -18,6 +21,17 @@ using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 namespace wolvic {
+
+namespace {
+
+void doPageZoom(const JavaParamRef<jobject>& jweb_contents,
+                content::PageZoom zoom) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+  zoom::PageZoom::Zoom(web_contents, zoom);
+}
+
+}  // namespace
 
 ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
     JNIEnv* env,
@@ -36,6 +50,8 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
       std::make_unique<WolvicContents>(std::move(web_contents));
   wolvic_contents.release()->Init();
 
+  zoom::ZoomController::CreateForWebContents(web_contents_impl);
+
   return web_contents_impl->GetJavaWebContents();
 }
 
@@ -50,6 +66,31 @@ void JNI_Tab_SetWebContentsDelegate(
   auto web_contents_delegate =
       std::make_unique<WolvicWebContentsDelegate>(env, jweb_contents_delegate);
   wolvic_contents->SetDelegate(std::move(web_contents_delegate));
+}
+
+void JNI_Tab_PageZoomIn(JNIEnv* env,
+                        const JavaParamRef<jobject>& jweb_contents) {
+  doPageZoom(jweb_contents, content::PAGE_ZOOM_IN);
+}
+
+void JNI_Tab_PageZoomOut(JNIEnv* env,
+                         const JavaParamRef<jobject>& jweb_contents) {
+  doPageZoom(jweb_contents, content::PAGE_ZOOM_OUT);
+}
+
+void JNI_Tab_PageZoomReset(JNIEnv* env,
+                           const JavaParamRef<jobject>& jweb_contents) {
+  doPageZoom(jweb_contents, content::PAGE_ZOOM_RESET);
+}
+
+jint JNI_Tab_GetCurrentZoomLevel(JNIEnv* env,
+                                 const JavaParamRef<jobject>& jweb_contents) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents);
+  return zoom_controller->GetZoomPercent();
 }
 
 }  // namespace wolvic
