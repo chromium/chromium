@@ -1825,16 +1825,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.LayoutSwitch" units="units"
-    expires_after="M95">
-  <owner>dvallet@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The count of layout switching actions while virtual keyboard is alive.
-    Recorded when the virtual keyboard window is hidden or destroyed.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.Multipaste.Actions"
     enum="IMEMultipasteAction" expires_after="2022-04-03">
   <owner>jiwan@chromium.org</owner>
