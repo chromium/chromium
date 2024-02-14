@@ -68,14 +68,10 @@ BASE_FEATURE(kCastMirroringPlayoutDelay,
 const base::FeatureParam<int> kCastMirroringPlayoutDelayMs{
     &kCastMirroringPlayoutDelay, "cast_mirroring_playout_delay_ms", -1};
 
-// TODO(b/202294946): Remove when enabled by default on ChromeOS.
+// TODO(b/202294946): Remove when enabled by default after a few milestones.
 BASE_FEATURE(kGlobalMediaControlsCastStartStop,
              "GlobalMediaControlsCastStartStop",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
              "CastSilentlyRemoveVcOnNavigation",

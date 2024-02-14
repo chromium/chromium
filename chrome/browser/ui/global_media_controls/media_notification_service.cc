@@ -92,17 +92,17 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::MediaUI* GetMediaUI() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
     return chromeos::LacrosService::Get()
         ->GetRemote<crosapi::mojom::MediaUI>()
         .get();
   }
-  return nullptr;
-#else
-  return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -119,14 +119,8 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutes) {
   // A local mirroring route should show the action icon.
   UpdateRoutesAndExpectIconShown({local_mirroring_route_});
 
-// The GlobalMediaControlsCastStartStop flag is disabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  // A local cast route should show the action icon.
-  UpdateRoutesAndExpectIconShown({local_cast_route_});
-#else
   // A cast route should hide the action icon.
   UpdateRoutesAndExpectIconHidden({local_cast_route_});
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // A non local route should hide the action icon.
   UpdateRoutesAndExpectIconHidden({non_local_mirroring_route_});
