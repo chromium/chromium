@@ -134,9 +134,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
                                const int end_offset) const;
 
   // Return the bounds relative to the container bounds. This functions applies
-  // the horizontal scroll offset.
-  // TODO(accessibility): This function should also clip the bounds to the
-  // container bounds.
+  // the horizontal scroll offset and clips the bounds to the container bounds.
   // TODO(accessibility): Add support for vertical scroll offsets if needed.
   // There's no known use case for this yet.
   gfx::RectF RelativeToContainerBounds(

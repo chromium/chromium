@@ -869,11 +869,12 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 
   // 1. Check the bounds of the first 5 characters. They are on screen.
   constexpr gfx::Range kRange1 = gfx::Range(0, 5);
+  // The expected width is as follows because we clip bounds to the container.
+  int expected_width = textfield_bounds.width() - insets.left();
   bounds = textfield_delegate()->GetInnerTextRangeBoundsRect(
       kRange1.start(), kRange1.end(), ui::AXCoordinateSystem::kScreenDIPs,
       ui::AXClippingBehavior::kClipped, &offscreen_result);
-  EXPECT_EQ(gfx::Rect(initial_x, insets.top(), 5 * kGlyphWidth, height),
-            bounds);
+  EXPECT_EQ(gfx::Rect(initial_x, insets.top(), expected_width, height), bounds);
 
   EXPECT_EQ(offscreen_result, ui::AXOffscreenResult::kOnscreen);
 
@@ -884,9 +885,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
   bounds = textfield_delegate()->GetInnerTextRangeBoundsRect(
       kRange2.start(), kRange2.end(), ui::AXCoordinateSystem::kScreenDIPs,
       ui::AXClippingBehavior::kClipped, &offscreen_result);
-  EXPECT_EQ(gfx::Rect(initial_x + kRange2.start() * kGlyphWidth, insets.top(),
-                      kGlyphWidth, height),
-            bounds);
+  EXPECT_EQ(gfx::Rect(insets.left(), insets.top(), 0, 0), bounds);
   EXPECT_EQ(offscreen_result, ui::AXOffscreenResult::kOffscreen);
 
   // 3. Set the selection to the last character. This will scroll the textfield
