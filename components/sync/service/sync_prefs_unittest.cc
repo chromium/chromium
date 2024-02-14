@@ -61,6 +61,8 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenForSyncingUser) {
 }
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
   auto gaia_id_hash_empty = signin::GaiaIdHash::FromGaiaId("");
   EXPECT_TRUE(
       sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_empty)
@@ -68,6 +70,8 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccountSignedOut) {
 }
 
 TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
   ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
                   .empty());
   sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);
@@ -84,6 +88,8 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapTokenPerAccount) {
 }
 
 TEST_F(SyncPrefsTest, ClearEncryptionBootstrapTokenPerAccount) {
+  base::test::ScopedFeatureList enable_keep_account_passphrase(
+      kSyncRememberCustomPassphraseAfterSignout);
   ASSERT_TRUE(sync_prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash_)
                   .empty());
   sync_prefs_->SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash_);

@@ -568,12 +568,16 @@ void SyncPrefs::ClearCachedPassphraseType() {
 
 std::string SyncPrefs::GetEncryptionBootstrapToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
+  // disabled.
   return pref_service_->GetString(
       prefs::internal::kSyncEncryptionBootstrapToken);
 }
 
 void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
+  // disabled.
   pref_service_->SetString(prefs::internal::kSyncEncryptionBootstrapToken,
                            token);
 }
@@ -594,6 +598,8 @@ void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
 
 std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
     const signin::GaiaIdHash& gaia_id_hash) const {
+  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
+  // enabled.
   CHECK(gaia_id_hash.IsValid());
   const std::string* account_passphrase =
       pref_service_
@@ -605,6 +611,8 @@ std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
 void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
     const std::string& token,
     const signin::GaiaIdHash& gaia_id_hash) {
+  // This is only called when kSyncRememberCustomPassphraseAfterSignout is
+  // enabled.
   CHECK(gaia_id_hash.IsValid());
   {
     ScopedDictPrefUpdate update_account_passphrase_dict(
