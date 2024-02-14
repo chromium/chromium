@@ -192,7 +192,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // potentially large (24px) hit area for window resizing on the window shadow
   // to a more reasonable (10px) area.  If |region_px| is nullopt, then any
   // existing region will be reset.
-  virtual void SetInputRegion(std::optional<gfx::Rect> region_px);
+  virtual void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px);
 
   // Whether the platform supports client-controlled window movement. Under
   // Wayland, for example, this returns false, unless the required protocol

@@ -263,7 +263,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
       wayland_extension ? wayland_extension->GetWindowCornersRadii()
                         : gfx::RoundedCornersF();
 
-  std::vector<gfx::Rect> opaque_region;
+  std::vector<gfx::Rect> input_region;
 
   const bool should_have_rounded_window =
       views::ViewsDelegate::GetInstance()->ShouldWindowHaveRoundedCorners(
@@ -273,58 +273,38 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
     GetContentWindow()->layer()->SetRoundedCornerRadius(window_radii);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
-    // The opaque region is a list of rectangles that contain only fully
-    // opaque pixels of the window.  We need to convert the clipping
-    // rounded-rect into this format.
-    const NonClientFrameView* frame_view =
-        GetWidget()->non_client_view()->frame_view();
-    gfx::Rect local_bounds = frame_view->GetLocalBounds();
-    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), window_radii);
-    gfx::RectF rect_f = rounded_corners_rect.rect();
-    rect_f.Scale(scale);
-
-    // It is acceptable to omit some pixels that are opaque, but the region
-    // must not include any translucent pixels.  Therefore, we must
-    // conservatively scale to the enclosed rectangle.
-    gfx::Rect rect = gfx::ToEnclosedRect(rect_f);
-
-    // Create the initial region from the clipping rectangle without rounded
-    // corners.
-    cc::Region region(rect);
-
-    // Now subtract out the small rectangles that cover the corners.
-    struct {
-      gfx::RRectF::Corner corner;
-      bool left;
-      bool upper;
-    } kCorners[] = {
-        {gfx::RRectF::Corner::kUpperLeft, true, true},
-        {gfx::RRectF::Corner::kUpperRight, false, true},
-        {gfx::RRectF::Corner::kLowerLeft, true, false},
-        {gfx::RRectF::Corner::kLowerRight, false, false},
+    auto to_rect = [](float origin_x, float origin_y, float size) {
+      gfx::RectF rect(origin_x, origin_y, size, size);
+      return gfx::ToEnclosingRectIgnoringError(rect);
     };
-    for (const auto& corner : kCorners) {
-      auto corner_radii = rounded_corners_rect.GetCornerRadii(corner.corner);
-      auto rx = std::ceil(scale * corner_radii.x());
-      auto ry = std::ceil(scale * corner_radii.y());
-      auto corner_rect =
-          gfx::Rect(corner.left ? rect.x() : rect.right() - rx,
-                    corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
-      region.Subtract(corner_rect);
-    }
+
+    cc::Region region(gfx::Rect{widget_size_px});
+    const int width = widget_size_px.width(), height = widget_size_px.height();
+
+    const float upper_left_px = window_radii.upper_left() * scale;
+    region.Subtract(to_rect(0, 0, upper_left_px));
+
+    const float upper_right_px = window_radii.upper_right() * scale;
+    region.Subtract(to_rect(width - upper_right_px * scale, 0, upper_right_px));
+
+    const float lower_left_px = window_radii.lower_left() * scale;
+    region.Subtract(to_rect(0, height - lower_left_px, lower_left_px));
+
+    const float lower_right_px = window_radii.lower_right() * scale;
+    region.Subtract(to_rect(width - lower_right_px, height - lower_right_px,
+                            lower_right_px));
 
     // Convert the region to a list of rectangles.
     for (gfx::Rect i : region) {
-      opaque_region.push_back(i);
+      input_region.push_back(i);
     }
   } else {
     GetContentWindow()->layer()->SetRoundedCornerRadius({});
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
-    opaque_region.push_back({{}, widget_size_px});
+    input_region.push_back({{}, widget_size_px});
   }
-  // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
-  // corners in dp. This should probably be the input region not opaque region.
-  platform_window()->SetOpaqueRegion(opaque_region);
+  // TODO(crbug.com/1306688): Instead of setting in pixels, set in dp.
+  platform_window()->SetInputRegion(input_region);
 
   // If the window is rounded, we hint the platform to match the drop shadow's
   // radii to the window's radii. Otherwise, we allow the platform to

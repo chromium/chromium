@@ -208,7 +208,8 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
     input_bounds.Inset(insets_dip - view->GetInputInsets());
     input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
     window->SetInputRegion(
-        showing_frame ? std::optional<gfx::Rect>(input_bounds) : std::nullopt);
+        showing_frame ? std::optional<std::vector<gfx::Rect>>({input_bounds})
+                      : std::nullopt);
   }
 
   if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {

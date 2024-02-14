@@ -1148,8 +1148,9 @@ void X11Window::SetOpaqueRegion(
   connection_->SetArrayProperty(xwindow_, atom, x11::Atom::CARDINAL, value);
 }
 
-void X11Window::SetInputRegion(std::optional<gfx::Rect> region_px) {
-  if (!region_px) {
+void X11Window::SetInputRegion(
+    std::optional<std::vector<gfx::Rect>> region_px) {
+  if (!region_px.has_value() || region_px->empty()) {
     // Reset the input region.
     connection_->shape().Mask({
         .operation = x11::Shape::So::Set,
@@ -1158,15 +1159,16 @@ void X11Window::SetInputRegion(std::optional<gfx::Rect> region_px) {
     });
     return;
   }
+  DCHECK_EQ(1u, region_px->size());
   connection_->shape().Rectangles(x11::Shape::RectanglesRequest{
       .operation = x11::Shape::So::Set,
       .destination_kind = x11::Shape::Sk::Input,
       .ordering = x11::ClipOrdering::YXBanded,
       .destination_window = xwindow_,
-      .rectangles = {{static_cast<int16_t>(region_px->x()),
-                      static_cast<int16_t>(region_px->y()),
-                      static_cast<uint16_t>(region_px->width()),
-                      static_cast<uint16_t>(region_px->height())}},
+      .rectangles = {{static_cast<int16_t>((*region_px)[0].x()),
+                      static_cast<int16_t>((*region_px)[0].y()),
+                      static_cast<uint16_t>((*region_px)[0].width()),
+                      static_cast<uint16_t>((*region_px)[0].height())}},
   });
 }
 

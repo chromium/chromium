@@ -349,8 +349,9 @@ void WaylandSurface::set_opaque_region(
   }
 }
 
-void WaylandSurface::set_input_region(std::optional<gfx::Rect> region_px) {
-  pending_state_.input_region_px.reset();
+void WaylandSurface::set_input_region(
+    std::optional<std::vector<gfx::Rect>> region_px) {
+  pending_state_.input_region_px.clear();
   if (!root_window_)
     return;
   if (root_window_->root_surface() == this &&
@@ -358,17 +359,17 @@ void WaylandSurface::set_input_region(std::optional<gfx::Rect> region_px) {
     return;
   }
   if (region_px)
-    pending_state_.input_region_px = region_px;
+    pending_state_.input_region_px = *region_px;
 
   if (apply_state_immediately_) {
     state_.input_region_px = pending_state_.input_region_px;
     wl_surface_set_input_region(
         surface_.get(),
-        pending_state_.input_region_px.has_value()
-            ? CreateAndAddRegion({pending_state_.input_region_px.value()},
+        pending_state_.input_region_px.empty()
+            ? nullptr
+            : CreateAndAddRegion(pending_state_.input_region_px,
                                  GetWaylandScale(pending_state_))
-                  .get()
-            : nullptr);
+                  .get());
   }
 }
 
@@ -554,11 +555,11 @@ bool WaylandSurface::ApplyPendingState() {
     // outside of the surface.
     wl_surface_set_input_region(
         surface_.get(),
-        pending_state_.input_region_px.has_value()
-            ? CreateAndAddRegion({pending_state_.input_region_px.value()},
+        pending_state_.input_region_px.empty()
+            ? nullptr
+            : CreateAndAddRegion(pending_state_.input_region_px,
                                  GetWaylandScale(pending_state_))
-                  .get()
-            : nullptr);
+                  .get());
     needs_commit = true;
   }
 
