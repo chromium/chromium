@@ -60,6 +60,12 @@ import {gen_jni_class.full_name_with_dots};
     sb.append(f"""
   @Override
   public {return_type_str} {native.name}({sig_params}) {{
+""")
+    if native.first_param_cpp_type:
+      sb.append(f"""\
+    assert {native.params[0].name} != 0;
+""")
+    sb.append(f"""\
     {return_prefix}{gen_jni}.{native.proxy_name}({call_params});
   }}
 """)
