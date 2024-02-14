@@ -273,20 +273,6 @@ CGFloat HeaderBottomPadding() {
   return kNTPShrunkLogoSearchFieldBottomPadding;
 }
 
-UIImageView* CreateMagnifyingGlassView() {
-  UIImageView* image_view = [[UIImageView alloc] init];
-  image_view.translatesAutoresizingMaskIntoConstraints = NO;
-  image_view.contentMode = UIViewContentModeScaleAspectFit;
-  image_view.userInteractionEnabled = NO;
-
-  UIImage* magnifying_glass_image = DefaultSymbolWithPointSize(
-      kMagnifyingglassSymbol, kSymbolContentSuggestionsPointSize);
-  image_view.tintColor = [UIColor colorNamed:kGrey500Color];
-
-  [image_view setImage:magnifying_glass_image];
-  return image_view;
-}
-
 void ConfigureSearchHintLabel(UILabel* search_hint_label,
                               UIView* search_tab_target) {
   [search_hint_label setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -361,15 +347,6 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
     return view;
   }
   return NearestAncestor([view superview], of_class);
-}
-
-BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
-                                    UIWindow* window) {
-  // Some iphone devices in landscape mode are still small enough to have a
-  // Compact  UIUserInterfaceSizeClass.
-  return traitCollection.horizontalSizeClass ==
-             UIUserInterfaceSizeClassRegular ||
-         IsLandscape(window);
 }
 
 UIColor* SearchHintLabelColor() {
