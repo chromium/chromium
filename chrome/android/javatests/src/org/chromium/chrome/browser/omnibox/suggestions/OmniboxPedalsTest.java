@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -104,11 +103,6 @@ public class OmniboxPedalsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        FeatureList.TestValues featureTestValues = new FeatureList.TestValues();
-        featureTestValues.addFeatureFlagOverride(ChromeFeatureList.HISTORY_JOURNEYS, true);
-        FeatureList.setTestValues(featureTestValues);
-        FeatureList.setTestCanUseDefaultsForTesting();
-
         sActivityTestRule.startMainActivityOnBlankPage();
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         sActivityTestRule.waitForDeferredStartup();

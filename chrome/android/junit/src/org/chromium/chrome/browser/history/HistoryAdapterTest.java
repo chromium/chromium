@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
@@ -37,12 +36,7 @@ public class HistoryAdapterTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter =
-                new HistoryAdapter(
-                        mContentManager,
-                        mHistoryProvider,
-                        new ObservableSupplierImpl<>(),
-                        (vg) -> null);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }

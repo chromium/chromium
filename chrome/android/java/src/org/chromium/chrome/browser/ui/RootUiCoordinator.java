@@ -31,7 +31,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -68,9 +67,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
-import org.chromium.chrome.browser.history.HistoryActivity;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -189,9 +185,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -319,7 +313,6 @@ public class RootUiCoordinator
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
     private final boolean mInitializeUiWithIncognitoColors;
-    private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
@@ -876,8 +869,6 @@ public class RootUiCoordinator
                 mActivity, mActivityTabProvider, mEdgeToEdgeControllerSupplier);
         initBoardingPassDetector();
 
-        new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
-
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                         getPrimaryDisplaySizeInInches(),
@@ -1007,59 +998,6 @@ public class RootUiCoordinator
      */
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
         return null;
-    }
-
-    private void initHistoryClustersCoordinator(Profile profile) {
-        if (mActivity == null) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
-            HistoryClustersDelegate historyClustersDelegate =
-                    new HistoryClustersDelegate() {
-                        @Override
-                        public boolean isSeparateActivity() {
-                            return false;
-                        }
-
-                        @Override
-                        public Tab getTab() {
-                            return mActivityTabProvider.get();
-                        }
-
-                        @Override
-                        public Intent getHistoryActivityIntent() {
-                            return new Intent()
-                                    .setClass(mActivity, HistoryActivity.class)
-                                    .putExtra(
-                                            IntentHandler.EXTRA_PARENT_COMPONENT,
-                                            mActivity.getComponentName());
-                        }
-
-                        @Override
-                        public <SerializableList extends List<String> & Serializable>
-                                Intent getOpenUrlIntent(
-                                        GURL gurl,
-                                        boolean inIncognito,
-                                        boolean createNewTab,
-                                        boolean inTabGroup,
-                                        @Nullable SerializableList additionalUrls) {
-                            assert false;
-                            return new Intent();
-                        }
-
-                        @Override
-                        public ViewGroup getToggleView(ViewGroup parent) {
-                            assert false;
-                            return null;
-                        }
-                    };
-
-            mHistoryClustersCoordinator =
-                    new HistoryClustersCoordinator(
-                            profile,
-                            mActivity,
-                            TemplateUrlServiceFactory.getForProfile(profile),
-                            historyClustersDelegate,
-                            mSnackbarManagerSupplier.get());
-        }
     }
 
     private void initMerchantTrustSignals() {
@@ -1406,11 +1344,7 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
-            OpenHistoryClustersDelegate openHistoryClustersDelegate =
-                    query -> {
-                        if (mHistoryClustersCoordinator == null) return;
-                        mHistoryClustersCoordinator.openHistoryClustersUi(query);
-                    };
+            OpenHistoryClustersDelegate openHistoryClustersDelegate = query -> {};
 
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(

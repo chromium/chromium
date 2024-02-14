@@ -307,9 +307,6 @@ found in the LICENSE file.
     <dimen name="legacy_sync_promo_view_padding">16dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
-    <!-- The List/Journeys toggle in the history UI is laid out at 40 dp (less than the typical minimum of 48dp)
-         but has its touch target expanded by 4dp on top and bottom to compensate. -->
-    <dimen name="history_toggle_added_touch_target_height">4dp</dimen>
 
     <!-- Context Menu Dimensions -->
     <!-- Prevent the chip from reaching the edges of the screen for long translations. -->
@@ -421,10 +418,6 @@ found in the LICENSE file.
     <dimen name="virtual_card_enrollment_dialog_description_margin_top">16dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_legal_message_margin_top">20dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
-
-    <!-- Section tab dimensions -->
-    <dimen name="section_tab_background_corner_radius">60dp</dimen>
-    <dimen name="section_tab_bezel_width">2dp</dimen>
 
     <!-- Price Drop dimensions -->
     <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>

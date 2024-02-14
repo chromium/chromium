@@ -2946,9 +2946,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       </message>
 
       <!-- Browsing History UI -->
-      <message name="IDS_HISTORY_MANAGER_EMPTY" desc="Indicates that there are no browsing history items.">
-        Pages that you visit appear here
-      </message>
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">
         You’ll find your history here
       </message>

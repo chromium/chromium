@@ -367,7 +367,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/gsa:java",
       "//chrome/browser/history:java",
       "//chrome/browser/history_clusters:java",
-      "//chrome/browser/history_clusters:java_resources",
       "//chrome/browser/hub:factory_java",
       "//chrome/browser/hub:java",
       "//chrome/browser/image_descriptions:java",

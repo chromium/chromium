@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -65,12 +64,7 @@ public class BrowsingHistoryBridgeTest {
         // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
         // object, and later gets passed down when marking the item for removal.
         HistoryContentManager contentManager = mock(HistoryContentManager.class);
-        HistoryAdapter adapter =
-                new HistoryAdapter(
-                        contentManager,
-                        mBrowsingHistoryBridge,
-                        new ObservableSupplierImpl<>(),
-                        (vg) -> null);
+        HistoryAdapter adapter = new HistoryAdapter(contentManager, mBrowsingHistoryBridge);
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();

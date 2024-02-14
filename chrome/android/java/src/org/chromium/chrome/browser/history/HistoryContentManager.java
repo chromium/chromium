@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -57,7 +55,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /** Displays and manages the content view / list UI for browsing history. */
 public class HistoryContentManager implements SignInStateObserver, PrefObserver {
@@ -138,12 +135,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *     unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
-     *     separate activity.
-     * @param showHistoryToggleSupplier A supplier that tells us if and when we should show the
-     *     toggle that swaps between the Journeys and regular history UIs.
-     * @param toggleViewFactory Function that provides a toggle view container for the given parent
-     *     ViewGroup. This toggle is used to switch between the Journeys UI and the regular history
-     *     UI and is thus controlled by our parent component.
+     *     separate activity. separate activity.
      * @param historyProvider Provider of methods for querying and managing browsing history.
      * @param appId The ID of the application from which the history activity is launched, passed as
      *     the client package name.
@@ -158,8 +150,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<Tab> tabSupplier,
-            ObservableSupplier<Boolean> showHistoryToggleSupplier,
-            Function<ViewGroup, ViewGroup> toggleViewFactory,
             HistoryProvider historyProvider,
             String appId) {
         mActivity = activity;
@@ -199,10 +189,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         mHistoryAdapter =
                 new HistoryAdapter(
-                        this,
-                        sProviderForTests != null ? sProviderForTests : historyProvider,
-                        showHistoryToggleSupplier,
-                        toggleViewFactory);
+                        this, sProviderForTests != null ? sProviderForTests : historyProvider);
 
         // Create a recycler view.
         mRecyclerView =

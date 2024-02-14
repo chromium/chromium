@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -94,8 +93,6 @@ public class PageInfoHistoryController
                         mHost,
                         /* selectionDelegate= */ null,
                         mTabSupplier,
-                        new ObservableSupplierImpl<>(),
-                        vg -> null,
                         new BrowsingHistoryBridge(profile),
                         null);
         mContentManager.startLoadingItems();

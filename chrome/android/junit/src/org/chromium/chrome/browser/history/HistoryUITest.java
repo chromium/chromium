@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -21,10 +20,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
-import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -35,8 +32,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
-
-import com.google.android.material.tabs.TabLayout;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -51,11 +46,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -63,9 +56,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersBridge;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersResult;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -96,11 +86,7 @@ import java.util.Date;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.HISTORY_JOURNEYS,
-    ChromeFeatureList.RENAME_JOURNEYS,
-    ChromeFeatureList.APP_SPECIFIC_HISTORY
-})
+@DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -118,7 +104,6 @@ public class HistoryUITest {
     private HistoryAdapter mAdapter;
     private HistoryManager mHistoryManager;
     private RecyclerView mRecyclerView;
-    private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private Activity mActivity;
 
     private HistoryItem mItem1;
@@ -136,7 +121,6 @@ public class HistoryUITest {
     @Mock private SigninManager mSigninManager;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
-    @Mock private HistoryClustersBridge mHistoryClustersBridge;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -162,7 +146,6 @@ public class HistoryUITest {
         mJniMocker.mock(PrefChangeRegistrarJni.TEST_HOOKS, mPrefChangeRegistrarJni);
         IncognitoUtils.setEnabledForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -178,12 +161,9 @@ public class HistoryUITest {
                         mSnackbarManager,
                         mProfile,
                         /* Supplier<Tab>= */ null,
-                        false,
-                        null,
                         mHistoryProvider,
                         null,
                         true);
-        mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
 
@@ -196,10 +176,6 @@ public class HistoryUITest {
         layoutRecyclerView();
 
         int expectedItemCount = 4;
-        // When Journeys is enabled, there is an additional header item.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
-            expectedItemCount += 1;
-        }
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
@@ -716,135 +692,6 @@ public class HistoryUITest {
                 (PAGE_INCREMENT) + " more Items should be loaded",
                 mAdapter.getItemCount(),
                 itemCount + PAGE_INCREMENT);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
-    public void testToggleToJourneysAndBack() {
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
-
-        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab journeysTab = toggle.getTabAt(1);
-
-        Assert.assertFalse(journeysTab.isSelected());
-
-        toggle.selectTab(journeysTab);
-        TransitionManager.endTransitions(mHistoryManager.getView());
-        ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
-        Assert.assertEquals(mHistoryManager.getView().getChildAt(0), activityContentView);
-        promise.fulfill(HistoryClustersResult.emptyResult());
-        ShadowLooper.idleMainLooper();
-
-        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
-        recyclerView.measure(0, 0);
-        recyclerView.layout(0, 0, 600, 1000);
-
-        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
-        Assert.assertFalse(historyTab.isSelected());
-
-        journeysToggle.selectTab(historyTab);
-        Assert.assertEquals(
-                mHistoryManager.getView().getChildAt(0), mHistoryManager.getSelectableListLayout());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS, ChromeFeatureList.RENAME_JOURNEYS})
-    public void testToggle_renameEnabled() {
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
-
-        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab dateTab = toggle.getTabAt(0);
-        Assert.assertEquals(
-                mActivity.getString(R.string.history_clusters_by_date_tab_label),
-                dateTab.getText());
-        TabLayout.Tab journeysTab = toggle.getTabAt(1);
-        Assert.assertEquals(
-                mActivity.getString(R.string.history_clusters_by_group_tab_label),
-                journeysTab.getText());
-        Assert.assertNull(
-                mHistoryManager.getToolbarForTests().getMenu().findItem(R.id.optout_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
-    public void testJourneysInfoHeader() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        setHasOtherFormsOfBrowsingData(true);
-        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
-        final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
-        toolbar.onSignInStateChange();
-        Assert.assertTrue(infoMenuItem.isVisible());
-        mHistoryManager.onMenuItemClick(infoMenuItem);
-
-        DateDividedAdapter.ItemGroup headerGroup = mAdapter.getFirstGroupForTests();
-        Assert.assertEquals(2, headerGroup.size());
-
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
-
-        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab journeysTab = toggle.getTabAt(1);
-        toggle.selectTab(journeysTab);
-
-        promise.fulfill(HistoryClustersResult.emptyResult());
-        ShadowLooper.idleMainLooper();
-
-        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
-        recyclerView.measure(0, 0);
-        recyclerView.layout(0, 0, 600, 1000);
-
-        // Hiding the disclaimer in the List UI should hide it in the Journeys UI.
-        Assert.assertNull(recyclerView.findViewById(R.id.privacy_disclaimer));
-        mHistoryClustersCoordinator.onMenuItemClick(
-                mHistoryClustersCoordinator
-                        .getToolbarForTesting()
-                        .getMenu()
-                        .findItem(R.id.info_menu_id));
-        recyclerView.measure(0, 0);
-        recyclerView.layout(0, 0, 600, 1000);
-        Assert.assertNotNull(recyclerView.findViewById(R.id.privacy_disclaimer));
-
-        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
-        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
-        journeysToggle.selectTab(historyTab);
-
-        headerGroup = mAdapter.getFirstGroupForTests();
-        // Showing the disclaimer in the Journeys UI should show it in the List UI.
-        Assert.assertTrue(mAdapter.hasListHeader());
-        Assert.assertEquals(3, headerGroup.size());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
-    public void testJourneysDisabledByPolicy() {
-        doReturn(false).when(mPrefService).getBoolean(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
-        doReturn(true)
-                .when(mPrefService)
-                .isManagedPreference(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
-
-        mHistoryManager =
-                new HistoryManager(
-                        mActivity,
-                        true,
-                        mSnackbarManager,
-                        mProfile,
-                        /* Supplier<Tab>= */ null,
-                        false,
-                        null,
-                        mHistoryProvider,
-                        null,
-                        false);
-
-        Assert.assertNull(mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout));
-        Assert.assertNull(
-                mHistoryManager.getToolbarForTests().getMenu().findItem(R.id.optout_menu_id));
     }
 
     private void toggleItemSelection(int position) {
