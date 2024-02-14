@@ -93,6 +93,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -1820,6 +1821,11 @@ void BrowserCommandController::UpdatePrintingState() {
 
   bool print_enabled = CanPrint(browser_);
   command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
+  if (features::IsToolbarPinningEnabled()) {
+    actions::ActionManager::Get()
+        .FindAction(kActionPrint)
+        ->SetEnabled(print_enabled);
+  }
 #if BUILDFLAG(ENABLE_PRINTING)
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,
                                         CanBasicPrint(browser_));
