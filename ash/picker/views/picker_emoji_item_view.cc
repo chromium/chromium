@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/ash_element_identifiers.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -17,7 +16,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -37,8 +35,6 @@ PickerEmojiItemView::PickerEmojiItemView(
     const std::u16string& emoji)
     : views::Button(std::move(callback)) {
   SetUseDefaultFillLayout(true);
-  SetProperty(views::kElementIdentifierKey,
-              kPickerSearchResultsEmojiItemElementId);
 
   emoji_label_ = AddChildView(views::Builder<views::Label>()
                                   .SetText(emoji)
@@ -55,10 +51,6 @@ PickerEmojiItemView::PickerEmojiItemView(
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
                                    /*highlight_on_focus=*/true);
-}
-
-std::u16string_view PickerEmojiItemView::GetTextForTesting() const {
-  return emoji_label_->GetText();
 }
 
 PickerEmojiItemView::~PickerEmojiItemView() = default;

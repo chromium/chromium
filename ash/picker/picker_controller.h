@@ -78,9 +78,6 @@ class ASH_EXPORT PickerController
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Disables the feature key checking. Only works in tests.
-  static void DisableFeatureKeyCheckForTesting();
-
  private:
   // Downloads a gif from `url`. If the download is successful, encoded gif data
   // is passed to `callback`. Otherwise, `callback` is run with an empty string.

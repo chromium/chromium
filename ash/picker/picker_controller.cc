@@ -24,7 +24,6 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -40,8 +39,6 @@
 namespace ash {
 
 namespace {
-
-bool g_should_check_key = true;
 
 // The hash value for the feature key of the Picker feature, used for
 // development.
@@ -155,21 +152,12 @@ PickerController::~PickerController() {
 }
 
 bool PickerController::IsFeatureKeyMatched() {
-  if (!g_should_check_key) {
-    return true;
-  }
-
   if (MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kNone) {
     LOG(ERROR) << "Provided feature key does not match with the expected one.";
     return false;
   }
 
   return true;
-}
-
-void PickerController::DisableFeatureKeyCheckForTesting() {
-  CHECK_IS_TEST();
-  g_should_check_key = false;
 }
 
 void PickerController::SetClient(PickerClient* client) {
