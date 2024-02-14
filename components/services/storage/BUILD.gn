@@ -107,7 +107,6 @@ source_set("storage") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//storage/common",
-    "//third_party/sqlite",
   ]
 }
 
@@ -233,7 +232,6 @@ source_set("tests") {
     "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/sqlite",
   ]
 
   if (is_ios) {
