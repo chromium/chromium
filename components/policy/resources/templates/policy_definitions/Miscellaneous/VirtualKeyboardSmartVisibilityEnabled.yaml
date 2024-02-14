@@ -12,8 +12,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-  - chrome_os
+supported_on:
+  - chrome_os:123-
 items:
 - caption: Show the on-screen keyboard when appropriate.
   value: true
