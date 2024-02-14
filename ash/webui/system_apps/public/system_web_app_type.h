@@ -72,7 +72,7 @@ enum class SystemWebAppType {
   // feedback report on Chrome OS.
   //
   // Source: //ash/webui/os_feedback_ui
-  // contact: cros-telemetry@google.com
+  // contact: cros-feedback-app@google.com
   OS_FEEDBACK = 19,
 
   // Projector aka Screencast (go/projector-player-dd) aims to make it simple
