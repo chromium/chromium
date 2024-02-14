@@ -7901,18 +7901,39 @@ be describing additional metrics about the same event.
       The number of times the Compose result was inserted into the page. Uses
       exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="MenuItemClicked">
     <summary>
       The number of times the Compose context menu item was clicked for an
       element on the page. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="MenuItemShown">
     <summary>
       The number of times the Compose context menu item was shown for an element
       on the page. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="MissingFormData">
     <summary>
@@ -7945,60 +7966,130 @@ be describing additional metrics about the same event.
       If the user canceled this session with the &quot;X&quot; button. This does
       not include dismissing the dialog by losing focus.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="CasualCount">
     <summary>
       How many times the user pressed the &quot;shorten&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ComposeCount">
     <summary>
       How many times the user pressed the &quot;generate&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="DialogShownCount">
     <summary>
       How many times the compose dialog was shown to the user. Uses exponential
       buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="FormalCount">
     <summary>
       How many times the user pressed the &quot;formal&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InsertedResults" enum="Boolean">
     <summary>
       If the user inserted results back to the web page in this session, either
       by pressing the &quot;insert&quot; or &quot;replace&quot; button.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="LengthenCount">
     <summary>
       How many times the user pressed the &quot;elaborate&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="RegenerateCount">
     <summary>
       How many times the user pressed the &quot;regenerate&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ShortenCount">
     <summary>
       How many times the user pressed the &quot;shorten&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="UndoCount">
     <summary>
       How many times the user pressed the &quot;undo&quot; button in this
       session. Uses exponential buckets for privacy.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -8010,16 +8101,30 @@ be describing additional metrics about the same event.
     input. Excludes potentially sensitive fields including input type=password
     or when autofill determines the field is sensitive.
   </summary>
-  <metric name="AutofillFormControlType">
+  <metric name="AutofillFormControlType" enum="AutofillFormControlType2">
     <summary>
       The control type, such as text or textarea. See
       |autofill::FormControlType|.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
-  <metric name="IsAutofillFieldType">
+  <metric name="IsAutofillFieldType" enum="Boolean">
     <summary>
       Whether the field is detected and supported by Autofill.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TypedCharacterCount">
     <summary>
@@ -8029,6 +8134,13 @@ be describing additional metrics about the same event.
       count only typed changes, but is not always accurate. Additionally, there
       is a limit to the total possible length observed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TypedWordCount">
     <summary>
@@ -8039,6 +8151,13 @@ be describing additional metrics about the same event.
       accurate. Additionally, there is a limit to the total possible length
       observed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
