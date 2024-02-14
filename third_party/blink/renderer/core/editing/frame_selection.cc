@@ -1292,21 +1292,12 @@ void FrameSelection::MoveRangeSelectionInternal(
   if (selection.IsNone())
     return;
 
-  SelectionInDOMTree::Builder builder;
-  if (selection.IsBaseFirst()) {
-    builder.SetBaseAndExtent(selection.ComputeStartPosition(),
-                             selection.ComputeEndPosition());
-  } else {
-    builder.SetBaseAndExtent(selection.ComputeEndPosition(),
-                             selection.ComputeStartPosition());
-  }
-  builder.SetAffinity(selection.Affinity());
-  SetSelection(builder.Build(), SetSelectionOptions::Builder()
-                                    .SetShouldCloseTyping(true)
-                                    .SetShouldClearTypingStyle(true)
-                                    .SetGranularity(granularity)
-                                    .SetShouldShowHandle(IsHandleVisible())
-                                    .Build());
+  SetSelection(selection, SetSelectionOptions::Builder()
+                              .SetShouldCloseTyping(true)
+                              .SetShouldClearTypingStyle(true)
+                              .SetGranularity(granularity)
+                              .SetShouldShowHandle(IsHandleVisible())
+                              .Build());
 }
 
 void FrameSelection::SetCaretEnabled(bool enabled) {

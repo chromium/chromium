@@ -172,15 +172,11 @@ SelectionInFlatTree AdjustSelectionWithTrailingWhitespace(
     return selection;
   if (!selection.IsRange())
     return selection;
-  const bool base_is_first =
-      selection.Base() == selection.ComputeStartPosition();
-  const PositionInFlatTree& end =
-      base_is_first ? selection.Extent() : selection.Base();
-  DCHECK_EQ(end, selection.ComputeEndPosition());
+  const PositionInFlatTree& end = selection.ComputeEndPosition();
   const PositionInFlatTree& new_end = SkipWhitespace(end);
   if (end == new_end)
     return selection;
-  if (base_is_first) {
+  if (selection.IsBaseFirst()) {
     return SelectionInFlatTree::Builder(selection)
         .SetBaseAndExtent(selection.Base(), new_end)
         .Build();
@@ -314,9 +310,7 @@ static SelectionInFlatTree ExtendSelectionAsDirectional(
     TextGranularity granularity) {
   DCHECK(!selection.IsNone());
   DCHECK(position.IsNotNull());
-  const PositionInFlatTree& start = selection.ComputeStartPosition();
-  const PositionInFlatTree& end = selection.ComputeEndPosition();
-  const PositionInFlatTree& base = selection.IsBaseFirst() ? start : end;
+  const PositionInFlatTree& base = selection.Base();
   if (position.GetPosition() < base) {
     // Extend backward yields backward selection
     //  - forward selection:  *abc ^def ghi| => |abc def^ ghi
@@ -326,8 +320,8 @@ static SelectionInFlatTree ExtendSelectionAsDirectional(
     const PositionInFlatTree& new_end =
         selection.IsBaseFirst()
             ? ComputeEndRespectingGranularity(
-                  new_start, PositionInFlatTreeWithAffinity(start), granularity)
-            : end;
+                  new_start, PositionInFlatTreeWithAffinity(base), granularity)
+            : base;
     if (new_start.IsNull() || new_end.IsNull()) {
       // By some reasons, we fail to extend `selection`.
       // TODO(crbug.com/1386012) We want to have a test case of this.
@@ -345,8 +339,8 @@ static SelectionInFlatTree ExtendSelectionAsDirectional(
   //  - backward selection: |abc def^ ghi* => abc ^def ghi|
   const PositionInFlatTree& new_start =
       selection.IsBaseFirst()
-          ? start
-          : ComputeStartFromEndForExtendForward(end, granularity);
+          ? base
+          : ComputeStartFromEndForExtendForward(base, granularity);
   const PositionInFlatTree& new_end = ComputeEndRespectingGranularity(
       new_start, PositionInFlatTreeWithAffinity(position), granularity);
   if (new_start.IsNull() || new_end.IsNull()) {
