@@ -157,6 +157,10 @@ struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta);
 // Return a set of all the codecs supported by the hardware as well as
 // their capabilities
 std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs();
+
+// Queries the driver to see if it supports stateful decoding.
+bool IsV4L2DecoderStateful();
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

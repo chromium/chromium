@@ -540,4 +540,32 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
   return supported_media_configs;
 }
 
+bool IsV4L2DecoderStateful() {
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return false;
+  }
+
+  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+      base::BindRepeating(&HandledIoctl, device_fd.get()),
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+  // V4L2 stateful formats (don't end up with _SLICE or _FRAME) supported.
+  constexpr std::array<uint32_t, 4> kSupportedStatefulInputCodecs = {
+      V4L2_PIX_FMT_H264,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_HEVC,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_VP8,
+      V4L2_PIX_FMT_VP9,
+  };
+
+  return std::find_first_of(v4l2_codecs.begin(), v4l2_codecs.end(),
+                            kSupportedStatefulInputCodecs.begin(),
+                            kSupportedStatefulInputCodecs.end()) !=
+         v4l2_codecs.end();
+}
+
 }  // namespace media
