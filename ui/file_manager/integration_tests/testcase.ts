@@ -19,7 +19,7 @@ import * as fileDisplayTests from './file_manager/file_display.js';
 import * as fileListTests from './file_manager/file_list.js';
 // import * as fileTransferConnectorTests from './file_manager/file_transfer_connector.js';
 import * as filesTooltipTests from './file_manager/files_tooltip.js';
-// import * as folderShortcutsTests from './file_manager/folder_shortcuts.js';
+import * as folderShortcutsTests from './file_manager/folder_shortcuts.js';
 import * as formatDialogTests from './file_manager/format_dialog.js';
 // import * as gearMenuTests from './file_manager/gear_menu.js';
 import * as gridViewTests from './file_manager/grid_view.js';
@@ -77,7 +77,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...fileListTests,
   // ...fileTransferConnectorTests,
   ...filesTooltipTests,
-  // ...folderShortcutsTests,
+  ...folderShortcutsTests,
   ...formatDialogTests,
   // ...gearMenuTests,
   ...gridViewTests,

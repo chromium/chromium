@@ -19,7 +19,6 @@ js_files = [
   "file_manager/drive_specific.js",
   "file_manager/file_dialog.js",
   "file_manager/file_transfer_connector.js",
-  "file_manager/folder_shortcuts.js",
   "file_manager/gear_menu.js",
   "file_manager/holding_space.js",
   "file_manager/recents.js",
@@ -72,7 +71,7 @@ ts_files = [
 
   "file_manager/files_tooltip.ts",
 
-  # "file_manager/folder_shortcuts.ts",
+  "file_manager/folder_shortcuts.ts",
 
   "file_manager/format_dialog.ts",
 
