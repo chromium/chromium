@@ -2322,6 +2322,40 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Please wait…
       </message>
 
+      <!-- Identity error card message strings -->
+      <message name="IDS_IDENTITY_ERROR_CARD_PASSPHRASE_REQUIRED" desc="Error message to resolve passphrase required error.">
+        To use and save Chrome data in your Google Account, enter your passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_CLIENT_OUT_OF_DATE" desc="Error message to resolve sync protocol error for out-of-date client.">
+        To use and save Chrome data in your Google Account, update Chrome
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_AUTH_ERROR" desc="Error message to resolve auth error.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RETRIEVE_KEYS_FOR_EVERYTHING" desc="Error message to resolve sync encryption error, required to resume sync.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Error message to resolve sync encryption error, required to resume syncing passwords.">
+        To use and save passwords in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Error message to resolve sync degraded recoverability, for users that have not chosen to encrypt all sync data.">
+        To use and save Chrome data in your Google Account, verify it’s you
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Error message to resolve sync degraded recoverability, for users that have chosen to encrypt all sync data.">
+        To make sure you can always use the passwords in your Google Account, verify it’s you
+      </message>
+
+      <!-- Identity error card button strings -->
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_PASSPHRASE_REQUIRED" desc="Button label for passphrase required error.">
+        Enter passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_CLIENT_OUT_OF_DATE" desc="Button label for client out-of-date error.">
+        Update
+      </message>
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error)">
+        Verify it’s you
+      </message>
+
       <!-- Tab switcher -->
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK" desc="Content description for the standard stack selection 'button'.">
         Standard tabs

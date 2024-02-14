@@ -15,6 +15,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorCardDetails;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.sync.SyncService;
 
@@ -82,9 +83,11 @@ public class IdentityErrorCardPreference extends Preference
         TextView error = (TextView) card.findViewById(R.id.identity_error_card_error_description);
         Button button = (Button) card.findViewById(R.id.identity_error_card_button);
 
-        // TODO(crbug.com/1503649): Update strings to use for identity errors.
-        error.setText(SyncSettingsUtils.getSyncErrorHint(getContext(), mIdentityError));
-        button.setText(SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mIdentityError));
+        ErrorCardDetails error_card_details =
+                SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError);
+        Context context = getContext();
+        error.setText(context.getString(error_card_details.message));
+        button.setText(context.getString(error_card_details.buttonLabel));
 
         // TODO(crbug.com/1503649): Add handlers for button click.
     }

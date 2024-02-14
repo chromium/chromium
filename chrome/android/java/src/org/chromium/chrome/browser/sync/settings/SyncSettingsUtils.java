@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
@@ -78,6 +79,17 @@ public class SyncSettingsUtils {
         int CLIENT_OUT_OF_DATE = 6;
         int SYNC_SETUP_INCOMPLETE = 7;
         int OTHER_ERRORS = 128;
+    }
+
+    // Class to wrap the details of an error card.
+    public static class ErrorCardDetails {
+        public @StringRes int message;
+        public @StringRes int buttonLabel;
+
+        public ErrorCardDetails(@StringRes int message, @StringRes int buttonLabel) {
+            this.message = message;
+            this.buttonLabel = buttonLabel;
+        }
     }
 
     /** Returns the type of the sync error, for syncing users. */
@@ -519,8 +531,13 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        // TODO(crbug.com/1503649): Re-evaluate if all the errors make sense as identity errors.
-        return getSyncErrorFromSyncService(syncService);
+        @SyncError int error = getSyncErrorFromSyncService(syncService);
+        // Do not show identity error for unrecoverable errors, since they are not actionable.
+        // TODO(crbug.com/1503649): Remove these unused values after sync-to-signin transition.
+        if (error == SyncError.OTHER_ERRORS) {
+            return SyncError.NO_ERROR;
+        }
+        return error;
     }
 
     /** Returns the type of the sync error from sync service. */
@@ -560,5 +577,52 @@ public class SyncSettingsUtils {
         }
 
         return SyncError.NO_ERROR;
+    }
+
+    /**
+     * Gets text for the identity error card.
+     *
+     * @param error The identity error.
+     * @return A ErrorCardDetails instance containing the error message and the button text for the
+     *     identity error.
+     */
+    public static ErrorCardDetails getIdentityErrorErrorCardDetails(@SyncError int error) {
+        switch (error) {
+            case SyncError.PASSPHRASE_REQUIRED:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_passphrase_required,
+                        R.string.identity_error_card_button_passphrase_required);
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_client_out_of_date,
+                        R.string.identity_error_card_button_client_out_of_date);
+            case SyncError.AUTH_ERROR:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_auth_error,
+                        R.string.identity_error_card_button_verify);
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_sync_retrieve_keys_for_everything,
+                        R.string.identity_error_card_button_verify);
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_sync_retrieve_keys_for_passwords,
+                        R.string.identity_error_card_button_verify);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_sync_recoverability_degraded_for_everything,
+                        R.string.identity_error_card_button_verify);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return new ErrorCardDetails(
+                        R.string.identity_error_card_sync_recoverability_degraded_for_passwords,
+                        R.string.identity_error_card_button_verify);
+            case SyncError.OTHER_ERRORS:
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.NO_ERROR:
+                assert false; // NOTREACHED()
+                // fall through
+            default:
+                return null;
+        }
     }
 }
