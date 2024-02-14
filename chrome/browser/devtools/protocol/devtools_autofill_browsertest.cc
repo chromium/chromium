@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -473,14 +474,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   // Create fake filled fields.
   // TODO(crbug.com/1331312): Get rid of FormFieldData.
   FormData form;
-  form.host_frame = form_id().frame_token;
+  form.host_frame = LocalFrameToken(*main_frame()->GetFrameToken());
   form.renderer_id = form_id().renderer_id;
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
   form.fields.back().id_attribute = u"id_1";
+  form.fields.back().host_frame = form.host_frame;
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
   form.fields.back().id_attribute = u"id_2";
+  form.fields.back().host_frame = form.host_frame;
 
   // The parsed form is queried by
   // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type
@@ -551,6 +554,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                             af->Type().GetStorableType()))));
     // Note: we read the value from `FormFieldData`.
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", ffd->value));
+    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
+                        "frameId",
+                        base::UTF8ToUTF16(
+                            main_frame()->GetDevToolsFrameToken().ToString())));
     EXPECT_THAT(ff,
                 Not(FilledFieldHasAttributeWithValue16("value", af->value)));
     EXPECT_THAT(ff,

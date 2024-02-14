@@ -1110,6 +1110,8 @@ experimental domain Autofill
       string autofillType
       # The filling strategy
       FillingStrategy fillingStrategy
+      # The frame the field belongs to
+      Page.FrameId frameId
       # The form field's DOM node
       DOM.BackendNodeId fieldId
 

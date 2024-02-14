@@ -60,6 +60,22 @@ std::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
   return std::nullopt;
 }
 
+std::optional<std::string> GetRenderFrameDevtoolsToken(
+    const std::string& target_id,
+    const std::string& frame_token) {
+  auto host = content::DevToolsAgentHost::GetForId(target_id);
+  CHECK(host);
+
+  std::string result;
+  host->GetWebContents()->GetOutermostWebContents()->ForEachRenderFrameHost(
+      [&result, &frame_token](content::RenderFrameHost* rfh) {
+        if (rfh->GetFrameToken().ToString() == frame_token) {
+          result = rfh->GetDevToolsFrameToken().ToString();
+        }
+      });
+  return result;
+}
+
 }  // namespace
 
 AutofillHandler::AutofillHandler(protocol::UberDispatcher* dispatcher,
@@ -261,6 +277,10 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
+            .SetFrameId(GetRenderFrameDevtoolsToken(
+                            target_id_,
+                            autofill_field->global_id().frame_token->ToString())
+                            .value_or(""))
             .SetFieldId(autofill_field->renderer_id.value())
             .Build());
   }
