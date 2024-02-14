@@ -98,7 +98,8 @@ ScriptPromise DocumentStorageAccess::requestStorageAccess(
       !storage_access_types->estimate() &&
       !storage_access_types->createObjectURL() &&
       !storage_access_types->revokeObjectURL() &&
-      !storage_access_types->broadcastChannel()) {
+      !storage_access_types->broadcastChannel() &&
+      !storage_access_types->sharedWorker()) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kSecurityError,

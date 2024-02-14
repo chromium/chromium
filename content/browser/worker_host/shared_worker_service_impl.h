@@ -67,6 +67,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Creates the worker if necessary or connects to an already existing worker.
+  // `storage_key_override` is used to grant access to unpartitioned workers
+  // in a partitioned context.
   void ConnectToWorker(
       GlobalRenderFrameHostId client_render_frame_host_id,
       blink::mojom::SharedWorkerInfoPtr info,
@@ -74,7 +76,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
       const blink::MessagePortChannel& port,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      ukm::SourceId client_ukm_source_id);
+      ukm::SourceId client_ukm_source_id,
+      const std::optional<blink::StorageKey>& storage_key_override);
 
   // Returns the SharedWorkerHost associated with this token. Clients should
   // not hold on to the pointer, as it may become invalid when the worker exits.
@@ -113,7 +116,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
           outside_fetch_client_settings_object,
       const std::string& storage_domain,
       const blink::MessagePortChannel& message_port,
-      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+      bool has_storage_access);
 
   void StartWorker(
       base::WeakPtr<SharedWorkerHost> host,

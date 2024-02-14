@@ -22,9 +22,10 @@
     await handle.caches.keys();
     await handle.getDirectory();
     await handle.estimate();
-    const url = handle.createObjectURL(new Blob(["TEST"]));
-    handle.revokeObjectURL(url);
     handle.BroadcastChannel("test").close();
+    const url = handle.createObjectURL(new Blob([""]));
+    handle.SharedWorker(url);
+    handle.revokeObjectURL(url);
     let unpartitioned_cookie_access = await document.hasUnpartitionedCookieAccess();
     if (!unpartitioned_cookie_access) {
       message = "NoAccess";

@@ -80,6 +80,32 @@ SharedWorker* SharedWorker::Create(
     const String& url,
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) {
+  return CreateImpl(context, url, name_or_options, exception_state,
+                    &To<LocalDOMWindow>(context)->GetPublicURLManager(),
+                    /*connector_override=*/nullptr);
+}
+
+SharedWorker* SharedWorker::Create(
+    base::PassKey<StorageAccessHandle>,
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionSharedWorkerOptionsOrString* name_or_options,
+    ExceptionState& exception_state,
+    PublicURLManager* public_url_manager,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
+  return CreateImpl(context, url, name_or_options, exception_state,
+                    public_url_manager, connector_override);
+}
+
+SharedWorker* SharedWorker::CreateImpl(
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionSharedWorkerOptionsOrString* name_or_options,
+    ExceptionState& exception_state,
+    PublicURLManager* public_url_manager,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
   DCHECK(IsMainThread());
 
   if (context->IsContextDestroyed()) {
@@ -116,7 +142,7 @@ SharedWorker* SharedWorker::Create(
 
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (script_url.ProtocolIs("blob")) {
-    window->GetPublicURLManager().Resolve(
+    public_url_manager->Resolve(
         script_url, blob_url_token.InitWithNewPipeAndPassReceiver());
   }
 
@@ -183,7 +209,8 @@ SharedWorker* SharedWorker::Create(
 
   SharedWorkerClientHolder::From(*window)->Connect(
       worker, std::move(remote_port), script_url, std::move(blob_url_token),
-      std::move(options), same_site_cookies, context->UkmSourceID());
+      std::move(options), same_site_cookies, context->UkmSourceID(),
+      connector_override);
 
   return worker;
 }

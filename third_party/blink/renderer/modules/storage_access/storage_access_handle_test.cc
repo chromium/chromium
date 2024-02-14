@@ -31,6 +31,7 @@ using TestParams = std::tuple<bool,
                               bool,
                               bool,
                               bool,
+                              bool,
                               bool>;
 
 template <size_t N>
@@ -56,6 +57,7 @@ class StorageAccessHandleTest : public testing::TestWithParam<TestParams> {
   bool createObjectURL() { return std::get<9>(GetParam()); }
   bool revokeObjectURL() { return std::get<10>(GetParam()); }
   bool BroadcastChannel() { return std::get<11>(GetParam()); }
+  bool SharedWorker() { return std::get<12>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -88,6 +90,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setCreateObjectURL(createObjectURL());
   storage_access_types->setRevokeObjectURL(revokeObjectURL());
   storage_access_types->setBroadcastChannel(BroadcastChannel());
+  storage_access_types->setSharedWorker(SharedWorker());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -150,6 +153,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel),
       BroadcastChannel());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker),
+      SharedWorker());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -180,6 +188,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -303,6 +314,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                   ? nullptr
                   : StorageAccessHandle::kBroadcastChannelNotRequested);
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->SharedWorker(scope.GetExecutionContext(), "",
+                                        nullptr, scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || SharedWorker())
+                  ? "Access to shared workers is denied to origin 'null'."
+                  : StorageAccessHandle::kSharedWorkerNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -353,6 +375,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use),
       all() || BroadcastChannel());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use),
+      all() || SharedWorker());
 }
 
 // Test all handles.
@@ -386,6 +413,8 @@ INSTANTIATE_TEST_SUITE_P(
         MakeParamsWithSetBit<10>(),
         // BroadcastChannel:
         MakeParamsWithSetBit<11>(),
+        // SharedWorker:
+        MakeParamsWithSetBit<12>(),
     }));
 
 }  // namespace blink

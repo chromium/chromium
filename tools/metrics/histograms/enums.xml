@@ -11225,6 +11225,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4854" label="ProgressElementHorizontalRtl"/>
   <int value="4855" label="ProgressElementVerticalLtr"/>
   <int value="4856" label="ProgressElementVerticalRtl"/>
+  <int value="4857"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker"/>
+  <int value="4858"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

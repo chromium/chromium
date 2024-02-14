@@ -133,6 +133,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       DevToolsAgentHostImpl* devtools_agent_host,
       const base::UnguessableToken& devtools_worker_token,
       bool require_cross_site_request_for_cookies,
+      bool has_storage_access,
       CompletionCallback callback);
 
   // Creates a loader factory bundle. Must be called on the UI thread. For

@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom-forward.h"
 
 namespace storage {
 struct BucketInfo;
@@ -47,6 +48,9 @@ class StorageAccessHandle
   void BindBroadcastChannel(
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
           receiver) override;
+  void BindSharedWorker(
+      mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver)
+      override;
 
  private:
   StorageAccessHandle(

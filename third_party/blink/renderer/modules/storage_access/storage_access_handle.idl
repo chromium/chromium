@@ -14,4 +14,5 @@ interface StorageAccessHandle {
     [LogActivity, RaisesException] DOMString createObjectURL(Blob blob);
     [LogActivity, RaisesException] void revokeObjectURL(DOMString url);
     [CallWith=ExecutionContext, LogActivity, RaisesException] BroadcastChannel BroadcastChannel(DOMString name);
+    [CallWith=ExecutionContext, LogActivity, RaisesException] SharedWorker SharedWorker(ScriptURLString scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
 };

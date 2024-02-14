@@ -243,6 +243,26 @@
         local_channel.close();
         break;
       }
+      case "SharedWorker": {
+        const local_shared_worker = new SharedWorker("/storage-access-api/resources/shared-worker-relay.js", id);
+        local_shared_worker.port.start();
+        local_shared_worker.port.postMessage("Same-origin local access");
+        const handle = await document.requestStorageAccess({SharedWorker: true});
+        let couldRequestAllCookies = true;
+        try {
+          handle.SharedWorker("/storage-access-api/resources/shared-worker-relay.js", {name: id, sameSiteCookies: 'all'});
+        } catch (_) {
+          couldRequestAllCookies = false;
+        }
+        if (couldRequestAllCookies) {
+          message = "Shared Workers in a third-party context should not be able to request SameSite cookies.";
+        }
+        handle.SharedWorker("/storage-access-api/resources/shared-worker-cookies.py", id).port.start();
+        const handle_shared_worker = handle.SharedWorker("/storage-access-api/resources/shared-worker-relay.js", {name: id, sameSiteCookies: 'none'});
+        handle_shared_worker.port.start();
+        handle_shared_worker.port.postMessage("Same-origin handle access");
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;
