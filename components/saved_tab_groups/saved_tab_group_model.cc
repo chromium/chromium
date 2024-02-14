@@ -264,7 +264,7 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
   std::optional<int> group_index = GetIndexOf(group_id);
 
   if (saved_tab_groups_[group_index.value()].ContainsTab(tab_id)) {
-    // This can happen when an out of sync SavedTabGroup sends a tab update. 
+    // This can happen when an out of sync SavedTabGroup sends a tab update.
     saved_tab_groups_[group_index.value()].ReplaceTabAt(tab_id, tab);
   } else {
     saved_tab_groups_[group_index.value()].AddTabFromSync(tab);
