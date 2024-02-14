@@ -139,7 +139,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     gfx::Insets insets;
 
     // Occlusion state
-    PlatformWindowOcclusionState occlusion_state;
+    PlatformWindowOcclusionState occlusion_state =
+        PlatformWindowOcclusionState::kUnknown;
 
     // Returns true if updating from the given State |old| to this state
     // should produce a frame.
