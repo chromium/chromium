@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_m
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
+import {voiceToHtmlTestId} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_selection_menu.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('VoiceSelectionMenuElement', () => {
@@ -19,6 +20,12 @@ suite('VoiceSelectionMenuElement', () => {
     // @ts-ignore
     voiceSelectionMenu.availableVoices = availableVoices;
     flush();
+  };
+
+  const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
+    return voiceSelectionMenu.$.voiceSelectionMenu
+        .querySelector<HTMLButtonElement>(`[data-test-id="${
+            voiceToHtmlTestId(voice)}"].dropdown-voice-selection-button`)!;
   };
 
   setup(() => {
@@ -34,11 +41,8 @@ suite('VoiceSelectionMenuElement', () => {
     });
 
     test('it does not show dropdown before click', () => {
-      const dropdownItems: NodeListOf<HTMLElement> =
-          voiceSelectionMenu.$.voiceSelectionMenu
-              .querySelectorAll<HTMLButtonElement>('.dropdown-item');
-
-      assertFalse(isPositionedOnPage(dropdownItems.item(0)));
+      assertFalse(
+          isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)));
     });
 
     test('it shows dropdown items after button click', () => {
@@ -48,13 +52,11 @@ suite('VoiceSelectionMenuElement', () => {
       button!.click();
       flush();
 
-      const dropdownItems: NodeListOf<HTMLElement> =
-          voiceSelectionMenu.$.voiceSelectionMenu
-              .querySelectorAll<HTMLButtonElement>('.dropdown-item');
-
-      assertTrue(isPositionedOnPage(dropdownItems.item(0)!));
+      assertTrue(
+          isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)!));
       assertEquals(
-          dropdownItems.item(0)!.textContent!.trim(), availableVoices[0]!.name);
+          getDropdownItemForVoice(availableVoices[0]!)!.textContent!.trim(),
+          availableVoices[0]!.name);
     });
 
     suite('when availableVoices updates', () => {
@@ -75,17 +77,20 @@ suite('VoiceSelectionMenuElement', () => {
 
         const dropdownItems: NodeListOf<HTMLElement> =
             voiceSelectionMenu.$.voiceSelectionMenu
-                .querySelectorAll<HTMLButtonElement>('.dropdown-item');
+                .querySelectorAll<HTMLButtonElement>(
+                    '.dropdown-voice-selection-button');
 
         assertEquals(
-            dropdownItems.item(0)!.textContent!.trim(),
+            getDropdownItemForVoice(availableVoices[0]!).textContent!.trim(),
             availableVoices[0]!.name);
         assertEquals(
-            dropdownItems.item(1)!.textContent!.trim(),
+            getDropdownItemForVoice(availableVoices[1]!).textContent!.trim(),
             availableVoices[1]!.name);
         assertEquals(dropdownItems.length, 2);
-        assertTrue(isPositionedOnPage(dropdownItems.item(0)!));
-        assertTrue(isPositionedOnPage(dropdownItems.item(1)!));
+        assertTrue(
+            isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)));
+        assertTrue(
+            isPositionedOnPage(getDropdownItemForVoice(availableVoices[1]!)));
       });
     });
   });
@@ -114,15 +119,12 @@ suite('VoiceSelectionMenuElement', () => {
       voiceSelectionMenu.selectedVoice = selectedVoice;
       flush();
 
-      const dropdownItems: NodeListOf<HTMLElement> =
-          voiceSelectionMenu.$.voiceSelectionMenu
-              .querySelectorAll<HTMLButtonElement>('.dropdown-item');
-      const checkMarkVoice0 =
-          dropdownItems.item(0)!.querySelector<HTMLElement>('#check-mark')!;
+      const checkMarkVoice0 = getDropdownItemForVoice(availableVoices[0]!)
+                                  .querySelector<HTMLElement>('#check-mark')!;
       const checkMarkSelectedVoice =
-          dropdownItems.item(3)!.querySelector<HTMLElement>('#check-mark')!;
+          getDropdownItemForVoice(selectedVoice)
+              .querySelector<HTMLElement>('#check-mark')!;
 
-      assertEquals(dropdownItems.length, 4);
       assertFalse(isHiddenWithCss(checkMarkSelectedVoice));
       assertTrue(isHiddenWithCss(checkMarkVoice0));
     });
@@ -143,18 +145,16 @@ suite('VoiceSelectionMenuElement', () => {
       });
 
       test('it shows preview-playing button when preview plays', () => {
-        const dropdownItems: NodeListOf<HTMLElement> =
-            voiceSelectionMenu.$.voiceSelectionMenu
-                .querySelectorAll<HTMLButtonElement>('.dropdown-item');
-
-        const playIconVoice0 =
-            dropdownItems.item(0)!.querySelector<HTMLElement>('#play-icon')!;
-        const pauseIconVoice0 =
-            dropdownItems.item(0)!.querySelector<HTMLElement>('#pause-icon')!;
+        const playIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
+                                   .querySelector<HTMLElement>('#play-icon')!;
+        const pauseIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
+                                    .querySelector<HTMLElement>('#pause-icon')!;
         const playIconOfPreviewVoice =
-            dropdownItems.item(1)!.querySelector<HTMLElement>('#play-icon')!;
+            getDropdownItemForVoice(previewVoice)
+                .querySelector<HTMLElement>('#play-icon')!;
         const pauseIconOfPreviewVoice =
-            dropdownItems.item(1)!.querySelector<HTMLElement>('#pause-icon')!;
+            getDropdownItemForVoice(previewVoice)
+                .querySelector<HTMLElement>('#pause-icon')!;
 
         // The play icon should flip to pause for the voice being previewed
         assertFalse(isPositionedOnPage(playIconOfPreviewVoice));
@@ -174,18 +174,17 @@ suite('VoiceSelectionMenuElement', () => {
         });
 
         test('it flips the preview pause button back to play', () => {
-          const dropdownItems: NodeListOf<HTMLElement> =
-              voiceSelectionMenu.$.voiceSelectionMenu
-                  .querySelectorAll<HTMLButtonElement>('.dropdown-item');
-
-          const playIconVoice0 =
-              dropdownItems.item(0)!.querySelector<HTMLElement>('#play-icon')!;
+          const playIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
+                                     .querySelector<HTMLElement>('#play-icon')!;
           const pauseIconVoice0 =
-              dropdownItems.item(0)!.querySelector<HTMLElement>('#pause-icon')!;
+              getDropdownItemForVoice(availableVoices[0]!)
+                  .querySelector<HTMLElement>('#pause-icon')!;
           const playIconOfPreviewVoice =
-              dropdownItems.item(1)!.querySelector<HTMLElement>('#play-icon')!;
+              getDropdownItemForVoice(availableVoices[1]!)
+                  .querySelector<HTMLElement>('#play-icon')!;
           const pauseIconOfPreviewVoice =
-              dropdownItems.item(1)!.querySelector<HTMLElement>('#pause-icon')!;
+              getDropdownItemForVoice(availableVoices[1]!)
+                  .querySelector<HTMLElement>('#pause-icon')!;
 
           // All icons should be play icons because no preview is playing
           assertTrue(isPositionedOnPage(playIconOfPreviewVoice));

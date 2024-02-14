@@ -23,11 +23,19 @@ export interface VoiceSelectionMenuElement {
   };
 }
 
+// This ID does not ensure uniqueness and is just used for testing purposes.
+export function voiceToHtmlTestId(voice: SpeechSynthesisVoice): string {
+  return voice.name.replace(/\s/g, '-');
+}
+
 interface VoiceDropdown {
   title: string;
   voice: SpeechSynthesisVoice;
   selected: boolean;
   previewPlaying: boolean;
+  // This ID is currently just used for testing purposes and does not ensure
+  // uniqueness
+  id: string;
 }
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
@@ -72,6 +80,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         voice => ({
           title: voice.name,
           voice,
+          id: voiceToHtmlTestId(voice),
           selected: voicesAreEqual(selectedVoice, voice),
           previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
         }));

@@ -20,7 +20,7 @@
     margin-left: var(--sp-body-padding);
     max-height: 95%;
   }
-  .dropdown-voice-selection {
+  .dropdown-voice-selection-button {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -28,7 +28,7 @@
   .display-false {
     display: none;
   }
-  .dropdown-voice-selection cr-icon-button {
+  .dropdown-voice-selection-button cr-icon-button {
     margin: 0;
   }
   .voice-name {
@@ -55,7 +55,7 @@
   <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
     <!--  TODO(crbug.com/1474951): show a header for each locale group before
           listing the languages of the locale -->
-    <button class="dropdown-item dropdown-voice-selection"
+    <button data-test-id$="[[item.id]]" class="dropdown-voice-selection-button"
       on-click="onVoiceSelectClick_">
       <span class="voice-name">
         <iron-icon id="check-mark"
