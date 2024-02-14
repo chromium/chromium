@@ -38,6 +38,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -122,17 +123,22 @@ class EditingList::AddContainerButton : public views::Button {
     title_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 12));
     // `+` button should be right aligned, so flex label to fill empty space.
     layout->SetFlexForView(title_, /*flex=*/1);
+    title_changed_callback_ =
+        title_->AddTextChangedCallback(base::BindRepeating(
+            &AddContainerButton::OnTitleChanged, base::Unretained(this)));
 
     // Add `add_button_` and apply design style.
     add_button_ = AddChildView(std::make_unique<views::LabelButton>(callback));
-    // TODO(b/274690042): Replace it with localized strings.
-    add_button_->SetAccessibleName(u"add");
+    // Ignore `add_button_` for the screen reader.
+    add_button_->GetViewAccessibility().OverrideIsIgnored(true);
     add_button_->SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysPrimary, kAddButtonCornerRadius));
+    add_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
     add_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(kGameControlsAddIcon,
-                                       cros_tokens::kCrosSysOnPrimary));
+                                       cros_tokens::kCrosSysOnPrimary,
+                                       /*icon_size=*/20));
     add_button_->SetImageCentered(true);
 
     // Set up focus rings.
@@ -177,6 +183,12 @@ class EditingList::AddContainerButton : public views::Button {
   views::LabelButton* add_button() { return add_button_; }
 
  private:
+  void OnTitleChanged() {
+    CHECK(add_button_);
+    add_button_->SetTooltipText(title_->GetText());
+  }
+
+  // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
 
@@ -187,6 +199,8 @@ class EditingList::AddContainerButton : public views::Button {
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_;
   raw_ptr<views::LabelButton> add_button_;
+
+  base::CallbackListSubscription title_changed_callback_;
 };
 
 BEGIN_METADATA(EditingList, AddContainerButton, views::Button)
