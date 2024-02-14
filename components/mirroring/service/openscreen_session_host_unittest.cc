@@ -122,8 +122,8 @@ Json::Value ParseAsJsoncppValue(std::string_view document) {
   Json::Value root_node;
   std::string error_msg;
   std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-  EXPECT_TRUE(
-      reader->parse(document.begin(), document.end(), &root_node, &error_msg));
+  EXPECT_TRUE(reader->parse(&*document.begin(), &*document.end(), &root_node,
+                            &error_msg));
 
   return root_node;
 }
