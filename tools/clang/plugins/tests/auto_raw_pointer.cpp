@@ -146,3 +146,28 @@ void alias_template_specialization_function() {
   auto auto_alias =
       auto_function_return_elaborated_alias_with_ptr<AliasWithPtr>();
 }
+
+struct auto_type_level_three {
+  template <class T>
+  inline auto foo() const {
+    return T();
+  }
+};
+
+constexpr auto auto_type_level_two = auto_type_level_three{};
+
+template <typename T>
+constexpr auto auto_type_level_one() {
+  return auto_type_level_two.foo<T>();
+}
+
+void nested_auto_function() {
+  // This test function returns a type that has `AutoType` nested multiple
+  // times. Something like:
+  // AutoType 0x157941d90 'int *' sugar
+  // `-AutoType 0x157941d90 'int *' sugar
+  //   `-AutoType 0x157940b30 'int *' sugar
+  //     `-SubstTemplateTypeParmType 0x157940a20 'int *' sugar
+  //       `-PointerType 0x15790b7c0 'int *'
+  auto x = auto_type_level_one<AliasWithPtr>();
+}

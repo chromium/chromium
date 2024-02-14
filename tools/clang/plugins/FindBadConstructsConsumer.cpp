@@ -296,9 +296,10 @@ bool FindBadConstructsConsumer::VisitCallExpr(CallExpr* call_expr) {
 }
 
 bool FindBadConstructsConsumer::VisitVarDecl(clang::VarDecl* var_decl) {
-  if (options_.allow_auto_typedefs_better) {
+  if (options_.allow_auto_typedefs_better_nested) {
     CheckDeducedAutoPointer(var_decl);
-  } else if (options_.allow_auto_typedefs) {
+  } else if (options_.allow_auto_typedefs_better) {
+    // TODO(danakj): Remove this path once the other is enabled in Chromium.
     CheckDeducedAutoPointerBadVersion(var_decl);
   } else {
     // TODO(danakj): Remove this path once the other is enabled in Chromium.
@@ -1277,12 +1278,27 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointerBadVersion(
   }
 
   QualType deduced_type = auto_type->getDeducedType();
-  if (deduced_type.isNull()) {
-    var_decl->dump();
-    // return;
-  }
   // If `auto` resolves to a function pointer, it's always allowed.
   if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
+    return;
+  }
+  // Elaborated types wrap the type that we're interested in, so we need to
+  // step through them. Inside, there may be a template param type, a pointer
+  // type, etc. For example, this function returns an ElaboratedType, which
+  // has a pointer inside. But has additional sugar around the pointer that
+  // we want to examine first.
+  // ```
+  // template <class T>
+  // AliasOfT<T> auto_function_return_elaborated_alias_with_ptr() { ... }
+  // ```
+  if (auto* elaborated = deduced_type->getAs<clang::ElaboratedType>()) {
+    deduced_type = elaborated->getNamedType();
+  }
+  // If the `auto` resolves to a type that comes from a template parameter, the
+  // input type may have been a type alias and we can't tell how the type was
+  // actually spelt, so just allow it. This handles the return type of
+  // std::find() for example.
+  if (deduced_type->getAs<clang::SubstTemplateTypeParmType>()) {
     return;
   }
   // If `auto` resolves to a type alias, it's allowed, even if there's a pointer
@@ -1291,7 +1307,16 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointerBadVersion(
   if (deduced_type->getAs<clang::TypedefType>()) {
     return;
   }
-  // Last, if it's not a pointer at all then `auto` is allowed.
+  // It's also possible to resolve to a template specialization of a type alias,
+  // in which the same applies as for TypedefType.
+  if (auto* spec = deduced_type->getAs<clang::TemplateSpecializationType>()) {
+    if (spec->isTypeAlias()) {
+      return;
+    }
+  }
+  // Last, if it's not a pointer at all then `auto` is allowed. This comes last
+  // because `getAs()` will jump past 'sugar' in the type, so we need to look
+  // for other things before jumping past them to the PointerType.
   if (!deduced_type->getAs<clang::PointerType>()) {
     return;
   }
@@ -1372,6 +1397,11 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointer(
   }
 
   QualType deduced_type = auto_type->getDeducedType();
+  // `AutoType` can contain further nested `AutoType`s, so we need to walk
+  // through them all.
+  while (auto* inner_auto = deduced_type->getAs<clang::AutoType>()) {
+    deduced_type = inner_auto->getDeducedType();
+  }
   // If `auto` resolves to a function pointer, it's always allowed.
   if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
     return;
