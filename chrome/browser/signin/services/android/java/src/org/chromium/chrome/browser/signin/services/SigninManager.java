@@ -178,7 +178,10 @@ public interface SigninManager {
             SignOutCallback signOutCallback,
             boolean forceWipeUserData);
 
-    /** Returns true if sign out can be started now. */
+    /**
+     * Returns true if sign out can be started now. Sign out can start if there is no sign in/out in
+     * progress and there is a signed-in account.
+     */
     boolean isSignOutAllowed();
 
     /** Invokes signOut with no callback. */
