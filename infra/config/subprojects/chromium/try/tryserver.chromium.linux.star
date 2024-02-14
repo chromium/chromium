@@ -431,6 +431,7 @@ try_.builder(
             "partial_code_coverage_instrumentation",
         ],
     ),
+    ssd = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         location_filters = [
