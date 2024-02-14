@@ -256,8 +256,6 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
       codec_profile_.level
           ? ToOpenH264Level(*codec_profile_.level).value_or(LEVEL_UNKNOWN)
           : LEVEL_UNKNOWN;
-  DCHECK_EQ(init_params.sSpatialLayers[0].uiProfileIdc == PRO_UNKNOWN,
-            init_params.sSpatialLayers[0].uiLevelIdc == LEVEL_UNKNOWN);
 
   // When uiSliceMode = SM_FIXEDSLCNUM_SLICE, uiSliceNum = 0 means auto design
   // it with cpu core number.

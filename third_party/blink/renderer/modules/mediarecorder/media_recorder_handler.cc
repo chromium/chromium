@@ -325,12 +325,14 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
       // The software encoder is unable to process the kAV1 codec if
       // ENABLE_LIBAOM is not defined. It verifies hardware encoding supports is
       // doable.
+      VideoTrackRecorder::CodecProfile codec_profile =
+          VideoStringToCodecProfile(codec_string);
       if (!VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
               // The CanUseAcceleratedEncoder function requires a frame size for
               // validation. However, at this point, we don’t have the frame
               // size available. We’re making an assumption that it exceeds the
               // minimum size.
-              VideoStringToCodecProfile(codec_string).codec_id,
+              codec_profile,
               video_track_recorder::kVEAEncoderMinResolutionWidth,
               video_track_recorder::kVEAEncoderMinResolutionHeight)) {
         return false;
@@ -608,10 +610,11 @@ void MediaRecorderHandler::EncodingInfo(
   info->supported = CanSupportMimeType(mime_type, codec);
 
   if (configuration.video_configuration && info->supported) {
+    VideoTrackRecorder::CodecProfile codec_profile =
+        VideoStringToCodecProfile(codec);
     const bool is_likely_accelerated =
         VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
-            VideoStringToCodecProfile(codec).codec_id,
-            configuration.video_configuration->width,
+            codec_profile, configuration.video_configuration->width,
             configuration.video_configuration->height,
             configuration.video_configuration->framerate);
 

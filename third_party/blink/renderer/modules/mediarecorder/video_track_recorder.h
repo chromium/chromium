@@ -334,9 +334,12 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 
   // Returns true if the device has a hardware accelerated encoder which can
   // encode video of the given |width|x|height| and |framerate| to specific
-  // |codec|.
-  // Note: default framerate value means no restriction.
-  static bool CanUseAcceleratedEncoder(CodecId codec,
+  // |codec_profile.codec_id|. If |codec_profile.profile| is set, then this
+  // returns false if and only if the hardware encoder can encode in the
+  // profile. If |codec_profile.profile| is not set, this sets
+  // |codec_profile.profile| to the first profile supported by the hardware
+  // encoder. Note: default framerate value means no restriction.
+  static bool CanUseAcceleratedEncoder(CodecProfile& codec_profile,
                                        size_t width,
                                        size_t height,
                                        double framerate = 0.0);

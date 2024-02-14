@@ -246,6 +246,28 @@ bool MustUseVEA(CodecId codec_id) {
 #endif
 }
 
+// Returns the default codec profile for |codec_id|.
+media::VideoCodecProfile DefaultCodecProfile(
+    VideoTrackRecorder::CodecId codec_id) {
+  switch (codec_id) {
+#if BUILDFLAG(ENABLE_OPENH264)
+    case CodecId::kH264:
+      return media::H264PROFILE_BASELINE;
+#endif  // BUILDFLAG(ENABLE_OPENH264)
+    case CodecId::kVp8:
+      return media::VP8PROFILE_ANY;
+    case CodecId::kVp9:
+      return media::VP9PROFILE_MIN;
+#if BUILDFLAG(ENABLE_LIBAOM)
+    case CodecId::kAv1:
+      return media::AV1PROFILE_MIN;
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+    default:
+      NOTREACHED_NORETURN()
+          << "Unsupported codec: " << static_cast<int>(codec_id);
+  }
+}
+
 MediaRecorderEncoderWrapper::CreateEncoderCB
 GetCreateHardwareVideoEncoderCallback() {
   return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
@@ -693,11 +715,12 @@ VideoTrackRecorderImpl::CodecId VideoTrackRecorderImpl::GetPreferredCodecId(
 }
 
 // static
-bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(CodecId codec,
-                                                      size_t width,
-                                                      size_t height,
-                                                      double framerate) {
-  if (!MustUseVEA(codec)) {
+bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
+    CodecProfile& codec_profile,
+    size_t width,
+    size_t height,
+    double framerate) {
+  if (!MustUseVEA(codec_profile.codec_id)) {
     if (width < kVEAEncoderMinResolutionWidth) {
       return false;
     }
@@ -706,13 +729,18 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(CodecId codec,
     }
   }
 
-  const auto profiles = GetCodecEnumerator()->GetSupportedProfiles(codec);
+  const auto profiles =
+      GetCodecEnumerator()->GetSupportedProfiles(codec_profile.codec_id);
   if (profiles.empty())
     return false;
 
   for (const auto& profile : profiles) {
     if (profile.profile == media::VIDEO_CODEC_PROFILE_UNKNOWN) {
       return false;
+    }
+    // Skip other profiles if the profile is specified.
+    if (codec_profile.profile && *codec_profile.profile != profile.profile) {
+      continue;
     }
 
     const gfx::Size& min_resolution = profile.min_resolution;
@@ -736,6 +764,8 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(CodecId codec,
         profile.max_framerate_numerator;
 
     if (width_within_range && height_within_range && valid_framerate) {
+      // Record with the first found profile that satisfies the condition.
+      codec_profile.profile = profile.profile;
       return true;
     }
   }
@@ -819,34 +849,7 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
     const OnEncodedVideoCB& on_encoded_video_cb,
     bool create_vea_encoder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  media::VideoCodecProfile video_codec_profile =
-      media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  switch (codec_profile.codec_id) {
-#if BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kH264:
-      video_codec_profile =
-          codec_profile.profile.value_or(media::H264PROFILE_BASELINE);
-      break;
-#endif  // BUILDFLAG(ENABLE_OPENH264)
-    case CodecId::kVp8:
-      video_codec_profile =
-          codec_profile.profile.value_or(media::VP8PROFILE_ANY);
-      break;
-    case CodecId::kVp9:
-      video_codec_profile =
-          codec_profile.profile.value_or(media::VP9PROFILE_MIN);
-      break;
-#if BUILDFLAG(ENABLE_LIBAOM)
-    case CodecId::kAv1:
-      video_codec_profile =
-          codec_profile.profile.value_or(media::AV1PROFILE_MIN);
-      break;
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
-    default:
-      NOTREACHED() << "Unsupported codec: "
-                   << static_cast<int>(codec_profile.codec_id);
-      return nullptr;
-  }
+  CHECK(codec_profile.profile.has_value());
 
   MediaRecorderEncoderWrapper::OnErrorCB on_error_cb;
   if (create_vea_encoder) {
@@ -869,7 +872,7 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
   media::GpuVideoAcceleratorFactories* gpu_factories =
       Platform::Current()->GetGpuFactories();
   return std::make_unique<MediaRecorderEncoderWrapper>(
-      std::move(encoding_task_runner), video_codec_profile, bits_per_second,
+      std::move(encoding_task_runner), *codec_profile.profile, bits_per_second,
       is_screencast, create_vea_encoder ? gpu_factories : nullptr,
       create_vea_encoder
           ? GetCreateHardwareVideoEncoderCallback()
@@ -885,6 +888,8 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
     bool is_screencast,
     const OnEncodedVideoCB& on_encoded_video_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  CHECK(codec_profile.profile.has_value());
+
   switch (codec_profile.codec_id) {
 #if BUILDFLAG(ENABLE_OPENH264)
     case CodecId::kH264:
@@ -913,8 +918,7 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
           WTF::BindOnce(&CallbackInterface::OnVideoEncodingError,
                         WrapWeakPersistent(callback_interface())));
       return std::make_unique<MediaRecorderEncoderWrapper>(
-          std::move(encoding_task_runner),
-          codec_profile.profile.value_or(media::AV1PROFILE_PROFILE_MAIN),
+          std::move(encoding_task_runner), *codec_profile.profile,
           bits_per_second, is_screencast,
           /*gpu_factories=*/nullptr,
           GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
@@ -937,12 +941,11 @@ VideoTrackRecorderImpl::CreateHardwareVideoEncoder(
     bool use_import_mode,
     bool is_screencast) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  CHECK(codec_profile.profile.has_value());
   const auto [vea_profile, vbr_supported] =
-      codec_profile.profile
-          ? GetCodecEnumerator()->FindSupportedVideoCodecProfile(
-                codec_profile.codec_id, *codec_profile.profile)
-          : GetCodecEnumerator()->GetFirstSupportedVideoCodecProfile(
-                codec_profile.codec_id);
+      GetCodecEnumerator()->FindSupportedVideoCodecProfile(
+          codec_profile.codec_id, *codec_profile.profile);
+
   // VBR encoding is preferred.
   media::Bitrate::Mode bitrate_mode = vbr_supported
                                           ? media::Bitrate::Mode::kVariable
@@ -995,7 +998,13 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   const gfx::Size& input_size = frame->visible_rect().size();
   const bool can_use_vea = CanUseAcceleratedEncoder(
-      codec_profile.codec_id, input_size.width(), input_size.height());
+      codec_profile, input_size.width(), input_size.height());
+  // If |can_use_vea| is true, codec_profile.profile must be filled after
+  // CanUseAcceleratedEncoder().
+  if (!codec_profile.profile.has_value()) {
+    CHECK(!can_use_vea);
+    codec_profile.profile = DefaultCodecProfile(codec_profile.codec_id);
+  }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264)
   if (MustUseVEA(codec_profile.codec_id) &&
