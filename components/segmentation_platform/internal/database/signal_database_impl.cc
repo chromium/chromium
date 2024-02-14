@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 namespace {
@@ -88,6 +89,8 @@ SignalDatabaseImpl::SignalDatabaseImpl(
     : database_(std::move(database)),
       task_runner_(task_runner),
       clock_(clock),
+      enable_signal_cache_(base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformSignalDbCache)),
       should_fix_compaction_(
           base::FeatureList::IsEnabled(kSegmentationCompactionFix)) {}
 
@@ -145,7 +148,7 @@ void SignalDatabaseImpl::GetSamples(proto::SignalType signal_type,
                                     uint64_t name_hash,
                                     base::Time start_time,
                                     base::Time end_time,
-                                    SamplesCallback callback) {
+                                    EntriesCallback callback) {
   TRACE_EVENT("segmentation_platform", "SignalDatabaseImpl::GetSamples");
   DCHECK(initialized_);
   DCHECK_LE(start_time, end_time);
@@ -202,18 +205,22 @@ void IterateOverAllSamples(
 }
 
 void SignalDatabaseImpl::OnGetSamples(
-    SamplesCallback callback,
+    EntriesCallback callback,
     base::Time start_time,
     base::Time end_time,
     bool success,
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
-  std::vector<Sample> out;
+  std::vector<DbEntry> out;
   IterateOverAllSamples(
       start_time, end_time, success, std::move(entries), task_runner_,
       base::BindRepeating(
-          [](std::vector<Sample>* out, const SignalKey&, base::Time timestamp,
-             const proto::Sample& sample) {
-            out->emplace_back(std::make_pair(timestamp, sample.value()));
+          [](std::vector<DbEntry>* out, const SignalKey& key,
+             base::Time timestamp, const proto::Sample& sample) {
+            out->emplace_back(DbEntry{
+                .type = metadata_utils::SignalKindToSignalType(key.kind()),
+                .name_hash = key.name_hash(),
+                .time = timestamp,
+                .value = sample.value()});
           },
           base::Unretained(&out)));
   std::move(callback).Run(out);
@@ -223,6 +230,7 @@ const std::vector<SignalDatabase::DbEntry>*
 SignalDatabaseImpl::GetAllSamples() {
   TRACE_EVENT("segmentation_platform", "SignalDatabaseImpl::GetAllSamples");
   DCHECK(initialized_);
+  CHECK(enable_signal_cache_);
   return &all_signals_;
 }
 
@@ -357,9 +365,13 @@ void SignalDatabaseImpl::OnDatabaseInitialized(
     leveldb_proto::Enums::InitStatus status) {
   initialized_ = status == leveldb_proto::Enums::InitStatus::kOK;
   if (initialized_) {
-    database_->LoadKeysAndEntries(
-        base::BindOnce(&SignalDatabaseImpl::OnGetAllSamples,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    if (enable_signal_cache_) {
+      database_->LoadKeysAndEntries(
+          base::BindOnce(&SignalDatabaseImpl::OnGetAllSamples,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    } else {
+      std::move(callback).Run(true);
+    }
   } else {
     std::move(callback).Run(false);
   }

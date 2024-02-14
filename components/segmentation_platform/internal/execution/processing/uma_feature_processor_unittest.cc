@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -25,6 +26,7 @@
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "feature_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,6 +78,8 @@ class UmaFeatureProcessorTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    feature_list_.InitAndEnableFeature(
+        features::kSegmentationPlatformSignalDbCache);
     clock_.SetNow(base::Time::Now());
     ASSERT_TRUE(
         temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
@@ -192,6 +196,7 @@ class UmaFeatureProcessorTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_env_;
   base::ScopedTempDir temp_dir_;
   base::SimpleTestClock clock_;

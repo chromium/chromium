@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +15,7 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -50,7 +52,9 @@ UmaFeatureProcessor::UmaFeatureProcessor(
       observation_time_(observation_time),
       bucket_duration_(bucket_duration),
       segment_id_(segment_id),
-      is_output_(is_output) {}
+      is_output_(is_output),
+      is_batch_processing_enabled_(base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformSignalDbCache)) {}
 
 UmaFeatureProcessor::~UmaFeatureProcessor() = default;
 
@@ -78,8 +82,47 @@ void UmaFeatureProcessor::Process(
     }
   }
 
-  ProcessOnGotAllSamples(feature_processor_state,
-                         *signal_database_->GetAllSamples());
+  if (is_batch_processing_enabled_) {
+    ProcessOnGotAllSamples(feature_processor_state,
+                           *signal_database_->GetAllSamples());
+  } else {
+    ProcessNextFeature();
+  }
+}
+
+void UmaFeatureProcessor::ProcessNextFeature() {
+  // Processing of the feature list has completed.
+  if (uma_features_.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), std::move(result_)));
+    return;
+  }
+
+  // Process the feature list.
+  const auto& it = uma_features_.begin();
+  proto::UMAFeature feature = *GetAsUMA(it->second);
+  FeatureIndex index = it->first;
+  uma_features_.erase(it);
+
+  proto::SignalType signal_type = feature.type();
+  const auto name_hash = feature.name_hash();
+  base::Time start_time;
+  base::Time end_time;
+  GetStartAndEndTime(feature.bucket_count(), start_time, end_time);
+
+  signal_database_->GetSamples(
+      signal_type, name_hash, start_time, end_time,
+      base::BindOnce(&UmaFeatureProcessor::OnGetSamplesForUmaFeature,
+                     weak_ptr_factory_.GetWeakPtr(), index, feature, end_time));
+}
+
+void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
+    FeatureIndex index,
+    const proto::UMAFeature& feature,
+    const base::Time end_time,
+    std::vector<SignalDatabase::DbEntry> samples) {
+  ProcessSingleUmaFeature(samples, index, feature);
+  ProcessNextFeature();
 }
 
 void UmaFeatureProcessor::GetStartAndEndTime(size_t bucket_count,

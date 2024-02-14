@@ -137,4 +137,13 @@ BASE_FEATURE(kSegmentationPlatformModelInitializationDelay,
              "SegmentationPlatformModelInitializationDelay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled only on iOS to improve startup performance of the module ranker.
+BASE_FEATURE(kSegmentationPlatformSignalDbCache,
+             "SegmentationPlatformSignalDbCache",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace segmentation_platform::features

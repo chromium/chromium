@@ -24,7 +24,6 @@ class SignalDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using Sample = std::pair<base::Time, int32_t>;
-  using SamplesCallback = base::OnceCallback<void(std::vector<Sample>)>;
 
   virtual ~SignalDatabase() = default;
 
@@ -38,15 +37,6 @@ class SignalDatabase {
                            std::optional<int32_t> value,
                            SuccessCallback callback) = 0;
 
-  // Called to get signals collected between any two timestamps (including both
-  // ends). The samples are returned in the |callback| as a list of pairs
-  // containing signal timestamp and and an optional value.
-  virtual void GetSamples(proto::SignalType signal_type,
-                          uint64_t name_hash,
-                          base::Time start_time,
-                          base::Time end_time,
-                          SamplesCallback callback) = 0;
-
   // Represents an entry in the signal database.
   struct DbEntry {
     proto::SignalType type;
@@ -58,6 +48,15 @@ class SignalDatabase {
     int32_t value;
   };
   using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
+
+  // Called to get signals collected between any two timestamps (including both
+  // ends). The samples are returned in the |callback| as a list of pairs
+  // containing database entries.
+  virtual void GetSamples(proto::SignalType signal_type,
+                          uint64_t name_hash,
+                          base::Time start_time,
+                          base::Time end_time,
+                          EntriesCallback callback) = 0;
 
   // Called to fetch all entries from the signal database. WARNING: This may
   // return signals that are deleted from database but are still cached in

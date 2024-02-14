@@ -17,6 +17,7 @@
 *DummySegmentationPlatformServiceTest.*
 *FailedUkmDatabaseTest.*
 *FeatureAggregatorImplTest.*
+*FeatureListQueryProcessorNoDbCacheTest.*
 *FeatureListQueryProcessorTest.*
 *FeedUserModelTest.*
 *FieldTrialRecorderTest.*

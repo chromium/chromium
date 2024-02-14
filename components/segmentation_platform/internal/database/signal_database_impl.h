@@ -53,7 +53,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                   uint64_t name_hash,
                   base::Time start_time,
                   base::Time end_time,
-                  SamplesCallback callback) override;
+                  EntriesCallback callback) override;
   const std::vector<DbEntry>* GetAllSamples() override;
   void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
@@ -69,7 +69,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                              leveldb_proto::Enums::InitStatus status);
 
   void OnGetSamples(
-      SamplesCallback callback,
+      EntriesCallback callback,
       base::Time start_time,
       base::Time end_time,
       bool success,
@@ -106,6 +106,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   // Whether or not initialization has been completed.
   bool initialized_{false};
 
+  const bool enable_signal_cache_;
   std::vector<DbEntry> all_signals_;
 
   // A cache of recently added signals. Used for avoiding collisions between two

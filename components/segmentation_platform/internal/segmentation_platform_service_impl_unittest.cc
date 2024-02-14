@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -25,6 +26,7 @@
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -64,6 +66,8 @@ class SegmentationPlatformServiceImplTest
  public:
   explicit SegmentationPlatformServiceImplTest(
       std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr) {
+    feature_list_.InitAndEnableFeature(
+        features::kSegmentationPlatformSignalDbCache);
     if (ukm_data_manager) {
       ukm_data_manager_ = std::move(ukm_data_manager);
       return;
@@ -273,6 +277,7 @@ class SegmentationPlatformServiceImplTest
     return segmentation_platform_service_impl_->pending_actions_.size();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockServiceProxyObserver observer_;
