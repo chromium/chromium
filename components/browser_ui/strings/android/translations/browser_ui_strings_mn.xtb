@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
 <translation id="1415402041810619267">URL-г танасан</translation>
-<translation id="1434873037477293673">үнэ бууралтын карт</translation>
 <translation id="1448064542941920355">Томруулалтыг багасгах</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
 <translation id="1510341833810331442">Сайтуудад таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4151930093518524179">Өгөгдмөл томруулалт</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
-<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />-г нуух</translation>
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Микрофоны дууг хаах</translation>
 <translation id="4570913071927164677">Дэлгэрэнгүй</translation>
 <translation id="4598549027014564149">Нууцлалтай горимд байх үед сайтууд таны күүкиг сайтууд, тэр байтугай холбогдох сайтууд дээрх хөтчийн үйл ажиллагааг тань харахад ашиглах боломжгүй. Таны хөтчийн үйл ажиллагааг зар хувийн болгох зэрэг зүйлсэд ашигладаггүй. Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
+<translation id="4619615317237390068">Бусад төхөөрөмжний таб</translation>
 <translation id="4644713492825682049">Устгаж, шинэчлэх</translation>
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4670064810192446073">Виртуал бодит байдал</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Озын Гайхамшигт шидтэн</translation>
 <translation id="7684642910516280563">Сайтад гуравдагч талын күүки ашиглахыг бүү зөвшөөр</translation>
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
+<translation id="7759147511335618829">MIDI төхөөрөмжийн хяналт, дахин программчлах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Энэ табтай үргэлжлүүлэх}other{Эдгээр табтай үргэлжлүүлэх}}</translation>

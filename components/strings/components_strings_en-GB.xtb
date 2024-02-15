@@ -759,6 +759,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2505268675989099013">Protect Account</translation>
 <translation id="2512101340618156538">Not allowed (default)</translation>
 <translation id="2512413427717747692">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser in iOS settings</translation>
+<translation id="2514548229949738417">Home and garden</translation>
 <translation id="2515629240566999685">Checking the signal in your area</translation>
 <translation id="2515761554693942801">You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
@@ -1614,7 +1615,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4306529830550717874">Save address?</translation>
 <translation id="4306812610847412719">clipboard</translation>
 <translation id="4308567447483056043">This policy is ignored because the user is unaffiliated. For this policy to be applied, the Chrome browser and profile must be managed through the Admin console by the same organisation.</translation>
-<translation id="4310070645992025887">Search your journeys</translation>
 <translation id="4310496734563057511">If you share this device with others, you can turn on Windows Hello to verify that it's you whenever you use a saved password</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Block (default)</translation>
@@ -1794,6 +1794,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4731638775147756694">This application has been blocked by your administrator</translation>
 <translation id="4732860731866514038">Downloading <ph name="LANGUAGE" /> language pack… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wants to use your device's location</translation>
+<translation id="473414950835101501">Use your cameras</translation>
 <translation id="4736825316280949806">Restart Chromium</translation>
 <translation id="4736934858538408121">Virtual card</translation>
 <translation id="473775607612524610">Update</translation>
@@ -1904,6 +1905,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Incognito in Chrome</translation>
 <translation id="494111439860963024">Clear browsing data button, activate to clear your browsing history, cookies, cache and more in Chrome settings</translation>
+<translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4950898438188848926">Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Actions</translation>
@@ -2988,7 +2990,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7241863998525879494">What to expect</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# match}other{# matches}}</translation>
 <translation id="724691107663265825">The site ahead contains malware</translation>
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
 Additional details:
@@ -3403,6 +3404,7 @@ Additional details:
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>
 <translation id="8079031581361219619">Reload site?</translation>
 <translation id="8079976827192572403">Dangerous site</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedans</translation>
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8088680233425245692">Failed to view article.</translation>
@@ -3492,6 +3494,7 @@ Additional details:
 <translation id="8269242089528251720">Separate documents/Collated copies</translation>
 <translation id="8269703227894255363">{0,plural, =1{File blocked from opening}other{<ph name="FILE_COUNT" /> files blocked from opening}}</translation>
 <translation id="8270242299912238708">PDF documents</translation>
+<translation id="8272426682713568063">Credit Cards</translation>
 <translation id="8275952078857499577">Don‘t offer to translate this site</translation>
 <translation id="8277900682056760511">Payment handler sheet is opened</translation>
 <translation id="827820107214076967">Refresh logs</translation>

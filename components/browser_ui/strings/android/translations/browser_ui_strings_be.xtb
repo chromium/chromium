@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384959399684842514">Спампоўка прыпынена</translation>
 <translation id="1415402041810619267">URL-адрас абрэзаны</translation>
-<translation id="1434873037477293673">картка з апавяшчэннем пра зніжэнне цаны</translation>
 <translation id="1448064542941920355">Паменшыць маштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайты}many{<ph name="SITE_COUNT" /> сайтаў}other{<ph name="SITE_COUNT" /> сайта}}</translation>
 <translation id="1510341833810331442">Сайтам не дазволена захоўваць даныя на вашай прыладзе</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
 <translation id="4151930093518524179">Стандартны маштаб</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
-<translation id="4169019654293892025">Схаваць: <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
 <translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Выключыць мікрафон</translation>
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
 <translation id="4598549027014564149">Калі ўключаны рэжым інкогніта, сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на сайтах, нават звязаных. Вашы дзеянні ў браўзеры не выкарыстоўваюцца для паказу персаналізаванай рэкламы і падобных мэт. На некаторых сайтах можа не працаваць частка функцый.</translation>
+<translation id="4619615317237390068">Укладкі з іншых прылад</translation>
 <translation id="4644713492825682049">Выдаліць і скінуць</translation>
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Чараўнік краіны Оз</translation>
 <translation id="7684642910516280563">Забараніце сайту выкарыстоўваць староннія файлы cookie</translation>
 <translation id="7719367874908701697">Маштаб старонкі</translation>
+<translation id="7759147511335618829">Кіраванне/перапраграмаванне MIDI</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Працягвайце працу з гэтай укладкай}one{Працягвайце працу з гэтымі ўкладкамі}few{Працягвайце працу з гэтымі ўкладкамі}many{Працягвайце працу з гэтымі ўкладкамі}other{Працягвайце працу з гэтымі ўкладкамі}}</translation>

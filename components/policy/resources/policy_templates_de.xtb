@@ -8012,15 +8012,6 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
       Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Verwendung von Systembenachrichtigungen zulassen</translation>
-<translation id="7642884929006659708">Diese Richtlinie wird seit <ph name="PRODUCT_NAME" />-Version 122 nicht mehr unterstützt. Verwende stattdessen die Richtlinie „AllowedDomainsForAppsList“.
-
-      Wenn die Richtlinie konfiguriert ist, ist in <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> die eingeschränkte Anmeldefunktion von Chrome aktiviert, und Nutzer können diese Einstellung nicht ändern. Nutzer können nur über Konten der angegebenen Domains auf Tools von Google zugreifen – um gmail.com- oder googlemail.com-Konten zuzulassen, musst du der Domainliste „consumer_accounts“ (ohne Anführungszeichen) hinzufügen. Durch diese Einstellung können sich Nutzer nicht auf einem verwalteten Gerät, für das eine Authentifizierung durch Google notwendig ist, anmelden und kein zweites Konto hinzufügen, wenn dieses Konto nicht zu einer der Domains in der Zulassungsliste gehört.
-
-      Wenn diese Einstellung leer gelassen oder nicht konfiguriert wird, können Nutzer über beliebige Konten auf <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> zugreifen.
-
-      Nutzer können diese Einstellung weder ändern noch überschreiben.
-
-      Hinweis: Durch diese Richtlinie wird allen HTTP- und HTTPS-Anfragen, die an google.com-Domains gesendet werden, der Header „X-GoogApps-Allowed-Domains“ angehängt, siehe https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse für Nutzer deaktiviert werden kann.
 
 Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Anzeigenanalyse für Nutzer deaktiviert.

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
-<translation id="1434873037477293673">«Գնիջեցում» քարտ</translation>
 <translation id="1448064542941920355">Փոքրացնել մասշտաբը</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> կայք}one{<ph name="SITE_COUNT" /> կայք}other{<ph name="SITE_COUNT" /> կայք}}</translation>
 <translation id="1510341833810331442">Կայքերին չի թույլատրվում տվյալներ պահել ձեր սարքում</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Կայքերի պարզեցված դիտակերպ</translation>
 <translation id="4151930093518524179">Կանխադրված մասշտաբ</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
-<translation id="4169019654293892025">Թաքցնել «<ph name="TITLE_OF_MODULE" />» մոդուլը</translation>
 <translation id="4169549551965910670">Կայքը միացած է USB սարքի</translation>
 <translation id="4194328954146351878">Կայքերի համար թույլտվություն խնդրել՝ տեսնելու և փոփոխելու տեղեկությունները NFC սարքերում (խորհուրդ է տրվում)</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Անջատել խոսափողը</translation>
 <translation id="4570913071927164677">Մանրամասներ</translation>
 <translation id="4598549027014564149">Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ տեսնելու ձեր գործողությունները դիտարկիչում, նույնիսկ առնչվող կայքերում։ Ձեր գործողությունները դիտարկիչում չեն օգտագործվում, օրինակ, գովազդներն անհատականացնելու համար։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
+<translation id="4619615317237390068">Ներդիրներ այլ սարքերից</translation>
 <translation id="4644713492825682049">Ջնջել և զրոյացնել</translation>
 <translation id="4645575059429386691">Կառավարվում է ձեր ծնողի կողմից</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Օզի կախարդը</translation>
 <translation id="7684642910516280563">Արգելեք կայքին օգտագործել երրորդ կողմի քուքիներ</translation>
 <translation id="7719367874908701697">Էջի մասշտաբավորում</translation>
+<translation id="7759147511335618829">MIDI կառավարում և վերածրագրավոր․</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Շարունակեք այս ներդիրի դիտումը}one{Շարունակեք այս ներդիրի դիտումը}other{Շարունակեք այս ներդիրների դիտումը}}</translation>

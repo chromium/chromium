@@ -160,6 +160,7 @@
 <translation id="1296930489679394997">Продаж</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Праверце налады абароненай DNS</translation>
+<translation id="1302418742166945866">Сайт <ph name="URL" /> запытвае дазвол на кіраванне вашымі прыладамі MIDI і іх перапраграміраванне</translation>
 <translation id="1307966114820526988">Састарэлыя функцыі</translation>
 <translation id="1308113895091915999">Ёсць прапанова</translation>
 <translation id="1309375166585231290">Твае бацькі яшчэ не ўхвалілі гэты сайт</translation>
@@ -541,6 +542,7 @@
 <translation id="2056658168519009885">Сайты могуць запытваць у браўзера Chrome інфармацыю, якая дапаможа персаналізаваць для вас рэкламу.</translation>
 <translation id="2059166748188874810">Муніцыпальная акруга</translation>
 <translation id="2059202684901022309">22 x 34 цалі</translation>
+<translation id="2062723461792528824">дзейнічаюць умовы</translation>
 <translation id="2064568741209980952">Крэдыты і пазыкі</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 прапанова}one{# прапанова}few{# прапановы}many{# прапаноў}other{# прапановы}}</translation>
 <translation id="2066915425250589881">запытаць яе выдаленне</translation>
@@ -755,6 +757,7 @@
 <translation id="2505268675989099013">Абараніць уліковы запіс</translation>
 <translation id="2512101340618156538">Забаронена (стандартна)</translation>
 <translation id="2512413427717747692">Кнопка "Зрабіць Chrome стандартным браўзерам". Каб зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS, націсніце Увод</translation>
+<translation id="2514548229949738417">Дом і сад</translation>
 <translation id="2515629240566999685">Праверыць сігнал там, дзе вы знаходзіцеся.</translation>
 <translation id="2515761554693942801">Вы выбралі Touch ID для спраўджання купляў на сайтах, якія карыстаюцца паслугамі пастаўшчыка <ph name="PROVIDER_ORIGIN" />. Гэты пастаўшчык мог захаваць інфармацыю пра ваш спосаб аплаты. Вы можаце <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Скаба знізу справа</translation>
@@ -1211,6 +1214,7 @@
 <translation id="3515972145999192222">Ваша арганізацыя заблакіравала сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> за парушэнне палітыкі. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Апрацоўка некалькіх аб'ектаў</translation>
 <translation id="3525130752944427905">10 x 14 цаляў</translation>
+<translation id="3525435918300186947">Кіраваць прыладамі MIDI і перапраграміраваць іх?</translation>
 <translation id="3528171143076753409">Ненадзейны сертыфікат сервера.</translation>
 <translation id="3528485271872257980">Цёмна-карычневы</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Як мінімум 1 элемент на сінхранізаваных прыладах}=1{1 элемент (і больш на сінхранізаваных прыладах)}one{# элемент (і больш на сінхранізаваных прыладах)}few{# элементы (і больш на сінхранізаваных прыладах)}many{# элементаў (і больш на сінхранізаваных прыладах)}other{# элемента (і больш на сінхранізаваных прыладах)}}</translation>
@@ -1608,7 +1612,6 @@
 <translation id="4306529830550717874">Захаваць адрас?</translation>
 <translation id="4306812610847412719">буфер абмену</translation>
 <translation id="4308567447483056043">Гэта палітыка ігнаруецца, бо карыстальнік з'яўляецца самастойным. Каб палітыка прымянялася, профіль і браўзер Chrome павінны кантралявацца адной арганізацыяй праз кансоль адміністратара.</translation>
-<translation id="4310070645992025887">Пошук па шляхах</translation>
 <translation id="4310496734563057511">Калі гэтай прыладай апроч вас карыстаецца нехта яшчэ, уключыце Windows Hello, каб карыстацца сваімі захаванымі паролямі маглі толькі вы</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
@@ -1788,6 +1791,7 @@
 <translation id="4731638775147756694">Гэта праграма заблакіравана адміністратарам</translation>
 <translation id="4732860731866514038">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запытвае дазвол на выкарыстанне звестак аб месцазнаходжанні прылады</translation>
+<translation id="473414950835101501">Выкарыстоўваць камеры</translation>
 <translation id="4736825316280949806">Перазапусціце Chromium</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
@@ -1898,6 +1902,7 @@
 <translation id="4936675324097895694">Фінансы</translation>
 <translation id="4940163644868678279">Рэжым інкогніта ў браўзеры Chrome</translation>
 <translation id="494111439860963024">Кнопка "Выдаліць даныя пра работу ў браўзеры". Каб выдаліць даныя гісторыі праглядаў сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome, націсніце яе.</translation>
+<translation id="4943620199112228840">Выкарыстоўваць мікрафоны</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
 <translation id="4950898438188848926">Кнопка пераключэння ўкладак. Націсніце Enter, каб пераключыцца на адкрытую ўкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дзеянні</translation>
@@ -2253,6 +2258,7 @@
 <translation id="5715150588940290235">Выдаліць захаваныя коды бяспекі?</translation>
 <translation id="5720705177508910913">Бягучы карыстальнік</translation>
 <translation id="572328651809341494">Нядаўнія ўкладкі</translation>
+<translation id="5723873695528696965">Кіраваць прыладамі MIDI і перапраграміраваць іх</translation>
 <translation id="5725297205162868298">Хуткая каманда "<ph name="SHORTCUT_NAME" />" не можа пачынацца з сімвала @</translation>
 <translation id="5730040223043577876">Chrome рэкамендуе скінуць ваш пароль, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="5732392974455271431">Разблакіраваць сайт для вас могуць бацькі</translation>
@@ -2347,6 +2353,7 @@
 <translation id="5951495562196540101">Не ўдалося зарэгістраваць з дапамогай уліковага запісу спажыўца (даступна пакетная ліцэнзія).</translation>
 <translation id="5953516610448771166">Імгненныя субцітры для гэтага медыяфайла недаступныя. Каб атрымаць субцітры, заблакіруйце для гэтага сайта <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="595873925609605681">Калі функцыі сайта не працуюць, <ph name="BEGIN_LINK" />паспрабуйце часова дазволіць выкарыстанне старонніх файлаў cookie<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Спраўджанне</translation>
 <translation id="5963413905009737549">Раздзел</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5967260682280773804">36 x 48 цаляў</translation>
@@ -2978,7 +2985,6 @@
 <translation id="7241863998525879494">Што далей</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# супадзенне}one{# супадзенне}few{# супадзенні}many{# супадзенняў}other{# супадзення}}</translation>
 <translation id="724691107663265825">Сайт, на які вы збіраецеся перайсці, змяшчае шкоднае ПЗ</translation>
 <translation id="7251437084390964440">Канфігурацыя сеткі не адпавядае стандарту ONC. Магчыма, некаторыя часткі канфігурацыі не былі імпартаваны.
 Падрабязныя звесткі:
@@ -3249,6 +3255,7 @@
 <translation id="7755287808199759310">Разблакіраваць сайт можа адзін з бацькоў</translation>
 <translation id="7755624218968747854">Асноўны рулон</translation>
 <translation id="7758069387465995638">Падключэнне магло быць заблакіравана брандмаўэрам або антывірусам.</translation>
+<translation id="7759147511335618829">Кіраванне/перапраграмаванне MIDI</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="776110834126722255">Састарэлая</translation>
 <translation id="7761159795823346334">Дазволіць доступ да камеры?</translation>
@@ -3393,6 +3400,7 @@
 <translation id="8078141288243656252">Нельга дадаваць анатацыі, калі дакумент павернуты</translation>
 <translation id="8079031581361219619">Перазагрузіць сайт?</translation>
 <translation id="8079976827192572403">Небяспечны сайт</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Седаны</translation>
 <translation id="8086971161893892807">Чарнавая</translation>
 <translation id="8088680233425245692">Не ўдалося паглядзець артыкул.</translation>
@@ -3409,6 +3417,7 @@
 <translation id="8103161714697287722">Спосаб аплаты</translation>
 <translation id="8103643211515685474">Усё роўна надрукаваць</translation>
 <translation id="8105368624971345109">Выключыць</translation>
+<translation id="8107664017913103177">Даступныя перавагі карткі</translation>
 <translation id="810875025413331850">Прылад паблізу не знойдзена.</translation>
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="8118489163946903409">Спосаб аплаты</translation>

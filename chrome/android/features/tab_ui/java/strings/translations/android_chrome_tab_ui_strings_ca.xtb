@@ -6,6 +6,7 @@
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="1215127405478249895">Revisa les pestanyes</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
+<translation id="1322824555808364080">Convida persones</translation>
 <translation id="1326271443836399892">Revisa la configuració actual d'ordenació.</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1555130319947370107">Blau</translation>
@@ -87,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>
 <translation id="7129458170538955174">S'ha obert a mitja alçada la informació sobre aquesta botiga</translation>
 <translation id="7204204600596740190">Mode de multiselecció</translation>
+<translation id="731648547091221002">S'ha seleccionat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consulta la política de devolució i més detalls</translation>
 <translation id="7352298686197644113">Descobreix quin element de les pestanyes que hi ha obertes té un preu més baix</translation>
 <translation id="753732157349120914">Selector de pestanyes</translation>
@@ -97,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupa <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Agrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
+<translation id="7939917283308035850">No s'ha seleccionat <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7966321538264951561">Ignora els suggeriments.</translation>
 <translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>

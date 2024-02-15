@@ -6,6 +6,7 @@
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="1215127405478249895">Zkontrolovat karty</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
+<translation id="1322824555808364080">Pozvat lidi</translation>
 <translation id="1326271443836399892">Zkontrolovat aktuální nastavení úklidu.</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1555130319947370107">Modrá</translation>
@@ -87,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Sdílet kartu}few{Sdílet karty}many{Sdílet karty}other{Sdílet karty}}</translation>
 <translation id="7129458170538955174">Informace o této prodejně jsou otevřeny na poloviční výšku</translation>
 <translation id="7204204600596740190">Režim vícenásobného výběru</translation>
+<translation id="731648547091221002"><ph name="COLOR_NAME" />, vybráno</translation>
 <translation id="7326879924029668159">Zobrazit zásady vracení zboží a další</translation>
 <translation id="7352298686197644113">Podívejte se, která položka na otevřených kartách má nižší cenu</translation>
 <translation id="753732157349120914">Přepínač karet</translation>
@@ -97,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Seskupit <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Seskupit <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Seskupit <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Seskupit <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenze}few{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}many{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenze}other{Hodnocení <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzí}}</translation>
 <translation id="7885132941432959125">Přesunout kartu doprava</translation>
+<translation id="7939917283308035850"><ph name="COLOR_NAME" />, nevybráno</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7966321538264951561">Zavřít návrhy.</translation>
 <translation id="8029301326595421733">Informace o této prodejně jsou otevřeny na celou výšku</translation>

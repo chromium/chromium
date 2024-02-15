@@ -759,6 +759,7 @@
 <translation id="2505268675989099013">खात्याचे संरक्षण करा</translation>
 <translation id="2512101340618156538">अनुमती नाही (डीफॉल्ट)</translation>
 <translation id="2512413427717747692">Chrome ला डीफॉल्ट ब्राउझर बटण म्हणून सेट करा, iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर प्रेस करा</translation>
+<translation id="2514548229949738417">घर आणि बाग</translation>
 <translation id="2515629240566999685">आपल्या क्षेत्रातील सिग्नल तपासणे</translation>
 <translation id="2515761554693942801">तुम्ही <ph name="PROVIDER_ORIGIN" /> वापरणाऱ्या वेबसाइटवर टच आयडी वापरून पडताळणी करण्याचे निवडले आहे. या पुरवठादाराने तुमच्या पेमेंट पद्धतीविषयी माहिती स्टोअर केलेली असू शकते, जी तुम्ही <ph name="LINK_TEXT" /> करू शकता.</translation>
 <translation id="2521385132275182522">स्टेपल बॉटम राइट</translation>
@@ -1613,7 +1614,6 @@
 <translation id="4306529830550717874">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
 <translation id="4308567447483056043">हे धोरण दुर्लक्षित केले आहे, कारण वापरकर्ता अनुषंगिक नाही. हे धोरण लागू केले जाण्यासाठी, एकाच संस्थेने Chrome ब्राउझर आणि प्रोफाइल ॲडमिन कन्सोलद्वारे व्यवस्थापित करणे आवश्यक आहे.</translation>
-<translation id="4310070645992025887">तुमचे प्रवास शोधा</translation>
 <translation id="4310496734563057511">तुम्ही हे डिव्‍हाइस इतरांसोबत शेअर करत असल्‍यास, तुम्‍ही सेव्ह केलेला पासवर्ड वापरताना हे तुम्‍हीच आहात याची पडताळणी करण्‍यासाठी तुम्ही Windows Hello सुरू करू शकता</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ब्लॉक करा (डीफॉल्ट)</translation>
@@ -2988,7 +2988,6 @@
 <translation id="7241863998525879494">काय अपेक्षित आहे</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# जुळणी}other{# जुळण्या}}</translation>
 <translation id="724691107663265825">साइटमध्ये पुढे मालवेअर आहे</translation>
 <translation id="7251437084390964440">नेटवर्क कॉंफिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉंफिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
 अतिरिक्त तपशील:
@@ -3403,6 +3402,7 @@
 <translation id="8078141288243656252">फिरवल्यावर भाष्य करू शकत नाही</translation>
 <translation id="8079031581361219619">साइट रीलोड करायची?</translation>
 <translation id="8079976827192572403">धोकादायक साइट</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">सडॅन</translation>
 <translation id="8086971161893892807">मसुदा</translation>
 <translation id="8088680233425245692">लेख पाहण्यात अयशस्वी.</translation>
@@ -3492,6 +3492,7 @@
 <translation id="8269242089528251720">वेगळे दस्तऐवज/संकलित केलेल्या प्रती</translation>
 <translation id="8269703227894255363">{0,plural, =1{फाइल उघडण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल उघडण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="8270242299912238708">पीडीएफ दस्तऐवज</translation>
+<translation id="8272426682713568063">क्रेडिट कार्ड</translation>
 <translation id="8275952078857499577">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8277900682056760511">पेमेंट हँडलर शीट उघडलेले आहे</translation>
 <translation id="827820107214076967">लॉग रिफ्रेश करा</translation>

@@ -1250,6 +1250,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
       Nếu bạn bật chính sách "KerberosUseCustomPrefilledConfig", thì giá trị của chính sách sẽ được áp dụng làm cấu hình đề xuất và hiển thị trong phần "Advanced" (Nâng cao) của hộp thoại xác thực Kerberos. Nếu bạn đặt chính sách này thành một chuỗi trống hoặc không đặt, thì cấu hình <ph name="PRODUCT_OS_NAME" /> đề xuất sẽ bị xoá.
 
       Nếu bạn tắt chính sách "KerberosUseCustomPrefilledConfig", thì giá trị của chính sách này sẽ không được sử dụng.</translation>
+<translation id="1967820716244187368">Cho phép sử dụng Chrome for Testing</translation>
 <translation id="1969212217917526199">Ghi đè chính sách trên bản dựng Gỡ lỗi của máy chủ truy cập từ xa.
 
           Giá trị được phân tích cú pháp như từ điển JSON của tên chính sách đối với các ánh xạ giá trị chính sách.</translation>
@@ -2567,6 +2568,7 @@ Người dùng có thể đặt hình đại diện từ bất kỳ tuỳ chọn
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="305106159605171619">Đã tắt chế độ giảm thiểu Tác nhân người dùng (User-Agent Reduction) và không dùng Bản dùng thử thử nghiệm (Field-Trials) hay Bản dùng thử theo nguyên gốc (Origin-Trials) để bật tính năng này.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3057459316145779761">Không cho phép sử dụng Chrome for Testing</translation>
 <translation id="3063302084011279315">Tắt Screencast</translation>
 <translation id="3063307261083019730">Không cho phép lưu trữ các trang có tiêu đề <ph name="CACHE_CONTROL_NO_STORE_NAME" /> trong bộ nhớ đệm cho thao tác tiến/lùi.</translation>
 <translation id="3064530882228745118">Dùng tính năng tra cứu CNAME trong quá trình xác thực Kerberos</translation>
@@ -3102,6 +3104,7 @@ chứng chỉ bị định cấu hình sai. Bộ thuật toán mật mã ECDHE_R
 dùng tuỳ chọn sử dụng khoá "keyEncipherment". Nếu không chắc chắn, quản trị viên phải
 đưa cả hai tuỳ chọn này vào chứng chỉ RSA dành cho HTTPS.</translation>
 <translation id="3459509316159669723">In</translation>
+<translation id="3460485593332210712">Cho phép sử dụng Chrome for Testing</translation>
 <translation id="3461279434465463233">Báo cáo trạng thái nguồn</translation>
 <translation id="3468115890799739909">Chính sách này kiểm soát chế độ hiển thị của trang Nhật ký duyệt web trên Chrome được sắp xếp theo nhóm trang.
 
@@ -6412,6 +6415,11 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt chính
 <translation id="6254498834449523938">Không cho phép người dùng bỏ qua cảnh báo Duyệt web an toàn</translation>
 <translation id="625580680776945310">Chế độ hiệu quả cao sẽ được bật.</translation>
 <translation id="6258314216623064461">Chế độ cài đặt cho tính năng Giúp tôi viết</translation>
+<translation id="6258502079038650092">Kiểm soát việc người dùng có thể sử dụng Chrome for Testing hay không.
+
+      Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt thì người dùng có thể cài đặt và chạy Chrome for Testing.
+
+      Nếu bạn đặt chính sách này thành Disabled (Tắt) thì người dùng sẽ không được phép chạy Chrome for Testing. Người dùng vẫn có thể cài đặt Chrome for Testing. Tuy nhiên, phiên bản này sẽ không chạy với những hồ sơ mà bạn đặt chính sách này thành Disabled (Tắt).</translation>
 <translation id="6258658183356534534">Kiểm soát tính năng Cập nhật thuật toán GREASE trong User-Agent Client Hints.</translation>
 <translation id="6261643884958898336">Báo cáo thông tin nhận dạng máy</translation>
 <translation id="6264247808139384018">Nếu bạn đặt thành Enabled (Bật) hoặc không đặt chính sách này, những người dùng xác thực bằng mật khẩu có thể khoá màn hình.
@@ -8211,15 +8219,6 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
       Khi bạn đặt chính sách này thành Tắt, bất cứ khi nào người dùng thực hiện thao tác làm kích hoạt hộp thoại chọn tệp (chẳng hạn như nhập dấu trang, tải tệp lên, lưu đường liên kết, v.v), một thông báo sẽ xuất hiện. Người dùng được xem là đã nhấp vào nút Hủy trên hộp thoại chọn tệp.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Cho phép sử dụng các thông báo hệ thống</translation>
-<translation id="7642884929006659708">Kể từ <ph name="PRODUCT_NAME" /> phiên bản 122, chính sách này không còn được dùng nữa. Vui lòng sử dụng chính sách AllowedDomainsForAppsList.
-
-      Khi bạn đặt chính sách này, tính năng đăng nhập có giới hạn của Chrome sẽ được bật trong <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> và người dùng sẽ không thể thay đổi chế độ cài đặt này. Người dùng chỉ có thể truy cập vào các công cụ của Google bằng tài khoản thuộc miền được chỉ định (để cho phép tài khoản Gmail hoặc googlemail, hãy thêm consumer_accounts vào danh sách miền). Chế độ cài đặt này ngăn người dùng đăng nhập và thêm Tài khoản phụ trên một thiết bị được quản lý có yêu cầu quy trình xác thực của Google, nếu tài khoản đó không thuộc một trong những miền được cho phép rõ ràng.
-
-      Nếu bạn để trống hoặc không đặt chế độ cài đặt này thì người dùng có thể truy cập vào <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> bằng bất kỳ tài khoản nào.
-
-      Người dùng không thể thay đổi hay ghi đè chế độ cài đặt này.
-
-      Lưu ý: Với chính sách này, tiêu đề X-GoogApps-Allowed-Domains sẽ được thêm vào mọi yêu cầu HTTP và HTTPS gửi đến tất cả miền google.com, như mô tả trong https://support.google.com/a/answer/1668854.</translation>
 <translation id="7643151458117317518">Chính sách kiểm soát việc có thể tắt chế độ cài đặt Đo lường quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng của bạn hay không.
 
 Nếu bạn đặt chính sách này thành Tắt, thì chế độ cài đặt Đo lường quảng cáo sẽ tắt cho người dùng.

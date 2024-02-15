@@ -575,6 +575,7 @@
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5107243100836678918">Eine Tastenkombination ohne <ph name="META_KEY" />-Taste kann einen Konflikt mit der Tastenkombination einer App verursachen. Wenn du diese Tastenkombination weiter verwenden möchtest, drück sie noch einmal. Anderenfalls kannst du eine neue Tastenkombination mit der <ph name="KEY" />-Taste eingeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Ähnlich:</translation>
 <translation id="5137451382116112100">Voll</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>

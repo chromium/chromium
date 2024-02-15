@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384959399684842514">Завантаження призупинено</translation>
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
-<translation id="1434873037477293673">картка "Зниження ціни"</translation>
 <translation id="1448064542941920355">Зменшити масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
 <translation id="1510341833810331442">Сайтам заборонено зберігати дані на вашому пристрої</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4151930093518524179">Масштаб за умовчанням</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
-<translation id="4169019654293892025">Сховати модуль "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">Підключено до пристрою USB</translation>
 <translation id="4194328954146351878">Запитувати, перш ніж дозволяти сайтам переглядати й змінювати інформацію на пристроях NFC (рекомендовано)</translation>
 <translation id="4200726100658658164">Відкрити налаштування доступу до моїх геоданих</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Вимкнути мікрофон</translation>
 <translation id="4570913071927164677">Деталі</translation>
 <translation id="4598549027014564149">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, навіть на пов’язаних сайтах. Дані про дії у веб-переглядачі не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
+<translation id="4619615317237390068">Вкладки з інших пристроїв</translation>
 <translation id="4644713492825682049">Видалити й скинути</translation>
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Чарівник країни Оз</translation>
 <translation id="7684642910516280563">Заборонити сайту використовувати сторонні файли cookie</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
+<translation id="7759147511335618829">Керування пристроями MIDI</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продовжити на цій вкладці}one{Продовжити із цими вкладками}few{Продовжити із цими вкладками}many{Продовжити із цими вкладками}other{Продовжити із цими вкладками}}</translation>

@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1415402041810619267">URL छोटो बनाइयो</translation>
-<translation id="1434873037477293673">मूल्य घटेको जानकारी दिने कार्ड</translation>
 <translation id="1448064542941920355">जुमको स्तर घटाउनुहोस्</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> वटा साइट}}</translation>
 <translation id="1510341833810331442">साइटहरूलाई तपाईंको डिभाइसमा जानकारी सेभ गर्ने अनुमति दिइएको छैन</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4151930093518524179">डिफल्ट जुम</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
-<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> लुकाउनुहोस्</translation>
 <translation id="4169549551965910670">USB डिभाइसमा कनेक्ट गर्नुहोस्</translation>
 <translation id="4194328954146351878">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्ने र ती जानकारी परिवर्तन गर्ने अनुमति दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
 <translation id="4200726100658658164">लोकेसन सेटिङ खोल्नुहोस्</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">माइक्रोफोन म्युट गर्नुहोस्</translation>
 <translation id="4570913071927164677">विवरणहरू</translation>
 <translation id="4598549027014564149">इन्कोग्निटो मोडमा ब्राउज गर्दा साइटहरूले सम्बन्धित साइटहरूलगायत सबै साइटहरूमा तपाईंले ब्राउजर प्रयोग गरी गर्नुभएको क्रियाकलाप हेर्न तपाईंका कुकीहरू प्रयोग गर्न सक्दैनन्। तपाईंले ब्राउजर प्रयोग गरी गर्नुभएको क्रियाकलाप विज्ञापनहरू पर्सनलाइज गर्नेलगायतका अन्य कार्यहरू गर्न प्रयोग गरिँदैन। केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
+<translation id="4619615317237390068">अन्य यन्त्रहरूका ट्याबहरू</translation>
 <translation id="4644713492825682049">मेटाउनुहोस् र रिसेट गर्नुहोस्</translation>
 <translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">कुनै साइटलाई तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="7719367874908701697">पृष्ठ जुम</translation>
+<translation id="7759147511335618829">MIDI डिभाइस कन्ट्रोल र रिप्रोग्राम</translation>
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{यो ट्याब प्रयोग गरेर जारी राख्नुहोस्}other{यी ट्याबहरू प्रयोग गरेर जारी राख्नुहोस्}}</translation>

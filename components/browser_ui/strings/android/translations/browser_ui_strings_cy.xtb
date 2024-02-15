@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384959399684842514">Wedi seibio lawrlwytho</translation>
 <translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
-<translation id="1434873037477293673">cerdyn gostyngiad pris</translation>
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
 <translation id="1510341833810331442">Ni chaniateir i wefannau gadw data ar eich dyfais</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
 <translation id="4151930093518524179">Chwyddo diofyn</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
-<translation id="4169019654293892025">Cuddio <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
 <translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
 <translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
+<translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Dewin Rhyfeddol Oz</translation>
 <translation id="7684642910516280563">Peidio â chaniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
 <translation id="7719367874908701697">Lefel chwyddo'r dudalen</translation>
+<translation id="7759147511335618829">Rheoli ac ailraglennu dyfais MIDI</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Parhau gyda'r tab hwn}zero{Parhau gyda'r tabiau hyn}two{Parhau gyda'r tabiau hyn}few{Parhau gyda'r tabiau hyn}many{Parhau gyda'r tabiau hyn}other{Parhau gyda'r tabiau hyn}}</translation>

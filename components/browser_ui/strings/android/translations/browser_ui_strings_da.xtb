@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384959399684842514">Download er sat på pause</translation>
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
-<translation id="1434873037477293673">kort med prisfald</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Enkel visning af websider</translation>
 <translation id="4151930093518524179">Standardzoom</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
-<translation id="4169019654293892025">Skjul <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
 <translation id="4194328954146351878">Spørg, om websites må få adgang til og ændre oplysninger på NFC-enheder (anbefales)</translation>
 <translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
+<translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Den vidunderlige troldmand fra Oz</translation>
 <translation id="7684642910516280563">Tillad ikke, at et website bruger tredjepartscookies</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
+<translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Fortsæt med denne fane}one{Fortsæt med denne fane}other{Fortsæt med disse faner}}</translation>

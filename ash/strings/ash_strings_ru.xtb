@@ -329,6 +329,7 @@
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
 <translation id="2382875860893882175">Трансляция приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
+<translation id="2392659840443812875">Точки доступа не найдены. Убедитесь, что устройство находится рядом и Bluetooth включен.</translation>
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
 <translation id="240006516586367791">Управление медиаконтентом</translation>
 <translation id="2402411679569069051">Чтобы разблокировать Chromebook, используйте отпечаток пальца или разблокируйте телефон.</translation>
@@ -587,6 +588,7 @@
 <translation id="3437677362970530951">Игры из Google Play и с других платформ</translation>
 <translation id="3439896670700055005">Обновить текущую страницу без использования кешированного контента</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">Персонализация мыши</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3454555520521576458">Изменяемые</translation>
@@ -1084,6 +1086,7 @@
 <translation id="5313326810920013265">Настройки Bluetooth</translation>
 <translation id="5314219114274263156">Видео с экрана записано</translation>
 <translation id="5314489738835854379">Перейти к предыдущему окну</translation>
+<translation id="5315931444962548795">Включите Bluetooth, чтобы находить точки доступа поблизости.</translation>
 <translation id="5316716239522500219">Дублировать изображения на мониторах</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319712128756744240">Подключить новое устройство</translation>
@@ -1620,6 +1623,7 @@
 <translation id="7509246181739783082">Подтвердите личность</translation>
 <translation id="7512509370370076552">Сочетание клавиш для нажатия правой кнопкой мыши изменено с Alt + нажатие на <ph name="LAUNCHER_KEY_NAME" /> + нажатие.</translation>
 <translation id="7512726380443357693">"<ph name="BUTTON_LABEL" />", не выбрано</translation>
+<translation id="7513057995673284840">Вы можете задать действия для кнопок на устройстве "<ph name="PERIPHERAL_NAME" />".</translation>
 <translation id="7513622367902644023">Выбран режим создания скриншота</translation>
 <translation id="7513922695575567867">Календарь, неделя с <ph name="DATE" />, сейчас выбрано <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Скачать</translation>
@@ -1676,6 +1680,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Создание GIF</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
+<translation id="7716257086539630827">Персонализация планшета</translation>
 <translation id="7720400844887872976">Вкл. до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
 <translation id="7721132362314201794">Название рабочего стола</translation>
@@ -1701,6 +1706,7 @@
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
+<translation id="7830453190047749513">Вы можете задать действия для кнопок, скорость передвижения указателя и настроить другие параметры устройства "<ph name="PERIPHERAL_NAME" />".</translation>
 <translation id="7837740436429729974">Время истекло</translation>
 <translation id="7842569679327885685">Внимание! Экспериментальная функция</translation>
 <translation id="7846634333498149051">Клавиатура</translation>

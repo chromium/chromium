@@ -754,6 +754,7 @@
 <translation id="2505268675989099013">ఖాతాను సంరక్షించు</translation>
 <translation id="2512101340618156538">అనుమతించనివి (ఆటోమేటిక్ సెట్టింగ్)</translation>
 <translation id="2512413427717747692">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసే బటన్, 'Enter'ను నొక్కి iOS సెట్టింగ్‌లలో Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
+<translation id="2514548229949738417">ఇల్లు &amp; తోట</translation>
 <translation id="2515629240566999685">మీ ప్రాంతంలో సిగ్నల్‌ను చెక్ చేయడం</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో Touch IDతో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, దీనిని మీరు <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">కుడివైపు దిగువ భాగంలో స్టేపుల్</translation>
@@ -1609,7 +1610,6 @@
 <translation id="4306529830550717874">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="4306812610847412719">క్లిప్‌బోర్డ్</translation>
 <translation id="4308567447483056043">యూజర్ అనుబంధంగా లేనందున, ఈ పాలసీ విస్మరించబడింది. ఈ పాలసీని వర్తింపజేయాలంటే, Chrome బ్రౌజర్‌ను, అలాగే ప్రొఫైల్‌ను అడ్మిన్ కన్సోల్ ద్వారా తప్పనిసరిగా ఒకే సంస్థ మేనేజ్ చేయాలి.</translation>
-<translation id="4310070645992025887">మీ బ్రౌజింగ్ జర్నీలను సెర్చ్ చేయండి</translation>
 <translation id="4310496734563057511">మీరు ఈ పరికరాన్ని ఇతరులతో షేర్ చేసుకుంటున్నట్లయితే, Windows Helloను ఆన్ చేసి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌ను ఉపయోగించినప్పుడల్లా, అది మీరేనని వెరిఫై చేయవచ్చు</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">బ్లాక్ చేయండి (డిఫాల్ట్)</translation>
@@ -2983,7 +2983,6 @@
 <translation id="7241863998525879494">ఏమి ఆశించవచ్చు</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# మ్యాచ్}other{# మ్యాచ్‌లు}}</translation>
 <translation id="724691107663265825">ముందున్న సైట్‌లో మాల్వేర్ ఉంది</translation>
 <translation id="7251437084390964440">నెట్‌వర్క్ కాన్ఫిగరేషన్ ONC ప్రమాణానికి అనుకూలంగా లేదు. కాన్ఫిగరేషన్‌లోని భాగాలు దిగుమతి కాకపోయి ఉండకపోవచ్చు.
 అదనపు వివరాలు:
@@ -3398,6 +3397,7 @@
 <translation id="8078141288243656252">తిప్పినప్పుడు అదనపు గమనికలను అందించడం సాధ్యపడదు</translation>
 <translation id="8079031581361219619">సైట్‌ను తిరిగి లోడ్ చేయాలా?</translation>
 <translation id="8079976827192572403">హానికరమైన సైట్</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">సెడాన్‌లు</translation>
 <translation id="8086971161893892807">డ్రాఫ్ట్</translation>
 <translation id="8088680233425245692">కథనాన్ని వీక్షించడంలో విఫలమైంది.</translation>
@@ -3487,6 +3487,7 @@
 <translation id="8269242089528251720">విడి డాక్యుమెంట్‌లు/సమగ్ర కాపీలు</translation>
 <translation id="8269703227894255363">{0,plural, =1{తెరవకుండా ఫైల్ బ్లాక్ చేయబడింది}other{తెరవకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="8270242299912238708">PDF డాక్యుమెంట్లు</translation>
+<translation id="8272426682713568063">క్రెడిట్ కార్డ్‌లు</translation>
 <translation id="8275952078857499577">ఈ సైట్‌ను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
 <translation id="8277900682056760511">చెల్లింపు హ్యాండ్లర్ షీట్ తెరవబడింది</translation>
 <translation id="827820107214076967">రిఫ్రెష్ లాగ్‌లు</translation>

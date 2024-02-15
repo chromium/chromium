@@ -160,6 +160,7 @@
 <translation id="1296930489679394997">Продажі</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Перевірте налаштування безпеки DNS</translation>
+<translation id="1302418742166945866">Сайт <ph name="URL" /> хоче керувати вашими пристроями MIDI й перепрограмовувати їх</translation>
 <translation id="1307966114820526988">Функції не підтримуються</translation>
 <translation id="1308113895091915999">Доступна пропозиція</translation>
 <translation id="1309375166585231290">Ще немає схвалення від батьків</translation>
@@ -541,6 +542,7 @@
 <translation id="2056658168519009885">Сайти можуть запитувати в Chrome інформацію, щоб персоналізувати для вас оголошення.</translation>
 <translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2059202684901022309">22 x 34 дюйм.</translation>
+<translation id="2062723461792528824">діють умови</translation>
 <translation id="2064568741209980952">Кредити й позики</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 пропозиція}one{# пропозиція}few{# пропозиції}many{# пропозицій}other{# пропозиції}}</translation>
 <translation id="2066915425250589881">запит на видалення</translation>
@@ -757,6 +759,7 @@
 <translation id="2505268675989099013">Захистити обліковий запис</translation>
 <translation id="2512101340618156538">Заборонено (за умовчанням)</translation>
 <translation id="2512413427717747692">Кнопка "Зробити Chrome веб-переглядачем за умовчанням": щоб зробити Chrome веб-переглядачем системи за умовчанням у налаштуваннях iOS, натисніть Enter</translation>
+<translation id="2514548229949738417">Дім і сад</translation>
 <translation id="2515629240566999685">перевірити сигнал у своїй місцевості</translation>
 <translation id="2515761554693942801">Ви вибрали підтвердження за допомогою Touch ID на веб-сайтах, які використовують <ph name="PROVIDER_ORIGIN" />. У цього постачальника могла зберегтись інформація про ваш спосіб оплати, але ви можете надіслати <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
@@ -1214,6 +1217,7 @@
 <translation id="3515972145999192222">Ваша організація заблокувала домен <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки він порушує правила. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обробка кількох об'єктів</translation>
 <translation id="3525130752944427905">10 x 14 дюйм.</translation>
+<translation id="3525435918300186947">Дозволити керувати пристроями MIDI й перепрограмовувати їх?</translation>
 <translation id="3528171143076753409">Сертифікат сервера ненадійний.</translation>
 <translation id="3528485271872257980">Темно-коричневий</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Принаймні 1 запис на синхронізованих пристроях}=1{1 запис (не враховуючи записів на синхронізованих пристроях)}one{# запис (не враховуючи записів на синхронізованих пристроях)}few{# записи (не враховуючи записів на синхронізованих пристроях)}many{# записів (не враховуючи записів на синхронізованих пристроях)}other{# запису (не враховуючи записів на синхронізованих пристроях)}}</translation>
@@ -1611,7 +1615,6 @@
 <translation id="4306529830550717874">Зберегти адресу?</translation>
 <translation id="4306812610847412719">буфер обміну</translation>
 <translation id="4308567447483056043">Правило ігнорується, оскільки цей користувач є стороннім. Щоб застосувати це правило, веб-переглядачем і профілем Chrome має керувати на консолі адміністратора та сама організація.</translation>
-<translation id="4310070645992025887">Пошук у сеансах</translation>
 <translation id="4310496734563057511">Якщо ви користуєтеся цим пристроєм спільно з іншими людьми, увімкніть Windows Hello, щоб підтверджувати свою особу щоразу, коли ви вводите збережений пароль</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
@@ -2258,6 +2261,7 @@
 <translation id="5715150588940290235">Видалити збережені коди безпеки?</translation>
 <translation id="5720705177508910913">Поточний користувач</translation>
 <translation id="572328651809341494">Останні вкладки</translation>
+<translation id="5723873695528696965">Керувати вашими пристроями MIDI й перепрограмовувати їх</translation>
 <translation id="5725297205162868298">Швидка команда не може починатися із символу @: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="5732392974455271431">Батьки можуть розблокувати його</translation>
@@ -2352,6 +2356,7 @@
 <translation id="5951495562196540101">Не вдається зареєструватися за допомогою особистого облікового запису користувача (ліцензію отримано в комплекті з пристроєм).</translation>
 <translation id="5953516610448771166">Живі субтитри недоступні для цього медіаконтенту. Щоб отримати субтитри, заблокуйте <ph name="CONTENT_SETTINGS" /> для цього сайту.</translation>
 <translation id="595873925609605681">Якщо функції сайту не працюють належним чином, <ph name="BEGIN_LINK" />спробуйте тимчасово дозволити сторонні файли cookie<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Підтвердження</translation>
 <translation id="5963413905009737549">Розділ</translation>
 <translation id="5964247741333118902">Вбудований контент</translation>
 <translation id="5967260682280773804">36 x 48 дюйм.</translation>
@@ -2983,7 +2988,6 @@
 <translation id="7241863998525879494">Чого слід очікувати</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# збіг}one{# збіг}few{# збіги}many{# збігів}other{# збігу}}</translation>
 <translation id="724691107663265825">Сайт містить зловмисне програмне забезпечення</translation>
 <translation id="7251437084390964440">Конфігурація мережі не відповідає стандарту ONC. Вона може імпортуватися частково.
 Додаткові відомості:
@@ -3253,6 +3257,7 @@
 <translation id="7755287808199759310">Хтось із батьків може розблокувати його</translation>
 <translation id="7755624218968747854">Основний рулон</translation>
 <translation id="7758069387465995638">Можливо, брандмауер або антивірусна програма заблокували з’єднання.</translation>
+<translation id="7759147511335618829">Керування пристроями MIDI</translation>
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="776110834126722255">Не підтримується</translation>
 <translation id="7761159795823346334">Дозволити доступ до камери?</translation>
@@ -3397,6 +3402,7 @@
 <translation id="8078141288243656252">Коли документ обернено, створення приміток недоступне</translation>
 <translation id="8079031581361219619">Оновити сайт?</translation>
 <translation id="8079976827192572403">Небезпечний сайт</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086971161893892807">Чернетка</translation>
 <translation id="8088680233425245692">Не вдалося переглянути статтю.</translation>
@@ -3413,6 +3419,7 @@
 <translation id="8103161714697287722">Спосіб оплати</translation>
 <translation id="8103643211515685474">Усе одно друкувати</translation>
 <translation id="8105368624971345109">Вимкнути</translation>
+<translation id="8107664017913103177">Доступні переваги картки</translation>
 <translation id="810875025413331850">Пристроїв поблизу не знайдено.</translation>
 <translation id="8116925261070264013">Звук вимкнено</translation>
 <translation id="8118489163946903409">Спосіб оплати</translation>
@@ -3485,6 +3492,7 @@
 <translation id="8269242089528251720">Окремі документи/підібрані копії</translation>
 <translation id="8269703227894255363">{0,plural, =1{Файл заборонено відкривати}one{<ph name="FILE_COUNT" /> файл заборонено відкривати}few{<ph name="FILE_COUNT" /> файли заборонено відкривати}many{<ph name="FILE_COUNT" /> файлів заборонено відкривати}other{<ph name="FILE_COUNT" /> файлу заборонено відкривати}}</translation>
 <translation id="8270242299912238708">Документи PDF</translation>
+<translation id="8272426682713568063">Кредитні картки</translation>
 <translation id="8275952078857499577">Не пропонувати перекладати цей сайт</translation>
 <translation id="8277900682056760511">Аркуш обробника платежу відкрито</translation>
 <translation id="827820107214076967">Оновити журнали</translation>

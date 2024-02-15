@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="1415402041810619267">URL కుదించబడింది</translation>
-<translation id="1434873037477293673">ధర తగ్గింపు కార్డ్</translation>
 <translation id="1448064542941920355">జూమ్ స్థాయిని తగ్గించండి</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> సైట్}other{<ph name="SITE_COUNT" /> సైట్‌లు}}</translation>
 <translation id="1510341833810331442">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌లకు అనుమతి లేదు</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">వెబ్ పేజీల కోసం సరళమైన వీక్షణ</translation>
 <translation id="4151930093518524179">ఆటోమేటిక్ జూమ్ సెట్టింగ్</translation>
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
-<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" />‌ను దాచండి</translation>
 <translation id="4169549551965910670">USB పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="4194328954146351878">NFC పరికరాలలో సమాచారాన్ని చూడటానికి, మార్చడానికి సైట్‌లను అనుమతించే ముందు అడగాలి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="4200726100658658164">లొకేషన్ సెట్టింగ్‌లను తెరవండి</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">మైక్రోఫోన్‌ను మ్యూట్ చేయి</translation>
 <translation id="4570913071927164677">వివరాలు</translation>
 <translation id="4598549027014564149">అజ్ఞాత మోడ్‌లో ఉన్నప్పుడు, సంబంధిత సైట్‌లతో సహా మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు. యాడ్‌లను వ్యక్తిగతీకరించడం వంటి వాటికి మీ బ్రౌజింగ్ యాక్టివిటీ ఉపయోగించబడదు. కొన్ని సైట్‌లలోని ఫీచర్‌లు పని చేయకపోవచ్చు.</translation>
+<translation id="4619615317237390068">ఇతర పరికరాల్లోని ట్యాబ్‌లు</translation>
 <translation id="4644713492825682049">తొలగించండి &amp; రీసెట్ చేయండి</translation>
 <translation id="4645575059429386691">మీ తల్లి/తండ్రి ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="4670064810192446073">వర్చువల్ రియాలిటీ</translation>

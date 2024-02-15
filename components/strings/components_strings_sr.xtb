@@ -759,6 +759,7 @@
 <translation id="2505268675989099013">Заштити налог</translation>
 <translation id="2512101340618156538">Није дозвољено (подразумевано)</translation>
 <translation id="2512413427717747692">Дугме Подеси Chrome као подразумевани прегледач, притисните Enter да бисте подесили Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
+<translation id="2514548229949738417">Дом и башта</translation>
 <translation id="2515629240566999685">да проверите сигнал у својој области</translation>
 <translation id="2515761554693942801">Одабрали сте да се верификујете помоћу Touch ID-а на веб-сајтовима који користе <ph name="PROVIDER_ORIGIN" />. Овај добављач је можда сачувао информације о начину плаћања, за који можете да <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Спајање у доњем десном углу</translation>
@@ -1614,7 +1615,6 @@
 <translation id="4306529830550717874">Желите да сачувате адресу?</translation>
 <translation id="4306812610847412719">привремена меморија</translation>
 <translation id="4308567447483056043">Ове смернице се игноришу зато што корисник није повезан. Да би се ове смернице примењивале, иста организација мора да управља Chrome прегледачем и профилом преко Администраторске конзоле.</translation>
-<translation id="4310070645992025887">Претражите своје путеве</translation>
 <translation id="4310496734563057511">Ако делите овај уређај са другима, можете да укључите Windows Hello да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
@@ -2989,7 +2989,6 @@
 <translation id="7241863998525879494">Шта можете да очекујете</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# подударање}one{# подударање}few{# подударања}other{# подударања}}</translation>
 <translation id="724691107663265825">Сајт који ћете посетити садржи малвер</translation>
 <translation id="7251437084390964440">Конфигурација мреже није у складу са ONC стандардом. Делови конфигурације можда нису увезени.
 Додатни детаљи:
@@ -3404,6 +3403,7 @@
 <translation id="8078141288243656252">Додавање напомене није могуће када је ротиран</translation>
 <translation id="8079031581361219619">Желите ли поново да учитате сајт?</translation>
 <translation id="8079976827192572403">Опасан сајт</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086971161893892807">Радна верзија</translation>
 <translation id="8088680233425245692">Прегледање чланка није успело.</translation>
@@ -3493,6 +3493,7 @@
 <translation id="8269242089528251720">Одвојени документи/сређене копије</translation>
 <translation id="8269703227894255363">{0,plural, =1{Отварање фајла је блокирано}one{Отварање <ph name="FILE_COUNT" /> фајла је блокирано}few{Отварање <ph name="FILE_COUNT" /> фајла је блокирано}other{Отварање <ph name="FILE_COUNT" /> фајлова је блокирано}}</translation>
 <translation id="8270242299912238708">PDF документи</translation>
+<translation id="8272426682713568063">Кредитне картице</translation>
 <translation id="8275952078857499577">Не нуди превод овог сајта</translation>
 <translation id="8277900682056760511">Страница обрађивача плаћања је отворена</translation>
 <translation id="827820107214076967">Освежи евиденције</translation>

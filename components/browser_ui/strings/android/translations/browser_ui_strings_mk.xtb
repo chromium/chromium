@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
-<translation id="1434873037477293673">картичка за намалување на цената</translation>
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
 <translation id="1510341833810331442">На сајтовите не им е дозволено да зачувуваат податоци на вашиот уред</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Поедноставен приказ за веб-страници</translation>
 <translation id="4151930093518524179">Стандардно зумирање</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
-<translation id="4169019654293892025">Скриј го модулот <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Поврзано со USB-уред</translation>
 <translation id="4194328954146351878">Прашај пред да дозволиш сајтовите да гледаат и менуваат податоци на NFC-уреди (се препорачува)</translation>
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Исклучете звук на микрофонот</translation>
 <translation id="4570913071927164677">Детали</translation>
 <translation id="4598549027014564149">Додека сте во „Инкогнито“, сајтовите не може да ги користат колачињата за да ја видат вашата активност од прелистувањето на различни сајтови, дури и на слични сајтови. Вашата активност од прелистувањето не се користи за нешта, како персонализирање реклами. Функциите на некои сајтови може да не функционираат</translation>
+<translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4644713492825682049">Избриши и ресетирај</translation>
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
@@ -402,6 +401,7 @@
 <translation id="7667547420449112975">Чудесниот волшебник од Оз</translation>
 <translation id="7684642910516280563">Не дозволувајте му на сајт да користи колачиња од трети страни</translation>
 <translation id="7719367874908701697">Зумирање страница</translation>
+<translation id="7759147511335618829">Контрола/репрогр. на MIDI-уреди</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Продолжете со картичкава}one{Продолжете со картичкиве}other{Продолжете со картичкиве}}</translation>

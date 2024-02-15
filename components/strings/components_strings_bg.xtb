@@ -160,6 +160,7 @@
 <translation id="1296930489679394997">Продажби</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Проверете настройките си за защитен DNS</translation>
+<translation id="1302418742166945866"><ph name="URL" /> иска да контролира и препрограмира MIDI устройствата ви</translation>
 <translation id="1307966114820526988">Оттеглени функции</translation>
 <translation id="1308113895091915999">Налице е оферта</translation>
 <translation id="1309375166585231290">Родителите ви още не са дали разрешение</translation>
@@ -541,6 +542,7 @@
 <translation id="2056658168519009885">Сайтовете могат да поискат от Chrome информация, с чиято помощ да персонализират показваните ви реклами.</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2059202684901022309">22 x 34 инча</translation>
+<translation id="2062723461792528824">прилагат се определени условия</translation>
 <translation id="2064568741209980952">Кредити и заеми</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предложение}other{# предложения}}</translation>
 <translation id="2066915425250589881">заявите изтриването ѝ</translation>
@@ -757,6 +759,7 @@
 <translation id="2505268675989099013">Защита на профила</translation>
 <translation id="2512101340618156538">Не е разрешено (по подразбиране)</translation>
 <translation id="2512413427717747692">Бутон за задаване на Chrome като браузър по подразбиране. Натиснете Enter за задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
+<translation id="2514548229949738417">Дом и градина</translation>
 <translation id="2515629240566999685">Проверете сигнала в района.</translation>
 <translation id="2515761554693942801">Избрахте опцията за потвърждаване чрез Touch ID в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
@@ -1214,6 +1217,7 @@
 <translation id="3515972145999192222">Организацията ви е блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, защото нарушава правилата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обработване на няколко обекта</translation>
 <translation id="3525130752944427905">10 x 14 инча</translation>
+<translation id="3525435918300186947">Да се контролират и препрограмират ли MIDI устройствата?</translation>
 <translation id="3528171143076753409">Сертификатът на сървъра не е надежден.</translation>
 <translation id="3528485271872257980">тъмнокафяво</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Поне 1 елемент на синхронизирани устройства}=1{1 елемент (и други на синхронизирани устройства)}other{# елемента (и други на синхронизирани устройства)}}</translation>
@@ -1611,7 +1615,6 @@
 <translation id="4306529830550717874">Да се запази ли адресът?</translation>
 <translation id="4306812610847412719">буферна памет</translation>
 <translation id="4308567447483056043">Това правило е пренебрегнато, защото потребителят не е свързан. За да бъде приложено, браузърът Chrome и потребителският профил трябва да бъдат управлявани през администраторската конзола от една и съща организация.</translation>
-<translation id="4310070645992025887">Търсете в пътуванията си</translation>
 <translation id="4310496734563057511">Ако споделяте устройството с други хора, можете да включите Windows Hello, за да потвърждавате самоличността си всеки път, когато използвате запазена парола</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокиране (по подразбиране)</translation>
@@ -1791,6 +1794,7 @@
 <translation id="4731638775147756694">Това приложение е блокирано от администратора ви</translation>
 <translation id="4732860731866514038">Езиковият пакет за <ph name="LANGUAGE" /> се изтегля... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> иска да използва местоположението на устройството ви</translation>
+<translation id="473414950835101501">Използване на камерите ви</translation>
 <translation id="4736825316280949806">Рестартирайте Chromium.</translation>
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
@@ -1901,6 +1905,7 @@
 <translation id="4936675324097895694">Финанси</translation>
 <translation id="4940163644868678279">Режим „инкогнито“ в Chrome</translation>
 <translation id="494111439860963024">Бутон „Изчистване на данните за сърфирането“. Активирайте, за да изчистите историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
+<translation id="4943620199112228840">Използване на микрофоните ви</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
 <translation id="4950898438188848926">Бутон за превключване между раздели. Натиснете Enter, за да преминете към отворения раздел – <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Действия</translation>
@@ -2258,6 +2263,7 @@
 <translation id="5715150588940290235">Да се изтрият ли запазените кодове за сигурност?</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>
+<translation id="5723873695528696965">Контролиране и препрограмиране на MIDI устройствата ви</translation>
 <translation id="5725297205162868298">Прекият път „<ph name="SHORTCUT_NAME" />“ не може да започва със знака @</translation>
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
@@ -2352,6 +2358,7 @@
 <translation id="5951495562196540101">Не е възможно регистриране с профил на потребител (налице е лиценз в пакет).</translation>
 <translation id="5953516610448771166">Функцията „Надписи на живо“ не е налице за този медиен формат. За да получите надписи, блокирайте <ph name="CONTENT_SETTINGS" /> за този сайт.</translation>
 <translation id="595873925609605681">Ако функциите на сайта не работят, <ph name="BEGIN_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Потвърждаване</translation>
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5964247741333118902">Вградено съдържание</translation>
 <translation id="5967260682280773804">36 x 48 инча</translation>
@@ -2983,7 +2990,6 @@
 <translation id="7241863998525879494">Какво да очаквате</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
-<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# съответствие}other{# съответствия}}</translation>
 <translation id="724691107663265825">На хоризонта се задава сайт със злонамерен софтуер</translation>
 <translation id="7251437084390964440">Конфигурацията на мрежата не спазва стандарта на ONC. Възможно е части от нея да не са импортирани.
 Допълнителни подробности:
@@ -3253,6 +3259,7 @@
 <translation id="7755287808199759310">Родителят ви може да го отблокира за вас</translation>
 <translation id="7755624218968747854">Основна ролка</translation>
 <translation id="7758069387465995638">Възможно е връзката да е блокирана от защитна стена или антивирусен софтуер.</translation>
+<translation id="7759147511335618829">MIDI у-ва: Контрол. и препрогр.</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="776110834126722255">Оттеглено</translation>
 <translation id="7761159795823346334">Да се разреши ли достъпът до камерата?</translation>
@@ -3397,6 +3404,7 @@
 <translation id="8078141288243656252">Добавянето на пояснения не е възможно, когато документът е завъртян</translation>
 <translation id="8079031581361219619">Искате ли да презаредите сайта?</translation>
 <translation id="8079976827192572403">Опасен сайт</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086971161893892807">Чернова</translation>
 <translation id="8088680233425245692">Преглеждането на статията не бе успешно.</translation>
@@ -3413,6 +3421,7 @@
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8103643211515685474">Отпечатване въпреки това</translation>
 <translation id="8105368624971345109">Изключване</translation>
+<translation id="8107664017913103177">Налице са предимства на картата</translation>
 <translation id="810875025413331850">Няма намерени устройства в близост.</translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="8118489163946903409">Начин на плащане</translation>
@@ -3485,6 +3494,7 @@
 <translation id="8269242089528251720">Отделни документи/подредени копия</translation>
 <translation id="8269703227894255363">{0,plural, =1{Отварянето на файла е блокирано}other{Отварянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="8270242299912238708">PDF документи</translation>
+<translation id="8272426682713568063">Кредитни карти</translation>
 <translation id="8275952078857499577">Да не се предлага превод на този сайт</translation>
 <translation id="8277900682056760511">Листът на инструмента за обработване на плащания е отворен</translation>
 <translation id="827820107214076967">Опресняване на регистрационните файлове</translation>

@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Trimite fila}few{Trimite filele}other{Trimite filele}}</translation>
 <translation id="7129458170538955174">Informațiile despre magazin deschise la jumătate din înălțime</translation>
 <translation id="7204204600596740190">Modul de selectare multiplă</translation>
+<translation id="731648547091221002">S-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Vezi politica privind returnarea și altele</translation>
 <translation id="7352298686197644113">Vezi care dintre articolele din filele deschise are un preț mai mic</translation>
 <translation id="753732157349120914">Comutator de file</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă selectată la un grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file selectate la un grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file selectate la un grup}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzie}few{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzii}other{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> de recenzii}}</translation>
 <translation id="7885132941432959125">Mută fila spre dreapta</translation>
+<translation id="7939917283308035850">Nu s-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7966321538264951561">Închide sugestiile.</translation>
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>

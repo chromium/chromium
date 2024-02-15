@@ -21,7 +21,6 @@
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384959399684842514">Жүктеу кідіртілді</translation>
 <translation id="1415402041810619267">URL қысқартылды</translation>
-<translation id="1434873037477293673">баға түсуінің картасы</translation>
 <translation id="1448064542941920355">Масштабты азайту</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}other{<ph name="SITE_COUNT" /> сайт}}</translation>
 <translation id="1510341833810331442">Сайттарға деректерді құрылғыда сақтауға рұқсат етілмейді.</translation>
@@ -188,7 +187,6 @@
 <translation id="4149994727733219643">Веб-беттердің қарапайым көрінісі</translation>
 <translation id="4151930093518524179">Әдепкі масштаб</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
-<translation id="4169019654293892025">"<ph name="TITLE_OF_MODULE" />" жасыру</translation>
 <translation id="4169549551965910670">USB құрылғысына жалғанды.</translation>
 <translation id="4194328954146351878">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне рұқсат бермес бұрын сізден сұрау (ұсынылады)</translation>
 <translation id="4200726100658658164">Орналасу параметрлерін ашу</translation>
@@ -213,6 +211,7 @@
 <translation id="4566417217121906555">Микрофон дыбысын өшіру</translation>
 <translation id="4570913071927164677">Мәліметтер</translation>
 <translation id="4598549027014564149">Инкогнито режимінде болған кезде, сайттар қатысты сайттардағы да браузерді пайдалану тарихыңызды көру үшін cookie файлдарыңызды пайдалана алмайды. Браузерді пайдалану тарихыңыз жарнамаларды жекелендіру сияқты нәрселер үшін пайдаланылмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
+<translation id="4619615317237390068">Басқа құрылғылардағы қойындылар</translation>
 <translation id="4644713492825682049">Жою және қайта орнату</translation>
 <translation id="4645575059429386691">Ата-ана басқарады</translation>
 <translation id="4670064810192446073">Виртуалдық шындық</translation>
