@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -125,6 +127,7 @@ public class StartSurfaceDelegate {
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param profileSupplier Supplies the {@link Profile}.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param moduleRegistrySupplier Supplies the {@link ModuleRegistry}.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(
@@ -155,7 +158,8 @@ public class StartSurfaceDelegate {
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            @Nullable OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
         return new StartSurfaceCoordinator(
                 activity,
                 scrimCoordinator,
@@ -184,6 +188,7 @@ public class StartSurfaceDelegate {
                 incognitoReauthControllerSupplier,
                 tabSwitcherClickHandler,
                 profileSupplier,
-                tabStripHeightSupplier);
+                tabStripHeightSupplier,
+                moduleRegistrySupplier);
     }
 }

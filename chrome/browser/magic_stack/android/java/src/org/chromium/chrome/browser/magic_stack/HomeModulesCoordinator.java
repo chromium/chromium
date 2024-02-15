@@ -49,12 +49,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private final ModelList mModel;
     private final HomeModulesContextMenuManager mHomeModulesContextMenuManager;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ModuleRegistry mModuleRegistry;
 
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
     private int mItemPerScreen;
-    private Set<Integer> mEnabledModuleList;
+    private Set<Integer> mEnabledModuleSet;
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
     private SegmentationPlatformService mSegmentationPlatformService;
@@ -74,23 +75,34 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      * @param homeModulesConfigManager The manager class which handles the enabling states of
      *     modules.
      * @param profileSupplier The supplier of the profile in use.
+     * @param moduleRegistry The instance of {@link ModuleRegistry}.
      */
     public HomeModulesCoordinator(
             @NonNull Activity activity,
             @NonNull ModuleDelegateHost moduleDelegateHost,
             @NonNull ViewGroup parentView,
             @NonNull HomeModulesConfigManager homeModulesConfigManager,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ModuleRegistry moduleRegistry) {
         mModuleDelegateHost = moduleDelegateHost;
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
+        mHomeModulesConfigManager = homeModulesConfigManager;
+        mHomeModulesStateListener = this::onModuleConfigChanged;
+        mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
+        mModuleRegistry = moduleRegistry;
+
+        assert mModuleRegistry != null;
+
         mHomeModulesContextMenuManager =
                 new HomeModulesContextMenuManager(
-                        this, moduleDelegateHost.getContextMenuStartPoint(), moduleRegistry);
+                        this,
+                        moduleDelegateHost.getContextMenuStartPoint(),
+                        mHomeModulesConfigManager);
         mProfileSupplier = profileSupplier;
 
         mModel = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
-        moduleRegistry.registerAdapter(mAdapter, this::onViewCreated);
+
+        mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
         mRecyclerView = parentView.findViewById(R.id.home_modules_recycler_view);
 
         mRecyclerView.setAdapter(mAdapter);
@@ -100,11 +112,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         // Add pager indicator.
         setupRecyclerView(activity);
-
-        mHomeModulesConfigManager = homeModulesConfigManager;
-        mHomeModulesStateListener = this::onModuleConfigChanged;
-        mHomeModulesConfigManager.addListener(mHomeModulesStateListener);
-        mEnabledModuleList = mHomeModulesConfigManager.getEnabledModuleList();
 
         mMediator = new HomeModulesMediator(mModel, moduleRegistry);
     }
@@ -231,9 +238,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     /** Reacts when the home modules' specific module type is disabled or enabled. */
     void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
         if (isEnabled) {
-            mEnabledModuleList.add(moduleType);
+            // If the mEnabledModuleSet hasn't been initialized yet, skip here.
+            if (mEnabledModuleSet != null) {
+                mEnabledModuleSet.add(moduleType);
+            }
         } else {
-            mEnabledModuleList.remove(moduleType);
+            // If the mEnabledModuleSet hasn't been initialized yet, skip here.
+            if (mEnabledModuleSet != null) {
+                mEnabledModuleSet.remove(moduleType);
+            }
             removeModule(moduleType);
         }
     }
@@ -364,10 +377,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             generalModuleList.add(ModuleType.TAB_RESUMPTION);
         }
 
+        ensureEnabledModuleSetCreated();
         List<Integer> moduleList = new ArrayList<>();
         for (int i = 0; i < generalModuleList.size(); i++) {
             @ModuleType int currentModuleType = generalModuleList.get(i);
-            if (mEnabledModuleList.contains(currentModuleType)) {
+            if (mEnabledModuleSet.contains(currentModuleType)) {
                 moduleList.add(currentModuleType);
             }
         }
@@ -439,5 +453,16 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             }
         }
         return moduleList;
+    }
+
+    /**
+     * Initializes the mEnabledModuleSet if hasn't yet. The mEnabledModuleSet should only be created
+     * after Profile is ready.
+     */
+    @VisibleForTesting
+    void ensureEnabledModuleSetCreated() {
+        if (mEnabledModuleSet != null) return;
+
+        mEnabledModuleSet = mHomeModulesConfigManager.getEnabledModuleSet();
     }
 }

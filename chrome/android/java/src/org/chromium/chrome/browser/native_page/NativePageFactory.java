@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -66,6 +68,7 @@ public class NativePageFactory {
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
     private NewTabPageUma mNewTabPageUma;
 
     private NativePageBuilder mNativePageBuilder;
@@ -84,7 +87,8 @@ public class NativePageFactory {
             @NonNull Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             @Nullable ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -99,6 +103,7 @@ public class NativePageFactory {
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mModuleRegistrySupplier = moduleRegistrySupplier;
     }
 
     private NativePageBuilder getBuilder() {
@@ -119,7 +124,8 @@ public class NativePageFactory {
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
                             mTabContentManagerSupplier,
-                            mTabStripHeightSupplier);
+                            mTabStripHeightSupplier,
+                            mModuleRegistrySupplier);
         }
         return mNativePageBuilder;
     }
@@ -149,6 +155,7 @@ public class NativePageFactory {
         private final HomeSurfaceTracker mHomeSurfaceTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
         private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+        private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
         public NativePageBuilder(
                 Activity activity,
@@ -165,7 +172,8 @@ public class NativePageFactory {
                 Supplier<Toolbar> toolbarSupplier,
                 HomeSurfaceTracker homeSurfaceTracker,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-                ObservableSupplier<Integer> tabStripHeightSupplier) {
+                ObservableSupplier<Integer> tabStripHeightSupplier,
+                OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
             mActivity = activity;
             mUma = uma;
             mBottomSheetController = sheetController;
@@ -181,6 +189,7 @@ public class NativePageFactory {
             mHomeSurfaceTracker = homeSurfaceTracker;
             mTabContentManagerSupplier = tabContentManagerSupplier;
             mTabStripHeightSupplier = tabStripHeightSupplier;
+            mModuleRegistrySupplier = moduleRegistrySupplier;
         }
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
@@ -210,7 +219,8 @@ public class NativePageFactory {
                     mToolbarSupplier,
                     mHomeSurfaceTracker,
                     mTabContentManagerSupplier,
-                    mTabStripHeightSupplier);
+                    mTabStripHeightSupplier,
+                    mModuleRegistrySupplier);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

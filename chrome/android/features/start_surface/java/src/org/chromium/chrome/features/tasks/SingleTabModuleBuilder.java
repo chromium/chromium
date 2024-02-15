@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
@@ -26,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The {@link ModuleProviderBuilder} to build the single tab module on the magic stack. */
-public class SingleTabModuleBuilder implements ModuleProviderBuilder {
+public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Activity mActivity;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -99,5 +100,12 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder {
     @Override
     public void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         SingleTabViewBinder.bind(model, view, propertyKey);
+    }
+
+    // ModuleEligibilityChecker implementation:
+
+    @Override
+    public boolean isEligible() {
+        return true;
     }
 }

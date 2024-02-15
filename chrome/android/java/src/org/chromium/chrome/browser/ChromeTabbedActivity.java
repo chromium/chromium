@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
@@ -443,6 +444,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private DragAndDropDelegate mDragDropDelegate;
 
     private ExperimentalStartupMetricsTracker mExperimentalStartupMetricsTracker;
+
+    private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
+            new OneshotSupplierImpl<>();
 
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
@@ -894,7 +898,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 v -> onTabSwitcherClicked(),
                 mTabModelProfileSupplier,
-                getToolbarManager().getTabStripHeightSupplier());
+                getToolbarManager().getTabStripHeightSupplier(),
+                mModuleRegistrySupplier);
     }
 
     private void initHub() {
@@ -2302,7 +2307,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void maybeRegisterHomeModules() {
         if (!StartSurfaceConfiguration.useMagicStack()) return;
 
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
+        ModuleRegistry moduleRegistry = new ModuleRegistry(HomeModulesConfigManager.getInstance());
         SingleTabModuleBuilder singleTabModuleBuilder =
                 new SingleTabModuleBuilder(
                         this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());
@@ -2319,6 +2324,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new TabResumptionModuleBuilder(this, mTabModelProfileSupplier);
             moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
         }
+
+        mModuleRegistrySupplier.set(moduleRegistry);
     }
 
     private boolean shouldIgnoreIntent() {
@@ -2547,7 +2554,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getToolbarManager()::getToolbar,
                             mHomeSurfaceTracker,
                             getTabContentManagerSupplier(),
-                            getToolbarManager().getTabStripHeightSupplier());
+                            getToolbarManager().getTabStripHeightSupplier(),
+                            mModuleRegistrySupplier);
         }
         return mTabDelegateFactory;
     }

@@ -50,7 +50,7 @@ public class HomeModulesContextMenuManagerUnitTest {
     @Mock private ContextMenu mContextMenu;
     @Mock private View mView;
     @Mock private Context mContext;
-    @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     private @ModuleType int mModuleType;
     private Point mPoint = new Point(0, 0);
@@ -61,7 +61,9 @@ public class HomeModulesContextMenuManagerUnitTest {
         mModuleType = ModuleType.SINGLE_TAB;
         doReturn(mContext).when(mView).getContext();
         doReturn(mModuleType).when(mModuleProvider).getModuleType();
-        mManager = new HomeModulesContextMenuManager(mModuleDelegate, mPoint, mModuleRegistry);
+        mManager =
+                new HomeModulesContextMenuManager(
+                        mModuleDelegate, mPoint, mHomeModulesConfigManager);
     }
 
     @Test
@@ -80,14 +82,14 @@ public class HomeModulesContextMenuManagerUnitTest {
     @SmallTest
     public void testShouldShowItem() {
         // Verifies that the "customize" menu item is default shown for all modules.
-        when(mModuleRegistry.hasCustomizableModule()).thenReturn(true);
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
         assertTrue(
                 mManager.shouldShowItem(
                         ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS, mModuleProvider));
 
         // Verifies that the "customize" menu item is removed when there isn't any module to
         // customize.
-        when(mModuleRegistry.hasCustomizableModule()).thenReturn(false);
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
         mManager.resetHasModuleToCustomizeForTesting();
         assertFalse(
                 mManager.shouldShowItem(
@@ -120,12 +122,12 @@ public class HomeModulesContextMenuManagerUnitTest {
                         eq(Menu.NONE),
                         anyInt());
 
-        when(mModuleRegistry.hasCustomizableModule()).thenReturn(false);
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
         mManager.createContextMenu(mContextMenu, mView, mModuleProvider);
         verify(menuItem1, never()).setOnMenuItemClickListener(any());
         verify(mModuleProvider, never()).onContextMenuCreated();
 
-        when(mModuleRegistry.hasCustomizableModule()).thenReturn(true);
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
         mManager.resetHasModuleToCustomizeForTesting();
         mManager.createContextMenu(mContextMenu, mView, mModuleProvider);
         verify(menuItem1).setOnMenuItemClickListener(any());

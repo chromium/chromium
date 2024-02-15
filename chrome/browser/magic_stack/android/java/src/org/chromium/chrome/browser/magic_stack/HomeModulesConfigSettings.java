@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 
-import java.util.Set;
+import java.util.List;
 
 /** Fragment that allows the user to configure chrome home modules related preferences. */
 public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
@@ -25,12 +25,9 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         HomeModulesConfigManager homeModulesConfigManager =
                 HomeModulesConfigManager.getInstance();
 
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        Set<Integer> moduleTypeRegistered = moduleRegistry.getRegisteredModuleTypes();
-        for (@ModuleType int moduleType : moduleTypeRegistered) {
-            if (!moduleRegistry.isModuleConfigurable(moduleType)
-                    || !moduleRegistry.isModuleEligibleToBuild(moduleType)) continue;
-
+        List<Integer> moduleTypeShownInSettings =
+                homeModulesConfigManager.getModuleListShownInSettings();
+        for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
             currentSwitch.setKey(homeModulesConfigManager.getPreferenceKey(moduleType));

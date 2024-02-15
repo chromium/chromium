@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.magic_stack;
 import android.content.Context;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -31,16 +37,28 @@ public class HomeModulesConfigManager {
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomeModulesStateListener> mHomepageStateListeners;
 
-    private static final HomeModulesConfigManager sInstance = new HomeModulesConfigManager();
+    /** A map of <ModuleType, ModuleEligibilityChecker>. */
+    private final Map<Integer, ModuleConfigChecker> mModuleConfigCheckerMap;
+
+    /** Static class that implements the initialization-on-demand holder idiom. */
+    private static class LazyHolder {
+        static HomeModulesConfigManager sInstance = new HomeModulesConfigManager();
+    }
 
     /** Returns the singleton instance of HomeModulesConfigManager. */
     public static HomeModulesConfigManager getInstance() {
-        return sInstance;
+        return LazyHolder.sInstance;
     }
 
     private HomeModulesConfigManager() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mHomepageStateListeners = new ObserverList<>();
+        mModuleConfigCheckerMap = new HashMap<>();
+    }
+
+    public void registerModuleEligibilityChecker(
+            @ModuleType int moduleType, ModuleConfigChecker eligibilityChecker) {
+        mModuleConfigCheckerMap.put(moduleType, eligibilityChecker);
     }
 
     /**
@@ -104,21 +122,42 @@ public class HomeModulesConfigManager {
 
     /**
      * Returns the set which contains all the module types that are registered and enabled according
-     * to user preference.
+     * to user preference. Note: this function should be called after profile is ready.
      */
     @ModuleType
-    Set<Integer> getEnabledModuleList() {
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        @ModuleType Set<Integer> moduleTypeRegistered = moduleRegistry.getRegisteredModuleTypes();
+    public Set<Integer> getEnabledModuleSet() {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
-        for (@ModuleType int moduleType : moduleTypeRegistered) {
-            if (!moduleRegistry.isModuleConfigurable(moduleType)
-                    || (moduleRegistry.isModuleEligibleToBuild(moduleType)
-                            && getPrefModuleTypeEnabled(moduleType))) {
-                enabledModuleList.add(moduleType);
+        for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
+            ModuleConfigChecker configChecker = entry.getValue();
+            if (!configChecker.isConfigurable()
+                    || configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
+                enabledModuleList.add(entry.getKey());
             }
         }
         return enabledModuleList;
+    }
+
+    /** Returns a list of modules that allow users to configure in settings. */
+    @ModuleType
+    public List<Integer> getModuleListShownInSettings() {
+        @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
+        for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
+            ModuleConfigChecker configChecker = entry.getValue();
+            if (configChecker.isEligible() && configChecker.isConfigurable()) {
+                moduleListShownInSettings.add(entry.getKey());
+            }
+        }
+        return moduleListShownInSettings;
+    }
+
+    /** Returns whether it has any module to configure in settings. */
+    public boolean hasModuleShownInSettings() {
+        for (ModuleConfigChecker moduleConfigChecker : mModuleConfigCheckerMap.values()) {
+            if (moduleConfigChecker.isConfigurable() && moduleConfigChecker.isEligible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Returns the preference key of the module type. */
@@ -126,5 +165,12 @@ public class HomeModulesConfigManager {
         assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
 
         return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
+    }
+
+    /** Sets a mocked instance for testing. */
+    public static void setInstanceForTesting(HomeModulesConfigManager instance) {
+        var oldValue = LazyHolder.sInstance;
+        LazyHolder.sInstance = instance;
+        ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
     }
 }

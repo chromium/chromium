@@ -18,6 +18,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -26,6 +27,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -99,7 +101,8 @@ public class TabUmaTest {
                 rootUiCoordinator.getToolbarManager()::getToolbar,
                 null,
                 null,
-                rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier());
+                rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
+                new OneshotSupplierImpl<ModuleRegistry>());
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

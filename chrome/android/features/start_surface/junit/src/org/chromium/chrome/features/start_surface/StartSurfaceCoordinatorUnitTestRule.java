@@ -299,7 +299,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                         mIncognitoReauthControllerSupplier,
                         null,
                         mProfileSupplier,
-                        tabStripHeightSupplier);
+                        tabStripHeightSupplier,
+                        new OneshotSupplierImpl<>());
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

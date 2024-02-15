@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
@@ -19,7 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-public class TabResumptionModuleBuilder implements ModuleProviderBuilder {
+public class TabResumptionModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
@@ -65,6 +66,8 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder {
             @NonNull PropertyKey propertyKey) {
         TabResumptionModuleViewBinder.bind(model, view, propertyKey);
     }
+
+    // ModuleEligibilityChecker implementation:
 
     @Override
     public boolean isEligible() {

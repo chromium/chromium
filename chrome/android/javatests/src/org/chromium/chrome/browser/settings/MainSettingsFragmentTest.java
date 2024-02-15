@@ -75,10 +75,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
-import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -87,7 +85,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -165,7 +162,7 @@ public class MainSettingsFragmentTest {
     @Mock private PasswordCheck mPasswordCheck;
 
     @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
-    @Mock private ModuleProviderBuilder mMockModuleProviderBuilder;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     private MainSettings mMainSettings;
 
@@ -767,53 +764,20 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID, ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testHomeModulesConfigSettingsEnabled_MagicStackAndPriceChangeEnabled() {
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+    public void testHomeModulesConfigSettingsWithCustomizableModule() {
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         launchSettingsActivity();
-        Assert.assertTrue(moduleRegistry.hasCustomizableModule());
         assertSettingsExists(
                 MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID, ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testHomeModulesConfigSettingsEnabled_MagicStackAndPriceChangeDisabled() {
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        when(mMockModuleProviderBuilder.isEligible()).thenReturn(true);
-        moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, mMockModuleProviderBuilder);
+    public void testHomeModulesConfigSettingsWithoutCustomizableModule() {
+        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         launchSettingsActivity();
-        Assert.assertTrue(moduleRegistry.hasCustomizableModule());
-        assertSettingsExists(
-                MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID, ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testHomeModulesConfigSettingsDisabled_MagicStackAndPriceChangeEnabled() {
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
-        launchSettingsActivity();
-        Assert.assertFalse(moduleRegistry.hasCustomizableModule());
-        Assert.assertNull(
-                "Home modules config setting should not be shown on automotive",
-                mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID, ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testHomeModulesConfigSettingsDisabled_MagicStackAndPriceChangeDisabled() {
-        ModuleRegistry moduleRegistry = ModuleRegistry.getInstance();
-        when(mMockModuleProviderBuilder.isEligible()).thenReturn(false);
-        moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, mMockModuleProviderBuilder);
-        launchSettingsActivity();
-        Assert.assertFalse(moduleRegistry.hasCustomizableModule());
         Assert.assertNull(
                 "Home modules config setting should not be shown on automotive",
                 mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
