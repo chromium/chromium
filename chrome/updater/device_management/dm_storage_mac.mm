@@ -26,29 +26,40 @@
 namespace updater {
 namespace {
 
-const CFStringRef kEnrollmentTokenKey = CFSTR("EnrollmentToken");
+const CFStringRef kEnrollmentTokenLegacyName = CFSTR("EnrollmentToken");
+const CFStringRef kEnrollmentTokenKey = CFSTR("CloudManagementEnrollmentToken");
 const CFStringRef kBrowserBundleId =
     CFSTR(MAC_BROWSER_BUNDLE_IDENTIFIER_STRING);
 
-bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
+std::string LoadEnrollmentTokenFromPolicyAtKey(CFStringRef key) {
   base::apple::ScopedCFTypeRef<CFPropertyListRef> token_value(
-      CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
+      CFPreferencesCopyAppValue(key, kBrowserBundleId));
   if (!token_value || CFGetTypeID(token_value.get()) != CFStringGetTypeID() ||
-      !CFPreferencesAppValueIsForced(kEnrollmentTokenKey, kBrowserBundleId)) {
-    return false;
+      !CFPreferencesAppValueIsForced(key, kBrowserBundleId)) {
+    return {};
   }
 
   CFStringRef value_string =
       base::apple::CFCast<CFStringRef>(token_value.get());
   if (!value_string) {
-    return false;
+    return {};
   }
 
-  *enrollment_token = base::SysCFStringRefToUTF8(value_string);
-  return true;
+  return base::SysCFStringRefToUTF8(value_string);
+}
+
+std::string LoadEnrollmentTokenFromPolicy() {
+  std::string enrollment_token =
+      LoadEnrollmentTokenFromPolicyAtKey(kEnrollmentTokenKey);
+
+  return enrollment_token.empty()
+             ? LoadEnrollmentTokenFromPolicyAtKey(kEnrollmentTokenLegacyName)
+             : enrollment_token;
 }
 
 void DeletePolicyEnrollmentToken() {
+  CFPreferencesSetValue(kEnrollmentTokenLegacyName, nil, kBrowserBundleId,
+                        kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
   CFPreferencesSetValue(kEnrollmentTokenKey, nil, kBrowserBundleId,
                         kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
   CFPreferencesSynchronize(kBrowserBundleId, kCFPreferencesAnyUser,
@@ -83,16 +94,14 @@ base::FilePath GetDmTokenFilePath() {
       .AppendASCII("CloudManagement");
 }
 
-bool LoadTokenFromFile(const base::FilePath& token_file_path,
-                       std::string* token) {
+std::string LoadTokenFromFile(const base::FilePath& token_file_path) {
   std::string token_value;
   if (token_file_path.empty() ||
       !base::ReadFileToString(token_file_path, &token_value)) {
-    return false;
+    return {};
   }
 
-  *token = std::string(base::TrimWhitespaceASCII(token_value, base::TRIM_ALL));
-  return true;
+  return std::string(base::TrimWhitespaceASCII(token_value, base::TRIM_ALL));
 }
 
 class TokenService : public TokenServiceInterface {
@@ -126,16 +135,11 @@ TokenService::TokenService(const base::FilePath& enrollment_token_path,
                                  ? GetEnrollmentTokenFilePath()
                                  : enrollment_token_path),
       dm_token_path_(dm_token_path.empty() ? GetDmTokenFilePath()
-                                           : dm_token_path) {
-  std::string enrollment_token;
-  if (LoadEnrollmentTokenFromPolicy(&enrollment_token) ||
-      LoadTokenFromFile(enrollment_token_path_, &enrollment_token)) {
-    enrollment_token_ = enrollment_token;
-  }
-
-  std::string dm_token;
-  if (LoadTokenFromFile(dm_token_path_, &dm_token)) {
-    dm_token_ = dm_token;
+                                           : dm_token_path),
+      dm_token_(LoadTokenFromFile(dm_token_path_)) {
+  enrollment_token_ = LoadEnrollmentTokenFromPolicy();
+  if (enrollment_token_.empty()) {
+    enrollment_token_ = LoadTokenFromFile(enrollment_token_path_);
   }
 }
 

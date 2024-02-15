@@ -838,6 +838,8 @@ The `EnrollmentMandatory` REG_DWORD value is also read from
 
 #### macOS
 The enrollment token is searched in the order:
+* Managed Preference value with key `CloudManagementEnrollmentToken` in domain
+ `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * Managed Preference value with key `EnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * File
