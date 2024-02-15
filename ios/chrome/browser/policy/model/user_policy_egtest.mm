@@ -462,7 +462,7 @@ void WaitForVisibleChromeManagementURL() {
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
                  gaiaID:@"exampleManagedID"
                    name:@"Fake Managed"];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
 
   // Restart the browser while keeping sign-in by preserving the identity of the
   // managed account.
