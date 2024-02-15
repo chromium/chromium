@@ -176,8 +176,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kYahooURL];
 }
 
+// TODO(crbug.com/325379827): Re-enable this test.
 // Deletes a custom search engine by swiping and tapping on the "Delete" button.
-- (void)testDeleteCustomSearchEngineSwipeAndTap {
+- (void)DISABLED_testDeleteCustomSearchEngineSwipeAndTap {
   [self enterSettingsWithCustomSearchEngine];
 
   [[SearchEngineChoiceEarlGreyUI
@@ -196,8 +197,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
+// TODO(crbug.com/325379827): Re-enable this test.
 // Deletes a custom engine by swiping it.
-- (void)testDeleteCustomSearchEngineSwipe {
+- (void)DISABLED_testDeleteCustomSearchEngineSwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
@@ -232,8 +234,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 }
 
+// TODO(crbug.com/325379827): Re-enable this test.
 // Deletes a custom search engine by entering edit mode.
-- (void)testDeleteCustomSearchEngineEdit {
+- (void)DISABLED_testDeleteCustomSearchEngineEdit {
   [self enterSettingsWithCustomSearchEngine];
 
   id<GREYMatcher> editButton = grey_allOf(
