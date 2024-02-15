@@ -279,6 +279,30 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  {
+    // Normally a previous prompt rejection would already be filtered before
+    // reaching `StorageAccessGrantPermissionContext::DecidePermission`, but the
+    // requirement not to surface the user's denial back to the caller means
+    // this code is reachable even after permission has been blocked.
+    // Accordingly, check the default implementation, and if a denial has been
+    // persisted, respect that decision.
+    ContentSetting existing_setting =
+        PermissionContextBase::GetPermissionStatusInternal(
+            rfh, request_data.requesting_origin, request_data.embedding_origin);
+    // ALLOW grants are handled by PermissionContextBase so they never reach
+    // this point.
+    CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
+    if (existing_setting == CONTENT_SETTING_BLOCK) {
+      NotifyPermissionSetInternal(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          /*persist=*/false, existing_setting,
+          RequestOutcome::kReusedPreviousDecision);
+      return;
+    }
+    CHECK_EQ(existing_setting, CONTENT_SETTING_ASK);
+  }
+
   if (!request_data.user_gesture) {
     rfh->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
@@ -333,39 +357,13 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
 void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
     permissions::PermissionRequestData request_data,
     permissions::BrowserPermissionCallback callback) {
-  {
-    // Normally a previous prompt rejection would already be filtered, but the
-    // requirement not to surface the user's denial back to the caller means
-    // this path can be reached on subsequent requests. Accordingly, check the
-    // default implementation, and if a denial has been persisted, respect that
-    // decision.
-    content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
-        request_data.id.global_render_frame_host_id());
-
-    if (!rfh) {
-      // After async steps, the RenderFrameHost is not guaranteed to still be
-      // alive.
-      RecordOutcomeSample(RequestOutcome::kDeniedAborted);
-      std::move(callback).Run(CONTENT_SETTING_BLOCK);
-      return;
-    }
-
-    // ALLOW grants are handled by PermissionContextBase so they never reach
-    // this point.
-    // StorageAccessGrantPermissionContext::GetPermissionStatusInternal rewrites
-    // BLOCK to ASK, so we need to handle BLOCK here explicitly.
-    ContentSetting existing_setting =
-        PermissionContextBase::GetPermissionStatusInternal(
-            rfh, request_data.requesting_origin, request_data.embedding_origin);
-    CHECK_NE(existing_setting, CONTENT_SETTING_ALLOW);
-    if (existing_setting == CONTENT_SETTING_BLOCK) {
-      NotifyPermissionSetInternal(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, std::move(callback),
-          /*persist=*/false, existing_setting,
-          RequestOutcome::kReusedPreviousDecision);
-      return;
-    }
+  if (!content::RenderFrameHost::FromID(
+          request_data.id.global_render_frame_host_id())) {
+    // After async steps, the RenderFrameHost is not guaranteed to still be
+    // alive.
+    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
   }
 
   // Get all of our implicit grants and see which ones apply to our
