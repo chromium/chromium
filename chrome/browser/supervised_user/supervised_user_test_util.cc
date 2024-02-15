@@ -47,6 +47,21 @@ void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
       prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
 }
 
+void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
+                                                  bool enabled) {
+  // TODO(b/324898798): Once the new extension handling mode is releaded, this
+  // method replaces `SetSupervisedUserExtensionsMayRequestPermissionsPref` for
+  // handling the Extensions behaviour.
+  supervised_user::SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey());
+  settings_service->SetLocalSetting(
+      supervised_user::kSkipParentApprovalToInstallExtensions,
+      base::Value(enabled));
+  profile->GetPrefs()->SetBoolean(prefs::kSkipParentApprovalToInstallExtensions,
+                                  enabled);
+}
+
 void PopulateAccountInfoWithName(AccountInfo& info,
                                  const std::string& given_name) {
   info.given_name = given_name;

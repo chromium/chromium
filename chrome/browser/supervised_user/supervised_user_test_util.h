@@ -19,6 +19,11 @@ void AddCustodians(Profile* profile);
 void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
                                                           bool enabled);
 
+// Updates preferences relevant to skipping parent approval for installing
+// extensions.
+void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
+                                                  bool enabled);
+
 // Populates account info with a `given_name` and other fake data needed for a
 // valid `AccountInfo` structure.
 void PopulateAccountInfoWithName(AccountInfo& info,
