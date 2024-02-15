@@ -407,6 +407,74 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
 )
 
+cq_build_perf_builder(
+    name = "ios-build-perf",
+    description_html = """\
+This builder measures ios build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator-compilator">ios-simulator-compilator</a>.\
+""",
+    executable = "recipe:chrome_build/build_perf",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
+    gn_args = "try/ios-simulator",
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios",
+        short_name = "ninja",
+    ),
+)
+
+cq_build_perf_builder(
+    name = "ios-build-perf-siso",
+    description_html = """\
+This builder measures ios build performance with Siso.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator-compilator">ios-simulator-compilator</a>.\
+""",
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/ios-simulator", "no_reclient"]),
+        "reproxy": "try/ios-simulator",
+    },
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "ios",
+        short_name = "siso",
+    ),
+)
+
 def developer_build_perf_builder(description_html, **kwargs):
     # Use CQ reclient instance and high reclient jobs/cores to simulate CQ builds.
     return ci.builder(
