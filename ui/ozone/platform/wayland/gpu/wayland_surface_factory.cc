@@ -113,8 +113,8 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
             display->GetAs<gl::GLDisplayEGL>(), widget, buffer_manager_));
   }
 
-  // Only EGLGLES2 is supported with surfaceless view gl.
-  if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2) ||
+  if ((gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2 &&
+       gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) ||
       !connection_) {
     return nullptr;
   }
