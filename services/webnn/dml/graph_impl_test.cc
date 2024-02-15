@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <DirectML.h>
 #include <stdint.h>
+#include <wrl.h>
 #include <cmath>
 #include <type_traits>
 
@@ -12,9 +14,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/webnn/dml/adapter.h"
+#include "services/webnn/dml/command_queue.h"
+#include "services/webnn/dml/command_recorder.h"
+#include "services/webnn/dml/context_impl.h"
+#include "services/webnn/dml/graph_impl.h"
+#include "services/webnn/dml/test_base.h"
+#include "services/webnn/dml/utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -23,26 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fp16/src/include/fp16.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <DirectML.h>
-#include <wrl.h>
-
-#include "base/containers/fixed_flat_map.h"
-#include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/command_queue.h"
-#include "services/webnn/dml/command_recorder.h"
-#include "services/webnn/dml/context_impl.h"
-#include "services/webnn/dml/graph_impl.h"
-#include "services/webnn/dml/test_base.h"
-#include "services/webnn/dml/utils.h"
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-#include "base/containers/fixed_flat_set.h"
-#include "base/mac/mac_util.h"
-#endif  // BUILDFLAG(IS_MAC)
-
-namespace webnn::test {
+namespace webnn::dml {
 
 namespace {
 
@@ -64,7 +53,7 @@ void BuildAndCompute(
   WebNNContextProviderImpl::Create(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
-  // Create the ContextImpl through context provider.
+  // Create the dml::ContextImpl through context provider.
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(), create_context_future.GetCallback());
@@ -76,7 +65,7 @@ void BuildAndCompute(
   }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
-  // The GraphImpl should be built successfully.
+  // The dml::GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
   webnn_context_remote->CreateGraph(std::move(graph_info),
                                     create_graph_future.GetCallback());
@@ -97,7 +86,7 @@ void BuildAndCompute(
   }
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
-  // The GraphImpl should compute successfully.
+  // The dml::GraphImpl should compute successfully.
   base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
   webnn_graph_remote->Compute(std::move(named_inputs),
                               compute_future.GetCallback());
@@ -207,120 +196,32 @@ void VerifyIsEqual(mojo_base::BigBuffer actual,
 }
 }  // namespace
 
-#if BUILDFLAG(IS_WIN)
-class WebNNGraphImplBackendTest : public dml::TestBase {
+class WebNNGraphDMLImplTest : public TestBase {
  public:
   void SetUp() override;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<dml::Adapter> adapter_;
+  scoped_refptr<Adapter> adapter_;
 };
 
-void WebNNGraphImplBackendTest::SetUp() {
-  SKIP_TEST_IF(!dml::UseGPUInTests());
+void WebNNGraphDMLImplTest::SetUp() {
+  SKIP_TEST_IF(!UseGPUInTests());
+
   scoped_feature_list_.InitAndEnableFeature(
       webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 
   ASSERT_TRUE(InitializeGLDisplay());
-  dml::Adapter::EnableDebugLayerForTesting();
-  auto adapter_creation_result = dml::Adapter::GetInstanceForTesting();
+  Adapter::EnableDebugLayerForTesting();
+  auto adapter_creation_result = Adapter::GetInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());
   adapter_ = adapter_creation_result.value();
   // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
   // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
   // DirectML version doesn't support this feature.
   SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
-
-  // Skip a test if the required feature level is not supported for the
-  // operator being tested.
-  auto kRequiredFeatureLevels = base::MakeFixedFlatMap<std::string_view,
-                                                       DML_FEATURE_LEVEL>(
-      {// DML_BATCHNORMALIZATION_OPERATOR_DESC support for 1~8 dimension counts
-       // was introduced in DML_FEATURE_LEVEL_3_1.
-       {"BuildSingleOperatorBatchNormalization", DML_FEATURE_LEVEL_3_1},
-       // DML_OPERATOR_SLICE support for dimensions other than 4 or 5 was
-       // introduced in DML_FEATURE_LEVEL_3_0.
-       {"BuildAndComputeSliceOperator", DML_FEATURE_LEVEL_3_0},
-       // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC support for 2 dimensions was
-       // introduced in DML_FEATURE_LEVEL_3_0.
-       {"BuildAndComputeSingleOperatorSoftmax", DML_FEATURE_LEVEL_3_0},
-       // DML_GATHER_OPERATOR_DESC support for 1~8 dimensions was introduced in
-       // DML_FEATURE_LEVEL_3_0.
-       {"BuildAndComputeSingleOperatorGather", DML_FEATURE_LEVEL_3_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildSingleOperatorGemm", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildAndComputeMultipleOperatorGemm", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildOneInputAndOneConstantOperand", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildOneGraphToComputeMultipleTimes", DML_FEATURE_LEVEL_4_0},
-       // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC support for 1~8
-       // dimension
-       // counts was introduced in DML_FEATURE_LEVEL_3_1.
-       {"BuildSingleOperatorLayerNormalization", DML_FEATURE_LEVEL_3_1},
-       // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildAndComputeSingleOperatorMatmul", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMultipleInputsAppendingConstants", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMultipleConstantsAppendingInputs", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildGemmWithReshapedConstantOperand", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsThirdOperator", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsSecondOperator", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildMaxPooingAsFirstOperator", DML_FEATURE_LEVEL_4_0}});
-  auto it = kRequiredFeatureLevels.find(
-      ::testing::UnitTest::GetInstance()->current_test_info()->name());
-  if (it != kRequiredFeatureLevels.end()) {
-    const auto& required_feature_level = it->second;
-    SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(required_feature_level));
-  }
 }
-#endif  // #if BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-class WebNNGraphImplBackendTest : public testing::Test {
- public:
-  void SetUp() override {
-    if (base::mac::MacOSVersion() < 13'00'00) {
-      GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
-                   << base::mac::MacOSVersion();
-    }
-    const std::string_view current_test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
-        "BuildAndComputeSingleOperatorElementWiseBinary",
-    });
-    if (!kSupportedTests.contains(current_test_name)) {
-      GTEST_SKIP()
-          << "Skipping test because the operator is not yet supported.";
-    }
-    scoped_feature_list_.InitAndEnableFeature(
-        webnn::mojom::features::kWebMachineLearningNeuralNetwork);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
-};
-#endif  // BUILDFLAG(IS_MAC)
 
 template <typename T>
 struct ArgMinMaxTester {
@@ -352,8 +253,8 @@ struct ArgMinMaxTester {
   }
 };
 
-// Test building and computing a graph with single operator ArgMinMax.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorArgMinMax) {
+// Test building and computing a DML graph with single operator ArgMinMax.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorArgMinMax) {
   // Test argMax with axes = {0} and select_last_index = false.
   {
     ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
@@ -554,9 +455,13 @@ struct BatchNormalizationTester {
   }
 };
 
-// Test building and computing a graph with single operator
+// Test building and computing a DML graph with single operator
 // batchNormalization.
-TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorBatchNormalization) {
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
+  // DML_BATCHNORMALIZATION_OPERATOR_DESC support for 1~8 dimension counts was
+  // introduced in DML_FEATURE_LEVEL_3_1.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_1));
+
   {
     // Test batchNormalization with 4-D input with default axis.
     BatchNormalizationTester<float>{
@@ -917,8 +822,8 @@ struct Conv2dTester {
   }
 };
 
-// Test building and computing a graph with single operator conv2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
+// Test building and computing a DML graph with single operator conv2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 32 data type,
   // fusing with bias.
   {
@@ -1312,9 +1217,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   }
 }
 
-// Test building and computing a graph with single operator convTranspose2d.
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeSingleOperatorConvTranspose2d) {
+// Test building and computing a DML graph with single operator convTranspose2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConvTranspose2d) {
   // Test convTranspose2d with default attributes.
   {
     Conv2dTester<float>{
@@ -1524,14 +1428,10 @@ struct ElementWiseBinaryTester {
   }
 };
 
-// Test building and computing a graph with single operator element-wise
+// Test building and computing a DML graph with single operator element-wise
 // binary.
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeSingleOperatorElementWiseBinary) {
-  // TODO(https://crbug.com/1522285): Re-enable the test on Mac, after adding
-  // support for 0-D scalars.
-#if !BUILDFLAG(IS_MAC)
-  // Test building and computing a graph with single operator add for 0-D
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
+  // Test building and computing a DML graph with single operator add for 0-D
   // scalars.
   {
     ElementWiseBinaryTester<float>{
@@ -1547,8 +1447,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {7}}}
         .Test();
   }
-#endif
-  // Test building and computing a graph with single operator add.
+  // Test building and computing a DML graph with single operator add.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1563,10 +1462,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {7, 7, 7, 7, 7, 7}}}
         .Test();
   }
-  // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
-  // after adding support for other binary operators.
-#if !BUILDFLAG(IS_MAC)
-  // Test building and computing a graph with single operator add using
+  // Test building and computing a DML graph with single operator add using
   // broadcasting from 0-D scalar.
   {
     ElementWiseBinaryTester<float>{
@@ -1582,7 +1478,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {2, 3, 4, 5, 6, 7}}}
         .Test();
   }
-  // Test building and computing a graph with single operator add using
+  // Test building and computing a DML graph with single operator add using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1598,7 +1494,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17}}}
         .Test();
   }
-  // Test building and computing a graph with single operator div.
+  // Test building and computing a DML graph with single operator div.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1613,7 +1509,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0.5, 1, 1.5, 2, 2.5, 3}}}
         .Test();
   }
-  // Test building and computing a graph with single operator div using
+  // Test building and computing a DML graph with single operator div using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1629,7 +1525,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 1, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator max.
+  // Test building and computing a DML graph with single operator max.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1644,7 +1540,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {6, 5, 4, 4, 5, 6}}}
         .Test();
   }
-  // Test building and computing a graph with single operator max using
+  // Test building and computing a DML graph with single operator max using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1660,7 +1556,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {6, 6, 6, 4, 5, 6}}}
         .Test();
   }
-  // Test building and computing a graph with single operator min.
+  // Test building and computing a DML graph with single operator min.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1675,7 +1571,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 2, 3, 3, 2, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator min using
+  // Test building and computing a DML graph with single operator min using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1691,7 +1587,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 2, 1, 2, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator mul.
+  // Test building and computing a DML graph with single operator mul.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1706,7 +1602,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {6, 10, 12, 12, 10, 6}}}
         .Test();
   }
-  // Test building and computing a graph with single operator mul using
+  // Test building and computing a DML graph with single operator mul using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1722,7 +1618,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {6, 12, 18, 20, 25, 30}}}
         .Test();
   }
-  // Test building and computing a graph with single operator pow.
+  // Test building and computing a DML graph with single operator pow.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1737,7 +1633,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 4, 3, 4, 25, 6}}}
         .Test();
   }
-  // Test building and computing a graph with single operator pow using
+  // Test building and computing a DML graph with single operator pow using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1753,7 +1649,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 4, 3, 4, 25, 6}}}
         .Test();
   }
-  // Test building and computing a graph with single operator sub.
+  // Test building and computing a DML graph with single operator sub.
   {
     ElementWiseBinaryTester<float>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1768,7 +1664,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 0, 2, 2, 4, 4}}}
         .Test();
   }
-  // Test building and computing a graph with single operator sub using
+  // Test building and computing a DML graph with single operator sub using
   // broadcasting.
   {
     ElementWiseBinaryTester<float>{
@@ -1784,7 +1680,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {-1, 0, 1, 2, 3, 4}}}
         .Test();
   }
-  // Test building and computing a graph with single operator equal.
+  // Test building and computing a DML graph with single operator equal.
   {
     ElementWiseBinaryTester<float, uint8_t>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1800,7 +1696,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 0, 0, 1, 0, 0}}}
         .Test();
   }
-  // Test building and computing a graph with single operator equal using
+  // Test building and computing a DML graph with single operator equal using
   // broadcasting.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1817,7 +1713,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 1, 0, 0, 0, 0}}}
         .Test();
   }
-  // Test building and computing a graph with single operator greater.
+  // Test building and computing a DML graph with single operator greater.
   {
     ElementWiseBinaryTester<float, uint8_t>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1833,7 +1729,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 1, 0, 0, 1, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator greater using
+  // Test building and computing a DML graph with single operator greater using
   // broadcasting.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1850,7 +1746,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 0, 1, 1, 1, 1}}}
         .Test();
   }
-  // Test building and computing graph with single operator greaterOrEqual.
+  // Test building and computing DML graph with single operator greaterOrEqual.
   {
     ElementWiseBinaryTester<float, uint8_t>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1866,7 +1762,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 0, 0, 1, 1, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator
+  // Test building and computing a DML graph with single operator
   // greaterOrEqual using broadcasting.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1883,7 +1779,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 1, 0, 1, 1, 1}}}
         .Test();
   }
-  // Test building and computing a graph with single operator lesser.
+  // Test building and computing a DML graph with single operator lesser.
   {
     ElementWiseBinaryTester<float, uint8_t>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1899,7 +1795,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 0, 1, 0, 0}}}
         .Test();
   }
-  // Test building and computing a graph with single operator lesser using
+  // Test building and computing a DML graph with single operator lesser using
   // broadcasting.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1916,7 +1812,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 0, 1, 0, 0, 0}}}
         .Test();
   }
-  // Test building and computing a graph with single operator lesserOrEqual.
+  // Test building and computing a DML graph with single operator lesserOrEqual.
   {
     ElementWiseBinaryTester<float, uint8_t>{
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
@@ -1932,7 +1828,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 0, 1, 0, 0}}}
         .Test();
   }
-  // Test building and computing a graph with single operator lesserOrEqual
+  // Test building and computing a DML graph with single operator lesserOrEqual
   // using broadcasting.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1949,7 +1845,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 1, 1, 0, 0}}}
         .Test();
   }
-#endif  // !BUILDFLAG(IS_MAC)
 }
 
 template <typename T, typename O = T>
@@ -1975,9 +1870,8 @@ struct ElementWiseUnaryTester {
   }
 };
 
-// Test building and computing a graph with element-wise unary operator.
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeSingleOperatorElementWiseUnary) {
+// Test building and computing a DML graph with element-wise unary operator.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
   OperandInfo<float_t> test_operand_info_float32_scalar{
       .type = mojom::Operand::DataType::kFloat32,
       .dimensions = {},
@@ -2260,7 +2154,7 @@ struct ExpandTester {
   }
 };
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorExpand) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorExpand) {
   {
     // Test building expand 0-D scalar to 3-D tensor.
     ExpandTester<float>{
@@ -2358,7 +2252,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorExpand) {
   }
 }
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorCast) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorCast) {
   OperandInfo<float_t> test_operand_info_float32{
       .type = mojom::Operand::DataType::kFloat32,
       .dimensions = {1, 2, 3, 1},
@@ -2675,9 +2569,9 @@ struct Pool2dTester {
   }
 };
 
-// Test building and computing a graph with single operator average
+// Test building and computing a DML graph with single operator average
 // pool2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorAveragePool2d) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
   {
     // Test average pool2d with nchw layout, float 32 data type.
     Pool2dTester<float>{
@@ -2754,8 +2648,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorAveragePool2d) {
   }
 }
 
-// Test building and computing a graph with single operator l2Pool2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorL2Pool2d) {
+// Test building and computing a DML graph with single operator l2Pool2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorL2Pool2d) {
   {
     // Test l2Pool2d with nchw layout, float 32 data type.
     Pool2dTester<float>{
@@ -2828,9 +2722,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorL2Pool2d) {
   }
 }
 
-// Test building and computing a graph with single operator max pool2d
+// Test building and computing a DML graph with single operator max pool2d
 // with nchw layout.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorMaxPool2d) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
   // Test max pool2d with nchw layout, strides=1, padding=0, and floor
   // rounding.
   Pool2dTester<float>{
@@ -2880,7 +2774,7 @@ struct PreluTester {
   }
 };
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorPrelu) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPrelu) {
   {
     // Test prelu when the input and slope have the same dimensions.
     PreluTester<float>{
@@ -2983,7 +2877,10 @@ struct SliceTester {
   }
 };
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSliceOperator) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSliceOperator) {
+  // DML_OPERATOR_SLICE support for dimensions other than 4 or 5 was
+  // introduced in DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     // Test a simple 2-dimension slice
     SliceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
@@ -3036,7 +2933,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSliceOperator) {
   }
 }
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSplit) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSplit) {
   {
     SplitTester<float>{
         .input =
@@ -3188,7 +3085,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSplit) {
   }
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //         [input]
 //            |
 //          split
@@ -3196,7 +3093,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSplit) {
 //   [output1]  reshape
 //                 |
 //             [output2]
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithSplitAndReshape) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithSplitAndReshape) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id =
@@ -3265,8 +3162,8 @@ struct PadTester {
   }
 };
 
-// Test building and computing a graph with single operator pad.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorPad) {
+// Test building and computing a DML graph with single operator pad.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorPad) {
   // Test pad with mode = "constant" and value = 0 by default.
   {
     PadTester<float>{
@@ -3462,8 +3359,8 @@ struct UnaryOperatorTester {
   }
 };
 
-// Test building and computing a graph with single operator clamp.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorClamp) {
+// Test building and computing a DML graph with single operator clamp.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
   {
     // Test clamp for 4-D tensor input.
     UnaryOperatorTester<float>{
@@ -3496,8 +3393,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorClamp) {
   }
 }
 
-// Test building and computing a graph with single operator hardSigmoid.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorHardSigmoid) {
+// Test building and computing a DML graph with single operator hardSigmoid.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSigmoid) {
   {
     // Test hardSigmoid with default alpha = 0.2 and beta = 0.5.
     UnaryOperatorTester<float>{
@@ -3540,8 +3437,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorHardSigmoid) {
   }
 }
 
-// Test building and computing a graph with single operator hardSwish.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorHardSwish) {
+// Test building and computing a DML graph with single operator hardSwish.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSwish) {
   // Test hardSwish with a 0-D scalar input.
   {
     UnaryOperatorTester<float>{
@@ -3568,8 +3465,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorHardSwish) {
   }
 }
 
-// Test building and computing a graph with single operator sigmoid.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSigmoid) {
+// Test building and computing a DML graph with single operator sigmoid.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSigmoid) {
   // Test sigmoid with a 0-D scalar input.
   {
     UnaryOperatorTester<float>{
@@ -3637,8 +3534,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSigmoid) {
   }
 }
 
-// Test building and computing a graph with single operator softplus.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftplus) {
+// Test building and computing a DML graph with single operator softplus.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
   {
     // Test softplus with steepness = 1.0.
     UnaryOperatorTester<float>{
@@ -3693,8 +3590,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftplus) {
   }
 }
 
-// Test building and computing a graph with single operator softsign.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftsign) {
+// Test building and computing a DML graph with single operator softsign.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftsign) {
   {
     // Test softsign with a float32 input.
     UnaryOperatorTester<float>{
@@ -3722,8 +3619,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftsign) {
   }
 }
 
-// Test building and computing a graph with single operator tanh.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorTanh) {
+// Test building and computing a DML graph with single operator tanh.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorTanh) {
   // Test tanh with a 0-D scalar input.
   {
     UnaryOperatorTester<float>{
@@ -3764,8 +3661,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorTanh) {
   }
 }
 
-// Test building and computing a graph with single operator softmax.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftmax) {
+// Test building and computing a DML graph with single operator softmax.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftmax) {
+  // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC support for 2 dimensions was
+  // introduced in DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     UnaryOperatorTester<float>{
         .tag = mojom::Operation::Tag::kSoftmax,
@@ -3784,8 +3684,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorSoftmax) {
   }
 }
 
-// Test building and computing a graph with single operator relu.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorRelu) {
+// Test building and computing a DML graph with single operator relu.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorRelu) {
   {
     UnaryOperatorTester<float>{
         .tag = mojom::Operation::Tag::kRelu,
@@ -3814,8 +3714,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorRelu) {
   }
 }
 
-// Test building and computing a graph with single operator elu.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorElu) {
+// Test building and computing a DML graph with single operator elu.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElu) {
   {
     // Test elu with a 3d input and alpha = 1.0.
     UnaryOperatorTester<float>{
@@ -3858,8 +3758,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorElu) {
   }
 }
 
-// Test building and computing a graph with single operator leakyRelu.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLeakyRelu) {
+// Test building and computing a DML graph with single operator leakyRelu.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorLeakyRelu) {
   {
     // Test leakyRelu with a 3d input and alpha = 0.01.
     UnaryOperatorTester<float>{
@@ -3900,8 +3800,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLeakyRelu) {
   }
 }
 
-// Test building and computing a graph with single operator linear.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLinear) {
+// Test building and computing a DML graph with single operator linear.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorLinear) {
   {
     // Test linear with a 3d input and alpha = 0.01, beta = 1.0.
     UnaryOperatorTester<float>{
@@ -3933,13 +3833,13 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLinear) {
   }
 }
 
-// Test building and computing a graph with two relu operators.
+// Test building and computing a DML graph with two relu operators.
 //    [input]
 //       |
 //      relu1
 //       |
 //      relu2
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoRelu) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoRelu) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -3967,8 +3867,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoRelu) {
                           13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
 }
 
-// Test building and computing a graph with single operator reshape.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorReshape) {
+// Test building and computing a DML graph with single operator reshape.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorReshape) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -3991,14 +3891,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorReshape) {
             input_data);
 }
 
-// Test building and computing a graph with two operators (reshape as the
+// Test building and computing a DML graph with two operators (reshape as the
 // last node).
 //    [input]
 //       |
 //      relu
 //       |
 //     reshape
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithReshapeAsLastNode) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithReshapeAsLastNode) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -4024,14 +3924,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithReshapeAsLastNode) {
             input_data);
 }
 
-// Test building and computing a graph with two operators (reshape as an
+// Test building and computing a DML graph with two operators (reshape as an
 // intermediate node).
 //    [input]
 //       |
 //    reshape
 //       |
 //      relu
-TEST_F(WebNNGraphImplBackendTest,
+TEST_F(WebNNGraphDMLImplTest,
        BuildAndComputeGraphWithReshapeAsIntermediateNode) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
@@ -4058,13 +3958,13 @@ TEST_F(WebNNGraphImplBackendTest,
             input_data);
 }
 
-// Test building and computing a graph with two reshape operators
+// Test building and computing a DML graph with two reshape operators
 //    [input]
 //       |
 //    reshape1
 //       |
 //    reshape2
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoReshape) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoReshape) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -4090,13 +3990,13 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoReshape) {
             input_data);
 }
 
-// Test building and computing a graph with two operators and two outputs
+// Test building and computing a DML graph with two operators and two outputs
 //      [input]
 //       /   \
 //  reshape   relu
 //     |        |
 // [output1] [output2]
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoOutputs) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoOutputs) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -4159,8 +4059,8 @@ struct ReduceTester {
   }
 };
 
-// Test building and computing a graph with single operator reduce.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorReduce) {
+// Test building and computing a DML graph with single operator reduce.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorReduce) {
   // Test reduceL1 with axes = {1} and keep_dimensions = true.
   {
     ReduceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
@@ -4351,7 +4251,10 @@ struct GatherTester {
   }
 };
 
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGather) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
+  // DML_GATHER_OPERATOR_DESC support for 1~8 dimensions was introduced in
+  // DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     // Test gather with 1-D input, 1-D indices and axis = 0 with data type
     // uint32.
@@ -4603,8 +4506,12 @@ struct GemmTester {
   }
 };
 
-// Test building and computing a graph with single operator gemm.
-TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemm) {
+// Test building and computing a DML graph with single operator gemm.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorGemm) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+
   // Test gemm without a third input.
   {
     GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
@@ -4696,13 +4603,16 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemm) {
   }
 }
 
-// Test building and computing a graph with three gemm operations.
+// Test building and computing a DML graph with three gemm operations.
 //    [input_a] [input_b] [input_a] [input_b]
 //           \    /                \    /
 //            gemm                  gemm
 //                \                /
 //                       gemm
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeMultipleOperatorGemm) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeMultipleOperatorGemm) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -4736,8 +4646,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeMultipleOperatorGemm) {
             std::vector<float>({30, 30, 70, 70}));
 }
 
-// Test building and computing a graph with one input and one constant.
-TEST_F(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
+// Test building and computing a DML graph with one input and one constant.
+TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   std::vector<float> constant_data = {5, 6, 7, 8};
   GraphInfoBuilder builder;
@@ -4763,9 +4676,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
             std::vector<float>({12, 14, 12, 14}));
 }
 
-// Test building a graph with one input and one constant to compute for
+// Test building a DML graph with one input and one constant to compute for
 // multiple times.
-TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
+TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   std::vector<float> constant_data = {5, 6, 7, 8};
   GraphInfoBuilder builder;
@@ -4786,7 +4702,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   WebNNContextProviderImpl::Create(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
-  // Create the ContextImpl through context provider.
+  // Create the dml::ContextImpl through context provider.
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(), create_context_future.GetCallback());
@@ -4798,7 +4714,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
-  // The GraphImpl should be built successfully.
+  // The dml::GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
   webnn_context_remote->CreateGraph(builder.CloneGraphInfo(),
                                     create_graph_future.GetCallback());
@@ -4811,7 +4727,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
-    // The GraphImpl should compute successfully.
+    // The dml::GraphImpl should compute successfully.
     base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
     webnn_graph_remote->Compute(std::move(named_inputs),
                                 compute_future.GetCallback());
@@ -4828,7 +4744,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({1, 1, 1, 1})});
 
-    // The GraphImpl should compute successfully.
+    // The dml::GraphImpl should compute successfully.
     base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
     webnn_graph_remote->Compute(std::move(named_inputs),
                                 compute_future.GetCallback());
@@ -4845,7 +4761,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input_a", VectorToBigBuffer<float>({2, 2, 2, 2})});
 
-    // The GraphImpl should compute successfully.
+    // The dml::GraphImpl should compute successfully.
     base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
     webnn_graph_remote->Compute(std::move(named_inputs),
                                 compute_future.GetCallback());
@@ -4917,9 +4833,9 @@ struct InstanceNormalizationTester {
   }
 };
 
-// Test building and computing a graph with single operator
+// Test building and computing a DML graph with single operator
 // instanceNormalization.
-TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorInstanceNormalization) {
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorInstanceNormalization) {
   {
     // Test instanceNormalization with 4-D input with default scale and bias.
     InstanceNormalizationTester<float>{
@@ -5061,9 +4977,12 @@ struct LayerNormalizationTester {
   }
 };
 
-// Test building and computing a graph with single operator
+// Test building and computing a DML graph with single operator
 // layerNormalization.
-TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorLayerNormalization) {
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
+  // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC support for 1~8 dimension
+  // counts was introduced in DML_FEATURE_LEVEL_3_1.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_1));
   {
     // Test layerNormalization with a scalar input with default scale and bias.
     LayerNormalizationTester<float>{
@@ -5230,8 +5149,12 @@ struct MatmulTester {
   }
 };
 
-// Test building and computing a graph with single operator matmul.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorMatmul) {
+// Test building and computing a DML graph with single operator matmul.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMatmul) {
+  // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+
   // Test matmul with 2-D * 2-D inputs.
   {
     MatmulTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
@@ -5301,14 +5224,17 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorMatmul) {
   }
 }
 
-// Test building and computing a graph with two inputs and two constant in
+// Test building and computing a DML graph with two inputs and two constant in
 // the following topology.
 //    [input_a] [constant_a] [input_b] [constant_b]
 //           \    /                \    /
 //            gemm                  gemm
 //                \                /
 //                       gemm
-TEST_F(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
+TEST_F(WebNNGraphDMLImplTest, BuildMultipleInputsAppendingConstants) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -5350,14 +5276,17 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
             std::vector<float>({30, 30, 70, 70}));
 }
 
-// Test building and computing a graph with two inputs and two constant in
+// Test building and computing a DML graph with two inputs and two constant in
 // the following topology.
 //    [constant_a] [input_a] [constant_b] [input_b]
 //           \    /                \    /
 //            gemm                  gemm
 //                \                /
 //                       gemm
-TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
+TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -5399,7 +5328,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
             std::vector<float>({30, 30, 70, 70}));
 }
 
-// Test building and computing a graph whose gemm operator takes a reshaped
+// Test building and computing a DML graph whose gemm operator takes a reshaped
 // constant operand c in the following topology:
 //                        [constant_c]
 //                         |
@@ -5409,7 +5338,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
 // This test case could reproduce the issue of ResNetV2 50 model of WebNN image
 // classification sample:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1509747
-TEST_F(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
+TEST_F(WebNNGraphDMLImplTest, BuildGemmWithReshapedConstantOperand) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -5444,14 +5376,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
             std::vector<float>({8, 11, 16, 23}));
 }
 
-// Test building a graph whose add operator takes a reshaped
+// Test building a DML graph whose add operator takes a reshaped
 // constant operand b in the following topology:
 //              [constant_b]
 //                 |
 //    [input_a]  reshape
 //           \    /
 //            add
-TEST_F(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
+TEST_F(WebNNGraphDMLImplTest, BuildAddWithReshapedConstantOperand) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id = builder.BuildInput(
@@ -5480,12 +5412,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
-// Test building and computing a graph whose relu operator only has a
+// Test building and computing a DML graph whose relu operator only has a
 // constant operand input, as the following topology:
 //    [constant]
 //         |
 //       relu
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReluWithOnlyConstantInput) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeReluWithOnlyConstantInput) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   std::vector<float> constant_data = {-1, 0, 1};
@@ -5504,12 +5436,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReluWithOnlyConstantInput) {
             std::vector<float>({0, 0, 1}));
 }
 
-// Test building and computing a graph whose add operator only has constant
+// Test building and computing a DML graph whose add operator only has constant
 // operand inputs, as the following topology:
 //    [constant_a]  [constant_b]
 //               \  /
 //               add
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeAddWithOnlyConstantInputs) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddWithOnlyConstantInputs) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   std::vector<float> constant_a_data = {1, 1, 1, 1};
@@ -5534,15 +5466,14 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeAddWithOnlyConstantInputs) {
             std::vector<float>({3, 3, 3, 3}));
 }
 
-// Test building and computing a graph whose add and mul operators only have
+// Test building and computing a DML graph whose add and mul operators only have
 // constant and intermediate operand inputs, as the following topology:
 //    [constant_a]  [constant_b]
 //               \  /
 //               add    [constant_c]
 //                  \  /
 //                   mul
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeAddAndMulWithOnlyConstantInputs) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddAndMulWithOnlyConstantInputs) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   std::vector<float> constant_a_data = {1, 1, 1, 1};
@@ -5576,7 +5507,7 @@ TEST_F(WebNNGraphImplBackendTest,
             std::vector<float>({9, 9, 9, 9}));
 }
 
-// Test building a graph in the following topology.
+// Test building a DML graph in the following topology.
 //    [input_a] [input_b]
 //           \    /
 //            add
@@ -5584,7 +5515,10 @@ TEST_F(WebNNGraphImplBackendTest,
 //            relu
 //             |
 //          max pooling
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsThirdOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id = builder.BuildInput(
@@ -5625,7 +5559,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
-// Test building a graph in the following topology.
+// Test building a DML graph in the following topology.
 //    [input_a] [input_b]
 //           \    /
 //            add
@@ -5633,7 +5567,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
 //          max pooling
 //             |
 //            relu
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsSecondOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id = builder.BuildInput(
@@ -5674,7 +5611,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
-// Test building a graph in the following topology.
+// Test building a DML graph in the following topology.
 //      [input_a]
 //          |
 //      max pooling
@@ -5683,7 +5620,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
 //               add
 //                |
 //               relu
-TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsFirstOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id = builder.BuildInput(
@@ -5724,8 +5664,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
-// Test building and computing a graph with single operator concat.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConcat) {
+// Test building and computing a DML graph with single operator concat.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConcat) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id1 = builder.BuildInput(
@@ -5772,7 +5712,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConcat) {
                                 1,  2,  3,  4,  5,  6,  7, 8, 9, 10, 11, 12}));
 }
 
-// Test building and computing a graph with float 16 data type in the
+// Test building and computing a DML graph with float 16 data type in the
 // following topology.
 //     [input_a]
 //         |
@@ -5781,7 +5721,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConcat) {
 //             concat
 //               |
 //             clamp
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeReshapeConcatAndClamp) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id1 =
@@ -5833,13 +5773,13 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
                                 8.75, 1.25, 1.25, 1.25, 1.25, 1.25, 1.25}));
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //      [input]   [constant_a]
 //          \          /
 //             concat   [constant_b]
 //               \           /
 //                   concat
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeConcatWithConstants) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -5920,8 +5860,8 @@ struct Resample2dTester {
   }
 };
 
-// Test building and computing a graph with single operator resample2d.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
+// Test building and computing a DML graph with single operator resample2d.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorResample2d) {
   // Test resample2d with "NearestNeighbor" mode and axes = [2, 3].
   {
     Resample2dTester<float>{
@@ -6054,8 +5994,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
   }
 }
 
-// Test building and computing a graph with single operator transpose.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorTranspose) {
+// Test building and computing a DML graph with single operator transpose.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorTranspose) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id =
@@ -6077,13 +6017,13 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorTranspose) {
             std::vector<float>({-1, -4, -2, -5, -3, -6}));
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //      [input]
 //         |
 //     transpose
 //         |
 //     transpose
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoTranspose) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTwoTranspose) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -6131,13 +6071,13 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoTranspose) {
                           -3, 15, -7, 19, -11, 23, -4, 16, -8, 20, -12, 24}));
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //      [input]
 //         |
 //     transpose
 //         |
 //       relu
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndRelu) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -6183,7 +6123,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
                                 0, 15, 0, 19, 0, 23, 0, 16, 0, 20, 0, 24}));
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //      [input]
 //         |
 //     transpose
@@ -6193,8 +6133,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
 //      reshape
 //         |
 //     transpose
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeGraphWithTransposeAndTwoReshape) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndTwoReshape) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -6240,7 +6179,7 @@ TEST_F(WebNNGraphImplBackendTest,
                           13, 17, 21, 14, 18, 22,  15, 19, 23,  16, 20, 24}));
 }
 
-// Test building and computing a graph in the following topology.
+// Test building and computing a DML graph in the following topology.
 //         [input]
 //            |
 //           relu
@@ -6248,8 +6187,7 @@ TEST_F(WebNNGraphImplBackendTest,
 //     reshape    transpose
 //        |           |
 //    [output1]   [output2]
-TEST_F(WebNNGraphImplBackendTest,
-       BuildAndComputeGraphWithTransposeAndTwoOutputs) {
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeGraphWithTransposeAndTwoOutputs) {
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -6325,8 +6263,8 @@ struct WhereTester {
   }
 };
 
-// Test building and computing a graph with single operator where.
-TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorWhere) {
+// Test building and computing a DML graph with single operator where.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorWhere) {
   // Test where with 2-D condition, 2-D true_value and 2-D false_value.
   {
     WhereTester<float>{
@@ -6455,4 +6393,4 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorWhere) {
   }
 }
 
-}  // namespace webnn::test
+}  // namespace webnn::dml
