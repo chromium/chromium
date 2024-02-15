@@ -107,6 +107,14 @@ class StructuredMetricsService final {
   // This doesn't interfere with the normal cadence.
   void ManualUpload();
 
+  // Queue an upload if there are logs stored in the log store. This is meant to
+  // be used to start an upload when the service starts, so we do not have to
+  // wait until first upload to send events from the previous session.
+  //
+  // Reporting is assumed to be enabled by function. Must be checked before
+  // called.
+  void MaybeStartUpload();
+
   // Helper function to serialize a ChromeUserMetricsExtension proto.
   static std::string SerializeLog(const ChromeUserMetricsExtension& uma_proto);
 
@@ -129,6 +137,9 @@ class StructuredMetricsService final {
   // Represents if structured metrics and the service is enabled. This isn't
   // to indicate if the service is recording.
   bool structured_metrics_enabled_ = false;
+
+  // Flag to make sure MaybeStartUpload() isn't called twice.
+  bool initial_upload_started_ = false;
 
   // The metrics client |this| is service is associated.
   raw_ptr<MetricsServiceClient> client_;

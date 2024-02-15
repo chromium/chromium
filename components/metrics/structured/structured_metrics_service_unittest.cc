@@ -298,4 +298,21 @@ TEST_F(StructuredMetricsServiceTest, DoesNotRecordWhenRecordingDisabled) {
   EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
 }
 
+TEST_F(StructuredMetricsServiceTest, FlushOnShutdown) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(
+      std::move(TestEventSeven().SetTestMetricSeven(1)));
+
+  // Will flush the log.
+  service_.reset();
+
+  const auto uma_proto = GetPersistedLog();
+  EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+}
+
 }  // namespace metrics::structured

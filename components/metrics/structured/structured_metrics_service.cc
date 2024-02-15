@@ -56,7 +56,15 @@ StructuredMetricsService::StructuredMetricsService(
       rotate_callback, get_upload_interval_callback, fast_startup_for_test);
 }
 
-StructuredMetricsService::~StructuredMetricsService() = default;
+StructuredMetricsService::~StructuredMetricsService() {
+  // Will create a new log for all in-memory events.
+  // With this, we may be able to add a fast path initialization because flushed
+  // events do not need to be loaded.
+  if (recorder_ && recorder_->CanProvideMetrics() &&
+      recorder_->event_storage()->HasEvents()) {
+    Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
+  }
+}
 
 void StructuredMetricsService::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -67,6 +75,11 @@ void StructuredMetricsService::EnableRecording() {
     Initialize();
   }
   recorder_->EnableRecording();
+
+  // Attempt an upload if reporting is also active.
+  if (initialize_complete_ && reporting_active()) {
+    MaybeStartUpload();
+  }
 }
 
 void StructuredMetricsService::DisableRecording() {
@@ -86,6 +99,11 @@ void StructuredMetricsService::EnableReporting() {
     scheduler_->Start();
   }
   reporting_service_->EnableReporting();
+
+  // Attempt an upload if recording is also enabled.
+  if (initialize_complete_ && recording_enabled()) {
+    MaybeStartUpload();
+  }
 }
 
 void StructuredMetricsService::DisableReporting() {
@@ -170,26 +188,8 @@ void StructuredMetricsService::InitializeUmaProto(
   metrics::MetricsLog::RecordCoreSystemProfile(client_, system_profile);
 }
 
-// static:
-std::string StructuredMetricsService::SerializeLog(
-    const ChromeUserMetricsExtension& uma_proto) {
-  std::string log_data;
-  const bool status = uma_proto.SerializeToString(&log_data);
-  DCHECK(status);
-  return log_data;
-}
-
 void StructuredMetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   reporting::StructuredMetricsReportingService::RegisterPrefs(registry);
-}
-
-UnsentLogStore::UnsentLogStoreLimits
-StructuredMetricsService::GetLogStoreLimits() {
-  return UnsentLogStore::UnsentLogStoreLimits{
-      .min_log_count = static_cast<size_t>(kMinLogQueueCount.Get()),
-      .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
-      .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
-  };
 }
 
 void StructuredMetricsService::SetRecorderForTest(
@@ -214,6 +214,42 @@ void StructuredMetricsService::ManualUpload() {
     BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
   }
   reporting_service_->Start();
+}
+
+void StructuredMetricsService::MaybeStartUpload() {
+  // We do not have any logs to upload. Nothing to do.
+  if (!reporting_service_->log_store()->has_unsent_logs()) {
+    return;
+  }
+
+  if (initial_upload_started_) {
+    return;
+  }
+
+  initial_upload_started_ = true;
+
+  // Starts an upload. If a log is not staged the next log will be staged for
+  // upload.
+  reporting_service_->Start();
+}
+
+// static:
+std::string StructuredMetricsService::SerializeLog(
+    const ChromeUserMetricsExtension& uma_proto) {
+  std::string log_data;
+  const bool status = uma_proto.SerializeToString(&log_data);
+  DCHECK(status);
+  return log_data;
+}
+
+// static:
+UnsentLogStore::UnsentLogStoreLimits
+StructuredMetricsService::GetLogStoreLimits() {
+  return UnsentLogStore::UnsentLogStoreLimits{
+      .min_log_count = static_cast<size_t>(kMinLogQueueCount.Get()),
+      .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
+      .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
+  };
 }
 
 }  // namespace metrics::structured
