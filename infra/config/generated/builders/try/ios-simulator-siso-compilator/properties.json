@@ -42,8 +42,7 @@
           "builder": "ios-simulator",
           "project": "chromium"
         }
-      ],
-      "is_compile_only": true
+      ]
     }
   },
   "$build/code_coverage": {

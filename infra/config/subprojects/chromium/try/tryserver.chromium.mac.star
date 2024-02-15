@@ -635,9 +635,6 @@ This builder shadows ios-simulator builder to compare between Siso builds and Ni
 This builder should be removed after migrating ios-simulator from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/ios-simulator"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
     gn_args = "try/ios-simulator",
     os = os.LINUX_DEFAULT,
     compilator = "ios-simulator-siso-compilator",
@@ -651,7 +648,7 @@ This builder should be removed after migrating ios-simulator from Ninja to Siso.
     main_list_view = "try",
     siso_enabled = True,
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 5,
     ),
     use_clang_coverage = True,
 )
