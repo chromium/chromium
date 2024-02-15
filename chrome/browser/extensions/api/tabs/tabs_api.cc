@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -146,6 +147,7 @@ using content::NavigationEntry;
 using content::OpenURLParams;
 using content::Referrer;
 using content::WebContents;
+using tabs::TabModel;
 using zoom::ZoomController;
 
 namespace extensions {
@@ -350,9 +352,9 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
-  std::unique_ptr<content::WebContents> web_contents =
-      source_tab_strip->DetachWebContentsAtForInsertion(source_index);
-  if (!web_contents) {
+  std::unique_ptr<TabModel> detached_tab =
+      source_tab_strip->DetachTabAtForInsertion(source_index);
+  if (!detached_tab) {
     *error = ErrorUtils::FormatErrorMessage(tabs_constants::kTabNotFoundError,
                                             base::NumberToString(tab_id));
     return -1;
@@ -369,8 +371,8 @@ int MoveTabToWindow(ExtensionFunction* function,
   if (target_index > target_tab_strip->count() || target_index < 0)
     target_index = target_tab_strip->count();
 
-  return target_tab_strip->InsertWebContentsAt(
-      target_index, std::move(web_contents), AddTabTypes::ADD_NONE);
+  return target_tab_strip->InsertDetachedTabAt(
+      target_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
 }
 
 // This function sets the state of the browser window to a "locked"
@@ -824,26 +826,26 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     Navigate(&navigate_params);
   }
 
-  WebContents* contents = nullptr;
+  const TabModel* tab = nullptr;
   // Move the tab into the created window only if it's an empty popup or it's
   // a tabbed window.
   if (window_type == Browser::TYPE_NORMAL || urls.empty()) {
     if (source_tab_strip) {
       CHECK(!isolated_web_app_url_info.has_value());
-      std::unique_ptr<content::WebContents> detached_tab =
-          source_tab_strip->DetachWebContentsAtForInsertion(tab_index);
-      contents = detached_tab.get();
+      std::unique_ptr<TabModel> detached_tab =
+          source_tab_strip->DetachTabAtForInsertion(tab_index);
+      tab = detached_tab.get();
       TabStripModel* target_tab_strip =
           ExtensionTabUtil::GetEditableTabStripModel(new_window);
       if (!target_tab_strip)
         return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-      target_tab_strip->InsertWebContentsAt(
+      target_tab_strip->InsertDetachedTabAt(
           urls.size(), std::move(detached_tab), AddTabTypes::ADD_NONE);
     }
   }
   // Create a new tab if the created window is still empty. Don't create a new
   // tab when it is intended to create an empty popup.
-  if (!contents && urls.empty() && window_type == Browser::TYPE_NORMAL) {
+  if (!tab && urls.empty() && window_type == Browser::TYPE_NORMAL) {
     chrome::NewTab(new_window);
   }
   chrome::SelectNumberedTab(
