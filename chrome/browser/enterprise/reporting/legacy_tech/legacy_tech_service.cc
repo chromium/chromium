@@ -51,7 +51,6 @@ void LegacyTechService::ReportEvent(
 
   LegacyTechReportGenerator::LegacyTechData data = {
       type,
-      /*timestamp=*/base::Time::Now(),
       url,
       frame_url,
       *matched_url,

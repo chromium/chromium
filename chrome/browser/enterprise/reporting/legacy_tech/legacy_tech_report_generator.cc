@@ -11,7 +11,6 @@ namespace enterprise_reporting {
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData() = default;
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     const std::string& type,
-    const base::Time& timestamp,
     const GURL& url,
     const GURL& frame_url,
     const std::string& matched_url,
@@ -20,7 +19,6 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     uint64_t column,
     std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details)
     : type(type),
-      timestamp(timestamp),
       url(url),
       frame_url(frame_url),
       matched_url(matched_url),
@@ -48,9 +46,6 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
       static_cast<const LegacyTechData&>(data);
   std::unique_ptr<LegacyTechEvent> report = std::make_unique<LegacyTechEvent>();
   report->set_feature_id(legacy_tech_data.type);
-  // Blur timestamp for privacy.
-  report->set_event_timestamp_millis(
-      legacy_tech_data.timestamp.UTCMidnight().InMillisecondsSinceUnixEpoch());
   report->set_url(legacy_tech_data.url.spec());
   report->set_frame_url(legacy_tech_data.frame_url.spec());
   report->set_allowlisted_url_match(legacy_tech_data.matched_url);

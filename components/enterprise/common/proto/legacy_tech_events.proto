@@ -13,12 +13,10 @@ package enterprise_reporting;
 //
 // Next ID: 9.
 message LegacyTechEvent {
+  reserved 2;
+
   // ID of the deprecated feature.
   optional string feature_id = 1;
-
-  // The event upload time, in milliseconds since Epoch in UTC timezone (Java
-  // time).
-  optional int64 event_timestamp_millis = 2;
 
   // This includes url + path but not the params. The params will be cut before
   // data uploading.

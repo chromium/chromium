@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/time/time.h"
 #include "components/enterprise/common/proto/legacy_tech_events.pb.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,19 +14,6 @@
 namespace enterprise_reporting {
 
 namespace {
-
-constexpr base::Time::Exploded kTestDate = {.year = 2023,
-                                            .month = 5,
-                                            .day_of_week = 4,
-                                            .day_of_month = 4,
-                                            .hour = 22,
-                                            .minute = 10,
-                                            .second = 15};
-
-constexpr base::Time::Exploded kTestDateInMidnight = {.year = 2023,
-                                                      .month = 5,
-                                                      .day_of_week = 4,
-                                                      .day_of_month = 4};
 
 constexpr char kType[] = "type";
 constexpr char kUrl[] = "https://www.example.com/path";
@@ -53,7 +39,6 @@ class LegacyTechGeneratorTest : public ::testing::Test {
 TEST_F(LegacyTechGeneratorTest, Test) {
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -61,7 +46,6 @@ TEST_F(LegacyTechGeneratorTest, Test) {
       /*line=*/kLine,
       /*column=*/kColumn,
       /*cookie_issue_details=*/std::nullopt};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
@@ -75,11 +59,6 @@ TEST_F(LegacyTechGeneratorTest, Test) {
   EXPECT_EQ(kLine, report->line());
 
   EXPECT_FALSE(report->has_cookie_issue_details());
-
-  base::Time midnight;
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDateInMidnight, &midnight));
-  EXPECT_EQ(midnight.InMillisecondsSinceUnixEpoch(),
-            report->event_timestamp_millis());
 }
 
 TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
@@ -93,7 +72,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
 
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -102,7 +80,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
       /*column=*/kColumn,
       /*cookie_issue_details=*/
       std::move(cookie_issue_details)};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
@@ -128,7 +105,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
 
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -137,7 +113,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
       /*column=*/kColumn,
       /*cookie_issue_details=*/
       std::move(cookie_issue_details)};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
