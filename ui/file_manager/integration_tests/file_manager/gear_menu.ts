@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -11,24 +10,22 @@ import {BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN, BASIC_DRIV
 
 /**
  * Gets the common steps to toggle hidden files in the Files app
- * @param {!Array<!TestEntryInfo>} basicSet Files expected before showing hidden
- * @param {!Array<!TestEntryInfo>} hiddenEntrySet Files expected after showing
- * hidden
+ * @param basicSet Files expected before showing hidden
+ * @param hiddenEntrySet Files expected after showing hidden
  */
-// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
-function runHiddenFilesTest(appId, basicSet, hiddenEntrySet) {
+function runHiddenFilesTest(
+    appId: string, basicSet: TestEntryInfo[], hiddenEntrySet: TestEntryInfo[]) {
   return runHiddenFilesTestWithMenuItem(
       appId, basicSet, hiddenEntrySet, '#gear-menu-toggle-hidden-files');
 }
 
 /**
  * Gets the common steps to toggle Android hidden files in the Files app
- * @param {!Array<!TestEntryInfo>} basicSet Files expected before showing hidden
- * @param {!Array<!TestEntryInfo>} hiddenEntrySet Files expected after showing
- * hidden
+ * @param basicSet Files expected before showing hidden
+ * @param hiddenEntrySet Files expected after showing hidden
  */
-// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
-function runAndroidHiddenFilesTest(appId, basicSet, hiddenEntrySet) {
+function runAndroidHiddenFilesTest(
+    appId: string, basicSet: TestEntryInfo[], hiddenEntrySet: TestEntryInfo[]) {
   return runHiddenFilesTestWithMenuItem(
       appId, basicSet, hiddenEntrySet,
       '#gear-menu-toggle-hidden-android-folders');
@@ -36,15 +33,14 @@ function runAndroidHiddenFilesTest(appId, basicSet, hiddenEntrySet) {
 
 /**
  * Gets the common steps to toggle hidden files in the Files app
- * @param {!Array<!TestEntryInfo>} basicSet Files expected before showing hidden
- * @param {!Array<!TestEntryInfo>} hiddenEntrySet Files expected after showing
- * hidden
- * @param {string} toggleMenuItemSelector Selector for the menu item that
- * toggles hidden file visibility
+ * @param basicSet Files expected before showing hidden
+ * @param hiddenEntrySet Files expected after showing hidden
+ * @param toggleMenuItemSelector Selector for the menu item that toggles hidden
+ * file visibility
  */
 async function runHiddenFilesTestWithMenuItem(
-    // @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
-    appId, basicSet, hiddenEntrySet, toggleMenuItemSelector) {
+    appId: string, basicSet: TestEntryInfo[], hiddenEntrySet: TestEntryInfo[],
+    toggleMenuItemSelector: string) {
   await remoteCall.waitForElement(appId, '#gear-button:not([hidden])');
 
   // Open the gear menu by clicking the gear button.
@@ -72,11 +68,6 @@ async function runHiddenFilesTestWithMenuItem(
   // Check the hidden files are displayed.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(hiddenEntrySet),
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Repeat steps to toggle again.
@@ -95,49 +86,36 @@ async function runHiddenFilesTestWithMenuItem(
       appId, toggleMenuItemSelector + ':not([checked])');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(basicSet),
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 }
 
 /**
  * Tests toggling the show-hidden-files menu option on Downloads.
  */
-// @ts-ignore: error TS4111: Property 'showHiddenFilesDownloads' comes from an
-// index signature, so it must be accessed with ['showHiddenFilesDownloads'].
-testcase.showHiddenFilesDownloads = async () => {
+export async function showHiddenFilesDownloads() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN, []);
 
   await runHiddenFilesTest(
       appId, BASIC_LOCAL_ENTRY_SET, BASIC_LOCAL_ENTRY_SET_WITH_HIDDEN);
-};
+}
 
 /**
  * Tests toggling the show-hidden-files menu option on Drive.
  */
-// @ts-ignore: error TS4111: Property 'showHiddenFilesDrive' comes from an index
-// signature, so it must be accessed with ['showHiddenFilesDrive'].
-testcase.showHiddenFilesDrive = async () => {
+export async function showHiddenFilesDrive() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN);
 
   await runHiddenFilesTest(
       appId, BASIC_DRIVE_ENTRY_SET, BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN);
-};
+}
 
 /**
  * Tests that toggle-hidden-android-folders menu item exists when "Play files"
  * is selected, but hidden in Recents.
  */
-// @ts-ignore: error TS4111: Property
-// 'showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles' comes from an index
-// signature, so it must be accessed with
-// ['showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles'].
-testcase.showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles = async () => {
+export async function showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles() {
   // Open Files.App on Play Files.
   const appId = await openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
@@ -185,17 +163,13 @@ testcase.showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles = async () => {
   // #toggle-hidden-android-folders command should be hidden.
   await remoteCall.waitForElement(
       appId, '#gear-menu-toggle-hidden-android-folders[hidden]');
-};
+}
 
 /**
  * Tests that "Play files" shows the full set of files after
  * toggle-hidden-android-folders is enabled.
  */
-// @ts-ignore: error TS4111: Property
-// 'enableToggleHiddenAndroidFoldersShowsHiddenFiles' comes from an index
-// signature, so it must be accessed with
-// ['enableToggleHiddenAndroidFoldersShowsHiddenFiles'].
-testcase.enableToggleHiddenAndroidFoldersShowsHiddenFiles = async () => {
+export async function enableToggleHiddenAndroidFoldersShowsHiddenFiles() {
   // Open Files.App on Play Files.
   const appId = await openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN);
@@ -207,17 +181,13 @@ testcase.enableToggleHiddenAndroidFoldersShowsHiddenFiles = async () => {
   await remoteCall.waitForElement(appId, '#gear-button:not([hidden])');
   await runAndroidHiddenFilesTest(
       appId, BASIC_ANDROID_ENTRY_SET, BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN);
-};
+}
 
 /**
  * Tests that the current directory is changed to "Play files" after the
  * current directory is hidden by toggle-hidden-android-folders option.
  */
-// @ts-ignore: error TS4111: Property
-// 'hideCurrentDirectoryByTogglingHiddenAndroidFolders' comes from an index
-// signature, so it must be accessed with
-// ['hideCurrentDirectoryByTogglingHiddenAndroidFolders'].
-testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
+export async function hideCurrentDirectoryByTogglingHiddenAndroidFolders() {
   const MENU_ITEM_SELECTOR = '#gear-menu-toggle-hidden-android-folders';
   const appId = await openNewWindow(RootPath.ANDROID_FILES);
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN);
@@ -247,11 +217,6 @@ testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
   // Check the hidden files are displayed.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_ANDROID_ENTRY_SET_WITH_HIDDEN),
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Navigate to "/My files/Play files/A".
@@ -282,21 +247,15 @@ testcase.hideCurrentDirectoryByTogglingHiddenAndroidFolders = async () => {
   // "/My files/Play files/A" is invisible now.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/My files/Play files');
-};
+}
 
 /**
  * Tests the paste-into-current-folder menu item.
  */
-// @ts-ignore: error TS4111: Property 'showPasteIntoCurrentFolder' comes from an
-// index signature, so it must be accessed with ['showPasteIntoCurrentFolder'].
-testcase.showPasteIntoCurrentFolder = async () => {
-  // @ts-ignore: error TS4111: Property 'world' comes from an index signature,
-  // so it must be accessed with ['world'].
+export async function showPasteIntoCurrentFolder() {
   const entrySet = [ENTRIES.hello, ENTRIES.world];
 
   // Add files to Downloads volume.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await addEntries(['local'], entrySet);
 
   // Open Files.App on Downloads.
@@ -304,8 +263,6 @@ testcase.showPasteIntoCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#file-list');
 
   // Wait for the files to appear in the file list.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows(entrySet));
 
   // Wait for the gear menu button to appear.
@@ -366,17 +323,12 @@ testcase.showPasteIntoCurrentFolder = async () => {
       'fakeMouseClick', appId, ['#file-list']));
 
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
-};
+}
 
 /**
  * Tests the "select-all" menu item.
  */
-// @ts-ignore: error TS4111: Property 'showSelectAllInCurrentFolder' comes from
-// an index signature, so it must be accessed with
-// ['showSelectAllInCurrentFolder'].
-testcase.showSelectAllInCurrentFolder = async () => {
-  // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-  // signature, so it must be accessed with ['newlyAdded'].
+export async function showSelectAllInCurrentFolder() {
   const entrySet = [ENTRIES.newlyAdded];
 
   // Open Files.App on Downloads.
@@ -408,13 +360,9 @@ testcase.showSelectAllInCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // Add a new file to Downloads.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await addEntries(['local'], entrySet);
 
   // Wait for the file list change.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows(entrySet));
 
   // Click on the gear button again.
@@ -434,15 +382,13 @@ testcase.showSelectAllInCurrentFolder = async () => {
 
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
-};
+}
 
 /**
  * Tests that new folder appears in the gear menu with Downloads focused in the
  * directory tree.
  */
-// @ts-ignore: error TS4111: Property 'newFolderInDownloads' comes from an index
-// signature, so it must be accessed with ['newFolderInDownloads'].
-testcase.newFolderInDownloads = async () => {
+export async function newFolderInDownloads() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
@@ -463,15 +409,13 @@ testcase.newFolderInDownloads = async () => {
   // Wait for menu to appear, containing new folder.
   await remoteCall.waitForElement(
       appId, '#gear-menu-newfolder:not([disabled]):not([hidden])');
-};
+}
 
 /**
  * Tests that the "Files settings" button appears in the gear menu and properly
  * opens the Files section of the Settings page.
  */
-// @ts-ignore: error TS4111: Property 'showFilesSettingsButton' comes from an
-// index signature, so it must be accessed with ['showFilesSettingsButton'].
-testcase.showFilesSettingsButton = async () => {
+export async function showFilesSettingsButton() {
   const settingsWindowOrigin = 'chrome://os-settings';
   const filesSettingsWindowURL = 'chrome://os-settings/files';
 
@@ -500,15 +444,13 @@ testcase.showFilesSettingsButton = async () => {
 
   // Check that the settings window is opened on the Files subpage.
   await remoteCall.waitForLastOpenedBrowserTabUrl(filesSettingsWindowURL);
-};
+}
 
 /**
  * Tests that the "Send feedback" button appears in the gear menu and properly
  * opens the feedback window.
  */
-// @ts-ignore: error TS4111: Property 'showSendFeedbackAction' comes from an
-// index signature, so it must be accessed with ['showSendFeedbackAction'].
-testcase.showSendFeedbackAction = async () => {
+export async function showSendFeedbackAction() {
   const feedbackWindowOrigin = 'chrome://os-feedback';
 
   // Open Files.App on Downloads.
@@ -538,22 +480,20 @@ testcase.showSendFeedbackAction = async () => {
 
   // Check that the feedback window is open.
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   return repeatUntil(async () => {
     if (!await remoteCall.windowOriginExists(feedbackWindowOrigin)) {
       return pending(caller, `Waiting for ${feedbackWindowOrigin} to open`);
     }
+
+    return;
   });
-};
+}
 
 /**
  * Tests that clicking the gear menu's help button from a Downloads location
  * navigates the user to the Files app's help page.
  */
-// @ts-ignore: error TS4111: Property 'openHelpPageFromDownloadsVolume' comes
-// from an index signature, so it must be accessed with
-// ['openHelpPageFromDownloadsVolume'].
-testcase.openHelpPageFromDownloadsVolume = async () => {
+export async function openHelpPageFromDownloadsVolume() {
   // Open Files App on Downloads.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
   await remoteCall.waitForElement(appId, '#file-list');
@@ -575,16 +515,13 @@ testcase.openHelpPageFromDownloadsVolume = async () => {
   chrome.test.assertEq(
       filesHelpURL,
       await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
-};
+}
 
 /**
  * Tests that clicking the gear menu's help button from a drive location
  * navigates the user to the Google drive help page.
  */
-// @ts-ignore: error TS4111: Property 'openHelpPageFromDriveVolume' comes from
-// an index signature, so it must be accessed with
-// ['openHelpPageFromDriveVolume'].
-testcase.openHelpPageFromDriveVolume = async () => {
+export async function openHelpPageFromDriveVolume() {
   // Open Files App on Downloads.
   const appId = await openNewWindow(RootPath.DRIVE);
   await remoteCall.waitForElement(appId, '#file-list');
@@ -606,7 +543,7 @@ testcase.openHelpPageFromDriveVolume = async () => {
   chrome.test.assertEq(
       driveHelpURL,
       await remoteCall.callRemoteTestUtil('getLastVisitedURL', appId, []));
-};
+}
 
 /**
  * Tests that the link of the volume space info item in the gear menu is
@@ -614,10 +551,7 @@ testcase.openHelpPageFromDriveVolume = async () => {
  * otherwise. The volume space info item should only link to the storage
  * settings page when the user is navigating within local folders.
  */
-// @ts-ignore: error TS4111: Property 'enableDisableStorageSettingsLink' comes
-// from an index signature, so it must be accessed with
-// ['enableDisableStorageSettingsLink'].
-testcase.enableDisableStorageSettingsLink = async () => {
+export async function enableDisableStorageSettingsLink() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET_WITH_HIDDEN);
 
@@ -651,16 +585,13 @@ testcase.enableDisableStorageSettingsLink = async () => {
 
   // Check: volume space info should be disabled for external volume.
   await remoteCall.waitForElement(appId, '#volume-space-info[disabled]');
-};
+}
 
 /**
- * Tests that the "xGB available" message appears in the gear menu for
- * the "My Files" volume.
+ * Tests that the "xGB available" message appears in the gear menu for the "My
+ * Files" volume.
  */
-// @ts-ignore: error TS4111: Property 'showAvailableStorageMyFiles' comes from
-// an index signature, so it must be accessed with
-// ['showAvailableStorageMyFiles'].
-testcase.showAvailableStorageMyFiles = async () => {
+export async function showAvailableStorageMyFiles() {
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -677,15 +608,13 @@ testcase.showAvailableStorageMyFiles = async () => {
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([disabled]):not([hidden])');
-};
+}
 
 /**
- * Tests that the "xGB available" message appears in the gear menu for
- * the "Google Drive" volume.
+ * Tests that the "xGB available" message appears in the gear menu for the
+ * "Google Drive" volume.
  */
-// @ts-ignore: error TS4111: Property 'showAvailableStorageDrive' comes from an
-// index signature, so it must be accessed with ['showAvailableStorageDrive'].
-testcase.showAvailableStorageDrive = async () => {
+export async function showAvailableStorageDrive() {
   // Mock the pooled storage quota to have 1 MB available.
   await remoteCall.setPooledStorageQuotaUsage(
       1 * 1024 * 1024, 2 * 1024 * 1024, false);
@@ -709,15 +638,13 @@ testcase.showAvailableStorageDrive = async () => {
 
   // Check that it correctly indicates the available storage.
   chrome.test.assertTrue(driveMenuEntry.text?.trim() === '1 MB available');
-};
+}
 
 /**
  * Tests that the "xGB available" message appears in the gear menu for
  * an SMB volume.
  */
-// @ts-ignore: error TS4111: Property 'showAvailableStorageSmbfs' comes from an
-// index signature, so it must be accessed with ['showAvailableStorageSmbfs'].
-testcase.showAvailableStorageSmbfs = async () => {
+export async function showAvailableStorageSmbfs() {
   // Populate Smbfs with some files.
   await addEntries(['smbfs'], BASIC_LOCAL_ENTRY_SET);
 
@@ -748,16 +675,13 @@ testcase.showAvailableStorageSmbfs = async () => {
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
-};
+}
 
 /**
  * Tests that the "xGB available message appears in the gear menu for
  * the DocumentsProvider volume.
  */
-// @ts-ignore: error TS4111: Property 'showAvailableStorageDocProvider' comes
-// from an index signature, so it must be accessed with
-// ['showAvailableStorageDocProvider'].
-testcase.showAvailableStorageDocProvider = async () => {
+export async function showAvailableStorageDocProvider() {
   const documentsProviderVolumeType = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
@@ -793,16 +717,13 @@ testcase.showAvailableStorageDocProvider = async () => {
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#volume-storage\']' +
           ':not([hidden])');
-};
+}
 
 /**
  * Test that the "Mange synced folders" gear menu item is hidden and is also
  * disabled when the DriveFsMirroring flag is disabled.
  */
-// @ts-ignore: error TS4111: Property 'showManageMirrorSyncShowsOnlyInLocalRoot'
-// comes from an index signature, so it must be accessed with
-// ['showManageMirrorSyncShowsOnlyInLocalRoot'].
-testcase.showManageMirrorSyncShowsOnlyInLocalRoot = async () => {
+export async function showManageMirrorSyncShowsOnlyInLocalRoot() {
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -845,4 +766,4 @@ testcase.showManageMirrorSyncShowsOnlyInLocalRoot = async () => {
       appId,
       '#gear-menu:not([hidden]) cr-menu-item' +
           '[command=\'#manage-mirrorsync\'][disabled][hidden]');
-};
+}
