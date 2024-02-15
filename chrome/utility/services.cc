@@ -9,7 +9,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"

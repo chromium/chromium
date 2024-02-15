@@ -1,27 +1,26 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/qrcode_generator/qrcode_generator_service_impl.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 
-#include <memory>
-#include <string>
-#include <utility>
-
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/types/expected.h"
 #include "components/qr_code_generator/dino_image.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/size.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace qrcode_generator {
+namespace qr_code_generator {
+
+namespace {
 
 // Allow each element to render as this many pixels.
 static const int kModuleSizePixels = 10;
@@ -32,20 +31,15 @@ static const int kDinoTileSizePixels = 4;
 // Size of a QR locator, in modules.
 static const int kLocatorSizeModules = 7;
 
-QRCodeGeneratorServiceImpl::QRCodeGeneratorServiceImpl() {
-  InitializeDinoBitmap();
-}
-
-QRCodeGeneratorServiceImpl::~QRCodeGeneratorServiceImpl() = default;
-
-void QRCodeGeneratorServiceImpl::InitializeDinoBitmap() {
+SkBitmap CreateDinoBitmap() {
   // The dino is taller than it is wide; validate this assumption in debug
   // builds to simplify some calculations later.
   DCHECK_GE(dino_image::kDinoHeight, dino_image::kDinoWidth);
 
-  dino_bitmap_.allocN32Pixels(dino_image::kDinoWidth, dino_image::kDinoHeight);
-  dino_bitmap_.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
-  SkCanvas canvas(dino_bitmap_, SkSurfaceProps{});
+  SkBitmap dino_bitmap;
+  dino_bitmap.allocN32Pixels(dino_image::kDinoWidth, dino_image::kDinoHeight);
+  dino_bitmap.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
+  SkCanvas canvas(dino_bitmap, SkSurfaceProps{});
   SkPaint paint;
   paint.setColor(SK_ColorBLACK);
 
@@ -75,13 +69,22 @@ void QRCodeGeneratorServiceImpl::InitializeDinoBitmap() {
   copyPixelBitData(dino_image::kDinoHeadRight, dino_image::kDinoHeadHeight, 0);
   copyPixelBitData(dino_image::kDinoBody, dino_image::kDinoBodyHeight,
                    dino_image::kDinoHeadHeight);
+
+  return dino_bitmap;
 }
 
-void QRCodeGeneratorServiceImpl::DrawPasskeyIcon(
-    SkCanvas* canvas,
-    const SkRect& canvas_bounds,
-    const SkPaint& paint_foreground,
-    const SkPaint& paint_background) {
+void PaintCenterImage(SkCanvas* canvas,
+                      const SkRect& canvas_bounds,
+                      const int width_px,
+                      const int height_px,
+                      const int border_px,
+                      const SkPaint& paint_background,
+                      const SkBitmap& image);
+
+void DrawPasskeyIcon(SkCanvas* canvas,
+                     const SkRect& canvas_bounds,
+                     const SkPaint& paint_foreground,
+                     const SkPaint& paint_background) {
   constexpr int kSizePx = 100;
   constexpr int kBorderPx = 0;  // Unlike the dino, the icon is already padded.
   auto icon = gfx::CreateVectorIcon(gfx::IconDescription(
@@ -90,26 +93,26 @@ void QRCodeGeneratorServiceImpl::DrawPasskeyIcon(
                    paint_background, icon.GetRepresentation(1.0f).GetBitmap());
 }
 
-void QRCodeGeneratorServiceImpl::DrawDino(SkCanvas* canvas,
-                                          const SkRect& canvas_bounds,
-                                          const int pixels_per_dino_tile,
-                                          const int dino_border_px,
-                                          const SkPaint& paint_foreground,
-                                          const SkPaint& paint_background) {
+void DrawDino(SkCanvas* canvas,
+              const SkRect& canvas_bounds,
+              const int pixels_per_dino_tile,
+              const int dino_border_px,
+              const SkPaint& paint_foreground,
+              const SkPaint& paint_background) {
+  SkBitmap dino_bitmap = CreateDinoBitmap();
   int dino_width_px = pixels_per_dino_tile * dino_image::kDinoWidth;
   int dino_height_px = pixels_per_dino_tile * dino_image::kDinoHeight;
   PaintCenterImage(canvas, canvas_bounds, dino_width_px, dino_height_px,
-                   dino_border_px, paint_background, dino_bitmap_);
+                   dino_border_px, paint_background, dino_bitmap);
 }
 
-void QRCodeGeneratorServiceImpl::PaintCenterImage(
-    SkCanvas* canvas,
-    const SkRect& canvas_bounds,
-    const int width_px,
-    const int height_px,
-    const int border_px,
-    const SkPaint& paint_background,
-    const SkBitmap& image) {
+void PaintCenterImage(SkCanvas* canvas,
+                      const SkRect& canvas_bounds,
+                      const int width_px,
+                      const int height_px,
+                      const int border_px,
+                      const SkPaint& paint_background,
+                      const SkBitmap& image) {
   // If we request too big an image, we'll clip. In practice the image size
   // should be significantly smaller than the canvas to leave room for the
   // data payload and locators, so alert if we take over 25% of the area.
@@ -149,12 +152,12 @@ void QRCodeGeneratorServiceImpl::PaintCenterImage(
 }
 
 // Draws QR locators at three corners of |canvas|.
-static void DrawLocators(SkCanvas* canvas,
-                         const gfx::Size data_size,
-                         const SkPaint& paint_foreground,
-                         const SkPaint& paint_background,
-                         mojom::LocatorStyle style) {
-  SkScalar radius = style == mojom::LocatorStyle::ROUNDED ? 10 : 0;
+void DrawLocators(SkCanvas* canvas,
+                  const gfx::Size data_size,
+                  const SkPaint& paint_foreground,
+                  const SkPaint& paint_background,
+                  LocatorStyle style) {
+  SkScalar radius = style == LocatorStyle::kRounded ? 10 : 0;
 
   // Draw a locator with upper left corner at {x, y} in terms of module
   // coordinates.
@@ -194,10 +197,11 @@ static void DrawLocators(SkCanvas* canvas,
   // No locator on bottom-right.
 }
 
-SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
-    base::span<const uint8_t> data,
-    const gfx::Size data_size,
-    const mojom::GenerateQRCodeRequest& request) {
+SkBitmap RenderBitmap(base::span<const uint8_t> data,
+                      const gfx::Size data_size,
+                      ModuleStyle module_style,
+                      LocatorStyle locator_style,
+                      CenterImage center_image) {
   // Setup: create colors and clear canvas.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(data_size.width() * kModuleSizePixels,
@@ -225,7 +229,7 @@ SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
           continue;
         }
 
-        if (request.render_module_style == mojom::ModuleStyle::CIRCLES) {
+        if (module_style == ModuleStyle::kCircles) {
           float xc = (x + 0.5) * kModuleSizePixels;
           float yc = (y + 0.5) * kModuleSizePixels;
           SkScalar radius = kModuleSizePixels / 2 - 1;
@@ -240,20 +244,19 @@ SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
     }
   }
 
-  DrawLocators(&canvas, data_size, paint_black, paint_white,
-               request.render_locator_style);
+  DrawLocators(&canvas, data_size, paint_black, paint_white, locator_style);
 
   SkRect bitmap_bounds;
   bitmap.getBounds(&bitmap_bounds);
 
-  switch (request.center_image) {
-    case mojom::CenterImage::DEFAULT_NONE:
+  switch (center_image) {
+    case CenterImage::kNoCenterImage:
       break;
-    case mojom::CenterImage::CHROME_DINO:
+    case CenterImage::kDino:
       DrawDino(&canvas, bitmap_bounds, kDinoTileSizePixels, 2, paint_black,
                paint_white);
       break;
-    case mojom::CenterImage::PASSKEY_ICON:
+    case CenterImage::kPasskey:
       DrawPasskeyIcon(&canvas, bitmap_bounds, paint_black, paint_white);
       break;
   }
@@ -261,58 +264,45 @@ SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
   return bitmap;
 }
 
-void QRCodeGeneratorServiceImpl::GenerateQRCode(
-    mojom::GenerateQRCodeRequestPtr request,
-    ResponseCallback callback) {
-  mojom::GenerateQRCodeResponsePtr response =
-      mojom::GenerateQRCodeResponse::New();
+}  // namespace
 
-  if (!request->data.data()) {
-    response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
+base::expected<QRImage, Error> GenerateBitmap(base::span<const uint8_t> data,
+                                              ModuleStyle module_style,
+                                              LocatorStyle locator_style,
+                                              CenterImage center_image) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Sharing.QRCodeGeneration.Duration");
 
-  std::optional<qr_code_generator::GeneratedCode> qr_data;
+  GeneratedCode qr_code;
   {
-    base::TimeTicks start_time = base::TimeTicks::Now();
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2");
+
     // The QR version (i.e. size) must be >= 5 because otherwise the dino
     // painted over the middle covers too much of the code to be decodable.
     constexpr int kMinimumQRVersion = 5;
-    qr_data = qr_code_generator::Generate(
-        base::as_bytes(base::make_span(request->data)), kMinimumQRVersion);
-    base::UmaHistogramMicrosecondsTimes(
-        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2",
-        base::TimeTicks::Now() - start_time);
+    auto qr_result = GenerateCode(data, kMinimumQRVersion);
+    if (!qr_result.has_value()) {
+      return base::unexpected(qr_result.error());
+    }
+    qr_code = std::move(qr_result.value());
   }
 
-  if (!qr_data || qr_data->data.data() == nullptr ||
-      qr_data->data.size() == 0) {
-    // The above check should have caught the too-long-URL case.
-    // Remaining errors can be treated as UNKNOWN.
-    response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
   // The least significant bit of each byte in |qr_data.span| is set if the tile
   // should be black.
-  for (uint8_t& byte : qr_data->data) {
+  for (uint8_t& byte : qr_code.data) {
     byte &= 1;
   }
 
-  response->data_size = {qr_data->qr_size, qr_data->qr_size};
-  response->error_code = mojom::QRCodeGeneratorError::NONE;
-
+  QRImage result;
   {
-    base::TimeTicks start_time = base::TimeTicks::Now();
-    response->bitmap = RenderBitmap(base::make_span(qr_data->data),
-                                    response->data_size, *request);
-    base::UmaHistogramMicrosecondsTimes(
-        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2",
-        base::TimeTicks::Now() - start_time);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2");
+    result.data_size = {qr_code.qr_size, qr_code.qr_size};
+    result.bitmap =
+        RenderBitmap(base::make_span(qr_code.data), result.data_size,
+                     module_style, locator_style, center_image);
   }
-
-  std::move(callback).Run(std::move(response));
+  return result;
 }
 
-}  // namespace qrcode_generator
+}  // namespace qr_code_generator

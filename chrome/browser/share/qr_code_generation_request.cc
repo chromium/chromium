@@ -9,11 +9,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/QRCodeGenerationRequest_jni.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -23,40 +23,24 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
-QRCodeGenerationRequest::QRCodeGenerationRequest(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jstring>& j_data_string)
-    : java_qr_code_generation_request_(j_caller) {
-  std::string url_string(ConvertJavaStringToUTF8(env, j_data_string));
-
-  qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
-      qrcode_generator::mojom::GenerateQRCodeRequest::New();
-  request->data = url_string;
-  request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
-  request->render_module_style = qrcode_generator::mojom::ModuleStyle::CIRCLES;
-  request->render_locator_style =
-      qrcode_generator::mojom::LocatorStyle::ROUNDED;
-
-  qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
-
-  auto callback = base::BindOnce(
-      &QRCodeGenerationRequest::OnGenerateCodeResponse, base::Unretained(this));
-  qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
-}
-
 QRCodeGenerationRequest::~QRCodeGenerationRequest() {}
 
 void QRCodeGenerationRequest::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void QRCodeGenerationRequest::OnGenerateCodeResponse(
-    const qrcode_generator::mojom::GenerateQRCodeResponsePtr service_response) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+QRCodeGenerationRequest::QRCodeGenerationRequest(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_data_string)
+    : java_qr_code_generation_request_(j_caller) {
+  std::string url_string(ConvertJavaStringToUTF8(env, j_data_string));
+  auto qr_image = qr_code_generator::GenerateBitmap(
+      base::as_byte_span(url_string), qr_code_generator::ModuleStyle::kCircles,
+      qr_code_generator::LocatorStyle::kRounded,
+      qr_code_generator::CenterImage::kDino);
 
-  if (service_response->error_code !=
-      qrcode_generator::mojom::QRCodeGeneratorError::NONE) {
+  if (!qr_image.has_value()) {
     Java_QRCodeGenerationRequest_onQRCodeAvailable(
         env, java_qr_code_generation_request_, nullptr);
     return;
@@ -64,7 +48,7 @@ void QRCodeGenerationRequest::OnGenerateCodeResponse(
 
   // Convert the result to a Java Bitmap.
   ScopedJavaLocalRef<jobject> java_bitmap =
-      gfx::ConvertToJavaBitmap(service_response->bitmap);
+      gfx::ConvertToJavaBitmap(qr_image->bitmap);
   Java_QRCodeGenerationRequest_onQRCodeAvailable(
       env, java_qr_code_generation_request_, java_bitmap);
 }

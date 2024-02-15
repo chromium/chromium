@@ -372,8 +372,8 @@ X-XSS-Protection header.
 No. Denial of Service (DoS) issues are treated as **abuse** or **stability**
 issues rather than security vulnerabilities.
 
-*    If you find a reproducible crash, we encourage you to [report
-     it](https://issues.chromium.org/new).
+*    If you find a reproducible crash (e.g. a way to hit a `CHECK`),
+     we encourage you to [report it](https://issues.chromium.org/new).
 *    If you find a site that is abusing the user experience (e.g. preventing you
      from leaving a site), we encourage you to [report
      it](https://issues.chromium.org/new).

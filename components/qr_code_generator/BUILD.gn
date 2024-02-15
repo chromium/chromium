@@ -11,9 +11,23 @@ declare_args() {
   enable_qr_print = false
 }
 
+source_set("bitmap_generator") {
+  sources = [
+    "bitmap_generator.cc",
+    "bitmap_generator.h",
+    "dino_image.h",
+  ]
+  deps = [
+    ":qr_code_generator",
+    "//base",
+    "//components/vector_icons",
+    "//skia",
+    "//ui/gfx",
+  ]
+}
+
 source_set("qr_code_generator") {
   sources = [
-    "dino_image.h",
     "qr_code_generator.cc",
     "qr_code_generator.h",
   ]

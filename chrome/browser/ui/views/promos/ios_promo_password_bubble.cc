@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
@@ -15,10 +17,10 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -59,17 +61,8 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
     impression_histogram_already_recorded_ = false;
   }
 
-  // Returns a new QR code generator service if one does not yet exist.
-  qrcode_generator::QRImageGenerator& GetQRCodeGenerator() {
-    if (!qr_code_service_) {
-      qr_code_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
-    }
-    return *qr_code_service_;
-  }
-
   // Handler for when the window closes.
   void OnWindowClosing() {
-    qr_code_service_.reset();
     ios_promo_password_delegate_ = nullptr;
   }
 
@@ -93,26 +86,6 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  // Callback passed to QR code generation for populating the QR code image in
-  // the UI.
-  void OnQrCodeGenerated(
-      const qrcode_generator::mojom::GenerateQRCodeResponsePtr response) {
-    DCHECK(response->error_code ==
-           qrcode_generator::mojom::QRCodeGeneratorError::NONE);
-
-    auto qr_code_views = views::ElementTrackerViews::GetInstance()
-                             ->GetAllMatchingViewsInAnyContext(
-                                 IOSPromoPasswordBubble::kQRCodeView);
-
-    // There should only be one promo at a time.
-    DCHECK(qr_code_views.size() == 1);
-
-    views::ImageView* image_view =
-        views::AsViewClass<views::ImageView>(qr_code_views.front());
-
-    image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap));
-  }
-
   // Callback for when the "No thanks" button is clicked.
   void OnNoThanksButtonClicked() {
     browser_->profile()->GetPrefs()->SetBoolean(
@@ -129,9 +102,6 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  // Pointer to the QR code generator service.
-  std::unique_ptr<qrcode_generator::QRImageGenerator> qr_code_service_;
-
   // Pointer to the current Browser;
   raw_ptr<Browser> browser_;
 
@@ -234,23 +204,31 @@ std::unique_ptr<views::View> CreateFooter(
                             .AddChild(decline_button)))
           .Build();
 
-  qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
-      qrcode_generator::mojom::GenerateQRCodeRequest::New();
-  request->data = std::string(constants::kQRCodeURL);
-  request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
+  auto qr_image = qr_code_generator::GenerateBitmap(
+      base::as_byte_span(std::string_view(constants::kQRCodeURL)),
+      qr_code_generator::ModuleStyle::kCircles,
+      qr_code_generator::LocatorStyle::kRounded,
+      qr_code_generator::CenterImage::kDino);
 
-  request->render_module_style = qrcode_generator::mojom::ModuleStyle::CIRCLES;
-  request->render_locator_style =
-      qrcode_generator::mojom::LocatorStyle::ROUNDED;
+  // Generating QR code for `kQRCodeURL` should always succeed (e.g. it can't
+  // result in input-too-long error or other errors).
+  CHECK(qr_image.has_value());
 
-  // Rationale for Unretained(): Closing the bubble destroys qr_code_service_
-  // so the callback will not run (see also the doc comment of
-  // QRImageGenerator::GenerateQRCode).
-  auto callback =
-      base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnQrCodeGenerated,
-                     base::Unretained(bubble_delegate));
-  bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
-                                                       std::move(callback));
+  auto qr_code_views = views::ElementTrackerViews::GetInstance()
+                           ->GetAllMatchingViewsInAnyContext(
+                               IOSPromoPasswordBubble::kQRCodeView);
+
+  // `qr_code_views.front()` below is UB if `qr_code_views` is empty so
+  // explicitly `CHECK` against this.
+  CHECK(!qr_code_views.empty());
+  // There should only be one promo at a time.
+  CHECK(qr_code_views.size() == 1, base::NotFatalUntil::M124);
+
+  views::ImageView* image_view =
+      views::AsViewClass<views::ImageView>(qr_code_views.front());
+
+  image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_image->bitmap));
+
   return built_footer_view;
 }
 

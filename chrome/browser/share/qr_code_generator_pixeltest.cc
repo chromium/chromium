@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
@@ -20,31 +20,18 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
   QrCodeGeneratorServicePixelTest() = default;
 
   void TestGolden(const std::string& data,
-                  const mojom::CenterImage& center_image,
-                  const mojom::ModuleStyle& module_style,
-                  const mojom::LocatorStyle& locator_style) {
-    mojom::GenerateQRCodeRequestPtr request =
-        mojom::GenerateQRCodeRequest::New();
-    request->data = data;
-    request->center_image = center_image;
-    request->render_module_style = module_style;
-    request->render_locator_style = locator_style;
-
+                  const qr_code_generator::CenterImage& center_image,
+                  const qr_code_generator::ModuleStyle& module_style,
+                  const qr_code_generator::LocatorStyle& locator_style) {
     base::HistogramTester histograms;
-    mojom::GenerateQRCodeResponsePtr response;
-    base::RunLoop run_loop;
-    QRImageGenerator generator;
-    generator.GenerateQRCode(
-        std::move(request),
-        base::BindLambdaForTesting([&](mojom::GenerateQRCodeResponsePtr r) {
-          response = std::move(r);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    auto response = qr_code_generator::GenerateBitmap(
+        base::as_byte_span(data),
+        module_style,
+        locator_style,
+        center_image);
 
     // Verify that we got a successful response.
-    ASSERT_TRUE(response);
-    ASSERT_EQ(response->error_code, mojom::QRCodeGeneratorError::NONE);
+    ASSERT_TRUE(response.has_value());
 
     // Version 1 of QR codes has 21x21 modules/tiles/pixels.  Verify that the
     // returned QR image has a size that is at least 21x21.
@@ -83,15 +70,16 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
                        DinoWithRoundQrPixelsAndLocators) {
-  TestGolden("https://example.com", mojom::CenterImage::CHROME_DINO,
-             mojom::ModuleStyle::CIRCLES, mojom::LocatorStyle::ROUNDED);
+  TestGolden("https://example.com", qr_code_generator::CenterImage::kDino,
+             qr_code_generator::ModuleStyle::kCircles,
+             qr_code_generator::LocatorStyle::kRounded);
 }
 
 IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
                        PassKeyWithSquareQrPixelsAndLocators) {
-  TestGolden("https://example.com", mojom::CenterImage::PASSKEY_ICON,
-             mojom::ModuleStyle::DEFAULT_SQUARES,
-             mojom::LocatorStyle::DEFAULT_SQUARE);
+  TestGolden("https://example.com", qr_code_generator::CenterImage::kPasskey,
+             qr_code_generator::ModuleStyle::kSquares,
+             qr_code_generator::LocatorStyle::kSquare);
 }
 
 // This is a regression test for https://crbug.com/1334066.  It tests that the
@@ -130,8 +118,9 @@ IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest, BigUrl) {
       "malesuada+fames+ac+ante+ipsum+primis+in+faucibus.+Sed+magna+tortor,+"
       "ornare+ac+bibendum+ac,+ultricies+nec+nisl.+Maecenas+consequat+interdum+"
       "ipsum+a+ultrices.";
-  TestGolden(kInput, mojom::CenterImage::CHROME_DINO,
-             mojom::ModuleStyle::CIRCLES, mojom::LocatorStyle::ROUNDED);
+  TestGolden(kInput, qr_code_generator::CenterImage::kDino,
+             qr_code_generator::ModuleStyle::kCircles,
+             qr_code_generator::LocatorStyle::kRounded);
 }
 
 // This is a regression test for https://crbug.com/1334066.  It tests that the
@@ -196,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest, HugeUrl) {
       "neque+leo,+sodales+ac+viverra+in,+sollicitudin+non+est.+Aenean+"
       "dignissim+quam+quis+nibh+tempus+rhoncus.+Quisque+in+sapien+vitae+lectus+"
       "malesuada+finibus+et+et+n";
-  TestGolden(kInput, mojom::CenterImage::CHROME_DINO,
-             mojom::ModuleStyle::CIRCLES, mojom::LocatorStyle::ROUNDED);
+  TestGolden(kInput, qr_code_generator::CenterImage::kDino,
+             qr_code_generator::ModuleStyle::kCircles,
+             qr_code_generator::LocatorStyle::kRounded);
 }
 
 }  // namespace

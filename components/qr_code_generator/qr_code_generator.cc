@@ -19,8 +19,9 @@ GeneratedCode::~GeneratedCode() = default;
 GeneratedCode::GeneratedCode(GeneratedCode&&) = default;
 GeneratedCode& GeneratedCode::operator=(GeneratedCode&&) = default;
 
-std::optional<GeneratedCode> Generate(base::span<const uint8_t> in,
-                                      std::optional<int> min_version) {
+base::expected<GeneratedCode, Error> GenerateCode(
+    base::span<const uint8_t> in,
+    std::optional<int> min_version) {
   rust::Slice<const uint8_t> rs_in = base::SpanToRustSlice(in);
 
   // `min_version` might come from a fuzzer and therefore we use a lenient
@@ -34,7 +35,7 @@ std::optional<GeneratedCode> Generate(base::span<const uint8_t> in,
       rs_in, rs_min_version, result_pixels, result_width);
 
   if (!result_is_success) {
-    return std::nullopt;
+    return base::unexpected(Error::kUnknownError);
   }
   GeneratedCode code;
   code.data = std::move(result_pixels);

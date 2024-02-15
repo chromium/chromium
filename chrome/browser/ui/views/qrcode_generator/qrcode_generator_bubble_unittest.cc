@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_renderer_host.h"
@@ -175,8 +174,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
   // that, but inject an error.
   {
     VisibilityChangedWaiter waiter(image());
-    bubble()->SetQRCodeErrorForTesting(
-        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    bubble()->SetQRCodeErrorForTesting(qr_code_generator::Error::kUnknownError);
     textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
     EXPECT_FALSE(ImageShowing());
@@ -204,8 +202,7 @@ TEST_F(QRCodeGeneratorBubbleUITest,
   // Expecting image to be hidden after QR generation error.
   {
     VisibilityChangedWaiter waiter(image());
-    bubble()->SetQRCodeErrorForTesting(
-        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    bubble()->SetQRCodeErrorForTesting(qr_code_generator::Error::kUnknownError);
     textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
 
@@ -245,8 +242,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
   // Expecting image to be hidden after QR generation error.
   {
     VisibilityChangedWaiter waiter(image());
-    bubble()->SetQRCodeErrorForTesting(
-        mojom::QRCodeGeneratorError::UNKNOWN_ERROR);
+    bubble()->SetQRCodeErrorForTesting(qr_code_generator::Error::kUnknownError);
     textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
 
@@ -256,8 +252,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
   // Input-too-long should present a different UI from unknown errors.
   {
     VisibilityChangedWaiter waiter(image());
-    bubble()->SetQRCodeErrorForTesting(
-        mojom::QRCodeGeneratorError::INPUT_TOO_LONG);
+    bubble()->SetQRCodeErrorForTesting(qr_code_generator::Error::kInputTooLong);
     textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
     waiter.Wait();
     EXPECT_TRUE(ImageShowing());

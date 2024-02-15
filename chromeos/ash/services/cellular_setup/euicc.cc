@@ -212,10 +212,10 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   // Format EID to string that should be encoded in the QRCode.
   std::string qr_code_string =
       base::StrCat({kEidQrCodePrefix, properties_->eid});
-  std::optional<qr_code_generator::GeneratedCode> qr_data =
-      qr_code_generator::Generate(base::as_byte_span(qr_code_string));
-  if (!qr_data || qr_data->data.data() == nullptr ||
-      qr_data->data.size() == 0) {
+
+  auto qr_data =
+      qr_code_generator::GenerateCode(base::as_byte_span(qr_code_string));
+  if (!qr_data.has_value()) {
     std::move(callback).Run(nullptr);
     return;
   }

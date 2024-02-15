@@ -8,16 +8,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 
 namespace qr_code_generator {
 
-// Contains output data for Generate().
+enum class Error {
+  kUnknownError = 0,
+
+  // Input string was too long.
+  //
+  // TODO(https://crbug.com/1431991): Plumb input-too-long errors from the
+  // third-party Rust crate.
+  kInputTooLong = 1,
+};
+
+// Contains output data from Generate().
 // The default state contains no data.
 struct GeneratedCode {
  public:
@@ -52,7 +60,7 @@ struct GeneratedCode {
 // The generator will attempt to choose a version that fits the data and which
 // is >= |min_version|, if given. The returned span's length is
 // input-dependent and not known at compile-time.
-std::optional<GeneratedCode> Generate(
+base::expected<GeneratedCode, Error> GenerateCode(
     base::span<const uint8_t> in,
     std::optional<int> min_version = std::nullopt);
 
