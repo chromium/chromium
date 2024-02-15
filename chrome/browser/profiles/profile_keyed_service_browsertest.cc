@@ -185,6 +185,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           blink::features::kBrowsingTopics,
           net::features::kTpcdMetadataGrants,
           net::features::kTpcdTrialSettings,
+          net::features::kTopLevelTpcdTrialSettings,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
           features::kPdfOcr,
 #endif
@@ -546,6 +547,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "TemplateURLServiceFactory",
     "ThemeService",
     "ToolbarActionsModel",
+    "TopLevelTrialService",
     "TpcdTrialService",
     "TrackingProtectionSettings",
     "TranslateRanker",
