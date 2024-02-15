@@ -1288,7 +1288,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:identity];
-  [SigninEarlGreyUI signinWithFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:identity];
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Verify Identity Disc is visible since it is the top-most element and should
@@ -1557,7 +1557,7 @@ id<GREYMatcher> mostlyNotVisible() {
   [SigninEarlGrey addFakeIdentity:identity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:identity];
 
   // Check feed label and if NTP is scrollable.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
