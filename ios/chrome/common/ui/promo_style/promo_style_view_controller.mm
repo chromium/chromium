@@ -49,7 +49,8 @@ constexpr CGFloat kSeparatorHeight = 1;
 constexpr CGFloat kLearnMoreButtonSide = 40;
 constexpr CGFloat kheaderImageSize = 48;
 constexpr CGFloat kFullheaderImageSize = 100;
-constexpr CGFloat kStackViewDefaultSpacing = 10;
+constexpr CGFloat kStackViewEquallyWeightedButtonSpacing = 12;
+constexpr CGFloat kStackViewDefaultButtonSpacing = 0;
 
 // Corner radius for the whole view.
 constexpr CGFloat kCornerRadius = 20;
@@ -130,6 +131,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   BOOL _buttonUpdated;
 }
 
+@synthesize actionButtonsVisibility = _actionButtonsVisibility;
 @synthesize learnMoreButton = _learnMoreButton;
 
 #pragma mark - Public
@@ -220,13 +222,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _actionStackView.axis = UILayoutConstraintAxisVertical;
   _actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [_actionStackView addArrangedSubview:self.primaryActionButton];
-
-  // Spacing is needed when all buttons have filled background.
-  if (self.useEquallyWeightedButtons) {
-    [_actionStackView setCustomSpacing:kStackViewDefaultSpacing
-                             afterView:_primaryActionButton];
-  }
-
   [view addSubview:_actionStackView];
 
   // Create a layout guide to constrain the width of the content, while still
@@ -598,6 +593,39 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
+- (void)setActionButtonsVisibility:(ActionButtonsVisibility)visibility {
+  if (_actionButtonsVisibility == visibility) {
+    return;
+  }
+  // Visibility should not be reverted to kDefault.
+  DCHECK(visibility != ActionButtonsVisibility::kDefault);
+
+  _actionButtonsVisibility = visibility;
+  BOOL isHidden = (visibility == ActionButtonsVisibility::kHidden);
+
+  if (_primaryActionButton) {
+    if (!isHidden) {
+      // On unhiding, the primary action button will have updated style based
+      // on actionButtonsVisibility.
+      [self setPrimaryActionButtonColor:_primaryActionButton];
+    }
+    _primaryActionButton.hidden = isHidden;
+  }
+
+  if (_secondaryActionButton) {
+    if (!isHidden) {
+      // Remove the existing secondary button from view.
+      [_secondaryActionButton removeFromSuperview];
+      // On unhiding, the secondary action button has button type based on
+      // actionButtonsVisibility and should be recreated.
+      _secondaryActionButton = [self createSecondaryActionButton];
+      [_actionStackView insertArrangedSubview:_secondaryActionButton atIndex:1];
+      [self updateActionButtonsSpacing];
+    }
+    _secondaryActionButton.hidden = isHidden;
+  }
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -735,13 +763,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
   buttonConfiguration.titlePadding = kMoreArrowMargin;
-  buttonConfiguration.background.backgroundColor =
-      self.useEquallyWeightedButtons ? [UIColor colorNamed:kBlueHaloColor]
-                                     : [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.baseForegroundColor =
-      self.useEquallyWeightedButtons
-          ? [UIColor colorNamed:kBlueColor]
-          : [UIColor colorNamed:kSolidButtonTextColor];
   buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
   buttonConfiguration.title = buttonText;
   buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
@@ -749,6 +770,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   HighlightButton* button = [[HighlightButton alloc] initWithFrame:CGRectZero];
   button.configuration = buttonConfiguration;
   [self setPrimaryActionButtonFont:button];
+  [self setPrimaryActionButtonColor:button];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
@@ -772,6 +794,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                    forControlEvents:UIControlEventTouchUpInside];
     _primaryActionButton.configurationUpdateHandler = self.updateHandler;
     _primaryActionButton.enabled = _primaryButtonEnabled;
+    _primaryActionButton.hidden =
+        (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
   }
   return _primaryActionButton;
 }
@@ -989,6 +1013,20 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   button.configuration = buttonConfiguration;
 }
 
+- (void)setPrimaryActionButtonColor:(UIButton*)button {
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  BOOL useEquallyWeightedButtons =
+      (self.actionButtonsVisibility ==
+       ActionButtonsVisibility::kEquallyWeightedButtonShown);
+  buttonConfiguration.background.backgroundColor =
+      useEquallyWeightedButtons ? [UIColor colorNamed:kBlueHaloColor]
+                                : [UIColor colorNamed:kBlueColor];
+  buttonConfiguration.baseForegroundColor =
+      useEquallyWeightedButtons ? [UIColor colorNamed:kBlueColor]
+                                : [UIColor colorNamed:kSolidButtonTextColor];
+  button.configuration = buttonConfiguration;
+}
+
 // Sets or resets the "Read More" text label when the bottom hasn't been
 // reached yet and scrolling to the end is mandatory.
 - (void)setReadMoreText {
@@ -1163,7 +1201,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Add other buttons with the correct margins.
   if (self.secondaryActionString) {
     _secondaryActionButton = [self createSecondaryActionButton];
+    _secondaryActionButton.hidden =
+        (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
     [_actionStackView insertArrangedSubview:_secondaryActionButton atIndex:1];
+    [self updateActionButtonsSpacing];
   }
   if (self.tertiaryActionString) {
     _tertiaryActionButton = [self createTertiaryActionButton];
@@ -1353,7 +1394,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (UIButton*)createSecondaryActionButton {
   DCHECK(self.secondaryActionString);
   UIButton* button;
-  if (self.useEquallyWeightedButtons) {
+  if (self.actionButtonsVisibility ==
+      ActionButtonsVisibility::kEquallyWeightedButtonShown) {
     // Create the secondaryActionButton matching the button type, colors, and
     // text style of the primaryActionButton.
     button = [self createHighlightButtonWithText:self.secondaryActionString
@@ -1412,6 +1454,23 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   [_scrollView layoutIfNeeded];
   [self updateViewsOnScrollViewUpdate];
+}
+
+- (void)updateActionButtonsSpacing {
+  switch (self.actionButtonsVisibility) {
+    case ActionButtonsVisibility::kEquallyWeightedButtonShown:
+      // Spacing is needed when all buttons have filled background.
+      [_actionStackView setCustomSpacing:kStackViewEquallyWeightedButtonSpacing
+                               afterView:_primaryActionButton];
+      break;
+    case ActionButtonsVisibility::kRegularButtonsShown:
+      [_actionStackView setCustomSpacing:kStackViewDefaultButtonSpacing
+                               afterView:_primaryActionButton];
+      break;
+    default:
+      // Do not add button spacing by default or when buttons are hidden.
+      break;
+  }
 }
 
 #pragma mark - UIScrollViewDelegate

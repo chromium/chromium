@@ -20,6 +20,9 @@
 // Set the text for the disclaimer footer.
 - (void)setFooterText:(NSString*)footerText;
 
+// Set the button style and update button visibility.
+- (void)displayButtonsWithRestrictionStatus:(BOOL)isRestricted;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_CONSUMER_H_
