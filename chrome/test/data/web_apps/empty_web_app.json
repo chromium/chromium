@@ -69,7 +69,7 @@
    "theme_color": "none",
    "url_handlers": [  ],
    "user_display_mode_cros": null,
-   "user_display_mode_non_cros": null,
+   "user_display_mode_default": null,
    "user_launch_ordinal": "INVALID[]",
    "user_link_capturing_preference": "0",
    "user_page_ordinal": "INVALID[]",

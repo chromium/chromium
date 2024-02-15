@@ -42,17 +42,17 @@ mojom::UserDisplayMode ResolvePlatformSpecificUserDisplayMode(
     const sync_pb::WebAppSpecifics& sync_proto) {
   if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
     return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-        sync_proto.user_display_mode_non_cros());
+        sync_proto.user_display_mode_default());
   }
 
   sync_pb::WebAppSpecifics_UserDisplayMode user_display_mode;
 #if BUILDFLAG(IS_CHROMEOS)
   user_display_mode = sync_proto.has_user_display_mode_cros()
                           ? sync_proto.user_display_mode_cros()
-                          : sync_proto.user_display_mode_non_cros();
+                          : sync_proto.user_display_mode_default();
 #else
   // Defaults to UNSPECIFIED, which will be converted to kStandalone.
-  user_display_mode = sync_proto.user_display_mode_non_cros();
+  user_display_mode = sync_proto.user_display_mode_default();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
       user_display_mode);

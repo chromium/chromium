@@ -1644,7 +1644,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebAppIconInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {
   VISIT(start_url);
   VISIT(name);
-  VISIT_ENUM(user_display_mode_non_cros);
+  VISIT_ENUM(user_display_mode_default);
   VISIT(theme_color);
   VISIT(scope);
   VISIT_REP(icon_infos);

@@ -242,7 +242,7 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   sync_proto.set_start_url(app.start_url().spec());
 
-  CHECK(app.user_display_mode_cros() || app.user_display_mode_non_cros(),
+  CHECK(app.user_display_mode_cros() || app.user_display_mode_default(),
         base::NotFatalUntil::M125);
 
   if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS) ||
@@ -252,15 +252,15 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
           ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
               app.user_display_mode_cros().value()));
     }
-    if (app.user_display_mode_non_cros()) {
-      sync_proto.set_user_display_mode_non_cros(
+    if (app.user_display_mode_default()) {
+      sync_proto.set_user_display_mode_default(
           ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-              app.user_display_mode_non_cros().value()));
+              app.user_display_mode_default().value()));
     }
   } else {
-    sync_proto.set_user_display_mode_non_cros(
+    sync_proto.set_user_display_mode_default(
         ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-            app.user_display_mode_non_cros().value()));
+            app.user_display_mode_default().value()));
   }
 
   sync_proto.set_name(app.sync_fallback_data().name);

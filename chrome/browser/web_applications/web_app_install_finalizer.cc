@@ -110,7 +110,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
 
 #if BUILDFLAG(IS_CHROMEOS)
 // When web apps are added to sync on ChromeOS the value of
-// user_display_mode_non_cros should be set in certain cases to avoid poor sync
+// user_display_mode_default should be set in certain cases to avoid poor sync
 // install states on devices with kSeparateUserDisplayModeForCrOS disabled
 // (including all pre-M122 devices) and non-CrOS devices with particular web
 // apps.
@@ -139,8 +139,8 @@ void ApplyUserDisplayModeSyncMitigations(
     return;
   }
 
-  // Don't override existing non CrOS value.
-  if (web_app.user_display_mode_non_cros().has_value()) {
+  // Don't override existing default-platform value.
+  if (web_app.user_display_mode_default().has_value()) {
     return;
   }
 
@@ -152,10 +152,10 @@ void ApplyUserDisplayModeSyncMitigations(
       }
 
       // CrOS devices with kSeparateUserDisplayModeForCrOS disabled (including
-      // pre-M122 devices) use the user_display_mode_non_cros sync field instead
-      // of user_display_mode_cros. If user_display_mode_non_cros is ever unset
+      // pre-M122 devices) use the user_display_mode_default sync field instead
+      // of user_display_mode_cros. If user_display_mode_default is ever unset
       // they will fallback to using kStandalone even if user_display_mode_cros
-      // is set to kBrowser. This mitigation esures user_display_mode_non_cros
+      // is set to kBrowser. This mitigation esures user_display_mode_default
       // is set to kBrowser for these devices.
       // Example user journey:
       // - Install web app as browser shortcut on post-M122 CrOS device.
@@ -163,7 +163,7 @@ void ApplyUserDisplayModeSyncMitigations(
       // - Check that it is synced as a browser shortcut.
       // TODO(b/321617981): Remove when there are sufficiently few pre-M122 CrOS
       // devices in circulation.
-      web_app.SetUserDisplayModeNonCrOS(mojom::UserDisplayMode::kBrowser);
+      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
       break;
 
     case mojom::UserDisplayMode::kStandalone: {
@@ -186,7 +186,7 @@ void ApplyUserDisplayModeSyncMitigations(
       if (!is_standalone_averse_app) {
         break;
       }
-      web_app.SetUserDisplayModeNonCrOS(mojom::UserDisplayMode::kBrowser);
+      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
       break;
     }
 

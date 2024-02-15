@@ -55,7 +55,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
   EXPECT_EQ(kStartUrl, sync_proto.start_url());
   EXPECT_EQ(kAppName, sync_proto.name());
   EXPECT_EQ(sync_pb::WebAppSpecifics::BROWSER,
-            sync_proto.user_display_mode_non_cros());
+            sync_proto.user_display_mode_default());
 
   // Check the fields were parsed into the web app struct.
   std::optional<WebApp::SyncFallbackData> fallback_data =
@@ -76,7 +76,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_Minimal) {
   sync_pb::WebAppSpecifics sync_proto;
   sync_proto.set_start_url(kStartUrl);
   sync_proto.set_name(kAppName);
-  sync_proto.set_user_display_mode_non_cros(sync_pb::WebAppSpecifics::BROWSER);
+  sync_proto.set_user_display_mode_default(sync_pb::WebAppSpecifics::BROWSER);
 
   // Parse the proto.
   std::optional<WebApp::SyncFallbackData> fallback_data =
@@ -95,7 +95,7 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_FullyPopulated) {
   sync_pb::WebAppSpecifics sync_proto;
   sync_proto.set_start_url(kStartUrl);
   sync_proto.set_name(kAppName);
-  sync_proto.set_user_display_mode_non_cros(
+  sync_proto.set_user_display_mode_default(
       sync_pb::WebAppSpecifics::STANDALONE);
   sync_proto.set_theme_color(SK_ColorRED);
   sync_proto.set_scope(kScope);

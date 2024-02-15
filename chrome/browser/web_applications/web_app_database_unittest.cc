@@ -140,7 +140,7 @@ class WebAppDatabaseTest : public WebAppTest,
 
   void EnsureHasUserDisplayModeForCurrentPlatform(WebApp& app) {
     if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-      DCHECK(app.user_display_mode_non_cros());
+      DCHECK(app.user_display_mode_default());
       return;
     }
     // Avoid using `WebApp::user_display_mode` because it DCHECKs for a valid
@@ -150,12 +150,12 @@ class WebAppDatabaseTest : public WebAppTest,
       return;
     }
 #else
-    if (app.user_display_mode_non_cros()) {
+    if (app.user_display_mode_default()) {
       return;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
     app.SetUserDisplayMode(app.user_display_mode_cros().value_or(
-        app.user_display_mode_non_cros().value_or(
+        app.user_display_mode_default().value_or(
             mojom::UserDisplayMode::kStandalone)));
   }
 
@@ -334,7 +334,7 @@ TEST_P(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   {
     sync_pb::WebAppSpecifics sync_proto;
     sync_proto.set_start_url(start_url.spec());
-    sync_proto.set_user_display_mode_non_cros(
+    sync_proto.set_user_display_mode_default(
         sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
     *(proto->mutable_sync_data()) = std::move(sync_proto);
   }
@@ -388,7 +388,7 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
 
   base_proto->mutable_sync_data()->set_user_display_mode_cros(
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  base_proto->mutable_sync_data()->clear_user_display_mode_non_cros();
+  base_proto->mutable_sync_data()->clear_user_display_mode_default();
 
   std::vector<std::unique_ptr<WebAppProto>> protos;
   protos.push_back(std::move(base_proto));
@@ -405,7 +405,7 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
     // flag is turned off. Safer than trying to migrate back.
     EXPECT_EQ(app->user_display_mode().value(),
               mojom::UserDisplayMode::kStandalone);
-    EXPECT_EQ(new_proto->sync_data().user_display_mode_non_cros(),
+    EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
               sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE);
     EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_cros());
     return;
@@ -418,23 +418,23 @@ TEST_P(WebAppDatabaseTest, UserDisplayModeCrosOnly_MigratesToCurrentPlatform) {
   // On CrOS, the non-CrOS field should remain absent.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_non_cros());
+  EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_default());
 #else
   // On non-CrOS, both platform's fields should now be populated.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_non_cros(),
+  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_P(WebAppDatabaseTest,
-       UserDisplayModeNonCrosOnly_MigratesToCurrentPlatform) {
+       UserDisplayModeDefaultOnly_MigratesToCurrentPlatform) {
   std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
-  base_proto->mutable_sync_data()->set_user_display_mode_non_cros(
+  base_proto->mutable_sync_data()->set_user_display_mode_default(
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   base_proto->mutable_sync_data()->clear_user_display_mode_cros();
 
@@ -453,7 +453,7 @@ TEST_P(WebAppDatabaseTest,
       WebAppDatabase::CreateWebAppProto(*app);
 
   if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    EXPECT_EQ(new_proto->sync_data().user_display_mode_non_cros(),
+    EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
               sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
     EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_cros());
     return;
@@ -463,12 +463,12 @@ TEST_P(WebAppDatabaseTest,
   // On CrOS, both platform's fields should now be populated.
   EXPECT_EQ(new_proto->sync_data().user_display_mode_cros(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_non_cros(),
+  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
 #else
   // On non-CrOS, the CrOS field should remain absent.
   EXPECT_FALSE(new_proto->sync_data().has_user_display_mode_cros());
-  EXPECT_EQ(new_proto->sync_data().user_display_mode_non_cros(),
+  EXPECT_EQ(new_proto->sync_data().user_display_mode_default(),
             sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

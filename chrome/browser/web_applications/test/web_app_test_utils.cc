@@ -670,14 +670,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   // test expectations are consistent across platforms.
   if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
     if (random.next_bool()) {
-      app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+      app->SetUserDisplayModeDefault(user_display_modes[random.next_uint(3)]);
     }
     // Must have at least one platform's UserDisplayMode set.
-    if (!app->user_display_mode_non_cros().has_value() || random.next_bool()) {
+    if (!app->user_display_mode_default().has_value() || random.next_bool()) {
       app->SetUserDisplayModeCrOS(user_display_modes[random.next_uint(3)]);
     }
   } else {
-    app->SetUserDisplayModeNonCrOS(user_display_modes[random.next_uint(3)]);
+    app->SetUserDisplayModeDefault(user_display_modes[random.next_uint(3)]);
   }
 
   app->SetLastBadgingTime(random.next_time());

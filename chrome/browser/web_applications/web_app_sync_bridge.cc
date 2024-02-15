@@ -132,7 +132,7 @@ absl::optional<mojom::UserDisplayMode> GetCurrentPlatformUserDisplayMode(
 #if BUILDFLAG(IS_CHROMEOS)
   return app.user_display_mode_cros();
 #else
-  return app.user_display_mode_non_cros();
+  return app.user_display_mode_default();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 }  // namespace
@@ -164,10 +164,10 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
           CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
               sync_data.user_display_mode_cros()));
     }
-    if (sync_data.has_user_display_mode_non_cros()) {
-      app->SetUserDisplayModeNonCrOS(
+    if (sync_data.has_user_display_mode_default()) {
+      app->SetUserDisplayModeDefault(
           CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-              sync_data.user_display_mode_non_cros()));
+              sync_data.user_display_mode_default()));
     }
   }
 
@@ -184,7 +184,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
     // Always overwrite the original UserDisplayMode with sync data.
     app->SetUserDisplayMode(
         CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-            sync_data.user_display_mode_non_cros()));
+            sync_data.user_display_mode_default()));
   }
 
   app->SetUserPageOrdinal(syncer::StringOrdinal(sync_data.user_page_ordinal()));
@@ -618,7 +618,7 @@ void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
     if (!GetCurrentPlatformUserDisplayMode(app).has_value()) {
       // Use the other platform's UDM if set, or standalone.
       mojom::UserDisplayMode udm = app.user_display_mode_cros().value_or(
-          app.user_display_mode_non_cros().value_or(
+          app.user_display_mode_default().value_or(
               mojom::UserDisplayMode::kStandalone));
       update->UpdateApp(app.app_id())->SetUserDisplayMode(udm);
     }

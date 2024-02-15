@@ -62,7 +62,9 @@ message WebAppSpecifics {
   // devices this field is used by all platforms (ie. ChromeOS, Windows, Mac,
   // Linux) and always replaces any locally-stored value, with
   // absent/unspecified falling back to standalone.
-  optional UserDisplayMode user_display_mode_non_cros = 3;
+  optional UserDisplayMode user_display_mode_default = 3;
+  reserved "user_display_mode_non_cros";
+  reserved "user_display_mode";
 
   optional uint32 theme_color = 4;
   optional string scope = 5;
@@ -87,7 +89,7 @@ message WebAppSpecifics {
   optional string relative_manifest_id = 9;
 
   // User-selected display setting for ChromeOS.
-  // If absent, user_display_mode_non_cros may be used as fallback (if
+  // If absent, user_display_mode_default may be used as fallback (if
   // populated).
   // Introduced in M122.
   optional UserDisplayMode user_display_mode_cros = 10;

@@ -1558,7 +1558,7 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
       WebApp* web_app = update->UpdateApp(app_id);
       DCHECK(web_app);
       if (IsChromeOs()) {
-        web_app->SetUserDisplayModeNonCrOS(local_other_platform_udm().value());
+        web_app->SetUserDisplayModeDefault(local_other_platform_udm().value());
       } else {
         web_app->SetUserDisplayModeCrOS(local_other_platform_udm().value());
       }
@@ -1579,7 +1579,7 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
     sync_proto.set_user_display_mode_cros(sync_cros_udm().value());
   }
   if (sync_non_cros_udm()) {
-    sync_proto.set_user_display_mode_non_cros(sync_non_cros_udm().value());
+    sync_proto.set_user_display_mode_default(sync_non_cros_udm().value());
   }
 
   EXPECT_FALSE(sync_bridge().ApplyIncrementalSyncChanges(
@@ -1597,7 +1597,7 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
   //// kSeparateUserDisplayModeForCrOS Disabled ////
 
   if (!flag_enabled()) {
-    EXPECT_EQ(app->user_display_mode(), app->user_display_mode_non_cros());
+    EXPECT_EQ(app->user_display_mode(), app->user_display_mode_default());
 
     // Expect to always overwrite local UDM state with non-CrOS sync data,
     // including treating absent/unspecified as standalone.
@@ -1654,9 +1654,9 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
   std::optional<UserDisplayMode> app_other_platform_udm;
   if (IsChromeOs()) {
     app_this_platform_udm = app->user_display_mode_cros();
-    app_other_platform_udm = app->user_display_mode_non_cros();
+    app_other_platform_udm = app->user_display_mode_default();
   } else {
-    app_this_platform_udm = app->user_display_mode_non_cros();
+    app_this_platform_udm = app->user_display_mode_default();
     app_other_platform_udm = app->user_display_mode_cros();
   }
   EXPECT_EQ(app->user_display_mode(), app_this_platform_udm);
