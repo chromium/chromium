@@ -12,6 +12,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
@@ -40,16 +41,20 @@ namespace ash {
 
 namespace {
 
+constexpr float kContainerCornerRadius = 12.0f;
+constexpr int kBorderThickness = 1;
 constexpr int kIconHeight = 20;
-constexpr gfx::RoundedCornersF kRoundedCornerRadius =
-    gfx::RoundedCornersF(12.0f);
 constexpr gfx::Insets kArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
 constexpr gfx::Insets kButtonBorderInsets = gfx::Insets::TLBR(0, 12, 0, 8);
 constexpr gfx::Insets kGamepadIconMargins = gfx::Insets::TLBR(0, 0, 0, 8);
 
+// 8% opacity for button border.
+constexpr SkAlpha kAlphaForButtonBorder =
+    base::saturated_cast<SkAlpha>(std::numeric_limits<SkAlpha>::max() * 0.08);
+
 ui::ColorId GetBackgroundEnabledColorId(bool is_recording) {
   return is_recording ? cros_tokens::kCrosSysSystemNegativeContainer
-                      : cros_tokens::kCrosSysHighlightShape;
+                      : cros_tokens::kCrosSysPrimaryContainer;
 }
 
 ui::ColorId GetIconAndLabelEnabledColorId(bool is_recording) {
@@ -65,10 +70,10 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_inside_border_insets(kButtonBorderInsets);
 
-  SetBorder(views::CreateEmptyBorder(kButtonBorderInsets));
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(kRoundedCornerRadius);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kContainerCornerRadius));
   layer()->SetFillsBoundsOpaquely(false);
 
   // Add the gamepad icon view.
@@ -156,6 +161,13 @@ void GameDashboardButton::UpdateViews() {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE));
   }
+
+  SetBorder(views::CreateRoundedRectBorder(
+      kBorderThickness, kContainerCornerRadius, gfx::Insets(),
+      SkColorSetA(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                      ? cros_tokens::kCrosSysWhite
+                      : cros_tokens::kCrosSysBlack,
+                  kAlphaForButtonBorder)));
 
   auto* color_provider = GetColorProvider();
   DCHECK(color_provider);
