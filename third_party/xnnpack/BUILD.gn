@@ -396,6 +396,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
   source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
     cflags = [
+      "-mf16c",
+      "-mfma",
       "-mavx512bw",
       "-mavx512cd",
       "-mavx512dq",
