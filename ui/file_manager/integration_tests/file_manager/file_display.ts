@@ -314,7 +314,7 @@ export async function fileDisplayUsbPartition() {
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('FAKEUSB');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
+    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]!);
     chrome.test.assertTrue('removable' === childVolumeType);
   } else {
     // Wait for USB to appear in the directory tree.
@@ -326,7 +326,7 @@ export async function fileDisplayUsbPartition() {
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('fake-usb');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
+    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]!);
     chrome.test.assertTrue('removable' !== childVolumeType);
   }
 }

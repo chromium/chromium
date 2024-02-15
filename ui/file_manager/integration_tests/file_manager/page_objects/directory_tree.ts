@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {type ElementObject} from '../../prod/file_manager/shared_types.js';
 import {RemoteCallFilesApp} from '../../remote_call.js';
 import {getCaller, pending, repeatUntil, sendTestMessage} from '../../test_util.js';
 
@@ -10,22 +11,18 @@ const FAKE_ENTRY_PATH_PREFIX = 'fake-entry:';
 const ENTRY_LIST_PATH_PREFIX = 'entry-list:';
 const REAL_ENTRY_PATH_PREFIX = 'filesystem:chrome://file-manager/external';
 
-/**
- * This serves as the additional selector of the tree item.
- *
- * @typedef {{
- *   expanded: (?boolean|undefined),
- *   selected: (?boolean|undefined),
- *   focused: (?boolean|undefined),
- *   shortcut: (?boolean|undefined),
- *   renaming: (?boolean|undefined),
- *   acceptDrop: (?boolean|undefined),
- *   hasChildren: (?boolean|undefined),
- *   mayHaveChildren: (?boolean|undefined),
- *   currentDirectory: (?boolean|undefined),
- * }}
- */
-let ModifierOptions;
+/** This serves as the additional selector of the tree item. */
+interface ModifierOptions {
+  expanded?: boolean;
+  selected?: boolean;
+  focused?: boolean;
+  shortcut?: boolean;
+  renaming?: boolean;
+  acceptDrop?: boolean;
+  hasChildren?: boolean;
+  mayHaveChildren?: boolean;
+  currentDirectory?: boolean;
+}
 
 /**
  * Page object for Directory Tree, this class abstracts all the selectors
@@ -35,12 +32,9 @@ export class DirectoryTreePageObject {
   /**
    * Return a singleton instance of DirectoryTreePageObject. This will make sure
    * the directory tree DOM element is ready.
-   *
-   * @param {string} appId
-   * @param {!RemoteCallFilesApp} remoteCall
-   * @return {!Promise<DirectoryTreePageObject>}
    */
-  static async create(appId, remoteCall) {
+  static async create(appId: string, remoteCall: RemoteCallFilesApp):
+      Promise<DirectoryTreePageObject> {
     const useNewTree =
         await sendTestMessage({name: 'isNewDirectoryTreeEnabled'}) === 'true';
     const directoryTree =
@@ -49,24 +43,17 @@ export class DirectoryTreePageObject {
     return directoryTree;
   }
 
+  private selectors_: DirectoryTreeSelectors;
+
   /**
-   * Note: do not use constructor directly, use `create` static method
-   * instead, which will fetch the `useNewTree_` value and make sure the tree
-   * DOM element is ready.
-   *
-   * @param {string} appId
-   * @param {!RemoteCallFilesApp} remoteCall
-   * @param {boolean} useNewTree
+   * Note: do not use constructor directly, use `create` static method instead,
+   * which will fetch the `useNewTree_` value and make sure the tree DOM element
+   * is ready.
    */
-  constructor(appId, remoteCall, useNewTree) {
-    /** @private {string} */
-    this.appId_ = appId;
-    /** @private {!RemoteCallFilesApp} */
-    this.remoteCall_ = remoteCall;
-    /** @private {boolean} */
-    this.useNewTree_ = useNewTree;
-    /** @private {!DirectoryTreeSelectors_} */
-    this.selectors_ = new DirectoryTreeSelectors_(useNewTree);
+  constructor(
+      private appId_: string, private remoteCall_: RemoteCallFilesApp,
+      private useNewTree_: boolean) {
+    this.selectors_ = new DirectoryTreeSelectors(useNewTree_);
   }
 
   get isNewTree() {
@@ -75,27 +62,24 @@ export class DirectoryTreePageObject {
 
   /**
    * Returns the selector for the tree root.
-   * @return {string}
    */
-  get rootSelector() {
+  get rootSelector(): string {
     return this.selectors_.root;
   }
 
   /**
    * Returns the selector for the tree container.
-   * @return {string}
    */
-  get containerSelector() {
+  get containerSelector(): string {
     return this.selectors_.container;
   }
 
   /**
    * Returns the selector by the tree label.
    *
-   * @param {string} label Label of the tree item
-   * @return {string}
+   * @param label Label of the tree item
    */
-  itemSelectorByLabel(label) {
+  itemSelectorByLabel(label: string): string {
     return this.selectors_.itemByLabel(label);
   }
 
@@ -103,13 +87,10 @@ export class DirectoryTreePageObject {
    * Wait for the selected(aka "active" in the old tree implementation) tree
    * item with the label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async waitForSelectedItemByLabel(label) {
+  async waitForSelectedItemByLabel(label: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
-        // @ts-ignore: error TS2345: Argument of type '{ selected: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
   }
 
@@ -117,13 +98,10 @@ export class DirectoryTreePageObject {
    * Wait for the selected(aka "active" in the old tree implementation) tree
    * item with the label to be lost.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForSelectedItemLostByLabel(label) {
+  async waitForSelectedItemLostByLabel(label: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
-        // @ts-ignore: error TS2345: Argument of type '{ selected: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
   }
 
@@ -131,13 +109,10 @@ export class DirectoryTreePageObject {
    * Wait for the tree item with the label to have focused (aka "selected" in
    * the old tree implementation) state.
    *
-   * @param {string} label Label of the tree item
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item
    */
-  async waitForFocusedItemByLabel(label) {
+  async waitForFocusedItemByLabel(label: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
-        // @ts-ignore: error TS2345: Argument of type '{ focused: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
   }
 
@@ -145,10 +120,9 @@ export class DirectoryTreePageObject {
    * Wait for the tree item with the label to be focusable (aka "selected" in
    * the old tree implementation).
    *
-   * @param {string} label Label of the tree item
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item
    */
-  async waitForFocusableItemByLabel(label) {
+  async waitForFocusableItemByLabel(label: string): Promise<ElementObject> {
     if (this.isNewTree) {
       return this.remoteCall_.waitForElement(
           // Go inside shadow DOM to check tabindex.
@@ -156,8 +130,6 @@ export class DirectoryTreePageObject {
           [this.selectors_.itemByLabel(label), 'li[tabindex="0"]']);
     }
     return this.remoteCall_.waitForElement(
-        // @ts-ignore: error TS2345: Argument of type '{ focused: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
   }
 
@@ -165,15 +137,12 @@ export class DirectoryTreePageObject {
    * Wait for the tree item with the type to have focused (aka "selected" in the
    * old tree implementation) state.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async waitForFocusedItemByType(type) {
+  async waitForFocusedItemByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(
-            // @ts-ignore: error TS2345: Argument of type '{ focused: true; }'
-            // is not assignable to parameter of type 'ModifierOptions'.
             type, /* isPlaceholder= */ false, {focused: true}));
   }
 
@@ -181,15 +150,12 @@ export class DirectoryTreePageObject {
    * Wait for the shortcut tree item with the label to have focused (aka
    * "selected" in the old tree implementation) state.
    *
-   * @param {string} label Label of the tree item
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item
    */
-  async waitForFocusedShortcutItemByLabel(label) {
+  async waitForFocusedShortcutItemByLabel(label: string):
+      Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ focused: true;
-        // shortcut: true; }' is not assignable to parameter of type
-        // 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {focused: true, shortcut: true}));
   }
 
@@ -197,27 +163,26 @@ export class DirectoryTreePageObject {
    * Wait for the tree item with the label to have the the current directory
    * aria-description attribute.
    *
-   * @param {string} label Label of the tree item
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item
    */
-  async waitForCurrentDirectoryItemByLabel(label) {
+  async waitForCurrentDirectoryItemByLabel(label: string):
+      Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ currentDirectory: true;
-        // }' is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {currentDirectory: true}));
   }
 
   /**
    * Wait for the child items of the specific parent item to match the count.
    *
-   * @param {string} parentLabel Label of the parent tree item.
-   * @param {number} count Expected number of the child items.
-   * @param {boolean=} excludeEmptyChild Set true to only return child items
-   *     with nested children.
-   * @return {!Promise<void>}
+   * @param parentLabel Label of the parent tree item.
+   * @param count Expected number of the child items.
+   * @param excludeEmptyChild Set true to only return child items with nested
+   *     children.
    */
-  async waitForChildItemsCountByLabel(parentLabel, count, excludeEmptyChild) {
+  async waitForChildItemsCountByLabel(
+      parentLabel: string, count: number,
+      excludeEmptyChild?: boolean): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(parentLabel);
     const childItemsSelector = excludeEmptyChild ?
         this.selectors_.nonEmptyChildItems(itemSelector) :
@@ -229,75 +194,48 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the placeholder tree items specified by type to match the count.
    *
-   * @param {string} type Type of the placeholder tree item.
-   * @param {number} count Expected number of the child items.
-   * @return {!Promise<void>}
+   * @param type Type of the placeholder tree item.
+   * @param count Expected number of the child items.
    */
-  async waitForPlaceholderItemsCountByType(type, count) {
+  async waitForPlaceholderItemsCountByType(type: string, count: number):
+      Promise<void> {
     const itemSelector =
         this.selectors_.itemByType(type, /* isPlaceholder= */ true);
     return this.remoteCall_.waitForElementsCount(
         this.appId_, [itemSelector], count);
   }
 
-  /**
-   * Get the currently focused tree item.
-   *
-   * @return {!Promise<?import('../../prod/file_manager/shared_types.js').ElementObject>}
-   */
-  async getFocusedItem() {
+  /** Get the currently focused tree item. */
+  async getFocusedItem(): Promise<null|ElementObject> {
     const focusedItemSelector = this.selectors_.attachModifier(
-        // @ts-ignore: error TS2345: Argument of type '{ focused: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         `${this.selectors_.root} ${this.selectors_.item}`, {focused: true});
-    const elements = await this.remoteCall_.callRemoteTestUtil(
+    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
         'deepQueryAllElements', this.appId_, [focusedItemSelector]);
     if (elements && elements.length > 0) {
-      return elements[0];
+      return elements[0]!;
     }
     return null;
   }
 
-  /**
-   * Get the label of the tree item.
-   *
-   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject}
-   *     item The tree item.
-   * @returns {string}
-   */
-  getItemLabel(item) {
+  /** Gets the label of the tree item. */
+  getItemLabel(item: ElementObject|null): string {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
     }
-    // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
-    // type 'string'.
-    return this.useNewTree_ ? item.attributes['label'] :
-                              item.attributes['entry-label'];
+    return this.useNewTree_ ? item.attributes['label']! :
+                              item.attributes['entry-label']!;
   }
 
-  /**
-   * Get the volume type of the tree item.
-   *
-   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject|undefined}
-   *     item The tree item.
-   * @returns {string}
-   */
-  getItemVolumeType(item) {
+  /** Gets the volume type of the tree item. */
+  getItemVolumeType(item: ElementObject|null): string {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
     }
-    // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
-    // type 'string'.
-    return item.attributes['volume-type-for-testing'];
+    return item.attributes['volume-type-for-testing']!;
   }
 
-  /**
-   * Check if the tree item is disabled or not.
-   *
-   * @param {?import('../../prod/file_manager/shared_types.js').ElementObject}
-   *     item The tree item.
-   */
-  assertItemDisabled(item) {
+  /** Check if the tree item is disabled or not. */
+  assertItemDisabled(item: ElementObject|null) {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
     }
@@ -309,19 +247,17 @@ export class DirectoryTreePageObject {
    * Wait for the item with the label to get the `has-children` attribute with
    * the specified value.
    *
-   * @param {string} label Label of the tree item.
-   * @param {boolean} hasChildren should the tree item have children or not.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
+   * @param hasChildren should the tree item have children or not.
    */
-  async waitForItemToHaveChildrenByLabel(label, hasChildren) {
+  async waitForItemToHaveChildrenByLabel(label: string, hasChildren: boolean):
+      Promise<ElementObject> {
     // Expand the item first before checking its children.
     if (hasChildren) {
       await this.expandTreeItemByLabel(label);
     }
     return this.remoteCall_.waitForElement(
         this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ hasChildren: boolean;
-        // }' is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {hasChildren: hasChildren}));
   }
 
@@ -329,11 +265,11 @@ export class DirectoryTreePageObject {
    * Wait for the item with the type to get the `has-children` attribute with
    * the specified value.
    *
-   * @param {string} type Type of the tree item.
-   * @param {boolean} hasChildren should the tree item have children or not.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
+   * @param hasChildren should the tree item have children or not.
    */
-  async waitForItemToHaveChildrenByType(type, hasChildren) {
+  async waitForItemToHaveChildrenByType(type: string, hasChildren: boolean):
+      Promise<ElementObject> {
     // Expand the item first before checking its children.
     if (hasChildren) {
       await this.expandTreeItemByType(type);
@@ -341,36 +277,28 @@ export class DirectoryTreePageObject {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(
-            // @ts-ignore: error TS2345: Argument of type '{ hasChildren:
-            // boolean; }' is not assignable to parameter of type
-            // 'ModifierOptions'.
             type, /* isPlaceholder= */ false, {hasChildren: hasChildren}));
   }
 
   /**
    * Wait for the item with the label to get the `may-have-children` attribute.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToMayHaveChildrenByLabel(label) {
+  async waitForItemToMayHaveChildrenByLabel(label: string):
+      Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ mayHaveChildren: true;
-        // }' is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {mayHaveChildren: true}));
   }
 
   /**
    * Wait for the item with the label to be expanded.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToExpandByLabel(label) {
+  async waitForItemToExpandByLabel(label: string): Promise<void> {
     const expandedItemSelector =
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {expanded: true});
     await this.remoteCall_.waitForElement(this.appId_, expandedItemSelector);
   }
@@ -378,13 +306,10 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the item with the label to be collapsed.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToCollapseByLabel(label) {
+  async waitForItemToCollapseByLabel(label: string): Promise<void> {
     const collapsedItemSelector =
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: false; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {expanded: false});
     await this.remoteCall_.waitForElement(this.appId_, collapsedItemSelector);
   }
@@ -392,56 +317,52 @@ export class DirectoryTreePageObject {
   /**
    * Expands a single tree item with the specified label by clicking on its
    * expand icon.
-   * @param {string} label Label of the tree item we want to expand on.
-   * @param {boolean=} allowEmpty Allow expanding tree item without
-   *     any children.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item we want to expand on.
+   * @param allowEmpty Allow expanding tree item without any children.
    */
-  async expandTreeItemByLabel(label, allowEmpty) {
+  async expandTreeItemByLabel(label: string, allowEmpty?: boolean):
+      Promise<void> {
     await this.expandTreeItem_(this.selectors_.itemByLabel(label), allowEmpty);
   }
 
   /**
    * Expands a single tree item with the specified type by clicking on its
    * expand icon.
-   * @param {string} type Type of the tree item we want to expand on.
-   * @param {boolean=} allowEmpty Allow expanding tree item without
-   *     any children.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item we want to expand on.
+   * @param allowEmpty Allow expanding tree item without any children.
    */
-  async expandTreeItemByType(type, allowEmpty) {
+  async expandTreeItemByType(type: string, allowEmpty?: boolean):
+      Promise<void> {
     await this.expandTreeItem_(this.selectors_.itemByType(type), allowEmpty);
   }
 
   /**
    * Expands a single tree item with the specified full path by clicking on its
    * expand icon.
-   * @param {string} path Path of the tree item we want to expand on.
-   * @return {!Promise<void>}
+   * @param path Path of the tree item we want to expand on.
    */
-  async expandTreeItemByPath(path) {
+  async expandTreeItemByPath(path: string): Promise<void> {
     await this.expandTreeItem_(this.selectors_.itemByPath(path));
   }
 
   /**
    * Collapses a single tree item with the specified label by clicking on its
    * expand icon.
-   * @param {string} label Label of the tree item we want to collapse on.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item we want to collapse on.
    */
-  async collapseTreeItemByLabel(label) {
+  async collapseTreeItemByLabel(label: string): Promise<void> {
     await this.collapseTreeItem_(this.selectors_.itemByLabel(label));
   }
 
   /**
    * Expands each directory in the breadcrumbs path.
    *
-   * @param {string} breadcrumbsPath Path based in the entry labels like:
+   * @param breadcrumbsPath Path based in the entry labels like:
    *     /My files/Downloads/photos.
-   * @return {!Promise<string>} Promise fulfilled on success with the selector
-   *    query of the last directory expanded.
+   * @return Promise fulfilled on success with the selector query of the last
+   *    directory expanded.
    */
-  async recursiveExpand(breadcrumbsPath) {
+  async recursiveExpand(breadcrumbsPath: string): Promise<string> {
     const paths = breadcrumbsPath.split('/').filter(path => path);
 
     // Expand each directory in the breadcrumb.
@@ -452,11 +373,10 @@ export class DirectoryTreePageObject {
       await this.remoteCall_.waitForElement(this.appId_, query);
 
       // Only expand if element isn't expanded yet.
-      const elements = await this.remoteCall_.callRemoteTestUtil(
-          'queryAllElements', this.appId_,
-          // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-          // not assignable to parameter of type 'ModifierOptions'.
-          [this.selectors_.attachModifier(query, {expanded: true})]);
+      const elements =
+          await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+              'queryAllElements', this.appId_,
+              [this.selectors_.attachModifier(query, {expanded: true})]);
       if (elements.length === 0) {
         await this.expandTreeItem_(query);
       }
@@ -468,14 +388,14 @@ export class DirectoryTreePageObject {
   /**
    * Focus the directory tree and navigates using mouse clicks.
    *
-   * @param {string} breadcrumbsPath Path based on the entry labels like:
+   * @param breadcrumbsPath Path based on the entry labels like:
    *     /My files/Downloads/photos to item that should navigate to.
-   * @param {string=} shortcutToPath For shortcuts it navigates to a different
-   *   breadcrumbs path, like /My Drive/ShortcutName.
-   * @return {!Promise<string>} the final selector used to click on the
-   * desired tree item.
+   * @param shortcutToPath For shortcuts it navigates to a different breadcrumbs
+   *     path, like /My Drive/ShortcutName.
+   * @return the final selector used to click on the desired tree item.
    */
-  async navigateToPath(breadcrumbsPath, shortcutToPath) {
+  async navigateToPath(breadcrumbsPath: string, shortcutToPath?: string):
+      Promise<string> {
     // Focus the directory tree.
     await this.focusTree();
 
@@ -484,14 +404,12 @@ export class DirectoryTreePageObject {
     if (this.useNewTree_ && paths[1] === 'My Drive') {
       paths.unshift('', 'Google Drive');
     }
-    const leaf = paths.pop();
+    const leaf = paths.pop()!;
 
     // Expand all parents of the leaf entry.
     let query = await this.recursiveExpand(paths.join('/'));
 
     // Navigate to the final entry.
-    // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-    // assignable to parameter of type 'string'.
     query += ` ${this.selectors_.itemItselfByLabel(leaf)}`;
     await this.remoteCall_.waitAndClickElement(this.appId_, query);
 
@@ -516,10 +434,8 @@ export class DirectoryTreePageObject {
   /**
    * Trigger a keydown event with ArrowUp key to move the focus to the previous
    * tree item.
-   *
-   * @return {!Promise<void>}
    */
-  async focusPreviousItem() {
+  async focusPreviousItem(): Promise<void> {
     // Focus the tree first before keyboard event.
     await this.focusTree();
 
@@ -533,9 +449,8 @@ export class DirectoryTreePageObject {
    * Trigger a keydown event with ArrowDown key to move the focus to the next
    * tree item.
    *
-   * @return {!Promise<void>}
    */
-  async focusNextItem() {
+  async focusNextItem(): Promise<void> {
     // Focus the tree first before keyboard event.
     await this.focusTree();
 
@@ -548,9 +463,8 @@ export class DirectoryTreePageObject {
   /**
    * Trigger a keydown event with Enter key to select currently focused item.
    *
-   * @return {!Promise<void>}
    */
-  async selectFocusedItem() {
+  async selectFocusedItem(): Promise<void> {
     // Focus the tree first before keyboard event.
     await this.focusTree();
 
@@ -563,10 +477,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async waitForItemByLabel(label) {
+  async waitForItemByLabel(label: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label));
   }
@@ -574,10 +487,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item by its label to be lost.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemLostByLabel(label) {
+  async waitForItemLostByLabel(label: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_, this.selectors_.itemByLabel(label));
   }
@@ -585,10 +497,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item by its full path.
    *
-   * @param {string} path Path of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param path Path of the tree item.
    */
-  async waitForItemByPath(path) {
+  async waitForItemByPath(path: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_, this.selectors_.itemByPath(path));
   }
@@ -596,42 +507,31 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item by its full path to be lost.
    *
-   * @param {string} path Path of the tree item.
-   * @return {!Promise<void>}
+   * @param path Path of the tree item.
    */
-  async waitForItemLostByPath(path) {
+  async waitForItemLostByPath(path: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_, this.selectors_.itemByPath(path));
   }
 
-  /**
-   * Returns the labels for all visible tree items.
-   *
-   * @return {!Promise<!Array<string>>}
-   */
-  async getVisibleItemLabels() {
-    const allItems =
-        /**
-           @type {!Array<!import('../../prod/file_manager/shared_types.js').ElementObject>}
-             */
-        (await this.remoteCall_.callRemoteTestUtil(
-            'queryAllElements', this.appId_, [
-              `${this.selectors_.root} ${this.selectors_.item}`,
-              ['visibility'],
-            ]));
+  /** Returns the labels for all visible tree items. */
+  async getVisibleItemLabels(): Promise<string[]> {
+    const allItems = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
+        'queryAllElements', this.appId_, [
+          `${this.selectors_.root} ${this.selectors_.item}`,
+          ['visibility'],
+        ]);
     return allItems
-        // @ts-ignore: error TS18048: 'item.styles' is possibly 'undefined'.
-        .filter(item => !item.hidden && item.styles['visibility'] !== 'hidden')
+        .filter(item => !item.hidden && item.styles!['visibility'] !== 'hidden')
         .map(item => this.getItemLabel(item));
   }
 
   /**
    * Wait for the tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async waitForItemByType(type) {
+  async waitForItemByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
@@ -640,10 +540,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item by its type to be lost.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item.
    */
-  async waitForItemLostByType(type) {
+  async waitForItemLostByType(type: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
@@ -652,10 +551,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the placeholder tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async waitForPlaceholderItemByType(type) {
+  async waitForPlaceholderItemByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
@@ -664,10 +562,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the placeholder tree item by its type to be lost.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item.
    */
-  async waitForPlaceholderItemLostByType(type) {
+  async waitForPlaceholderItemLostByType(type: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
@@ -676,37 +573,31 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the shortcut tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async waitForShortcutItemByLabel(label) {
+  async waitForShortcutItemByLabel(label: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
-        // @ts-ignore: error TS2345: Argument of type '{ shortcut: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
   /**
    * Wait for the shortcut tree item by its label to be lost.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForShortcutItemLostByLabel(label) {
+  async waitForShortcutItemLostByLabel(label: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
-        // @ts-ignore: error TS2345: Argument of type '{ shortcut: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
   /**
    * Wait for the child tree item under a specified parent item by their label.
    *
-   * @param {string} parentLabel Label of the parent item.
-   * @param {string} childLabel Label of the child item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param parentLabel Label of the parent item.
+   * @param childLabel Label of the child item.
    */
-  async waitForChildItemByLabel(parentLabel, childLabel) {
+  async waitForChildItemByLabel(parentLabel: string, childLabel: string):
+      Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.childItem(
@@ -718,11 +609,11 @@ export class DirectoryTreePageObject {
    * Wait for the child tree item to be lost under a specified parent item by
    * its label.
    *
-   * @param {string} parentLabel Label of the parent item.
-   * @param {string} childLabel Label of the child item.
-   * @return {!Promise<void>}
+   * @param parentLabel Label of the parent item.
+   * @param childLabel Label of the child item.
    */
-  async waitForChildItemLostByLabel(parentLabel, childLabel) {
+  async waitForChildItemLostByLabel(parentLabel: string, childLabel: string):
+      Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_,
         this.selectors_.childItem(
@@ -733,10 +624,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the group root tree item (e.g. entry list) by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async waitForGroupRootItemByType(type) {
+  async waitForGroupRootItemByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_, this.selectors_.groupRootItemByType(type));
   }
@@ -744,10 +634,10 @@ export class DirectoryTreePageObject {
   /**
    * Returns the child items of a parent item specified by its label.
    *
-   * @param {string} parentLabel Label of the parent item.
-   * @return {!Promise<!Array<!import('../../prod/file_manager/shared_types.js').ElementObject>>}
+   * @param parentLabel Label of the parent item.
    */
-  async getChildItemsByParentLabel(parentLabel) {
+  async getChildItemsByParentLabel(parentLabel: string):
+      Promise<ElementObject[]> {
     const parentItemSelector = this.selectors_.itemByLabel(parentLabel);
     const childItemsSelector = this.selectors_.childItems(parentItemSelector);
     return this.remoteCall_.callRemoteTestUtil(
@@ -757,10 +647,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the eject button under the tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async waitForItemEjectButtonByType(type) {
+  async waitForItemEjectButtonByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
@@ -769,10 +658,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the eject button to be lost under the tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item.
    */
-  async waitForItemEjectButtonLostByType(type) {
+  async waitForItemEjectButtonLostByType(type: string): Promise<void> {
     await this.remoteCall_.waitForElementLost(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
@@ -781,10 +669,9 @@ export class DirectoryTreePageObject {
   /**
    * Click the eject button under the tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param type Type of the tree item.
    */
-  async ejectItemByType(type) {
+  async ejectItemByType(type: string): Promise<ElementObject> {
     return this.remoteCall_.waitAndClickElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByType(type)));
@@ -793,10 +680,9 @@ export class DirectoryTreePageObject {
   /**
    * Click the eject button under the tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async ejectItemByLabel(label) {
+  async ejectItemByLabel(label: string): Promise<ElementObject> {
     return this.remoteCall_.waitAndClickElement(
         this.appId_,
         this.selectors_.ejectButton(this.selectors_.itemByLabel(label)));
@@ -805,10 +691,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the expand icon under the tree item to show by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemExpandIconToShowByLabel(label) {
+  async waitForItemExpandIconToShowByLabel(label: string): Promise<void> {
     const expandIcon =
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
     const caller = getCaller();
@@ -818,8 +703,7 @@ export class DirectoryTreePageObject {
           expandIcon,
           ['visibility'],
       );
-      // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
-      if (element.styles['visibility'] !== 'visible') {
+      if (element.styles!['visibility'] !== 'visible') {
         return pending(
             caller, `Expand icon for tree item ${label} is still hidden.`);
       }
@@ -830,10 +714,9 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the expand icon under the tree item to hide by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemExpandIconToHideByLabel(label) {
+  async waitForItemExpandIconToHideByLabel(label: string): Promise<void> {
     const expandIcon =
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
     const caller = getCaller();
@@ -843,8 +726,7 @@ export class DirectoryTreePageObject {
           expandIcon,
           ['visibility'],
       );
-      // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
-      if (element.styles['visibility'] !== 'hidden') {
+      if (element.styles!['visibility'] !== 'hidden') {
         return pending(
             caller, `Expand icon for tree item ${label} is still showing.`);
       }
@@ -855,17 +737,12 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item specified by label to accept drag/drop.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToAcceptDropByLabel(label) {
+  async waitForItemToAcceptDropByLabel(label: string): Promise<void> {
     const itemAcceptDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: false; }'
-        // is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: false});
     await this.remoteCall_.waitForElement(this.appId_, itemAcceptDrop);
     await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
@@ -874,17 +751,12 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item specified by label to deny drag/drop.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToDenyDropByLabel(label) {
+  async waitForItemToDenyDropByLabel(label: string): Promise<void> {
     const itemAcceptDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: false; }'
-        // is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: false});
     await this.remoteCall_.waitForElement(this.appId_, itemDenyDrop);
     await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
@@ -894,13 +766,14 @@ export class DirectoryTreePageObject {
    * Drag files specified by `sourceQuery` to the target tree item specified by
    * the `targetLabel`.
    *
-   * @param {string} sourceQuery Query to specify the source element.
-   * @param {string} targetLabel The drop target tree item label.
-   * @param {boolean} skipDrop Set true to drag over (hover) the target
-   *    only, and not send target drop or source dragend events.
-   * @return {!Promise<!function(string, boolean):Promise<void>>}
+   * @param sourceQuery Query to specify the source element.
+   * @param targetLabel The drop target tree item label.
+   * @param skipDrop Set true to drag over (hover) the target only, and not send
+   *    target drop or source dragend events.
    */
-  async dragFilesToItemByLabel(sourceQuery, targetLabel, skipDrop) {
+  async dragFilesToItemByLabel(
+      sourceQuery: string, targetLabel: string, skipDrop: boolean):
+      Promise<((dragEndQuery: string, dragLeave: boolean) => Promise<void>)> {
     const target = this.selectors_.itemByLabel(targetLabel);
     chrome.test.assertTrue(
         await this.remoteCall_.callRemoteTestUtil(
@@ -915,15 +788,15 @@ export class DirectoryTreePageObject {
   }
 
   /**
-   *
-   * @param {string} targetQuery Query to specify the drop target.
-   * @param {string} dragEndQuery Query to specify which element to trigger
-   *     the dragend event.
-   * @param {boolean} dragLeave Set true to send a dragleave event to
-   *    the target instead of a drop event.
-   * @return {!Promise<void>}
+   * @param targetQuery Query to specify the drop target.
+   * @param dragEndQuery Query to specify which element to trigger the dragend
+   *     event.
+   * @param dragLeave Set true to send a dragleave event to the target instead
+   *    of a drop event.
    */
-  async finishDrop_(targetQuery, dragEndQuery, dragLeave) {
+  private async finishDrop_(
+      targetQuery: string, dragEndQuery: string,
+      dragLeave: boolean): Promise<void> {
     chrome.test.assertTrue(
         await this.remoteCall_.callRemoteTestUtil(
             'fakeDragLeaveOrDrop', this.appId_,
@@ -934,12 +807,9 @@ export class DirectoryTreePageObject {
   /**
    * Use keyboard shortcut to trigger rename for a tree item.
    *
-   * @param {string} label Label of the tree item to trigger rename.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item to trigger rename.
    */
-  async triggerRenameWithKeyboardByLabel(label) {
-    // @ts-ignore: error TS2345: Argument of type '{ focused: true; }' is not
-    // assignable to parameter of type 'ModifierOptions'.
+  async triggerRenameWithKeyboardByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label, {focused: true});
 
     // Press rename <Ctrl>-Enter keyboard shortcut on the tree item.
@@ -957,10 +827,9 @@ export class DirectoryTreePageObject {
   /**
    * Waits for the rename input to show inside the tree item.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<!import('../../prod/file_manager/shared_types.js').ElementObject>}
+   * @param label Label of the tree item.
    */
-  async waitForRenameInputByLabel(label) {
+  async waitForRenameInputByLabel(label: string): Promise<ElementObject> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const textInput = this.selectors_.renameInput(itemSelector);
     return this.remoteCall_.waitForElement(this.appId_, textInput);
@@ -970,11 +839,11 @@ export class DirectoryTreePageObject {
    * Input the new name to the tree item specified by its label without pressing
    * Enter to commit.
    *
-   * @param {string} label Label of the tree item.
-   * @param {string} newName The new name.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
+   * @param newName The new name.
    */
-  async inputNewNameForItemByLabel(label, newName) {
+  async inputNewNameForItemByLabel(label: string, newName: string):
+      Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     // Check: the renaming text input element should appear.
     const textInputSelector = this.selectors_.renameInput(itemSelector);
@@ -987,11 +856,10 @@ export class DirectoryTreePageObject {
   /**
    * Renames the tree item specified by the label to the new name.
    *
-   * @param {string} label Label of the tree item.
-   * @param {string} newName The new name.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
+   * @param newName The new name.
    */
-  async renameItemByLabel(label, newName) {
+  async renameItemByLabel(label: string, newName: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const textInputSelector = this.selectors_.renameInput(itemSelector);
     await this.inputNewNameForItemByLabel(label, newName);
@@ -1006,8 +874,6 @@ export class DirectoryTreePageObject {
 
     // Wait until renaming is complete.
     const renamingItemSelector = this.selectors_.attachModifier(
-        // @ts-ignore: error TS2345: Argument of type '{ renaming: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         `${this.selectors_.root} ${this.selectors_.item}`, {renaming: true});
     await this.remoteCall_.waitForElementLost(
         this.appId_, renamingItemSelector);
@@ -1016,17 +882,12 @@ export class DirectoryTreePageObject {
   /**
    * Wait for the tree item specified by label to finish drag/drop.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async waitForItemToFinishDropByLabel(label) {
+  async waitForItemToFinishDropByLabel(label: string): Promise<void> {
     const itemAcceptDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: true});
     const itemDenyDrop =
-        // @ts-ignore: error TS2345: Argument of type '{ acceptDrop: false; }'
-        // is not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {acceptDrop: false});
     await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
     await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
@@ -1035,20 +896,18 @@ export class DirectoryTreePageObject {
   /**
    * Select the tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async selectItemByLabel(label) {
+  async selectItemByLabel(label: string): Promise<void> {
     await this.selectItem_(this.selectors_.itemByLabel(label));
   }
 
   /**
    * Select the tree item by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item.
    */
-  async selectItemByType(type) {
+  async selectItemByType(type: string): Promise<void> {
     if (this.selectors_.isInsideDrive(type)) {
       await this.expandTreeItemByLabel('Google Drive');
     }
@@ -1059,30 +918,27 @@ export class DirectoryTreePageObject {
   /**
    * Select the tree item by its path.
    *
-   * @param {string} path Full path of the tree item.
-   * @return {!Promise<void>}
+   * @param path Full path of the tree item.
    */
-  async selectItemByPath(path) {
+  async selectItemByPath(path: string): Promise<void> {
     await this.selectItem_(this.selectors_.itemByPath(path));
   }
 
   /**
    * Select the group root tree item (e.g. entry list) by its type.
    *
-   * @param {string} type Type of the tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the tree item.
    */
-  async selectGroupRootItemByType(type) {
+  async selectGroupRootItemByType(type: string): Promise<void> {
     await this.selectItem_(this.selectors_.groupRootItemByType(type));
   }
 
   /**
    * Select the placeholder tree item by its type.
    *
-   * @param {string} type Type of the placeholder tree item.
-   * @return {!Promise<void>}
+   * @param type Type of the placeholder tree item.
    */
-  async selectPlaceholderItemByType(type) {
+  async selectPlaceholderItemByType(type: string): Promise<void> {
     await this.selectItem_(
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
   }
@@ -1090,56 +946,47 @@ export class DirectoryTreePageObject {
   /**
    * Select the shortcut tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async selectShortcutItemByLabel(label) {
+  async selectShortcutItemByLabel(label: string): Promise<void> {
     await this.selectItem_(
-        // @ts-ignore: error TS2345: Argument of type '{ shortcut: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
   /**
    * Show context menu for the tree item by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async showContextMenuForItemByLabel(label) {
+  async showContextMenuForItemByLabel(label: string): Promise<void> {
     await this.showItemContextMenu_(this.selectors_.itemByLabel(label));
   }
 
   /**
    * Show context menu for the tree item by its full path.
    *
-   * @param {string} path Path of the tree item.
-   * @return {!Promise<void>}
+   * @param path Path of the tree item.
    */
-  async showContextMenuForItemByPath(path) {
+  async showContextMenuForItemByPath(path: string): Promise<void> {
     await this.showItemContextMenu_(this.selectors_.itemByPath(path));
   }
 
   /**
    * Show context menu for the shortcut item by its label.
    *
-   * @param {string} label Label of the shortcut tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the shortcut tree item.
    */
-  async showContextMenuForShortcutItemByLabel(label) {
+  async showContextMenuForShortcutItemByLabel(label: string): Promise<void> {
     await this.showItemContextMenu_(
-        // @ts-ignore: error TS2345: Argument of type '{ shortcut: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
   /**
    * Show context menu for the eject button inside the tree item.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async showContextMenuForEjectButtonByLabel(label) {
+  async showContextMenuForEjectButtonByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const ejectButton = this.selectors_.ejectButton(itemSelector);
     await this.remoteCall_.waitForElement(this.appId_, ejectButton);
@@ -1156,10 +1003,9 @@ export class DirectoryTreePageObject {
   /**
    * Show context menu for the rename input inside the tree item.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async showContextMenuForRenameInputByLabel(label) {
+  async showContextMenuForRenameInputByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const renameInput = this.selectors_.renameInput(itemSelector);
     await this.remoteCall_.waitAndRightClick(this.appId_, renameInput);
@@ -1168,9 +1014,8 @@ export class DirectoryTreePageObject {
   /**
    * Focus the tree.
    *
-   * @return {!Promise<void>}
    */
-  async focusTree() {
+  async focusTree(): Promise<void> {
     await this.remoteCall_.callRemoteTestUtil(
         'focus', this.appId_, [this.selectors_.root]);
   }
@@ -1178,10 +1023,9 @@ export class DirectoryTreePageObject {
   /**
    * Send a blur even to the tree item specified by its label.
    *
-   * @param {string} label Label of the tree item.
-   * @return {!Promise<void>}
+   * @param label Label of the tree item.
    */
-  async blurItemByLabel(label) {
+  async blurItemByLabel(label: string): Promise<void> {
     const itemSelector = this.selectors_.itemByLabel(label);
     const iconSelector = this.useNewTree_ ?
         [
@@ -1193,44 +1037,27 @@ export class DirectoryTreePageObject {
         'fakeEvent', this.appId_, [iconSelector, 'blur']);
   }
 
-  /**
-   * Show the context menu for a tree item by right clicking it.
-   *
-   * @private
-   * @param {string} itemSelector
-   * @return {!Promise<void>}
-   */
-  async showItemContextMenu_(itemSelector) {
+  /** Show the context menu for a tree item by right clicking it. */
+  private async showItemContextMenu_(itemSelector: string): Promise<void> {
     await this.remoteCall_.waitAndRightClick(this.appId_, itemSelector);
   }
 
-  /**
-   * Select the tree item by clicking it.
-   *
-   * @private
-   * @param {string} itemSelector
-   * @return {!Promise<void>}
-   */
-  async selectItem_(itemSelector) {
+  /** Select the tree item by clicking it. */
+  private async selectItem_(itemSelector: string): Promise<void> {
     await this.remoteCall_.waitAndClickElement(this.appId_, [itemSelector]);
   }
 
   /**
    * Expands a single tree item by clicking on its expand icon.
    *
-   * @private
-   * @param {string} itemSelector Selector to the tree item that should be
-   *     expanded.
-   * @param {boolean=} allowEmpty Allow expanding tree item without
-   *     any children.
-   * @return {!Promise<void>}
+   * @param itemSelector Selector to the tree item that should be expanded.
+   * @param allowEmpty Allow expanding tree item without any children.
    */
-  async expandTreeItem_(itemSelector, allowEmpty) {
+  private async expandTreeItem_(itemSelector: string, allowEmpty?: boolean):
+      Promise<void> {
     await this.remoteCall_.waitForElement(this.appId_, itemSelector);
-    const elements = await this.remoteCall_.callRemoteTestUtil(
+    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         [this.selectors_.attachModifier(itemSelector, {expanded: true})]);
     // If it's already expanded just set the focus on directory tree.
     if (elements.length > 0) {
@@ -1245,26 +1072,18 @@ export class DirectoryTreePageObject {
     if (this.useNewTree_) {
       // Use array here because they are inside shadow DOM.
       expandIcon = [
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: false; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.attachModifier(itemSelector, {expanded: false}),
         '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
       ];
       expandedSubtree = [
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.attachModifier(itemSelector, {expanded: true}),
         '.tree-item[aria-expanded="true"]',
       ];
     } else {
-      // @ts-ignore: error TS2345: Argument of type '{ expanded: false; }' is
-      // not assignable to parameter of type 'ModifierOptions'.
       expandIcon = `${this.selectors_.attachModifier(itemSelector, {
         expanded: false,
       })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
       expandedSubtree = this.selectors_.attachModifier(
-          // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-          // not assignable to parameter of type 'ModifierOptions'.
           `${itemSelector} > .tree-children`, {expanded: true});
     }
 
@@ -1282,17 +1101,12 @@ export class DirectoryTreePageObject {
   /**
    * Collapses a single tree item by clicking on its expand icon.
    *
-   * @private
-   * @param {string} itemSelector Selector to the tree item that should be
-   *     expanded.
-   * @return {!Promise<void>}
+   * @param itemSelector Selector to the tree item that should be expanded.
    */
-  async collapseTreeItem_(itemSelector) {
+  private async collapseTreeItem_(itemSelector: string): Promise<void> {
     await this.remoteCall_.waitForElement(this.appId_, itemSelector);
-    const elements = await this.remoteCall_.callRemoteTestUtil(
+    const elements = await this.remoteCall_.callRemoteTestUtil<ElementObject[]>(
         'queryAllElements', this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: false; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         [this.selectors_.attachModifier(itemSelector, {expanded: false})]);
     // If it's already collapsed just set the focus on directory tree.
     if (elements.length > 0) {
@@ -1306,14 +1120,10 @@ export class DirectoryTreePageObject {
     if (this.useNewTree_) {
       // Use array here because they are inside shadow DOM.
       expandIcon = [
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.attachModifier(itemSelector, {expanded: true}),
         '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
       ];
     } else {
-      // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is not
-      // assignable to parameter of type 'ModifierOptions'.
       expandIcon = `${this.selectors_.attachModifier(itemSelector, {
         expanded: true,
       })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
@@ -1322,8 +1132,6 @@ export class DirectoryTreePageObject {
     await this.remoteCall_.waitAndClickElement(this.appId_, expandIcon);
     await this.remoteCall_.waitForElement(
         this.appId_,
-        // @ts-ignore: error TS2345: Argument of type '{ expanded: false; }' is
-        // not assignable to parameter of type 'ModifierOptions'.
         this.selectors_.attachModifier(itemSelector, {expanded: false}));
     if (!this.useNewTree_) {
       // Force the focus on directory tree.
@@ -1333,113 +1141,61 @@ export class DirectoryTreePageObject {
 }
 
 /**
- * Selectors of DirectoryTree, all the method provided by this class return
- * the selector string.
+ * Selectors of DirectoryTree, all the method provided by this class return the
+ * selector string.
  */
-class DirectoryTreeSelectors_ {
-  /**
-   * @param {boolean} useNewTree
-   */
-  constructor(useNewTree) {
-    /** @type {boolean} */
-    this.useNewTree = useNewTree;
-  }
+class DirectoryTreeSelectors {
+  constructor(public useNewTree: boolean) {}
 
-  /**
-   * The root selector of the directory tree.
-   *
-   * @return {string}
-   */
-  get root() {
+  /** The root selector of the directory tree. */
+  get root(): string {
     return '#directory-tree';
   }
 
-  /**
-   * The container selector of the directory tree.
-   *
-   * @return {string}
-   */
-  get container() {
+  /** The container selector of the directory tree. */
+  get container(): string {
     return '.dialog-navigation-list';
   }
 
-  /**
-   * The tree item selector.
-   *
-   * @return {string}
-   */
-  get item() {
+  /** The tree item selector. */
+  get item(): string {
     return this.useNewTree ? 'xf-tree-item' : '.tree-item';
   }
 
-  /**
-   * Get tree item by the label of the item.
-   *
-   * @param {string} label
-   * @param {ModifierOptions=} modifiers
-   * @return {string}
-   */
-  itemByLabel(label, modifiers) {
+  /** Get tree item by the label of the item. */
+  itemByLabel(label: string, modifiers?: ModifierOptions): string {
     const itemSelector = `${this.root} ${this.itemItselfByLabel(label)}`;
     return this.attachModifier(itemSelector, modifiers);
   }
 
-  /**
-   * Get tree item by the full path of the item.
-   *
-   * @param {string} path
-   * @param {ModifierOptions=} modifiers
-   * @return {string}
-   */
-  itemByPath(path, modifiers) {
+  /** Get tree item by the full path of the item. */
+  itemByPath(path: string, modifiers?: ModifierOptions): string {
     const itemSelector = `${this.root} ${this.itemItselfByPath(path)}`;
     return this.attachModifier(itemSelector, modifiers);
   }
 
-  /**
-   * Get tree item by the type of the item.
-   *
-   * @param {string} type
-   * @param {boolean=} isPlaceholder
-   * @param {ModifierOptions=} modifiers
-   * @return {string}
-   */
-  itemByType(type, isPlaceholder, modifiers) {
+  /** Get tree item by the type of the item. */
+  itemByType(
+      type: string, isPlaceholder?: boolean,
+      modifiers?: ModifierOptions): string {
     const itemSelector =
         `${this.root} ${this.itemItselfByType(type, !!isPlaceholder)}`;
     return this.attachModifier(itemSelector, modifiers);
   }
 
-  /**
-   * Get the group root tree item (e.g. entry list) by the type of the item.
-   *
-   * @param {string} type
-   * @param {ModifierOptions=} modifiers
-   * @return {string}
-   */
-  groupRootItemByType(type, modifiers) {
+  /** Get the group root tree item (e.g. entry list) by the type of the item. */
+  groupRootItemByType(type: string, modifiers?: ModifierOptions): string {
     const itemSelector = `${this.root} ${this.groupRootItemItselfByType(type)}`;
     return this.attachModifier(itemSelector, modifiers);
   }
 
-  /**
-   * Get all expanded tree items.
-   *
-   * @return {string}
-   */
-  expandedItems() {
-    // @ts-ignore: error TS2345: Argument of type '{ expanded: true; }' is not
-    // assignable to parameter of type 'ModifierOptions'.
+  /** Get all expanded tree items. */
+  expandedItems(): string {
     return `${this.root} ${this.attachModifier(this.item, {expanded: true})}`;
   }
 
-  /**
-   * Get all the direct child items of the specific item.
-   *
-   * @param {string} parentSelector
-   * @return {string}
-   */
-  childItems(parentSelector) {
+  /** Get all the direct child items of the specific item. */
+  childItems(parentSelector: string): string {
     return this.useNewTree ?
         `${parentSelector} > ${this.item}` :
         `${parentSelector} > .tree-children > ${this.item}`;
@@ -1448,11 +1204,10 @@ class DirectoryTreeSelectors_ {
   /**
    * Get the direct child item under a specific parent item.
    *
-   * @param {string} parentSelector The parent item selector.
-   * @param {string} childSelector The child item selector.
-   * @return {string}
+   * @param parentSelector The parent item selector.
+   * @param childSelector The child item selector.
    */
-  childItem(parentSelector, childSelector) {
+  childItem(parentSelector: string, childSelector: string): string {
     return this.useNewTree ?
         `${parentSelector} ${childSelector}` :
         `${parentSelector} .tree-children ${childSelector}`;
@@ -1461,56 +1216,33 @@ class DirectoryTreeSelectors_ {
   /**
    * Get all direct child items of the specific item, which are not empty (have
    * nested children inside).
-   *
-   * @param {string} itemSelector
-   * @return {string}
    */
-  nonEmptyChildItems(itemSelector) {
+  nonEmptyChildItems(itemSelector: string): string {
     // For new tree implementation, `hasChildren` will only be true when there's
     // actual tree item rendered inside, hence the use of `mayHaveChildren`
     // here instead of `hasChildren`.
     return this.useNewTree ?
         this.attachModifier(
-            // @ts-ignore: error TS2345: Argument of type '{ mayHaveChildren:
-            // true; }' is not assignable to parameter of type
-            // 'ModifierOptions'.
             `${itemSelector} > ${this.item}`, {mayHaveChildren: true}) :
         this.attachModifier(
             `${itemSelector} > .tree-children > ${this.item} > .tree-row`,
-            // @ts-ignore: error TS2345: Argument of type '{ hasChildren: true;
-            // }' is not assignable to parameter of type 'ModifierOptions'.
             {hasChildren: true});
   }
 
-  /**
-   * Get the eject button of the specific tree item.
-   *
-   * @param {string} itemSelector
-   * @return {string}
-   */
-  ejectButton(itemSelector) {
+  /** Get the eject button of the specific tree item. */
+  ejectButton(itemSelector: string): string {
     return `${itemSelector} .root-eject`;
   }
 
-  /**
-   * Get the expand icon of the specific tree item.
-   *
-   * @param {string} itemSelector
-   * @return {string|!Array<string>}
-   */
-  expandIcon(itemSelector) {
+  /** Get the expand icon of the specific tree item. */
+  expandIcon(itemSelector: string): string|string[] {
     // Use array here because they are inside shadow DOM.
     return this.useNewTree ? [itemSelector, '.expand-icon'] :
                              `${itemSelector} > .tree-row .expand-icon`;
   }
 
-  /**
-   * Get the rename input of the specific tree item.
-   *
-   * @param {string} itemSelector
-   * @return {string}
-   */
-  renameInput(itemSelector) {
+  /** Get the rename input of the specific tree item. */
+  renameInput(itemSelector: string): string {
     return this.useNewTree ? `${itemSelector} > input` :
                              `${itemSelector} > .tree-row input`;
   }
@@ -1518,11 +1250,9 @@ class DirectoryTreeSelectors_ {
   /**
    * Get the tree item itself (without the parent tree selector) by its type.
    *
-   * @param {string} type
-   * @param {boolean} isPlaceholder Is the tree item a placeholder or not.
-   * @return {string}
+   * @param isPlaceholder Is the tree item a placeholder or not.
    */
-  itemItselfByType(type, isPlaceholder) {
+  itemItselfByType(type: string, isPlaceholder: boolean): string {
     if (this.useNewTree) {
       // volume type for "My files" is "downloads", but in the code when we
       // query item by "downloads" type, what we want is the actual Downloads
@@ -1546,22 +1276,16 @@ class DirectoryTreeSelectors_ {
   /**
    * Get the group root tree item (e.g. entry list) itself (without the parent
    * tree selector) by its type.
-   *
-   * @param {string} type
-   * @return {string}
    */
-  groupRootItemItselfByType(type) {
+  groupRootItemItselfByType(type: string): string {
     // For EntryList, there are some differences between the old/new tree on the
     // icon names. Format: <old-tree-icon-name>: <new-tree-icon-name>.
-    const iconNameMap = {
+    const iconNameMap: Record<string, string> = {
       'drive': 'service_drive',
       'removable': 'usb',
     };
     if (this.useNewTree && type in iconNameMap) {
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type '{ drive:
-      // string; removable: string; }'.
-      type = iconNameMap[type];
+      type = iconNameMap[type]!;
     }
     return this.useNewTree ?
         `${this.item}[data-navigation-key^="${ENTRY_LIST_PATH_PREFIX}"][icon="${
@@ -1572,10 +1296,9 @@ class DirectoryTreeSelectors_ {
   /**
    * Get the tree item itself (without the parent tree selector) by its label.
    *
-   * @param {string} label The label of the tree item.
-   * @return {string}
+   * @param label The label of the tree item.
    */
-  itemItselfByLabel(label) {
+  itemItselfByLabel(label: string): string {
     return this.useNewTree ? `${this.item}[label="${label}"]` :
                              `${this.item}[entry-label="${label}"]`;
   }
@@ -1583,42 +1306,30 @@ class DirectoryTreeSelectors_ {
   /**
    * Get the tree item itself (without the parent tree selector) by its path.
    *
-   * @param {string} path The full path of the tree item.
-   * @return {string}
+   * @param path The full path of the tree item.
    */
-  itemItselfByPath(path) {
+  itemItselfByPath(path: string): string {
     return `${this.item}[full-path-for-testing="${path}"]`;
   }
 
   /**
    * Check if the volume type is inside the Google Drive volume or not.
    *
-   * @param {string} type The volume type of the tree item.
-   * @return {boolean}
+   * @param type The volume type of the tree item.
    */
-  isInsideDrive(type) {
+  isInsideDrive(type: string): boolean {
     return type === 'drive_recent' || type === 'drive_shared_with_me' ||
         type === 'drive_offline' || type === 'shared_drive' ||
         type === 'computer';
   }
 
-  /**
-   * Return the recipient element of the keyboard event.
-   */
+  /** Return the recipient element of the keyboard event. */
   get keyboardRecipient() {
     return this.root;
   }
 
-  /**
-   * Append the modifier selector to the item selector.
-   *
-   * @param {string} itemSelector
-   * @param {ModifierOptions=} modifiers
-   */
-  // @ts-ignore: error TS2740: Type '{}' is missing the following properties
-  // from type 'ModifierOptions': expanded, selected, focused, shortcut, and 5
-  // more.
-  attachModifier(itemSelector, modifiers = {}) {
+  /** Append the modifier selector to the item selector. */
+  attachModifier(itemSelector: string, modifiers: ModifierOptions = {}) {
     const appendedSelectors = [];
     if (typeof modifiers.expanded !== 'undefined') {
       appendedSelectors.push(

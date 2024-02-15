@@ -21,9 +21,6 @@ js_files = [
   "file_manager/recents.js",
   "file_manager/search.js",
   "file_manager/transfer.js",
-
-  # Page Objects.
-  "file_manager/page_objects/directory_tree.js",
 ]
 
 ts_files = [
@@ -119,7 +116,7 @@ ts_files = [
   "file_manager/zip_files.ts",
 
   # Page Objects.
-  # "file_manager/page_objects/directory_tree.ts",
+  "file_manager/page_objects/directory_tree.ts",
 ]
 
 # TS/JS files.
