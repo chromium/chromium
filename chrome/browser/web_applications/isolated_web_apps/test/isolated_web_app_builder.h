@@ -96,6 +96,8 @@ class ScopedBundledIsolatedWebApp {
 
   void FakeInstallPageState(Profile* profile);
 
+  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
+
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
 
  private:
@@ -117,6 +119,8 @@ class ScopedProxyIsolatedWebApp {
   void FakeInstallPageState(
       Profile* profile,
       const web_package::SignedWebBundleId& web_bundle_id);
+
+  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
 
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
 

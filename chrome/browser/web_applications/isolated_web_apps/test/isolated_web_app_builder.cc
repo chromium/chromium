@@ -121,6 +121,13 @@ void ScopedBundledIsolatedWebApp::TrustSigningKey() {
   AddTrustedWebBundleIdForTesting(web_bundle_id_);
 }
 
+IsolatedWebAppUrlInfo ScopedBundledIsolatedWebApp::InstallChecked(
+    Profile* profile) {
+  auto result = Install(profile);
+  CHECK(result.has_value()) << result.error();
+  return *result;
+}
+
 base::expected<IsolatedWebAppUrlInfo, std::string>
 ScopedBundledIsolatedWebApp::Install(Profile* profile) {
   return ::web_app::Install(profile, web_bundle_id_,
@@ -151,6 +158,13 @@ void ScopedProxyIsolatedWebApp::FakeInstallPageState(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
   ::web_app::FakeInstallPageState(
       profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
+}
+
+IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
+    Profile* profile) {
+  auto result = Install(profile);
+  CHECK(result.has_value()) << result.error();
+  return *result;
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>

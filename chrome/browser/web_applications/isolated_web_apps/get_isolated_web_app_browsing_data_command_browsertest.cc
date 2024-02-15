@@ -51,9 +51,7 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
       const GetIsolatedWebAppBrowsingDataCommandBrowserTest&) = delete;
 
  protected:
-  IsolatedWebAppUrlInfo InstallApp() {
-    return app_->Install(profile()).value();
-  }
+  IsolatedWebAppUrlInfo InstallApp() { return app_->InstallChecked(profile()); }
 
   GURL proxy_server_url() { return app_->proxy_server().base_url(); }
 
