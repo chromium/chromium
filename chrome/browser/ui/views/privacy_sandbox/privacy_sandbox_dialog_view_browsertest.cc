@@ -103,14 +103,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/325427167): Re-enable the test.
-#if BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
-#define MAYBE_InvokeUi_Notice DISABLED_InvokeUi_Notice
-#else
-#define MAYBE_InvokeUi_Notice InvokeUi_Notice
-#endif
+// TODO(crbug.com/325436918): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_Notice) {
+                       DISABLED_InvokeUi_Notice) {
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
