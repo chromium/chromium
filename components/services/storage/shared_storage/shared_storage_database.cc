@@ -1719,212 +1719,220 @@ void SharedStorageDatabase::LogInitHistograms() {
   base::UmaHistogramBoolean("Storage.SharedStorage.Database.IsFileBacked",
                             is_filebacked());
 
-  if (is_filebacked()) {
-    int64_t file_size = 0L;
-    if (base::GetFileSize(db_path_, &file_size)) {
-      int64_t file_size_kb = file_size / 1024;
-      base::UmaHistogramCounts10M(
-          "Storage.SharedStorage.Database.FileBacked.FileSize.KB",
-          file_size_kb);
+  if (!is_filebacked()) {
+    // The remaining histograms are only defined and recorded for filebacked
+    // databases.
+    return;
+  }
 
-      int64_t file_size_gb = file_size_kb / (1024 * 1024);
-      if (file_size_gb) {
-        base::UmaHistogramCounts1000(
-            "Storage.SharedStorage.Database.FileBacked.FileSize.GB",
-            file_size_gb);
-      }
+  int64_t file_size = 0L;
+  if (base::GetFileSize(db_path_, &file_size)) {
+    int64_t file_size_kb = file_size / 1024;
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.FileSize.KB", file_size_kb);
+
+    int64_t file_size_gb = file_size_kb / (1024 * 1024);
+    if (file_size_gb) {
+      base::UmaHistogramCounts1000(
+          "Storage.SharedStorage.Database.FileBacked.FileSize.GB",
+          file_size_gb);
     }
+  }
 
-    static constexpr char kOriginCountSql[] =
-        "SELECT COUNT(*) FROM per_origin_mapping";
+  static constexpr char kValueCountSql[] =
+      "SELECT COUNT(*) FROM values_mapping";
 
-    sql::Statement origin_count_statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kOriginCountSql));
+  sql::Statement value_count_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kValueCountSql));
 
-    if (origin_count_statement.Step()) {
-      int64_t origin_count = origin_count_statement.ColumnInt64(0);
-      base::UmaHistogramCounts100000(
-          "Storage.SharedStorage.Database.FileBacked.NumOrigins", origin_count);
+  if (value_count_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.Total",
+        value_count_statement.ColumnInt64(0));
+  }
 
-      const int64_t kMedianLimit = 2 - (origin_count % 2);
-      const int64_t kMedianOffset = (origin_count - 1) / 2;
+  static constexpr char kOriginCountSql[] =
+      "SELECT COUNT(*) FROM per_origin_mapping";
 
-      static constexpr char kLengthQuartileSql[] =
-          "SELECT AVG(length) FROM "
-          "(SELECT length FROM per_origin_mapping "
-          "ORDER BY length LIMIT ? OFFSET ?)";
+  sql::Statement origin_count_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kOriginCountSql));
 
-      sql::Statement length_median_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kLengthQuartileSql));
-      length_median_statement.BindInt64(0, kMedianLimit);
-      length_median_statement.BindInt64(1, kMedianOffset);
+  int64_t origin_count = 0;
+  if (origin_count_statement.Step()) {
+    origin_count = origin_count_statement.ColumnInt64(0);
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumOrigins", origin_count);
+  } else {
+    // Skip recording further histograms on `per_origin_mapping` since either
+    // it's empty or we've encountered a database error.
+    return;
+  }
 
-      if (length_median_statement.Step()) {
-        base::UmaHistogramCounts100000(
-            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
-            "Median",
-            length_median_statement.ColumnInt64(0));
-      }
+  const int64_t kMedianLimit = 2 - (origin_count % 2);
+  const int64_t kMedianOffset = (origin_count - 1) / 2;
 
-      static constexpr char kBytesQuartileSql[] =
-          "SELECT AVG(num_bytes) FROM "
-          "(SELECT num_bytes FROM per_origin_mapping "
-          "ORDER BY num_bytes LIMIT ? OFFSET ?)";
+  static constexpr char kLengthQuartileSql[] =
+      "SELECT AVG(length) FROM "
+      "(SELECT length FROM per_origin_mapping "
+      "ORDER BY length LIMIT ? OFFSET ?)";
 
-      sql::Statement bytes_median_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesQuartileSql));
-      bytes_median_statement.BindInt64(0, kMedianLimit);
-      bytes_median_statement.BindInt64(1, kMedianOffset);
+  sql::Statement length_median_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kLengthQuartileSql));
+  length_median_statement.BindInt64(0, kMedianLimit);
+  length_median_statement.BindInt64(1, kMedianOffset);
 
-      if (bytes_median_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
-            "Median",
-            bytes_median_statement.ColumnInt64(0));
-      }
+  if (length_median_statement.Step()) {
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+        "Median",
+        length_median_statement.ColumnInt64(0));
+  }
 
-      const int64_t kQuartileLimit = 2 - (origin_count % 4) / 2;
-      const int64_t kQuartileOffset =
-          (origin_count > 1) ? (origin_count - 2) / 4 : 0;
+  static constexpr char kBytesQuartileSql[] =
+      "SELECT AVG(num_bytes) FROM "
+      "(SELECT num_bytes FROM per_origin_mapping "
+      "ORDER BY num_bytes LIMIT ? OFFSET ?)";
 
-      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
-      // calculate upper and lower quartiles.
-      sql::Statement length_q1_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kLengthQuartileSql));
-      length_q1_statement.BindInt64(0, kQuartileLimit);
-      length_q1_statement.BindInt64(1, kQuartileOffset);
+  sql::Statement bytes_median_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesQuartileSql));
+  bytes_median_statement.BindInt64(0, kMedianLimit);
+  bytes_median_statement.BindInt64(1, kMedianOffset);
 
-      if (length_q1_statement.Step()) {
-        base::UmaHistogramCounts100000(
-            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1",
-            length_q1_statement.ColumnInt64(0));
-      }
+  if (bytes_median_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
+        "Median",
+        bytes_median_statement.ColumnInt64(0));
+  }
 
-      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
-      // calculate upper and lower quartiles.
-      sql::Statement bytes_q1_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesQuartileSql));
-      bytes_q1_statement.BindInt64(0, kQuartileLimit);
-      bytes_q1_statement.BindInt64(1, kQuartileOffset);
+  const int64_t kQuartileLimit = 2 - (origin_count % 4) / 2;
+  const int64_t kQuartileOffset =
+      (origin_count > 1) ? (origin_count - 2) / 4 : 0;
 
-      if (bytes_q1_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q1",
-            bytes_q1_statement.ColumnInt64(0));
-      }
+  // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+  // calculate upper and lower quartiles.
+  sql::Statement length_q1_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kLengthQuartileSql));
+  length_q1_statement.BindInt64(0, kQuartileLimit);
+  length_q1_statement.BindInt64(1, kQuartileOffset);
 
-      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
-      // calculate upper and lower quartiles.
-      static constexpr char kLengthUpperQuartileSql[] =
-          "SELECT AVG(length) FROM "
-          "(SELECT length FROM per_origin_mapping "
-          "ORDER BY length DESC LIMIT ? OFFSET ?)";
+  if (length_q1_statement.Step()) {
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1",
+        length_q1_statement.ColumnInt64(0));
+  }
 
-      sql::Statement length_q3_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kLengthUpperQuartileSql));
-      length_q3_statement.BindInt64(0, kQuartileLimit);
-      length_q3_statement.BindInt64(1, kQuartileOffset);
+  // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+  // calculate upper and lower quartiles.
+  sql::Statement bytes_q1_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesQuartileSql));
+  bytes_q1_statement.BindInt64(0, kQuartileLimit);
+  bytes_q1_statement.BindInt64(1, kQuartileOffset);
 
-      if (length_q3_statement.Step()) {
-        base::UmaHistogramCounts100000(
-            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3",
-            length_q3_statement.ColumnInt64(0));
-      }
+  if (bytes_q1_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q1",
+        bytes_q1_statement.ColumnInt64(0));
+  }
 
-      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
-      // calculate upper and lower quartiles.
-      static constexpr char kBytesUpperQuartileSql[] =
-          "SELECT AVG(num_bytes) FROM "
-          "(SELECT num_bytes FROM per_origin_mapping "
-          "ORDER BY num_bytes DESC LIMIT ? OFFSET ?)";
+  // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+  // calculate upper and lower quartiles.
+  static constexpr char kLengthUpperQuartileSql[] =
+      "SELECT AVG(length) FROM "
+      "(SELECT length FROM per_origin_mapping "
+      "ORDER BY length DESC LIMIT ? OFFSET ?)";
 
-      sql::Statement bytes_q3_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesUpperQuartileSql));
-      bytes_q3_statement.BindInt64(0, kQuartileLimit);
-      bytes_q3_statement.BindInt64(1, kQuartileOffset);
+  sql::Statement length_q3_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kLengthUpperQuartileSql));
+  length_q3_statement.BindInt64(0, kQuartileLimit);
+  length_q3_statement.BindInt64(1, kQuartileOffset);
 
-      if (bytes_q3_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q3",
-            bytes_q3_statement.ColumnInt64(0));
-      }
+  if (length_q3_statement.Step()) {
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3",
+        length_q3_statement.ColumnInt64(0));
+  }
 
-      static constexpr char kLengthMinSql[] =
-          "SELECT MIN(length) FROM per_origin_mapping";
+  // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+  // calculate upper and lower quartiles.
+  static constexpr char kBytesUpperQuartileSql[] =
+      "SELECT AVG(num_bytes) FROM "
+      "(SELECT num_bytes FROM per_origin_mapping "
+      "ORDER BY num_bytes DESC LIMIT ? OFFSET ?)";
 
-      sql::Statement length_min_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kLengthMinSql));
+  sql::Statement bytes_q3_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesUpperQuartileSql));
+  bytes_q3_statement.BindInt64(0, kQuartileLimit);
+  bytes_q3_statement.BindInt64(1, kQuartileOffset);
 
-      if (length_min_statement.Step()) {
-        base::UmaHistogramCounts100000(
-            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
-            "Min",
-            length_min_statement.ColumnInt64(0));
-      }
+  if (bytes_q3_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q3",
+        bytes_q3_statement.ColumnInt64(0));
+  }
 
-      static constexpr char kBytesMinSql[] =
-          "SELECT MIN(num_bytes) FROM per_origin_mapping";
+  static constexpr char kLengthMinSql[] =
+      "SELECT MIN(length) FROM per_origin_mapping";
 
-      sql::Statement bytes_min_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesMinSql));
+  sql::Statement length_min_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kLengthMinSql));
 
-      if (bytes_min_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
-            "Min",
-            bytes_min_statement.ColumnInt64(0));
-      }
+  if (length_min_statement.Step()) {
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+        "Min",
+        length_min_statement.ColumnInt64(0));
+  }
 
-      static constexpr char kLengthMaxSql[] =
-          "SELECT MAX(length) FROM per_origin_mapping";
+  static constexpr char kBytesMinSql[] =
+      "SELECT MIN(num_bytes) FROM per_origin_mapping";
 
-      sql::Statement length_max_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kLengthMaxSql));
+  sql::Statement bytes_min_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesMinSql));
 
-      if (length_max_statement.Step()) {
-        base::UmaHistogramCounts100000(
-            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
-            "Max",
-            length_max_statement.ColumnInt64(0));
-      }
+  if (bytes_min_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
+        "Min",
+        bytes_min_statement.ColumnInt64(0));
+  }
 
-      static constexpr char kBytesMaxSql[] =
-          "SELECT MAX(num_bytes) FROM per_origin_mapping";
+  static constexpr char kLengthMaxSql[] =
+      "SELECT MAX(length) FROM per_origin_mapping";
 
-      sql::Statement bytes_max_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesMaxSql));
+  sql::Statement length_max_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kLengthMaxSql));
 
-      if (bytes_max_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
-            "Max",
-            bytes_max_statement.ColumnInt64(0));
-      }
+  if (length_max_statement.Step()) {
+    base::UmaHistogramCounts100000(
+        "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+        "Max",
+        length_max_statement.ColumnInt64(0));
+  }
 
-      static constexpr char kBytesSumSql[] =
-          "SELECT SUM(num_bytes) FROM per_origin_mapping";
+  static constexpr char kBytesMaxSql[] =
+      "SELECT MAX(num_bytes) FROM per_origin_mapping";
 
-      sql::Statement bytes_sum_statement(
-          db_.GetCachedStatement(SQL_FROM_HERE, kBytesSumSql));
+  sql::Statement bytes_max_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesMaxSql));
 
-      if (bytes_sum_statement.Step()) {
-        base::UmaHistogramCounts10M(
-            "Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB",
-            bytes_sum_statement.ColumnInt64(0) / 1024);
-      }
-    }
+  if (bytes_max_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin."
+        "Max",
+        bytes_max_statement.ColumnInt64(0));
+  }
 
-    static constexpr char kValueCountSql[] =
-        "SELECT COUNT(*) FROM values_mapping";
+  static constexpr char kBytesSumSql[] =
+      "SELECT SUM(num_bytes) FROM per_origin_mapping";
 
-    sql::Statement value_count_statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, kValueCountSql));
+  sql::Statement bytes_sum_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kBytesSumSql));
 
-    if (value_count_statement.Step()) {
-      base::UmaHistogramCounts10M(
-          "Storage.SharedStorage.Database.FileBacked.NumEntries.Total",
-          value_count_statement.ColumnInt64(0));
-    }
+  if (bytes_sum_statement.Step()) {
+    base::UmaHistogramCounts10M(
+        "Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB",
+        bytes_sum_statement.ColumnInt64(0) / 1024);
   }
 }
 
