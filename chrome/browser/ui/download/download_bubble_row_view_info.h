@@ -41,15 +41,6 @@ class DownloadBubbleRowViewInfo
     : public DownloadBubbleInfo<DownloadBubbleRowViewInfoObserver>,
       public DownloadUIModel::Delegate {
  public:
-  struct QuickAction {
-    DownloadCommands::Command command;
-    std::u16string hover_text;
-    raw_ptr<const gfx::VectorIcon> icon = nullptr;
-    QuickAction(DownloadCommands::Command command,
-                const std::u16string& hover_text,
-                const gfx::VectorIcon* icon);
-  };
-
   explicit DownloadBubbleRowViewInfo(DownloadUIModel::DownloadUIModelPtr model);
   ~DownloadBubbleRowViewInfo() override;
 
@@ -63,7 +54,7 @@ class DownloadBubbleRowViewInfo
   ui::ColorId secondary_text_color() const {
     return secondary_text_color_.value_or(secondary_color());
   }
-  const std::vector<QuickAction>& quick_actions() const {
+  const std::vector<DownloadBubbleQuickAction>& quick_actions() const {
     return quick_actions_;
   }
   bool main_button_enabled() const { return main_button_enabled_; }
@@ -71,10 +62,11 @@ class DownloadBubbleRowViewInfo
   std::optional<DownloadCommands::Command> primary_button_command() const {
     return primary_button_command_;
   }
-  bool has_progress_bar() const { return has_progress_bar_; }
-  bool is_progress_bar_looping() const { return is_progress_bar_looping_; }
+  bool has_progress_bar() const { return progress_bar_.is_visible; }
+  bool is_progress_bar_looping() const { return progress_bar_.is_looping; }
 
-  void SetQuickActionsForTesting(const std::vector<QuickAction>& actions);
+  void SetQuickActionsForTesting(
+      const std::vector<DownloadBubbleQuickAction>& actions);
 
  private:
   // Overrides DownloadUIModel::Delegate:
@@ -111,7 +103,7 @@ class DownloadBubbleRowViewInfo
   // text.
   std::optional<ui::ColorId> secondary_text_color_ = std::nullopt;
   // List of quick actions
-  std::vector<QuickAction> quick_actions_;
+  std::vector<DownloadBubbleQuickAction> quick_actions_;
   // Whether the main button (clicking the row itself) should be enabled. When
   // true, the main button will either:
   // - Open the subpage, if it exists
@@ -123,9 +115,8 @@ class DownloadBubbleRowViewInfo
   // row).
   std::optional<DownloadCommands::Command> primary_button_command_ =
       std::nullopt;
-  // Whether the row has a progress bar
-  bool has_progress_bar_ = false;
-  bool is_progress_bar_looping_ = false;
+
+  DownloadBubbleProgressBar progress_bar_;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_ROW_VIEW_INFO_H_

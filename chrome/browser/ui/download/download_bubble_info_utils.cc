@@ -8,10 +8,15 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/vector_icons.h"
+
+using download::DownloadItem;
+using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 
 namespace {
 
@@ -202,6 +207,21 @@ IconAndColor IconAndColorForInProgressOrComplete(const DownloadUIModel& model) {
 
 }  // namespace
 
+// static
+DownloadBubbleProgressBar DownloadBubbleProgressBar::NoProgressBar() {
+  return DownloadBubbleProgressBar{/*is_visible=*/false, /*is_looping=*/false};
+}
+
+// static
+DownloadBubbleProgressBar DownloadBubbleProgressBar::ProgressBar() {
+  return DownloadBubbleProgressBar{/*is_visible=*/true, /*is_looping=*/false};
+}
+
+// static
+DownloadBubbleProgressBar DownloadBubbleProgressBar::LoopingProgressBar() {
+  return DownloadBubbleProgressBar{/*is_visible=*/true, /*is_looping=*/true};
+}
+
 IconAndColor IconAndColorForDownload(const DownloadUIModel& model) {
   switch (model.GetState()) {
     case download::DownloadItem::IN_PROGRESS:
@@ -222,4 +242,196 @@ IconAndColor IconAndColorForDownload(const DownloadUIModel& model) {
   }
 
   return IconAndColorForDownloadOff();
+}
+
+DownloadBubbleQuickAction::DownloadBubbleQuickAction(
+    DownloadCommands::Command command,
+    const std::u16string& hover_text,
+    const gfx::VectorIcon* icon)
+    : command(command), hover_text(hover_text), icon(icon) {}
+
+std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
+    const DownloadUIModel& model) {
+  switch (model.GetState()) {
+    case DownloadItem::IN_PROGRESS:
+    case DownloadItem::COMPLETE:
+      break;
+    case DownloadItem::INTERRUPTED:
+    case DownloadItem::CANCELLED:
+    case DownloadItem::MAX_DOWNLOAD_STATE:
+      return {};
+  }
+
+  switch (model.GetInsecureDownloadStatus()) {
+    case DownloadItem::InsecureDownloadStatus::BLOCK:
+    case DownloadItem::InsecureDownloadStatus::WARN:
+      return {};
+    case DownloadItem::InsecureDownloadStatus::UNKNOWN:
+    case DownloadItem::InsecureDownloadStatus::SAFE:
+    case DownloadItem::InsecureDownloadStatus::VALIDATED:
+    case DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
+      break;
+  }
+
+  if (enterprise_connectors::ShouldPromptReviewForDownload(
+          model.profile(), model.GetDownloadItem())) {
+    switch (model.GetDangerType()) {
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+        return {};
+      default:
+        break;
+    }
+  }
+
+  if (model.GetTailoredWarningType() !=
+      TailoredWarningType::kNoTailoredWarning) {
+    return {};
+  }
+
+  switch (model.GetDangerType()) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return {};
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+      break;
+  }
+
+  std::vector<DownloadBubbleQuickAction> actions;
+  if (model.GetState() == DownloadItem::IN_PROGRESS) {
+    if (model.IsPaused()) {
+      actions.emplace_back(
+          DownloadCommands::Command::RESUME,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kPlayArrowChromeRefreshIcon
+              : &vector_icons::kPlayArrowIcon);
+    } else {
+      actions.emplace_back(
+          DownloadCommands::Command::PAUSE,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kPauseChromeRefreshIcon
+              : &vector_icons::kPauseIcon);
+    }
+
+    actions.emplace_back(
+        DownloadCommands::Command::CANCEL,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+        features::IsChromeRefresh2023()
+            ? &vector_icons::kCancelChromeRefreshIcon
+            : &vector_icons::kCancelIcon);
+
+  } else {
+    actions.emplace_back(DownloadCommands::Command::SHOW_IN_FOLDER,
+                         l10n_util::GetStringUTF16(
+                             IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
+                         features::IsChromeRefresh2023()
+                             ? &vector_icons::kFolderChromeRefreshIcon
+                             : &vector_icons::kFolderIcon);
+    actions.emplace_back(
+        DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
+        features::IsChromeRefresh2023()
+            ? &vector_icons::kLaunchChromeRefreshIcon
+            : &kOpenInNewIcon);
+  }
+
+  return actions;
+}
+
+DownloadBubbleProgressBar ProgressBarForDownload(const DownloadUIModel& model) {
+  switch (model.GetState()) {
+    case DownloadItem::IN_PROGRESS:
+    case DownloadItem::COMPLETE:
+      break;
+    case DownloadItem::INTERRUPTED:
+    case DownloadItem::CANCELLED:
+    case DownloadItem::MAX_DOWNLOAD_STATE:
+      return DownloadBubbleProgressBar::NoProgressBar();
+  }
+
+  switch (model.GetInsecureDownloadStatus()) {
+    case DownloadItem::InsecureDownloadStatus::BLOCK:
+    case DownloadItem::InsecureDownloadStatus::WARN:
+      return DownloadBubbleProgressBar::NoProgressBar();
+    case DownloadItem::InsecureDownloadStatus::UNKNOWN:
+    case DownloadItem::InsecureDownloadStatus::SAFE:
+    case DownloadItem::InsecureDownloadStatus::VALIDATED:
+    case DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
+      break;
+  }
+
+  if (enterprise_connectors::ShouldPromptReviewForDownload(
+          model.profile(), model.GetDownloadItem())) {
+    switch (model.GetDangerType()) {
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+        return DownloadBubbleProgressBar::NoProgressBar();
+      default:
+        break;
+    }
+  }
+
+  if (model.GetTailoredWarningType() !=
+      TailoredWarningType::kNoTailoredWarning) {
+    return DownloadBubbleProgressBar::NoProgressBar();
+  }
+
+  switch (model.GetDangerType()) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return DownloadBubbleProgressBar::NoProgressBar();
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return DownloadBubbleProgressBar::LoopingProgressBar();
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+      break;
+  }
+
+  return model.GetState() == DownloadItem::IN_PROGRESS
+             ? DownloadBubbleProgressBar::ProgressBar()
+             : DownloadBubbleProgressBar::NoProgressBar();
 }
