@@ -116,8 +116,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 
@@ -138,8 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // considered expired and won't be displayed.
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
 
