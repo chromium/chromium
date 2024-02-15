@@ -558,6 +558,7 @@ blink_core_sources_layout = [
   "svg/layout_svg_resource_marker.h",
   "svg/layout_svg_resource_masker.cc",
   "svg/layout_svg_resource_masker.h",
+  "svg/layout_svg_resource_paint_server.cc",
   "svg/layout_svg_resource_paint_server.h",
   "svg/layout_svg_resource_pattern.cc",
   "svg/layout_svg_resource_pattern.h",
