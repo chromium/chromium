@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -55,8 +57,8 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     private static final String TAG = "SyncUI";
 
-    private @Nullable static SyncErrorNotifier sInstance;
-    private static boolean sInitialized;
+    private static ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
+            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
     private final NotificationManagerProxy mNotificationManager;
     private final SyncService mSyncService;
@@ -66,21 +68,22 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     // is set slightly earlier, when the class calls createTrustedVaultKeyRetrievalIntent().
     private @NotificationState int mNotificationState = NotificationState.HIDDEN;
 
-    /** Returns null if there's no instance of SyncService (Sync disabled via command-line). */
-    public static @Nullable SyncErrorNotifier get() {
+    /**
+     * Returns null if there's no instance of SyncService for the given {@link Profile} (Sync
+     * disabled via command-line).
+     */
+    public static @Nullable SyncErrorNotifier getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        if (!sInitialized) {
-            if (SyncServiceFactory.get() != null) {
-                sInstance =
-                        new SyncErrorNotifier(
-                                new NotificationManagerProxyImpl(
-                                        ContextUtils.getApplicationContext()),
-                                SyncServiceFactory.get(),
-                                TrustedVaultClient.get());
-            }
-            sInitialized = true;
-        }
-        return sInstance;
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        if (syncService == null) return null;
+        return sProfileMap.getForProfile(
+                profile,
+                () -> {
+                    return new SyncErrorNotifier(
+                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                            syncService,
+                            TrustedVaultClient.get());
+                });
     }
 
     @VisibleForTesting

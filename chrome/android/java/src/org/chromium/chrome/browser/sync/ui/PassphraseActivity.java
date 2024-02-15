@@ -34,6 +34,7 @@ public class PassphraseActivity extends AppCompatActivity
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
 
+    private Profile mProfile;
     private IdentityManager mIdentityManager;
     private SyncService mSyncService;
 
@@ -47,9 +48,9 @@ public class PassphraseActivity extends AppCompatActivity
         // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
         // process and this wouldn't be necessary.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+        mProfile = Profile.getLastUsedRegularProfile();
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mSyncService = SyncServiceFactory.getForProfile(mProfile);
         assert mSyncService != null;
         getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
@@ -139,7 +140,7 @@ public class PassphraseActivity extends AppCompatActivity
     @Override
     public void onPassphraseCanceled() {
         // Re add the notification.
-        SyncErrorNotifier.get().syncStateChanged();
+        SyncErrorNotifier.getForProfile(mProfile).syncStateChanged();
         finish();
     }
 
