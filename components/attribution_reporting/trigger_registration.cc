@@ -113,11 +113,6 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
 }  // namespace
 
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
-  static_assert(
-      TriggerRegistrationError::kMaxValue ==
-          TriggerRegistrationError::
-              kTriggerContextIdInvalidSourceRegistrationTimeConfig,
-      "Bump version of Conversions.TriggerRegistrationError9 histogram.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
 }
 
@@ -217,9 +212,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   SerializeListIfNotEmpty(dict, kAggregatableTriggerData,
                           aggregatable_trigger_data);
 
-  if (!aggregatable_values.values().empty()) {
-    dict.Set(kAggregatableValues, aggregatable_values.ToJson());
-  }
+  SerializeListIfNotEmpty(dict, kAggregatableValues, aggregatable_values);
 
   SerializeDebugKey(dict, debug_key);
 

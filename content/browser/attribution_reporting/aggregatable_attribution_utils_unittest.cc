@@ -34,6 +34,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableValues;
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::mojom::SourceType;
@@ -103,12 +104,12 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   ASSERT_TRUE(source_filter_data.has_value());
 
   auto aggregatable_values = *attribution_reporting::AggregatableValues::Create(
-      {{"key1", 32768}, {"key2", 1664}});
+      {{"key1", 32768}, {"key2", 1664}}, FilterPair());
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           *source_filter_data, SourceType::kEvent, source_time, trigger_time,
-          *source, std::move(aggregatable_trigger_data), aggregatable_values);
+          *source, std::move(aggregatable_trigger_data), {aggregatable_values});
 
   // "key3" is not present as no value is found.
   EXPECT_THAT(
@@ -126,6 +127,113 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
 }
 
 TEST(AggregatableAttributionUtilsTest,
+     CreateAggregatableHistogram_ValuesFiltered) {
+  auto source = attribution_reporting::AggregationKeys::FromKeys(
+      {{"key1", 345}, {"key2", 5}});
+  ASSERT_TRUE(source.has_value());
+
+  base::Time source_time = base::Time::Now();
+  base::Time trigger_time = source_time + base::Seconds(5);
+
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data{
+          *attribution_reporting::AggregatableTriggerData::Create(
+              absl::MakeUint128(/*high=*/0, /*low=*/1024),
+              /*source_keys=*/{"key1", "key2"}, FilterPair()),
+      };
+
+  attribution_reporting::FilterData source_filter_data =
+      *attribution_reporting::FilterData::Create({{"product", {"1"}}});
+
+  const struct {
+    const char* description;
+    std::vector<AggregatableValues> aggregatable_values;
+    std::vector<AggregatableHistogramContribution> expected;
+  } kTestCases[] =
+      {{
+           .description = "filter_not_matching",
+           .aggregatable_values =
+               {*attribution_reporting::AggregatableValues::Create(
+                   {{"key1", 32768}}, FilterPair(
+                                          /*positive=*/{*FilterConfig::Create(
+                                              {{"product", {"2"}}})},
+                                          /*negative=*/{}))},
+           .expected = {},
+       },
+       {
+           .description = "first_entry_skipped",
+           .aggregatable_values =
+               {*attribution_reporting::AggregatableValues::Create(
+                    {{"key1", 32768}}, FilterPair(
+                                           /*positive=*/{*FilterConfig::Create(
+                                               {{"product", {"2"}}})},
+                                           /*negative=*/{})),
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"key2", 1664}}, FilterPair(
+                                          /*positive=*/{*FilterConfig::Create(
+                                              {{"product", {"1"}}})},
+                                          /*negative=*/{}))},
+           .expected = {AggregatableHistogramContribution(1029, 1664)},
+       },
+       {
+           .description = "second_entry_ignored",
+           .aggregatable_values =
+               {*attribution_reporting::AggregatableValues::Create(
+                    {{"key1", 32768}}, FilterPair(
+                                           /*positive=*/{*FilterConfig::Create(
+                                               {{"product", {"1"}}})},
+                                           /*negative=*/{})),
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"key2", 1664}}, FilterPair(
+                                          /*positive=*/{*FilterConfig::Create(
+                                              {{"product", {"1"}}})},
+                                          /*negative=*/{}))},
+           .expected = {AggregatableHistogramContribution(1369, 32768)},
+       },
+       {
+           .description = "filters_matched_keys_mismatched_no_contributions",
+           .aggregatable_values =
+               {*attribution_reporting::AggregatableValues::Create(
+                    {{"key3", 32768}}, FilterPair(
+                                           /*positive=*/{*FilterConfig::Create(
+                                               {{"product", {"1"}}})},
+                                           /*negative=*/{})),
+                // Shouldn't contribute as only the first aggregatable values
+                // entry with matching filters is considered.
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"key2", 1664}}, FilterPair(
+                                          /*positive=*/{*FilterConfig::Create(
+                                              {{"product", {"1"}}})},
+                                          /*negative=*/{}))},
+           .expected = {},
+       },
+       {
+           .description = "not_filter_matching_first_entry_skipped",
+           .aggregatable_values =
+               {*attribution_reporting::AggregatableValues::Create(
+                    {{"key1", 32768}},
+                    FilterPair(/*positive=*/{},
+                               /*negative=*/{*FilterConfig::Create(
+                                   {{"product", {"1"}}})})),
+                *attribution_reporting::AggregatableValues::Create(
+                    {{"key2", 1664}}, FilterPair(
+                                          /*positive=*/{*FilterConfig::Create(
+                                              {{"product", {"1"}}})},
+                                          /*negative=*/{}))},
+           .expected = {AggregatableHistogramContribution(1029, 1664)},
+       }};
+  for (auto& test_case : kTestCases) {
+    std::vector<AggregatableHistogramContribution> contributions =
+        CreateAggregatableHistogram(source_filter_data, SourceType::kEvent,
+                                    source_time, trigger_time, *source,
+                                    std::move(aggregatable_trigger_data),
+                                    test_case.aggregatable_values);
+
+    EXPECT_THAT(contributions, test_case.expected) << test_case.description;
+  }
+}
+
+TEST(AggregatableAttributionUtilsTest,
      NoTriggerData_FilteredPercentageNotRecorded) {
   base::HistogramTester histograms;
 
@@ -140,8 +248,8 @@ TEST(AggregatableAttributionUtilsTest,
           *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
-          *attribution_reporting::AggregatableValues::Create(
-              {{"key2", 32768}}));
+          {*attribution_reporting::AggregatableValues::Create({{"key2", 32768}},
+                                                              FilterPair())});
 
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 0);

@@ -2033,16 +2033,37 @@ ToAggregatableTriggerData(
   return out;
 }
 
-std::unique_ptr<Array<Storage::AttributionReportingAggregatableValueEntry>>
-ToAggregatableValueEntries(
-    const attribution_reporting::AggregatableValues& values) {
+std::unique_ptr<Array<Storage::AttributionReportingAggregatableValueDictEntry>>
+ToAggregatableValueDictEntries(
+    const attribution_reporting::AggregatableValues::Values&
+        aggregatable_value) {
   auto out = std::make_unique<
-      Array<Storage::AttributionReportingAggregatableValueEntry>>();
-  for (const auto& [key, value] : values.values()) {
+      Array<Storage::AttributionReportingAggregatableValueDictEntry>>();
+  out->reserve(aggregatable_value.size());
+  for (const auto& [key, value] : aggregatable_value) {
     out->emplace_back(
-        Storage::AttributionReportingAggregatableValueEntry::Create()
+        Storage::AttributionReportingAggregatableValueDictEntry::Create()
             .SetKey(key)
             .SetValue(value)
+            .Build());
+  }
+
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingAggregatableValueEntry>>
+ToAggregatableValueEntries(
+    const std::vector<attribution_reporting::AggregatableValues>&
+        aggregatable_values) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregatableValueEntry>>();
+  out->reserve(aggregatable_values.size());
+  for (const auto& aggregatable_value : aggregatable_values) {
+    out->emplace_back(
+        Storage::AttributionReportingAggregatableValueEntry::Create()
+            .SetValues(
+                ToAggregatableValueDictEntries(aggregatable_value.values()))
+            .SetFilters(ToFilterPair(aggregatable_value.filters()))
             .Build());
   }
 

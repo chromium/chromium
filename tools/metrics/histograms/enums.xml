@@ -3995,6 +3995,9 @@ Called by update_net_error_codes.py.-->
   <int value="38"
       label="trigger_context_id disallowed for
              aggregatable_source_registration_time"/>
+  <int value="39" label="aggregatable_values list value has wrong type"/>
+  <int value="40"
+      label="aggregatable_values list value is missing values field"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">

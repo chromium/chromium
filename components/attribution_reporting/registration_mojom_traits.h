@@ -325,10 +325,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.aggregatable_trigger_data;
   }
 
-  static const attribution_reporting::AggregatableValues::Values&
+  static const std::vector<attribution_reporting::AggregatableValues>&
   aggregatable_values(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregatable_values.values();
+    return trigger.aggregatable_values;
   }
 
   static std::optional<uint64_t> debug_key(
@@ -387,6 +387,25 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static bool Read(
       attribution_reporting::mojom::AggregatableDedupKeyDataView data,
       attribution_reporting::AggregatableDedupKey* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::AggregatableValuesDataView,
+                 attribution_reporting::AggregatableValues> {
+  static const attribution_reporting::AggregatableValues::Values& values(
+      const attribution_reporting::AggregatableValues& data) {
+    return data.values();
+  }
+
+  static const attribution_reporting::FilterPair& filters(
+      const attribution_reporting::AggregatableValues& data) {
+    return data.filters();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AggregatableValuesDataView data,
+      attribution_reporting::AggregatableValues* out);
 };
 
 template <>

@@ -10198,12 +10198,17 @@ experimental domain Storage
       include
       exclude
 
-  experimental type AttributionReportingAggregatableValueEntry extends object
+  experimental type AttributionReportingAggregatableValueDictEntry extends object
     properties
       string key
       # number instead of integer because not all uint32 can be represented by
       # int
       number value
+
+  experimental type AttributionReportingAggregatableValueEntry extends object
+    properties
+      array of AttributionReportingAggregatableValueDictEntry values
+      AttributionReportingFilterPair filters
 
   experimental type AttributionReportingEventTriggerData extends object
     properties

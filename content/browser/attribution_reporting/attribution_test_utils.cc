@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -307,7 +308,8 @@ TriggerBuilder& TriggerBuilder::SetAggregatableTriggerData(
 }
 
 TriggerBuilder& TriggerBuilder::SetAggregatableValues(
-    attribution_reporting::AggregatableValues aggregatable_values) {
+    std::vector<attribution_reporting::AggregatableValues>
+        aggregatable_values) {
   aggregatable_values_ = std::move(aggregatable_values);
   return *this;
 }
@@ -863,8 +865,9 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
 
   return TriggerBuilder()
       .SetAggregatableTriggerData(std::move(aggregatable_trigger_data))
-      .SetAggregatableValues(*attribution_reporting::AggregatableValues::Create(
-          std::move(aggregatable_values)));
+      .SetAggregatableValues(
+          {*attribution_reporting::AggregatableValues::Create(
+              std::move(aggregatable_values), FilterPair())});
 }
 
 std::vector<AggregatableHistogramContribution>

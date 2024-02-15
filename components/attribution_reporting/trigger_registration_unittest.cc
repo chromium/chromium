@@ -81,8 +81,7 @@ TEST(TriggerRegistrationTest, Parse) {
               Field(&TriggerRegistration::aggregatable_dedup_keys, IsEmpty()),
               Field(&TriggerRegistration::event_triggers, IsEmpty()),
               Field(&TriggerRegistration::aggregatable_trigger_data, IsEmpty()),
-              Field(&TriggerRegistration::aggregatable_values,
-                    AggregatableValues()),
+              Field(&TriggerRegistration::aggregatable_values, IsEmpty()),
               Field(&TriggerRegistration::debug_reporting, false),
               Field(&TriggerRegistration::aggregation_coordinator_origin,
                     std::nullopt),
@@ -212,7 +211,8 @@ TEST(TriggerRegistrationTest, Parse) {
           "aggregatable_values_valid",
           R"json({"aggregatable_values":{"a":1}})json",
           ValueIs(Field(&TriggerRegistration::aggregatable_values,
-                        *AggregatableValues::Create({{"a", 1}}))),
+                        ElementsAre(*AggregatableValues::Create(
+                            {{"a", 1}}, FilterPair())))),
       },
       {
           "aggregatable_values_wrong_type",
@@ -317,7 +317,9 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.aggregatable_dedup_keys = {
                 AggregatableDedupKey(/*dedup_key=*/1, FilterPair())};
             r.aggregatable_trigger_data = {AggregatableTriggerData()};
-            r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
+            r.aggregatable_values = {
+                *AggregatableValues::Create({{"a", 2}}, FilterPair()),
+                *AggregatableValues::Create({{"b", 3}}, FilterPair())};
             r.debug_key = 3;
             r.debug_reporting = true;
             r.event_triggers = {EventTriggerData()};
@@ -332,7 +334,7 @@ TEST(TriggerRegistrationTest, ToJson) {
             "aggregatable_source_registration_time": "exclude",
             "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
-            "aggregatable_values": {"a": 2},
+            "aggregatable_values": [{"values":{"a":2}},{"values":{"b":3}}],
             "debug_key": "3",
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],

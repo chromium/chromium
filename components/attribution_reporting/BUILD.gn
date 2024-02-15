@@ -286,6 +286,12 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { struct AggregatableDedupKey; }"
         },
         {
+          mojom = "attribution_reporting.mojom.AggregatableValues"
+          cpp = "::attribution_reporting::AggregatableValues"
+          forward_declaration =
+              "namespace attribution_reporting { class AggregatableValues; }"
+        },
+        {
           mojom = "attribution_reporting.mojom.TriggerRegistration"
           cpp = "::attribution_reporting::TriggerRegistration"
           forward_declaration =

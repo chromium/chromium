@@ -2464,8 +2464,9 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 
-  auto aggregatable_values =
-      *attribution_reporting::AggregatableValues::Create({{"0", 1}});
+  auto aggregatable_values = {
+      *attribution_reporting::AggregatableValues::Create({{"0", 1}},
+                                                         FilterPair())};
 
   storage()->StoreSource(
       SourceBuilder()
@@ -3436,8 +3437,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
 
-  auto aggregatable_values =
-      *attribution_reporting::AggregatableValues::Create({{"0", 1}});
+  auto aggregatable_values = {
+      *attribution_reporting::AggregatableValues::Create({{"0", 1}},
+                                                         FilterPair())};
 
   storage()->StoreSource(
       SourceBuilder()
@@ -3560,6 +3562,29 @@ TEST_F(AttributionStorageTest,
             NewAggregatableReportIs(Eq(std::nullopt))));
 }
 
+TEST_F(AttributionStorageTest,
+       AggregatableAttributionValues_NoMatchingFilters_NoContributions) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetAggregationKeys(
+              *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
+          .SetFilterData(
+              *attribution_reporting::FilterData::Create({{"product", {"1"}}}))
+          .Build());
+
+  EXPECT_EQ(
+      MaybeCreateAndStoreAggregatableReport(
+          TriggerBuilder()
+              .SetAggregatableValues(
+                  {*attribution_reporting::AggregatableValues::Create(
+                      {{"0", 123}}, FilterPair(
+                                        /*positive=*/{*FilterConfig::Create(
+                                            {{"product", {"2"}}})},
+                                        /*negative=*/{}))})
+              .Build()),
+      AttributionTrigger::AggregatableResult::kNoHistograms);
+}
+
 TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
   auto source_builder = TestAggregatableSourceProvider().GetBuilder();
   storage()->StoreSource(source_builder.Build());
@@ -3666,7 +3691,7 @@ TEST_F(AttributionStorageTest,
                 TriggerBuilder()
                     .SetAggregatableValues(
                         {*attribution_reporting::AggregatableValues::Create(
-                            {{"0", 123}})})
+                            {{"0", 123}}, FilterPair())})
                     .Build()),
             AttributionTrigger::AggregatableResult::kSuccess);
 }

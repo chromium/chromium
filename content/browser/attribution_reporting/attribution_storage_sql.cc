@@ -40,6 +40,7 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -924,7 +925,11 @@ bool IsSuccessResult(std::optional<AggregatableResult> result) {
 bool HasAggregatableData(
     const attribution_reporting::TriggerRegistration& trigger_registration) {
   return !trigger_registration.aggregatable_trigger_data.empty() ||
-         !trigger_registration.aggregatable_values.values().empty();
+         base::ranges::any_of(
+             trigger_registration.aggregatable_values,
+             [](const attribution_reporting::AggregatableValues& values) {
+               return !values.values().empty();
+             });
 }
 
 }  // namespace

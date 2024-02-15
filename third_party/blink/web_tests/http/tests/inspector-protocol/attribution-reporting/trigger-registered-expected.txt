@@ -29,8 +29,18 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
         ]
         aggregatableValues : [
             [0] : {
-                key : a
-                value : 2
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+                values : [
+                    [0] : {
+                        key : a
+                        value : 2
+                    }
+                ]
             }
         ]
         debugReporting : true

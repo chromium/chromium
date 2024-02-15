@@ -19,6 +19,8 @@ enum TriggerRegistrationError {
   kAggregatableValuesKeyTooLong = 11,
   kAggregatableValuesValueWrongType = 12,
   kAggregatableValuesValueOutOfRange = 13,
+  kAggregatableValuesListWrongType = 39,
+  kAggregatableValuesListValuesFieldMissing = 40,
 
   kAggregatableTriggerDataListWrongType = 14,
   kAggregatableTriggerDataWrongType = 16,

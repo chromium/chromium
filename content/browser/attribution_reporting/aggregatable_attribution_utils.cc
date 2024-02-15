@@ -59,7 +59,8 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
-    const attribution_reporting::AggregatableValues& aggregatable_values) {
+    const std::vector<attribution_reporting::AggregatableValues>&
+        aggregatable_values) {
   int num_trigger_data_filtered = 0;
 
   attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
@@ -84,17 +85,22 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     }
   }
 
-  const attribution_reporting::AggregatableValues::Values& values =
-      aggregatable_values.values();
-
   std::vector<AggregatableHistogramContribution> contributions;
-  for (const auto& [key_id, key] : buckets) {
-    auto value = values.find(key_id);
-    if (value == values.end()) {
-      continue;
-    }
+  for (const auto& aggregatable_value : aggregatable_values) {
+    if (source_filter_data.Matches(source_type, source_time, trigger_time,
+                                   aggregatable_value.filters())) {
+      const attribution_reporting::AggregatableValues::Values& values =
+          aggregatable_value.values();
+      for (const auto& [key_id, key] : buckets) {
+        auto value = values.find(key_id);
+        if (value == values.end()) {
+          continue;
+        }
 
-    contributions.emplace_back(key, value->second);
+        contributions.emplace_back(key, value->second);
+      }
+      break;
+    }
   }
 
   if (!aggregatable_trigger_data.empty()) {

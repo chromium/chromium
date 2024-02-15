@@ -323,6 +323,30 @@ bool StructTraits<attribution_reporting::mojom::AggregatableDedupKeyDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::AggregatableValuesDataView,
+                  attribution_reporting::AggregatableValues>::
+    Read(attribution_reporting::mojom::AggregatableValuesDataView data,
+         attribution_reporting::AggregatableValues* out) {
+  attribution_reporting::FilterPair filters;
+  if (!data.ReadFilters(&filters)) {
+    return false;
+  }
+
+  attribution_reporting::AggregatableValues::Values values;
+  if (!data.ReadValues(&values)) {
+    return false;
+  }
+  auto aggregatable_values = attribution_reporting::AggregatableValues::Create(
+      std::move(values), std::move(filters));
+  if (!aggregatable_values) {
+    return false;
+  }
+
+  *out = std::move(*aggregatable_values);
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
                   attribution_reporting::TriggerRegistration>::
     Read(attribution_reporting::mojom::TriggerRegistrationDataView data,
@@ -339,18 +363,9 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
-  attribution_reporting::AggregatableValues::Values values;
-  if (!data.ReadAggregatableValues(&values)) {
+  if (!data.ReadAggregatableValues(&out->aggregatable_values)) {
     return false;
   }
-
-  auto aggregatable_values =
-      attribution_reporting::AggregatableValues::Create(std::move(values));
-  if (!aggregatable_values) {
-    return false;
-  }
-
-  out->aggregatable_values = std::move(*aggregatable_values);
 
   if (!data.ReadAggregatableDedupKeys(&out->aggregatable_dedup_keys)) {
     return false;

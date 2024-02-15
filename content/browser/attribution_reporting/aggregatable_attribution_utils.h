@@ -37,7 +37,7 @@ CreateAggregatableHistogram(
     const base::Time& trigger_time,
     const attribution_reporting::AggregationKeys& keys,
     const std::vector<attribution_reporting::AggregatableTriggerData>&,
-    const attribution_reporting::AggregatableValues&);
+    const std::vector<attribution_reporting::AggregatableValues>&);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
