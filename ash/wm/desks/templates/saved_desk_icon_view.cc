@@ -206,7 +206,7 @@ void SavedDeskRegularIconView::CreateChildViews(
       delegate->MaybeRetrieveIconForSpecialIdentifier(
           icon_identifier_, incognito_window_color_provider);
 
-  icon_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
+  icon_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
   if (!app_title.empty())
     icon_view_->GetViewAccessibility().OverrideName(app_title);
 

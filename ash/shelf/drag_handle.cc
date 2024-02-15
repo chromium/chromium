@@ -290,7 +290,7 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
 void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(b/262424972): Remove unwanted ", window" string from the announcement.
   Button::GetAccessibleNodeData(node_data);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
 
   std::u16string accessible_name = std::u16string();
   switch (shelf_->shelf_layout_manager()->hotseat_state()) {

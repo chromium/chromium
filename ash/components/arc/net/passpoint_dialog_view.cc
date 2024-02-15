@@ -135,7 +135,7 @@ gfx::Size PasspointDialogView::CalculatePreferredSize() const {
 
 void PasspointDialogView::AddedToWidget() {
   auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
-  view_ax.OverrideRole(ax::mojom::Role::kDialog);
+  view_ax.SetRole(ax::mojom::Role::kDialog);
   view_ax.OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE, app_name_));
 }

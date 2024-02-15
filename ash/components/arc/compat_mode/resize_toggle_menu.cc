@@ -112,7 +112,7 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   }
 
   SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   constexpr int kBorderThicknessDp = 1;
   const auto button_radius =

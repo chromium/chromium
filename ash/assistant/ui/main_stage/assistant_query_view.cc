@@ -51,7 +51,7 @@ std::unique_ptr<views::Label> CreateLabel() {
 AssistantQueryView::AssistantQueryView() {
   SetID(AssistantViewID::kQueryView);
   InitLayout();
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
 }
 
 AssistantQueryView::~AssistantQueryView() = default;
