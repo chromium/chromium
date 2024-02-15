@@ -58,7 +58,7 @@ void OmniboxPopupUI::BindInterface(
     base::StringPiece spec(url.query_piece());
     url::Component query, key, value;
     query.len = static_cast<int>(spec.size());
-    while (url::ExtractQueryKeyValue(spec.data(), &query, &key, &value)) {
+    while (url::ExtractQueryKeyValue(spec, &query, &key, &value)) {
       if (key.is_nonempty() && value.is_nonempty()) {
         const base::StringPiece key_piece = spec.substr(key.begin, key.len);
         constexpr char kSessionIdKey[] = "session_id";

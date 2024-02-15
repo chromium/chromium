@@ -30,7 +30,7 @@ base::TimeDelta ExtractDelayFromUrl(const GURL& url) {
   url::Component key;
   url::Component value;
   base::StringPiece spec = url.possibly_invalid_spec();
-  while (url::ExtractQueryKeyValue(spec.data(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(spec, &query, &key, &value)) {
     base::StringPiece key_piece = spec.substr(key.begin, key.len);
     if (key_piece != "content-shell-websocket-delay-ms")
       continue;

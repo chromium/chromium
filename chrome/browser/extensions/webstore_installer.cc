@@ -130,8 +130,7 @@ void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
   url::Component query(0, old_query.length());
   url::Component key, value;
   // Ensure that the URL doesn't already specify an authuser parameter.
-  while (url::ExtractQueryKeyValue(
-             old_query.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(old_query, &query, &key, &value)) {
     std::string key_string = old_query.substr(key.begin, key.len);
     if (key_string == kAuthUserQueryKey) {
       return;

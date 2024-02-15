@@ -39,6 +39,7 @@
 #include <stdlib.h>
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "url/url_parse_internal.h"
@@ -806,8 +807,8 @@ void DoExtractFileName(const CHAR* spec,
   return;
 }
 
-template <typename CHAR>
-bool DoExtractQueryKeyValue(const CHAR* spec,
+template <typename CharT>
+bool DoExtractQueryKeyValue(std::basic_string_view<CharT> spec,
                             Component* query,
                             Component* key,
                             Component* value) {
@@ -1004,14 +1005,14 @@ void ExtractFileName(const char16_t* url,
   DoExtractFileName(url, path, file_name);
 }
 
-bool ExtractQueryKeyValue(const char* url,
+bool ExtractQueryKeyValue(std::string_view url,
                           Component* query,
                           Component* key,
                           Component* value) {
   return DoExtractQueryKeyValue(url, query, key, value);
 }
 
-bool ExtractQueryKeyValue(const char16_t* url,
+bool ExtractQueryKeyValue(std::u16string_view url,
                           Component* query,
                           Component* key,
                           Component* value) {

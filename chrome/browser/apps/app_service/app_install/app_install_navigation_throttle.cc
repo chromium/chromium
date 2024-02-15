@@ -52,7 +52,7 @@ std::optional<PackageId> AppInstallNavigationThrottle::ExtractPackageId(
   url::Component query_slice(0, query.length());
   url::Component key_slice;
   url::Component value_slice;
-  while (url::ExtractQueryKeyValue(query.begin(), &query_slice, &key_slice,
+  while (url::ExtractQueryKeyValue(query, &query_slice, &key_slice,
                                    &value_slice)) {
     if (query.substr(key_slice.begin, key_slice.len) !=
         kAppInstallPackageIdParam) {

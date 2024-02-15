@@ -153,15 +153,15 @@ void UntrustedSource::StartDataRequest(
   if (path == "custom_background_image") {
     // Parse all query parameters to hash map and decode values.
     std::unordered_map<std::string, std::string> params;
+    std::string_view query_piece = url.query_piece();
     url::Component query(0, url.query_piece().length());
     url::Component key, value;
-    while (
-        url::ExtractQueryKeyValue(url.query().c_str(), &query, &key, &value)) {
+    while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
       url::RawCanonOutputW<kMaxUriDecodeLen> output;
-      url::DecodeURLEscapeSequences(
-          url.query_piece().substr(value.begin, value.len),
-          url::DecodeURLMode::kUTF8OrIsomorphic, &output);
-      params.insert({std::string(url.query_piece().substr(key.begin, key.len)),
+      url::DecodeURLEscapeSequences(query_piece.substr(value.begin, value.len),
+                                    url::DecodeURLMode::kUTF8OrIsomorphic,
+                                    &output);
+      params.insert({std::string(query_piece.substr(key.begin, key.len)),
                      base::UTF16ToUTF8(output.view())});
     }
     // Extract desired values.

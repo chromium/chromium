@@ -96,8 +96,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
-  while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
-                                   &value_range)) {
+  while (url::ExtractQueryKeyValue(input, &cursor, &key_range, &value_range)) {
     const std::string_view key = input.substr(key_range.begin, key_range.len);
     std::string key_value_pair;
     // Check |replaced| as only the first pair should be replaced.
@@ -178,8 +177,7 @@ void QueryIterator::Advance() {
   key_.reset();
   value_.reset();
   unescaped_value_.clear();
-  at_end_ =
-      !url::ExtractQueryKeyValue(url_->spec().c_str(), &query_, &key_, &value_);
+  at_end_ = !url::ExtractQueryKeyValue(url_->spec(), &query_, &key_, &value_);
 }
 
 bool GetValueForKeyInQuery(const GURL& url,

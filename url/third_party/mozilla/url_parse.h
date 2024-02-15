@@ -6,6 +6,7 @@
 #define URL_THIRD_PARTY_MOZILLA_URL_PARSE_H_
 
 #include <iosfwd>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/component_export.h"
@@ -445,13 +446,14 @@ void ExtractFileName(const char16_t* url,
 //
 // If no key/value are found |*key| and |*value| will be unchanged and it will
 // return false.
+
 COMPONENT_EXPORT(URL)
-bool ExtractQueryKeyValue(const char* url,
+bool ExtractQueryKeyValue(std::string_view url,
                           Component* query,
                           Component* key,
                           Component* value);
 COMPONENT_EXPORT(URL)
-bool ExtractQueryKeyValue(const char16_t* url,
+bool ExtractQueryKeyValue(std::u16string_view url,
                           Component* query,
                           Component* key,
                           Component* value);

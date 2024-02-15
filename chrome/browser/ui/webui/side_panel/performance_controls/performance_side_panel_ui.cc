@@ -58,8 +58,7 @@ PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui,
 
   url::Component query(0, static_cast<int>(url.query_piece().length()));
   url::Component key, value;
-  while (url::ExtractQueryKeyValue(url.query_piece().data(), &query, &key,
-                                   &value)) {
+  while (url::ExtractQueryKeyValue(url.query_piece(), &query, &key, &value)) {
     if (url.query_piece().substr(key.begin, key.len) == "notifications") {
       base::StringPiece value_str =
           url.query_piece().substr(value.begin, value.len);

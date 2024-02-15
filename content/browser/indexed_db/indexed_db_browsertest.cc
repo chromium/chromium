@@ -956,8 +956,8 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     std::string fail_method;
 
     url::Component query(0, request_query.length()), key_pos, value_pos;
-    while (url::ExtractQueryKeyValue(
-        request_query.c_str(), &query, &key_pos, &value_pos)) {
+    while (url::ExtractQueryKeyValue(request_query, &query, &key_pos,
+                                     &value_pos)) {
       std::string escaped_key(request_query.substr(key_pos.begin, key_pos.len));
       std::string escaped_value(
           request_query.substr(value_pos.begin, value_pos.len));
