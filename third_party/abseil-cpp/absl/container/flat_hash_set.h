@@ -29,6 +29,7 @@
 #ifndef ABSL_CONTAINER_FLAT_HASH_SET_H_
 #define ABSL_CONTAINER_FLAT_HASH_SET_H_
 
+#include <cstddef>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -492,6 +493,11 @@ struct FlatHashSetPolicy {
   }
 
   static size_t space_used(const T*) { return 0; }
+
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return &TypeErasedApplyToSlotFn<Hash, T>;
+  }
 };
 }  // namespace container_internal
 

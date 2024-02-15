@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "absl/base/internal/raw_logging.h"
+#include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/raw_hash_set.h"
 #include "absl/strings/str_format.h"
@@ -58,6 +59,11 @@ struct IntPolicy {
   template <class F>
   static auto apply(F&& f, int64_t x) -> decltype(std::forward<F>(f)(x, x)) {
     return std::forward<F>(f)(x, x);
+  }
+
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return nullptr;
   }
 };
 
@@ -116,6 +122,11 @@ class StringPolicy {
                              PairArgs(std::forward<Args>(args)...))) {
     return apply_impl(std::forward<F>(f),
                       PairArgs(std::forward<Args>(args)...));
+  }
+
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return nullptr;
   }
 };
 

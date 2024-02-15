@@ -52,6 +52,11 @@ config("quiche_config") {
 }
 
 component("quiche") {
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [
+    "-Wno-deprecated-declarations",
+  ]
   sources = [
               "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
               "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
@@ -132,6 +137,11 @@ proto_library("net_quic_test_tools_proto") {
 
 if (build_epoll_based_tools) {
   static_library("epoll_tool_support") {
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [
+      "-Wno-deprecated-declarations",
+    ]
     testonly = true
     sources = [
                 "overrides/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
@@ -208,6 +218,11 @@ if (build_epoll_based_tools) {
 
   executable("masque_client") {
     testonly = true
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [
+      "-Wno-deprecated-declarations",
+    ]
     sources = [ "src/quiche/quic/masque/masque_client_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -260,6 +275,11 @@ if (build_epoll_based_tools) {
 
 static_library("quiche_test_support") {
   testonly = true
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [
+    "-Wno-deprecated-declarations",
+  ]
   sources = [
               "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
               "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
@@ -323,6 +343,11 @@ if (!is_ios) {
   # on those.
   source_set("quic_client_core") {
     testonly = true
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [
+      "-Wno-deprecated-declarations",
+    ]
     sources = [
       "src/quiche/quic/tools/quic_toy_client.cc",
       "src/quiche/quic/tools/quic_toy_client.h",
@@ -355,6 +380,11 @@ if (!is_ios) {
 
   executable("quic_packet_printer") {
     testonly = true
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [
+      "-Wno-deprecated-declarations",
+    ]
     sources = [ "src/quiche/quic/tools/quic_packet_printer_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -372,6 +402,11 @@ if (!is_ios) {
 
   executable("quic_crypto_message_printer") {
     testonly = true
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [
+      "-Wno-deprecated-declarations",
+    ]
     sources = [ "src/quiche/quic/tools/crypto_message_printer_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -437,6 +472,11 @@ bundle_data("test_data") {
 
 source_set("quiche_tests") {
   testonly = true
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [
+    "-Wno-deprecated-declarations",
+  ]
   sources = [
     "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth_test.cc",

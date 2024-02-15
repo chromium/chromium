@@ -401,6 +401,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::container_memory
     absl::core_headers
     absl::hash_function_defaults
     absl::node_slot_policy
@@ -560,6 +561,7 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::container_memory
     absl::hash_policy_traits
     GTest::gmock_main
 )
@@ -776,6 +778,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::config
+    absl::container_memory
     absl::raw_hash_set
     absl::tracked
     GTest::gmock_main

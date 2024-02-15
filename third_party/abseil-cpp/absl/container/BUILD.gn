@@ -371,6 +371,7 @@ absl_test("raw_hash_set_test") {
 absl_test("raw_hash_set_allocator_test") {
   sources = [ "internal/raw_hash_set_allocator_test.cc" ]
   deps = [
+    ":container_memory",
     ":raw_hash_set",
     ":tracked",
     "//third_party/abseil-cpp/absl/base:config",

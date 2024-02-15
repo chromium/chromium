@@ -837,6 +837,24 @@ constexpr char kHexValueLenient[256] = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+constexpr signed char kHexValueStrict[256] = {
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,  // '0'..'9'
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 'A'..'F'
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 'a'..'f'
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+};
 /* clang-format on */
 
 // This is a templated function so that T can be either a char*
@@ -929,6 +947,30 @@ std::string WebSafeBase64Escape(absl::string_view src) {
       reinterpret_cast<const unsigned char*>(src.data()), src.size(), &dest,
       false, strings_internal::kWebSafeBase64Chars);
   return dest;
+}
+
+bool HexStringToBytes(absl::string_view hex,
+                      absl::Nonnull<std::string*> bytes) {
+  size_t num_bytes = hex.size() / 2;
+  bytes->clear();
+  if (hex.size() != num_bytes * 2) {
+    return false;
+  }
+
+  absl::strings_internal::STLStringResizeUninitialized(bytes, num_bytes);
+  auto hex_p = hex.cbegin();
+  for (std::string::iterator bin_p = bytes->begin();
+       bin_p != bytes->end(); ++bin_p) {
+    int h1 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+    int h2 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+    if (h1 == -1 || h2 == -1) {
+      bytes->resize(static_cast<size_t>(bin_p - bytes->begin()));
+      return false;
+    }
+    *bin_p = static_cast<char>((h1 << 4) + h2);
+  }
+
+  return true;
 }
 
 std::string HexStringToBytes(absl::string_view from) {

@@ -476,26 +476,24 @@ struct StringLikeTest : public ::testing::Test {
   hash_default_hash<typename T::first_type> hash;
 };
 
-TYPED_TEST_SUITE_P(StringLikeTest);
+TYPED_TEST_SUITE(StringLikeTest, StringTypesCartesianProduct);
 
-TYPED_TEST_P(StringLikeTest, Eq) {
+TYPED_TEST(StringLikeTest, Eq) {
   EXPECT_TRUE(this->eq(this->a1, this->b1));
   EXPECT_TRUE(this->eq(this->b1, this->a1));
 }
 
-TYPED_TEST_P(StringLikeTest, NotEq) {
+TYPED_TEST(StringLikeTest, NotEq) {
   EXPECT_FALSE(this->eq(this->a1, this->b2));
   EXPECT_FALSE(this->eq(this->b2, this->a1));
 }
 
-TYPED_TEST_P(StringLikeTest, HashEq) {
+TYPED_TEST(StringLikeTest, HashEq) {
   EXPECT_EQ(this->hash(this->a1), this->hash(this->b1));
   EXPECT_EQ(this->hash(this->a2), this->hash(this->b2));
   // It would be a poor hash function which collides on these strings.
   EXPECT_NE(this->hash(this->a1), this->hash(this->b2));
 }
-
-TYPED_TEST_SUITE(StringLikeTest, StringTypesCartesianProduct);
 
 }  // namespace
 }  // namespace container_internal

@@ -298,6 +298,20 @@ TEST(MapSlotPolicy, DestroyReturnsTrue) {
   }
 }
 
+TEST(ApplyTest, TypeErasedApplyToSlotFn) {
+  size_t x = 7;
+  auto fn = [](size_t v) { return v * 2; };
+  EXPECT_EQ((TypeErasedApplyToSlotFn<decltype(fn), size_t>(&fn, &x)), 14);
+}
+
+TEST(ApplyTest, TypeErasedDerefAndApplyToSlotFn) {
+  size_t x = 7;
+  auto fn = [](size_t v) { return v * 2; };
+  size_t* x_ptr = &x;
+  EXPECT_EQ(
+      (TypeErasedDerefAndApplyToSlotFn<decltype(fn), size_t>(&fn, &x_ptr)), 14);
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

@@ -263,6 +263,11 @@ source_set("tokens_encodings") {
 
 static_library("anonymous_tokens_test_support") {
   testonly = true
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [
+    "-Wno-deprecated-declarations",
+  ]
   sources = [
     "overrides/anonymous_tokens/cpp/testing/testdata_utils.h",
     "src/anonymous_tokens/cpp/testing/proto_utils.cc",
@@ -301,6 +306,11 @@ bundle_data("test_data") {
 
 source_set("anonymous_tokens_tests") {
   testonly = true
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [
+    "-Wno-deprecated-declarations",
+  ]
   sources = [
     "src/anonymous_tokens/cpp/client/anonymous_tokens_public_key_client_test.cc",
     "src/anonymous_tokens/cpp/client/anonymous_tokens_redemption_client_test.cc",

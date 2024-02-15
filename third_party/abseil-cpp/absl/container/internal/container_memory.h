@@ -464,6 +464,26 @@ struct map_slot_policy {
   }
 };
 
+// Type erased function for computing hash of the slot.
+using HashSlotFn = size_t (*)(const void* hash_fn, void* slot);
+
+// Type erased function to apply `Fn` to data inside of the `slot`.
+// The data is expected to have type `T`.
+template <class Fn, class T>
+size_t TypeErasedApplyToSlotFn(const void* fn, void* slot) {
+  const auto* f = static_cast<const Fn*>(fn);
+  return (*f)(*static_cast<const T*>(slot));
+}
+
+// Type erased function to apply `Fn` to data inside of the `*slot_ptr`.
+// The data is expected to have type `T`.
+template <class Fn, class T>
+size_t TypeErasedDerefAndApplyToSlotFn(const void* fn, void* slot_ptr) {
+  const auto* f = static_cast<const Fn*>(fn);
+  const T* slot = *static_cast<const T**>(slot_ptr);
+  return (*f)(*slot);
+}
+
 }  // namespace container_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

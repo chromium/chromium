@@ -1170,7 +1170,8 @@ inline void Cord::InlineRep::Swap(absl::Nonnull<Cord::InlineRep*> rhs) {
   if (rhs == this) {
     return;
   }
-  std::swap(data_, rhs->data_);
+  using std::swap;
+  swap(data_, rhs->data_);
 }
 
 inline absl::Nullable<const char*> Cord::InlineRep::data() const {

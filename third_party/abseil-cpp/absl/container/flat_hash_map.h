@@ -593,6 +593,13 @@ struct FlatHashMapPolicy {
                                                    std::forward<Args>(args)...);
   }
 
+  template <class Hash>
+  static constexpr HashSlotFn get_hash_slot_fn() {
+    return memory_internal::IsLayoutCompatible<K, V>::value
+               ? &TypeErasedApplyToSlotFn<Hash, K>
+               : nullptr;
+  }
+
   static size_t space_used(const slot_type*) { return 0; }
 
   static std::pair<const K, V>& element(slot_type* slot) { return slot->value; }

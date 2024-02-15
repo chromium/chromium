@@ -2323,7 +2323,7 @@ EXPORTS
     ?DoStore@?$AtomicHook@P6AXXZ@base_internal@absl@@AEAA_NP6AXXZ@Z
     ?DoStore@?$AtomicHook@P6AX_J@Z@base_internal@absl@@AEAA_NP6AX_J@Z@Z
     ?DoStore@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@AEAA_NP6A_NW4LogSeverity@3@PEBDHPEAPEADPEAH@Z@Z
-    ?DropDeletesWithoutResize@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@PEAX@Z
+    ?DropDeletesWithoutResize@container_internal@absl@@YAXAEAVCommonFields@12@PEBXAEBUPolicyFunctions@12@PEAX@Z
     ?Dtor@Mutex@absl@@AEAAXXZ
     ?DummyFunction@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@23@AEBVCord@absl@@@Z@base_internal@absl@@CA?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@56@AEBVCord@3@@Z
     ?DummyFunction@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@CAXPEBDH000@Z
@@ -2686,6 +2686,7 @@ EXPORTS
     ?HasRandenHwAesImplementation@random_internal@absl@@YA_NXZ
     ?Head@CordzInfo@cord_internal@absl@@SAPEAV123@AEBVCordzSnapshot@23@@Z
     ?HexStringToBytes@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
+    ?HexStringToBytes@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?HideMask@base_internal@absl@@YA_KXZ
     ?HighestBitSet@?$NonIterableBitMask@G$0BA@$0A@@container_internal@absl@@QEBAIXZ
     ?IDivDuration@absl@@YA_JVDuration@1@0PEAV21@@Z

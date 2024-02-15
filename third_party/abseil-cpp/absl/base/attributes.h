@@ -871,4 +871,23 @@
 #define ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
 #endif
 
+// ABSL_ATTRIBUTE_UNINITIALIZED
+//
+// GCC and Clang support a flag `-ftrivial-auto-var-init=<option>` (<option>
+// can be "zero" or "pattern") that can be used to initialize automatic stack
+// variables. Variables with this attribute will be left uninitialized,
+// overriding the compiler flag.
+//
+// See https://clang.llvm.org/docs/AttributeReference.html#uninitialized
+// and https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html#index-uninitialized-variable-attribute
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED [[clang::uninitialized]]
+#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED [[gnu::uninitialized]]
+#elif ABSL_HAVE_ATTRIBUTE(uninitialized)
+#define ABSL_ATTRIBUTE_UNINITIALIZED __attribute__((uninitialized))
+#else
+#define ABSL_ATTRIBUTE_UNINITIALIZED
+#endif
+
 #endif  // ABSL_BASE_ATTRIBUTES_H_
