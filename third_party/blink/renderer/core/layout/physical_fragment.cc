@@ -410,6 +410,7 @@ PhysicalFragment::PhysicalFragment(FragmentBuilder* builder,
                     ? nullptr
                     : OofDataFromBuilder(builder)) {
   CHECK(builder->layout_object_);
+  CHECK(builder->layout_object_->Style());
 
   // A line with a float / block in a parallel flow should not have an outgoing
   // break token associated. An outgoing inline break token from a line means
@@ -466,6 +467,7 @@ PhysicalFragment::PhysicalFragment(const PhysicalFragment& other)
       break_token_(other.break_token_),
       oof_data_(other.oof_data_ ? other.CloneOofData() : nullptr) {
   CHECK(layout_object_);
+  CHECK(layout_object_->Style());
   DCHECK(other.children_valid_);
   DCHECK(children_valid_);
 }
