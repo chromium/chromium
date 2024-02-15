@@ -114,6 +114,10 @@ IN_PROC_BROWSER_TEST_F(
       "on_selection_change_nothing_selected_on_loading_screen_selection.js"));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_AllHeadings) {
+  ASSERT_TRUE(RunTest("update_content_all_headings.js"));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_HidesLoadingScreen) {
   ASSERT_TRUE(RunTest("update_content_hides_loading_screen.js"));
 }

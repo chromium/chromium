@@ -300,6 +300,7 @@ class ReadAnythingAppModel {
   void UpdateSelection();
   void ComputeSelectionNodeIds();
   bool SelectionInsideDisplayNodes();
+  bool ContentNodesOnlyContainHeadings();
 
   void AddPendingUpdates(const ui::AXTreeID tree_id,
                          const std::vector<ui::AXTreeUpdate>& updates);
