@@ -2381,7 +2381,7 @@
   {
     "name": "enable-cros-autocorrect-by-default",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "enable-cros-autocorrect-params-tuning",
@@ -2396,7 +2396,7 @@
   {
     "name": "enable-cros-autocorrect-use-replace-surrounding-text",
     "owners": [ "hdchuong@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "enable-cros-avatars-cloud-migration",
@@ -2431,7 +2431,7 @@
   {
     "name": "enable-cros-ime-assist-multi-word",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-cros-ime-assist-multi-word-expanded",
