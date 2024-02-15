@@ -183,14 +183,15 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
 TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client);
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchResults last_results;
+  NiceMock<MockSearchResultsCallback> first_search_results_callback;
+  NiceMock<MockSearchResultsCallback> second_search_results_callback;
   // CrOS search calls `StopSearch()` automatically on starting a search.
   // If `StopSearch` actually stops a search, some providers such as the omnibox
   // automatically call the search result callback from the _last_ search with
   // an empty vector.
   // Ensure that we don't flash empty results if this happens - i.e. that we
-  // call `StopSearch` before starting a new search.
+  // call `StopSearch` before starting a new search, and calling `StopSearch`
+  // does not trigger a search callback call with empty CrOS search results.
   bool search_started = false;
   ON_CALL(client, StopCrosQuery).WillByDefault([&search_started, &client]() {
     if (search_started) {
@@ -204,13 +205,42 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
                              client.StopCrosQuery();
                              search_started = true;
                            }));
-  ON_CALL(search_results_callback, Call)
-      .WillByDefault(SaveArg<0>(&last_results));
+  // Function only used for the below `EXPECT_CALL` to ensure that we don't call
+  // the search callback with an empty callback after the initial state.
+  testing::MockFunction<void()> after_start_search;
+  testing::Expectation after_start_search_call =
+      EXPECT_CALL(after_start_search, Call).Times(1);
+  EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      first_search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Contains(
+              AllOf(Property("heading", &PickerSearchResults::Section::heading,
+                             u"Matching links"),
+                    Property("results", &PickerSearchResults::Section::results,
+                             IsEmpty()))))))
+      .Times(0)
+      .After(after_start_search_call);
+  EXPECT_CALL(second_search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      second_search_results_callback,
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Contains(
+              AllOf(Property("heading", &PickerSearchResults::Section::heading,
+                             u"Matching links"),
+                    Property("results", &PickerSearchResults::Section::results,
+                             IsEmpty()))))))
+      // This may be changed to 1 if the initial state has an empty "Matching
+      // links" section.
+      .Times(0);
 
   controller.StartSearch(
       u"cat", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)));
+                          base::Unretained(&first_search_results_callback)));
+  after_start_search.Call();
   client.cros_search_callback()->Run(
       ash::AppListSearchResultType::kOmnibox,
       {ash::PickerSearchResult::BrowsingHistory(
@@ -219,13 +249,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
   controller.StartSearch(
       u"dog", std::nullopt,
       base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)));
-
-  EXPECT_THAT(
-      last_results,
-      Property("sections", &PickerSearchResults::sections,
-               Each(Property("results", &PickerSearchResults::Section::results,
-                             Not(IsEmpty())))));
+                          base::Unretained(&second_search_results_callback)));
 }
 
 TEST_F(PickerSearchControllerTest, SendsQueryToGifSearch) {

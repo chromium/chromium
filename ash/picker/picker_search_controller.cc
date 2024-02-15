@@ -59,6 +59,7 @@ void PickerSearchController::StartSearch(
     const std::u16string& query,
     std::optional<PickerCategory> category,
     PickerViewDelegate::SearchResultsCallback callback) {
+  current_callback_.Reset();
   client_->StopCrosQuery();
   ResetResults();
   current_callback_ = std::move(callback);
@@ -91,7 +92,9 @@ void PickerSearchController::ResetResults() {
 }
 
 void PickerSearchController::RunCallback() {
-  CHECK(current_callback_);
+  if (!current_callback_) {
+    return;
+  }
   current_callback_.Run(PickerSearchResults({{
       GetFakeExpressionsSection(gif_results_),
       PickerSearchResults::Section(u"Matching links", omnibox_results_),
