@@ -21825,45 +21825,6 @@
             ]
         }
     ],
-    "WebProtectPrint": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnablePrintContentAnalysis"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebProtectPrintAfterDialog": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCloudScanAfterPreview"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [
