@@ -34,10 +34,14 @@ class EntropyState final {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Overriding the entropy source preferences with new values as given by
   // Ash upon initialization, before the MetricsService gets created.
-  static void SetExternalPrefs(PrefService* local_state,
-                               int low_entropy_source,
-                               int old_low_entropy_source,
-                               int pseudo_low_entropy_source);
+  // |limited_entropy_randomization_source| will only be overridden if it's
+  // valid. See IsValidLimitedEntropyRandomizationSource().
+  static void SetExternalPrefs(
+      PrefService* local_state,
+      int low_entropy_source,
+      int old_low_entropy_source,
+      int pseudo_low_entropy_source,
+      std::string_view limited_entropy_randomization_source);
 #endif
 
   // Returns the high entropy source for this client, which is composed of a

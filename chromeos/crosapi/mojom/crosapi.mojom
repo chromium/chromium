@@ -1003,8 +1003,8 @@ struct DeviceProperties {
 // Entropy variables which need to be kept in sync between Ash and Lacros
 // throughout a session.
 //
-// Next version: 1
-// Next id: 3
+// Next version: 2
+// Next id: 4
 [Stable]
 struct EntropySource {
   // Metrics service low entropy source of ash chrome.
@@ -1015,6 +1015,13 @@ struct EntropySource {
 
   // Metrics service pseudo low entropy source of ash chrome.
   int32 pseudo_low_entropy@2;
+
+  // The limited entropy randomization source used by ash chrome, provided by
+  // the metrics service. This field should not be null, but is required to be
+  // optional by mojo for backward compatibility. See
+  // https://chromium.googlesource.com/chromium/src/mojo/+/HEAD/public/tools/bindings/README.md#versioned-structs
+  [MinVersion=1]
+  string? limited_entropy_randomization_source@3;
 };
 
 [Stable, Extensible]

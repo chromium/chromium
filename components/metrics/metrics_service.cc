@@ -480,6 +480,10 @@ int MetricsService::GetPseudoLowEntropySource() {
   return state_manager_->GetPseudoLowEntropySource();
 }
 
+std::string_view MetricsService::GetLimitedEntropyRandomizationSource() {
+  return state_manager_->GetLimitedEntropyRandomizationSource();
+}
+
 void MetricsService::SetExternalClientId(const std::string& id) {
   state_manager_->SetExternalClientId(id);
 }

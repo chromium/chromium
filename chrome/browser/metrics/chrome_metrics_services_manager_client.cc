@@ -320,7 +320,10 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
       // This needs to be called before `metrics::MetricsStateManager::Create`.
       metrics::EntropyState::SetExternalPrefs(
           local_state_, entropy_source->low_entropy,
-          entropy_source->old_low_entropy, entropy_source->pseudo_low_entropy);
+          entropy_source->old_low_entropy, entropy_source->pseudo_low_entropy,
+          entropy_source->limited_entropy_randomization_source.has_value()
+              ? entropy_source->limited_entropy_randomization_source.value()
+              : std::string_view());
     }
 #endif
 

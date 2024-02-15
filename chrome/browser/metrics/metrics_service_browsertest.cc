@@ -525,6 +525,13 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, EntropyTransfer) {
               init_params->EntropySource()->old_low_entropy);
     EXPECT_EQ(metrics_service->GetPseudoLowEntropySource(),
               init_params->EntropySource()->pseudo_low_entropy);
+
+    EXPECT_EQ(
+        metrics_service->GetLimitedEntropyRandomizationSource(),
+        init_params->EntropySource()->limited_entropy_randomization_source);
+    EXPECT_NE(
+        std::string(),
+        init_params->EntropySource()->limited_entropy_randomization_source);
   } else {
     LOG(WARNING) << "MetricsReportingLacrosBrowserTest.EntropyTransfer "
                  << "- Ash version does not support entropy transfer yet";
