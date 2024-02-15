@@ -128,13 +128,32 @@ class AutofillDriver {
       base::OnceCallback<void(AutofillDriver* host_frame_driver,
                               const std::optional<FormData>& form)>;
 
-  // Extracts the given form and calls `response_handler`.
+  // Extracts the given form and calls `response_handler` for the browser form
+  // that includes `form`.
   //
-  // If the form is found, `response_handler` is called with the driver that
-  // manages this form and the form itself (i.e., their `FormData.host_frame`
-  // and `AutofillDriver::GetFrameToken()` are equal). The driver is distinct
-  // from `this` if the form is managed by another frame (e.g., when `this` is
-  // a subframe and the form is managed by an ancestor).
+  // The semantics may be a little surprising. Consider the following example:
+  //   <form id=f>
+  //     <input>
+  //     <iframe>
+  //       <form id=g>
+  //         <input id=i>
+  //       </form>
+  //     </iframe>
+  //   </form>
+  // Calling ExtractForm() for "g" re-extracts that form and may then flatten it
+  // into "f". So the `response_handler` is called for that browser form that
+  // includes "f" and the newly-extracted "g".
+  //
+  // To re-extract all forms (in all frames), see TriggerFormExtractionIn*().
+  //
+  // More precisely:
+  //
+  // If the `form` is found, `response_handler` is called with the driver that
+  // manages the browser form that includes `form` and that browser form itself
+  // (i.e., their `FormData.host_frame` and `AutofillDriver::GetFrameToken()`
+  // are equal). The driver is distinct from `this` if the form is managed by
+  // another frame (e.g., when `this` is a subframe and the form is managed by
+  // an ancestor).
   //
   // If the form is not found, the `response_handler` is called with nullptr for
   // the driver and std::nullopt for the form.
