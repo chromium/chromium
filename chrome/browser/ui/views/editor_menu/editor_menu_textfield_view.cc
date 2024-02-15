@@ -35,23 +35,25 @@ namespace {
 constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
-constexpr int kMinWidthForFullPlaceHolderString = 400;
 
 std::u16string GetPlaceholderText(EditorMenuMode editor_menu_mode, int width) {
   int placeholder_text_id;
-  if (editor_menu_mode == EditorMenuMode::kWrite &&
-      width >= kMinWidthForFullPlaceHolderString) {
-    placeholder_text_id = IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER;
-  } else if (editor_menu_mode == EditorMenuMode::kRewrite &&
-             width >= kMinWidthForFullPlaceHolderString) {
-    placeholder_text_id = IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER;
-  } else if (editor_menu_mode == EditorMenuMode::kWrite &&
-             width < kMinWidthForFullPlaceHolderString) {
-    placeholder_text_id = IDS_EDITOR_MENU_WRITE_CARD_SHORT_FREEFORM_PLACEHOLDER;
-  } else {
-    placeholder_text_id =
-        IDS_EDITOR_MENU_REWRITE_CARD_SHORT_FREEFORM_PLACEHOLDER;
+
+  switch (editor_menu_mode) {
+    case EditorMenuMode::kWrite:
+      placeholder_text_id = IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER;
+      break;
+
+    case EditorMenuMode::kRewrite:
+      placeholder_text_id = IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER;
+      break;
+
+    default:
+      // EditorMenuTextfieldView will only be created for write & rewrite mode.
+      // We should nevery reach here.
+      NOTREACHED();
   }
+
   return l10n_util::GetStringUTF16(placeholder_text_id);
 }
 
@@ -73,7 +75,6 @@ void EditorMenuTextfieldView::AddedToWidget() {
 
 void EditorMenuTextfieldView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
-
   // Vertically center the arrow button at the right end of the textfield.
   arrow_button_->SetBounds(
       width() - (kArrowButtonSize.width() + kArrowButtonInsets.right() +
@@ -114,10 +115,8 @@ void EditorMenuTextfieldView::InitLayout() {
   // TODO:b:302404392 - Consider removing the line below after fixing the autocorrect crash
   // issue in native views
   textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
-  textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
-      editor_menu_mode_ == EditorMenuMode::kWrite
-          ? IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER
-          : IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER));
+  textfield_->SetPlaceholderText(
+      GetPlaceholderText(editor_menu_mode_, width()));
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
   textfield_->SetExtraInsets(gfx::Insets::TLBR(
