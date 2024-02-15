@@ -121,12 +121,6 @@ class StorageAccessGrantPermissionContext
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 
-  // Determines whether an implicit grant is available, and otherwise may prompt
-  // the user.
-  void UseImplicitGrantOrPrompt(
-      permissions::PermissionRequestData request_data,
-      permissions::BrowserPermissionCallback callback);
-
   // Determines whether the top-level user-interaction heuristic was satisfied,
   // and if so, prompts the user.
   void OnCheckedUserInteractionHeuristic(

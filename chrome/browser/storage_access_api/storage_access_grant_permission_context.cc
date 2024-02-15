@@ -350,21 +350,6 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
                                 RequestOutcome::kDeniedByFirstPartySet);
     return;
   }
-  // Not autodenying; fall back to implicit grants or prompt.
-  UseImplicitGrantOrPrompt(std::move(request_data), std::move(callback));
-}
-
-void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
-    permissions::PermissionRequestData request_data,
-    permissions::BrowserPermissionCallback callback) {
-  if (!content::RenderFrameHost::FromID(
-          request_data.id.global_render_frame_host_id())) {
-    // After async steps, the RenderFrameHost is not guaranteed to still be
-    // alive.
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted);
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
-    return;
-  }
 
   // Get all of our implicit grants and see which ones apply to our
   // |requesting_origin|.
