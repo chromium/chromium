@@ -48,7 +48,10 @@ const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
     &kEnableArcIdleManager, "ignore_battery_for_test", false};
 
 const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
-    &kEnableArcIdleManager, "delay_ms", 20 * 1000};
+    &kEnableArcIdleManager, "delay_ms", 60 * 1000};
+
+const base::FeatureParam<bool> kEnableArcIdleManagerPendingIdleReactivate{
+    &kEnableArcIdleManager, "pending_idle_reactivate", false};
 
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
