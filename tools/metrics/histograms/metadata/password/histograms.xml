@@ -2773,6 +2773,30 @@ chromium-metrics-reviews@google.com.
   <token key="Function" variants="PasswordStoreBackendFunction"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API. Recorded when
+    the asynchronous job has returned. This histogram is recording an overall
+    metric for {Type}.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.ErrorCode"
+    enum="PasswordStoreAndroidBackendError" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    This is an overall metric that reports the errors observed when
+    retrieving/adding/updating or removing logins from the PasswordStore Android
+    backend that uses {Type}. Recorded when the asynchronous job has returned.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}"
     enum="PasswordStoreAndroidBackendRequestStatus" expires_after="2025-01-30">
   <owner>izuzic@google.com</owner>

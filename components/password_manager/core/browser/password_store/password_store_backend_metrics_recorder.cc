@@ -132,6 +132,10 @@ void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
 
   if (store_type_ != PasswordStoreAndroidBackendType::kNone) {
     base::UmaHistogramEnumeration(
+        base::JoinString(
+            {base::StrCat({kMetricPrefix, GetStoreInfix()}), "ErrorCode"}, "."),
+        backend_error.type);
+    base::UmaHistogramEnumeration(
         base::JoinString({base::StrCat({kMetricPrefix, GetStoreInfix()}),
                           *method_name_, "ErrorCode"},
                          "."),
@@ -180,6 +184,10 @@ void PasswordStoreBackendMetricsRecorder::RecordApiErrorCode(
       api_error_code);
 
   if (store_type_ != PasswordStoreAndroidBackendType::kNone) {
+    base::UmaHistogramSparse(
+        base::JoinString(
+            {base::StrCat({kMetricPrefix, GetStoreInfix()}), "APIError"}, "."),
+        api_error_code);
     base::UmaHistogramSparse(
         base::JoinString({base::StrCat({kMetricPrefix, GetStoreInfix()}),
                           *method_name_, "APIError"},

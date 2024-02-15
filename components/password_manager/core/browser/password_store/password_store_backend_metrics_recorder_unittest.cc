@@ -44,8 +44,12 @@ constexpr char kSuccessMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.Success";
 constexpr char kErrorCodeMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.ErrorCode";
+constexpr char kOverallErrorCodeMetricWithStoreInfix[] =
+    "PasswordManager.PasswordStoreSomeBackend.Account.ErrorCode";
 constexpr char kApiErrorMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName.APIError";
+constexpr char kOverallApiErrorMetricWithStoreInfix[] =
+    "PasswordManager.PasswordStoreSomeBackend.Account.APIError";
 constexpr char kConnectionResultMetricWithStoreInfix[] =
     "PasswordManager.PasswordStoreSomeBackend.Account.MethodName."
     "ConnectionResultCode";
@@ -208,8 +212,14 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
                 ElementsAre(Bucket(false, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetricWithStoreInfix),
                 ElementsAre(Bucket(7, 1)));  // External
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallErrorCodeMetricWithStoreInfix),
+        ElementsAre(Bucket(7, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetricWithStoreInfix),
                 ElementsAre(Bucket(11010, 1)));  // No access.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallApiErrorMetricWithStoreInfix),
+        ElementsAre(Bucket(11010, 1)));
     EXPECT_THAT(
         histogram_tester.GetAllSamples(kConnectionResultMetricWithStoreInfix),
         IsEmpty());
@@ -221,8 +231,14 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
                 IsEmpty());
     EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetricWithStoreInfix),
                 IsEmpty());
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallErrorCodeMetricWithStoreInfix),
+        IsEmpty());
     EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetricWithStoreInfix),
                 IsEmpty());
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallApiErrorMetricWithStoreInfix),
+        IsEmpty());
     EXPECT_THAT(
         histogram_tester.GetAllSamples(kConnectionResultMetricWithStoreInfix),
         IsEmpty());
@@ -307,8 +323,14 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest,
                 ElementsAre(Bucket(false, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetricWithStoreInfix),
                 ElementsAre(Bucket(7, 1)));  // External
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallErrorCodeMetricWithStoreInfix),
+        ElementsAre(Bucket(7, 1)));
     EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetricWithStoreInfix),
                 ElementsAre(Bucket(11010, 1)));  // No access.
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallApiErrorMetricWithStoreInfix),
+        ElementsAre(Bucket(11010, 1)));
     EXPECT_THAT(
         histogram_tester.GetAllSamples(kConnectionResultMetricWithStoreInfix),
         ElementsAre(Bucket(kApiUnavailableConnectionResult, 1)));
@@ -320,8 +342,14 @@ TEST_P(PasswordStoreBackendMetricsRecorderTest,
                 IsEmpty());
     EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetricWithStoreInfix),
                 IsEmpty());
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallErrorCodeMetricWithStoreInfix),
+        IsEmpty());
     EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetricWithStoreInfix),
                 IsEmpty());
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(kOverallApiErrorMetricWithStoreInfix),
+        IsEmpty());
     EXPECT_THAT(
         histogram_tester.GetAllSamples(kConnectionResultMetricWithStoreInfix),
         IsEmpty());

@@ -101,6 +101,7 @@ class PasswordStoreBackendMetricsRecorder {
   // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
   // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.ErrorCode"
   // Records additionally if the store infix is provided:
+  // - "PasswordManager.PasswordStoreAndroidBackend.<store infix>.ErrorCode"
   // -
   // "PasswordManager.PasswordStoreAndroidBackend.<store
   // infix>.<method_name_>.ErrorCode"
@@ -119,6 +120,7 @@ class PasswordStoreBackendMetricsRecorder {
   // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
   // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.APIError"
   // Records additionally if the store infix is provided:
+  // - "PasswordManager.PasswordStoreAndroidBackend.<store infix>.APIError"
   // -
   // "PasswordManager.PasswordStoreAndroidBackend.<store
   // infix>.<method_name_>.APIError"
