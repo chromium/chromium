@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/upload_client_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
@@ -38,8 +39,8 @@ class CertificateProvisioningService : public KeyedService {
     // Cached identity.
     std::optional<ClientIdentity> identity = std::nullopt;
 
-    // HTTP response code for the last upload request.
-    std::optional<int> last_upload_code = std::nullopt;
+    // HTTP response code, or client-side error, for the last upload request.
+    std::optional<HttpCodeOrClientError> last_upload_code = std::nullopt;
   };
 
   ~CertificateProvisioningService() override;

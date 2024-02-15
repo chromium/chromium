@@ -11,13 +11,16 @@ source_set("core") {
     "certificate_provisioning_service.h",
     "certificate_store.h",
     "client_identity.h",
+    "cloud_management_delegate.h",
     "constants.h",
+    "dm_server_client.h",
     "key_upload_client.h",
     "prefs.h",
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
     "store_error.h",
+    "upload_client_error.h",
   ]
 
   sources = [
@@ -29,6 +32,7 @@ source_set("core") {
     "ec_private_key.h",
     "ec_private_key_factory.cc",
     "ec_private_key_factory.h",
+    "key_upload_client.cc",
     "prefs.cc",
     "private_key.cc",
     "private_key_factory.cc",
@@ -44,6 +48,7 @@ source_set("core") {
   ]
 
   deps = [
+    "//components/policy/proto",
     "//components/prefs",
     "//net",
   ]
@@ -69,6 +74,10 @@ source_set("test_support") {
     "mock_certificate_provisioning_service.h",
     "mock_certificate_store.cc",
     "mock_certificate_store.h",
+    "mock_cloud_management_delegate.cc",
+    "mock_cloud_management_delegate.h",
+    "mock_dm_server_client.cc",
+    "mock_dm_server_client.h",
     "mock_key_upload_client.cc",
     "mock_key_upload_client.h",
     "mock_private_key.cc",
@@ -80,6 +89,7 @@ source_set("test_support") {
   deps = [
     ":core",
     "//components/leveldb_proto",
+    "//components/policy/proto",
     "//net",
     "//testing/gmock",
   ]
@@ -93,6 +103,7 @@ source_set("unit_tests") {
     "certificate_store_unittest.cc",
     "ec_private_key_factory_unittest.cc",
     "ec_private_key_unittest.cc",
+    "key_upload_client_unittest.cc",
     "private_key_factory_unittest.cc",
   ]
 

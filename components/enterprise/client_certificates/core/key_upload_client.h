@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_KEY_UPLOAD_CLIENT_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_KEY_UPLOAD_CLIENT_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/enterprise/client_certificates/core/upload_client_error.h"
 
 namespace net {
 class X509Certificate;
@@ -15,13 +18,20 @@ class X509Certificate;
 namespace client_certificates {
 
 class PrivateKey;
+class CloudManagementDelegate;
+class DMServerClient;
 
 // Interface to be used for uploading a public key to an attestation server.
 class KeyUploadClient {
  public:
+  static std::unique_ptr<KeyUploadClient> Create(
+      std::unique_ptr<CloudManagementDelegate> management_delegate,
+      std::unique_ptr<DMServerClient> dm_server_client);
+
   using CreateCertificateCallback =
-      base::OnceCallback<void(int, scoped_refptr<net::X509Certificate>)>;
-  using SyncKeyCallback = base::OnceCallback<void(int)>;
+      base::OnceCallback<void(HttpCodeOrClientError,
+                              scoped_refptr<net::X509Certificate>)>;
+  using SyncKeyCallback = base::OnceCallback<void(HttpCodeOrClientError)>;
 
   virtual ~KeyUploadClient() = default;
 

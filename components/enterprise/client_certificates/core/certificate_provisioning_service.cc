@@ -62,10 +62,10 @@ class CertificateProvisioningServiceImpl
   void OnCertificateCreatedResponse(
       bool is_permanent_identity,
       scoped_refptr<PrivateKey> private_key,
-      int upload_code,
+      HttpCodeOrClientError upload_code,
       scoped_refptr<net::X509Certificate> certificate);
 
-  void OnKeyUploadResponse(int upload_code);
+  void OnKeyUploadResponse(HttpCodeOrClientError upload_code);
 
   void OnCertificateCommitted(scoped_refptr<PrivateKey> private_key,
                               scoped_refptr<net::X509Certificate> certificate,
@@ -81,7 +81,7 @@ class CertificateProvisioningServiceImpl
   bool is_provisioning_{false};
 
   std::optional<ClientIdentity> cached_identity_ = std::nullopt;
-  std::optional<int> last_upload_code_;
+  std::optional<HttpCodeOrClientError> last_upload_code_;
 
   base::WeakPtrFactory<CertificateProvisioningServiceImpl> weak_factory_{this};
 };
@@ -228,9 +228,9 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
 void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     bool is_permanent_identity,
     scoped_refptr<PrivateKey> private_key,
-    int upload_code,
+    HttpCodeOrClientError upload_code,
     scoped_refptr<net::X509Certificate> certificate) {
-  OnKeyUploadResponse(upload_code);
+  last_upload_code_ = upload_code;
 
   if (!certificate) {
     OnProvisioningError();
@@ -258,7 +258,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
   }
 }
 
-void CertificateProvisioningServiceImpl::OnKeyUploadResponse(int upload_code) {
+void CertificateProvisioningServiceImpl::OnKeyUploadResponse(
+    HttpCodeOrClientError upload_code) {
   last_upload_code_ = upload_code;
 }
 
