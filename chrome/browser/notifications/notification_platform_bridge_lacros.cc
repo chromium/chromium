@@ -76,6 +76,18 @@ crosapi::mojom::FullscreenVisibility ToMojo(
   }
 }
 
+crosapi::mojom::SettingsButtonHandler ToMojo(
+    message_center::SettingsButtonHandler settings_button_handler) {
+  switch (settings_button_handler) {
+    case message_center::SettingsButtonHandler::NONE:
+      return crosapi::mojom::SettingsButtonHandler::kNone;
+    case message_center::SettingsButtonHandler::INLINE:
+      return crosapi::mojom::SettingsButtonHandler::kInline;
+    case message_center::SettingsButtonHandler::DELEGATE:
+      return crosapi::mojom::SettingsButtonHandler::kDelegate;
+  }
+}
+
 crosapi::mojom::NotificationPtr ToMojo(
     const message_center::Notification& notification,
     const ui::ColorProvider* color_provider) {
@@ -141,6 +153,9 @@ crosapi::mojom::NotificationPtr ToMojo(
   if (image_path.has_value()) {
     mojo_note->image_path = image_path;
   }
+
+  mojo_note->settings_button_handler =
+      ToMojo(notification.rich_notification_data().settings_button_handler);
 
   return mojo_note;
 }
