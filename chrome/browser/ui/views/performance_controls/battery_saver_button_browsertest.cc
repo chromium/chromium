@@ -9,7 +9,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
-#include "chrome/browser/ui/performance_controls/test_support/user_education_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -34,33 +34,33 @@
 #include "ui/views/widget/any_widget_observer.h"
 
 class BatterySaverHelpPromoTest
-    : public BatterySaverBrowserTestMixin<
-          UserEducationBrowserTestMixin<InProcessBrowserTest>> {
+    : public BatterySaverBrowserTestMixin<InteractiveFeaturePromoTest> {
  public:
-  BatterySaverHelpPromoTest() = default;
+  BatterySaverHelpPromoTest()
+      : BatterySaverBrowserTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHBatterySaverModeFeature})) {}
   ~BatterySaverHelpPromoTest() override = default;
-
-  void SetUp() override {
-    iph_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHBatterySaverModeFeature});
-
-    BatterySaverBrowserTestMixin::SetUp();
-  }
 
   void PressButton(views::Button* button) {
     views::test::InteractionTestUtilSimulatorViews::PressButton(
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
- private:
-  feature_engagement::test::ScopedIphFeatureList iph_features_;
+  BrowserFeaturePromoController* GetFeaturePromoController() {
+    return static_cast<BrowserFeaturePromoController*>(
+        browser()->window()->GetFeaturePromoController());
+  }
+
+  bool WaitForFeatureTrackerInitialization() {
+    feature_engagement::Tracker* const tracker =
+        GetFeaturePromoController()->feature_engagement_tracker();
+    return user_education::test::WaitForFeatureEngagementReady(tracker);
+  }
 };
 
 // Check if the battery saver in-product help promo is shown when the mode is
 // first activated and confirm it is dismissed when the button is clicked.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-
   bool initialized = WaitForFeatureTrackerInitialization();
   ASSERT_TRUE(initialized);
 
@@ -86,8 +86,6 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
 // Check if the battery saver in-product help promo is closed if the promo is
 // active when the mode is deactivated.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, HidePromoOnModeDeactivation) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-
   bool initialized = WaitForFeatureTrackerInitialization();
   ASSERT_TRUE(initialized);
 
@@ -109,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, HidePromoOnModeDeactivation) {
 // Confirm that the navigation to the performance settings page happens when
 // custom action button for battery saver promo bubble is clicked.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   auto* const promo_controller = GetFeaturePromoController();
 
   bool initialized = WaitForFeatureTrackerInitialization();

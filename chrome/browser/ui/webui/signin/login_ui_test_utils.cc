@@ -152,7 +152,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
 };
 
 void RunLoopFor(base::TimeDelta duration) {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), duration);
   run_loop.Run();

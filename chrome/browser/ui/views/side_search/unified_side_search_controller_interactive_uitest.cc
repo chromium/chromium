@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -967,8 +968,180 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
+class SideSearchIPHAndTutorialBrowserTest
+    : public InteractiveFeaturePromoTestT<SideSearchBrowserTest> {
+ public:
+  SideSearchIPHAndTutorialBrowserTest()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHSideSearchFeature})) {
+    feature_list_.InitWithFeatures({features::kSideSearch}, {});
+  }
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveFeaturePromoTestT::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
+  void SetUp() override {
+    // TODO(crbug/1512129): Delete tests.
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      GTEST_SKIP() << "Side search feature no longer in use";
+    }
+
+    set_open_about_blank_on_browser_launch(true);
+    InteractiveFeaturePromoTestT::SetUp();
+  }
+
+  auto CheckHelpBubbleAnchoredToCorrectElement(
+      ui::ElementIdentifier anchored_element_id) {
+    return CheckView(
+        user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+        [](user_education::HelpBubbleView* view) {
+          return view->GetAnchorView()->GetProperty(
+              views::kElementIdentifierKey);
+        },
+        anchored_element_id);
+  }
+
+  auto StartNavigationFromSidePanel(Browser* browser, const GURL& url) {
+    return Do([this, browser, url]() {
+      auto* const side_contents = GetActiveSidePanelWebContents(browser);
+      side_contents->GetController().LoadURLWithParams(
+          content::NavigationController::LoadURLParams(url));
+    });
+  }
+
+  auto CheckIPHTriggeredCorrectly(const ui::ElementIdentifier& primary_tab_id) {
+    const auto srp_url = GetMatchingSearchUrl();
+    const auto non_srp_url_1 = GetNonMatchingUrl();
+    return Steps(
+        WaitForFeatureEngagementReady(), InstrumentTab(primary_tab_id),
+        // Navigate to a SRP URL and then once to a non-SRP URL.
+        NavigateWebContents(primary_tab_id, srp_url),
+        NavigateWebContents(primary_tab_id, non_srp_url_1),
+        // Ensure that the side search button is present, but the side search
+        // panel isn't open.
+        WaitForShow(kSideSearchButtonElementId),
+        EnsureNotPresent(kSidePanelElementId),
+
+        // IPH bubble appears.
+        // Verify it's created with correct body text and anchored to side
+        // search page action icon button.
+        WaitForShow(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+        CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
+                          &views::Label::GetText,
+                          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
+        CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
+                       IPHDismissedCorrectly) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
+
+  RunTestSequence(
+      CheckIPHTriggeredCorrectly(kPrimaryTabId),
+
+      // Press "Remind me later".
+      PressButton(
+          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
+                       IPHTriggersTutorialCorrectly) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
+  const auto non_srp_url = GetNonMatchingUrl();
+
+  RunTestSequence(
+      CheckIPHTriggeredCorrectly(kPrimaryTabId),
+
+      // Press "Show me how".
+      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
+
+      // 1st tutorial bubble appears.
+      // Verify it's created with correct body text and anchored to side search
+      // page action icon button.
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckViewProperty(
+          user_education::HelpBubbleView::kBodyTextIdForTesting,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId),
+
+      // Click on side search page action icon to pop up side panel.
+      PressButton(kSideSearchButtonElementId),
+
+      // 2nd tutorial bubble appears.
+      // Verify it's created with correct body text and anchored to side panel
+      // web view.
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(
+                            IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB)),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchWebViewElementId),
+
+      // Simulate a click on a random result in side panel.
+      StartNavigationFromSidePanel(browser(), non_srp_url),
+      WaitForWebContentsNavigation(kPrimaryTabId),
+
+      // 3rd tutorial bubble appears.
+      // Verify it's created with correct body text and anchored to side panel
+      // close button.
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckViewProperty(
+          user_education::HelpBubbleView::kBodyTextIdForTesting,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_CLOSE_SIDE_PANEL)),
+      CheckHelpBubbleAnchoredToCorrectElement(kSidePanelCloseButtonElementId),
+
+      // Press side panel close button.
+      PressButton(kSidePanelCloseButtonElementId), FlushEvents(),
+
+      // Final tutorial button appears.
+      // Verify it's created with correct body text and anchored to side search
+      // page action icon button.
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId),
+
+      // Verify the final tutorial bubble has a Restart button.
+      CheckViewProperty(
+          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting,
+          &views::MdTextButton::GetText,
+          l10n_util::GetStringUTF16(IDS_TUTORIAL_RESTART_TUTORIAL)),
+
+      // Pressing Restart button restarts the tutorial flow.
+      // 1st tutorial bubble appears.
+      // Verify it's created with correct body text and anchored to side search
+      // page action icon button.
+      PressButton(
+          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckViewProperty(
+          user_education::HelpBubbleView::kBodyTextIdForTesting,
+          &views::Label::GetText,
+          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
+      CheckHelpBubbleAnchoredToCorrectElement(kSideSearchButtonElementId));
+}
+
 // Fixture base to test feature engagement functionality for the side search
-// feature.
+// feature. These features do not interact with FeaturePromoController, but
+// instead directly with the Feature Engagement Tracker.
 class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
  public:
   SideSearchFeatureEngagementTest()
@@ -1014,198 +1187,6 @@ class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
   base::HistogramTester histogram_tester_;
   base::CallbackListSubscription subscription_;
 };
-
-class SideSearchIPHAndTutorialBrowserTest
-    : public InteractiveBrowserTestT<SideSearchFeatureEngagementTest> {
- public:
-  SideSearchIPHAndTutorialBrowserTest() {
-    feature_list_.InitAndEnableFeaturesWithParameters({
-        {feature_engagement::kIPHSideSearchFeature,
-         GetFeatureEngagementParams()},
-        {features::kSideSearch, {}},
-    });
-  }
-
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-
-  void SetUp() override {
-    // TODO(crbug/1512129): Delete tests.
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-      GTEST_SKIP() << "Side search feature no longer in use";
-    }
-
-    set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTestT::SetUp();
-  }
-
-  bool CurrentBubbleAnchoredToCorrectElement(
-      const ui::ElementIdentifier& anchored_element_id) {
-    ui::TrackedElement* t =
-        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting);
-    auto* const view_element = t->AsA<views::TrackedElementViews>()->view();
-    return views::AsViewClass<views::BubbleDialogDelegateView>(view_element)
-               ->GetAnchorView()
-               ->GetProperty(views::kElementIdentifierKey) ==
-           anchored_element_id;
-  }
-
-  auto StartNavigationFromSidePanel(Browser* browser, const GURL& url) {
-    auto* side_contents = GetActiveSidePanelWebContents(browser);
-    side_contents->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(url));
-  }
-
-  auto CheckIPHTriggeredCorrectly(const ui::ElementIdentifier& primary_tab_id) {
-    const auto srp_url = GetMatchingSearchUrl();
-    const auto non_srp_url_1 = GetNonMatchingUrl();
-    return Steps(
-        InstrumentTab(primary_tab_id),
-        // Navigate to a SRP URL and then once to a non-SRP URL.
-        NavigateWebContents(primary_tab_id, srp_url),
-        NavigateWebContents(primary_tab_id, non_srp_url_1),
-        // Ensure that the side search button is present, but the side search
-        // panel isn't open.
-        WaitForShow(kSideSearchButtonElementId),
-        EnsureNotPresent(kSidePanelElementId),
-
-        // IPH bubble appears.
-        // Verify it's created with correct body text and anchored to side
-        // search page action icon button.
-        WaitForShow(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
-                          &views::Label::GetText,
-                          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
-        Check(base::BindLambdaForTesting([this]() {
-          return CurrentBubbleAnchoredToCorrectElement(
-              kSideSearchButtonElementId);
-        })));
-  }
-
- private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
-                       IPHDismissedCorrectly) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
-
-  RunTestSequence(
-      CheckIPHTriggeredCorrectly(kPrimaryTabId),
-
-      // Press "Remind me later".
-      PressButton(
-          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-IN_PROC_BROWSER_TEST_F(SideSearchIPHAndTutorialBrowserTest,
-                       IPHTriggersTutorialCorrectly) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
-  const auto non_srp_url = GetNonMatchingUrl();
-
-  RunTestSequence(
-      CheckIPHTriggeredCorrectly(kPrimaryTabId),
-
-      // Press "Show me how".
-      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
-
-      // 1st tutorial bubble appears.
-      // Verify it's created with correct body text and anchored to side search
-      // page action icon button.
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckViewProperty(
-          user_education::HelpBubbleView::kBodyTextIdForTesting,
-          &views::Label::GetText,
-          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })),
-
-      // Click on side search page action icon to pop up side panel.
-      PressButton(kSideSearchButtonElementId),
-
-      // 2nd tutorial bubble appears.
-      // Verify it's created with correct body text and anchored to side panel
-      // web view.
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
-                        &views::Label::GetText,
-                        l10n_util::GetStringUTF16(
-                            IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchWebViewElementId);
-      })),
-
-      // Simulate a click on a random result in side panel.
-      Do(base::BindLambdaForTesting([&, this]() {
-        StartNavigationFromSidePanel(browser(), non_srp_url);
-      })),
-      WaitForWebContentsNavigation(kPrimaryTabId),
-
-      // 3rd tutorial bubble appears.
-      // Verify it's created with correct body text and anchored to side panel
-      // close button.
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckViewProperty(
-          user_education::HelpBubbleView::kBodyTextIdForTesting,
-          &views::Label::GetText,
-          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_CLOSE_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSidePanelCloseButtonElementId);
-      })),
-
-      // Press side panel close button.
-      PressButton(kSidePanelCloseButtonElementId), FlushEvents(),
-
-      // Final tutorial button appears.
-      // Verify it's created with correct body text and anchored to side search
-      // page action icon button.
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckViewProperty(user_education::HelpBubbleView::kBodyTextIdForTesting,
-                        &views::Label::GetText,
-                        l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_PROMO)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })),
-
-      // Verify the final tutorial bubble has a Restart button.
-      CheckViewProperty(
-          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting,
-          &views::MdTextButton::GetText,
-          l10n_util::GetStringUTF16(IDS_TUTORIAL_RESTART_TUTORIAL)),
-
-      // Pressing Restart button restarts the tutorial flow.
-      // 1st tutorial bubble appears.
-      // Verify it's created with correct body text and anchored to side search
-      // page action icon button.
-      PressButton(
-          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      CheckViewProperty(
-          user_education::HelpBubbleView::kBodyTextIdForTesting,
-          &views::Label::GetText,
-          l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)),
-      Check(base::BindLambdaForTesting([this]() {
-        return CurrentBubbleAnchoredToCorrectElement(
-            kSideSearchButtonElementId);
-      })));
-}
 
 class SideSearchAutoTriggeringBrowserTest
     : public SideSearchFeatureEngagementTest,
@@ -1308,12 +1289,13 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       NavigateWebContents(kPrimaryTabId, non_srp_url_3),
       WaitForHide(kSideSearchButtonElementId), WaitForShow(kSidePanelElementId),
       // Verify that the side search panel is selected.
-      CheckResult(base::BindLambdaForTesting([coordinator]() {
-                    return coordinator->GetCurrentSidePanelEntryForTesting()
-                        ->key()
-                        .id();
-                  }),
-                  SidePanelEntry::Id::kSideSearch),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id();
+          },
+          SidePanelEntry::Id::kSideSearch),
       // When the side search WebContents is displayed, instrument it.
       InstrumentNonTabWebView(kSidePanelWebContentsId,
                               kSideSearchWebViewElementId),
@@ -1321,19 +1303,19 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       // that metrics are emitted correctly. A matching URL navigates in side
       // panel.
       AfterShow(kSidePanelWebContentsId,
-                base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                [this](ui::TrackedElement* el) {
                   // This isn't guaranteed to load in the side panel, so we
                   // don't use the NavigateWebContents() verb.
                   AsInstrumentedWebContents(el)->LoadPage(
                       GetMatchingSearchUrl());
-                })),
+                }),
       WaitForWebContentsNavigation(kSidePanelWebContentsId),
       // A non-matching URL navigates in the current browser tab.
       WithElement(kSidePanelWebContentsId,
-                  base::BindLambdaForTesting([this](ui::TrackedElement* el) {
+                  [this](ui::TrackedElement* el) {
                     AsInstrumentedWebContents(el)->LoadPage(
                         GetNonMatchingUrl());
-                  }))
+                  })
           .SetMustRemainVisible(false),
       WaitForWebContentsNavigation(kPrimaryTabId),
       // Metrics should not be emitted until the side panel is closed (i.e. the

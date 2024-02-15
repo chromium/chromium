@@ -30,9 +30,8 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -93,10 +92,6 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   }
 };
 
-std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
-  return feature_engagement::CreateTestTracker();
-}
-
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
 }
@@ -111,24 +106,24 @@ std::unique_ptr<KeyedService> CreateTestUserPolicySigninService(
 }  // namespace
 
 // Browser tests for SigninInterceptFirstRunExperienceDialog.
-class SigninInterceptFirstRunExperienceDialogBrowserTest
-    : public SigninBrowserTestBase {
+using TestBase = InteractiveFeaturePromoTestT<SigninBrowserTestBase>;
+class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
  public:
   using DialogEvent = SigninInterceptFirstRunExperienceDialog::DialogEvent;
   using DialogEventSet =
       base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
 
   SigninInterceptFirstRunExperienceDialogBrowserTest()
-      : SigninBrowserTestBase(/*use_main_profile=*/true) {
-    feature_list_.InitAndEnableFeatures(
-        /*allow_and_enable_features=*/
-        {feature_engagement::kIPHProfileSwitchFeature});
-  }
+      : TestBase(UseDefaultTrackerAllowingPromos(
+                     {feature_engagement::kIPHProfileSwitchFeature}),
+                 ClockMode::kUseTestClock,
+                 InitialSessionState::kOutsideGracePeriod,
+                 /*use_main_profile=*/true) {}
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    SigninBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    TestBase::SetUpInProcessBrowserTestFixture();
 
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -139,10 +134,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
-    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    TestBase::OnWillCreateBrowserContextServices(context);
 
-    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestTracker));
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
@@ -150,7 +143,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    SigninBrowserTestBase::SetUpOnMainThread();
+    TestBase::SetUpOnMainThread();
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
     // Needed for profile switch IPH testing.
@@ -269,7 +262,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
 
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
