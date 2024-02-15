@@ -12,8 +12,9 @@ namespace media {
 void InitLibVpxThreadWrapper() {
   const VPxWorkerInterface interface =
       CodecWorkerImpl<VPxWorkerInterface, VPxWorkerImpl, VPxWorker,
-                      VPxWorkerStatus, NOT_OK, OK,
-                      WORK>::GetCodecWorkerInterface();
+                      VPxWorkerStatus, VPX_WORKER_STATUS_NOT_OK,
+                      VPX_WORKER_STATUS_OK,
+                      VPX_WORKER_STATUS_WORKING>::GetCodecWorkerInterface();
 
   CHECK(vpx_set_worker_interface(&interface));
 }
