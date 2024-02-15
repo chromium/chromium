@@ -124,7 +124,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 - (void)testCanDownloadToFiles {
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Load a page with a download button and tap the download button.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
@@ -157,7 +157,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 - (void)testCanDownloadToDrive {
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Load a page with a download button and tap the download button.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
@@ -191,7 +191,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 - (void)testCanRetryDownloadToDrive {
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Load a page with a download button and tap the download button. The file
   // name of the file to download is set to
   // `kTestDriveFileUploaderTryAgainFileName` so that the upload fails during
