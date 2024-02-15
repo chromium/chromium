@@ -73,6 +73,12 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
 #endif
@@ -364,7 +370,16 @@ bool ChromeAutocompleteProviderClient::IsGuestSession() const {
 }
 
 bool ChromeAutocompleteProviderClient::SearchSuggestEnabled() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled) &&
+         (!g_browser_process->platform_part() ||
+          !g_browser_process->platform_part()->essential_search_manager() ||
+          !g_browser_process->platform_part()
+               ->essential_search_manager()
+               ->ShouldDisableSearchSuggest());
+#else
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
+#endif
 }
 
 bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
