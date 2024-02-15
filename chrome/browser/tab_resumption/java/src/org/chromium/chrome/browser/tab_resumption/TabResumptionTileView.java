@@ -26,6 +26,7 @@ public class TabResumptionTileView extends RelativeLayout {
     }
 
     void destroy() {
+        setOnLongClickListener(null);
         setOnClickListener(null);
     }
 
@@ -64,5 +65,7 @@ public class TabResumptionTileView extends RelativeLayout {
     /** Binds the click handler with an associated URL. */
     public void bindSuggestionClickCallback(SuggestionClickCallback callback, GURL url) {
         setOnClickListener(v -> callback.onSuggestionClick(url));
+        // Handle and return false to avoid obstructing long click handling of containing Views.
+        setOnLongClickListener(v -> false);
     }
 }

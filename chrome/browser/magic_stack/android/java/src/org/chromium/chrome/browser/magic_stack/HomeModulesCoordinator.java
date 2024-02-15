@@ -351,19 +351,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
      */
     @VisibleForTesting
     List<Integer> getFixedModuleList() {
-        List<Integer> generalModuleList;
-        if (HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue()) {
-            generalModuleList =
-                    List.of(
-                            ModuleType.PRICE_CHANGE,
-                            ModuleType.SINGLE_TAB,
-                            ModuleType.TAB_RESUMPTION);
-        } else if (mModuleDelegateHost.isHomeSurface()) {
-            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        } else if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
-            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
-        } else {
-            generalModuleList = List.of(ModuleType.PRICE_CHANGE);
+        List<Integer> generalModuleList = new ArrayList<Integer>();
+        boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
+        boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
+        generalModuleList.add(ModuleType.PRICE_CHANGE);
+        if (addAll || isHomeSurface) {
+            generalModuleList.add(ModuleType.SINGLE_TAB);
+        }
+        // Make tab resumption module NTP-only.
+        if (addAll
+                || (!isHomeSurface && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled())) {
+            generalModuleList.add(ModuleType.TAB_RESUMPTION);
         }
 
         List<Integer> moduleList = new ArrayList<>();

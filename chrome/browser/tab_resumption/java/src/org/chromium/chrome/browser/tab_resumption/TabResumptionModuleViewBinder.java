@@ -8,11 +8,9 @@ import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-class TabResumptionModuleViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
-    @Override
-    public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+class TabResumptionModuleViewBinder {
+    public static final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         TabResumptionModuleView moduleView = (TabResumptionModuleView) view;
 
         if (TabResumptionModuleProperties.IS_VISIBLE == propertyKey) {

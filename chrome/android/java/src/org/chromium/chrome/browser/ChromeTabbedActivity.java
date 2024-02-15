@@ -183,6 +183,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleBuilder;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -2311,6 +2312,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             PriceChangeModuleBuilder priceChangeModuleBuilder =
                     new PriceChangeModuleBuilder(this, mTabModelProfileSupplier, mTabModelSelector);
             moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
+        }
+
+        if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
+            TabResumptionModuleBuilder tabResumptionModuleBuilder =
+                    new TabResumptionModuleBuilder(this, mTabModelProfileSupplier);
+            moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
         }
     }
 

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -18,6 +20,7 @@ public class TabResumptionModuleMediator {
     private static final int MAX_TILES_NUMBER = 2;
 
     private final Context mContext;
+    private final ModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
     protected final TabResumptionDataProvider mDataProvider;
     protected final UrlImageProvider mUrlImageProvider;
@@ -25,11 +28,13 @@ public class TabResumptionModuleMediator {
 
     public TabResumptionModuleMediator(
             Context context,
+            ModuleDelegate moduleDelegate,
             PropertyModel model,
             TabResumptionDataProvider dataProvider,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback) {
         mContext = context;
+        mModuleDelegate = moduleDelegate;
         mModel = model;
         mDataProvider = dataProvider;
         mUrlImageProvider = urlImageProvider;
@@ -73,8 +78,10 @@ public class TabResumptionModuleMediator {
                                         R.plurals.home_modules_tab_resumption_title,
                                         bundle.entries.size());
                         mModel.set(TabResumptionModuleProperties.TITLE, title);
+                        mModuleDelegate.onDataReady(getModuleType(), mModel);
                     } else {
                         mModel.set(TabResumptionModuleProperties.TITLE, null);
+                        mModuleDelegate.onDataFetchFailed(getModuleType());
                     }
                 });
     }
@@ -105,5 +112,14 @@ public class TabResumptionModuleMediator {
         }
 
         return bundle;
+    }
+
+    int getModuleType() {
+        return ModuleType.TAB_RESUMPTION;
+    }
+
+    String getModuleContextMenuHideText(Context context) {
+        return context.getResources()
+                .getString(R.string.tab_resumption_module_other_devices_context_menu_hide);
     }
 }

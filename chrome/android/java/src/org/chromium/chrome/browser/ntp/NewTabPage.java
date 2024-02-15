@@ -564,10 +564,7 @@ public class NewTabPage
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
                 mIsTablet,
-                mTabStripHeightSupplier,
-                (GURL gurl) -> {
-                    mTab.loadUrl(new LoadUrlParams(gurl));
-                });
+                mTabStripHeightSupplier);
 
         initializeHomeModules();
 

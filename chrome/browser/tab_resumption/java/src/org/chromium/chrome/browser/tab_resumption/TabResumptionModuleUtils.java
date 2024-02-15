@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.view.ViewGroup;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -83,35 +79,5 @@ public class TabResumptionModuleUtils {
         }
 
         return res.getString(R.string.just_now);
-    }
-
-    /**
-     * Creates a {@link TabResumptionModuleCoordinator} if allowed to.
-     *
-     * @param parent The parent layout which the tab resumption module lives.
-     * @param suggestionClickCallback The function to call when a suggestion tile is clicked.
-     * @param profile The profile of the user.
-     * @param moduleContainerStubId The id of the tab resumption module on its parent view.
-     */
-    public static @Nullable TabResumptionModuleCoordinator mayCreateTabResumptionModuleCoordinator(
-            Context context,
-            ViewGroup parent,
-            SuggestionClickCallback suggestionClickCallback,
-            Profile profile,
-            int moduleContainerStubId) {
-        if (!shouldShowTabResumptionModule(profile)) return null;
-
-        TabResumptionDataProvider dataProvider =
-                ForeignSessionTabResumptionDataProvider.createFromProfile(profile);
-        UrlImageProvider urlImageProvider = new UrlImageProvider(profile, parent.getContext());
-        TabResumptionModuleCoordinator coordinator =
-                new TabResumptionModuleCoordinator(
-                        context,
-                        dataProvider,
-                        urlImageProvider,
-                        suggestionClickCallback,
-                        parent.findViewById(moduleContainerStubId));
-        coordinator.showModule();
-        return coordinator;
     }
 }

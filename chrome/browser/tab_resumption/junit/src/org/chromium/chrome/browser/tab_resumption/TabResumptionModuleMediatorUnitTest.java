@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -44,6 +45,7 @@ import java.util.List;
 public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
+    @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
 
@@ -80,7 +82,12 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
         mMediator =
                 new TabResumptionModuleMediator(
-                        context, mModel, mDataProvider, mUrlImageProvider, mClickCallback) {
+                        context,
+                        mModuleDelegate,
+                        mModel,
+                        mDataProvider,
+                        mUrlImageProvider,
+                        mClickCallback) {
                     @Override
                     long getCurrentTimeMs() {
                         return CURRENT_TIME_MS;
