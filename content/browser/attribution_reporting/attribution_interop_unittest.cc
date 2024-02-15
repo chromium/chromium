@@ -118,10 +118,6 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
   std::vector<base::test::FeatureRef> enabled_features;
-  if (dict.FindBool("needs_trigger_config").value_or(false)) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionReportingTriggerConfig);
-  }
   if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionReportingTriggerContextId);

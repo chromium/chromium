@@ -42,6 +42,7 @@
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
@@ -486,9 +487,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Non-whole-day expiry is invalid for `SourceType::kEvent`.
   source_data.expiry = base::Days(1) + base::Microseconds(1);
   source_data.aggregatable_report_window = source_data.expiry;
-  source_data.event_report_windows =
+  source_data.trigger_specs = attribution_reporting::TriggerSpecs(
+      SourceType::kEvent,
       *attribution_reporting::EventReportWindows::FromDefaults(
-          source_data.expiry, SourceType::kEvent);
+          source_data.expiry, SourceType::kEvent));
 
   {
     mojo::test::BadMessageObserver bad_message_observer;
@@ -1689,7 +1691,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError10",
+  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError11",
                                 SourceRegistrationError::kInvalidJson, 1);
 }
 

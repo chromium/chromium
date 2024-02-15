@@ -60,9 +60,9 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kEventLevelEpsilonValueInvalid,
-      "Bump version of Conversions.SourceRegistrationError10 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError10", error);
+          SourceRegistrationError::kTopLevelTriggerDataAndTriggerSpecs,
+      "Bump version of Conversions.SourceRegistrationError11 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError11", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
@@ -135,7 +135,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
   }
 
   ASSIGN_OR_RETURN(
-      result.event_report_windows,
+      auto default_event_report_windows,
       EventReportWindows::FromJSON(registration, result.expiry, source_type));
 
   ASSIGN_OR_RETURN(result.max_event_level_reports,
@@ -143,6 +143,12 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
   ASSIGN_OR_RETURN(result.trigger_data_matching,
                    ParseTriggerDataMatching(registration));
+
+  ASSIGN_OR_RETURN(
+      result.trigger_specs,
+      TriggerSpecs::ParseTopLevelTriggerData(
+          registration, source_type, std::move(default_event_report_windows),
+          result.trigger_data_matching));
 
   ASSIGN_OR_RETURN(result.event_level_epsilon,
                    EventLevelEpsilon::Parse(registration));
@@ -198,7 +204,7 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   SerializeTimeDeltaInSeconds(dict, kExpiry, expiry);
 
-  event_report_windows.Serialize(dict);
+  trigger_specs.Serialize(dict);
 
   SerializeTimeDeltaInSeconds(dict, kAggregatableReportWindow,
                               aggregatable_report_window);
@@ -220,8 +226,10 @@ bool SourceRegistration::IsValid() const {
     return false;
   }
 
-  if (!event_report_windows.IsValidForExpiry(expiry)) {
-    return false;
+  for (const auto& spec : trigger_specs.specs()) {
+    if (!spec.event_report_windows().IsValidForExpiry(expiry)) {
+      return false;
+    }
   }
 
   if (aggregatable_report_window < kMinReportWindow ||

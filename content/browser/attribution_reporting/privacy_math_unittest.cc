@@ -367,7 +367,7 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.expected,
               internal::GetFakeReportsForSequenceIndex(
-                  attribution_reporting::TriggerSpecs::Default(
+                  attribution_reporting::TriggerSpecs(
                       test_case.source_type,
                       *EventReportWindows::FromDefaults(base::Days(30),
                                                         test_case.source_type)),
@@ -440,7 +440,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
   // For the distribution check, the probability of failure with `tolerance` is
   // at most 1e-9.
   RunRandomFakeReportsTest(
-      attribution_reporting::TriggerSpecs::Default(
+      attribution_reporting::TriggerSpecs(
           SourceType::kEvent, *EventReportWindows::FromDefaults(
                                   base::Days(30), SourceType::kEvent)),
       MaxEventLevelReports(1),
@@ -456,7 +456,7 @@ TEST(PrivacyMathTest,
   //
   // For the distribution check, the probability of failure with `tolerance` is
   // at most .0002.
-  RunRandomFakeReportsTest(attribution_reporting::TriggerSpecs::Default(
+  RunRandomFakeReportsTest(attribution_reporting::TriggerSpecs(
                                SourceType::kNavigation,
                                *EventReportWindows::FromDefaults(
                                    base::Days(30), SourceType::kNavigation)),
@@ -480,7 +480,7 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
           /*start_time=*/base::Seconds(2),
           /*end_times=*/{base::Days(1)}))};
 
-  const auto kSpecs = attribution_reporting::TriggerSpecs::CreateForTesting(
+  const auto kSpecs = *attribution_reporting::TriggerSpecs::Create(
       /*trigger_data_indices=*/
       {
           {/*trigger_data=*/1, /*index=*/0},
@@ -539,8 +539,8 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
       index++;
     }
 
-    auto specs = attribution_reporting::TriggerSpecs::CreateForTesting(
-        indices, raw_specs);
+    auto specs =
+        *attribution_reporting::TriggerSpecs::Create(indices, raw_specs);
     ASSERT_EQ(test_case.expected_num_states,
               GetNumStates(specs, test_case.max_reports));
 
@@ -566,7 +566,7 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
 // the trigger data *value* in the fake reports.
 TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   // Note that the trigger data does not start at 0.
-  const auto kSpecs = attribution_reporting::TriggerSpecs::CreateForTesting(
+  const auto kSpecs = *attribution_reporting::TriggerSpecs::Create(
       {{/*trigger_data=*/123, /*index=*/0}},
       {attribution_reporting::TriggerSpec()});
 
@@ -603,7 +603,7 @@ TEST(PrivacyMathTest, UnaryChannel) {
       },
       {
           .desc = "zero-max-reports",
-          .trigger_specs = attribution_reporting::TriggerSpecs::Default(
+          .trigger_specs = attribution_reporting::TriggerSpecs(
               SourceType::kNavigation, EventReportWindows()),
           .max_event_level_reports = MaxEventLevelReports(0),
       },

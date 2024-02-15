@@ -97,9 +97,7 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta expiry;
 
-  // Specifies a custom set of report windows determining the time
-  // bounds of a report being generated with this source.
-  EventReportWindows event_report_windows;
+  TriggerSpecs trigger_specs;
 
   // Specifies how long after source registration an aggregatable
   // report can be generated with this source.

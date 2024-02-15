@@ -186,9 +186,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.aggregatable_report_window;
   }
 
-  static const attribution_reporting::EventReportWindows& event_report_windows(
+  static const attribution_reporting::TriggerSpecs& trigger_specs(
       const attribution_reporting::SourceRegistration& source) {
-    return source.event_report_windows;
+    return source.trigger_specs;
   }
 
   static int max_event_level_reports(

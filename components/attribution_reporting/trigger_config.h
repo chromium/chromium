@@ -60,25 +60,32 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   using TriggerDataIndices = base::flat_map<uint32_t, uint8_t>;
   using value_type = std::pair<uint32_t, const TriggerSpec&>;
 
-  static base::expected<TriggerSpecs, mojom::SourceRegistrationError> Parse(
-      const base::Value::Dict&,
-      mojom::SourceType,
-      base::TimeDelta expiry,
-      EventReportWindows default_report_windows,
-      mojom::TriggerDataMatching);
+  // TODO: Merge `ParseTopLevelTriggerData()` into this function and rename it
+  // to `Parse()`.
+  static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
+  ParseFullFlexForTesting(const base::Value::Dict&,
+                          mojom::SourceType,
+                          base::TimeDelta expiry,
+                          EventReportWindows default_report_windows,
+                          mojom::TriggerDataMatching);
 
-  // Creates specs with the default trigger data cardinality for the given
-  // source type.
-  static TriggerSpecs Default(mojom::SourceType, EventReportWindows);
+  // Parses the top-level `trigger_data` field. The resulting value is either
+  // `empty()` or `SingleSharedSpec()`.
+  static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
+  ParseTopLevelTriggerData(const base::Value::Dict&,
+                           mojom::SourceType,
+                           EventReportWindows default_report_windows,
+                           mojom::TriggerDataMatching);
 
   static std::optional<TriggerSpecs> Create(TriggerDataIndices,
                                             std::vector<TriggerSpec>);
 
-  static TriggerSpecs CreateForTesting(TriggerDataIndices,
-                                       std::vector<TriggerSpec>);
-
   // Creates specs matching no trigger data.
   TriggerSpecs();
+
+  // Creates specs with the default trigger data cardinality for the given
+  // source type.
+  TriggerSpecs(mojom::SourceType, EventReportWindows);
 
   ~TriggerSpecs();
 

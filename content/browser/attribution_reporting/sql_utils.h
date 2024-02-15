@@ -21,6 +21,7 @@ class AggregationKeys;
 class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
+class TriggerSpecs;
 }  // namespace attribution_reporting
 
 namespace sql {
@@ -44,12 +45,12 @@ std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
 
 // Exposed for use with earlier DB migrations that only contained a subset of
 // fields.
-void SetReadOnlySourceData(const attribution_reporting::EventReportWindows&,
+void SetReadOnlySourceData(const attribution_reporting::EventReportWindows*,
                            attribution_reporting::MaxEventLevelReports,
                            proto::AttributionReadOnlySourceData&);
 
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::EventReportWindows&,
+    const attribution_reporting::TriggerSpecs&,
     attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
@@ -64,8 +65,9 @@ std::optional<attribution_reporting::FilterData> DeserializeFilterData(
     sql::Statement&,
     int col);
 
-std::optional<attribution_reporting::EventReportWindows>
-DeserializeEventReportWindows(const proto::AttributionReadOnlySourceData&);
+std::optional<attribution_reporting::TriggerSpecs> DeserializeTriggerSpecs(
+    const proto::AttributionReadOnlySourceData&,
+    attribution_reporting::mojom::SourceType);
 
 std::string SerializeAggregationKeys(
     const attribution_reporting::AggregationKeys&);

@@ -47,11 +47,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 57;
+  static constexpr int kCurrentVersionNumber = 58;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 57;
+  static constexpr int kCompatibleVersionNumber = 58;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -109,13 +109,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kSourceInvalidFilterData = 20,
     kSourceInvalidActiveState = 21,
     kSourceInvalidReadOnlySourceData = 22,
-    kSourceInvalidEventReportWindows = 23,
+    // Obsolete: kSourceInvalidEventReportWindows = 23,
     kSourceInvalidMaxEventLevelReports = 24,
     kSourceInvalidEventLevelEpsilon = 25,
     kSourceDestinationSitesQueryFailed = 26,
     kSourceInvalidDestinationSites = 27,
     kStoredSourceConstructionFailed = 28,
-    kMaxValue = kStoredSourceConstructionFailed,
+    kSourceInvalidTriggerSpecs = 29,
+    kMaxValue = kSourceInvalidTriggerSpecs,
   };
 
   struct DeletionCounts {

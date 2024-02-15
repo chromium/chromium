@@ -79,7 +79,6 @@ using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Le;
 using ::testing::Optional;
-using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -90,6 +89,8 @@ using AttributionFilterData = ::attribution_reporting::FilterData;
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::TriggerSpec;
+using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
 
@@ -227,26 +228,23 @@ TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
 
 TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
   base::Time source_time = base::Time::Now();
-  auto event_report_windows =
-      *attribution_reporting::EventReportWindows::Create(
-          /*start_time=*/base::Days(3),
-          /*end_times=*/{base::Days(15)});
+
+  const auto kTriggerSpecs =
+      TriggerSpecs(SourceType::kNavigation,
+                   *attribution_reporting::EventReportWindows::Create(
+                       /*start_time=*/base::Days(3),
+                       /*end_times=*/{base::Days(15)}));
+
   storage()->StoreSource(SourceBuilder()
                              .SetExpiry(base::Days(30))
-                             .SetEventReportWindows(event_report_windows)
+                             .SetTriggerSpecs(kTriggerSpecs)
                              .SetAggregatableReportWindow(base::Days(5))
                              .Build());
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(AllOf(
           Property(&StoredSource::expiry_time, source_time + base::Days(30)),
-          Property(
-              &StoredSource::trigger_specs,
-              Property(
-                  &attribution_reporting::TriggerSpecs::SingleSharedSpec,
-                  Pointee(Property(
-                      &attribution_reporting::TriggerSpec::event_report_windows,
-                      event_report_windows)))),
+          Property(&StoredSource::trigger_specs, kTriggerSpecs),
           Property(&StoredSource::aggregatable_report_window_time,
                    source_time + base::Days(5)))));
 }
@@ -399,9 +397,10 @@ TEST_F(AttributionStorageTest,
        ImpressionReportWindowNotStarted_NoReportGenerated) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
-                  base::Milliseconds(1), {base::Days(30)}))
+          .SetTriggerSpecs(
+              TriggerSpecs(SourceType::kNavigation,
+                           *attribution_reporting::EventReportWindows::Create(
+                               base::Milliseconds(1), {base::Days(30)})))
           .Build());
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowNotStarted,
@@ -412,9 +411,10 @@ TEST_F(AttributionStorageTest,
        ImpressionReportWindowsPassed_NoReportGenerated) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
-                  base::Milliseconds(0), {base::Hours(1)}))
+          .SetTriggerSpecs(
+              TriggerSpecs(SourceType::kNavigation,
+                           *attribution_reporting::EventReportWindows::Create(
+                               base::Milliseconds(0), {base::Hours(1)})))
           .Build());
 
   task_environment_.FastForwardBy(base::Hours(1) + base::Microseconds(1));
@@ -1790,8 +1790,10 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
       .SetSourceType(SourceType::kEvent)
       .SetExpiry(kExpiry)
       .SetPriority(100)
-      .SetEventReportWindows(*attribution_reporting::EventReportWindows::Create(
-          base::Days(0), {kFirstWindow, kExpiry}))
+      .SetTriggerSpecs(
+          TriggerSpecs(SourceType::kEvent,
+                       *attribution_reporting::EventReportWindows::Create(
+                           base::Days(0), {kFirstWindow, kExpiry})))
       .SetMaxEventLevelReports(1);
   delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
       {.trigger_data = 1, .window_index = 0}});
@@ -1912,10 +1914,11 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
 
     auto result = storage()->StoreSource(
         SourceBuilder()
-            .SetEventReportWindows(
+            .SetTriggerSpecs(TriggerSpecs(
+                SourceType::kNavigation,
                 *attribution_reporting::EventReportWindows::Create(
                     base::Days(0),
-                    {base::Days(1), base::Days(2), base::Days(3)}))
+                    {base::Days(1), base::Days(2), base::Days(3)})))
             .Build());
 
     EXPECT_THAT(result.result(), test_case.matches);
@@ -1989,14 +1992,15 @@ TEST_F(AttributionStorageTest, TriggerPriority_UsesOriginalReportTime) {
   storage()->StoreSource(
       SourceBuilder()
           .SetMaxEventLevelReports(1)
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
-                  /*start_time=*/base::Seconds(0),
-                  /*end_times=*/
-                  {
-                      base::Hours(1),
-                      base::Hours(1) + base::Minutes(5),
-                  }))
+          .SetTriggerSpecs(
+              TriggerSpecs(SourceType::kNavigation,
+                           *attribution_reporting::EventReportWindows::Create(
+                               /*start_time=*/base::Seconds(0),
+                               /*end_times=*/
+                               {
+                                   base::Hours(1),
+                                   base::Hours(1) + base::Minutes(5),
+                               })))
           .Build());
 
   ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -3996,9 +4000,10 @@ TEST_F(AttributionStorageTest, TriggerDataMatching) {
 TEST_F(AttributionStorageTest, EventLevelDedupBeforeWindowCheck) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
-                  base::Milliseconds(0), {base::Hours(1)}))
+          .SetTriggerSpecs(
+              TriggerSpecs(SourceType::kNavigation,
+                           *attribution_reporting::EventReportWindows::Create(
+                               base::Milliseconds(0), {base::Hours(1)})))
           .Build());
 
   ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -4067,6 +4072,19 @@ TEST_F(AttributionStorageTest,
       ElementsAre(AllOf(NullAggregatableDataIs(
                             TriggerContextIdIs(Optional(std::string("123")))),
                         ReportTimeIs(report_time))));
+}
+
+// TODO(crbug.com/1501555): Support multiple trigger specs instead of just 1.
+TEST_F(AttributionStorageTest, RejectsMultipleTriggerSpecs) {
+  auto source = SourceBuilder().Build();
+  source.registration().trigger_specs =
+      *TriggerSpecs::Create(/*trigger_data_indices=*/{{0, 0}},
+                            /*specs=*/{TriggerSpec(), TriggerSpec()});
+
+  EXPECT_EQ(storage()->StoreSource(source).status(),
+            StorableSource::Result::kInternalError);
+
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 }
 
 }  // namespace content

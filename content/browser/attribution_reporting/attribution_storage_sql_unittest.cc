@@ -43,6 +43,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -77,13 +78,16 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceType;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Key;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 const char kDefaultReportOrigin[] = "https://reporter.test/";
 
@@ -1829,6 +1833,64 @@ TEST_P(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
                            attribution_reporting::EventLevelEpsilon())));
 }
 
+TEST_P(AttributionStorageSqlTest,
+       TriggerDataNotStored_RecalculatedWhenHandled) {
+  {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder()
+                               .SetSourceEventId(1u)
+                               .SetSourceType(SourceType::kNavigation)
+                               .Build());
+    storage()->StoreSource(SourceBuilder()
+                               .SetSourceEventId(2u)
+                               .SetSourceType(SourceType::kEvent)
+                               .Build());
+    CloseDatabase();
+  }
+
+  {
+    sql::Database raw_db;
+    ASSERT_TRUE(raw_db.Open(db_path()));
+
+    static constexpr char kGetSql[] =
+        "SELECT source_id,read_only_source_data FROM sources";
+    sql::Statement get_statement(raw_db.GetUniqueStatement(kGetSql));
+
+    static constexpr char kSetSql[] =
+        "UPDATE sources SET read_only_source_data=? WHERE source_id=?";
+    sql::Statement set_statement(raw_db.GetUniqueStatement(kSetSql));
+
+    while (get_statement.Step()) {
+      int64_t id = get_statement.ColumnInt64(0);
+
+      proto::AttributionReadOnlySourceData msg;
+      {
+        base::span<const uint8_t> blob = get_statement.ColumnBlob(1);
+        ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
+      }
+
+      msg.clear_trigger_data();
+
+      set_statement.Reset(/*clear_bound_vars=*/true);
+      set_statement.BindBlob(0, msg.SerializeAsString());
+      set_statement.BindInt64(1, id);
+      ASSERT_TRUE(set_statement.Run());
+    }
+  }
+
+  OpenDatabase();
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(
+                  AllOf(Property(&StoredSource::source_event_id, 1u),
+                        Property(&StoredSource::trigger_specs,
+                                 ElementsAre(Key(0), Key(1), Key(2), Key(3),
+                                             Key(4), Key(5), Key(6), Key(7)))),
+                  AllOf(Property(&StoredSource::source_event_id, 2u),
+                        Property(&StoredSource::trigger_specs,
+                                 ElementsAre(Key(0), Key(1))))));
+}
+
 // Having the missing field default to the correct value allows us to avoid a
 // DB migration to populate the field.
 TEST_P(AttributionStorageSqlTest,
@@ -1839,7 +1901,7 @@ TEST_P(AttributionStorageSqlTest,
             proto::AttributionReadOnlySourceData::MODULUS);
 }
 
-TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserializaiton) {
+TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserialization) {
   const struct {
     const char* desc;
     const char* reporting_origin;
@@ -1971,10 +2033,10 @@ TEST_P(AttributionStorageSqlTest,
 
     if (!test_case.valid) {
       histograms.ExpectBucketCount(
-          "Conversions.CorruptReportsInDatabase4",
+          "Conversions.CorruptReportsInDatabase5",
           AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
       histograms.ExpectBucketCount(
-          "Conversions.CorruptReportsInDatabase4",
+          "Conversions.CorruptReportsInDatabase5",
           AttributionStorageSql::ReportCorruptionStatus::kInvalidMetadata, 1);
     }
   }
@@ -2170,10 +2232,10 @@ TEST_P(AttributionStorageSqlTest,
                                   test_case.valid, 1);
     if (!test_case.valid) {
       histograms.ExpectBucketCount(
-          "Conversions.CorruptReportsInDatabase4",
+          "Conversions.CorruptReportsInDatabase5",
           AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
       histograms.ExpectBucketCount(
-          "Conversions.CorruptReportsInDatabase4",
+          "Conversions.CorruptReportsInDatabase5",
           AttributionStorageSql::ReportCorruptionStatus::kInvalidMetadata, 1);
     }
   }
@@ -2304,9 +2366,9 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceDataFoundNullAggregatable,
                                1);
@@ -2340,9 +2402,9 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceDataFoundNullAggregatable,
                                1);
@@ -2526,18 +2588,18 @@ TEST_P(AttributionStorageSqlTest, InvalidStoredReportFields_MarkedAsCorrupted) {
                          base::NullCallback());
     CloseDatabase();
 
-    histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+    histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                  test_case.status, 1);
     histograms.ExpectBucketCount(
-        "Conversions.CorruptReportsInDatabase4",
+        "Conversions.CorruptReportsInDatabase5",
         AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
     if (test_case.source_id_mismatch) {
       histograms.ExpectBucketCount(
-          "Conversions.CorruptReportsInDatabase4",
+          "Conversions.CorruptReportsInDatabase5",
           AttributionStorageSql::ReportCorruptionStatus::kSourceNotFound, 1);
-      histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase4", 3);
+      histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 3);
     } else {
-      histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase4", 2);
+      histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 2);
     }
   }
 }
@@ -2595,65 +2657,61 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 2);
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kSourceInvalidSourceOrigin,
       2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidReportingOrigin,
                                2);
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kSourceInvalidSourceType,
       2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidAttributionLogic,
                                2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidNumConversions,
                                2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidNumAggregatableReports,
                                2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidAggregationKeys,
                                2);
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kSourceInvalidFilterData,
       2);
   histograms.ExpectBucketCount(
-      "Conversions.CorruptReportsInDatabase4",
+      "Conversions.CorruptReportsInDatabase5",
       AttributionStorageSql::ReportCorruptionStatus::kSourceInvalidActiveState,
       2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidDestinationSites,
                                2);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidReadOnlySourceData,
                                1);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
-                               AttributionStorageSql::ReportCorruptionStatus::
-                                   kSourceInvalidEventReportWindows,
-                               1);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidMaxEventLevelReports,
                                1);
-  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase4",
+  histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase5",
                                AttributionStorageSql::ReportCorruptionStatus::
                                    kSourceInvalidEventLevelEpsilon,
                                1);
-  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase4", 28);
+  histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 27);
 }
 
 TEST_P(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {

@@ -26,6 +26,10 @@ message AttributionFilterData {
   map<string, AttributionFilterValues> filter_values = 1;
 }
 
+message TriggerData {
+  repeated uint32 trigger_data = 1;
+}
+
 // Eventually will migrate other non indexed source fields into this proto.
 message AttributionReadOnlySourceData {
   // Must be non-negative.
@@ -47,6 +51,9 @@ message AttributionReadOnlySourceData {
   optional bool debug_cookie_set = 6;
 
   optional double event_level_epsilon = 7;
+
+  // If absent, will be deserialized using the defaults for the source type.
+  optional TriggerData trigger_data = 8;
 }
 
 message AttributionEventLevelMetadata {

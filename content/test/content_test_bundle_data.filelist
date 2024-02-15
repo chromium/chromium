@@ -5595,6 +5595,7 @@ data/attribution_reporting/databases/version_54.sql
 data/attribution_reporting/databases/version_55.sql
 data/attribution_reporting/databases/version_56.sql
 data/attribution_reporting/databases/version_57.sql
+data/attribution_reporting/databases/version_58.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
@@ -5607,6 +5608,7 @@ data/attribution_reporting/interop/aggregatable_with_event_disabled.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json
+data/attribution_reporting/interop/custom_trigger_data.json
 data/attribution_reporting/interop/dedup_key.json
 data/attribution_reporting/interop/dedup_key_report_window_ordering.json
 data/attribution_reporting/interop/deduplication_sequence.json

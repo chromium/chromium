@@ -142,4 +142,20 @@ object_value {
       }
     }
   }
+  field {
+    name: "trigger_data"
+    value {
+      object_value {
+        array_value {
+          value {
+            number_value {
+              integer_value {
+                value: 5
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

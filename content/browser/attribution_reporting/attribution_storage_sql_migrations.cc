@@ -316,7 +316,7 @@ bool To56(sql::Database& db) {
 
     proto::AttributionReadOnlySourceData msg;
     SetReadOnlySourceData(
-        *event_report_windows,
+        &*event_report_windows,
         attribution_reporting::MaxEventLevelReports(*source_type), msg);
 
     set_statement.Reset(/*clear_bound_vars=*/true);
@@ -391,6 +391,17 @@ bool To56(sql::Database& db) {
          transaction.Commit();
 }
 
+// Version bump only: We avoid having to populate the new trigger_data proto
+// field for existing sources by treating absence of the field as equivalent to
+// specifying the default trigger-data cardinality for the source's source
+// type. We nonetheless bump the DB version to ensure that browser
+// downgrades do not result in this new field being ignored for sources
+// that *do* use non-default trigger data, because we raze the DB if the
+// version is too new.
+bool To58(sql::Database&) {
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -408,12 +419,13 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 53, &To54) &&  //
             MaybeMigrate(db, meta_table, 54, &To55) &&  //
             MaybeMigrate(db, meta_table, 55, &To56) &&  //
-            MaybeMigrateTo57(storage, db, meta_table, 56);
+            MaybeMigrateTo57(storage, db, meta_table, 56) &&
+            MaybeMigrate(db, meta_table, 57, &To58);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 57,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 58,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

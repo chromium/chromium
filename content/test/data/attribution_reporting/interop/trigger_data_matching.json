@@ -1,6 +1,5 @@
 {
   "description": "trigger data matching",
-  "needs_trigger_config": true,
   "input": {
     "registrations": [
       {

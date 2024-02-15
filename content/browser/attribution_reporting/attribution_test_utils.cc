@@ -76,6 +76,8 @@ SourceBuilder::SourceBuilder(base::Time time)
   registration_.source_event_id = 123;
   registration_.max_event_level_reports =
       attribution_reporting::MaxEventLevelReports::Max();
+  registration_.trigger_specs = attribution_reporting::TriggerSpecs(
+      source_type_, attribution_reporting::EventReportWindows());
 }
 
 SourceBuilder::~SourceBuilder() = default;
@@ -123,6 +125,8 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
 
 SourceBuilder& SourceBuilder::SetSourceType(SourceType source_type) {
   source_type_ = source_type;
+  registration_.trigger_specs = attribution_reporting::TriggerSpecs(
+      source_type_, attribution_reporting::EventReportWindows());
   return *this;
 }
 
@@ -199,9 +203,9 @@ SourceBuilder& SourceBuilder::SetDebugReporting(bool debug_reporting) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetEventReportWindows(
-    attribution_reporting::EventReportWindows event_report_windows) {
-  registration_.event_report_windows = std::move(event_report_windows);
+SourceBuilder& SourceBuilder::SetTriggerSpecs(
+    attribution_reporting::TriggerSpecs trigger_specs) {
+  registration_.trigger_specs = std::move(trigger_specs);
   return *this;
 }
 
@@ -233,9 +237,7 @@ StoredSource SourceBuilder::BuildStored() const {
   StoredSource source = *StoredSource::Create(
       CommonSourceInfo(source_origin_, reporting_origin_, source_type_),
       registration_.source_event_id, registration_.destination_set,
-      source_time_, expiry_time,
-      attribution_reporting::TriggerSpecs::Default(
-          source_type_, registration_.event_report_windows),
+      source_time_, expiry_time, registration_.trigger_specs,
       source_time_ + registration_.aggregatable_report_window,
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,

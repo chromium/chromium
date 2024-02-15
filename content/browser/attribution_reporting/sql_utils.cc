@@ -12,6 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -38,6 +41,9 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::EventReportWindows;
+using ::attribution_reporting::TriggerSpec;
+using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
@@ -151,20 +157,23 @@ std::optional<SourceType> DeserializeSourceType(int val) {
 }
 
 void SetReadOnlySourceData(
-    const attribution_reporting::EventReportWindows& event_report_windows,
+    const EventReportWindows* event_report_windows,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     proto::AttributionReadOnlySourceData& msg) {
   msg.set_max_event_level_reports(max_event_level_reports);
-  msg.set_event_level_report_window_start_time(
-      event_report_windows.start_time().InMicroseconds());
 
-  for (base::TimeDelta time : event_report_windows.end_times()) {
-    msg.add_event_level_report_window_end_times(time.InMicroseconds());
+  if (event_report_windows) {
+    msg.set_event_level_report_window_start_time(
+        event_report_windows->start_time().InMicroseconds());
+
+    for (base::TimeDelta time : event_report_windows->end_times()) {
+      msg.add_event_level_report_window_end_times(time.InMicroseconds());
+    }
   }
 }
 
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::EventReportWindows& event_report_windows,
+    const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
@@ -174,7 +183,27 @@ std::string SerializeReadOnlySourceData(
 
   proto::AttributionReadOnlySourceData msg;
 
-  SetReadOnlySourceData(event_report_windows, max_event_level_reports, msg);
+  if (
+      // Calling `mutable_trigger_data()` forces creation of the field, even
+      // when `trigger_specs.empty()` below, so that the presence check in
+      // `DeserializeTriggerSpecs()` doesn't mistakenly use the defaults
+      // corresponding to the field being absent, as opposed to its inner list
+      // being empty.
+      auto* mutable_trigger_data = msg.mutable_trigger_data();
+      const TriggerSpec* trigger_spec = trigger_specs.SingleSharedSpec()) {
+    SetReadOnlySourceData(&trigger_spec->event_report_windows(),
+                          max_event_level_reports, msg);
+
+    for (auto [trigger_data, _] : trigger_specs.trigger_data_indices()) {
+      mutable_trigger_data->add_trigger_data(trigger_data);
+    }
+  } else {
+    // TODO(crbug.com/1499890): Support multiple specs.
+    DCHECK(trigger_specs.empty());
+
+    SetReadOnlySourceData(/*event_report_windows=*/nullptr,
+                          max_event_level_reports, msg);
+  }
 
   msg.set_randomized_response_rate(randomized_response_rate);
 
@@ -382,8 +411,13 @@ bool DeserializeReportMetadata(base::span<const uint8_t> blob,
   return true;
 }
 
-std::optional<attribution_reporting::EventReportWindows>
-DeserializeEventReportWindows(const proto::AttributionReadOnlySourceData& msg) {
+std::optional<TriggerSpecs> DeserializeTriggerSpecs(
+    const proto::AttributionReadOnlySourceData& msg,
+    SourceType source_type) {
+  if (msg.has_trigger_data() && msg.trigger_data().trigger_data().empty()) {
+    return TriggerSpecs();
+  }
+
   std::vector<base::TimeDelta> end_times;
   end_times.reserve(msg.event_level_report_window_end_times_size());
 
@@ -391,9 +425,28 @@ DeserializeEventReportWindows(const proto::AttributionReadOnlySourceData& msg) {
     end_times.push_back(base::Microseconds(time));
   }
 
-  return attribution_reporting::EventReportWindows::Create(
+  auto event_report_windows = EventReportWindows::Create(
       base::Microseconds(msg.event_level_report_window_start_time()),
       std::move(end_times));
+  if (!event_report_windows.has_value()) {
+    return std::nullopt;
+  }
+
+  if (!msg.has_trigger_data()) {
+    return TriggerSpecs(source_type, std::move(*event_report_windows));
+  }
+
+  std::vector<TriggerSpec> specs;
+  specs.emplace_back(std::move(*event_report_windows));
+
+  return TriggerSpecs::Create(
+      base::MakeFlatMap<uint32_t, uint8_t>(msg.trigger_data().trigger_data(),
+                                           /*comp=*/{},
+                                           [](uint32_t trigger_data) {
+                                             return std::make_pair(trigger_data,
+                                                                   uint8_t{0});
+                                           }),
+      std::move(specs));
 }
 
 }  // namespace content

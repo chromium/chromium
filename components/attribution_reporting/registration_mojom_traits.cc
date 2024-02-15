@@ -226,7 +226,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadEventReportWindows(&out->event_report_windows)) {
+  if (!data.ReadTriggerSpecs(&out->trigger_specs)) {
     return false;
   }
 

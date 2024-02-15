@@ -3736,7 +3736,9 @@ Called by update_net_error_codes.py.-->
   <int value="20" label="Corresponding source - invalid filter data"/>
   <int value="21" label="Corresponding source - invalid active state"/>
   <int value="22" label="Corresponding source - invalid read only source data"/>
-  <int value="23" label="Corresponding source - invalid event report windows"/>
+  <int value="23"
+      label="(Obsolete): Corresponding source - invalid event report windows.
+             Removed in 2024/02."/>
   <int value="24"
       label="Corresponding source - invalid max event level reports"/>
   <int value="25" label="Corresponding source - invalid event level epsilon"/>
@@ -3744,6 +3746,7 @@ Called by update_net_error_codes.py.-->
       label="Corresponding source - destination sites query failed"/>
   <int value="27" label="Corresponding source - invalid destination sites"/>
   <int value="28" label="Corresponding source - construction failed"/>
+  <int value="29" label="Corresponding source - invalid trigger specs"/>
 </enum>
 
 <enum name="ConversionCreateAggregatableReportStatus">
@@ -3888,6 +3891,8 @@ Called by update_net_error_codes.py.-->
   <int value="57" label="summary_buckets non-increasing"/>
   <int value="58" label="event_level_epsilon has wrong type"/>
   <int value="59" label="event_level_epsilon value is invalid"/>
+  <int value="60"
+      label="top-level trigger_data and specs are mutually exclusive"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

@@ -78,4 +78,6 @@ enum SourceRegistrationError {
 
   kEventLevelEpsilonWrongType = 58,
   kEventLevelEpsilonValueInvalid = 59,
+
+  kTopLevelTriggerDataAndTriggerSpecs = 60,
 };

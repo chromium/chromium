@@ -2094,12 +2094,7 @@ void StorageHandler::OnSourceHandled(
           .SetAggregationKeys(
               ToAggregationKeysEntries(registration.aggregation_keys))
           .SetExpiry(registration.expiry.InSeconds())
-          // TODO(crbug.com/1499890): Replace defaults with
-          // `registration.trigger_specs` once that field is added.
-          .SetTriggerSpecs(
-              ToTriggerSpecs(attribution_reporting::TriggerSpecs::Default(
-                  common_info.source_type(),
-                  registration.event_report_windows)))
+          .SetTriggerSpecs(ToTriggerSpecs(registration.trigger_specs))
           .SetAggregatableReportWindow(
               registration.aggregatable_report_window.InSeconds())
           .SetTriggerDataMatching(
