@@ -629,10 +629,12 @@ void ServiceWorkerContainerHost::CountFeature(
     return;
 
   // `container_` shouldn't be disconnected during the lifetime of `this` but
-  // there seems a situation where `container_` is disconnected.
-  // TODO(crbug.com/1136843): Figure out the cause and remove this check.
-  if (!container_.is_connected())
+  // there seems a situation where `container_` is disconnected or unbound.
+  // TODO(crbug.com/1136843, crbug.com/40918057): Figure out the cause and
+  // remove this check.
+  if (!container_.is_bound() || !container_.is_connected()) {
     return;
+  }
 
   container_->CountFeature(feature);
 }
