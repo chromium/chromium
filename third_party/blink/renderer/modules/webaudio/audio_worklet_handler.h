@@ -82,6 +82,10 @@ class AudioWorkletHandler final
   Vector<scoped_refptr<AudioBus>> inputs_;
   Vector<scoped_refptr<AudioBus>> outputs_;
 
+  // For unconnected outputs, the handler needs to provide an AudioBus object
+  // to the AudioWorkletProcessor.
+  Vector<scoped_refptr<AudioBus>> unconnected_outputs_;
+
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map_;
   HashMap<String, std::unique_ptr<AudioFloatArray>> param_value_map_;
 
