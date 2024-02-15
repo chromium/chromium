@@ -129,7 +129,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `identity`, then open the Sync Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
 
   // Forget `fakeIdentity`, screens should be popped back to the Main Settings.
@@ -151,7 +151,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
   [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
 
@@ -176,7 +176,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   [self openAccountSettings];
 
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
@@ -199,7 +199,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
 
   // Open MyGoogleUI.
@@ -259,7 +259,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
 
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
@@ -279,7 +279,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
@@ -304,7 +304,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
@@ -354,11 +354,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
   [SigninEarlGreyUI signOut];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 
@@ -368,7 +368,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
 
   // Open the SignOut dialog, then tap "Cancel".
@@ -426,7 +426,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testRemovePrimaryAccountWhileSignOutConfirmation {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [self openAccountSettings];
 
@@ -454,7 +454,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   [self openAccountSettings];
 
@@ -481,7 +481,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testInterruptDuringSignOutConfirmation {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [self openAccountSettings];
 
@@ -504,7 +504,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testDismissSignOutConfirmationTwice {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [self openAccountSettings];
 
@@ -537,7 +537,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testSignOutWithNonManagedAccountFromNoneSyncingAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Add a bookmark.
   [BookmarkEarlGrey
@@ -557,7 +557,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testSignOutWithManagedAccountFromNoneSyncingAccount {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
@@ -576,7 +576,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)testSignOutFooterForSignInOnlyUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self openAccountSettings];
   [[EarlGrey
       selectElementWithMatcher:
