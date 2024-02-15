@@ -156,6 +156,40 @@ void CopyOutputResultSkiaRGBA::UnlockSkBitmap() const {
   result_.lock().Release();
 }
 
+ReadbackContextRGBA::ReadbackContextRGBA(
+    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+    std::unique_ptr<CopyOutputRequest> request,
+    const gfx::Rect& result_rect,
+    const gpu::Mailbox& mailbox,
+    const gfx::ColorSpace& color_space)
+    : impl_on_gpu_(impl_on_gpu),
+      request_(std::move(request)),
+      result_rect_(result_rect),
+      mailbox_(mailbox),
+      color_space_(color_space) {}
+
+ReadbackContextRGBA::~ReadbackContextRGBA() = default;
+
+void ReadbackContextRGBA::OnMailboxReady(GrGpuFinishedContext c) {
+  auto context = base::WrapUnique(static_cast<ReadbackContextRGBA*>(c));
+
+  context->OnMailboxReadyInternal();
+}
+
+void ReadbackContextRGBA::OnMailboxReadyInternal() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (impl_on_gpu_) {
+    impl_on_gpu_->ReadbackDone();
+  }
+
+  auto format = CopyOutputResult::Format::RGBA;
+  request_->SendResult(std::make_unique<CopyOutputTextureResult>(
+      format, result_rect_,
+      CopyOutputResult::TextureResult(mailbox_, gpu::SyncToken(), color_space_),
+      CopyOutputResult::ReleaseCallbacks()));
+}
+
 CopyOutputResultSkiaYUV::CopyOutputResultSkiaYUV(
     SkiaOutputSurfaceImplOnGpu* impl,
     const gfx::Rect& rect,

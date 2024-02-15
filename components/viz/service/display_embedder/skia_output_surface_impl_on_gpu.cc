@@ -908,6 +908,38 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
   }
 }
 
+namespace {
+bool IsValidInTextureCopyOutputRequest(
+    const copy_output::RenderPassGeometry& geometry,
+    const CopyOutputRequest& request) {
+  if (!request.has_blit_request()) {
+    return true;
+  }
+
+  if (request.result_destination() !=
+      CopyOutputRequest::ResultDestination::kNativeTextures) {
+    DLOG(ERROR) << "BlitRequest must have native texture destination";
+    return false;
+  }
+
+  if (!request.has_result_selection()) {
+    DLOG(ERROR) << "BlitRequest must have result_selection";
+    return false;
+  }
+
+  if (request.result_selection().size() != geometry.result_selection.size()) {
+    // We have a blit request that asks for a different
+    // size than what we have available - the behavior in this case is
+    // currently unspecified as we'd have to leave parts of the caller's
+    // region unpopulated.
+    DLOG(ERROR) << "BlitRequest result_selection must match output";
+    return false;
+  }
+
+  return true;
+}
+}  // namespace
+
 void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
     SkSurface* surface,
     copy_output::RenderPassGeometry geometry,
@@ -925,79 +957,188 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
           is_downscale_or_identity_in_both_dimensions, std::move(request));
       break;
     case CopyOutputRequest::ResultDestination::kNativeTextures: {
-      auto representation = CreateSharedImageRepresentationSkia(
-          SinglePlaneFormat::kRGBA_8888,
-          gfx::Size(geometry.result_selection.width(),
-                    geometry.result_selection.height()),
-          color_space, "CopyOutputInMemory");
-
-      if (!representation) {
-        DLOG(ERROR) << "Failed to create shared image.";
-        return;
-      }
-
-      SkSurfaceProps surface_props;
-      std::vector<GrBackendSemaphore> begin_semaphores;
-      std::vector<GrBackendSemaphore> end_semaphores;
-
-      auto scoped_write = representation->BeginScopedWriteAccess(
-          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
-          &end_semaphores,
-          gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-
-      std::optional<SkVector> scaling;
-      if (request->is_scaled()) {
-        scaling =
-            SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
-                               request->scale_from().x(),
-                           static_cast<SkScalar>(request->scale_to().y()) /
-                               request->scale_from().y());
-      }
-
-      scoped_write->surface()->wait(begin_semaphores.size(),
-                                    begin_semaphores.data());
-
-      RenderSurface(surface, src_rect, scaling,
-                    is_downscale_or_identity_in_both_dimensions,
-                    scoped_write->surface());
-
-      bool should_submit_gr_context = !end_semaphores.empty();
-
-      if (!FlushSurface(scoped_write->surface(), end_semaphores,
-                        scoped_write.get())) {
-        // TODO(penghuang): handle vulkan device lost.
-        FailedSkiaFlush("CopyOutputRGBA dest_surface->flush()");
-        return;
-      }
-
-      if (should_submit_gr_context && !gr_context()->submit()) {
-        DLOG(ERROR) << "CopyOutputRGBA gr_context->submit() failed";
-        return;
-      }
-
-      if (graphite_context() && !graphite_context()->submit()) {
-        DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
-        return;
-      }
-
-      representation->SetCleared();
-
-      // Grab the mailbox before we transfer `representation`'s ownership:
-      gpu::Mailbox mailbox = representation->mailbox();
-
-      CopyOutputResult::ReleaseCallbacks release_callbacks;
-      release_callbacks.push_back(
-          CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
-              std::move(representation)));
-
-      request->SendResult(std::make_unique<CopyOutputTextureResult>(
-          CopyOutputResult::Format::RGBA, geometry.result_selection,
-          CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(),
-                                          color_space),
-          std::move(release_callbacks)));
+      CopyOutputRGBAInTexture(
+          surface, geometry, color_space, src_rect, rescale_mode,
+          is_downscale_or_identity_in_both_dimensions, std::move(request));
       break;
     }
   }
+}
+
+void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
+    SkSurface* surface,
+    copy_output::RenderPassGeometry geometry,
+    const gfx::ColorSpace& color_space,
+    const SkIRect& src_rect,
+    SkSurface::RescaleMode rescale_mode,
+    bool is_downscale_or_identity_in_both_dimensions,
+    std::unique_ptr<CopyOutputRequest> request) {
+  // Check if the request is valid.
+  if (!IsValidInTextureCopyOutputRequest(geometry, *request)) {
+    return;
+  }
+
+  std::unique_ptr<gpu::SkiaImageRepresentation> representation;
+  // If has blit request, import texture from request.
+  if (request->has_blit_request()) {
+    const auto& blit_request = request->blit_request();
+    const gpu::Mailbox& mailbox = blit_request.mailbox(0).mailbox;
+
+    // Should never happen, mailboxes are validated when setting blit
+    // request on a CopyOutputResult.
+    DCHECK(!mailbox.IsZero());
+
+    representation = dependency_->GetSharedImageManager()->ProduceSkia(
+        mailbox, context_state_->memory_type_tracker(), context_state_);
+  } else {
+    representation = CreateSharedImageRepresentationSkia(
+        SinglePlaneFormat::kRGBA_8888,
+        gfx::Size(geometry.result_selection.width(),
+                  geometry.result_selection.height()),
+        color_space, "CopyOutputRGBA");
+  }
+
+  if (!representation) {
+    DLOG(ERROR) << "Failed to create shared image.";
+    return;
+  }
+
+  if (request->has_blit_request()) {
+    // Check if the destination will fit in the blit target:
+    const gfx::Rect blit_destination_rect(
+        request->blit_request().destination_region_offset(),
+        geometry.result_selection.size());
+    const gfx::Rect blit_target_image_rect(representation->size());
+    if (!blit_target_image_rect.Contains(blit_destination_rect)) {
+      // Send empty result, the blit target image is not large enough to fit
+      // the results.
+      DLOG(ERROR) << "blit target image is not large enough to fit results";
+      return;
+    }
+  }
+
+  SkSurfaceProps surface_props;
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  auto scoped_write = representation->BeginScopedWriteAccess(
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  std::optional<SkVector> scaling;
+  if (request->is_scaled()) {
+    scaling = SkVector::Make(static_cast<SkScalar>(request->scale_to().x()) /
+                                 request->scale_from().x(),
+                             static_cast<SkScalar>(request->scale_to().y()) /
+                                 request->scale_from().y());
+  }
+
+  scoped_write->surface()->wait(begin_semaphores.size(),
+                                begin_semaphores.data());
+
+  gfx::Point dest_origin;
+  if (request->has_blit_request()) {
+    dest_origin = request->blit_request().destination_region_offset();
+
+    if (request->blit_request().letterboxing_behavior() ==
+        LetterboxingBehavior::kLetterbox) {
+      scoped_write->surface()->getCanvas()->clear(SK_ColorBLACK);
+    }
+  }
+
+  RenderSurface(surface, src_rect, scaling,
+                is_downscale_or_identity_in_both_dimensions,
+                scoped_write->surface(), dest_origin);
+
+  if (request->has_blit_request()) {
+    BlendBitmapOverlays(scoped_write->surface()->getCanvas(),
+                        request->blit_request());
+  }
+
+  bool should_submit_gr_context = !end_semaphores.empty();
+
+  // If we are not the ones allocating the textures, they may come from a
+  // GMB, in which case we need to delay sending the results until we
+  // receive a callback that the GPU work has completed - otherwise,
+  // memory-mapping the GMB may not yield the latest version of the
+  // contents.
+  const bool should_wait_for_gpu_work =
+      request->has_blit_request() &&
+      request->blit_request().populates_gpu_memory_buffer();
+
+  std::unique_ptr<ReadbackContextRGBA> readback_context;
+
+  if (should_wait_for_gpu_work) {
+    // Treat the fact that we're waiting for GPU work to finish the same way
+    // as a readback request. This would allow us to nudge Skia to fire the
+    // callbacks. See
+    // `SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion()`.
+    ++num_readbacks_pending_;
+
+    readback_context = std::make_unique<ReadbackContextRGBA>(
+        weak_ptr_, std::move(request), geometry.result_selection,
+        request->blit_request().mailbox(0).mailbox, color_space);
+  }
+
+  bool flush_succeeded = false;
+  if (gr_context()) {
+    flush_succeeded = FlushSurface(
+        scoped_write->surface(), end_semaphores, scoped_write.get(),
+        should_wait_for_gpu_work ? &ReadbackContextRGBA::OnMailboxReady
+                                 : nullptr,
+        readback_context.release());
+  } else {
+    CHECK(graphite_context());
+    skgpu::graphite::GpuFinishedProc graphite_proc =
+        [](void* context, skgpu::CallbackResult result) {
+          NV12SingleMailboxReadyContext::OnMailboxReady(context);
+        };
+    flush_succeeded = FlushSurface(
+        scoped_write->surface(), end_semaphores, scoped_write.get(),
+        /*ganesh_finished_proc=*/nullptr, /*ganesh_finished_context=*/nullptr,
+        should_wait_for_gpu_work ? graphite_proc : nullptr,
+        readback_context.release());
+  }
+
+  if (!flush_succeeded) {
+    // TODO(penghuang): handle vulkan device lost.
+    FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
+    return;
+  }
+
+  if (should_submit_gr_context && !gr_context()->submit()) {
+    DLOG(ERROR) << "CopyOutputRGBA gr_context->submit() failed";
+    return;
+  }
+
+  if (graphite_context() && !graphite_context()->submit()) {
+    DLOG(ERROR) << "CopyOutputRGBA graphite_context->submit() failed";
+    return;
+  }
+
+  representation->SetCleared();
+
+  if (should_wait_for_gpu_work) {
+    // Flow will continue after GPU work is done - see
+    // `ReadbackContextRGBA::OnMailboxReady()` that eventually gets
+    // called.
+    return;
+  }
+
+  // Grab the mailbox before we transfer `representation`'s ownership:
+  gpu::Mailbox mailbox = representation->mailbox();
+
+  CopyOutputResult::ReleaseCallbacks release_callbacks;
+  if (!request->has_blit_request()) {
+    release_callbacks.push_back(
+        CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
+            std::move(representation)));
+  }
+
+  request->SendResult(std::make_unique<CopyOutputTextureResult>(
+      CopyOutputResult::Format::RGBA, geometry.result_selection,
+      CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(), color_space),
+      std::move(release_callbacks)));
 }
 
 void SkiaOutputSurfaceImplOnGpu::RenderSurface(
@@ -1005,9 +1146,13 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
     const SkIRect& source_selection,
     std::optional<SkVector> scaling,
     bool is_downscale_or_identity_in_both_dimensions,
-    SkSurface* dest_surface) {
+    SkSurface* dest_surface,
+    gfx::Point destination_origin) {
   SkCanvas* dest_canvas = dest_surface->getCanvas();
   int state_depth = dest_canvas->save();
+
+  // Apply the destination_origin of blit-request if present
+  dest_canvas->translate(destination_origin.x(), destination_origin.y());
 
   if (scaling.has_value()) {
     dest_canvas->scale(scaling->x(), scaling->y());
@@ -1236,14 +1381,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     SkSurface::RescaleMode rescale_mode,
     bool is_downscale_or_identity_in_both_dimensions,
     std::unique_ptr<CopyOutputRequest> request) {
-  DCHECK(!request->has_blit_request() ||
-         request->result_destination() ==
-             CopyOutputRequest::ResultDestination::kNativeTextures)
-      << "Only CopyOutputRequests that hand out native textures support blit "
-         "requests!";
-  DCHECK(!request->has_blit_request() || request->has_result_selection())
-      << "Only CopyOutputRequests that specify result selection support blit "
-         "requests!";
+  // Check if the request is valid.
+  if (!IsValidInTextureCopyOutputRequest(geometry, *request)) {
+    return;
+  }
 
   // Overview:
   // 1. Try to create surfaces for NV12 planes (we know the needed size in
@@ -1282,19 +1423,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   bool destination_surfaces_ready = false;
   if (request->has_blit_request()) {
-    if (request->result_selection().size() != intermediate_dst_size) {
-      DLOG(WARNING)
-          << __func__
-          << ": result selection is different than render pass output, "
-             "geometry="
-          << geometry.ToString() << ", request=" << request->ToString();
-      // Send empty result, we have a blit request that asks for a different
-      // size than what we have available - the behavior in this case is
-      // currently unspecified as we'd have to leave parts of the caller's
-      // region unpopulated.
-      return;
-    }
-
     destination_surfaces_ready = ImportSurfacesForNV12Planes(
         request->blit_request(), mailbox_access_datas, is_multiplane);
 
@@ -1369,7 +1497,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   RenderSurface(surface, src_rect, scaling,
                 is_downscale_or_identity_in_both_dimensions,
-                intermediate_surface.get());
+                intermediate_surface.get(), gfx::Point());
 
   if (request->has_blit_request()) {
     BlendBitmapOverlays(intermediate_surface->getCanvas(),
@@ -1995,7 +2123,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     }
 
 #if BUILDFLAG(IS_MAC)
-      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
 #endif
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
@@ -2243,9 +2371,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
-// Windows still uses gl_surface for DComp presentation. Once that's switched
-// over to presenter, these DCHECKs will be actual on all platforms and code can
-// be simplified.
+  // Windows still uses gl_surface for DComp presentation. Once that's switched
+  // over to presenter, these DCHECKs will be actual on all platforms and code
+  // can be simplified.
 #if !BUILDFLAG(IS_WIN)
   if (gl_surface_) {
     DCHECK(context_state_->GrContextIsGL());

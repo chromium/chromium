@@ -24,6 +24,7 @@
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/buildflags.h"
@@ -113,13 +114,32 @@ struct ReadbackTextureInfo {
   const raw_ref<SkBitmap> out_bitmap;
 };
 
+size_t GetRowBytesForColorType(int width, SkColorType color_type) {
+  size_t row_bytes = width;
+  switch (color_type) {
+    case kAlpha_8_SkColorType:
+      break;
+    case kR8G8_unorm_SkColorType:
+      row_bytes *= 2;
+      break;
+    case kRGBA_8888_SkColorType:
+    case kBGRA_8888_SkColorType:
+      row_bytes *= 4;
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return row_bytes;
+}
+
 void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
                                  gpu::SharedContextState* context_state,
                                  const gpu::Mailbox& mailbox,
                                  ReadbackTextureInfo readback_texture_infos[],
                                  int num_textures) {
-  if (!context_state->MakeCurrent(nullptr))
+  if (!context_state->MakeCurrent(nullptr)) {
     return;
+  }
 
   auto representation = shared_image_manager->ProduceSkia(
       mailbox, context_state->memory_type_tracker(), context_state);
@@ -143,11 +163,8 @@ void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
     auto color_type = readback_texture_infos[i].color_type;
     auto& out_bitmap = readback_texture_infos[i].out_bitmap.get();
 
-    DCHECK(color_type == kAlpha_8_SkColorType ||
-           color_type == kR8G8_unorm_SkColorType);
-
     size_t row_bytes =
-        texture_size.width() * (color_type == kAlpha_8_SkColorType ? 1 : 2);
+        GetRowBytesForColorType(texture_size.width(), color_type);
     size_t num_bytes = row_bytes * texture_size.height();
 
     DCHECK_EQ(num_bytes, out_bitmap.computeByteSize());
@@ -155,10 +172,9 @@ void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
     DCHECK_EQ(
         static_cast<size_t>(out_bitmap.width() * out_bitmap.bytesPerPixel()),
         out_bitmap.rowBytes());
-
     SkPixmap pixmap(
         SkImageInfo::Make(texture_size.width(), texture_size.height(),
-                          color_type, kUnpremul_SkAlphaType),
+                          color_type, representation->alpha_type()),
         out_bitmap.getAddr(0, 0), row_bytes);
 
     bool success = surface->readPixels(pixmap, 0, 0);
@@ -204,14 +220,10 @@ void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
   context_state->gr_context()->wait(begin_semaphores.size(),
                                     begin_semaphores.data());
 
-  DCHECK(color_type == kAlpha_8_SkColorType ||
-         color_type == kR8G8_unorm_SkColorType);
-
-  size_t row_bytes =
-      texture_size.width() * (color_type == kAlpha_8_SkColorType ? 1 : 2);
+  size_t row_bytes = GetRowBytesForColorType(texture_size.width(), color_type);
 
   SkPixmap pixmap(SkImageInfo::Make(texture_size.width(), texture_size.height(),
-                                    color_type, kUnpremul_SkAlphaType),
+                                    color_type, representation->alpha_type()),
                   pixel_data.data(), row_bytes);
 
   auto* surface = scoped_write->surface();
@@ -293,6 +305,28 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
   wait.Wait();
 }
 
+void WriteRGBAPlane(TestGpuServiceHolder* gpu_service_holder,
+                    gpu::Mailbox mailbox,
+                    const gfx::Size& texture_size,
+                    base::span<const uint8_t> pixel_data) {
+  base::WaitableEvent wait;
+
+  // Write the texture on the GPU main thread to ensure ordering with the
+  // creation of the SharedImage referred to by `mailbox`.
+  gpu_service_holder->ScheduleGpuMainTask(base::BindLambdaForTesting(
+      [&mailbox, &texture_size, &pixel_data, &wait]() {
+        WriteTextureOnGpuMainThread(
+            TestGpuServiceHolder::GetInstance()
+                ->gpu_service()
+                ->shared_image_manager(),
+            TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
+            mailbox, texture_size, kRGBA_8888_SkColorType, pixel_data);
+        wait.Signal();
+      }));
+
+  wait.Wait();
+}
+
 void WriteNV12Plane(TestGpuServiceHolder* gpu_service_holder,
                     gpu::Mailbox mailbox,
                     const gfx::Size& texture_size,
@@ -310,6 +344,42 @@ void WriteNV12Plane(TestGpuServiceHolder* gpu_service_holder,
                 ->shared_image_manager(),
             TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
             mailbox, texture_size, color_type, pixel_data);
+        wait.Signal();
+      }));
+
+  wait.Wait();
+}
+
+// Reads back RGBA planes from textures returned in the result like above.
+void ReadbackRGBAPlanes(TestGpuServiceHolder* gpu_service_holder,
+                        CopyOutputResult& result,
+                        const gfx::Size& texture_size,
+                        SkBitmap& out_plane) {
+  base::WaitableEvent wait;
+
+  // Some shared image implementations don't allow concurrent read/write to
+  // a same image. At this point, compositor GPU thread might be reading the
+  // image so it's better we issue the readback on the compositor GPU thread to
+  // avoid contention.
+  gpu_service_holder->ScheduleCompositorGpuTask(
+      base::BindLambdaForTesting([&out_plane, &result, &wait, &texture_size]() {
+        auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
+                                         ->gpu_service()
+                                         ->shared_image_manager();
+        auto* context_state = TestGpuServiceHolder::GetInstance()
+                                  ->GetCompositorGpuThreadSharedContextState()
+                                  .get();
+
+        auto plane_texture_info = ReadbackTextureInfo(
+            texture_size, kRGBA_8888_SkColorType, out_plane);
+
+        ReadbackTextureInfo texture_infos[] = {plane_texture_info};
+        ReadbackTexturesOnGpuThread(
+            shared_image_manager, context_state,
+            result.GetTextureResult()->mailbox_holders[0].mailbox,
+            texture_infos,
+            /*num_textures=*/1);
+
         wait.Signal();
       }));
 
@@ -533,22 +603,30 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
   SkBitmap expected_bitmap_;
 };
 
-class SkiaReadbackPixelTestRGBA : public SkiaReadbackPixelTest,
-                                  public testing::WithParamInterface<bool> {
+class SkiaReadbackPixelTestRGBA
+    : public SkiaReadbackPixelTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, CopyOutputResult::Destination>> {
  public:
+  SkiaReadbackPixelTestRGBA()
+      : should_scale_by_half_(std::get<0>(GetParam())),
+        request_destination_(std::get<1>(GetParam())) {}
+
   CopyOutputResult::Format RequestFormat() const {
     return CopyOutputResult::Format::RGBA;
   }
 
-  // TODO(kylechar): Add parameter to also test RGBA_TEXTURE when it's
-  // supported with the Skia readback API.
   CopyOutputResult::Destination RequestDestination() const {
-    return CopyOutputResult::Destination::kSystemMemory;
+    return request_destination_;
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(GetParam());
+    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
+
+ private:
+  bool should_scale_by_half_ = false;
+  CopyOutputResult::Destination request_destination_;
 };
 
 // Test that SkiaRenderer RGBA readback works correctly.
@@ -576,9 +654,29 @@ TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
   ASSERT_FALSE(result->IsEmpty());
   EXPECT_EQ(result_selection, result->rect());
 
+  std::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
+  SkBitmap actual;
+
   // Examine the image in the |result|, and compare it to the baseline PNG file.
-  auto scoped_bitmap = result->ScopedAccessSkBitmap();
-  auto actual = scoped_bitmap.bitmap();
+  switch (RequestDestination()) {
+    case CopyOutputResult::Destination::kSystemMemory: {
+      scoped_bitmap = result->ScopedAccessSkBitmap();
+      actual = scoped_bitmap.value().bitmap();
+      break;
+    }
+#if !BUILDFLAG(IS_ANDROID)
+    case CopyOutputResult::Destination::kNativeTextures: {
+      const gfx::Size size = result->size();
+      actual.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                           kRGBA_8888_SkColorType,
+                                           kUnpremul_SkAlphaType));
+      ReadbackRGBAPlanes(gpu_service_holder_, *result, result->size(), actual);
+      break;
+    }
+#endif
+    default:
+      NOTREACHED_NORETURN();
+  }
 
   base::FilePath expected_path = GetExpectedPath();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -592,10 +690,179 @@ TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SkiaReadbackPixelTestRGBA,
-                         // Result scaling: Scale by half?
-                         testing::Values(true, false));
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SkiaReadbackPixelTestRGBA,
+    testing::Combine(
+        // Result scaling: Scale by half?
+        testing::Values(true, false),
+        testing::Values(CopyOutputResult::Destination::kSystemMemory,
+                        CopyOutputResult::Destination::kNativeTextures)));
+#else
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SkiaReadbackPixelTestRGBA,
+    testing::Combine(
+        testing::Values(true, false),
+        // Exclude NativeTexture for Android test.
+        testing::Values(CopyOutputResult::Destination::kSystemMemory)));
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+class SkiaReadbackPixelTestRGBAWithBlit
+    : public SkiaReadbackPixelTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, LetterboxingBehavior, bool>> {
+ public:
+  SkiaReadbackPixelTestRGBAWithBlit()
+      : should_scale_by_half_(std::get<0>(GetParam())),
+        letterboxing_behavior_(std::get<1>(GetParam())),
+        populates_gpu_memory_buffer_(std::get<2>(GetParam())) {}
+
+  CopyOutputResult::Destination RequestDestination() const {
+    return CopyOutputResult::Destination::kNativeTextures;
+  }
+
+  CopyOutputResult::Format RequestFormat() const {
+    return CopyOutputResult::Format::RGBA;
+  }
+
+  void SetUp() override {
+    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
+  }
+
+  LetterboxingBehavior GetLetterboxingBehavior() const {
+    return letterboxing_behavior_;
+  }
+
+  // Test parameter that will return `true` if we'll claim that the textures we
+  // create come from GpuMemoryBuffer, `false` otherwise. This exercises a
+  // different code path in SkiaRenderer.
+  bool populates_gpu_memory_buffer() const {
+    return populates_gpu_memory_buffer_;
+  }
+
+ private:
+  bool should_scale_by_half_ = false;
+  LetterboxingBehavior letterboxing_behavior_;
+  bool populates_gpu_memory_buffer_ = false;
+};
+
+// Test that SkiaRenderer RGBA readback works correctly using existing textures.
+TEST_P(SkiaReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
+  const gfx::Rect result_selection = GetRequestArea();
+
+  // Generate a shared image that will be owned by us. They will be used as the
+  // destination for the issued BlitRequest. The logical size of the image will
+  // be the same as kSourceSize. The destination region will be the same size of
+  // |result_selection| rectangle, with the same center as the center of
+  // kSourceSize rectangle. As a consequence, the CopyOutputResult should
+  // contain the pixels from the source image in the middle, and the rest should
+  // remain unchanged.
+
+  const gfx::Size source_size = GetSourceSize();
+  gfx::Rect destination_subregion = gfx::Rect(source_size);
+  destination_subregion.ClampToCenteredSize(result_selection.size());
+
+  // RGBA
+  const std::vector<uint8_t> pattern = {255, 0, 0, 255};
+  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  auto* sii = child_context_provider_->SharedImageInterface();
+
+  // Create the dest shared image and pass the pixel data.
+  constexpr auto format = SinglePlaneFormat::kRGBA_8888;
+  std::vector<uint8_t> pixels =
+      GeneratePixels(format.EstimatedSizeInBytes(source_size), pattern);
+  scoped_refptr<gpu::ClientSharedImage> blit_dest_shared_image =
+      sii->CreateSharedImage(format, source_size, color_space,
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+                             gpu::kNullSurfaceHandle);
+
+  ASSERT_TRUE(blit_dest_shared_image);
+  gpu::Mailbox mailbox = blit_dest_shared_image->mailbox();
+
+  WriteRGBAPlane(gpu_service_holder_, mailbox, source_size, pixels);
+
+  std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
+      RequestFormat(), RequestDestination(),
+      base::BindLambdaForTesting([this, &result_selection,
+                                  &destination_subregion,
+                                  &mailbox](CopyOutputRequest& request) {
+        // Build CopyOutputRequest based on test parameters.
+        if (ScaleByHalf()) {
+          request.SetUniformScaleRatio(2, 1);
+        }
+
+        request.set_result_selection(result_selection);
+
+        request.set_blit_request(BlitRequest(
+            destination_subregion.origin(), GetLetterboxingBehavior(),
+            {gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0),
+             gpu::MailboxHolder(), gpu::MailboxHolder()},
+            populates_gpu_memory_buffer()));
+      }));
+
+  // Check that a result was produced and is of the expected rect/size.
+  ASSERT_TRUE(result);
+  ASSERT_FALSE(result->IsEmpty());
+  ASSERT_EQ(result_selection, result->rect());
+  ASSERT_EQ(result->destination(),
+            CopyOutputResult::Destination::kNativeTextures);
+
+  // Packed plane sizes. Note that for blit request, the size of the returned
+  // textures is caller-controlled, and we have issued a COR w/ blit request
+  // that is supposed to write to an image of |source_size| size.
+  SkBitmap actual;
+  actual.allocPixels(
+      SkImageInfo::Make(source_size.width(), source_size.height(),
+                        kRGBA_8888_SkColorType, kPremul_SkAlphaType));
+  ReadbackRGBAPlanes(gpu_service_holder_, *result, source_size, actual);
+
+  sii->DestroySharedImage(gpu::SyncToken(), std::move(blit_dest_shared_image));
+
+  // Load the expected subregion from a file - we will then write it on top of
+  // a new, all-red bitmap:
+  SkBitmap expected_subregion =
+      GLScalerTestUtil::CopyAndConvertToRGBA(GetExpectedOutputBitmap());
+
+  // The textures that we passed in to BlitRequest contained RGBA plane data for
+  // an all-red image, let's re-create such a bitmap:
+  SkBitmap expected = GLScalerTestUtil::AllocateRGBABitmap(source_size);
+
+  if (GetLetterboxingBehavior() == LetterboxingBehavior::kLetterbox) {
+    // We have requested the results to be letterboxed, so everything that
+    // CopyOutputRequest is not populating w/ render pass contents should be
+    // black:
+    expected.eraseColor(SK_ColorBLACK);
+  } else {
+    // We have requested the results to not be letterboxed, so everything that
+    // CopyOutputRequest is not populating w/ render pass will have original
+    // contents (red in our case):
+    expected.eraseColor(SK_ColorRED);
+  }
+
+  // Blit request should "stitch" the pixels from the source image into a
+  // sub-region of caller-provided texture - let's write our expected pixels
+  // loaded from a file into the same subregion of an all-red texture:
+  expected.writePixels(expected_subregion.pixmap(), destination_subregion.x(),
+                       destination_subregion.y());
+
+  EXPECT_TRUE(
+      cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SkiaReadbackPixelTestRGBAWithBlit,
+    testing::Combine(
+        testing::Bool(),  // Result scaling: Scale by half?
+        testing::Values(LetterboxingBehavior::kDoNotLetterbox,
+                        LetterboxingBehavior::kLetterbox),
+        testing::Bool()  // Should behave as if COR is populating a GMB?
+        ));
 
 // Tests of NV12.
 
@@ -607,7 +874,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // formats (WrappedSkImageBackingFactory and ExternalVkImageBackingFactory
 // don't support cross-thread access, while AHardwareBufferImageBackingFactory
 // doesn't support the plane formats).
-#if !BUILDFLAG(IS_ANDROID)
 class SkiaReadbackPixelTestNV12
     : public SkiaReadbackPixelTest,
       public testing::WithParamInterface<

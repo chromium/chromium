@@ -408,6 +408,14 @@ class SkiaOutputSurfaceImplOnGpu
                               bool is_downscale_or_identity_in_both_dimensions,
                               std::unique_ptr<CopyOutputRequest> request);
 
+  void CopyOutputRGBAInTexture(SkSurface* surface,
+                               copy_output::RenderPassGeometry geometry,
+                               const gfx::ColorSpace& color_space,
+                               const SkIRect& src_rect,
+                               SkSurface::RescaleMode rescale_mode,
+                               bool is_downscale_or_identity_in_both_dimensions,
+                               std::unique_ptr<CopyOutputRequest> request);
+
   void CopyOutputNV12(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
                       const gfx::ColorSpace& color_space,
@@ -431,7 +439,8 @@ class SkiaOutputSurfaceImplOnGpu
                      const SkIRect& source_selection,
                      std::optional<SkVector> scaling,
                      bool is_downscale_or_identity_in_both_dimensions,
-                     SkSurface* dest_surface);
+                     SkSurface* dest_surface,
+                     gfx::Point destination_origin);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, flushes writes
   // to |surface| with |end_semaphores| and |end_state|.
