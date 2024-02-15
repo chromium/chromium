@@ -6588,7 +6588,9 @@ def CheckStableMojomChanges(input_api, output_api):
         return [
             output_api.PresubmitError(
                 'One or more [Stable] mojom definitions appears to have been changed '
-                'in a way that is not backward-compatible.',
+                'in a way that is not backward-compatible. See '
+                'https://chromium.googlesource.com/chromium/src/+/HEAD/mojo/public/tools/bindings/README.md#versioning'
+                ' for details.',
                 long_text=error)
         ]
     return []
