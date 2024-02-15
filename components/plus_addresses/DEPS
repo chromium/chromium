@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/autofill/core/browser/autofill_plus_address_delegate.h",
+  "+components/autofill/core",
   "+components/keyed_service/core",
   "+components/signin/public",
   "+components/prefs",

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -15,16 +16,11 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
   MockAutofillPlusAddressDelegate();
   ~MockAutofillPlusAddressDelegate() override;
 
-  MOCK_METHOD(bool,
-              SupportsPlusAddresses,
-              (const url::Origin&, bool),
-              (const override));
-  MOCK_METHOD(std::optional<std::string>,
-              GetPlusAddress,
-              (const url::Origin&),
-              (const override));
   MOCK_METHOD(bool, IsPlusAddress, (const std::string&), (const override));
-  MOCK_METHOD(std::u16string, GetCreateSuggestionLabel, (), (const override));
+  MOCK_METHOD(std::vector<Suggestion>,
+              GetSuggestions,
+              (const url::Origin&, bool, std::u16string_view),
+              (override));
   MOCK_METHOD(void,
               RecordAutofillSuggestionEvent,
               (SuggestionEvent),

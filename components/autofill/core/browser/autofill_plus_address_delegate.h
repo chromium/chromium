@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
-#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 
@@ -17,6 +17,7 @@ class Origin;
 namespace autofill {
 
 using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
+struct Suggestion;
 
 // The interface for communication from //components/autofill to
 // //components/plus_addresses.
@@ -42,20 +43,16 @@ class AutofillPlusAddressDelegate {
 
   virtual ~AutofillPlusAddressDelegate() = default;
 
-  // Returns whether plus addresses are supported.
-  virtual bool SupportsPlusAddresses(const url::Origin& origin,
-                                     bool is_off_the_record) const = 0;
-
-  // Gets a plus address, if one exists, for `origin`.
-  virtual std::optional<std::string> GetPlusAddress(
-      const url::Origin& origin) const = 0;
-
   // Checks whether `potential_plus_address` is a known plus address.
   virtual bool IsPlusAddress(
       const std::string& potential_plus_address) const = 0;
 
-  // Returns the suggestion label for creating a plus address.
-  virtual std::u16string GetCreateSuggestionLabel() const = 0;
+  // Returns the suggestions to show for the given origin and
+  // `focused_field_value`.
+  virtual std::vector<Suggestion> GetSuggestions(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      bool is_off_the_record,
+      std::u16string_view focused_field_value) = 0;
 
   // Logs Autofill suggestion events related to plus addresses.
   virtual void RecordAutofillSuggestionEvent(

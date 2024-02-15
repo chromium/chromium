@@ -69,6 +69,7 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -379,12 +380,6 @@ auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
       Field("filling_prevented_by_iframe_security_policy",
             &FillFieldLogEvent::filling_prevented_by_iframe_security_policy,
             expected.filling_prevented_by_iframe_security_policy));
-}
-
-Matcher<Suggestion> IsPlusAddressSuggestion() {
-  return Field(&Suggestion::popup_item_id,
-               AnyOf(PopupItemId::kCreateNewPlusAddress,
-                     PopupItemId::kFillExistingPlusAddress));
 }
 
 // Creates a GUID for testing. For example,
@@ -6745,42 +6740,6 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
       form_https, card_number_field_https));
 }
 
-// Ensure that the experimental plus_addresses feature is not shown by default.
-// This is true even if the PlusAddressService had existing data for the current
-// domain.
-TEST_F(BrowserAutofillManagerTest, NoPlusAddressSuggestionsByDefault) {
-  auto plus_address_delegate =
-      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-  ON_CALL(*plus_address_delegate, SupportsPlusAddresses)
-      .WillByDefault(Return(false));
-  ON_CALL(*plus_address_delegate, GetPlusAddress)
-      .WillByDefault(
-          Return(std::make_optional<std::string>("plus_plus@plus.plus")));
-  autofill_client_.set_plus_address_delegate(std::move(plus_address_delegate));
-
-  // Set up our form data. Notably, the first field is an email address.
-  FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  FormsSeen({form});
-
-  // Check that suggestions are made for the field that has the autocomplete
-  // attribute, and ensure that they are exactly the expected set, with no plus
-  // address data.
-  GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate()->CheckSuggestions(
-      form.fields[0].global_id(),
-      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,
-                  PopupItemId::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
-}
-
 // Tests that compose suggestions are not queried if Autofill has suggestions
 // itself.
 TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
@@ -7500,8 +7459,6 @@ class BrowserAutofillManagerPlusAddressTest
     BrowserAutofillManagerTest::SetUp();
     auto plus_address_delegate =
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-    ON_CALL(*plus_address_delegate, SupportsPlusAddresses)
-        .WillByDefault(Return(true));
     autofill_client_.set_plus_address_delegate(
         std::move(plus_address_delegate));
   }
@@ -7512,9 +7469,9 @@ class BrowserAutofillManagerPlusAddressTest
   }
 };
 
-// Ensure that plus address options aren't shown unexpectedly.
+// Ensure that plus address options aren't queried for non-email fields.
 TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
-  EXPECT_CALL(plus_address_delegate(), RecordAutofillSuggestionEvent).Times(0);
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions).Times(0);
 
   // Set up our form data.
   FormData form = test::GetFormData(
@@ -7526,12 +7483,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   FormsSeen({form});
 
   // Check that suggestions are made for the field that has the autocomplete
-  // attribute. Ensure that there is no plus address option shown, because those options are
-  // only applicable to email fields.
+  // attribute. Ensure that there is no plus address option shown.
   GetAutofillSuggestions(form, form.fields[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(external_delegate()->suggestions(),
-              Each(Not(IsPlusAddressSuggestion())));
 
   // Also check that there are no suggestions for the field without the
   // autocomplete attribute, ensuring that unrecognized fields don't get plus
@@ -7540,75 +7494,13 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
-// Tests that plus address suggestions are offered iff the value in the focused
-// field matches the prefix of the plus address.
-TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
-  ON_CALL(plus_address_delegate(), GetPlusAddress)
-      .WillByDefault(
-          Return(std::make_optional<std::string>("plus+plus@plus.plus")));
-  const Suggestion kFillSuggestion =
-      Suggestion("plus+plus@plus.plus", "", Suggestion::Icon::kPlusAddress,
-                 PopupItemId::kFillExistingPlusAddress);
-
-  // Set up our form data. The first field is an email address.
-  FormData form = test::GetFormData(
-      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  FormsSeen({form});
-
-  MockFunction<void(int)> check;
-  {
-    InSequence s;
-    EXPECT_CALL(plus_address_delegate(),
-                RecordAutofillSuggestionEvent(
-                    AutofillPlusAddressDelegate::SuggestionEvent::
-                        kExistingPlusAddressSuggested));
-    EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(plus_address_delegate(),
-                RecordAutofillSuggestionEvent(
-                    AutofillPlusAddressDelegate::SuggestionEvent::
-                        kExistingPlusAddressSuggested));
-    EXPECT_CALL(check, Call(2));
-  }
-
-  // Check that suggestions are made for the field that has the autocomplete
-  // attribute, and ensure that they are exactly the expected set.
-  GetAutofillSuggestions(form, form.fields[0]);
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(kFillSuggestion, _, _, _, _));
-  check.Call(1);
-
-  // If the user types a letter and it matches the plus address (after
-  // normalization), the plus address continues to be shown.
-  form.fields[0].value = u"P";
-  GetAutofillSuggestions(form, form.fields[0]);
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(external_delegate()->suggestions(), ElementsAre(kFillSuggestion));
-  check.Call(2);
-
-  // If the value does not match the prefix of the plus address, nothing is
-  // shown.
-  form.fields[0].value = u"pp";
-  GetAutofillSuggestions(form, form.fields[0]);
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Ensure that email fields without existing plus addresses for the domain, but
-// with the feature enabled, still offer creation of a new plus address if their
-// value is empty.
+// Tests that address suggestions are queried and shown for email fields.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
-  EXPECT_CALL(plus_address_delegate(),
-              RecordAutofillSuggestionEvent(
-                  AutofillPlusAddressDelegate::SuggestionEvent::
-                      kCreateNewPlusAddressSuggested));
-  ON_CALL(plus_address_delegate(), GetPlusAddress)
-      .WillByDefault(Return(std::optional<std::string>()));
-  ON_CALL(plus_address_delegate(), GetCreateSuggestionLabel)
-      .WillByDefault(Return(u"Create plus address"));
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+      .WillOnce(Return(std::vector<Suggestion>{
+          Suggestion(PopupItemId::kCreateNewPlusAddress)}));
+
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -7618,21 +7510,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 
   FormsSeen({form});
 
-  // Check that suggestions are made for the field that has the autocomplete
-  // attribute, and ensure that they are exactly the expected set.
+  // Check that the plus address suggestion is offered.
   GetAutofillSuggestions(form, form.fields[0]);
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(Suggestion("Create plus address", "",
-                                     Suggestion::Icon::kPlusAddress,
-                                     PopupItemId::kCreateNewPlusAddress),
+              ElementsAre(EqualsSuggestion(PopupItemId::kCreateNewPlusAddress),
                           _, _, _, _));
-
-  // Check that no suggestions are offered if the focused field is not empty
-  // and there is no existing plus address.
-  form.fields[0].value = u"pp";
-  GetAutofillSuggestions(form, form.fields[0]);
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
 // Test that plus address inputs are forced to !should_autocomplete

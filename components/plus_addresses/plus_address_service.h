@@ -54,6 +54,13 @@ class PlusAddressService : public KeyedService,
                      PlusAddressHttpClient plus_address_client);
 
   // autofill::AutofillPlusAddressDelegate:
+  // Checks whether the passed-in string is a known plus address.
+  bool IsPlusAddress(const std::string& potential_plus_address) const override;
+  std::vector<autofill::Suggestion> GetSuggestions(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      bool is_off_the_record,
+      std::u16string_view focused_field_value) override;
+  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
 
   // Returns `true` when plus addresses are supported. This includes checks that
   // the `kPlusAddressesEnabled` base::Feature is enabled, that there's a
@@ -63,24 +70,20 @@ class PlusAddressService : public KeyedService,
   // tests (e.g., those in autofill that depend on this class) to substitute
   // their own behavior.
   bool SupportsPlusAddresses(const url::Origin& origin,
-                             bool is_off_the_record) const override;
+                             bool is_off_the_record) const;
 
-  // Get a plus address, if one exists, for the passed-in origin. Note that all
-  // plus address activity is scoped to eTLD+1. This class owns the conversion
-  // of `origin` to its eTLD+1 form.
-  std::optional<std::string> GetPlusAddress(
-      const url::Origin& origin) const override;
-
-  // Checks whether the passed-in string is a known plus address.
-  bool IsPlusAddress(const std::string& potential_plus_address) const override;
-
-  std::u16string GetCreateSuggestionLabel() const override;
-
-  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+  // Returns the suggestion label for creating a new plus address.
+  std::u16string GetCreateSuggestionLabel() const;
 
   // Same as `GetPlusAddress`, but packages the plus address along with its
   // eTLD+1.
-  absl::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
+  std::optional<PlusProfile> GetPlusProfile(const url::Origin& origin) const;
+
+  // Gets a plus address, if one exists, for the passed-in origin. Note that all
+  // plus address activity is scoped to eTLD+1. This class owns the conversion
+  // of `origin` to its eTLD+1 form.
+  std::optional<std::string> GetPlusAddress(const url::Origin& origin) const;
+
   // Save a plus address for the given origin, which is converted to its eTLD+1
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);

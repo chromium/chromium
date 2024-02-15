@@ -531,11 +531,6 @@ class BrowserAutofillManager : public AutofillManager {
   // focusable input field with a type from heuristics or the server.
   bool ShouldUploadUkm(const FormStructure& form_structure);
 
-  // Returns a plus address suggestion for the focused `field` using
-  // `client()`'s `GetPlusAddressService`.
-  std::optional<Suggestion> MaybeGetPlusAddressSuggestion(
-      const FormFieldData& field);
-
   // Returns a compose suggestion if the compose service is available for
   // `field`.
   std::optional<Suggestion> MaybeGetComposeSuggestion(

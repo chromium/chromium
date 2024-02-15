@@ -4,9 +4,16 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_metrics.h"
@@ -24,12 +31,17 @@
 namespace plus_addresses {
 
 namespace {
+
+using autofill::PopupItemId;
+using autofill::Suggestion;
+
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently.
 std::string GetEtldPlusOne(const url::Origin origin) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -86,7 +98,7 @@ bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
   }
   // Prerequisites are met, but it's an off-the-record session. If there's an
   // existing plus_address, it's supported, otherwise it is not.
-  return GetPlusAddress(origin).has_value();
+  return GetPlusProfile(origin).has_value();
 }
 
 std::optional<std::string> PlusAddressService::GetPlusAddress(
@@ -124,6 +136,44 @@ bool PlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_addresses_.contains(potential_plus_address);
+}
+
+std::vector<Suggestion> PlusAddressService::GetSuggestions(
+    const url::Origin& last_committed_primary_main_frame_origin,
+    bool is_off_the_record,
+    std::u16string_view focused_field_value) {
+  if (!SupportsPlusAddresses(last_committed_primary_main_frame_origin,
+                             is_off_the_record)) {
+    return {};
+  }
+
+  const std::u16string normalized_field_value =
+      autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field_value);
+  std::optional<std::string> maybe_address =
+      GetPlusAddress(last_committed_primary_main_frame_origin);
+  if (maybe_address == std::nullopt) {
+    if (!normalized_field_value.empty()) {
+      return {};
+    }
+    Suggestion create_plus_address_suggestion(
+        GetCreateSuggestionLabel(), PopupItemId::kCreateNewPlusAddress);
+    RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
+                                      kCreateNewPlusAddressSuggested);
+    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
+    return {std::move(create_plus_address_suggestion)};
+  }
+
+  // Only suggest filling a plus address whose prefix matches the field's value.
+  std::u16string address = base::UTF8ToUTF16(*maybe_address);
+  if (!address.starts_with(normalized_field_value)) {
+    return {};
+  }
+  Suggestion existing_plus_address_suggestion(
+      std::move(address), PopupItemId::kFillExistingPlusAddress);
+  RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
+                                    kExistingPlusAddressSuggested);
+  existing_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
+  return {std::move(existing_plus_address_suggestion)};
 }
 
 void PlusAddressService::ReservePlusAddress(
