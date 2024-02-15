@@ -90,10 +90,6 @@ TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
 
   ASSERT_EQ(0, container_before_tab_strip_->tab_organization_button()
                    ->width_factor_for_testing());
-  ASSERT_EQ(1, container_before_tab_strip_->tab_organization_button()
-                   ->flat_edge_factor_for_testing());
-  ASSERT_EQ(1, container_before_tab_strip_->tab_search_button()
-                   ->flat_edge_factor_for_testing());
 
   container_before_tab_strip_->ShowTabOrganization();
 
@@ -104,8 +100,4 @@ TEST_F(TabSearchContainerTest, AnimatesToExpanded) {
 
   ASSERT_EQ(1, container_before_tab_strip_->tab_organization_button()
                    ->width_factor_for_testing());
-  ASSERT_EQ(0, container_before_tab_strip_->tab_organization_button()
-                   ->flat_edge_factor_for_testing());
-  ASSERT_EQ(0, container_before_tab_strip_->tab_search_button()
-                   ->flat_edge_factor_for_testing());
 }

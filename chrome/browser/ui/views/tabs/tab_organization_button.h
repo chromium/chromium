@@ -22,6 +22,8 @@ class TabOrganizationButton : public TabStripControlButton {
   TabOrganizationButton& operator=(const TabOrganizationButton&) = delete;
   ~TabOrganizationButton() override;
 
+  void SetOpacity(float opacity);
+
   void SetWidthFactor(float factor);
   float width_factor_for_testing() { return width_factor_; }
 

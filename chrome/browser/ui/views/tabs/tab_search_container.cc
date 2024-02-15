@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
@@ -93,6 +94,10 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
       margin.set_right(space_between_buttons);
     }
     tab_organization_button_->SetProperty(views::kMarginsKey, margin);
+    tab_organization_button_->SetOpacity(0);
+
+    expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+    opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
   }
 
   if (!before_tab_strip) {
@@ -179,15 +184,38 @@ void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode) {
 }
 
 void TabSearchContainer::ExecuteShowTabOrganization() {
+  expansion_animation_.SetSlideDuration(base::Milliseconds(500));
+
+  flat_edge_animation_.SetSlideDuration(base::Milliseconds(400));
+  flat_edge_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
+
+  opacity_animation_.SetSlideDuration(base::Milliseconds(300));
+  const base::TimeDelta delay = base::Milliseconds(100);
+  opacity_animation_delay_timer_.Start(
+      FROM_HERE, delay, this, &TabSearchContainer::ShowOpacityAnimation);
+
   expansion_animation_.Show();
+  flat_edge_animation_.Show();
 
   const base::TimeDelta delta = base::Seconds(16);
   hide_tab_organization_timer_.Start(
       FROM_HERE, delta, this, &TabSearchContainer::OnOrganizeButtonTimeout);
 }
 
+void TabSearchContainer::ShowOpacityAnimation() {
+  opacity_animation_.Show();
+}
+
 void TabSearchContainer::ExecuteHideTabOrganization() {
+  expansion_animation_.SetSlideDuration(base::Milliseconds(250));
   expansion_animation_.Hide();
+
+  flat_edge_animation_.SetSlideDuration(base::Milliseconds(250));
+  flat_edge_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+  flat_edge_animation_.Hide();
+
+  opacity_animation_.SetSlideDuration(base::Milliseconds(100));
+  opacity_animation_.Hide();
 }
 
 void TabSearchContainer::MouseMovedOutOfHost() {
@@ -195,21 +223,27 @@ void TabSearchContainer::MouseMovedOutOfHost() {
 }
 
 void TabSearchContainer::AnimationCanceled(const gfx::Animation* animation) {
-  ApplyAnimationValue(animation->GetCurrentValue());
+  ApplyAnimationValue(animation);
 }
 
 void TabSearchContainer::AnimationEnded(const gfx::Animation* animation) {
-  ApplyAnimationValue(animation->GetCurrentValue());
+  ApplyAnimationValue(animation);
 }
 
 void TabSearchContainer::AnimationProgressed(const gfx::Animation* animation) {
-  ApplyAnimationValue(animation->GetCurrentValue());
+  ApplyAnimationValue(animation);
 }
 
-void TabSearchContainer::ApplyAnimationValue(float value) {
-  tab_search_button_->SetFlatEdgeFactor(1 - value);
-  tab_organization_button_->SetFlatEdgeFactor(1 - value);
-  tab_organization_button_->SetWidthFactor(value);
+void TabSearchContainer::ApplyAnimationValue(const gfx::Animation* animation) {
+  float value = animation->GetCurrentValue();
+  if (animation == &expansion_animation_) {
+    tab_organization_button_->SetWidthFactor(value);
+  } else if (animation == &flat_edge_animation_) {
+    tab_search_button_->SetFlatEdgeFactor(1 - value);
+    tab_organization_button_->SetFlatEdgeFactor(1 - value);
+  } else if (animation == &opacity_animation_) {
+    tab_organization_button_->SetOpacity(value);
+  }
 }
 
 void TabSearchContainer::OnToggleActionUIState(const Browser* browser,

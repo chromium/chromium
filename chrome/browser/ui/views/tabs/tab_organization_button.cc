@@ -69,6 +69,11 @@ TabOrganizationButton::TabOrganizationButton(
 
 TabOrganizationButton::~TabOrganizationButton() = default;
 
+void TabOrganizationButton::SetOpacity(float factor) {
+  label()->layer()->SetOpacity(factor);
+  close_button_->layer()->SetOpacity(factor);
+}
+
 void TabOrganizationButton::SetWidthFactor(float factor) {
   width_factor_ = factor;
   PreferredSizeChanged();

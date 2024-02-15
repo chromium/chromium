@@ -76,8 +76,9 @@ class TabSearchContainer : public views::View,
  private:
   void SetLockedExpansionMode(LockedExpansionMode mode);
   void ExecuteShowTabOrganization();
+  void ShowOpacityAnimation();
   void ExecuteHideTabOrganization();
-  void ApplyAnimationValue(float value);
+  void ApplyAnimationValue(const gfx::Animation* animation);
 
   // View where, if the mouse is currently over its bounds, the expansion state
   // will not change. Changes will be staged until after the mouse exits the
@@ -90,11 +91,15 @@ class TabSearchContainer : public views::View,
       nullptr;
   raw_ptr<const Browser> browser_;
 
-  // Animation controlling expansion and collapse of tab_organization_button_.
+  // Animations controlling showing and hiding of tab_organization_button_.
   gfx::SlideAnimation expansion_animation_{this};
+  gfx::SlideAnimation flat_edge_animation_{this};
+  gfx::SlideAnimation opacity_animation_{this};
 
   // Timer for hiding tab_organization_button_ after show.
   base::OneShotTimer hide_tab_organization_timer_;
+  // Timer for initiating the opacity animation during show.
+  base::OneShotTimer opacity_animation_delay_timer_;
 
   // When locked, the container is unable to change its expanded state. Changes
   // will be staged until after this is unlocked.
