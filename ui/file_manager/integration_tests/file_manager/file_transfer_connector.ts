@@ -2,88 +2,69 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, getCaller, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
+import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 
 import {openNewWindow, remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
+interface TransferLocationOptions {
+  volumeName: string;
+  breadcrumbsPath: string;
+  enterpriseConnectorsVolumeIdentifier: string;
+}
 /**
  * Info for the source or destination of a transfer.
  */
 class TransferLocationInfo {
-  /*
-   * Create a new TransferLocationInfo.
-   *
-   * @param{{
-         volumeName: !string,
-         breadcrumbsPath: !string,
-         enterpriseConnectorsVolumeIdentifier: !string,
-     }} opts Options for creating TransferLocationInfo.
+  /**
+   * The volume type (e.g. downloads, drive, drive_recent,
+   * drive_shared_with_me, drive_offline) or team drive name.
    */
-  // @ts-ignore: error TS7006: Parameter 'opts' implicitly has an 'any' type.
-  constructor(opts) {
-    /**
-     * The volume type (e.g. downloads, drive, drive_recent,
-     * drive_shared_with_me, drive_offline) or team drive name.
-     * @type {string}
-     */
+  volumeName: string;
+  breadcrumbsPath: string;
+  /**
+   * Identifies the volume and can be used for the
+   * OnFileTransferEnterpriseConnector policy. This should match the allowed
+   * policy values in policy_templates.json or
+   * source_destination_matcher_ash.cc.
+   */
+  enterpriseConnectorsVolumeIdentifier: string;
+
+  constructor(opts: TransferLocationOptions) {
     this.volumeName = opts.volumeName;
-
-    /** @type {string} */
     this.breadcrumbsPath = opts.breadcrumbsPath;
-
-    /**
-     * Identifies the volume and can be used for the
-     * OnFileTransferEnterpriseConnector policy. This should match the allowed
-     * policy values in policy_templates.json or
-     * source_destination_matcher_ash.cc.
-     * @type {string}
-     */
     this.enterpriseConnectorsVolumeIdentifier =
         opts.enterpriseConnectorsVolumeIdentifier;
   }
+}
+
+interface TransferInfoOptions {
+  source: TransferLocationInfo;
+  destination: TransferLocationInfo;
+  isMove?: boolean;
+  proceedOnWarning?: boolean;
 }
 
 /**
  * Info for the transfer operation.
  */
 class TransferInfo {
-  /*
-   * Create a new TransferInfo.
-   *
-   * @param{{
-         source: !TransferLocationInfo,
-         destination: !TransferLocationInfo,
-         isMove: boolean,
-         proceedOnWarning: boolean,
-     }} opts Options for creating TransferInfo.
+  source: TransferLocationInfo;
+  destination: TransferLocationInfo;
+  /**
+   * True if this transfer is for a move operation, false for a copy
+   * operation.
    */
-  // @ts-ignore: error TS7006: Parameter 'opts' implicitly has an 'any' type.
-  constructor(opts) {
-    /**
-     * The source location.
-     * @type {!TransferLocationInfo}
-     */
+  isMove: boolean;
+  /**
+   * Whether to proceed a potential warning or cancel the transfer.
+   */
+  proceedOnWarning: boolean;
+
+  constructor(opts: TransferInfoOptions) {
     this.source = opts.source;
-
-    /**
-     * The destination location.
-     * @type {!TransferLocationInfo}
-     */
     this.destination = opts.destination;
-
-    /**
-     * True if this transfer is for a move operation, false for a copy
-     * operation.
-     * @type {!boolean}
-     */
     this.isMove = opts.isMove || false;
-
-    /**
-     * Whether to proceed a potential warning or cancel the transfer.
-     * @type {!boolean}
-     */
     this.proceedOnWarning = opts.proceedOnWarning || false;
   }
 }
@@ -368,7 +349,6 @@ const CONNECTOR_ENTRIES_DEEP_WARNED = [
  * A list of transfer locations, for use with transferBetweenVolumes.
  * volumeName has to match an entry of
  * AddEntriesMessage::MapStringToTargetVolume().
- * @enum {TransferLocationInfo}
  */
 const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
@@ -439,20 +419,17 @@ const COPY_OUT_OF_SPACE_ERROR_MESSAGE =
 /**
  * Opens a Files app's main window and creates the source and destination
  * entries.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @return {Promise<string>} Promise to be fulfilled with the window ID.
+ * @param transferInfo Options for the transfer.
+ * @return Promise to be fulfilled with the window ID.
  */
 async function setupForFileTransferConnector(
-    // @ts-ignore: error TS7006: Parameter 'dstContents' implicitly has an 'any'
-    // type.
-    transferInfo, srcContents, dstContents) {
+    transferInfo: TransferInfo, srcContents: TestEntryInfo[],
+    dstContents: TestEntryInfo[]): Promise<string> {
   const sourceEntriesPromise =
       addEntries([transferInfo.source.volumeName], srcContents);
   const destEntriesPromise =
       addEntries([transferInfo.destination.volumeName], dstContents);
 
-  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-  // parameter of type 'FilesAppState'.
   const appId = await openNewWindow(RootPath.DOWNLOADS, {});
   await remoteCall.waitForElement(appId, '#detail-table');
 
@@ -462,21 +439,18 @@ async function setupForFileTransferConnector(
     sourceEntriesPromise,
     destEntriesPromise,
   ]);
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   return appId;
 }
 
 /**
  * Returns all entries that are children of the passed directory.
- * @param {!Array<!TestEntryInfo>} entries The entries.
- * @param {!Array<string>} directory The directory path.
- *  Contains the path of the current directory, e.g., ["A", "B"] for A/B/.
+ * @param entries The entries.
+ * @param directory The directory path. Contains the path of the current
+ *     directory, e.g., ["A", "B"] for A/B/.
  */
-function getCurrentEntries(entries, directory) {
+function getCurrentEntries(entries: TestEntryInfo[], directory: string[]) {
   return entries.filter(entry => {
-    // @ts-ignore: error TS18048: 'entry.targetPath' is possibly 'undefined'.
     const parent = entry.targetPath.split('/').slice(0, -1);
     return parent.length === directory.length &&
         parent.every((value, index) => value === directory[index]);
@@ -486,24 +460,20 @@ function getCurrentEntries(entries, directory) {
 /**
  * Verifies the recursive contents of the current path by checking the file list
  * of the current path and its ancestors.
- * @param {string} appId App window Id.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected contents of file
- *     list.
- * @param {string} rootDirectory The path to the root directory for the check.
- * @param {!Array<string>} currentSubDirectory The current directory path split
- *     at '/', e.g., ["A", "B"] for A/B/.
+ * @param appId App window Id.
+ * @param expectedEntries Expected contents of file list.
+ * @param rootDirectory The path to the root directory for the check.
+ * @param currentSubDirectory The current directory path split at '/', e.g.,
+ *     ["A", "B"] for A/B/.
  */
 async function verifyDirectoryRecursively(
-    appId, expectedEntries, rootDirectory, currentSubDirectory = []) {
+    appId: string, expectedEntries: TestEntryInfo[], rootDirectory: string,
+    currentSubDirectory: string[] = []) {
   // 1. Check current directory.
   const currentEntries =
       getCurrentEntries(expectedEntries, currentSubDirectory);
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(currentEntries),
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       {ignoreLastModifiedTime: true});
 
   // 2. For each subdirectory: enter subdirectory and call recursion.
@@ -528,9 +498,9 @@ async function verifyDirectoryRecursively(
 /**
  * Function to toggle display of all play files.
  * Before this function is called, the play file folder has to be opened.
- * @param {string} appId App window Id.
+ * @param appId App window Id.
  */
-async function showAllPlayFiles(appId) {
+async function showAllPlayFiles(appId: string) {
   const toggleMenuItemSelector = '#gear-menu-toggle-hidden-android-folders';
 
   // Open the gear menu by clicking the gear button.
@@ -549,13 +519,13 @@ async function showAllPlayFiles(appId) {
 /**
  * Checks that the panel item's primary and secondary buttons have expected type
  * and text, and then clicks the button defined by selectedButton.
- * @param {string} appId ID of the Files app window.
- * @param {string} secondaryButtonCategory Expected secondary button category
- *     (dismiss or cancel).
- * @param {string} selectedButton The button to click (primary or secondary).
+ * @param appId ID of the Files app window.
+ * @param secondaryButtonCategory Expected secondary button category (dismiss or
+ *     cancel).
+ * @param selectedButton The button to click (primary or secondary).
  */
 async function verifyPanelButtonsAndClick(
-    appId, secondaryButtonCategory, selectedButton) {
+    appId: string, secondaryButtonCategory: string, selectedButton: string) {
   const primaryButton = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']);
   chrome.test.assertEq(
@@ -576,16 +546,15 @@ async function verifyPanelButtonsAndClick(
 
 /**
  * Test function to copy from the specified source to the specified destination.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
- * @param {string} expectedFinalMsg The final message to expect at the progress
- *     center.
- * @param {string} expectedWarnMsg The warning message to expect at the progress
- *     center.
+ * @param transferInfo Options for the transfer.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
+ * @param expectedFinalMsg The final message to expect at the progress center.
+ * @param expectedWarnMsg The warning message to expect at the progress center.
  */
 async function transferBetweenVolumes(
-    transferInfo, entryTestSet, expectedFinalMsg, expectedWarnMsg = '') {
+    transferInfo: TransferInfo, entryTestSet: TestEntryInfo[],
+    expectedFinalMsg: string, expectedWarnMsg: string = '') {
   await setupVolumes(transferInfo);
 
   // Setup policy.
@@ -610,8 +579,6 @@ async function transferBetweenVolumes(
   await sendTestMessage({
     name: 'setupScanningRunLoop',
     number_of_expected_delegates:
-        // @ts-ignore: error TS18048: 'entry.targetPath' is possibly
-        // 'undefined'.
         entryTestSet.filter(entry => !entry.targetPath.includes('/')).length,
   });
 
@@ -630,14 +597,14 @@ async function transferBetweenVolumes(
 
 /**
  * Test function to copy from the specified source to the specified destination.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
- * @param {string} expectedFinalMsg The final message to expect at the progress
- *     center.
+ * @param transferInfo Options for the transfer.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
+ * @param expectedFinalMsg The final message to expect at the progress center.
  */
 async function transferBetweenVolumesNoSpace(
-    transferInfo, entryTestSet, expectedFinalMsg) {
+    transferInfo: TransferInfo, entryTestSet: TestEntryInfo[],
+    expectedFinalMsg: string) {
   // Ensure reportOnly is set, as the no-space behavior is special for
   // report-only mode.
   const reportOnly =
@@ -675,9 +642,9 @@ async function transferBetweenVolumesNoSpace(
 
 /**
  * Mounts required volumes.
- * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param transferInfo Options for the transfer.
  */
-async function setupVolumes(transferInfo) {
+async function setupVolumes(transferInfo: TransferInfo) {
   if (transferInfo.source.volumeName === 'usb' ||
       transferInfo.destination.volumeName === 'usb') {
     await sendTestMessage({name: 'mountFakeUsbEmpty'});
@@ -697,11 +664,12 @@ async function setupVolumes(transferInfo) {
  * with [ENTRIES.hello].
  * The destination is populated to prevent flakes (we can wait for the `hello`
  * file to appear).
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
+ * @param transferInfo Options for the transfer.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
  */
-async function openFilesAppAndInitTransfer(transferInfo, entryTestSet) {
+async function openFilesAppAndInitTransfer(
+    transferInfo: TransferInfo, entryTestSet: TestEntryInfo[]) {
   const dstContents = TestEntryInfo.getExpectedRows([ENTRIES.hello]);
 
   const appId = await setupForFileTransferConnector(
@@ -724,9 +692,7 @@ async function openFilesAppAndInitTransfer(transferInfo, entryTestSet) {
   await remoteCall.focus(appId, ['#file-list:not([hidden])']);
 
   // Select all files.
-  const ctrlA = ['#file-list', 'a', true, false, false];
-  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-  // or be passed to a rest parameter.
+  const ctrlA = ['#file-list', 'a', true, false, false] as const;
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
@@ -754,21 +720,17 @@ async function openFilesAppAndInitTransfer(transferInfo, entryTestSet) {
 /**
  * Verify what happens after a paste when scanning can block files.
  *
- * @param {string} appId The app id of the files app window.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
- * @param {string} expectedFinalMsg The final message to expect at the progress
- *     center.
- * @param {string} expectedWarnMsg The warning message to expect at the progress
- *     center.
+ * @param appId The app id of the files app window.
+ * @param transferInfo Options for the transfer.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
+ * @param expectedFinalMsg The final message to expect at the progress center.
+ * @param expectedWarnMsg The warning message to expect at the progress center.
  */
 async function verifyAfterPasteBlocking(
-    appId, transferInfo, entryTestSet, expectedFinalMsg, expectedWarnMsg) {
+    appId: string, transferInfo: TransferInfo, entryTestSet: TestEntryInfo[],
+    expectedFinalMsg: string, expectedWarnMsg: string) {
   // Check that a scanning label is shown.
-  // @ts-ignore: error TS6133: 'caller' is declared but its value is never read.
-  const caller = getCaller();
-
   await remoteCall.waitForFeedbackPanelItem(
       appId,
       transferInfo.isMove ? new RegExp('^Moving.*$') :
@@ -783,8 +745,8 @@ async function verifyAfterPasteBlocking(
       await sendTestMessage({name: 'usesNewFileTransferConnectorUI'}) ===
       'true';
 
-  const expectedNumberOfWarnedFilesByConnectors = await sendTestMessage(
-      {name: 'getExpectedNumberOfWarnedFilesByConnectors'});
+  const expectedNumberOfWarnedFilesByConnectors = Number(await sendTestMessage(
+      {name: 'getExpectedNumberOfWarnedFilesByConnectors'}));
 
   const bypassRequireJustification =
       await sendTestMessage({name: 'doesBypassRequireJustification'}) ===
@@ -793,8 +755,6 @@ async function verifyAfterPasteBlocking(
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
   if (usesNewFileTransferConnectorUI &&
-      // @ts-ignore: error TS18046: 'expectedNumberOfWarnedFilesByConnectors' is
-      // of type 'unknown'.
       expectedNumberOfWarnedFilesByConnectors > 0) {
     // Check that the warning appears in the feedback panel.
     await remoteCall.waitForFeedbackPanelItem(
@@ -820,8 +780,6 @@ async function verifyAfterPasteBlocking(
       // justification required).
       await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
 
-      // @ts-ignore: error TS18046: 'expectedNumberOfWarnedFilesByConnectors' is
-      // of type 'unknown'.
       if (expectedNumberOfWarnedFilesByConnectors > 1 ||
           bypassRequireJustification) {
         await sendTestMessage({
@@ -865,10 +823,7 @@ async function verifyAfterPasteBlocking(
   // Wait for the expected files to appear in the file list.
   // Files marked as 'blocked' should not appear.
   const expectedEntries =
-      entryTestSet
-          .concat([ENTRIES.hello])
-          // @ts-ignore: error TS18048: 'entry.targetPath' is possibly
-          // 'undefined'.
+      entryTestSet.concat([ENTRIES.hello])
           .filter(entry => !entry.targetPath.includes('blocked'));
   await verifyDirectoryRecursively(
       appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
@@ -880,8 +835,6 @@ async function verifyAfterPasteBlocking(
     // For a move, paths that include "allowed" should not be present at the
     // source.
     expectedSourceEntries = expectedSourceEntries.filter(
-        // @ts-ignore: error TS18048: 'entry.targetPath' is possibly
-        // 'undefined'.
         entry => !entry.targetPath.includes('allowed'));
   }
   // Wait for the expected files to appear in the file list.
@@ -889,11 +842,9 @@ async function verifyAfterPasteBlocking(
       appId, expectedSourceEntries, transferInfo.source.breadcrumbsPath);
 
   // Check that the error appears in the feedback panel.
-  const expectedNumberOfBlockedFilesByConnectors = await sendTestMessage(
-      {name: 'getExpectedNumberOfBlockedFilesByConnectors'});
+  const expectedNumberOfBlockedFilesByConnectors = Number(await sendTestMessage(
+      {name: 'getExpectedNumberOfBlockedFilesByConnectors'}));
   if (usesNewFileTransferConnectorUI &&
-      // @ts-ignore: error TS18046: 'expectedNumberOfBlockedFilesByConnectors'
-      // is of type 'unknown'.
       expectedNumberOfBlockedFilesByConnectors > 1) {
     // There should be a review button if there are at least two errors.
     await remoteCall.waitForFeedbackPanelItem(
@@ -922,12 +873,13 @@ async function verifyAfterPasteBlocking(
 /**
  * Verify what happens after a paste in the case of report-only scans.
  *
- * @param {string} appId The app id of the files app window.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
+ * @param appId The app id of the files app window.
+ * @param transferInfo Options for the transfer.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
  */
-async function verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet) {
+async function verifyAfterPasteReportOnly(
+    appId: string, transferInfo: TransferInfo, entryTestSet: TestEntryInfo[]) {
   // No check for scanning label, as there shouldn't be one.
 
   // Wait for the expected files to appear in the file list.
@@ -966,15 +918,15 @@ async function verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet) {
  * Verify what happens after a paste in the case of report-only scans if
  * there's a no space error.
  *
- * @param {string} appId The app id of the files app window.
- * @param {!TransferInfo} transferInfo Options for the transfer.
- * @param {string} expectedFinalMsg The final message to expect at the progress
- *     center.
- * @param {!Array<!TestEntryInfo>} entryTestSet The set of file and directory
- *     entries to be used for the test.
+ * @param appId The app id of the files app window.
+ * @param transferInfo Options for the transfer.
+ * @param expectedFinalMsg The final message to expect at the progress center.
+ * @param entryTestSet The set of file and directory entries to be used for the
+ *     test.
  */
 async function verifyAfterPasteReportOnlyNoSpace(
-    appId, transferInfo, expectedFinalMsg, entryTestSet) {
+    appId: string, transferInfo: TransferInfo, expectedFinalMsg: string,
+    entryTestSet: TestEntryInfo[]) {
   // No check for scanning label, as there shouldn't be one.
 
   // Wait for the expected files to appear in the file list.
@@ -1009,11 +961,7 @@ async function verifyAfterPasteReportOnlyNoSpace(
 /**
  * Tests copying from android_files to Downloads.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromAndroidFilesToDownloadsDeep' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromAndroidFilesToDownloadsDeep'].
-testcase.transferConnectorFromAndroidFilesToDownloadsDeep = () => {
+export async function transferConnectorFromAndroidFilesToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.android_files,
@@ -1022,12 +970,9 @@ testcase.transferConnectorFromAndroidFilesToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromAndroidFilesToDownloadsFlat' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromAndroidFilesToDownloadsFlat'].
-testcase.transferConnectorFromAndroidFilesToDownloadsFlat = () => {
+}
+
+export async function transferConnectorFromAndroidFilesToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.android_files,
@@ -1036,15 +981,12 @@ testcase.transferConnectorFromAndroidFilesToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
+}
 
 /**
  * Tests copying from Crostini to Downloads.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromCrostiniToDownloadsDeep' comes from an index signature,
-// so it must be accessed with ['transferConnectorFromCrostiniToDownloadsDeep'].
-testcase.transferConnectorFromCrostiniToDownloadsDeep = () => {
+export async function transferConnectorFromCrostiniToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.crostini,
@@ -1053,11 +995,9 @@ testcase.transferConnectorFromCrostiniToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromCrostiniToDownloadsFlat' comes from an index signature,
-// so it must be accessed with ['transferConnectorFromCrostiniToDownloadsFlat'].
-testcase.transferConnectorFromCrostiniToDownloadsFlat = () => {
+}
+
+export async function transferConnectorFromCrostiniToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.crostini,
@@ -1066,15 +1006,12 @@ testcase.transferConnectorFromCrostiniToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
+}
 
 /**
  * Tests copying from Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromDriveToDownloadsDeep' comes from an index signature, so
-// it must be accessed with ['transferConnectorFromDriveToDownloadsDeep'].
-testcase.transferConnectorFromDriveToDownloadsDeep = () => {
+export async function transferConnectorFromDriveToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.drive,
@@ -1083,11 +1020,8 @@ testcase.transferConnectorFromDriveToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromDriveToDownloadsFlat' comes from an index signature, so
-// it must be accessed with ['transferConnectorFromDriveToDownloadsFlat'].
-testcase.transferConnectorFromDriveToDownloadsFlat = () => {
+}
+export async function transferConnectorFromDriveToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.drive,
@@ -1096,32 +1030,24 @@ testcase.transferConnectorFromDriveToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-testcase
-    // @ts-ignore: error TS4111: Property
-    // 'transferConnectorFromDriveToDownloadsFlatDestinationNoSpaceForReportOnly'
-    // comes from an index signature, so it must be accessed with
-    // ['transferConnectorFromDriveToDownloadsFlatDestinationNoSpaceForReportOnly'].
-    .transferConnectorFromDriveToDownloadsFlatDestinationNoSpaceForReportOnly =
-    () => {
-      return transferBetweenVolumesNoSpace(
-          new TransferInfo({
-            source: TRANSFER_LOCATIONS.drive,
-            destination: TRANSFER_LOCATIONS.downloads,
-          }),
-          CONNECTOR_ENTRIES_FLAT,
-          COPY_OUT_OF_SPACE_ERROR_MESSAGE,
-      );
-    };
+}
+
+export async function
+transferConnectorFromDriveToDownloadsFlatDestinationNoSpaceForReportOnly() {
+  return transferBetweenVolumesNoSpace(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.drive,
+        destination: TRANSFER_LOCATIONS.downloads,
+      }),
+      CONNECTOR_ENTRIES_FLAT,
+      COPY_OUT_OF_SPACE_ERROR_MESSAGE,
+  );
+}
 
 /**
  * Tests moving from Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromDriveToDownloadsMoveDeep' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromDriveToDownloadsMoveDeep'].
-testcase.transferConnectorFromDriveToDownloadsMoveDeep = () => {
+export async function transferConnectorFromDriveToDownloadsMoveDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.drive,
@@ -1131,12 +1057,9 @@ testcase.transferConnectorFromDriveToDownloadsMoveDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_MOVE_FAIL_DIRECTORY_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromDriveToDownloadsMoveFlat' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromDriveToDownloadsMoveFlat'].
-testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
+}
+
+export async function transferConnectorFromDriveToDownloadsMoveFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.drive,
@@ -1146,15 +1069,12 @@ testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_MOVE_FAIL_FILE_MESSAGE,
   );
-};
+}
 
 /**
  * Tests copying from mtp to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferConnectorFromMtpToDownloadsDeep'
-// comes from an index signature, so it must be accessed with
-// ['transferConnectorFromMtpToDownloadsDeep'].
-testcase.transferConnectorFromMtpToDownloadsDeep = () => {
+export async function transferConnectorFromMtpToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.mtp,
@@ -1163,11 +1083,8 @@ testcase.transferConnectorFromMtpToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property 'transferConnectorFromMtpToDownloadsFlat'
-// comes from an index signature, so it must be accessed with
-// ['transferConnectorFromMtpToDownloadsFlat'].
-testcase.transferConnectorFromMtpToDownloadsFlat = () => {
+}
+export async function transferConnectorFromMtpToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.mtp,
@@ -1176,15 +1093,12 @@ testcase.transferConnectorFromMtpToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
+}
 
 /**
  * Tests copying from smbfs to Downloads.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromSmbfsToDownloadsDeep' comes from an index signature, so
-// it must be accessed with ['transferConnectorFromSmbfsToDownloadsDeep'].
-testcase.transferConnectorFromSmbfsToDownloadsDeep = () => {
+export async function transferConnectorFromSmbfsToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.smbfs,
@@ -1193,11 +1107,9 @@ testcase.transferConnectorFromSmbfsToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromSmbfsToDownloadsFlat' comes from an index signature, so
-// it must be accessed with ['transferConnectorFromSmbfsToDownloadsFlat'].
-testcase.transferConnectorFromSmbfsToDownloadsFlat = () => {
+}
+
+export async function transferConnectorFromSmbfsToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.smbfs,
@@ -1206,15 +1118,12 @@ testcase.transferConnectorFromSmbfsToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
+}
 
 /**
  * Tests copying from usb to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferConnectorFromUsbToDownloadsDeep'
-// comes from an index signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsDeep'].
-testcase.transferConnectorFromUsbToDownloadsDeep = () => {
+export async function transferConnectorFromUsbToDownloadsDeep() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1223,11 +1132,9 @@ testcase.transferConnectorFromUsbToDownloadsDeep = () => {
       CONNECTOR_ENTRIES_DEEP,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property 'transferConnectorFromUsbToDownloadsFlat'
-// comes from an index signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsFlat'].
-testcase.transferConnectorFromUsbToDownloadsFlat = () => {
+}
+
+export async function transferConnectorFromUsbToDownloadsFlat() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1236,15 +1143,12 @@ testcase.transferConnectorFromUsbToDownloadsFlat = () => {
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
   );
-};
+}
 
 /**
  * Tests for new UX.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsDeepNewUX' comes from an index signature,
-// so it must be accessed with ['transferConnectorFromUsbToDownloadsDeepNewUX'].
-testcase.transferConnectorFromUsbToDownloadsDeepNewUX = () => {
+export async function transferConnectorFromUsbToDownloadsDeepNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1253,11 +1157,9 @@ testcase.transferConnectorFromUsbToDownloadsDeepNewUX = () => {
       CONNECTOR_ENTRIES_DEEP,
       TWO_FILES_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsFlatNewUX' comes from an index signature,
-// so it must be accessed with ['transferConnectorFromUsbToDownloadsFlatNewUX'].
-testcase.transferConnectorFromUsbToDownloadsFlatNewUX = () => {
+}
+
+export async function transferConnectorFromUsbToDownloadsFlatNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1266,12 +1168,9 @@ testcase.transferConnectorFromUsbToDownloadsFlatNewUX = () => {
       CONNECTOR_ENTRIES_FLAT,
       NEW_COPY_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsDeepMoveNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsDeepMoveNewUX'].
-testcase.transferConnectorFromUsbToDownloadsDeepMoveNewUX = () => {
+}
+
+export async function transferConnectorFromUsbToDownloadsDeepMoveNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1281,12 +1180,9 @@ testcase.transferConnectorFromUsbToDownloadsDeepMoveNewUX = () => {
       CONNECTOR_ENTRIES_DEEP,
       TWO_FILES_MOVE_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsFlatMoveNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsFlatMoveNewUX'].
-testcase.transferConnectorFromUsbToDownloadsFlatMoveNewUX = () => {
+}
+
+export async function transferConnectorFromUsbToDownloadsFlatMoveNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1296,12 +1192,10 @@ testcase.transferConnectorFromUsbToDownloadsFlatMoveNewUX = () => {
       CONNECTOR_ENTRIES_FLAT,
       NEW_MOVE_FAIL_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX'].
-testcase.transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX = () => {
+}
+
+export async function
+transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1312,30 +1206,24 @@ testcase.transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX = () => {
       NEW_COPY_FAIL_MESSAGE,
       SINGLE_FILE_WARN_MESSAGE,
   );
-};
-testcase
-    // @ts-ignore: error TS4111: Property
-    // 'transferConnectorFromUsbToDownloadsFlatWarnProceedWithJustificationNewUX'
-    // comes from an index signature, so it must be accessed with
-    // ['transferConnectorFromUsbToDownloadsFlatWarnProceedWithJustificationNewUX'].
-    .transferConnectorFromUsbToDownloadsFlatWarnProceedWithJustificationNewUX =
-    () => {
-      return transferBetweenVolumes(
-          new TransferInfo({
-            source: TRANSFER_LOCATIONS.usb,
-            destination: TRANSFER_LOCATIONS.downloads,
-            proceedOnWarning: true,
-          }),
-          CONNECTOR_ENTRIES_FLAT_WARNED,
-          NEW_COPY_FAIL_MESSAGE,
-          SINGLE_FILE_WARN_MESSAGE,
-      );
-    };
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX'].
-testcase.transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX = () => {
+}
+
+export async function
+transferConnectorFromUsbToDownloadsFlatWarnProceedWithJustificationNewUX() {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+        proceedOnWarning: true,
+      }),
+      CONNECTOR_ENTRIES_FLAT_WARNED,
+      NEW_COPY_FAIL_MESSAGE,
+      SINGLE_FILE_WARN_MESSAGE,
+  );
+}
+
+export async function
+transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1346,30 +1234,23 @@ testcase.transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX = () => {
       TWO_FILES_COPY_FAIL_MESSAGE,
       TWO_FILES_WARN_MESSAGE,
   );
-};
-testcase
-    // @ts-ignore: error TS4111: Property
-    // 'transferConnectorFromUsbToDownloadsDeepWarnProceedWithJustificationNewUX'
-    // comes from an index signature, so it must be accessed with
-    // ['transferConnectorFromUsbToDownloadsDeepWarnProceedWithJustificationNewUX'].
-    .transferConnectorFromUsbToDownloadsDeepWarnProceedWithJustificationNewUX =
-    () => {
-      return transferBetweenVolumes(
-          new TransferInfo({
-            source: TRANSFER_LOCATIONS.usb,
-            destination: TRANSFER_LOCATIONS.downloads,
-            proceedOnWarning: true,
-          }),
-          CONNECTOR_ENTRIES_DEEP_WARNED,
-          TWO_FILES_COPY_FAIL_MESSAGE,
-          TWO_FILES_WARN_MESSAGE,
-      );
-    };
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX'].
-testcase.transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX = () => {
+}
+
+export async function
+transferConnectorFromUsbToDownloadsDeepWarnProceedWithJustificationNewUX() {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+        proceedOnWarning: true,
+      }),
+      CONNECTOR_ENTRIES_DEEP_WARNED,
+      TWO_FILES_COPY_FAIL_MESSAGE,
+      TWO_FILES_WARN_MESSAGE,
+  );
+}
+
+export async function transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1380,12 +1261,9 @@ testcase.transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX = () => {
       '',
       SINGLE_FILE_WARN_MESSAGE,
   );
-};
-// @ts-ignore: error TS4111: Property
-// 'transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX' comes from an index
-// signature, so it must be accessed with
-// ['transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX'].
-testcase.transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX = () => {
+}
+
+export async function transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX() {
   return transferBetweenVolumes(
       new TransferInfo({
         source: TRANSFER_LOCATIONS.usb,
@@ -1396,4 +1274,4 @@ testcase.transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX = () => {
       '',
       TWO_FILES_WARN_MESSAGE,
   );
-};
+}
