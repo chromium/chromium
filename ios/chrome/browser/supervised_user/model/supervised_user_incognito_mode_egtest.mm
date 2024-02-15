@@ -47,7 +47,7 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
