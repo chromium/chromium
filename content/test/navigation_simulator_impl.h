@@ -87,6 +87,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetTransition(ui::PageTransition transition) override;
   void SetHasUserGesture(bool has_user_gesture) override;
   void SetNavigationInputStart(base::TimeTicks navigation_input_start) override;
+  void SetNavigationStart(base::TimeTicks navigation_start) override;
   void SetReloadType(ReloadType reload_type) override;
   void SetMethod(const std::string& method) override;
   void SetIsFormSubmission(bool is_form_submission) override;
@@ -371,6 +372,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   int session_history_offset_ = 0;
   bool has_user_gesture_ = true;
   base::TimeTicks navigation_input_start_;
+  base::TimeTicks navigation_start_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;

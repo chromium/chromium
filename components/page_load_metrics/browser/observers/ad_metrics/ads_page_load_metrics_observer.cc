@@ -363,13 +363,30 @@ void AdsPageLoadMetricsObserver::OnTimingUpdate(
   bool has_new_fcp = ancestor_data->SetEarliestFirstContentfulPaint(
       timing.paint_timing->first_contentful_paint);
 
-  // If this is the earliest FCP for any frame in the root ad frame's subtree,
-  // set Creative Origin Status.
   if (has_new_fcp) {
+    // If this is the earliest FCP for any frame in the root ad frame's subtree,
+    // set Creative Origin Status.
     OriginStatus origin_status =
         IsFrameSameOriginToOutermostMainFrame(frame_rfh) ? OriginStatus::kSame
                                                          : OriginStatus::kCross;
     ancestor_data->set_creative_origin_status(origin_status);
+
+    // Determine the offset of this ad-frame FCP from main frame navigation
+    // start, and remember it if it's the lowest. The time calculation is
+    // (frame_fcp + frame_nav_start) - main_frame_nav_start.
+    auto id_and_start =
+        frame_navigation_starts_.find(frame_rfh->GetFrameTreeNodeId());
+    if (id_and_start != frame_navigation_starts_.end()) {
+      base::TimeDelta time_since_top_nav_start =
+          (id_and_start->second +
+           timing.paint_timing->first_contentful_paint.value()) -
+          GetDelegate().GetNavigationStart();
+
+      ancestor_data->SetEarliestFirstContentfulPaintSinceTopNavStart(
+          time_since_top_nav_start);
+      aggregate_frame_data_->UpdateFirstAdFCPSinceNavStart(
+          time_since_top_nav_start);
+    }
   }
 }
 
@@ -520,6 +537,9 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
       subresource_filter::ContentSubresourceFilterThrottleManager::
           FromNavigationHandle(*navigation_handle);
   DCHECK(throttle_manager);
+
+  frame_navigation_starts_[navigation_handle->GetFrameTreeNodeId()] =
+      navigation_handle->NavigationStart();
 
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
       navigation_handle->GetFrameTreeNodeId());
@@ -726,6 +746,8 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 }
 
 void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+  frame_navigation_starts_.erase(frame_tree_node_id);
+
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())
     return;
@@ -951,6 +973,15 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
     }
   }
 
+  std::optional<base::TimeDelta> first_ad_fcp_after_main_nav_start =
+      aggregate_frame_data_->first_ad_fcp_after_main_nav_start();
+  if (first_ad_fcp_after_main_nav_start) {
+    PAGE_LOAD_HISTOGRAM(
+        "PageLoad.Clients.Ads.AdPaintTiming."
+        "TopFrameNavigationToFirstAdFirstContentfulPaint",
+        first_ad_fcp_after_main_nav_start.value());
+  }
+
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kNonVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kAnyVisibility);
@@ -1168,6 +1199,13 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
       ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint3",
                     PAGE_LOAD_LONG_HISTOGRAM, visibility,
                     first_contentful_paint.value());
+    }
+
+    if (auto earliest_fcp_since_top_nav_start =
+            ad_frame_data.earliest_fcp_since_top_nav_start()) {
+      ADS_HISTOGRAM("AdPaintTiming.TopFrameNavigationToFirstContentfulPaint",
+                    PAGE_LOAD_LONG_HISTOGRAM, visibility,
+                    earliest_fcp_since_top_nav_start.value());
     }
   }
 }

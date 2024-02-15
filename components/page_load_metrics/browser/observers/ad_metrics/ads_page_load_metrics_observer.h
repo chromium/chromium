@@ -260,6 +260,8 @@ class AdsPageLoadMetricsObserver
   // where FrameInstance::Get() returns nullptr..
   std::map<FrameTreeNodeId, FrameInstance> ad_frames_data_;
 
+  std::map<FrameTreeNodeId, base::TimeTicks> frame_navigation_starts_;
+
   int64_t navigation_id_ = -1;
   bool subresource_filter_is_enabled_ = false;
 

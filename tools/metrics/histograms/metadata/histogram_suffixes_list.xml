@@ -192,6 +192,8 @@ chromium-metrics-reviews@google.com.
              have an area greater than 16 pixels."/>
   <affected-histogram
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3"/>
+  <affected-histogram
+      name="PageLoad.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.Bytes"/>
   <affected-histogram name="PageLoad.Cpu"/>
   <affected-histogram

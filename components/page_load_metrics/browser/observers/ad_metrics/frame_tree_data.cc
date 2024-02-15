@@ -177,6 +177,14 @@ bool FrameTreeData::SetEarliestFirstContentfulPaint(
   return true;
 }
 
+void FrameTreeData::SetEarliestFirstContentfulPaintSinceTopNavStart(
+    base::TimeDelta time_since_top_nav_start) {
+  if (!earliest_fcp_since_top_nav_start_ ||
+      earliest_fcp_since_top_nav_start_ > time_since_top_nav_start) {
+    earliest_fcp_since_top_nav_start_ = time_since_top_nav_start;
+  }
+}
+
 void FrameTreeData::UpdateFrameVisibility() {
   visibility_ =
       !is_display_none_ &&
