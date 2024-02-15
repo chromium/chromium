@@ -263,39 +263,6 @@ TEST_P(PhoneFieldParserTest, CountryAndCityAndPhoneNumber) {
   }
 }
 
-TEST_P(PhoneFieldParserTest, EmptyLabels) {
-  base::test::ScopedFeatureList enabled_features;
-  enabled_features.InitAndEnableFeature(
-      features::kAutofillEnableParsingEmptyPhoneNumberLabels);
-
-  // Phone: <input><input>
-  RunParsingTest(
-      {{FormControlType::kInputText, u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
-       {FormControlType::kInputText, u"", u"", PHONE_HOME_CITY_AND_NUMBER}});
-
-  // Phone: <input><input><input>
-  RunParsingTest(
-      {{FormControlType::kInputText, u"Phone", u"", PHONE_HOME_COUNTRY_CODE},
-       {FormControlType::kInputText, u"", u"", PHONE_HOME_CITY_CODE},
-       {FormControlType::kInputText, u"", u"", PHONE_HOME_NUMBER}});
-}
-
-// Tests that when a phone field is parsed, a metric indicating the used grammar
-// is emitted.
-TEST_P(PhoneFieldParserTest, GrammarMetrics) {
-  // PHONE_HOME_WHOLE_NUMBER corresponds to the last grammar. We thus expect
-  // that 2*16 + 1 = 33 is logged.
-  base::HistogramTester histogram_tester;
-  bool default_to_city_and_number =
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber);
-  RunParsingTest({{FormControlType::kInputText, u"Phone", u"phone",
-                   default_to_city_and_number ? PHONE_HOME_CITY_AND_NUMBER
-                                              : PHONE_HOME_WHOLE_NUMBER}});
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.FieldPrediction.PhoneNumberGrammarUsage"),
-              BucketsAre(base::Bucket(33, 1)));
-}
-
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code is a select element.
 TEST_P(PhoneFieldParserTest, CountryCodeIsSelectElement) {

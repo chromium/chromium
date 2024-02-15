@@ -60,9 +60,6 @@ class PhoneFieldParser : public FormFieldParser {
     REGEX_SUFFIX_SEPARATOR,
     REGEX_SUFFIX,
     REGEX_EXTENSION,
-    // Don't use any regex and match an empty label. This is helpful for inputs
-    // like "Phone <input><input>", where only the first fields has a label.
-    EMPTY_LABEL,
   };
 
   // Parsed fields.

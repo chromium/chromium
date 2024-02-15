@@ -2969,19 +2969,6 @@ void AutofillMetrics::
       number_of_corrected_fields, 50);
 }
 
-// static
-void AutofillMetrics::LogPhoneNumberGrammarMatched(int grammar_id,
-                                                   bool suffix_matched,
-                                                   int num_grammars) {
-  DCHECK(0 <= grammar_id && grammar_id < num_grammars);
-  int metric = 2 * grammar_id + suffix_matched;
-  int max_metric = 2 * (num_grammars - 1) + 1;
-  // Add 1 everywhere, because UmaHistogramExactLinear is 1-based.
-  base::UmaHistogramExactLinear(
-      "Autofill.FieldPrediction.PhoneNumberGrammarUsage", metric + 1,
-      /*exclusive_max=*/max_metric + 2);
-}
-
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
     const AutofillProfile& profile) {
   constexpr std::string_view base_histogram_name =

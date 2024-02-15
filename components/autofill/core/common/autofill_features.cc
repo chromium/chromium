@@ -252,12 +252,6 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
              "AutofillEnableImportWhenMultiplePhoneNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, phone number local heuristics match empty labels when looking
-// for composite phone number inputs. E.g. Phone number <input><input>.
-BASE_FEATURE(kAutofillEnableParsingEmptyPhoneNumberLabels,
-             "AutofillEnableParsingEmptyPhoneNumberLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the precedence is given to the field label over the name when
 // they match different types. Applied only for parsing of address forms in
 // Turkish.
