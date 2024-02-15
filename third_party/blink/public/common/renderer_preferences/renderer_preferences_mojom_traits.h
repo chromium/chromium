@@ -62,6 +62,14 @@ struct BLINK_COMMON_EXPORT
     return data.use_subpixel_positioning;
   }
 
+  static const float& text_contrast(const ::blink::RendererPreferences& data) {
+    return data.text_contrast;
+  }
+
+  static const float& text_gamma(const ::blink::RendererPreferences& data) {
+    return data.text_gamma;
+  }
+
   static const uint32_t& focus_ring_color(
       const ::blink::RendererPreferences& data) {
     return data.focus_ring_color;
