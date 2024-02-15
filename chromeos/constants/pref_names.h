@@ -7,6 +7,13 @@
 
 namespace chromeos::prefs {
 
+// This is the policy CaptivePortalAuthenticationIgnoresProxy that allows to
+// open captive portal authentication pages in a separate window under
+// a temporary incognito profile ("signin profile" is used for this purpose),
+// which allows to bypass the user's proxy for captive portal authentication.
+inline constexpr char kCaptivePortalAuthenticationIgnoresProxy[] =
+    "proxy.captive_portal_ignores_proxy";
+
 // A boolean pref that controls whether the prefs are associated with a captive
 // portal signin window. Used to ignore proxies and allow extensions in an OTR
 // profile when signing into a captive portal.

@@ -20,13 +20,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/prefs/pref_service.h"
@@ -336,7 +336,8 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
   SetIgnoreNoNetworkForTesting();
 
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      prefs::kCaptivePortalAuthenticationIgnoresProxy, preference_value);
+      chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy,
+      preference_value);
 
   // User connects to portalled wifi.
   SetConnected(kWifiServicePath);

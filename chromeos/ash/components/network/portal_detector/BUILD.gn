@@ -10,7 +10,6 @@ source_set("portal_detector") {
   configs += [ "//chromeos/ash/components/network:network_config" ]
   public_deps = [ "//base" ]
   deps = [
-    "//chromeos/ash/components/network",
     "//components/device_event_log",
     "//net",
   ]

@@ -66,6 +66,7 @@ void NetworkPortalDetectorTestImpl::Enable() {
 }
 
 void NetworkPortalDetectorTestImpl::RequestCaptivePortalDetection() {
+  captive_portal_detection_requested_++;
   NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
 

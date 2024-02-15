@@ -41,10 +41,15 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   void Enable() override;
   void RequestCaptivePortalDetection() override;
 
+  int captive_portal_detection_requested() {
+    return captive_portal_detection_requested_;
+  }
+
  private:
   bool enabled_ = false;
   std::unique_ptr<NetworkState> default_network_;
   std::map<std::string, CaptivePortalStatus> portal_status_map_;
+  int captive_portal_detection_requested_ = 0;
 };
 
 }  // namespace ash

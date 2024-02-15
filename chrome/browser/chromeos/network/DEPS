@@ -1,0 +1,10 @@
+specific_include_rules = {
+  # This file will be shared by Ash and Lacros. Ash specific includes are
+  # protected by IS_CHROMEOS_ASH.
+  "network_portal_signin_window\.cc": [
+    "+chromeos/ash/components/network/portal_detector/network_portal_detector.h",
+  ],
+  "network_portal_signin_window_ash_browsertest\.cc": [
+    "+chrome/browser/ash/net/network_portal_detector_test_impl.h",
+  ],
+}

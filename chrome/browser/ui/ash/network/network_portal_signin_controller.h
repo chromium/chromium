@@ -22,29 +22,27 @@ class NetworkPortalSigninController : public views::WidgetObserver,
                                       public NetworkStateHandlerObserver {
  public:
   // Keep this in sync with the NetworkPortalSigninMode enum in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/network/enums.xml.
   enum class SigninMode {
-    // Show in a dialog window using the signin (oobe/login) profile.
+    // Show in a dialog window during oobe/login.
     kSigninDialog = 1,
     // kSingletonTab (2) was deprecated in M110
-    // Show in a new tab using the active user profile.
+    // Show in a new tab using the active user profile (proxies enabled).
     kNormalTab = 3,
-    // Show in a new tab in an OTR window with the portal signin profile.
-    kIncognitoTab = 4,
+    // Default mode. Proxies will be disabled for captive portal signin.
+    kSigninDefault = 4,
     // DEPRECATED: kIncognitoDialog = 5,
-    // Show in a dialog window using the portal signin profile due to Incognito
-    // browsing disabled.
-    kIncognitoDialogDisabled = 6,
-    // Show in a dialog window using the portal signin profile due to parential
-    // controls disabling incognito browsing.
-    kIncognitoDialogParental = 7,
+    // Incognito mode is disabled by policy.
+    kIncognitoDisabledByPolicy = 6,
+    // Incognito mode is disabled by parental controls.
+    kIncognitoDisabledByParentalControls = 7,
     kMaxValue = 7,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const SigninMode& signin_mode);
 
   // Keep this in sync with the NetworkPortalSigninSource enum in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/network/enums.xml.
   enum class SigninSource {
     // Opened from a notification.
     kNotification = 1,
@@ -87,8 +85,16 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   friend class base::NoDestructor<NetworkPortalSigninController>;
   NetworkPortalSigninController();
 
-  // May be overridden in tests.
-  virtual void ShowDialog(Profile* profile, const GURL& url);
+  // Shows the signin UI in a dialog window using the 'signin' (login) profile.
+  // Overridden in tests.
+  virtual void ShowSigninDialog(const GURL& url);
+
+  // Shows the signin UI in a NetworkPortalSigninWindow window which uses a
+  // dedicated OTR profile. Overridden in tests.
+  virtual void ShowSigninWindow(const GURL& url);
+
+  // Shows the signin UI in browser tab using the specified profile. Overridden
+  // in tests.
   virtual void ShowTab(Profile* profile, const GURL& url);
 
   SigninMode GetSigninMode(NetworkState::PortalState portal_state) const;

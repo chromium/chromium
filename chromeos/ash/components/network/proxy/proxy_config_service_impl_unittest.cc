@@ -99,6 +99,13 @@ class ProxyConfigServiceImplTest : public testing::Test {
     environment_.RunUntilIdle();
   }
 
+  void SetCaptivePortalAuthenticationIgnoresProxy() {
+    profile_prefs_.SetUserPref(
+        chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy,
+        std::make_unique<base::Value>(false));
+    environment_.RunUntilIdle();
+  }
+
   void SetProxyPref() {
     base::Value::Dict fixed_config;
     fixed_config.Set("mode", "pac_script");
@@ -227,6 +234,8 @@ class ProxyConfigServiceImplCaptivePortalPopupWindowTest
         chromeos::features::kCaptivePortalPopupWindow);
     profile_prefs_.registry()->RegisterBooleanPref(
         chromeos::prefs::kCaptivePortalSignin, false);
+    profile_prefs_.registry()->RegisterBooleanPref(
+        chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
     ProxyConfigServiceImplTest::SetUp();
   }
 
@@ -261,7 +270,7 @@ TEST_F(ProxyConfigServiceImplCaptivePortalPopupWindowTest,
   SetCaptivePortalSignin();
   CreateTrackingProxyConfigService(nullptr);
 
-  // Proxy pref set
+  // Proxy pref set but ignored for captive portal signin.
   SetProxyPref();
   DetermineEffectiveConfigFromDefaultNetwork();
   net::ProxyConfigWithAnnotation config;
@@ -269,6 +278,23 @@ TEST_F(ProxyConfigServiceImplCaptivePortalPopupWindowTest,
             GetLatestProxyConfig(&config));
   EXPECT_EQ(config.value().ToValue(),
             net::ProxyConfig::CreateDirect().ToValue());
+}
+
+TEST_F(ProxyConfigServiceImplCaptivePortalPopupWindowTest,
+       CaptivePortalAuthenticationIgnoresProxy) {
+  SetCaptivePortalSignin();
+  SetCaptivePortalAuthenticationIgnoresProxy();
+  CreateTrackingProxyConfigService(nullptr);
+
+  // Proxy pref set and not ignored for captive portal signin.
+  SetProxyPref();
+  DetermineEffectiveConfigFromDefaultNetwork();
+  net::ProxyConfigWithAnnotation config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            GetLatestProxyConfig(&config));
+  EXPECT_EQ(
+      config.value().ToValue(),
+      net::ProxyConfig::CreateFromCustomPacURL(GURL(kFixedPacUrl)).ToValue());
 }
 
 }  // namespace ash

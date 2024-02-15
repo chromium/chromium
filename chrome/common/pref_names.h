@@ -646,13 +646,6 @@ inline constexpr char kTouchVirtualKeyboardEnabled[] =
 inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
     "ui.virtual_keyboard_smart_visibility_enabled";
 
-// This is the policy CaptivePortalAuthenticationIgnoresProxy that allows to
-// open captive portal authentication pages in a separate window under
-// a temporary incognito profile ("signin profile" is used for this purpose),
-// which allows to bypass the user's proxy for captive portal authentication.
-inline constexpr char kCaptivePortalAuthenticationIgnoresProxy[] =
-    "proxy.captive_portal_ignores_proxy";
-
 // A dictionary pref mapping public keys that identify platform keys to its
 // properties like whether it's meant for corporate usage.
 inline constexpr char kPlatformKeys[] = "platform_keys";

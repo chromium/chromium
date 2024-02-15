@@ -160,6 +160,9 @@ static_library("devtools") {
       "//ui/shell_dialogs",
       "//ui/views/controls/webview",
     ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/constants" ]
+    }
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
     }
