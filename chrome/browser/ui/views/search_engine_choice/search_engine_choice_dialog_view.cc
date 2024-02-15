@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -32,6 +33,16 @@ namespace {
 constexpr int kMinHeight = 376;
 constexpr int kPreferredMaxDialogWidth = 1077;
 constexpr int kPreferredMaxDialogHeight = 768;
+
+// This function is effectivley a copy of `DialogDelegate::GetCornerRadius()`.
+int GetWebViewCornerRadius() {
+#if BUILDFLAG(IS_MAC)
+  return 2;
+#else
+  return views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kDialogRadius);
+#endif
+}
 
 }  // namespace
 void ShowSearchEngineChoiceDialog(
@@ -160,6 +171,15 @@ void SearchEngineChoiceDialogView::ShowNativeView() {
   if (!widget) {
     return;
   }
+
+  // This solution is inspired by the code in `WebUIBubbleDialogView`, it
+  // applies the round corners to the inner web_view to match the view rounded
+  // corners.
+  // TODO(b/325270794): Investigate having `SearchEngineChoiceDialogView`
+  // inherit from `WebUIBubbleDialogView` instead of `views::View` in order to
+  // implicitly get this effect and potentially fix other issues.
+  web_view_->holder()->SetCornerRadii(
+      gfx::RoundedCornersF(GetWebViewCornerRadius()));
 
   constrained_window::UpdateWebContentsModalDialogPosition(
       widget, browser_->window()->GetWebContentsModalDialogHost());
