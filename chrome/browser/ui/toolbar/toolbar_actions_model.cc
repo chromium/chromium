@@ -234,8 +234,16 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // saying "No extensions can run..." is inaccurate). Other extensions
   // will still be properly attributed in UI.
   return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
-    return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
-        url, /*error=*/nullptr);
+    // action_ids() could include disabled extensions that haven't been removed
+    // yet from the set due to race conditions. Thus, we don't consider them in
+    // the restricted url computation.
+    auto* extension = GetExtensionById(id);
+    if (!extension) {
+      return true;
+    }
+
+    return extension->permissions_data()->IsRestrictedUrl(url,
+                                                          /*error=*/nullptr);
   });
 }
 
