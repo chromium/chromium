@@ -21,10 +21,8 @@ source_set("signin_headers") {
     ":constants",
     "//base",
     "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
   ]
 }
@@ -103,7 +101,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/pref_registry",
-    "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",
     "//components/sync_preferences",
@@ -150,6 +147,7 @@ source_set("eg2_tests") {
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/base:features",

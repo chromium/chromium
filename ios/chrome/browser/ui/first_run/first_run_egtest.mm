@@ -456,13 +456,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   }
 
   if ([self isRunningTest:@selector
-            (testHistorySyncShownWithEquallyWeightedButtons)] ||
-      [self isRunningTest:@selector
-            (testHistorySyncShownWithoutMinorModeRestrictions)] ||
-      [self
-          isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
-              )]) {
+            (testHistorySyncShownWithEquallyWeightedButtons)]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }
@@ -1132,17 +1126,13 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
 }
 
 // Tests that the History Sync Opt-In screen will have equally weighted button
-// for users with minor mode restrictions.
+// for supervised users.
+// TODO(b/318349283): This feature is only behind a feature flag. It will then
+// be based on AccountCapabilities.
 - (void)testHistorySyncShownWithEquallyWeightedButtons {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  // Enforce minor mode restrictions.
-  [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:NO
-                                                  forIdentity:fakeIdentity];
-
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
@@ -1156,90 +1146,6 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // Verify that the primary and secondary buttons have the same foreground and
-  // background colors.
-  NSString* foregroundColorName = kBlueColor;
-  NSString* backgroundColorName = kBlueHaloColor;
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoStylePrimaryActionButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
-              chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::PromoStyleSecondaryActionButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the History Sync Opt-In screen will not have equally weighted
-// button for users without minor mode restrictions.
-- (void)testHistorySyncShownWithoutMinorModeRestrictions {
-  // Add identity.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  // Set up capabilities.
-  [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
-
-  // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
-  // Verify that the History Sync Opt-In screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kHistorySyncViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Verify that buttons have the expected colors.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(
-                         kSolidButtonTextColor),
-                     chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::PromoStylePrimaryActionButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
-                     chrome_test_util::PromoStyleSecondaryActionButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the History Sync Opt-In screen will have equally weighted button
-// for users with unknown minor mode restrictions status.
-- (void)
-    testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout {
-  // Add identity without specifiying capabilities.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      performAction:grey_tap()];
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
-                                        consent:signin::ConsentLevel::kSignin];
-  // Verify that the History Sync Opt-In screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kHistorySyncViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Wait for UI changes to take effect.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      chrome_test_util::PromoStylePrimaryActionButtonMatcher()];
   // Verify that the primary and secondary buttons have the same foreground and
   // background colors.
   NSString* foregroundColorName = kBlueColor;

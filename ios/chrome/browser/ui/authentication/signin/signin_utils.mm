@@ -11,7 +11,6 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -277,18 +276,6 @@ IdentitySigninState GetPrimaryIdentitySigninState(
   } else {
     return IdentitySigninStateSignedOut;
   }
-}
-
-Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
-  switch (result) {
-    case SystemIdentityCapabilityResult::kTrue:
-      return Tribool::kTrue;
-    case SystemIdentityCapabilityResult::kFalse:
-      return Tribool::kFalse;
-    case SystemIdentityCapabilityResult::kUnknown:
-      return Tribool::kUnknown;
-  }
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace signin

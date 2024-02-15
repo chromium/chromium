@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller_audience.h"
-
 class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol HistorySyncConsumer;
@@ -31,7 +29,7 @@ class SyncService;
 @end
 
 // Mediator that handles the sync operations.
-@interface HistorySyncMediator : NSObject <HistorySyncViewControllerAudience>
+@interface HistorySyncMediator : NSObject
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<HistorySyncConsumer> consumer;
@@ -48,7 +46,7 @@ class SyncService;
                       syncService:(syncer::SyncService*)syncService
                     showUserEmail:(BOOL)showUserEmail NS_DESIGNATED_INITIALIZER;
 
-// Disconnects the mediator.
+// Disconnect the mediator.
 - (void)disconnect;
 
 // Opts in for history sync.
