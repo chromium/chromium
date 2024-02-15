@@ -341,17 +341,10 @@ void ProcessMirrorHeader(
 
 #elif BUILDFLAG(IS_ANDROID)
   if (manage_accounts_params.show_consistency_promo) {
-    auto* window = web_contents->GetNativeView()->GetWindowAndroid();
-    if (!window) {
-      // The page is prefetched in the background, ignore the header.
-      // See https://crbug.com/1145031#c5 for details.
-      return;
-    }
     SigninBridge::OpenAccountPickerBottomSheet(
-        profile, window,
-        manage_accounts_params.continue_url.empty()
-            ? chrome::kChromeUINativeNewTabURL
-            : manage_accounts_params.continue_url);
+        web_contents, manage_accounts_params.continue_url.empty()
+                          ? chrome::kChromeUINativeNewTabURL
+                          : manage_accounts_params.continue_url);
     return;
   }
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {

@@ -29,10 +29,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.ui.base.WindowAndroid;
 
 /** JUnit tests for the class {@link SigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,18 +47,20 @@ public class SigninBridgeTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Mock private Tab mTabMock;
+
     @Mock private Profile mProfileMock;
 
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
     @Mock private SigninManager mSigninManagerMock;
 
-    @Mock private WindowAndroid mWindowAndroidMock;
-
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsJniMock;
 
     @Before
     public void setUp() {
+        when(mTabMock.getProfile()).thenReturn(mProfileMock);
+
         when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getSigninManager(mProfileMock))
@@ -75,7 +77,7 @@ public class SigninBridgeTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenSigninNotAllowed() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
-        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mTabMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -86,7 +88,7 @@ public class SigninBridgeTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenNoAccountsOnDevice() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
-        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mTabMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
@@ -102,7 +104,7 @@ public class SigninBridgeTest {
                 .writeInt(
                         ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
-        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mTabMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
