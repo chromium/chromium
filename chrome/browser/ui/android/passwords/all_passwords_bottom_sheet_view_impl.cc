@@ -11,7 +11,7 @@
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "ui/android/window_android.h"
@@ -52,7 +52,7 @@ void AllPasswordsBottomSheetViewImpl::Show(
 
   int index = 0;
   for (const auto& credential : credentials) {
-    auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+    auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
         credential->signon_realm);
     std::string app_display_name = credential->app_display_name;
     if (facet.IsValidAndroidFacetURI() && app_display_name.empty()) {

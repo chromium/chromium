@@ -22,8 +22,8 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,11 +32,18 @@ namespace password_manager {
 
 namespace {
 
+using ::affiliations::AffiliatedFacets;
+using ::affiliations::Facet;
+using ::affiliations::FacetBrandingInfo;
+using ::affiliations::FacetURI;
+using ::affiliations::GroupedFacets;
+using ::affiliations::MockAffiliationService;
 using ::base::test::RunOnceCallback;
-using testing::_;
-using testing::IsEmpty;
-using testing::UnorderedElementsAre;
-using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
+using ::testing::_;
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
+using StrategyOnCacheMiss =
+    ::affiliations::AffiliationService::StrategyOnCacheMiss;
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestWebFacetURIAlpha2[] = "https://two.alpha.example.com";

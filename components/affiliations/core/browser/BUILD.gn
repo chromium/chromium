@@ -1,0 +1,139 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+
+source_set("sql_builder") {
+  sources = [
+    "sql_table_builder.cc",
+    "sql_table_builder.h",
+  ]
+  deps = [ "//sql" ]
+  public_deps = [ "//base" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+fuzzable_proto_library("affiliation_proto") {
+  sources = [ "affiliation_api.proto" ]
+}
+
+source_set("affiliations") {
+  sources = [
+    "affiliation_backend.cc",
+    "affiliation_backend.h",
+    "affiliation_database.cc",
+    "affiliation_database.h",
+    "affiliation_fetch_throttler.cc",
+    "affiliation_fetch_throttler.h",
+    "affiliation_fetch_throttler_delegate.h",
+    "affiliation_fetcher_base.cc",
+    "affiliation_fetcher_base.h",
+    "affiliation_fetcher_delegate.cc",
+    "affiliation_fetcher_delegate.h",
+    "affiliation_fetcher_factory.h",
+    "affiliation_fetcher_factory_impl.cc",
+    "affiliation_fetcher_factory_impl.h",
+    "affiliation_fetcher_interface.h",
+    "affiliation_service.h",
+    "affiliation_service_impl.cc",
+    "affiliation_service_impl.h",
+    "affiliation_utils.cc",
+    "affiliation_utils.h",
+    "facet_manager.cc",
+    "facet_manager.h",
+    "facet_manager_host.h",
+    "hash_affiliation_fetcher.cc",
+    "hash_affiliation_fetcher.h",
+    "lookup_affiliation_response_parser.cc",
+    "lookup_affiliation_response_parser.h",
+  ]
+  deps = [
+    ":affiliation_proto",
+    "//base",
+    "//components/affiliations/core/browser:sql_builder",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//components/variations/net",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+    "//sql",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_affiliation_api.cc",
+    "fake_affiliation_api.h",
+    "fake_affiliation_fetcher.cc",
+    "fake_affiliation_fetcher.h",
+    "fake_affiliation_service.cc",
+    "fake_affiliation_service.h",
+    "mock_affiliation_consumer.cc",
+    "mock_affiliation_consumer.h",
+    "mock_affiliation_fetcher.cc",
+    "mock_affiliation_fetcher.h",
+    "mock_affiliation_fetcher_delegate.cc",
+    "mock_affiliation_fetcher_delegate.h",
+    "mock_affiliation_fetcher_factory.cc",
+    "mock_affiliation_fetcher_factory.h",
+    "mock_affiliation_service.cc",
+    "mock_affiliation_service.h",
+  ]
+  deps = [
+    ":affiliations",
+    "//base",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "affiliation_backend_unittest.cc",
+    "affiliation_database_unittest.cc",
+    "affiliation_fetch_throttler_unittest.cc",
+    "affiliation_fetcher_factory_impl_unittest.cc",
+    "affiliation_service_impl_unittest.cc",
+    "affiliation_utils_unittest.cc",
+    "facet_manager_unittest.cc",
+    "hash_affiliation_fetcher_unittest.cc",
+    "sql_table_builder_unittest.cc",
+  ]
+  deps = [
+    ":affiliation_proto",
+    ":affiliations",
+    ":sql_builder",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations:test_support",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
+    sources = [ "lookup_affiliation_response_parser_fuzzer.cc" ]
+    deps = [
+      ":affiliation_proto",
+      ":affiliations",
+      "//base:base",
+      "//base:i18n",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+}

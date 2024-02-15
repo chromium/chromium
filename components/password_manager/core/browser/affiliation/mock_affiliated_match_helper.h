@@ -29,7 +29,8 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
   };
 
   MockAffiliatedMatchHelper();
-  explicit MockAffiliatedMatchHelper(AffiliationService* affiliation_service);
+  explicit MockAffiliatedMatchHelper(
+      affiliations::AffiliationService* affiliation_service);
 
   MockAffiliatedMatchHelper(const MockAffiliatedMatchHelper&) = delete;
   MockAffiliatedMatchHelper& operator=(const MockAffiliatedMatchHelper&) =

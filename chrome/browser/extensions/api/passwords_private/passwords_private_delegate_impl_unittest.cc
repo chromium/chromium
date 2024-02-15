@@ -52,11 +52,11 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
@@ -426,7 +426,7 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
   test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
   AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
       profile(), base::BindRepeating([](content::BrowserContext*) {
-        return std::make_unique<password_manager::FakeAffiliationService>();
+        return std::make_unique<affiliations::FakeAffiliationService>();
       }));
   SetUpRouters();
   SetUpSyncInTransportMode(profile());

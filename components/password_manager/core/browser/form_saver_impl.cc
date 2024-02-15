@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "url/gurl.h"
@@ -61,7 +61,7 @@ void PostProcessMatches(
         password_manager_util::GetMatchType(*match);
     const bool is_affiliated_android_match =
         match_type == password_manager_util::GetLoginMatchType::kAffiliated &&
-        password_manager::IsValidAndroidFacetURI(match->signon_realm);
+        affiliations::IsValidAndroidFacetURI(match->signon_realm);
     // TODO(crbug.com/1428539): include affiliated website matches when Android
     // supports them.
     if (same_password && username_was_added &&

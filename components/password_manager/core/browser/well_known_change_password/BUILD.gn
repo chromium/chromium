@@ -13,7 +13,7 @@ source_set("well_known_change_password") {
     "well_known_change_password_util.h",
   ]
   deps = [
-    "//components/password_manager/core/browser/affiliation",
+    "//components/affiliations/core/browser:affiliations",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -29,8 +29,8 @@ source_set("unit_tests") {
   deps = [
     ":well_known_change_password",
     "//base/test:test_support",
-    "//components/password_manager/core/browser/affiliation",
-    "//components/password_manager/core/browser/affiliation:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

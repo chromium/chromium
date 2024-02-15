@@ -6,8 +6,8 @@
 
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -59,7 +59,7 @@ class PasswordCheckupViewControllerTest
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
     browser_state_ = builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());

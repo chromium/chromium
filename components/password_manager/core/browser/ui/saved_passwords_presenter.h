@@ -21,13 +21,16 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
+namespace affiliations {
+class AffiliationService;
+}  // namespace affiliations
+
 namespace password_manager {
 
 namespace metrics_util {
 enum class MoveToAccountStoreTrigger;
 }
 
-class AffiliationService;
 class PasswordUndoHelper;
 class PasswordsGrouper;
 
@@ -106,7 +109,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   using AddCredentialsCallback = base::OnceClosure;
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
 
-  SavedPasswordsPresenter(AffiliationService* affiliation_service,
+  SavedPasswordsPresenter(affiliations::AffiliationService* affiliation_service,
                           scoped_refptr<PasswordStoreInterface> profile_store,
                           scoped_refptr<PasswordStoreInterface> account_store,
                           webauthn::PasskeyModel* passkey_store = nullptr);

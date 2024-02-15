@@ -16,8 +16,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -49,8 +49,10 @@ bool IsExtendedPublicSuffixDomainMatch(
     return true;
   }
 
-  std::string domain1(GetExtendedTopLevelDomain(url1, psl_extensions));
-  std::string domain2(GetExtendedTopLevelDomain(url2, psl_extensions));
+  std::string domain1(
+      affiliations::GetExtendedTopLevelDomain(url1, psl_extensions));
+  std::string domain2(
+      affiliations::GetExtendedTopLevelDomain(url2, psl_extensions));
   if (domain1.empty() || domain2.empty()) {
     return false;
   }
@@ -276,7 +278,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
         // For web federated credentials the signon_realm has a different
         // style. Extract the origin from URL instead for the lookup.
         if (form.IsFederatedCredential() &&
-            !IsValidAndroidFacetURI(form.signon_realm)) {
+            !affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
           signon_realm = url::Origin::Create(form.url).GetURL().spec();
         }
         if (base::Contains(affiliations_, signon_realm)) {

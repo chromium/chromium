@@ -710,7 +710,7 @@ const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
   return nullptr;
 }
 
-password_manager::AffiliationService*
+affiliations::AffiliationService*
 ChromePasswordManagerClient::GetAffiliationService() {
   return AffiliationServiceFactory::GetForProfile(profile_);
 }

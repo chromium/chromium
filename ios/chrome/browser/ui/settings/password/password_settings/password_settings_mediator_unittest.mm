@@ -6,8 +6,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -92,7 +92,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_env_;
   SyncServiceForPasswordTests sync_service_;
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;

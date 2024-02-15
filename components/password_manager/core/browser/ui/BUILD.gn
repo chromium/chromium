@@ -11,9 +11,9 @@ source_set("credential_ui_entry") {
     "credential_ui_entry.h",
   ]
   deps = [
+    "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/well_known_change_password",
@@ -46,11 +46,11 @@ source_set("ui") {
   public_deps = [ ":credential_ui_entry" ]
 
   deps = [
+    "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:common",
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/password_store:password_store_interface",
@@ -99,6 +99,7 @@ source_set("unit_tests") {
 
   deps = [
     ":ui",
+    "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection:test_support",

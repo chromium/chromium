@@ -198,6 +198,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/keyed_service/core",

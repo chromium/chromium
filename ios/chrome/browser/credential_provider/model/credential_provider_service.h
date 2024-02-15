@@ -21,8 +21,11 @@ class FaviconLoader;
 
 @protocol MutableCredentialStore;
 
-namespace password_manager {
+namespace affiliations {
 class AffiliationService;
+}
+
+namespace password_manager {
 class AffiliatedMatchHelper;
 }  // namespace password_manager
 
@@ -49,7 +52,7 @@ class CredentialProviderService
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
-      password_manager::AffiliationService* affiliation_service,
+      affiliations::AffiliationService* affiliation_service,
       FaviconLoader* favicon_loader);
 
   CredentialProviderService(const CredentialProviderService&) = delete;

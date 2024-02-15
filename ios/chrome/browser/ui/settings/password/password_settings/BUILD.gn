@@ -106,6 +106,7 @@ source_set("unit_tests") {
     ":password_settings",
     ":password_settings_ui",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager/objc",

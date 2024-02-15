@@ -26,7 +26,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -118,7 +118,7 @@ class PromoCardBaseTest : public ChromeRenderViewHostTestHarness {
     profile_store_ = CreateAndUseTestPasswordStore(profile());
     AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
         profile(), base::BindRepeating([](content::BrowserContext*) {
-          return std::make_unique<password_manager::FakeAffiliationService>();
+          return std::make_unique<affiliations::FakeAffiliationService>();
         }));
   }
 

@@ -30,13 +30,15 @@
 #include "base/gtest_prod_util.h"
 #endif
 
+namespace affiliations {
+class SQLTableBuilder;
+}  // namespace affiliations
+
 namespace syncer {
 class MetadataBatch;
 }
 
 namespace password_manager {
-
-class SQLTableBuilder;
 
 extern const int kCurrentVersionNumber;
 extern const int kCompatibleVersionNumber;
@@ -325,7 +327,7 @@ class LoginDatabase {
 
   // Initializes all the *_statement_ data members with appropriate SQL
   // fragments based on |builder|.
-  void InitializeStatementStrings(const SQLTableBuilder& builder);
+  void InitializeStatementStrings(const affiliations::SQLTableBuilder& builder);
 
   // Returns either kProfileStore or kAccountStore depending on the value of
   // `is_account_store_`.

@@ -15,8 +15,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -26,6 +26,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
@@ -55,7 +57,7 @@ std::optional<FacetURI> FacetURIFromPasskey(
 }  // namespace
 
 AffiliationsPrefetcher::AffiliationsPrefetcher(
-    AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   // I/O heavy initialization on start-up will be delayed by this long.
   // This should be high enough not to exacerbate start-up I/O contention too

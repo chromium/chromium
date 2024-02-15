@@ -68,7 +68,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
-  password_manager::AffiliationService* affiliation_service =
+  affiliations::AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
   FaviconLoader* favicon_loader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);

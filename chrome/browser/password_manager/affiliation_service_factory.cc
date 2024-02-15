@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
+#include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -28,9 +28,9 @@ AffiliationServiceFactory* AffiliationServiceFactory::GetInstance() {
   return instance.get();
 }
 
-password_manager::AffiliationService* AffiliationServiceFactory::GetForProfile(
+affiliations::AffiliationService* AffiliationServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<password_manager::AffiliationService*>(
+  return static_cast<affiliations::AffiliationService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -44,9 +44,10 @@ AffiliationServiceFactory::BuildServiceInstanceForBrowserContext(
   auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   auto affiliation_service =
-          std::make_unique<password_manager::AffiliationServiceImpl>(
-              url_loader_factory, backend_task_runner);
+      std::make_unique<affiliations::AffiliationServiceImpl>(
+          url_loader_factory, backend_task_runner);
 
+  // TODO(b/324553078): Move this constant into an affiliations file.
   base::FilePath database_path =
       profile->GetPath().Append(password_manager::kAffiliationDatabaseFileName);
   affiliation_service->Init(content::GetNetworkConnectionTracker(),

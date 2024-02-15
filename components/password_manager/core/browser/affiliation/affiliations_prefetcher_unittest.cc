@@ -20,8 +20,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -37,9 +37,12 @@ namespace password_manager {
 
 namespace {
 
-constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
+using StrategyOnCacheMiss =
+    affiliations::AffiliationService::StrategyOnCacheMiss;
+using affiliations::FacetURI;
+using affiliations::MockAffiliationService;
 
-using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
+constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestWebFacetURIAlpha2[] = "https://two.alpha.example.com";

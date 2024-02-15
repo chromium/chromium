@@ -38,6 +38,7 @@ if (use_blink) {
     deps = [
       ":importer",
       "//base/test:test_support",
+      "//components/affiliations/core/browser:test_support",
       "//components/password_manager/core/browser:test_support",
       "//components/password_manager/core/browser/affiliation:test_support",
       "//mojo/public/cpp/bindings:bindings",
@@ -64,7 +65,7 @@ source_set("csv") {
   ]
 
   deps = [
-    "//components/password_manager/core/browser/affiliation",
+    "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/form_parsing",
     "//url",
   ]

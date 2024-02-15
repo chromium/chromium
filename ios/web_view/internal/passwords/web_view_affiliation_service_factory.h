@@ -8,17 +8,19 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace password_manager {
+namespace affiliations {
 class AffiliationService;
 }
 
 namespace ios_web_view {
 
+// TODO(b/324553078): Move this factory into an
+// ios/webview/internal/affiliations subdirectory.
 class WebViewAffiliationServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static WebViewAffiliationServiceFactory* GetInstance();
-  static password_manager::AffiliationService* GetForBrowserState(
+  static affiliations::AffiliationService* GetForBrowserState(
       web::BrowserState* browser_state);
 
  private:

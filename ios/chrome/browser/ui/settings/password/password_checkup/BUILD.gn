@@ -89,6 +89,7 @@ source_set("unit_tests") {
     ":password_checkup_ui",
     "//base",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",

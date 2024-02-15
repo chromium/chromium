@@ -7,7 +7,7 @@
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace password_manager {
+namespace affiliations {
 class AffiliationService;
 }
 
@@ -18,13 +18,15 @@ class BrowserContext;
 class Profile;
 
 // Creates instances of AffiliationService per Profile.
+// TODO(b/324553078): Move this factory into a chrome/browser/affiliations
+// subdirectory.
 class AffiliationServiceFactory : public ProfileKeyedServiceFactory {
  public:
   AffiliationServiceFactory();
   ~AffiliationServiceFactory() override;
 
   static AffiliationServiceFactory* GetInstance();
-  static password_manager::AffiliationService* GetForProfile(Profile* profile);
+  static affiliations::AffiliationService* GetForProfile(Profile* profile);
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/threading/thread_restrictions.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
@@ -181,7 +182,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 
 - (CWVReuseCheckService*)reuseCheckService {
   if (!_reuseCheckService && self.persistent) {
-    password_manager::AffiliationService* affiliation_service =
+    affiliations::AffiliationService* affiliation_service =
         ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
             static_cast<ios_web_view::WebViewBrowserState*>(self.browserState));
 

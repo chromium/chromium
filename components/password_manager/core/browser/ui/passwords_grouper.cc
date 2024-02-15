@@ -9,8 +9,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -19,6 +19,10 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetBrandingInfo;
+using affiliations::FacetURI;
+using affiliations::GroupedFacets;
 
 constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
 constexpr char kFallbackIconQueryParams[] =
@@ -40,8 +44,8 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     branding_info.icon_url = GURL(kDefaultAndroidIcon);
     return branding_info;
   }
-  std::string group_name =
-      GetExtendedTopLevelDomain(credential.GetURL(), psl_extensions);
+  std::string group_name = affiliations::GetExtendedTopLevelDomain(
+      credential.GetURL(), psl_extensions);
   if (group_name.empty()) {
     group_name =
         credential.GetURL().is_valid()
@@ -89,7 +93,8 @@ std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
 PasswordsGrouper::Credentials::Credentials() = default;
 PasswordsGrouper::Credentials::~Credentials() = default;
 
-PasswordsGrouper::PasswordsGrouper(AffiliationService* affiliation_service)
+PasswordsGrouper::PasswordsGrouper(
+    affiliations::AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   DCHECK(affiliation_service_);
   affiliation_service_->GetPSLExtensions(
@@ -118,16 +123,18 @@ void PasswordsGrouper::GroupCredentials(std::vector<PasswordForm> forms,
         FacetURI::FromPotentiallyInvalidSpec(GetFacetRepresentation(passkey)));
   }
 
-  AffiliationService::GroupsCallback group_callback = base::BindOnce(
-      &PasswordsGrouper::GroupPasswordsImpl, weak_ptr_factory_.GetWeakPtr(),
-      std::move(forms), std::move(passkeys));
+  affiliations::AffiliationService::GroupsCallback group_callback =
+      base::BindOnce(&PasswordsGrouper::GroupPasswordsImpl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(forms),
+                     std::move(passkeys));
 
   // Before grouping passwords merge related groups. After grouping is finished
   // invoke |callback|.
   affiliation_service_->GetGroupingInfo(
-      std::move(facets), base::BindOnce(&MergeRelatedGroups, psl_extensions_)
-                             .Then(std::move(group_callback))
-                             .Then(std::move(callback)));
+      std::move(facets),
+      base::BindOnce(&affiliations::MergeRelatedGroups, psl_extensions_)
+          .Then(std::move(group_callback))
+          .Then(std::move(callback)));
 }
 
 std::vector<AffiliatedGroup>
@@ -330,7 +337,7 @@ PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
 
   for (const GroupedFacets& grouped_facets : groups) {
     GroupId unique_group_id(group_id_int);
-    for (const Facet& facet : grouped_facets.facets) {
+    for (const affiliations::Facet& facet : grouped_facets.facets) {
       std::string facet_uri_str = facet.uri.potentially_invalid_spec();
       map_facet_to_group_id[facet_uri_str] = unique_group_id;
 

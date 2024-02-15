@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -138,8 +138,8 @@ CredentialsItemView::CredentialsItemView(
   if (form->match_type.has_value() &&
       password_manager_util::GetMatchType(*form) !=
           password_manager_util::GetLoginMatchType::kExact) {
-    auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-        form->signon_realm);
+    auto facet =
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
     if (facet.IsValidAndroidFacetURI()) {
       std::u16string app_name = base::UTF8ToUTF16(form->app_display_name);
       if (app_name.empty()) {

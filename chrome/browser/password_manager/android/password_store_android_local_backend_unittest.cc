@@ -15,9 +15,9 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -38,6 +38,7 @@ using testing::Return;
 using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
+using affiliations::MockAffiliationService;
 
 constexpr JobId kJobId{1337};
 constexpr char kTestUrl[] = "https://example.com";

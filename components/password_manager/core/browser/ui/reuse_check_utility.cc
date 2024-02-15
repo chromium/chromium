@@ -9,7 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
@@ -65,7 +65,7 @@ bool AllUsernameAreEquivalent(
 
 bool HasOnlyAndroidApps(const CredentialUIEntry* credential) {
   return base::ranges::all_of(credential->facets, [](const auto& facet) {
-    return IsValidAndroidFacetURI(facet.signon_realm);
+    return affiliations::IsValidAndroidFacetURI(facet.signon_realm);
   });
 }
 
@@ -95,7 +95,7 @@ bool AllDomainsAreEquivalent(
     }
 
     for (const auto& facet : credential->facets) {
-      if (IsValidAndroidFacetURI(facet.signon_realm)) {
+      if (affiliations::IsValidAndroidFacetURI(facet.signon_realm)) {
         continue;
       }
 

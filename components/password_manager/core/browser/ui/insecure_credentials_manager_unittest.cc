@@ -14,8 +14,8 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -45,6 +45,7 @@ constexpr char16_t kWeakPassword216[] =
 constexpr int kDelay = 2;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+using affiliations::FacetURI;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -129,7 +130,7 @@ class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   InsecureCredentialsManager provider_{&presenter_, store_,
@@ -1255,7 +1256,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   if (!IsGroupingEnabled()) {
     return;
   }
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr};
   InsecureCredentialsManager provider{&presenter, &store(), nullptr};
@@ -1268,8 +1269,9 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword1);
 
   // Setup affiliated groups.
-  std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
+  std::vector<affiliations::GroupedFacets> grouped_facets(1);
+  affiliations::Facet facet(
+      FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
   grouped_facets[0].facets.push_back(facet);
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
@@ -1359,7 +1361,7 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
   InsecureCredentialsManager provider_{&presenter_, profile_store_,

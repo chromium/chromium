@@ -10,8 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/test/gmock_callback_support.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -20,12 +20,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using ::testing::ElementsAre;
-using ::testing::UnorderedElementsAre;
-
 namespace password_manager {
 
 namespace {
+
+using ::affiliations::Facet;
+using ::affiliations::FacetURI;
+using ::affiliations::GroupedFacets;
+using ::affiliations::MockAffiliationService;
+using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 PasskeyCredential CreatePasskey(std::string rp_id,
                                 std::string username = "username",
@@ -69,7 +73,8 @@ GURL GetIconUrl(const std::string& site) {
       .ReplaceComponents(replacements);
 }
 
-FacetBrandingInfo GetDefaultBrandingInfo(const CredentialUIEntry& credential) {
+affiliations::FacetBrandingInfo GetDefaultBrandingInfo(
+    const CredentialUIEntry& credential) {
   return {GetShownOrigin(credential), GetIconUrl(credential.GetURL().spec())};
 }
 

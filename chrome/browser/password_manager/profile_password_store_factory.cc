@@ -63,7 +63,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 #endif
   DCHECK(ps);
 
-  password_manager::AffiliationService* affiliation_service =
+  affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);

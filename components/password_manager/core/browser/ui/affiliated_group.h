@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -16,7 +16,7 @@ class AffiliatedGroup {
  public:
   AffiliatedGroup();
   AffiliatedGroup(std::vector<CredentialUIEntry> credentials,
-                  const FacetBrandingInfo& branding);
+                  const affiliations::FacetBrandingInfo& branding);
   AffiliatedGroup(const AffiliatedGroup& other);
   AffiliatedGroup(AffiliatedGroup&& other);
   AffiliatedGroup& operator=(const AffiliatedGroup& other);
@@ -41,7 +41,7 @@ class AffiliatedGroup {
  private:
   // The branding information for the affiliated group. Corresponds to the
   // `BrandingInfo` message in affiliation_api.proto.
-  FacetBrandingInfo branding_info_;
+  affiliations::FacetBrandingInfo branding_info_;
 
   // List of credential groups in the affiliated group.
   std::vector<CredentialUIEntry> credential_groups_;

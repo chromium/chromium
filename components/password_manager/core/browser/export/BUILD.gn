@@ -17,9 +17,9 @@ source_set("export") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/browser/affiliation",
-    "//components/password_manager/core/browser/ui",
+    "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/ui",
     "//components/sync/base:features",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -34,6 +34,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":export",
+    "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/import:csv",

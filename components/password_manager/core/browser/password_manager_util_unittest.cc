@@ -51,11 +51,11 @@
 namespace password_manager_util {
 namespace {
 
+using ::affiliations::Facet;
+using ::affiliations::FacetURI;
+using ::affiliations::GroupedFacets;
 using ::autofill::password_generation::PasswordGenerationType;
 using ::device_reauth::MockDeviceAuthenticator;
-using ::password_manager::Facet;
-using ::password_manager::FacetURI;
-using ::password_manager::GroupedFacets;
 using ::password_manager::PasswordForm;
 
 constexpr char kTestAndroidRealm[] = "android://hash@com.example.beta.android";

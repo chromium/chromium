@@ -10,9 +10,9 @@
 #import "base/no_destructor.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/affiliations/core/browser/affiliation_service_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -27,10 +27,10 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 }
 
 // static
-password_manager::AffiliationService*
+affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForBrowserState(
     web::BrowserState* browser_state) {
-  return static_cast<password_manager::AffiliationService*>(
+  return static_cast<affiliations::AffiliationService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
@@ -50,9 +50,10 @@ IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto affiliation_service =
-      std::make_unique<password_manager::AffiliationServiceImpl>(
+      std::make_unique<affiliations::AffiliationServiceImpl>(
           context->GetSharedURLLoaderFactory(), backend_task_runner);
 
+  // TODO(b/324553078): Move this constant into an affiliations file.
   base::FilePath database_path = context->GetStatePath().Append(
       password_manager::kAffiliationDatabaseFileName);
   affiliation_service->Init(

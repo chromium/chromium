@@ -300,6 +300,7 @@ ios_web_view_sources = [
 ios_web_view_deps = [
   ":web_view_resources",
   "//base",
+  "//components/affiliations/core/browser:affiliations",
   "//components/autofill/core/browser",
   "//components/autofill/core/common",
   "//components/autofill/ios/browser",
@@ -327,7 +328,6 @@ ios_web_view_deps = [
   "//components/metrics:library_support",
   "//components/metrics/demographics",
   "//components/password_manager/core/browser",
-  "//components/password_manager/core/browser/affiliation",
   "//components/password_manager/core/browser/affiliation:affiliation_fetching",
   "//components/password_manager/core/browser/features:password_features",
   "//components/password_manager/core/browser/generation:core",
@@ -524,6 +524,7 @@ test("ios_web_view_unittests") {
     ":web_view_sources",
     "test:test_support",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util:test_support",

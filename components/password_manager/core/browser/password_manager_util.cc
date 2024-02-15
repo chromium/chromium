@@ -20,12 +20,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -349,7 +349,7 @@ PasswordForm MakeNormalizedBlocklistedForm(
   result.signon_realm = std::move(digest.signon_realm);
   // In case |digest| corresponds to an Android credential copy the origin as
   // is, otherwise clear out the path by calling GetOrigin().
-  if (password_manager::FacetURI::FromPotentiallyInvalidSpec(digest.url.spec())
+  if (affiliations::FacetURI::FromPotentiallyInvalidSpec(digest.url.spec())
           .IsValidAndroidFacetURI()) {
     result.url = std::move(digest.url);
   } else {

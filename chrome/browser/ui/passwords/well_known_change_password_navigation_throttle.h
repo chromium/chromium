@@ -15,12 +15,16 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
+
+namespace affiliations {
+class AffiliationService;
+}  // namespace affiliations
+
 namespace content {
 class NavigationHandle;
 }  // namespace content
 
 namespace password_manager {
-class AffiliationService;
 }  // namespace password_manager
 
 // This NavigationThrottle checks whether a site supports the
@@ -65,7 +69,7 @@ class WellKnownChangePasswordNavigationThrottle
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-  raw_ptr<password_manager::AffiliationService> affiliation_service_ = nullptr;
+  raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
   base::WeakPtrFactory<password_manager::WellKnownChangePasswordState>
       weak_ptr_factory_{&well_known_change_password_state_};
 };

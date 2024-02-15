@@ -21,8 +21,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
@@ -45,6 +45,9 @@ namespace password_manager {
 
 namespace {
 
+using affiliations::Facet;
+using affiliations::FacetURI;
+using affiliations::FakeAffiliationService;
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -880,7 +883,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
     return;
   }
 
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr, &passkey_store()};
   presenter.Init();
@@ -900,7 +903,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
   store().AddLogin(form2);
   store().AddLogin(form3);
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(2);
+  std::vector<affiliations::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm)),
@@ -1683,7 +1686,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   }
 
   base::HistogramTester histogram_tester;
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr, /*passkey_store=*/nullptr};
   presenter.Init();
@@ -1703,7 +1706,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
 
   store().AddLogins({form1, form2, form3, blocked_form});
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(2);
+  std::vector<affiliations::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
@@ -1716,7 +1719,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   grouped_facets[1].branding_info.icon_url =
       GURL("https://test3.com/favicon.ico");
 
-  AffiliationService::GroupsCallback callback;
+  affiliations::AffiliationService::GroupsCallback callback;
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
       .WillOnce(MoveArg<1>(&callback));
   RunUntilIdle();

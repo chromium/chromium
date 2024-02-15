@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
@@ -279,7 +279,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<PasswordManagerPorter> porter_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   password_manager::SavedPasswordsPresenter presenter_{
       &affiliation_service_, store_,
       /*account_store=*/nullptr};

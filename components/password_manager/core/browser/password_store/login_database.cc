@@ -31,8 +31,9 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/sql_table_builder.h"
 #include "components/os_crypt/sync/os_crypt.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -40,7 +41,6 @@
 #include "components/password_manager/core/browser/password_store/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
-#include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
@@ -122,6 +122,8 @@ std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(const base::Pickle& p) {
 }
 
 namespace {
+
+using affiliations::SQLTableBuilder;
 
 // Common prefix for all histograms.
 constexpr char kPasswordManager[] = "PasswordManager";
@@ -307,7 +309,8 @@ class ScopedDbErrorHandler {
 };
 
 bool DoesMatchConstraints(const PasswordForm& form) {
-  if (!IsValidAndroidFacetURI(form.signon_realm) && form.url.is_empty()) {
+  if (!affiliations::IsValidAndroidFacetURI(form.signon_realm) &&
+      form.url.is_empty()) {
     DLOG(ERROR) << "Constraint violation: form.origin is empty";
     return false;
   }

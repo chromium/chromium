@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -213,7 +213,7 @@ void ReportLoginsWithSchemesMetrics(
     if (form->blocked_by_user)
       continue;
 
-    if (IsValidAndroidFacetURI(form->signon_realm)) {
+    if (affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       ++android_logins;
     } else if (form->url.SchemeIs(url::kHttpsScheme)) {
       ++https_logins;

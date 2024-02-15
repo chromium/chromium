@@ -12,9 +12,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "build/build_config.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -37,8 +37,8 @@
 
 namespace {
 
+using affiliations::AffiliationService;
 using password_manager::AffiliatedMatchHelper;
-using password_manager::AffiliationService;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
@@ -128,7 +128,7 @@ CredentialProviderService::CredentialProviderService(
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
-    password_manager::AffiliationService* affiliation_service,
+    affiliations::AffiliationService* affiliation_service,
     FaviconLoader* favicon_loader)
     : prefs_(prefs),
       profile_password_store_(profile_password_store),
@@ -259,7 +259,7 @@ void CredentialProviderService::AddCredentials(
     }
 
     // Only store password with valid Android facet URI or valid URL.
-    if (password_manager::IsValidAndroidFacetURI(form.signon_realm) ||
+    if (affiliations::IsValidAndroidFacetURI(form.signon_realm) ||
         form.url.is_valid()) {
       ArchivableCredential* credential =
           [[ArchivableCredential alloc] initWithPasswordForm:form

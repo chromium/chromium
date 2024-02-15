@@ -83,10 +83,10 @@ source_set("password_details_ui") {
   ]
   deps = [
     "//base",
+    "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common",
     "//components/device_reauth",
     "//components/password_manager/core/browser:browser",
-    "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -139,6 +139,7 @@ source_set("unit_tests") {
     ":password_details_ui",
     "//base",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",

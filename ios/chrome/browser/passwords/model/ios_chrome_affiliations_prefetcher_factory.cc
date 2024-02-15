@@ -36,8 +36,6 @@ IOSChromeAffiliationsPrefetcherFactory::
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationsPrefetcherFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  password_manager::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
   return std::make_unique<password_manager::AffiliationsPrefetcher>(
-      affiliation_service);
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state));
 }

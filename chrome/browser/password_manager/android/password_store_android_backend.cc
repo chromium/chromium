@@ -32,8 +32,8 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/autofill_regexes.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -78,7 +78,7 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
     return GetRegistryControlledDomain(GURL(form.signon_realm));
   }
   if (form.scheme == PasswordForm::Scheme::kHtml &&
-      !IsValidAndroidFacetURI(form.signon_realm)) {
+      !affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
     // Check federated matches and matches for exact signon realm.
     return form.url.host();
   }

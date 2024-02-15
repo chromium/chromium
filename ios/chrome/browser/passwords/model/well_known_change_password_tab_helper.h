@@ -11,9 +11,12 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-namespace password_manager {
-
+namespace affiliations {
 class AffiliationService;
+}  // namespace affiliations
+
+// TODO(b/324553078): Move out of namespace.
+namespace password_manager {
 
 // This TabHelper checks whether a site supports the .well-known/change-password
 // url. To check whether a site supports the change-password url the TabHelper
@@ -85,7 +88,7 @@ class WellKnownChangePasswordTabHelper
   web::WebStatePolicyDecider::PolicyDecisionCallback response_policy_callback_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  raw_ptr<password_manager::AffiliationService> affiliation_service_ = nullptr;
+  raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 

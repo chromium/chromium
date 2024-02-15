@@ -11,7 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -241,7 +241,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   credential_facet.signon_realm = credential.GetFirstSignonRealm();
   credential_facet.affiliated_web_realm = credential.GetAffiliatedWebRealm();
 
-  auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
       credential.GetFirstSignonRealm());
 
   if (facet.IsValidAndroidFacetURI()) {

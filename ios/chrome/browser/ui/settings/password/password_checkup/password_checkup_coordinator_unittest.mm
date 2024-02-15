@@ -8,7 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
@@ -60,7 +60,7 @@ class PasswordCheckupCoordinatorTest
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
     // Create scene state for reauthentication coordinator.

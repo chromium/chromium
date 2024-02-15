@@ -78,7 +78,8 @@ const syncer::SyncService* StubPasswordManagerClient::GetSyncService() const {
   return nullptr;
 }
 
-AffiliationService* StubPasswordManagerClient::GetAffiliationService() {
+affiliations::AffiliationService*
+StubPasswordManagerClient::GetAffiliationService() {
   return nullptr;
 }
 

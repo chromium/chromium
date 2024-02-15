@@ -9,15 +9,17 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 
-namespace password_manager {
+namespace affiliations {
 class AffiliationService;
 }
 
+// TODO(b/324553078): Move this factory into an ios/chrome/browser/affiliations
+// subdirectory.
 class IOSChromeAffiliationServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static IOSChromeAffiliationServiceFactory* GetInstance();
-  static password_manager::AffiliationService* GetForBrowserState(
+  static affiliations::AffiliationService* GetForBrowserState(
       web::BrowserState* browser_state);
 
  private:

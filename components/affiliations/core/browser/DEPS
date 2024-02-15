@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/variations",
+  "+components/url_formatter",
+  "+crypto",
+  "+google_apis",
+  "+net/base",
+  "+net/http/http_status_code.h",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+services/network/test",
+  "+sql",
+]

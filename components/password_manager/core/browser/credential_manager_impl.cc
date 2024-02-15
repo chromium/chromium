@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
@@ -232,7 +232,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     GetLoginMatchType match_type = GetMatchType(form);
     if (match_type == GetLoginMatchType::kPSL ||
         (match_type == GetLoginMatchType::kAffiliated &&
-         !IsValidAndroidFacetURI(form.signon_realm))) {
+         !affiliations::IsValidAndroidFacetURI(form.signon_realm))) {
       form_manager_->Save();
       return;
     }

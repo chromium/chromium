@@ -12,8 +12,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
@@ -22,17 +22,21 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::ElementsAre;
-using testing::ElementsAreArray;
-using testing::IsEmpty;
-using testing::UnorderedElementsAreArray;
-using testing::VariantWith;
 
 namespace password_manager {
 
 namespace {
 
+using ::affiliations::Facet;
+using ::affiliations::FacetURI;
+using ::affiliations::GroupedFacets;
+using ::affiliations::MockAffiliationService;
 using ::base::test::RunOnceCallback;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAreArray;
+using ::testing::VariantWith;
 
 constexpr const char kTestWebURL[] = "https://example.com/";
 constexpr const char kTestPSLURL[] = "https://one.example.com/";

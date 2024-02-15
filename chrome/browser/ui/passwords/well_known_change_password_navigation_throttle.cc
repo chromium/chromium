@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "content/public/browser/browser_context.h"

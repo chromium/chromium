@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 @implementation PasswordDetails
@@ -26,7 +26,7 @@
         [NSMutableArray arrayWithCapacity:websiteCount];
     for (const auto& domain_info : domain_infos) {
       [origins addObject:base::SysUTF8ToNSString(domain_info.name)];
-      if (password_manager::IsValidAndroidFacetURI(domain_info.signon_realm)) {
+      if (affiliations::IsValidAndroidFacetURI(domain_info.signon_realm)) {
         [websites addObject:base::SysUTF8ToNSString(domain_info.name)];
       } else {
         [websites addObject:base::SysUTF8ToNSString(domain_info.url.spec())];

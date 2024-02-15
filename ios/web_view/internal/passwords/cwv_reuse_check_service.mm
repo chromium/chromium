@@ -7,7 +7,8 @@
 #import "base/containers/flat_set.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/passwords_grouper.h"
@@ -19,12 +20,12 @@
 #import "ios/web_view/internal/web_view_global_state_util.h"
 
 @implementation CWVReuseCheckService {
-  password_manager::AffiliationService* _affiliation_service;
+  affiliations::AffiliationService* _affiliation_service;
   std::unique_ptr<password_manager::PasswordsGrouper> _passwords_grouper;
 }
 
 - (instancetype)initWithAffiliationService:
-    (password_manager::AffiliationService*)affiliationService {
+    (affiliations::AffiliationService*)affiliationService {
   DCHECK(affiliationService);
   self = [super init];
   if (self) {
@@ -66,14 +67,14 @@
   }
 
   // Convert forms to Facets.
-  std::vector<password_manager::FacetURI> facets;
+  std::vector<affiliations::FacetURI> facets;
   facets.reserve(passwordForms.size());
   for (const auto& form : passwordForms) {
     // Blocked forms aren't grouped.
     if (form.blocked_by_user) {
       continue;
     }
-    facets.emplace_back(password_manager::FacetURI::FromPotentiallyInvalidSpec(
+    facets.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
         GetFacetRepresentation(form)));
   }
 

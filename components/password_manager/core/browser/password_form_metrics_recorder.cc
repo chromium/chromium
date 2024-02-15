@@ -16,9 +16,9 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_clock.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -554,7 +554,7 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       match_type = FormMatchType::kExactMatch;
       break;
     case password_manager_util::GetLoginMatchType::kAffiliated:
-      match_type = IsValidAndroidFacetURI(form.signon_realm)
+      match_type = affiliations::IsValidAndroidFacetURI(form.signon_realm)
                        ? FormMatchType::kAffiliatedApp
                        : FormMatchType::kAffiliatedWebsites;
       break;

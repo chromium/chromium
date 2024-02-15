@@ -13,13 +13,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
-namespace password_manager {
-
+namespace affiliations {
 class AffiliationService;
+}  // namespace affiliations
+
+namespace password_manager {
 
 // Interacts with the AffiliationService on behalf of the PasswordStore.
 // For each GetLogins() request, it provides the PasswordStore with a list of
@@ -43,7 +45,8 @@ class AffiliatedMatchHelper {
 
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
-  explicit AffiliatedMatchHelper(AffiliationService* affiliation_service);
+  explicit AffiliatedMatchHelper(
+      affiliations::AffiliationService* affiliation_service);
   AffiliatedMatchHelper(const AffiliatedMatchHelper&) = delete;
   AffiliatedMatchHelper& operator=(const AffiliatedMatchHelper&) = delete;
   virtual ~AffiliatedMatchHelper();
@@ -82,12 +85,12 @@ class AffiliatedMatchHelper {
   void CompleteInjectAffiliationAndBrandingInformation(
       PasswordForm* form,
       base::OnceClosure barrier_closure,
-      const AffiliatedFacets& results,
+      const affiliations::AffiliatedFacets& results,
       bool success);
 
   void OnPSLExtensionsReceived(std::vector<std::string> psl_extensions);
 
-  const raw_ptr<AffiliationService> affiliation_service_;
+  const raw_ptr<affiliations::AffiliationService> affiliation_service_;
 
   std::optional<base::flat_set<std::string>> psl_extensions_;
 

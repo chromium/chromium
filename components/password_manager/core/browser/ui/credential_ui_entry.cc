@@ -6,7 +6,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
@@ -14,6 +14,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 constexpr char kPlayStoreAppPrefix[] =
     "https://play.google.com/store/apps/details?id=";
@@ -141,7 +143,7 @@ CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
   CredentialFacet facet;
   facet.url = csv_password.GetURL().value();
   facet.signon_realm =
-      IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
+      affiliations::IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
           ? csv_password.GetURL().value().spec()
           : GetSignonRealm(csv_password.GetURL().value());
   facets.push_back(std::move(facet));
@@ -242,9 +244,8 @@ CredentialUIEntry::GetAffiliatedDomains() const {
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
     domain.signon_realm = facet.signon_realm;
-    password_manager::FacetURI facet_uri =
-        password_manager::FacetURI::FromPotentiallyInvalidSpec(
-            facet.signon_realm);
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(facet.signon_realm);
     if (facet_uri.IsValidAndroidFacetURI()) {
       domain.name = facet.display_name.empty()
                         ? facet_uri.GetAndroidPackageDisplayName()

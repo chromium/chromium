@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -25,6 +25,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 // The URL prefixes that are removed from shown origin.
 const char* const kRemovedPrefixes[] = {"m.", "mobile.", "www."};

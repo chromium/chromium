@@ -8,7 +8,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -48,7 +47,7 @@ password_manager::AffiliatedGroup GetTestAffiliatedGroup() {
   password_manager::CredentialUIEntry credential(form);
   return password_manager::AffiliatedGroup(
       /*credentials=*/{credential},
-      /*branding=*/password_manager::FacetBrandingInfo());
+      /*branding=*/affiliations::FacetBrandingInfo());
 }
 
 // Registers a mock command handler in the dispatcher.

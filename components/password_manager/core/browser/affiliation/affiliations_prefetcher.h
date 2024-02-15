@@ -17,11 +17,13 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 
+namespace affiliations {
+class AffiliationService;
+}  // namespace affiliations
+
 namespace password_manager {
 
 struct PasswordForm;
-
-class AffiliationService;
 
 // This class prefetches affiliation information on start-up for all credentials
 // stored in a PasswordStore.
@@ -30,7 +32,8 @@ class AffiliationsPrefetcher : public KeyedService,
                                public webauthn::PasskeyModel::Observer,
                                public PasswordStoreConsumer {
  public:
-  explicit AffiliationsPrefetcher(AffiliationService* affiliation_service);
+  explicit AffiliationsPrefetcher(
+      affiliations::AffiliationService* affiliation_service);
   ~AffiliationsPrefetcher() override;
 
   // Registers a passkey model and starts listening for passkey changes. Only
@@ -67,7 +70,8 @@ class AffiliationsPrefetcher : public KeyedService,
 
   void InitializeWithPasswordStores();
 
-  const raw_ptr<AffiliationService> affiliation_service_ = nullptr;
+  const raw_ptr<affiliations::AffiliationService> affiliation_service_ =
+      nullptr;
 
   // Password stores registered via RegisterPasswordStore but aren't observed
   // yet.

@@ -11,8 +11,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/mock_callback.h"
 #import "base/test/task_environment.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
+#import "components/affiliations/core/browser/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
@@ -24,10 +25,14 @@
 
 namespace ios_web_view {
 
+namespace {
+
+using affiliations::Facet;
+using affiliations::FacetURI;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::PasswordForm;
-namespace {
+
 PasswordForm GenerateSavedPassword(
     base::StringPiece signon_realm,
     base::StringPiece16 username,
@@ -62,8 +67,8 @@ class CWVReuseCheckServiceTest : public PlatformTest {
 }  // namespace
 
 TEST_F(CWVReuseCheckServiceTest, CheckPasswords) {
-  password_manager::MockAffiliationService mock_affiliation_service;
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::MockAffiliationService mock_affiliation_service;
+  affiliations::FakeAffiliationService affiliation_service_;
   CWVReuseCheckService* reuseCheckService = [[CWVReuseCheckService alloc]
       initWithAffiliationService:&affiliation_service_];
 
@@ -76,14 +81,10 @@ TEST_F(CWVReuseCheckServiceTest, CheckPasswords) {
   CWVPassword* password2 = [[CWVPassword alloc] initWithPasswordForm:form2];
 
   // Setup affiliated groups.
-  std::vector<password_manager::GroupedFacets> grouped_facets(2);
-  password_manager::Facet facet1(
-      password_manager::FacetURI::FromPotentiallyInvalidSpec(
-          form1.signon_realm));
+  std::vector<affiliations::GroupedFacets> grouped_facets(2);
+  Facet facet1(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
   grouped_facets[0].facets.push_back(facet1);
-  password_manager::Facet facet2(
-      password_manager::FacetURI::FromPotentiallyInvalidSpec(
-          form2.signon_realm));
+  Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[1].facets.push_back(facet2);
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));

@@ -17,12 +17,15 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace affiliations {
+class AffiliationService;
+}  // namespace affiliations
+
 namespace network {
 class SharedURLLoaderFactory;
 }
 
 namespace password_manager {
-class AffiliationService;
 
 // A delegate that is notified when the processing is done and its known if
 // .well-known/change-password is supported.
@@ -53,8 +56,9 @@ class WellKnownChangePasswordState {
       std::optional<network::ResourceRequest::TrustedParams> trusted_params =
           std::nullopt);
   // Prefetch change password URLs from |affiliation_service|.
-  void PrefetchChangePasswordURLs(AffiliationService* affiliation_service,
-                                  const std::vector<GURL>& urls);
+  void PrefetchChangePasswordURLs(
+      affiliations::AffiliationService* affiliation_service,
+      const std::vector<GURL>& urls);
   // The request to .well-known/change-password is not made by this State. To
   // get the response code for the request the owner of the state has to call
   // this method to tell the state.

@@ -7,7 +7,7 @@
 #include "base/base64.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -21,6 +21,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 constexpr char16_t kPasswordReplacementChar = 0x2022;
 

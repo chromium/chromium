@@ -62,7 +62,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
-  AffiliationService* GetAffiliationService() override;
+  affiliations::AffiliationService* GetAffiliationService() override;
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;

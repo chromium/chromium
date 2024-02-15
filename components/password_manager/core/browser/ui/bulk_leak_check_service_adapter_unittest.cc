@@ -16,8 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
@@ -129,7 +129,7 @@ class BulkLeakCheckServiceAdapterTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   BulkLeakCheckService service_{

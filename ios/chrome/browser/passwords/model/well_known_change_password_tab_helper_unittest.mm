@@ -8,7 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#import "components/affiliations/core/browser/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -35,13 +35,13 @@
 
 namespace {
 
+using affiliations::FacetURI;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using net::test_server::BasicHttpResponse;
 using net::test_server::EmbeddedTestServer;
 using net::test_server::EmbeddedTestServerHandle;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
-using password_manager::FacetURI;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
 using password_manager::WellKnownChangePasswordResult;
@@ -68,7 +68,7 @@ void LoadUrlWithTransition(web::WebState* web_state,
 }
 
 std::unique_ptr<KeyedService> MakeMockAffiliationService(web::BrowserState*) {
-  return std::make_unique<NiceMock<password_manager::MockAffiliationService>>();
+  return std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
 }
 
 }  // namespace
@@ -102,10 +102,9 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
     EXPECT_TRUE(test_server_->InitializeAndListen());
     test_server_->StartAcceptingConnections();
 
-    affiliation_service_ =
-        static_cast<password_manager::MockAffiliationService*>(
-            IOSChromeAffiliationServiceFactory::GetForBrowserState(
-                browser_state_.get()));
+    affiliation_service_ = static_cast<affiliations::MockAffiliationService*>(
+        IOSChromeAffiliationServiceFactory::GetForBrowserState(
+            browser_state_.get()));
 
     web_state()->SetDelegate(&delegate_);
     password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
@@ -165,8 +164,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   web::FakeWebStateDelegate delegate_;
-  raw_ptr<password_manager::MockAffiliationService> affiliation_service_ =
-      nullptr;
+  raw_ptr<affiliations::MockAffiliationService> affiliation_service_ = nullptr;
 };
 
 GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {

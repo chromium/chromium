@@ -46,9 +46,6 @@ AffiliationsPrefetcherFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(!profile->IsOffTheRecord());
   DCHECK(profile->IsRegularProfile());
 
-  password_manager::AffiliationService* affiliation_service =
-      AffiliationServiceFactory::GetForProfile(profile);
-
   return std::make_unique<password_manager::AffiliationsPrefetcher>(
-      affiliation_service);
+      AffiliationServiceFactory::GetForProfile(profile));
 }

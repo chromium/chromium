@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
@@ -55,7 +55,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
       SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
 
   NSString* serviceIdentifier = @"";
-  if (password_manager::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
+  if (affiliations::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
     NSString* webRealm = SysUTF8ToNSString(passwordForm.affiliated_web_realm);
     url::Origin origin =
         url::Origin::Create(GURL(passwordForm.affiliated_web_realm));

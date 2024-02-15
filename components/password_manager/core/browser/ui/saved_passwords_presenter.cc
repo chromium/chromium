@@ -100,7 +100,7 @@ password_manager::PasswordStoreChangeList GetChangesForAddedForms(
 namespace password_manager {
 
 SavedPasswordsPresenter::SavedPasswordsPresenter(
-    AffiliationService* affiliation_service,
+    affiliations::AffiliationService* affiliation_service,
     scoped_refptr<PasswordStoreInterface> profile_store,
     scoped_refptr<PasswordStoreInterface> account_store,
     webauthn::PasskeyModel* passkey_store)

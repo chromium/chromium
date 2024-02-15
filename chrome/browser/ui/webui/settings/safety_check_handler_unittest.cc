@@ -32,8 +32,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/crx_file/id_util.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -256,7 +256,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
       extensions::api::passwords_private::PasswordCheckState::kIdle;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   password_manager::SavedPasswordsPresenter presenter_{
       &affiliation_service_, store_, /*account_store=*/nullptr};
   password_manager::InsecureCredentialsManager credentials_manager_{

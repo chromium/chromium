@@ -13,8 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/favicon/core/large_icon_service.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -148,7 +148,7 @@ class CredentialProviderServiceTest : public PlatformTest {
       [[MemoryCredentialStore alloc] init];
   signin::IdentityTestEnvironment identity_test_environment_;
   syncer::TestSyncService sync_service_;
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   MockLargeIconService large_icon_service_;
   FaviconLoader favicon_loader_ = FaviconLoader(&large_icon_service_);
   std::unique_ptr<CredentialProviderService> credential_provider_service_;

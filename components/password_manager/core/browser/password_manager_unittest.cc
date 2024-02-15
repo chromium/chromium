@@ -24,6 +24,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -33,7 +34,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -768,7 +768,7 @@ class PasswordManagerTestBase : public testing::Test {
   const std::string test_signon_realm_ = "https://www.google.com/";
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-  FakeAffiliationService fake_affiliation_service_;
+  affiliations::FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
   raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_ = nullptr;

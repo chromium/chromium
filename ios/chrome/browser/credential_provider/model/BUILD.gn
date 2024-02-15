@@ -33,11 +33,12 @@ if (ios_enable_credential_provider_extension) {
     deps = [
       ":buildflags",
       "//base",
+      "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/keyed_service/ios",
       "//components/password_manager/core/browser",
-      "//components/password_manager/core/browser/affiliation",
+      "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
       "//components/password_manager/core/common",
       "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
@@ -72,6 +73,7 @@ if (ios_enable_credential_provider_extension) {
     deps = [
       ":model",
       "//base/test:test_support",
+      "//components/affiliations/core/browser:test_support",
       "//components/autofill/core/common",
       "//components/favicon/core",
       "//components/password_manager/core/browser:test_support",

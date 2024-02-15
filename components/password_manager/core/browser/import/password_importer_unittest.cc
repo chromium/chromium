@@ -13,7 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -174,7 +174,7 @@ class PasswordImporterTest : public testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
   password_manager::PasswordImporter importer_;

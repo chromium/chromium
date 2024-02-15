@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -31,7 +32,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -530,7 +530,8 @@ bool PasswordAutofillManager::FillSuggestion(
       GetPasswordAndMetadataForUsername(username, popup_item_id, *fill_data_,
                                         &password_and_meta_data)) {
     bool is_android_credential =
-        FacetURI::FromPotentiallyInvalidSpec(password_and_meta_data.realm)
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(
+            password_and_meta_data.realm)
             .IsValidAndroidFacetURI();
     metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
     password_manager_driver_->FillSuggestion(

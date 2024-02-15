@@ -14,7 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
@@ -93,7 +93,7 @@ class IOSChromePasswordCheckManager
   explicit IOSChromePasswordCheckManager(
       scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
       scoped_refptr<password_manager::PasswordStoreInterface> account_store,
-      password_manager::AffiliationService* affiliation_service,
+      affiliations::AffiliationService* affiliation_service,
       password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
       PrefService* user_prefs);
 

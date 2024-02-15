@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/password_entry_edit/android/internal/jni/CredentialEditBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/url_formatter/url_formatter.h"
@@ -107,7 +107,7 @@ void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
 }
 
 std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
-  auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
       credential_.GetFirstSignonRealm());
   std::string display_name = credential_.GetDisplayName();
 

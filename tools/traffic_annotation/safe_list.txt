@@ -177,6 +177,7 @@ missing_new_fields,chromeos/ash/components/fwupd/firmware_update_manager.cc
 missing_new_fields,chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.cc
 missing_new_fields,chromeos/ash/components/timezone/timezone_request.cc
 missing_new_fields,chromeos/components/quick_answers/result_loader.cc
+missing_new_fields,components/affiliations/core/browser/hash_affiliation_fetcher.cc
 missing_new_fields,components/assist_ranker/ranker_url_fetcher.cc
 missing_new_fields,components/autofill/core/browser/payments/payments_network_interface.cc
 missing_new_fields,components/captive_portal/content/captive_portal_service.cc
@@ -210,7 +211,6 @@ missing_new_fields,components/openscreen_platform/udp_socket.cc
 missing_new_fields,components/optimization_guide/core/hints_fetcher.cc
 missing_new_fields,components/optimization_guide/core/prediction_model_download_manager.cc
 missing_new_fields,components/optimization_guide/core/prediction_model_fetcher_impl.cc
-missing_new_fields,components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.cc
 missing_new_fields,components/password_manager/core/browser/generation/password_requirements_spec_fetcher_impl.cc
 missing_new_fields,components/password_manager/core/browser/well_known_change_password_state.cc
 missing_new_fields,components/payments/core/payment_manifest_downloader.cc

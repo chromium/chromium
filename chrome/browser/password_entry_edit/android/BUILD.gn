@@ -17,7 +17,7 @@ source_set("android") {
     "//chrome/browser/password_entry_edit/android/internal:jni",
     "//chrome/browser/ui",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/url_formatter",
     "//ui/base",
   ]

@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -75,7 +75,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
     return *password_manager_client_;
   }
 
-  FakeAffiliationService& affiliation_service() {
+  affiliations::FakeAffiliationService& affiliation_service() {
     return *affiliation_service_;
   }
 
@@ -95,8 +95,8 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
       std::make_unique<NiceMock<MockAutofillClient>>();
   std::unique_ptr<StubPasswordManagerClient> password_manager_client_ =
       std::make_unique<StubPasswordManagerClient>();
-  std::unique_ptr<FakeAffiliationService> affiliation_service_ =
-      std::make_unique<FakeAffiliationService>();
+  std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_ =
+      std::make_unique<affiliations::FakeAffiliationService>();
   scoped_refptr<TestPasswordStore> profile_password_store_ =
       base::MakeRefCounted<TestPasswordStore>();
   std::unique_ptr<PasswordManualFallbackFlow> flow_;

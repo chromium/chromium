@@ -22,11 +22,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/url_constants.h"
+#include "components/affiliations/core/browser/affiliation_service_impl.h"
+#include "components/affiliations/core/browser/hash_affiliation_fetcher.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_api.pb.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service_impl.h"
-#include "components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/test/test_sync_service.h"
@@ -52,6 +51,8 @@
 #include "url/origin.h"
 
 namespace {
+using affiliations::FacetURI;
+using affiliations::MockAffiliationService;
 using content::NavigationThrottle;
 using content::RenderFrameHost;
 using content::TestNavigationObserver;
@@ -62,10 +63,8 @@ using net::test_server::EmbeddedTestServer;
 using net::test_server::EmbeddedTestServerHandle;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
-using password_manager::FacetURI;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
-using password_manager::MockAffiliationService;
 using password_manager::WellKnownChangePasswordResult;
 using testing::_;
 using testing::Return;

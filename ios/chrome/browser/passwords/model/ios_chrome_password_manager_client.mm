@@ -49,7 +49,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
 
-using password_manager::AffiliationService;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
@@ -166,7 +165,8 @@ const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
   return SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState);
 }
 
-AffiliationService* IOSChromePasswordManagerClient::GetAffiliationService() {
+affiliations::AffiliationService*
+IOSChromePasswordManagerClient::GetAffiliationService() {
   // Not used on IOS platform.
   return nullptr;
 }

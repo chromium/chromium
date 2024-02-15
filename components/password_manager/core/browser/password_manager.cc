@@ -24,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -32,7 +33,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -123,7 +123,7 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
         // User successfully signed-in with affiliated web credentials. These
         // credentials should be automatically saved in order to be autofilled
         // on next login.
-        if (!IsValidAndroidFacetURI(
+        if (!affiliations::IsValidAndroidFacetURI(
                 manager.GetPendingCredentials().signon_realm)) {
           return false;
         }

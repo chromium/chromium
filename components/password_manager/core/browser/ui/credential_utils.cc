@@ -4,14 +4,13 @@
 
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 
 namespace password_manager {
 
 bool IsValidPasswordURL(const GURL& url) {
-  return url.is_valid() &&
-         (url.SchemeIsHTTPOrHTTPS() ||
-          password_manager::IsValidAndroidFacetURI(url.spec()));
+  return url.is_valid() && (url.SchemeIsHTTPOrHTTPS() ||
+                            affiliations::IsValidAndroidFacetURI(url.spec()));
 }
 
 }  // namespace password_manager

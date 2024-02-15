@@ -86,7 +86,7 @@ PasswordCheckState ConvertBulkCheckState(State state) {
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
     scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
     scoped_refptr<password_manager::PasswordStoreInterface> account_store,
-    password_manager::AffiliationService* affiliation_service,
+    affiliations::AffiliationService* affiliation_service,
     password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
     PrefService* user_prefs)
     : profile_store_(profile_store),
