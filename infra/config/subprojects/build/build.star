@@ -116,6 +116,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "android",
         short_name = "ninja",
     ),
+    siso_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -182,6 +183,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "linux",
         short_name = "ninja",
     ),
+    siso_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -242,6 +244,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "windows",
         short_name = "ninja",
     ),
+    siso_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -305,6 +308,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "cros",
         short_name = "ninja",
     ),
+    siso_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -369,6 +373,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "mac",
         short_name = "ninja",
     ),
+    siso_enabled = False,
 )
 
 cq_build_perf_builder(
@@ -436,6 +441,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "ios",
         short_name = "ninja",
     ),
+    siso_enabled = False,
     xcode = xcode.xcode_default,
 )
 
