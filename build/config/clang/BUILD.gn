@@ -31,7 +31,7 @@ config("find_bad_constructs") {
       "-Xclang",
       "check-stack-allocated",
 
-      # TODO(danakj): Delete this and the option from the plugin.
+      # TODO(danakj): Delete this after the next clang roll.
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
