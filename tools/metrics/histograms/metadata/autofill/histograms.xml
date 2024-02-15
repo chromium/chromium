@@ -3445,6 +3445,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded"
+    units="cards" expires_after="2025-02-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Tracks the number of stored credit cards (both local and server) right as a
+    user adds a new local card through the Chrome payment methods settings page.
+    This value is recorded immediately after the async request to add the card
+    has been sent. Note that the new local card is not counted towards this
+    number (i.e. if there aren't any existing cards when adding the new card,
+    the &quot;cards&quot; bucket labeled 0 will be incremented).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"
     expires_after="2024-06-30">
   <owner>koerber@google.com</owner>
