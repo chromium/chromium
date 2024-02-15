@@ -332,9 +332,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       search_engine_choice_dialog_service =
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               profile);
-  const bool is_eea_country = search_engines::IsEeaChoiceCountry(
+  const bool is_eea_choice_country = search_engines::IsEeaChoiceCountry(
       search_engine_choice_dialog_service->GetCountryId());
-  html_source->AddBoolean("useLargeSearchEngineIcons", is_eea_country);
+  html_source->AddBoolean("isEeaChoiceCountry", is_eea_choice_country);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

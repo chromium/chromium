@@ -67,10 +67,10 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
       // Whether we need to set the icon size to large because they are loaded
       // in the binary or smaller because we get them from the favicon service.
-      useLargeSearchEngineIcons_: {
+      isEeaChoiceCountry_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('useLargeSearchEngineIcons');
+          return loadTimeData.getBoolean('isEeaChoiceCountry');
         },
       },
 
