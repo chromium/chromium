@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
@@ -2706,7 +2707,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
   // Sign-in and synced user.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncInitializedTimeout];
 
@@ -2910,7 +2911,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 - (void)testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -2941,7 +2942,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 - (void)testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -2957,7 +2958,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                policy::key::kSyncTypesListDisabled);
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -2999,8 +3000,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SavePasswordFormToProfileStore(/*password=*/@"localPassword",
                                  /*username=*/@"username",
                                  /*origin=*/@"https://local.com");
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   OpenPasswordManager();
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -3044,8 +3044,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SavePasswordFormToProfileStore(/*password=*/@"localPassword",
                                  /*username=*/@"username",
                                  /*origin=*/@"https://local.com");
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey closeAllNormalTabs];
@@ -3138,7 +3137,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3164,7 +3163,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3188,7 +3187,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3220,7 +3219,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3254,7 +3253,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3291,7 +3290,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3322,7 +3321,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3356,7 +3355,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3387,7 +3386,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3427,7 +3426,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
 
@@ -3828,7 +3827,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open password details view for the saved password.
   OpenPasswordManager();
