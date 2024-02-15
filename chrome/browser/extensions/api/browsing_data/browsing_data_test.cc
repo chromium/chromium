@@ -21,7 +21,6 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -42,16 +41,7 @@ using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
 namespace {
 
-class ExtensionBrowsingDataTest : public InProcessBrowserTest {
- public:
-  ExtensionBrowsingDataTest() {
-    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
-    scoped_feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class ExtensionBrowsingDataTest : public InProcessBrowserTest {};
 
 class ExtensionBrowsingDataTestWithStoragePartitioning
     : public ExtensionBrowsingDataTest {
