@@ -23,6 +23,10 @@
 -SurfaceAggregatorPixelTest.DrawAndEraseDelegatedInkTrail/SkiaGraphiteDawn
 -SurfaceAggregatorPixelTest.DrawAndEraseDelegatedInkTrail/SkiaGraphiteMetal
 
+# TODO(crbug.com/40256189): This test has been failing with pixel differences
+# since https://crrev.com/c/4966062.
+-VideoRendererPixelHiLoTest.SimpleYUVRect/1
+
 # These tests fail with perceptible pixel differences
 -FromColorSpace/ColorTransformPixelTest.Basic/118
 -FromColorSpace/ColorTransformPixelTest.Basic/119
