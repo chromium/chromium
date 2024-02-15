@@ -116,6 +116,13 @@ IsolationInfo IsolationInfo::CreateTransient() {
                        SiteForCookies(), /*nonce=*/std::nullopt);
 }
 
+IsolationInfo IsolationInfo::CreateTransientWithNonce(
+    const base::UnguessableToken& nonce) {
+  url::Origin opaque_origin;
+  return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
+                       SiteForCookies(), nonce);
+}
+
 std::optional<IsolationInfo> IsolationInfo::Deserialize(
     const std::string& serialized) {
   proto::IsolationInfo proto;

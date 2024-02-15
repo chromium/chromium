@@ -89,6 +89,13 @@ class NET_EXPORT IsolationInfo {
   // CreateForInternalRequest with a fresh opaque origin.
   static IsolationInfo CreateTransient();
 
+  // Same as CreateTransient, with a `nonce` used to identify requests tagged
+  // with this IsolationInfo in the network service. The `nonce` provides no
+  // additional resource isolation, because the opaque origin in the resulting
+  // IsolationInfo already represents a unique partition.
+  static IsolationInfo CreateTransientWithNonce(
+      const base::UnguessableToken& nonce);
+
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
   static std::optional<IsolationInfo> Deserialize(

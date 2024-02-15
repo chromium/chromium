@@ -448,6 +448,35 @@ TEST_P(IsolationInfoTest, CreateTransient) {
   EXPECT_TRUE(isolation_info.IsEqualForTesting(redirected_isolation_info));
 }
 
+TEST_P(IsolationInfoTest, CreateTransientWithNonce) {
+  IsolationInfo isolation_info =
+      IsolationInfo::CreateTransientWithNonce(kNonce1);
+  EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
+  EXPECT_TRUE(isolation_info.top_frame_origin()->opaque());
+  EXPECT_TRUE(isolation_info.frame_origin()->opaque());
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+  ASSERT_TRUE(isolation_info.nonce().has_value());
+  EXPECT_EQ(isolation_info.nonce().value(), kNonce1);
+
+  DuplicateAndCompare(isolation_info);
+
+  IsolationInfo redirected_isolation_info =
+      isolation_info.CreateForRedirect(kOrigin3);
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(redirected_isolation_info));
+
+  IsolationInfo new_info_same_nonce =
+      IsolationInfo::CreateTransientWithNonce(kNonce1);
+  ASSERT_TRUE(new_info_same_nonce.nonce().has_value());
+  EXPECT_EQ(new_info_same_nonce.nonce().value(), kNonce1);
+
+  // The new NIK is distinct from the first one because it uses a new opaque
+  // origin, even if the nonce is the same.
+  EXPECT_NE(isolation_info.network_isolation_key(),
+            new_info_same_nonce.network_isolation_key());
+}
+
 TEST_P(IsolationInfoTest, CreateForInternalRequest) {
   IsolationInfo isolation_info =
       IsolationInfo::CreateForInternalRequest(kOrigin1);
