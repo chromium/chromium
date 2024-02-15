@@ -120,24 +120,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
     return std::move(in);
   }
 
-  // `PendingRemote` -> `SharedURLLoaderFactory`:
-  // Wraps by `WrapperSharedURLLoaderFactory`.
-  template <>
-  scoped_refptr<SharedURLLoaderFactory> WrapAs(
-      mojo::PendingRemote<mojom::URLLoaderFactory> in) {
-    return base::MakeRefCounted<WrapperSharedURLLoaderFactory>(std::move(in));
-  }
-
-  // `SharedURLLoaderFactory` -> `PendingRemote`:
-  // Creates a new pipe and cloning.
-  template <>
-  mojo::PendingRemote<mojom::URLLoaderFactory> WrapAs(
-      scoped_refptr<SharedURLLoaderFactory> in) {
-    mojo::PendingRemote<mojom::URLLoaderFactory> remote;
-    in->Clone(remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
-
   template <typename OutType>
   static OutType WrapAs(mojom::NetworkContext* context,
                         mojom::URLLoaderFactoryParamsPtr factory_param) {
@@ -171,6 +153,20 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   mojo::PendingRemote<mojom::URLLoaderFactory> head_;
   mojo::PendingReceiver<mojom::URLLoaderFactory> tail_;
 };
+
+// `PendingRemote` -> `SharedURLLoaderFactory`:
+// Wraps by `WrapperSharedURLLoaderFactory`.
+template <>
+COMPONENT_EXPORT(NETWORK_CPP)
+scoped_refptr<SharedURLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    mojo::PendingRemote<mojom::URLLoaderFactory> in);
+
+// `SharedURLLoaderFactory` -> `PendingRemote`:
+// Creates a new pipe and cloning.
+template <>
+COMPONENT_EXPORT(NETWORK_CPP)
+mojo::PendingRemote<mojom::URLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    scoped_refptr<SharedURLLoaderFactory> in);
 
 }  // namespace network
 

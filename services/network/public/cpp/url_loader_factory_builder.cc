@@ -77,4 +77,18 @@ void URLLoaderFactoryBuilder::ConnectTerminal(
                                            std::move(factory_param));
 }
 
+template <>
+scoped_refptr<SharedURLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    mojo::PendingRemote<mojom::URLLoaderFactory> in) {
+  return base::MakeRefCounted<WrapperSharedURLLoaderFactory>(std::move(in));
+}
+
+template <>
+mojo::PendingRemote<mojom::URLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    scoped_refptr<SharedURLLoaderFactory> in) {
+  mojo::PendingRemote<mojom::URLLoaderFactory> remote;
+  in->Clone(remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 }  // namespace network
