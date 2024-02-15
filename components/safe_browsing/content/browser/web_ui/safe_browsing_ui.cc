@@ -1065,6 +1065,10 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("tailored_info", std::move(dict_tailored_info));
   }
 
+  if (cdr.has_previous_token()) {
+    dict.Set("previous_token", cdr.previous_token());
+  }
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);
