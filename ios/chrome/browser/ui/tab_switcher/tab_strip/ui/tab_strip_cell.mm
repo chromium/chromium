@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -111,6 +112,13 @@ UIImage* DefaultFavicon() {
     _separatorHeight = 0;
 
     [self addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+
+    if (ios::provider::IsRaccoonEnabled()) {
+      if (@available(iOS 17.0, *)) {
+        self.hoverStyle = [UIHoverStyle
+            styleWithShape:[UIShape rectShapeWithCornerRadius:kCornerSize]];
+      }
+    }
 
     UIView* contentView = self.contentView;
     contentView.layer.masksToBounds = YES;
