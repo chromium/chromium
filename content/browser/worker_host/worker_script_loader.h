@@ -116,10 +116,6 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
 
   base::WeakPtr<WorkerScriptLoader> GetWeakPtr();
 
-  // Set to true if the default URLLoader (network service) was used for the
-  // current request.
-  bool default_loader_used_ = false;
-
  private:
   void Abort();
   void Start();

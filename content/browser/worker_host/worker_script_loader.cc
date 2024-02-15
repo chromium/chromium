@@ -144,7 +144,6 @@ void WorkerScriptLoader::LoadFromNetwork() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!completed_);
 
-  default_loader_used_ = true;
   url_loader_client_receiver_.reset();
   url_loader_factory_ = default_loader_factory_;
   url_loader_.reset();
