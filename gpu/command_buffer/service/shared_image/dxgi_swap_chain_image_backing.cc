@@ -61,6 +61,10 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
+  if (!d3d11_device) {
+    return nullptr;
+  }
+
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
   DCHECK(dxgi_device);
