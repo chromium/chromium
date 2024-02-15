@@ -33,7 +33,7 @@ class ASH_EXPORT WindowMirrorView : public views::View,
  public:
   explicit WindowMirrorView(aura::Window* source,
                             bool show_non_client_view = false,
-                            bool sync_bounds = true);
+                            bool sync_bounds = false);
 
   WindowMirrorView(const WindowMirrorView&) = delete;
   WindowMirrorView& operator=(const WindowMirrorView&) = delete;
