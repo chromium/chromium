@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,23 +70,32 @@ class FakeH265Accelerator : public media::H265Decoder::H265Accelerator {
 
 }  // namespace
 
-// Entry point for LibFuzzer.
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (!size)
+  if (!size) {
     return 0;
+  }
 
   media::H265Decoder decoder(std::make_unique<FakeH265Accelerator>(),
                              media::HEVCPROFILE_MAIN);
+  auto external_memory = std::make_unique<media::DecoderBuffer::ExternalMemory>(
+      base::make_span(data, size));
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      media::DecoderBuffer::CopyFrom(data, size);
+      media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   decoder.SetStream(1, *decoder_buffer);
 
-  // Decode should consume all the data unless it returns kConfigChange, and in
-  // that case it needs to be called again.
+  size_t retry_count = 0;
   while (true) {
-    if (decoder.Decode() != media::AcceleratedVideoDecoder::kConfigChange)
-      break;
+    switch (decoder.Decode()) {
+      case media::AcceleratedVideoDecoder::DecodeResult::kConfigChange:
+        break;
+      case media::AcceleratedVideoDecoder::DecodeResult::kTryAgain:
+        if (++retry_count > 3) {
+          return 0;
+        }
+        break;
+      default:
+        return 0;
+    }
   }
-
-  return 0;
 }

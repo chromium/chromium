@@ -671,7 +671,7 @@ source_set("unit_tests") {
 
 if (enable_hevc_parser_and_hw_decoder) {
   fuzzer_test("media_h265_decoder_fuzzer") {
-    sources = [ "h265_decoder_fuzzertest.cc" ]
+    sources = [ "h265_decoder_fuzzer.cc" ]
     deps = [
       ":gpu",
       "//base",
