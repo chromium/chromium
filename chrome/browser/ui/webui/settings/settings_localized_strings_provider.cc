@@ -1443,6 +1443,9 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
       "activityControlsUrlInPrivacyGuide",
       chrome::kGoogleAccountActivityControlsURLInPrivacyGuide);
 
+  html_source->AddString("linkedServicesUrl",
+                         chrome::kGoogleAccountLinkedServicesURL);
+
   html_source->AddLocalizedString(
       "passwordsCheckboxLabel",
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
