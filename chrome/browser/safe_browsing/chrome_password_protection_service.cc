@@ -1408,8 +1408,9 @@ void ChromePasswordProtectionService::UpdateSecurityState(
 
   const GURL url_with_empty_path = url.GetWithEmptyPath();
   if (threat_type == SB_THREAT_TYPE_SAFE) {
-    ui_manager_->RemoveAllowlistUrlSet(url_with_empty_path, web_contents,
-                                       /*from_pending_only=*/false);
+    ui_manager_->RemoveAllowlistUrlSet(
+        url_with_empty_path, /*navigation_id=*/std::nullopt, web_contents,
+        /*from_pending_only=*/false);
     // Overrides cached verdicts.
     LoginReputationClientResponse verdict;
     GetCachedVerdict(url, LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
@@ -1432,11 +1433,13 @@ void ChromePasswordProtectionService::UpdateSecurityState(
     if (current_threat_type == threat_type)
       return;
     // Resets previous threat type.
-    ui_manager_->RemoveAllowlistUrlSet(url_with_empty_path, web_contents,
-                                       /*from_pending_only=*/false);
+    ui_manager_->RemoveAllowlistUrlSet(
+        url_with_empty_path, /*navigation_id=*/std::nullopt, web_contents,
+        /*from_pending_only=*/false);
   }
-  ui_manager_->AddToAllowlistUrlSet(url_with_empty_path, web_contents,
-                                    /*is_pending=*/true, threat_type);
+  ui_manager_->AddToAllowlistUrlSet(
+      url_with_empty_path, /*navigation_id=*/std::nullopt, web_contents,
+      /*is_pending=*/true, threat_type);
 }
 
 void ChromePasswordProtectionService::FillReferrerChain(

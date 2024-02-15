@@ -268,11 +268,12 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
     return ui_manager_->IsAllowlisted(resource);
   }
 
-  void AddToAllowlist(security_interstitials::UnsafeResource resource) {
+  void AddToAllowlist(security_interstitials::UnsafeResource resource,
+                      bool pending) {
     ui_manager_->AddToAllowlistUrlSet(
         SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
             resource),
-        web_contents(), false, resource.threat_type);
+        resource.navigation_id, web_contents(), pending, resource.threat_type);
   }
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
@@ -339,7 +340,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 TEST_F(SafeBrowsingUIManagerTest, Allowlist) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource);
+  AddToAllowlist(resource, /*pending=*/false);
   EXPECT_TRUE(IsAllowlisted(resource));
 }
 
@@ -349,10 +350,41 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresSitesNotAdded) {
   EXPECT_FALSE(IsAllowlisted(resource));
 }
 
+TEST_F(SafeBrowsingUIManagerTest,
+       PendingAllowlistOnlyAddedOnceForSameNavigation) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResourceAndStartNavigation(kBadURL);
+  resource.navigation_id = 1;
+  // AddToAllowlist is called twice with the same navigation id.
+  AddToAllowlist(resource, /*pending=*/true);
+  AddToAllowlist(resource, /*pending=*/true);
+  EXPECT_FALSE(IsAllowlisted(resource));
+
+  SBThreatType threat_type;
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      resource.url, resource.is_subresource, entry,
+      unsafe_resource_util::GetWebContentsForResource(resource),
+      /*allowlist_only=*/false, &threat_type));
+
+  std::vector<security_interstitials::UnsafeResource> resources;
+  resources.push_back(resource);
+  // Calling OnBlockingPageDone once should be sufficient to remove the
+  // URL from the pending allowlist.
+  SimulateBlockingPageDone(resources, /*proceed=*/false);
+
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      resource.url, resource.is_subresource, entry,
+      unsafe_resource_util::GetWebContentsForResource(resource),
+      /*allowlist_only=*/false, &threat_type));
+}
+
 TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource);
+  AddToAllowlist(resource, /*pending=*/false);
   EXPECT_TRUE(IsAllowlisted(resource));
   SBThreatType threat_type;
   content::NavigationEntry* entry =
@@ -368,7 +400,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresPath) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource);
+  AddToAllowlist(resource, /*pending=*/false);
   EXPECT_TRUE(IsAllowlisted(resource));
 
   content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
@@ -381,7 +413,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresPath) {
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresThreatType) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource);
+  AddToAllowlist(resource, /*pending=*/false);
   EXPECT_TRUE(IsAllowlisted(resource));
 
   security_interstitials::UnsafeResource resource_phishing =
@@ -405,7 +437,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistWithUnrelatedPendingLoad) {
     unrelated_navigation->Start();
 
     // Allowlist the resource on the landing page.
-    AddToAllowlist(resource);
+    AddToAllowlist(resource, /*pending=*/false);
     EXPECT_TRUE(IsAllowlisted(resource));
   }
 

@@ -78,8 +78,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
-  // Updates the allowlist URL set for |web_contents|. Called on the UI thread.
+  // Updates the allowlist URL set for |web_contents|. |navigation_id| is used
+  // to ensure the |allowlist_url| for same navigation is only added once.
+  // Called on the UI thread.
   void AddToAllowlistUrlSet(const GURL& allowlist_url,
+                            const std::optional<int64_t> navigation_id,
                             content::WebContents* web_contents,
                             bool is_pending,
                             SBThreatType threat_type);
@@ -178,9 +181,10 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   friend class ChromePasswordProtectionService;
   virtual ~BaseUIManager();
 
-  // Removes |allowlist_url| from the allowlist for |web_contents|.
-  // Called on the UI thread.
+  // Removes |allowlist_url| associated with the |navigation_id| from the
+  // allowlist for |web_contents|. Called on the UI thread.
   void RemoveAllowlistUrlSet(const GURL& allowlist_url,
+                             const std::optional<int64_t> navigation_id,
                              content::WebContents* web_contents,
                              bool from_pending_only);
 

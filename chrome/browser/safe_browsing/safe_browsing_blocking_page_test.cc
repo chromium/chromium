@@ -3617,6 +3617,15 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
+  void SetURLThreatType(const GURL& url, SBThreatType threat_type) {
+    TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
+    ASSERT_TRUE(service);
+
+    static_cast<FakeSafeBrowsingDatabaseManager*>(
+        service->database_manager().get())
+        ->AddDangerousUrl(url, threat_type);
+  }
+
   void ReturnUnsafeUrlRealTimeVerdictInUrlLoader(GURL url) {
     constexpr char kRealTimeLookupUrl[] =
         "https://safebrowsing.google.com/safebrowsing/clientreport/realtime";
@@ -3942,14 +3951,44 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   content::NavigationEntry* entry = post_tab->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   EXPECT_EQ(start_url, entry->GetURL());
-  bool check_complete_after_navigation_finish = GetParam();
-  if (check_complete_after_navigation_finish) {
-    ExpectNoSecurityIndicatorDowngrade(post_tab);
-  } else {
-    // TODO(crbug.com/40941453): Fix this. Security indicator should not
-    // persist after going back.
-    ExpectSecurityIndicatorDowngrade(post_tab, 0u);
-  }
+  ExpectNoSecurityIndicatorDowngrade(post_tab);
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
+                       SecurityStateGoBackFlaggedByBothChecks) {
+  EnableAsyncCheck();
+
+  // Navigate to a page so that there is somewhere to go back to.
+  GURL start_url = embedded_test_server()->GetURL(kEmptyPage);
+  NavigateToURLAndWaitForAsyncChecks(start_url);
+
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+  GURL url = embedded_test_server()->GetURL(kMaliciousPage);
+
+  // Mark the URL as dangerous for both checks.
+  SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
+                                        /*is_unsafe=*/true);
+  SetURLThreatType(url, SB_THREAT_TYPE_URL_PHISHING);
+  NavigateToURLAndWaitForAsyncChecks(url);
+
+  // The security indicator should be downgraded while the interstitial
+  // shows.
+  WebContents* error_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(error_tab);
+  ExpectSecurityIndicatorDowngrade(error_tab, 0u);
+
+  // Go back.
+  EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
+
+  // The security indicator should *not* still be downgraded after going back.
+  AssertNoInterstitial(browser(), true);
+  WebContents* post_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(post_tab);
+  content::NavigationEntry* entry = post_tab->GetController().GetVisibleEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(start_url, entry->GetURL());
+  ExpectNoSecurityIndicatorDowngrade(post_tab);
 }
 
 // Tests that commands work in a post commit interstitial if a pre commit
