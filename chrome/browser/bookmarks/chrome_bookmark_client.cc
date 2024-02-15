@@ -169,18 +169,8 @@ ChromeBookmarkClient::GetLoadManagedNodeCallback() {
   return managed_bookmark_service_->GetLoadManagedNodeCallback();
 }
 
-bookmarks::metrics::StorageStateForUma
-ChromeBookmarkClient::GetStorageStateForUma() {
-  if (local_or_syncable_bookmark_sync_service_->IsTrackingMetadata()) {
-    return bookmarks::metrics::StorageStateForUma::kSyncEnabled;
-  }
-
-  if (account_bookmark_sync_service_ &&
-      account_bookmark_sync_service_->IsTrackingMetadata()) {
-    return bookmarks::metrics::StorageStateForUma::kAccount;
-  }
-
-  return bookmarks::metrics::StorageStateForUma::kLocalOnly;
+bool ChromeBookmarkClient::IsSyncFeatureEnabledIncludingBookmarksForUma() {
+  return local_or_syncable_bookmark_sync_service_->IsTrackingMetadata();
 }
 
 bool ChromeBookmarkClient::CanSetPermanentNodeTitle(

@@ -462,6 +462,11 @@ class BookmarkModel final : public BookmarkUndoProvider,
   bool LocalOrSyncableStorageHasPendingWriteForTest() const;
   bool AccountStorageHasPendingWriteForTest() const;
 
+  // Mimics `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` having been
+  // used instead of `Load()`, for the purpose of logging metrics. For
+  // unit-tests only.
+  void SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest();
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
@@ -579,8 +584,19 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // `account_store_`. It may return null in tests.
   BookmarkStorage* GetStorageForNode(const BookmarkNode* node);
 
+  // Returns an enum representing how metrics associated to `node` should be
+  // suffixed with for the purpose of metric breakdowns.
+  metrics::StorageStateForUma GetStorageStateForUma(
+      const BookmarkNode* node) const;
+
   // Whether the initial set of data has been loaded.
   bool loaded_ = false;
+
+  // Whether or not loading was invoked via
+  // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, remembered for the
+  // purpose of metrics.
+  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ =
+      false;
 
   // See `root_` for details.
   std::unique_ptr<BookmarkNode> owned_root_;

@@ -63,6 +63,17 @@ BookmarkNode* AsMutable(const BookmarkNode* node) {
   return const_cast<BookmarkNode*>(node);
 }
 
+// Traverses ancestors to find a permanent node.
+const BookmarkNode* GetSelfOrAncestorPermanentNode(const BookmarkNode* node) {
+  CHECK(node);
+  CHECK(node->parent());
+  while (!node->is_permanent_node()) {
+    CHECK(node->parent());
+    node = node->parent();
+  }
+  return node;
+}
+
 // Comparator used when sorting permanent nodes. Nodes that are initially
 // visible are sorted before nodes that are initially hidden.
 class VisibilityComparator {
@@ -176,6 +187,8 @@ void BookmarkModel::LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
     const base::FilePath& profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!AreFoldersForAccountStorageAllowed());
+
+  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ = true;
 
   LoadImpl(/*local_or_syncable_file_path=*/profile_path.Append(
                kAccountBookmarksFileName),
@@ -510,7 +523,7 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   UpdateLastUsedTimeImpl(node, time);
   if (just_opened) {
     metrics::RecordBookmarkOpened(time, last_used_time, node->date_added(),
-                                  client_->GetStorageStateForUma());
+                                  GetStorageStateForUma(node));
   }
 }
 
@@ -892,7 +905,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
     new_node->SetMetaInfoMap(*meta_info);
   }
   metrics::RecordBookmarkFolderAdded(GetFolderType(parent),
-                                     client_->GetStorageStateForUma());
+                                     GetStorageStateForUma(parent));
   // TODO(mastiz): `added_by_user` should be true below or the parameter
   // renamed.
   return AddNode(AsMutable(parent), index, std::move(new_node),
@@ -907,7 +920,7 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info) {
   metrics::RecordUrlBookmarkAdded(GetFolderType(parent),
-                                  client_->GetStorageStateForUma());
+                                  GetStorageStateForUma(parent));
   return AddURL(parent, index, title, url, meta_info, std::nullopt,
                 std::nullopt, true);
 }
@@ -1080,6 +1093,11 @@ bool BookmarkModel::AccountStorageHasPendingWriteForTest() const {
   return account_store_->HasScheduledSaveForTesting();  // IN-TEST
 }
 
+void BookmarkModel::
+    SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest() {
+  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ = true;
+}
+
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
                                        size_t index,
                                        std::unique_ptr<BookmarkNode> node) {
@@ -1216,8 +1234,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
 
   const base::TimeDelta load_duration =
       base::TimeTicks::Now() - details->load_start();
-  metrics::RecordTimeToLoadAtStartup(load_duration,
-                                     client_->GetStorageStateForUma());
+  metrics::RecordTimeToLoadAtStartup(load_duration);
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_) {
@@ -1468,17 +1485,44 @@ BookmarkStorage* BookmarkModel::GetStorageForNode(const BookmarkNode* node) {
   CHECK(node);
   CHECK(!is_root_node(node));
 
-  if (!node->is_permanent_node()) {
-    return GetStorageForNode(node->parent());
-  }
+  const BookmarkNode* permanent_node = GetSelfOrAncestorPermanentNode(node);
+  CHECK(permanent_node);
 
-  if (node == account_bookmark_bar_node_ || node == account_other_node_ ||
-      node == account_mobile_node_) {
+  if (permanent_node == account_bookmark_bar_node_ ||
+      permanent_node == account_other_node_ ||
+      permanent_node == account_mobile_node_) {
     CHECK(AreFoldersForAccountStorageAllowed());
     return account_store_.get();
   }
 
   return local_or_syncable_store_.get();
+}
+
+metrics::StorageStateForUma BookmarkModel::GetStorageStateForUma(
+    const BookmarkNode* node) const {
+  CHECK(node);
+  CHECK(!is_root_node(node));
+
+  const BookmarkNode* permanent_node = GetSelfOrAncestorPermanentNode(node);
+  CHECK(permanent_node);
+
+  if (permanent_node == account_bookmark_bar_node_ ||
+      permanent_node == account_other_node_ ||
+      permanent_node == account_mobile_node_) {
+    CHECK(AreFoldersForAccountStorageAllowed());
+    return metrics::StorageStateForUma::kAccount;
+  }
+
+  // iOS-specific codepath for the case where a dedicated BookmarkModel instance
+  // is used to represent account bookmarks.
+  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_) {
+    return metrics::StorageStateForUma::kAccount;
+  }
+
+  // The ancestor is a local-or-syncable permanent folder.
+  return client_->IsSyncFeatureEnabledIncludingBookmarksForUma()
+             ? metrics::StorageStateForUma::kSyncEnabled
+             : metrics::StorageStateForUma::kLocalOnly;
 }
 
 }  // namespace bookmarks

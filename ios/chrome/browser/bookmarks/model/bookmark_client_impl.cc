@@ -87,15 +87,15 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
   return bookmarks::LoadManagedNodeCallback();
 }
 
-bookmarks::metrics::StorageStateForUma
-BookmarkClientImpl::GetStorageStateForUma() {
+bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarksForUma() {
   switch (storage_type_for_uma_) {
     case bookmarks::StorageType::kAccount:
-      return bookmarks::metrics::StorageStateForUma::kAccount;
+      // Not reachable because AccountBookmarkModelFactory exercises
+      // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` and in that case
+      // BookmarkModel doesn't exercise this predicate.
+      NOTREACHED_NORETURN();
     case bookmarks::StorageType::kLocalOrSyncable:
-      return bookmark_sync_service_->IsTrackingMetadata()
-                 ? bookmarks::metrics::StorageStateForUma::kSyncEnabled
-                 : bookmarks::metrics::StorageStateForUma::kLocalOnly;
+      return bookmark_sync_service_->IsTrackingMetadata();
   }
   NOTREACHED_NORETURN();
 }

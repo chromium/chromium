@@ -72,11 +72,9 @@ class BookmarkClient {
   // will be invoked in the Profile's IO task runner.
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
 
-  // Returns the current storage state to be added as suffix to metrics.
-  // TODO(b/41493391): Revisit this function as the notion of storage
-  // type is no longer an attribute of BookmarkModel or BookmarkClient and may
-  // need to be BookmarkNode-specific.
-  virtual metrics::StorageStateForUma GetStorageStateForUma() = 0;
+  // Returns whether sync-the-feature is currently on, for the purpose of
+  // logging metrics.
+  virtual bool IsSyncFeatureEnabledIncludingBookmarksForUma() = 0;
 
   // Returns true if the `permanent_node` can have its title updated.
   virtual bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) = 0;

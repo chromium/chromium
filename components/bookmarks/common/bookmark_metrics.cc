@@ -84,13 +84,8 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {
                               delta);
 }
 
-void RecordTimeToLoadAtStartup(base::TimeDelta delta,
-                               StorageStateForUma storage_state) {
+void RecordTimeToLoadAtStartup(base::TimeDelta delta) {
   UmaHistogramTimes("Bookmarks.Storage.TimeToLoadAtStartup2", delta);
-  UmaHistogramTimes(
-      base::StrCat({"Bookmarks.Storage.TimeToLoadAtStartup2",
-                    GetStorageStateSuffixForMetrics(storage_state)}),
-      delta);
 }
 
 void RecordFileSizeAtStartup(int64_t total_bytes) {
