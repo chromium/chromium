@@ -463,7 +463,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const NodeSplitSet& extra_nodes,
     const NodeSplitSet& nodes_to_skip,
     std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
-  // TODO(crbug.com/1471683): Handle final CPU usage of a process.
+  // TODO(crbug.com/325330345): Handle final CPU usage of a process.
   //
   // There isn't a good way to get the process CPU usage after it exits here:
   //
@@ -491,14 +491,10 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   //
   // So it's not possible to attribute the final CPU usage of a process to its
   // frames without a refactor of PerformanceManager to keep the FrameNodes
-  // alive slightly longer.
+  // alive slightly longer, or keeping a snapshot of the frame topology using
+  // FrameContext until after the ChildProcessTerminationInfo is received, and
+  // using that snapshot to distribute the measurements.
   //
-  // A better and more complete way to handle this would be to update the CPU
-  // usage of a PageNode every time a frame or worker is created or deleted.
-  // This would keep the estimate up to date with the page topology, which is
-  // important to avoid under-estimating the CPU usage of pages that create a
-  // lot of short-lived iframes.
-
   // Assume that the previous measurement was taken at time A
   // (`last_measurement_time_`), and the current measurement is being taken at
   // time B (TimeTicks::Now()). Since a measurement is taken in the
