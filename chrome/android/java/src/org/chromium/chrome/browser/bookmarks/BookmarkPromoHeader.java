@@ -121,7 +121,7 @@ public class BookmarkPromoHeader
 
     /** Returns sync promo header {@link View}. */
     View createSyncPromoHolder(ViewGroup parent) {
-        return LegacySyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
+        return LegacySyncPromoView.create(parent, mProfile, SigninAccessPoint.BOOKMARK_MANAGER);
     }
 
     /** Sets up the sync promo view. */

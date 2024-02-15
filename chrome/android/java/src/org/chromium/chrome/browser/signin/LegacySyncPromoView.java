@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -36,6 +37,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  */
 public class LegacySyncPromoView extends FrameLayout
         implements SyncService.SyncStateChangedListener {
+    private SyncService mSyncService;
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
@@ -50,26 +52,27 @@ public class LegacySyncPromoView extends FrameLayout
 
     /**
      * A convenience method to inflate and initialize a LegacySyncPromoView.
+     *
      * @param parent A parent used to provide LayoutParams (the LegacySyncPromoView will not be
-     *         attached).
+     *     attached).
+     * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where the LegacySyncPromoView is used.
      */
-    public static LegacySyncPromoView create(ViewGroup parent, @AccessPoint int accessPoint) {
+    public static LegacySyncPromoView create(
+            ViewGroup parent, Profile profile, @AccessPoint int accessPoint) {
         // TODO(injae): crbug.com/829548
         LegacySyncPromoView result =
                 (LegacySyncPromoView)
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.legacy_sync_promo_view, parent, false);
-        result.init(accessPoint);
+        result.init(profile, accessPoint);
         return result;
     }
 
     /** Constructor for inflating from xml. */
     public LegacySyncPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // This promo is about enabling sync, so no sense in showing it if
-        // syncing isn't possible.
-        assert SyncServiceFactory.get() != null;
+
     }
 
     @Override
@@ -93,9 +96,16 @@ public class LegacySyncPromoView extends FrameLayout
 
     /**
      * Provide the information necessary for this class to function.
+     *
+     * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where this UI component is used.
      */
-    public void init(@AccessPoint int accessPoint) {
+    public void init(Profile profile, @AccessPoint int accessPoint) {
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+        // This promo is about enabling sync, so no sense in showing it if
+        // syncing isn't possible.
+        assert mSyncService != null;
+
         mAccessPoint = accessPoint;
         mInitialized = true;
 
@@ -115,8 +125,7 @@ public class LegacySyncPromoView extends FrameLayout
 
     private void update() {
         ViewState viewState;
-        if (!SyncServiceFactory.get().hasSyncConsent()
-                || SyncServiceFactory.get().getSelectedTypes().isEmpty()) {
+        if (!mSyncService.hasSyncConsent() || mSyncService.getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
             viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
         } else {
@@ -268,14 +277,16 @@ public class LegacySyncPromoView extends FrameLayout
         assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
 
         super.onAttachedToWindow();
-        SyncServiceFactory.get().addSyncStateChangedListener(this);
+        mSyncService.addSyncStateChangedListener(this);
         update();
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
+
         super.onDetachedFromWindow();
-        SyncServiceFactory.get().removeSyncStateChangedListener(this);
+        mSyncService.removeSyncStateChangedListener(this);
     }
 
     // SyncService.SyncStateChangedListener

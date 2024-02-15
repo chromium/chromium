@@ -490,7 +490,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         View getChildView(
                 int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LegacySyncPromoView.create(parent, SigninAccessPoint.RECENT_TABS);
+                convertView =
+                        LegacySyncPromoView.create(
+                                parent,
+                                mRecentTabsManager.getProfile(),
+                                SigninAccessPoint.RECENT_TABS);
             }
             return convertView;
         }

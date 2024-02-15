@@ -138,6 +138,11 @@ public class RecentTabsManager
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
     }
 
+    /** Return the {@link Profile} associated with the recent tabs. */
+    public Profile getProfile() {
+        return mProfile;
+    }
+
     private static int countSessionIdsRestored(Map<Integer, Boolean> sessionIdToRestoredState) {
         int count = 0;
         for (Boolean state : sessionIdToRestoredState.values()) {
