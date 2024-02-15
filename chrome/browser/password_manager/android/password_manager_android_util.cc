@@ -11,7 +11,9 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/common/chrome_switches.h"
@@ -35,6 +37,25 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
 namespace password_manager_android_util {
 
 namespace {
+
+enum class UserType {
+  kSyncing,
+  kNonSyncingAndMigrationNeeded,
+  kNonSyncingAndNoMigrationNeeded,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with the corresponding
+// enum in tools/metrics/histograms/metadata/password/enums.xml.
+enum class ActivationError {
+  kNone = 0,
+  kUnenrolled = 1,
+  kInitialUpmMigrationMissing = 2,
+  kLoginDbFileMoveFailed = 3,
+  kOutdatedGmsCore = 4,
+  kFlagDisabled = 5,
+  kMaxValue = kFlagDisabled,
+};
 
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
     PrefService* pref_service) {
@@ -71,10 +92,12 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
 // WARNING: Use this function rather than base::FeatureList::IsEnabled(), it
 // defers the base::Feature checks to avoid adding ineligible users to the A/B
 // experiment.
-bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
+ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSkipLocalUpmGmsCoreVersionCheckForTesting)) {
-    return base::FeatureList::IsEnabled(feature);
+    return base::FeatureList::IsEnabled(feature)
+               ? ActivationError::kNone
+               : ActivationError::kFlagDisabled;
   }
 
   std::string gms_version_str =
@@ -83,7 +106,7 @@ bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
   // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
   if (!base::StringToInt(gms_version_str, &gms_version)) {
-    return false;
+    return ActivationError::kOutdatedGmsCore;
   }
 
   // Compare with the compile-time constant before comparing with the
@@ -95,7 +118,7 @@ bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
   // As soon as the min GMS version for auto can be changed client-side,
   // consider using it as a sentinel value here instead.
   if (gms_version < password_manager::features::kDefaultLocalUpmMinGmsVersion) {
-    return false;
+    return ActivationError::kOutdatedGmsCore;
   }
 
   if (base::android::BuildInfo::GetInstance()->is_automotive() &&
@@ -105,7 +128,7 @@ bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
               password_manager::features::kLocalUpmMinGmsVersionParamForAuto,
               password_manager::features::
                   kDefaultLocalUpmMinGmsVersionForAuto)) {
-    return false;
+    return ActivationError::kOutdatedGmsCore;
   }
 
   if (!base::android::BuildInfo::GetInstance()->is_automotive() &&
@@ -113,10 +136,11 @@ bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
           base::GetFieldTrialParamByFeatureAsInt(
               feature, password_manager::features::kLocalUpmMinGmsVersionParam,
               password_manager::features::kDefaultLocalUpmMinGmsVersion)) {
-    return false;
+    return ActivationError::kOutdatedGmsCore;
   }
 
-  return base::FeatureList::IsEnabled(feature);
+  return base::FeatureList::IsEnabled(feature) ? ActivationError::kNone
+                                               : ActivationError::kFlagDisabled;
 }
 
 bool MustMigrateLocalPasswordsOrSettingsOnActivation(
@@ -146,6 +170,38 @@ bool MustMigrateLocalPasswordsOrSettingsOnActivation(
          has_passwords_in_profile_login_db;
 }
 
+UserType GetUserType(PrefService* pref_service,
+                     const base::FilePath& login_db_directory) {
+  if (IsPasswordSyncEnabled(pref_service)) {
+    return UserType::kSyncing;
+  }
+
+  return MustMigrateLocalPasswordsOrSettingsOnActivation(pref_service,
+                                                         login_db_directory)
+             ? UserType::kNonSyncingAndMigrationNeeded
+             : UserType::kNonSyncingAndNoMigrationNeeded;
+}
+
+void RecordActivationError(UserType user_type, ActivationError error) {
+  const char kHistogramPrefix[] = "PasswordManager.LocalUpmActivationError";
+  const char* suffix = nullptr;
+  switch (user_type) {
+    case UserType::kNonSyncingAndMigrationNeeded:
+      suffix = ".NonSyncingWithMigration";
+      break;
+    case UserType::kNonSyncingAndNoMigrationNeeded:
+      suffix = ".NonSyncingNoMigration";
+      break;
+    case UserType::kSyncing:
+      suffix = ".Syncing";
+      break;
+  }
+  CHECK(suffix);
+  base::UmaHistogramEnumeration(base::StrCat({kHistogramPrefix, suffix}),
+                                error);
+  base::UmaHistogramEnumeration(kHistogramPrefix, error);
+}
+
 // Must only be called if the state pref is kOff, to set it to kOn or
 // kOffAndMigrationPending if all the preconditions are satisfied.
 void MaybeActivateSplitStoresAndLocalUpm(
@@ -153,49 +209,58 @@ void MaybeActivateSplitStoresAndLocalUpm(
     const base::FilePath& login_db_directory) {
   CHECK_EQ(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
 
-  if (IsPasswordSyncEnabled(pref_service)) {
-    // Only activate syncing users if they are healthy (not evicted, went
-    // through initial migration) and we can successfully move `profile_db_path`
-    // to `account_db_path` (with split stores, "account" is the synced one).
-    // Note: moving the DB file isn't strictly necessary, since the data would
-    // be redownloaded in `account_db_path` anyway, but a) it is a safety net,
-    // and b) avoids extra traffic.
-    // Note: kCurrentMigrationVersionToGoogleMobileServices is only ever 0 or 1.
-    base::FilePath profile_db_path = login_db_directory.Append(
-        password_manager::kLoginDataForProfileFileName);
-    base::FilePath account_db_path = login_db_directory.Append(
-        password_manager::kLoginDataForAccountFileName);
-    bool is_healthy_upm_user =
-        !password_manager_upm_eviction::IsCurrentUserEvicted(pref_service) &&
-        pref_service->GetInteger(
-            kCurrentMigrationVersionToGoogleMobileServices) != 0;
-    if (is_healthy_upm_user &&
-        HasMinGmsVersionAndFlagEnabled(
-            password_manager::features::
-                kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration) &&
-        base::ReplaceFile(profile_db_path, account_db_path,
-                          /*error=*/nullptr)) {
-      pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                               static_cast<int>(kOn));
+  UseUpmLocalAndSeparateStoresState state_to_set_on_success = kOn;
+  ActivationError error = ActivationError::kNone;
+  UserType user_type = GetUserType(pref_service, login_db_directory);
+  switch (user_type) {
+    case UserType::kNonSyncingAndNoMigrationNeeded:
+      error = CheckMinGmsVersionAndFlagEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      break;
+    case UserType::kNonSyncingAndMigrationNeeded:
+      error = CheckMinGmsVersionAndFlagEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+      state_to_set_on_success = kOffAndMigrationPending;
+      break;
+    case UserType::kSyncing: {
+      if (password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {
+        error = ActivationError::kUnenrolled;
+        break;
+      }
+      // kCurrentMigrationVersionToGoogleMobileServices is only 0 or 1.
+      if (pref_service->GetInteger(
+              kCurrentMigrationVersionToGoogleMobileServices) == 0) {
+        error = ActivationError::kInitialUpmMigrationMissing;
+        break;
+      }
+      error = CheckMinGmsVersionAndFlagEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      if (error != ActivationError::kNone) {
+        break;
+      }
+      // Move the "profile" login DB to the "account" path, the latter is the
+      // synced one after activation. We could rely on a redownload instead, but
+      // a) this is a safety net, and b)it spares traffic.
+      if (!base::ReplaceFile(
+              login_db_directory.Append(
+                  password_manager::kLoginDataForProfileFileName),
+              login_db_directory.Append(
+                  password_manager::kLoginDataForAccountFileName),
+              /*error=*/nullptr)) {
+        error = ActivationError::kLoginDbFileMoveFailed;
+        break;
+      }
+      break;
     }
-    return;
   }
 
-  // Non-syncing users are treated differently depending on whether they need
-  // a migration.
-  bool needs_migration = MustMigrateLocalPasswordsOrSettingsOnActivation(
-      pref_service, login_db_directory);
-  const base::Feature& feature_to_check =
-      needs_migration
-          ? password_manager::features::
-                kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration
-          : password_manager::features::
-                kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration;
-  UseUpmLocalAndSeparateStoresState state_to_set =
-      needs_migration ? kOffAndMigrationPending : kOn;
-  if (HasMinGmsVersionAndFlagEnabled(feature_to_check)) {
+  RecordActivationError(user_type, error);
+  if (error == ActivationError::kNone) {
     pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(state_to_set));
+                             static_cast<int>(state_to_set_on_success));
   }
 }
 
@@ -230,9 +295,17 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
   //       * Deactivates all users, reverting them to the old behavior, even
   //         healthy ones.
   // This flag check also keeps the user in the A/B experiment after activation.
-  if (HasMinGmsVersionAndFlagEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)) {
+  ActivationError error = CheckMinGmsVersionAndFlagEnabled(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  // Continue recording the metric for previously activated users. so they show
+  // up on the dashboard no matter the aggregation window. One caveat is the
+  // state recorded now might not be the same one where the user got activated
+  // E.g. they might have gone from syncing to non-syncing. Also the recording
+  // here ignores the possibility that rollback fails due to base::ReplaceFile()
+  // below, but that should be negligible.
+  RecordActivationError(GetUserType(pref_service, login_db_directory), error);
+  if (error == ActivationError::kNone) {
     // Artificial check to keep the user in the A/B experiment after activation.
     // (In practice, the check for NoMigration above might be enough, the flags
     // will probably be in a combined study.)
@@ -294,6 +367,12 @@ void SetUsesSplitStoresAndUPMForLocal(
                              static_cast<int>(kOff));
     MaybeActivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
   }
+
+  // Records false for users who had a migration scheduled but weren't activated
+  // yet, which is different from RecordActivationError().
+  base::UmaHistogramBoolean(
+      "PasswordManager.LocalUpmActivated",
+      password_manager::UsesSplitStoresAndUPMForLocal(pref_service));
 }
 
 }  // namespace password_manager_android_util

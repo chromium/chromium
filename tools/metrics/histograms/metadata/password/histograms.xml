@@ -1900,6 +1900,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.LocalUpmActivated" enum="Boolean"
+    expires_after="2025-02-15">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Records on startup whether the user was activated for local UPM. Records
+    false for users who have a migration of local passwords scheduled but didn't
+    get activated yet.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LocalUpmActivationError{UserType}"
+    enum="LocalUpmActivationError" expires_after="2025-02-15">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Recorded for {UserType}. Records the reason why the local UPM activation
+    algorithm failed, if any. For users that require a migration, the
+    &quot;None&quot; bucket doesn't mean the migration actually succeeded, only
+    that it was scheduled. Recorded on every startup, even for users who already
+    got successfully activated. This histogram should be analyzed with
+    &quot;count unique clients&quot;.
+
+    TODO(crbug.com/307678344): Mention what other histogram should be used for
+    migration failures.
+  </summary>
+  <token key="UserType">
+    <variant name="" summary="all users"/>
+    <variant name=".NonSyncingWithMigration"
+        summary="users who are not syncing passwords and need a migration for
+                 local passwords or password manager settings"/>
+    <variant name=".NonSyncingWithoutMigration"
+        summary="users who are not syncing passwords and have no local
+                 passwords nor custom password manager settings to be
+                 migrated"/>
+    <variant name=".Syncing" summary="users who are syncing passwords"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.LoginDatabase.DeleteFromKeychain"
     enum="ErrSecOSStatus" expires_after="2024-07-21">
   <owner>vsemeniuk@google.com</owner>
