@@ -580,7 +580,7 @@ src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/textureDimension.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGatherCompare.spec.ts
@@ -672,6 +672,7 @@ src/webgpu/shader/execution/memory_model/memory_model_setup.ts
 src/webgpu/shader/execution/memory_model/atomicity.spec.ts
 src/webgpu/shader/execution/memory_model/barrier.spec.ts
 src/webgpu/shader/execution/memory_model/coherence.spec.ts
+src/webgpu/shader/execution/memory_model/texture_intra_invocation_coherence.spec.ts
 src/webgpu/shader/execution/memory_model/weak.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/fragment_builtins.spec.ts
