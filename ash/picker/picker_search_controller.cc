@@ -48,12 +48,6 @@ PickerSearchResults::Section GetFakeExpressionsSection(
                                       std::move(results));
 }
 
-PickerSearchResults::Section GetFakeFilesSection() {
-  return PickerSearchResults::Section(
-      u"Matching files", {{PickerSearchResult::Text(u"my file"),
-                           PickerSearchResult::Text(u"my other file")}});
-}
-
 }  // namespace
 
 PickerSearchController::PickerSearchController(PickerClient* client)
@@ -101,7 +95,6 @@ void PickerSearchController::RunCallback() {
   current_callback_.Run(PickerSearchResults({{
       GetFakeExpressionsSection(gif_results_),
       PickerSearchResults::Section(u"Matching links", omnibox_results_),
-      GetFakeFilesSection(),
   }}));
 }
 

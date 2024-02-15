@@ -120,9 +120,7 @@ TEST_F(PickerSearchControllerTest, ShowsInitialHeadingsOnSearch) {
               Property("heading", &PickerSearchResults::Section::heading,
                        u"Matching expressions"),
               Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching links"),
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching files")))))
+                       u"Matching links")))))
       .Times(1);
 
   controller.StartSearch(
