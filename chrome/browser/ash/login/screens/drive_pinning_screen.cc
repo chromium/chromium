@@ -68,7 +68,7 @@ void RecordSettingChanged(bool initial, bool current) {
 }
 
 void RecordUserSelection(bool option) {
-  base::UmaHistogramBoolean("OOBE.Drive-pinning.Enabled", option);
+  base::UmaHistogramBoolean("OOBE.DrivePinning.Enabled", option);
 }
 
 }  // namespace
