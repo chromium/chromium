@@ -263,7 +263,8 @@ chromium-metrics-reviews@google.com.
   <int value="100022" label="ShowHomeButton"/>
   <int value="100023" label="PinnedExtensions"/>
   <int value="100024" label="SupervisedUserApprovedExtensions"/>
-  <int value="100025" label="IsDefaultPageColorsOnHighContrast"/>
+  <int value="100025"
+      label="(obsolete, no longer synced) IsDefaultPageColorsOnHighContrast"/>
   <int value="100026" label="ShowFullscreenToolbar"/>
   <int value="100027" label="AllowJavascriptAppleEvents"/>
   <int value="100028" label="RestoreAppsAndPagesPrefName"/>
@@ -387,7 +388,9 @@ chromium-metrics-reviews@google.com.
   <int value="100142" label="AccessibilityImageLabelsEnabled"/>
   <int value="100143" label="AccessibilityImageLabelsOptInAccepted"/>
   <int value="100144" label="AccessibilityPdfOcrAlwaysActive"/>
-  <int value="100145" label="ApplyPageColorsOnlyOnIncreasedContrast"/>
+  <int value="100145"
+      label="(obsolete, no longer synced)
+             ApplyPageColorsOnlyOnIncreasedContrast"/>
   <int value="100146" label="DefaultCharset"/>
   <int value="100147" label="DefaultTasksByMimeType"/>
   <int value="100148" label="DefaultTasksBySuffix"/>
@@ -404,7 +407,7 @@ chromium-metrics-reviews@google.com.
   <int value="100159" label="NetworkPredictionOptions"/>
   <int value="100160" label="NetworkQualities"/>
   <int value="100161" label="(obsolete) NtpAppPageNames"/>
-  <int value="100162" label="PageColors"/>
+  <int value="100162" label="(obsolete, no longer synced) PageColors"/>
   <int value="100163" label="PerformanceTracingEnabled"/>
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
   <int value="100165" label="PrivacySandboxApisEnabled"/>
