@@ -149,7 +149,8 @@ class LacrosAppWindowObserver : public apps::BrowserAppInstanceObserver {
   // BrowserAppInstanceObserver:
   void OnBrowserWindowAdded(
       const apps::BrowserWindowInstance& instance) override {
-    if (chromeos::features::IsDeskProfilesEnabled()) {
+    if (chromeos::features::IsDeskProfilesEnabled() ||
+        ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       instance.window->SetProperty(ash::kLacrosProfileId,
                                    instance.lacros_profile_id);
     }
