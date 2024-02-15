@@ -407,7 +407,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
-    PreloadingURLMatchCallback matcher)
+    base::WeakPtr<PreloadingAttempt> attempt)
     : referring_render_frame_host_id_(
           referring_render_frame_host.GetGlobalId()),
       referring_origin_(referring_render_frame_host.GetLastCommittedOrigin()),
@@ -422,26 +422,13 @@ PrefetchContainer::PrefetchContainer(
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr()),
       ukm_source_id_(GetUkmSourceId(prefetch_document_manager_)),
       request_id_(base::UnguessableToken::Create().ToString()),
+      attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
           referring_render_frame_host.GetDevToolsNavigationToken()) {
   auto* web_contents =
       WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host);
   is_javascript_enabled_ =
       web_contents->GetOrCreateWebPreferences().javascript_enabled;
-  auto* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents);
-  if (!matcher) {
-    matcher = PreloadingData::GetSameURLMatcher(GetURL());
-  }
-  auto* attempt =
-      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
-          GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-          PreloadingType::kPrefetch, std::move(matcher),
-          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
-  attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
-  attempt_ = attempt->GetWeakPtr();
-
-  // `PreloadingPrediction` is added in `PreloadingDecider`.
 
   redirect_chain_.push_back(
       std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));

@@ -15,6 +15,8 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -304,13 +306,29 @@ void PrefetchDocumentManager::PrefetchUrl(
     return;
   }
 
+  auto* web_contents = WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* preloading_data =
+      PreloadingData::GetOrCreateForWebContents(web_contents);
+
+  PreloadingURLMatchCallback matcher =
+      PreloadingDataImpl::GetPrefetchServiceMatcher(
+          prefetch_service, PrefetchContainer::Key(document_token_, url));
+
+  auto* attempt =
+      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
+          GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
+          PreloadingType::kPrefetch, std::move(matcher),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+
+  attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
+
+  // `PreloadingPrediction` is added in `PreloadingDecider`.
+
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
       url, prefetch_type, referrer, std::move(no_vary_search_expected),
-      weak_method_factory_.GetWeakPtr(),
-      PreloadingDataImpl::GetPrefetchServiceMatcher(
-          prefetch_service, PrefetchContainer::Key(document_token_, url)));
+      weak_method_factory_.GetWeakPtr(), attempt->GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
   DVLOG(1) << *container << ": created";
   all_prefetches_[url] = container->GetWeakPtr();

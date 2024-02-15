@@ -103,7 +103,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
-      PreloadingURLMatchCallback matcher = {});
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
   ~PrefetchContainer();
 
   PrefetchContainer(const PrefetchContainer&) = delete;

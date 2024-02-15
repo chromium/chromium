@@ -55,8 +55,8 @@ static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
 
 CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
 
-PreloadingPredictor GetPredictorForPreloadingTriggerType(
-    PreloadingTriggerType trigger_type);
+CONTENT_EXPORT PreloadingPredictor
+GetPredictorForPreloadingTriggerType(PreloadingTriggerType trigger_type);
 
 }  // namespace content
 
