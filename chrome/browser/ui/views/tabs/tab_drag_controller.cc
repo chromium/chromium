@@ -595,6 +595,17 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::Drag", "point_in_screen",
                point_in_screen.ToString());
 
+  // If we're in `kWaitingToExitRunLoop` or `kWaitingToDragTabs`, then we have
+  // asked to exit the nested run loop, but are still in it. We should ignore
+  // any events until we actually exit the nested run loop, to avoid potentially
+  // starting another one (see https://crbug.com/41493121). Similary, if we're
+  // kStopped but haven't been destroyed yet, we should ignore events.
+  if (current_state_ == DragState::kWaitingToExitRunLoop ||
+      current_state_ == DragState::kWaitingToDragTabs ||
+      current_state_ == DragState::kStopped) {
+    return;
+  }
+
   bring_to_front_timer_.Stop();
 
   if (attached_context_hidden_ && GetAttachedBrowserWidget()->IsVisible()) {
@@ -607,10 +618,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DragState old_state = current_state_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  if (current_state_ == DragState::kWaitingToDragTabs ||
-      current_state_ == DragState::kStopped)
-    return;
 
   if (current_state_ == DragState::kNotStarted) {
     if (!CanStartDrag(point_in_screen))
@@ -1058,7 +1065,12 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
       // capture.
       DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context,
                                   point_in_screen);
-      current_state_ = DragState::kDraggingTabs;
+
+      // Enter kWaitingToExitRunLoop until we actually have exited the nested
+      // run loop. Otherwise, we might attempt to start another nested run loop,
+      // which will CHECK. See https://crbug.com/41493121.
+      current_state_ = DragState::kWaitingToExitRunLoop;
+
       // Move the tabs into position.
       MoveAttached(point_in_screen, true);
       attached_context_->GetWidget()->Activate();
@@ -1183,7 +1195,10 @@ views::ScrollView* TabDragController::GetScrollView() {
 void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
                                      bool just_attached) {
   DCHECK(attached_context_);
-  DCHECK_EQ(current_state_, DragState::kDraggingTabs);
+  DCHECK(current_state_ == DragState::kDraggingTabs ||
+         current_state_ == DragState::kWaitingToExitRunLoop)
+      << "MoveAttached called with invalid DragState "
+      << static_cast<std::underlying_type<DragState>::type>(current_state_);
 
   gfx::Point dragged_view_point = GetAttachedDragPoint(point_in_screen);
 
@@ -1712,7 +1727,9 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   widget_observation_.Reset();
   move_loop_widget_ = nullptr;
 
-  if (current_state_ == DragState::kWaitingToDragTabs) {
+  if (current_state_ == DragState::kWaitingToExitRunLoop) {
+    current_state_ = DragState::kDraggingTabs;
+  } else if (current_state_ == DragState::kWaitingToDragTabs) {
     DCHECK(tab_strip_to_attach_to_after_exit_);
     gfx::Point point_in_screen(GetCursorScreenPoint());
     DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE,
