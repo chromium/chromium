@@ -113,7 +113,7 @@
   <template is="dom-repeat"
       items="[[sideTypes_(showSecondarySide_)]]"
       as="sideType">
-    <div class$="[[classForSideType_(sideType)]]">
+    <div class$="[[sideTypeClass_(sideType)]]">
       <template is="dom-repeat" items="[[groupIdsForSideType_(sideType, result.matches.*)]]"
           as="groupId">
         <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
@@ -129,13 +129,12 @@
             </cr-icon-button>
           </h3>
         </template>
-        <div class$="matches [[classForGroupRenderType_(groupId)]]">
+        <div class$="matches [[renderTypeClassForGroup_(groupId)]]">
           <template is="dom-repeat"
               items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
               as="match" on-dom-change="onResultRepaint_">
             <cr-realbox-match tabindex="0" role="option" match="[[match]]"
                 match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
-                render-type="[[classForGroupRenderType_(groupId)]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]">
             </cr-realbox-match>
           </template>

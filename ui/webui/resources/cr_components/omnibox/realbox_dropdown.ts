@@ -302,11 +302,11 @@ export class RealboxDropdownElement extends PolymerElement {
   // Helpers
   //============================================================================
 
-  private classForSideType_(side: SideType): string {
+  private sideTypeClass_(side: SideType): string {
     return sideTypeToClass(side);
   }
 
-  private classForGroupRenderType_(groupId: number) {
+  private renderTypeClassForGroup_(groupId: number): string {
     return renderTypeToClass(
         this.result?.suggestionGroupsMap[groupId]?.renderType ??
         RenderType.kDefaultVertical);

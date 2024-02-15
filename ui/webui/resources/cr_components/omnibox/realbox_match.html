@@ -116,7 +116,7 @@
   }
 
   /* Focus indicator only shown for vertically rendered matches. */
-  :host([render-type="vertical"]:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
+  :host-context(.vertical):host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
     display: block;
   }
 
@@ -202,8 +202,8 @@
     margin-inline-end: 1px;
   }
 
-  :host([side-type-class_='primary-side']) .container:hover #remove,
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host([side-type-class_='primary-side']) #remove {
+  :host-context(.primary-side) .container:hover #remove,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host-context(.primary-side) #remove {
     display: inline-flex;
   }
 
@@ -212,12 +212,12 @@
         var(--color-realbox-results-icon-focused-outline);
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]),
-  :host-context([chrome-refresh-hover-shape]):host([side-type-class_='secondary-side'][is-entity-suggestion][has-image]) .container {
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]),
+  :host-context([chrome-refresh-hover-shape]):host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]) .container {
     border-radius: 16px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       .container {
     box-sizing: border-box;
     flex-direction: column;
@@ -227,12 +227,12 @@
     width: 102px;
     height: auto;
   }
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       .focus-indicator {
     display: none;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #icon {
     --cr-realbox-icon-border-radius: 12px;
     /* Disable placeholder dominant color as the images are large and the
@@ -243,16 +243,16 @@
     width: 90px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #text-container {
     padding: 0;
     white-space: normal;
     width: 100%;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #contents,
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #description {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -261,14 +261,14 @@
     overflow: hidden;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #contents {
     font-size: 13px;
     line-height: 20px;
     margin-block-end: 4px;
   }
 
-  :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
+  :host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
       #description {
     font-size: 12px;
     line-height: 16px;

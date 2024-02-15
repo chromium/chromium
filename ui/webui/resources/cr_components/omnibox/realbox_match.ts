@@ -18,7 +18,7 @@ import {NavigationPredictor, SelectionLineState, SideType} from './omnibox.mojom
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import type {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
-import {decodeString16, mojoTimeTicks, sideTypeToClass} from './utils.js';
+import {decodeString16, mojoTimeTicks} from './utils.js';
 
 
 // clang-format off
@@ -160,13 +160,6 @@ export class RealboxMatchElement extends PolymerElement {
 
       sideType: Number,
 
-      /** String representation of `sideType` to use in CSS. */
-      sideTypeClass_: {
-        type: String,
-        computed: 'computeSideTypeClass_(sideType)',
-        reflectToAttribute: true,
-      },
-
       //========================================================================
       // Private properties
       //========================================================================
@@ -236,7 +229,6 @@ export class RealboxMatchElement extends PolymerElement {
   private removeButtonAriaLabel_: string;
   private removeButtonTitle_: string;
   private separatorText_: string;
-  private sideTypeClass_: string;
   private tailSuggestPrefix_: string;
 
   private pageHandler_: PageHandlerInterface;
@@ -431,10 +423,6 @@ export class RealboxMatchElement extends PolymerElement {
   private computeShowCrNonInlinedHoverFill_(): boolean {
     return !this.inlinedActions &&
         loadTimeData.getBoolean('realboxCr23HoverFillShape') && this.hasAction;
-  }
-
-  private computeSideTypeClass_(): string {
-    return sideTypeToClass(this.sideType);
   }
 
   private showActionsInlined_(): boolean {
