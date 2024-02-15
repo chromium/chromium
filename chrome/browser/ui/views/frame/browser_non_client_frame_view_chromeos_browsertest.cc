@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1235203): Find out why the test is flaky.
+// TODO(crbug.com/1466385): Reenable when bug is fixed.
 #define MAYBE_NonImmersiveFullscreen DISABLED_NonImmersiveFullscreen
 #else
 #define MAYBE_NonImmersiveFullscreen NonImmersiveFullscreen
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 
 // Tests that caption buttons are hidden when entering tab fullscreen.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1235203): Find out why the test is flaky.
+// TODO(crbug.com/1466385): Reenable when bug is fixed.
 #define MAYBE_CaptionButtonsHiddenNonImmersiveFullscreen \
   DISABLED_CaptionButtonsHiddenNonImmersiveFullscreen
 #else
