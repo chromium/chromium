@@ -96,6 +96,11 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#include "base/files/platform_file.h"
+#include "base/posix/global_descriptors.h"
+#endif
+
 namespace base {
 
 namespace test {
@@ -105,6 +110,12 @@ class ScopedFeatureList;
 class CompareActiveGroupToFieldTrialMatcher;
 class FieldTrialList;
 struct LaunchOptions;
+
+#if BUILDFLAG(USE_BLINK)
+namespace shared_memory {
+enum class SharedMemoryError;
+}  // namespace shared_memory
+#endif
 
 class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
  public:
@@ -590,14 +601,7 @@ class BASE_EXPORT FieldTrialList {
   // via PopulateLaunchOptionsWithFieldTrialState() in the parent process.
   // Trials are retrieved from a shared memory segment that has been shared with
   // the child process.
-  //
-  // `fd_key` is used on non-Mac POSIX platforms to access the shared memory
-  // segment and ignored on other platforms. The argument is needed here since
-  // //base can't depend on //content. On other platforms, we expect the
-  // `cmd_line` switch for kFieldTrialHandle to contain the shared memory handle
-  // that contains the field trial allocator.
-  static void CreateTrialsInChildProcess(const CommandLine& cmd_line,
-                                         uint32_t fd_key);
+  static void CreateTrialsInChildProcess(const CommandLine& cmd_line);
 
   // Creates base::Feature overrides in a child process using shared memory.
   // Requires CreateTrialsInChildProcess() to have been called first which
@@ -609,17 +613,13 @@ class BASE_EXPORT FieldTrialList {
   // line arguments necessary for a child process to inherit the shared-memory
   // object containing the FieldTrial configuration.
   static void PopulateLaunchOptionsWithFieldTrialState(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      GlobalDescriptors::Key descriptor_key,
+      ScopedFD& descriptor_to_share,
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
       CommandLine* command_line,
       LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)
-
-#if BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  // On POSIX, we also need to explicitly pass down this file descriptor that
-  // should be shared with the child process. Returns -1 if it was not
-  // initialized properly. The current process remains the owner of the passed
-  // descriptor.
-  static int GetFieldTrialDescriptor();
-#endif  // BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
   static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 
@@ -757,38 +757,12 @@ class BASE_EXPORT FieldTrialList {
       const ReadOnlySharedMemoryRegion& shm,
       LaunchOptions* launch_options);
 
-  // Indicates failure modes of deserializing the shared memory handle.
-  enum class SharedMemError {
-    kNoError,
-    kUnexpectedTokensCount,
-    kParseInt0Failed,
-    kParseInt4Failed,
-    kUnexpectedHandleType,
-    kInvalidHandle,
-    kGetFDFailed,
-    kDeserializeGUIDFailed,
-    kDeserializeFailed,
-    kCreateTrialsFailed,
-  };
-
-  // Deserialization instantiates the shared memory region for FieldTrials from
-  // the serialized information contained in |switch_value|. Returns an invalid
-  // ReadOnlySharedMemoryRegion on failure.
-  // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
-  // down to the child process for the shared memory region.
-  static expected<ReadOnlySharedMemoryRegion, SharedMemError>
-  DeserializeSharedMemoryRegionMetadata(const std::string& switch_value,
-                                        uint32_t fd_key);
-
   // Takes in |handle_switch| from the command line which represents the shared
   // memory handle for field trials, parses it, and creates the field trials.
   // Returns true on success, false on failure.
   // |switch_value| also contains the serialized GUID.
-  // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
-  // down to the child process for the shared memory region.
-  static SharedMemError CreateTrialsFromSwitchValue(
-      const std::string& switch_value,
-      uint32_t fd_key);
+  static base::shared_memory::SharedMemoryError CreateTrialsFromSwitchValue(
+      const std::string& switch_value);
 #endif  // BUILDFLAG(USE_BLINK)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size

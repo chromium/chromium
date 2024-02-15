@@ -178,9 +178,16 @@ const std::string& GetSeedVersion() {
 
 #if BUILDFLAG(USE_BLINK)
 void PopulateLaunchOptionsWithVariationsInfo(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+    base::GlobalDescriptors::Key descriptor_key,
+    base::ScopedFD& descriptor_to_share,
+#endif
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options) {
   base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      descriptor_key, descriptor_to_share,
+#endif
       command_line, launch_options);
   command_line->AppendSwitchASCII(switches::kVariationsSeedVersion,
                                   GetSeedVersion());

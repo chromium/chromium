@@ -53,7 +53,9 @@ void RecordHistogramsOnLauncherThread(base::TimeDelta launch_time) {
 
 // If the histogram shared memory region is valid and passing the histogram
 // shared memory region via the command line is enabled, update the launch
-// parameters to pass the shared memory handle.
+// parameters to pass the shared memory handle. The allocation of the shared
+// memory region is dependent on the process-type being launched, and non-fatal
+// if not enabled.
 //
 // This function is NOP if the platform does not use Blink.
 void PassHistogramSharedMemoryHandle(
@@ -61,9 +63,16 @@ void PassHistogramSharedMemoryHandle(
     [[maybe_unused]] base::CommandLine* command_line,
     [[maybe_unused]] base::LaunchOptions* launch_options,
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
+  // TODO(crbug.com/1028263): Once all process types support histogram shared
+  // memory being passed at launch, remove this if.
+  if (!histogram_memory_region.IsValid()) {
+    return;
+  }
+
   CHECK(command_line);
+  CHECK(histogram_memory_region.IsValid());
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  // TODO(crbug/1028263): content::FileMappedForLaunch (POSIX) is redundant
+  // TODO(crbug.com/1028263): content::FileMappedForLaunch (POSIX) is redundant
   // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
   // members. Refactor this so that the details of base::Launch vs Zygote on
   // (some) POSIX platforms is an implementation detail and not exposed here.
@@ -91,6 +100,48 @@ void PassHistogramSharedMemoryHandle(
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   if (descriptor_to_transfer.is_valid()) {
     files_to_register->Transfer(kHistogramSharedMemoryDescriptor,
+                                std::move(descriptor_to_transfer));
+  }
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(USE_BLINK)
+}
+
+// Update the process launch parameters to transmit the field trial shared
+// memory handle to the child process via the command line.
+//
+// This function is NOP if the platform does not use Blink.
+void PassFieldTrialSharedMemoryHandle(
+    [[maybe_unused]] base::CommandLine* command_line,
+    [[maybe_unused]] base::LaunchOptions* launch_options,
+    [[maybe_unused]] FileMappedForLaunch* files_to_register) {
+  CHECK(command_line);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  // TODO(crbug.com/1028263): content::FileMappedForLaunch (POSIX) is redundant
+  // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
+  // members. Refactor this so that the details of base::Launch vs Zygote on
+  // (some) POSIX platforms is an implementation detail and not exposed here.
+  // I.e., populate launch options (like for all other platforms) then if it's
+  // a Zygote launch pull out the handles to transfer and send them to the
+  // zygote, instead of (for posix only) ignoring the launch-options here,
+  // populating the |files_to_register| param then (if there's no zygote)
+  // filling in |launch_options|
+  CHECK(files_to_register);
+  base::ScopedFD descriptor_to_transfer;
+#else
+  CHECK(launch_options);
+#endif
+
+#if BUILDFLAG(USE_BLINK)
+  variations::PopulateLaunchOptionsWithVariationsInfo(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      /*descriptor_key=*/kFieldTrialDescriptor,
+      /*descriptor_to_share=*/descriptor_to_transfer,
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+      command_line, launch_options);
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+  if (descriptor_to_transfer.is_valid()) {
+    files_to_register->Transfer(kFieldTrialDescriptor,
                                 std::move(descriptor_to_transfer));
   }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
@@ -198,24 +249,22 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   if (IsUsingLaunchOptions()) {
     options.emplace();
     options_ptr = &*options;
+#if BUILDFLAG(IS_WIN)
+    options_ptr->elevated = delegate_->ShouldLaunchElevated();
+#endif
   }
 
-  // If a histogram shared memory region has been allocated, add it to the
-  // launch parameters for the child process. The allocation of the shared
-  // memory region is dependent on the process-type being launched, and
-  // non-fatal if not enabled.
-  // TODO(crbug/1028263): Once all process types support histogram shared
-  // memory being passed at launch, CHECK(region.IsValid()) instead of "if".
-  if (histogram_memory_region_.IsValid()) {
-    PassHistogramSharedMemoryHandle(std::move(histogram_memory_region_),
-                                    command_line(), options_ptr,
-                                    files_to_register.get());
-  }
+  // Update the command line and launch options to pass the histogram and
+  // field trial shared memory region handles.
+  PassHistogramSharedMemoryHandle(std::move(histogram_memory_region_),
+                                  command_line(), options_ptr,
+                                  files_to_register.get());
+  PassFieldTrialSharedMemoryHandle(command_line(), options_ptr,
+                                   files_to_register.get());
 
+  // Launch the child process.
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
-    variations::PopulateLaunchOptionsWithVariationsInfo(command_line(),
-                                                        options_ptr);
     process =
         LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)

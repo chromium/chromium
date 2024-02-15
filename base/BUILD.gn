@@ -1680,6 +1680,8 @@ component("base") {
       sources += [
         "memory/discardable_shared_memory.cc",
         "memory/discardable_shared_memory.h",
+        "memory/shared_memory_switch.cc",
+        "memory/shared_memory_switch.h",
         "metrics/histogram_shared_memory.cc",
         "metrics/histogram_shared_memory.h",
         "process/kill.cc",
@@ -3509,7 +3511,10 @@ test("base_unittests") {
   ]
 
   if (use_blink) {
-    sources += [ "metrics/histogram_shared_memory_unittest.cc" ]
+    sources += [
+      "memory/shared_memory_switch_unittest.cc",
+      "metrics/histogram_shared_memory_unittest.cc",
+    ]
   }
 
   if (!is_cronet_build) {

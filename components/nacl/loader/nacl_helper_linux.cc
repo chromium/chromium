@@ -152,8 +152,7 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   base::HistogramSharedMemory::InitFromLaunchParameters(command_line);
 
   base::FieldTrialList field_trial_list;
-  base::FieldTrialList::CreateTrialsInChildProcess(command_line,
-                                                   kFieldTrialDescriptor);
+  base::FieldTrialList::CreateTrialsInChildProcess(command_line);
   auto feature_list = std::make_unique<base::FeatureList>();
   base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
@@ -202,7 +201,7 @@ void ChildNaClLoaderInit(std::vector<base::ScopedFD> child_fds,
 
   // Stash the histogram descriptor in GlobalDescriptors so the histogram
   // allocator can be initialized later. See BecomeNaClLoader().
-  // TODO(crbug/1028263): Always update mapping once metrics shared memory
+  // TODO(crbug.com/1028263): Always update mapping once metrics shared memory
   // region is always passed on startup.
   if (child_fds.size() > content::ZygoteForkDelegate::kHistogramFDIndex &&
       child_fds[content::ZygoteForkDelegate::kHistogramFDIndex].is_valid()) {
@@ -252,8 +251,8 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
   // |child_fds| should contain either kNumPassedFDs or kNumPassedFDs-1 file
   // descriptors.. The actual size of |child_fds| depends on whether or not the
   // metrics shared memory region is being passed on startup.
-  // TODO(crbug/1028263): Expect a fixed size once passing the metrics shared
-  // memory region on startup has been launched.
+  // TODO(crbug.com/1028263): Expect a fixed size once passing the metrics
+  // shared memory region on startup has been launched.
   if (child_fds.size() != content::ZygoteForkDelegate::kNumPassedFDs &&
       child_fds.size() != content::ZygoteForkDelegate::kNumPassedFDs - 1) {
     LOG(ERROR) << "nacl_helper: unexpected number of fds, got "

@@ -15,6 +15,11 @@
 #include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#include "base/files/platform_file.h"
+#include "base/posix/global_descriptors.h"
+#endif
+
 namespace variations {
 
 // Suffix added to field trial group names when they are manually forced with
@@ -130,7 +135,7 @@ bool IsInSyntheticTrialGroup(const std::string& trial_name,
 
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/507665): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 void SetSeedVersion(const std::string& seed_version);
@@ -139,7 +144,7 @@ void SetSeedVersion(const std::string& seed_version);
 // generated from.
 // Only works on the browser process; returns the empty string from other
 // processes.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/507665): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 const std::string& GetSeedVersion();
@@ -150,6 +155,10 @@ const std::string& GetSeedVersion();
 // info.
 COMPONENT_EXPORT(VARIATIONS)
 void PopulateLaunchOptionsWithVariationsInfo(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+    base::GlobalDescriptors::Key descriptor_key,
+    base::ScopedFD& descriptor_to_share,
+#endif
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)

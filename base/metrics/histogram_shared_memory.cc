@@ -7,7 +7,9 @@
 #include <string_view>
 
 #include "base/base_switches.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -64,206 +66,6 @@
 // TODO(crbug.com/1028263): Refactor the common logic here and in
 // base/metrics/field_trial.cc
 namespace base {
-
-namespace {
-
-// Serializes the shared memory region metadata to a string that can be added
-// to the command-line of a child-process.
-std::string SerializeSharedMemoryRegionMetadata(
-    UnsafeSharedMemoryRegion shmem_region_to_share,
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-    GlobalDescriptors::Key descriptor_key,
-    ScopedFD& descriptor_to_share,
-#endif
-    [[maybe_unused]] LaunchOptions* launch_options) {
-#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE)
-  CHECK(launch_options != nullptr);
-#endif
-
-  CHECK(shmem_region_to_share.IsValid());
-
-  auto shmem_region = UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-      std::move(shmem_region_to_share));
-  auto shmem_token = shmem_region.GetGUID();
-  auto shmem_size = shmem_region.GetSize();
-  auto shmem_handle = shmem_region.PassPlatformHandle();
-
-  CHECK(shmem_token);
-  CHECK(shmem_size != 0u);
-
-  // Reserve memory for the serialized value.
-  // handle,method,hi,lo,size = 4 * 64-bit number + 1 char + 4 commas + NUL
-  //                          = (4 * 20-max decimal char) + 6 chars
-  //                          = 86 bytes
-  constexpr size_t kSerializedReservedSize = 86;
-
-  std::string serialized;
-  serialized.reserve(kSerializedReservedSize);
-
-#if BUILDFLAG(IS_WIN)
-  // Ownership of the handle is passed to |launch_options|. We keep a non-
-  // owning alias for a moment, so we can serialize the handle's numeric
-  // value.
-  HANDLE handle = shmem_handle.release();
-  launch_options->handles_to_inherit.push_back(handle);
-
-  // Tell the child process the name of the HANDLE and whether to handle can
-  // be inherited ('i') or must be duplicate from the parent process ('p').
-  base::StrAppend(&serialized, {NumberToString(win::HandleToUint32(handle)),
-                                (launch_options->elevated ? ",p," : ",i,")});
-#elif BUILDFLAG(IS_APPLE)
-  // In the receiving child, the handle is looked up using the rendezvous key.
-  launch_options->mach_ports_for_rendezvous.emplace(
-      HistogramSharedMemory::kRendezvousKey,
-      MachRendezvousPort(std::move(shmem_handle)));
-  base::StrAppend(
-      &serialized,
-      {base::NumberToString(HistogramSharedMemory::kRendezvousKey), ",r,"});
-#elif BUILDFLAG(IS_FUCHSIA)
-  // The handle is passed via the handles to transfer launch options. The child
-  // will use the returned handle_id to lookup the handle. Ownership of the
-  // handle is transferred to |launch_options|.
-  uint32_t handle_id = LaunchOptions::AddHandleToTransfer(
-      &launch_options->handles_to_transfer, shmem_handle.release());
-  base::StrAppend(&serialized, {base::NumberToString(handle_id), ",i,"});
-#elif BUILDFLAG(IS_POSIX)
-  // Serialize the key by which the child can lookup the shared memory handle.
-  // Ownership of the handle is transferred, via |descriptor_to_share|, to the
-  // caller, who is responsible for updating |launch_options| or the zygote
-  // launch parameters, as appropriate.
-  //
-  // TODO(crbug.com/1028263): Create a wrapper to release and return the primary
-  // descriptor for android (ScopedFD) vs non-android (ScopedFDPair).
-  //
-  // TODO(crbug.com/1028263): Get rid of |descriptor_to_share| and just populate
-  // |launch_options|. The caller should be responsible for translating between
-  // |launch_options| and zygote parameters as necessary.
-#if BUILDFLAG(IS_ANDROID)
-  descriptor_to_share = std::move(shmem_handle);
-#else
-  descriptor_to_share = std::move(shmem_handle.fd);
-#endif
-  DVLOG(1) << "Sharing fd=" << descriptor_to_share.get()
-           << " with child process as fd_key=" << descriptor_key;
-  base::StrAppend(&serialized, {base::NumberToString(descriptor_key), ",i,"});
-#else
-#error "Unsupported OS"
-#endif
-
-  base::StrAppend(
-      &serialized,
-      {base::NumberToString(shmem_token.GetHighForSerialization()), ",",
-       base::NumberToString(shmem_token.GetLowForSerialization()), ",",
-       base::NumberToString(shmem_size)});
-
-  DCHECK_LT(serialized.size(), kSerializedReservedSize);
-  return serialized;
-}
-
-// Deserialize |guid| from |hi_part| and |lo_part|, returning true on success.
-absl::optional<UnguessableToken> DeserializeGUID(std::string_view hi_part,
-                                                 std::string_view lo_part) {
-  uint64_t hi = 0;
-  uint64_t lo = 0;
-  if (!StringToUint64(hi_part, &hi) || !StringToUint64(lo_part, &lo)) {
-    return absl::nullopt;
-  }
-  return UnguessableToken::Deserialize(hi, lo);
-}
-
-// Deserialize |switch_value| and return a corresponding writable shared memory
-// region. On POSIX the handle is passed by |histogram_memory_descriptor_key|
-// but |switch_value| is still required to describe the memory region.
-UnsafeSharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
-    const std::string& switch_value) {
-  std::vector<std::string_view> tokens =
-      SplitStringPiece(switch_value, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
-  if (tokens.size() != 5) {
-    return UnsafeSharedMemoryRegion();
-  }
-
-  // Parse the handle from tokens[0].
-  uint64_t shmem_handle = 0;
-  if (!StringToUint64(tokens[0], &shmem_handle)) {
-    return UnsafeSharedMemoryRegion();
-  }
-
-  // token[1] has a fixed value but is ignored on all platforms except
-  // Windows, where it can be 'i' or 'p' to indicate that the handle is
-  // inherited or must be obtained from the parent.
-#if BUILDFLAG(IS_WIN)
-  HANDLE handle = win::Uint32ToHandle(checked_cast<uint32_t>(shmem_handle));
-  if (tokens[1] == "p") {
-    DCHECK(IsCurrentProcessElevated());
-    // LaunchProcess doesn't have a way to duplicate the handle, but this
-    // process can since by definition it's not sandboxed.
-    win::ScopedHandle parent_handle(OpenProcess(
-        PROCESS_ALL_ACCESS, FALSE, GetParentProcessId(GetCurrentProcess())));
-    DuplicateHandle(parent_handle.get(), handle, GetCurrentProcess(), &handle,
-                    0, FALSE, DUPLICATE_SAME_ACCESS);
-  } else if (tokens[1] != "i") {
-    return UnsafeSharedMemoryRegion();
-  }
-  win::ScopedHandle scoped_handle(handle);
-#elif BUILDFLAG(IS_APPLE)
-  DCHECK_EQ(tokens[1], "r");
-  auto* rendezvous = MachPortRendezvousClient::GetInstance();
-  if (!rendezvous) {
-    LOG(ERROR) << "No rendezvous client.";
-    return UnsafeSharedMemoryRegion();
-  }
-  apple::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
-      static_cast<MachPortsForRendezvous::key_type>(shmem_handle));
-  if (!scoped_handle.is_valid()) {
-    LOG(ERROR) << "Failed to initialize mach send right.";
-    return UnsafeSharedMemoryRegion();
-  }
-#elif BUILDFLAG(IS_FUCHSIA)
-  DCHECK_EQ(tokens[1], "i");
-  static bool startup_handle_taken = false;
-  DCHECK(!startup_handle_taken) << "Shared memory region initialized twice";
-  const uint32_t handle = checked_cast<uint32_t>(shmem_handle);
-  zx::vmo scoped_handle(zx_take_startup_handle(handle));
-  startup_handle_taken = true;
-  if (!scoped_handle.is_valid()) {
-    return UnsafeSharedMemoryRegion();
-  }
-#elif BUILDFLAG(IS_POSIX)
-  DCHECK_EQ(tokens[1], "i");
-  const int fd = GlobalDescriptors::GetInstance()->MaybeGet(
-      checked_cast<GlobalDescriptors::Key>(shmem_handle));
-  if (fd == -1) {
-    DVLOG(1) << "Failed global descriptor lookup: " << shmem_handle;
-    return UnsafeSharedMemoryRegion();
-  }
-  DVLOG(1) << "Opening shared memory handle " << fd << " shared as "
-           << shmem_handle;
-  ScopedFD scoped_handle(fd);
-#else
-#error Unsupported OS
-#endif
-
-  // Together, tokens[2] and tokens[3] encode the shared memory guid.
-  auto guid = DeserializeGUID(tokens[2], tokens[3]);
-  if (!guid.has_value()) {
-    return UnsafeSharedMemoryRegion();
-  }
-
-  // The size is in tokens[4].
-  uint64_t size;
-  if (!StringToUint64(tokens[4], &size)) {
-    return UnsafeSharedMemoryRegion();
-  }
-
-  // Resolve the handle to a shared memory region.
-  auto platform_handle = subtle::PlatformSharedMemoryRegion::Take(
-      std::move(scoped_handle),
-      subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      checked_cast<size_t>(size), guid.value());
-  return UnsafeSharedMemoryRegion::Deserialize(std::move(platform_handle));
-}
-
-}  // namespace
 
 BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
              "PassHistogramSharedMemoryOnLaunch",
@@ -357,14 +159,14 @@ void HistogramSharedMemory::AddToLaunchParameters(
     return;
   }
 
-  std::string encoded_switch_value =
-      SerializeSharedMemoryRegionMetadata(std::move(histogram_shmem_region),
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-                                          descriptor_key, descriptor_to_share,
+  shared_memory::AddToLaunchParameters(::switches::kMetricsSharedMemoryHandle,
+                                       std::move(histogram_shmem_region),
+#if BUILDFLAG(IS_APPLE)
+                                       kRendezvousKey,
+#elif BUILDFLAG(IS_POSIX)
+                                       descriptor_key, descriptor_to_share,
 #endif
-                                          launch_options);
-  command_line->AppendSwitchASCII(::switches::kMetricsSharedMemoryHandle,
-                                  encoded_switch_value);
+                                       command_line, launch_options);
 }
 
 // static
@@ -378,12 +180,19 @@ void HistogramSharedMemory::InitFromLaunchParameters(
   DVLOG(1) << "Initializing histogram shared memory from command line for "
            << command_line.GetSwitchValueASCII("type");
 
-  auto shmem_region = DeserializeSharedMemoryRegionMetadata(
+  auto shmem_region = shared_memory::UnsafeSharedMemoryRegionFrom(
       command_line.GetSwitchValueASCII(switches::kMetricsSharedMemoryHandle));
-  CHECK(shmem_region.IsValid())
+
+  SCOPED_CRASH_KEY_NUMBER(
+      "HistogramAllocator", "SharedMemError",
+      static_cast<int>(shmem_region.has_value()
+                           ? shared_memory::SharedMemoryError::kNoError
+                           : shmem_region.error()));
+
+  CHECK(shmem_region.has_value() && shmem_region.value().IsValid())
       << "Invald memory region passed on command line.";
 
-  GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shmem_region);
+  GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shmem_region.value());
 
   auto* global_allocator = GlobalHistogramAllocator::Get();
   CHECK(global_allocator);

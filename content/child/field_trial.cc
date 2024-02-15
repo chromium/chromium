@@ -34,8 +34,7 @@ void InitializeFieldTrialAndFeatureList() {
   std::ignore = leaked_field_trial_list;
 
   // Ensure any field trials in browser are reflected into the child process.
-  base::FieldTrialList::CreateTrialsInChildProcess(command_line,
-                                                   kFieldTrialDescriptor);
+  base::FieldTrialList::CreateTrialsInChildProcess(command_line);
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
   base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
   // TODO(crbug.com/988603): This may be redundant. The way this is supposed to

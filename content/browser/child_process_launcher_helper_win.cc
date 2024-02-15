@@ -46,9 +46,8 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (delegate_->ShouldLaunchElevated()) {
-    options->elevated = true;
-  } else {
+  DCHECK_EQ(options->elevated, delegate_->ShouldLaunchElevated());
+  if (!options->elevated) {
     mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
                                                command_line());
   }
