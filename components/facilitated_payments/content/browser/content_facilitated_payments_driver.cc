@@ -19,7 +19,8 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     content::RenderFrameHost* render_frame_host)
     : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
           this,
-          optimization_guide_decider)),
+          optimization_guide_decider,
+          render_frame_host->GetPageUkmSourceId())),
       render_frame_host_(*render_frame_host) {}
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;

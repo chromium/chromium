@@ -8,6 +8,9 @@
 #include "base/test/task_environment.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +73,8 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
-        driver_.get(), optimization_guide_decider_.get());
+        driver_.get(), optimization_guide_decider_.get(),
+        ukm::UkmRecorder::GetNewSourceID());
   }
 
   optimization_guide::OptimizationGuideDecision& GetAllowlistCheckResult() {
@@ -320,6 +324,34 @@ TEST_F(
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
   AdvanceTimeToAllowlistDecisionReceivedOrMaxAttemptsReached();
   AdvanceTimeToPotentiallyTriggerPixCodeDetectionAfterDecision();
+}
+
+class FacilitatedPaymentsManagerMetricsTest
+    : public FacilitatedPaymentsManagerTest,
+      public ::testing::WithParamInterface<mojom::PixCodeDetectionResult> {
+ protected:
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FacilitatedPaymentsManagerMetricsTest,
+    testing::Values(mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun,
+                    mojom::PixCodeDetectionResult::kPixCodeNotFound,
+                    mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
+                    mojom::PixCodeDetectionResult::kValidPixCodeFound));
+
+// Test that UKM metrics are recorded.
+TEST_P(FacilitatedPaymentsManagerMetricsTest,
+       TestProcessPixCodeDetectionResult) {
+  manager_->ProcessPixCodeDetectionResult(GetParam());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<uint8_t>(GetParam()));
 }
 
 }  // namespace payments::facilitated

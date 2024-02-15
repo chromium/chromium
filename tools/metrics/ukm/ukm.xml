@@ -9792,6 +9792,30 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.PixCodeDetectionResult">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after a PIX code detection is triggered on the page.
+  </summary>
+  <metric name="Result" enum="PixCodeDetectionResult">
+    <summary>
+      Represents the outcome of running PIX code detection on the page. It is
+      used to log whether or not PIX detection was run, and if a valid PIX code
+      was found on the page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="FamilyLinkUser.BlockedContent">
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

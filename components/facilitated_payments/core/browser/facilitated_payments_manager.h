@@ -12,6 +12,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -31,7 +32,8 @@ class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(
       FacilitatedPaymentsDriver* driver,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      ukm::SourceId ukm_source_id);
   FacilitatedPaymentsManager(const FacilitatedPaymentsManager&) = delete;
   FacilitatedPaymentsManager& operator=(const FacilitatedPaymentsManager&) =
       delete;
@@ -55,6 +57,8 @@ class FacilitatedPaymentsManager {
   friend class FacilitatedPaymentsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TestRegisterPixAllowlist);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerMetricsTest,
+                           TestProcessPixCodeDetectionResult);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -80,6 +84,8 @@ class FacilitatedPaymentsManager {
   // frame URL is eligible for facilitated payments.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
+
+  const ukm::SourceId ukm_source_id_;
 
   base::OneShotTimer pix_code_detection_triggering_timer_;
 

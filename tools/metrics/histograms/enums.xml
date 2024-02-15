@@ -28662,6 +28662,13 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="PIPELINE_ERROR_DISCONNECTED"/>
 </enum>
 
+<enum name="PixCodeDetectionResult">
+  <int value="0" label="Failure: PIX code detection was not run"/>
+  <int value="1" label="Failure: A PIX code was not found"/>
+  <int value="2" label="Failure: An invalid PIX code was found"/>
+  <int value="3" label="Success: A valid PIX code was found"/>
+</enum>
+
 <enum name="PlatformFileError">
   <summary>Errors from base::File::Error</summary>
   <int value="0" label="OK"/>

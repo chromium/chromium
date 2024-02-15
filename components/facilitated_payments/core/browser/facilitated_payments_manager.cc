@@ -8,14 +8,17 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
 
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    ukm::SourceId ukm_source_id)
     : driver_(*driver),
-      optimization_guide_decider_(optimization_guide_decider) {
+      optimization_guide_decider_(optimization_guide_decider),
+      ukm_source_id_(ukm_source_id) {
   DCHECK(optimization_guide_decider_);
   // TODO(b/314826708): Check if at least 1 GPay linked PIX account is
   // available for the user. If not, do not register the PIX allowlist.
@@ -90,6 +93,10 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 }
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
-    mojom::PixCodeDetectionResult result) const {}
+    mojom::PixCodeDetectionResult result) const {
+  ukm::builders::FacilitatedPayments_PixCodeDetectionResult(ukm_source_id_)
+      .SetResult(static_cast<uint8_t>(result))
+      .Record(ukm::UkmRecorder::Get());
+}
 
 }  // namespace payments::facilitated
