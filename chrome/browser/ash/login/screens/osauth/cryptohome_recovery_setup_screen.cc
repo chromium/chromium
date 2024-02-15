@@ -115,7 +115,9 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
   if (wizard_context.extra_factors_token.has_value()) {
     auto& token = wizard_context.extra_factors_token.value();
     auto* storage = ash::AuthSessionStorage::Get();
-    if (storage->IsValid(token) &&
+    const bool authsession_required =
+        ash::features::AreLocalPasswordsEnabledForConsumers();
+    if (storage->IsValid(token) && !authsession_required &&
         cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
             storage->Peek(token)->GetAccountId())) {
       storage->Invalidate(token, base::DoNothing());
