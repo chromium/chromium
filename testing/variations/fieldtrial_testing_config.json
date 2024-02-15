@@ -14218,35 +14218,6 @@
             ]
         }
     ],
-    "Prerender2NewTabPageTrigger": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "OnlyMouseDown_20240126",
-                    "params": {
-                        "prerender_new_tab_page_on_mouse_hover_trigger": "false",
-                        "prerender_new_tab_page_on_mouse_pressed_trigger": "true"
-                    },
-                    "enable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "NewTabPageTriggerForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
