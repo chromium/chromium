@@ -10,14 +10,15 @@
 // LINT.IfChange
 enum class DefaultBrowserPromoSource {
   kSettings = 0,
-  kOmnibox,
-  kExternalIntent,
-  kSetUpList,
+  kOmnibox = 1,
+  kExternalIntent = 2,
+  kSetUpList = 3,
   // kExternalAction refers to Chrome being opened with a "ChromeExternalAction"
   // host.
-  kExternalAction,
-  kMaxValue = kExternalAction,
+  kExternalAction = 4,
+  kTipsNotification = 5,
+  kMaxValue = kTipsNotification,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml)
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_PROMO_SOURCE_H_
