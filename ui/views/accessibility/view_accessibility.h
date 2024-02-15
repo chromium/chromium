@@ -114,6 +114,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   ax::mojom::Role GetViewAccessibilityRole() const;
 
+  void SetBounds(const gfx::RectF& bounds);
+
   void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.
@@ -207,7 +209,6 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideIsEnabled(bool enabled);
   virtual bool IsAccessibilityEnabled() const;
 
-  void OverrideBounds(const gfx::RectF& bounds);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 
   // Override information provided to users by screen readers when describing

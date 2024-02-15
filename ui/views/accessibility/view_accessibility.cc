@@ -409,6 +409,10 @@ ax::mojom::Role ViewAccessibility::GetViewAccessibilityRole() const {
   return data_.role;
 }
 
+void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
+  data_.relative_bounds.bounds = bounds;
+}
+
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   override_data_.role = role;
@@ -553,10 +557,6 @@ bool ViewAccessibility::IsAccessibilityEnabled() const {
   if (is_enabled_)
     return *is_enabled_;
   return view_->GetEnabled();
-}
-
-void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {
-  override_data_.relative_bounds.bounds = bounds;
 }
 
 void ViewAccessibility::OverrideHasPopup(const ax::mojom::HasPopup has_popup) {

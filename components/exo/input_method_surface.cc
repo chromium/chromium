@@ -83,7 +83,7 @@ void InputMethodSurface::OnSurfaceCommit() {
     input_method_bounds_ = int_bounds_in_dips;
     manager_->OnTouchableBoundsChanged(this);
 
-    GetViewAccessibility().OverrideBounds(gfx::RectF(input_method_bounds_));
+    GetViewAccessibility().SetBounds(gfx::RectF(input_method_bounds_));
   }
 }
 

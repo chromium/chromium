@@ -1979,7 +1979,7 @@ void CalendarView::AdjustDateCellVoxBounds() {
   // height, which is `scroll_view_->GetVisibleRect().y()` should also be added.
   // Otherwise the position of the Chrome Vox box is off.
   gfx::Rect bounds = focused_view->GetBoundsInScreen();
-  focused_view->GetViewAccessibility().OverrideBounds(
+  focused_view->GetViewAccessibility().SetBounds(
       gfx::RectF(bounds.x(), bounds.y() + scroll_view_->GetVisibleRect().y(),
                  bounds.width(), bounds.height()));
 }
