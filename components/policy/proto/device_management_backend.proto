@@ -2707,6 +2707,11 @@ message DeviceAutoEnrollmentResponse {
 // and secondary state enrollment. In this case, this request can also be sent
 // by brand new devices and the server would not know their serial number and
 // brand code, hence the values are supplied as part of the request.
+//
+// Another device state retrieval scenario is Flex Auto Enrollment initial
+// state determination, in which case the Flex enrollment token is included
+// (along with brand code and serial number) to retrieve token-keyed state
+// from the server.
 message DeviceStateRetrievalRequest {
   // Opaque, client-determined, unpredictable, stable and unique device
   // identifier to retrieve state for. This field contains 32 bytes of data that
@@ -2720,6 +2725,9 @@ message DeviceStateRetrievalRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 3;
+
+  // The enrollment token for Flex Auto Enrollment.
+  optional string enrollment_token = 4;
 }
 
 // Sent by the client to the server when in registered state to update the
@@ -2798,6 +2806,8 @@ message DeviceInitialEnrollmentStateResponse {
     // The device has been disabled by its owner. The device will show a warning
     // screen and prevent the user from proceeding further.
     INITIAL_ENROLLMENT_MODE_DISABLED = 3;
+    // Token-based enrollment is enforced and cannot be skipped.
+    INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED = 4;
   }
 
   // The server-indicated initial enrollment mode.

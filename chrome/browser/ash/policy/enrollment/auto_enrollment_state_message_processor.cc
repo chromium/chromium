@@ -67,6 +67,10 @@ std::string ConvertInitialEnrollmentMode(
         initial_enrollment_mode) {
   switch (initial_enrollment_mode) {
     case em::DeviceInitialEnrollmentStateResponse::INITIAL_ENROLLMENT_MODE_NONE:
+    // Do nothing initially with token-based enrollment mode.
+    // TODO(b/320497143): Return correct prefs constant instead of empty string.
+    case em::DeviceInitialEnrollmentStateResponse::
+        INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED:
       return std::string();
     case em::DeviceInitialEnrollmentStateResponse::
         INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED:

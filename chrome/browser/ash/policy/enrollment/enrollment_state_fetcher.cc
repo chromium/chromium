@@ -740,6 +740,8 @@ class EnrollmentState {
 
     switch (initial_enrollment_mode) {
       case Response::INITIAL_ENROLLMENT_MODE_NONE:
+      // Do nothing initially with token-based enrollment mode.
+      case Response::INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED:
         return {AutoEnrollmentResult::kNoEnrollment, std::string()};
       case Response::INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED:
         return {AutoEnrollmentResult::kEnrollment,
