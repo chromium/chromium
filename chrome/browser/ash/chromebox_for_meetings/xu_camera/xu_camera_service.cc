@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 
-#include <base/notreached.h>
-#include <base/posix/eintr_wrapper.h>
 #include <fcntl.h>
 #include <libudev.h>
 #include <linux/usb/video.h>
@@ -13,9 +11,12 @@
 #include <linux/videodev2.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
+
 #include <cstdint>
 #include <utility>
 
+#include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"

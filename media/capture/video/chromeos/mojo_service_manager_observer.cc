@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <base/memory/ptr_util.h>
+#include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 
+#include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/device_event_log/device_event_log.h"
-#include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 
 using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
 using chromeos::mojo_service_manager::mojom::ServiceState;

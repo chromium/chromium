@@ -5,8 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_MOJO_SERVICE_MANAGER_OBSERVER_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_MOJO_SERVICE_MANAGER_OBSERVER_H_
 
-#include <base/functional/callback_forward.h>
-
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

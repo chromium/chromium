@@ -4,7 +4,6 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
-#include <base/ranges/algorithm.h>
 #include <array>
 #include <cinttypes>
 #include <cstdint>

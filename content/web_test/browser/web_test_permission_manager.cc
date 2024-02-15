@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include <base/containers/contains.h>
 #include "base/barrier_callback.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
