@@ -45,6 +45,14 @@ constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
 constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
     FILE_PATH_LITERAL("third_party/screen-ai/macos_arm64/resources");
 #endif  // defined(ARCH_CPU_X86_64)
+#elif BUILDFLAG(IS_WIN)
+#if defined(ARCH_CPU_X86_64)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party\\screen-ai\\windows_amd64\\resources");
+#elif defined(ARCH_CPU_X86)
+constexpr base::FilePath::CharType kScreenAIResourcePathForTests[] =
+    FILE_PATH_LITERAL("third_party\\screen-ai\\windows_386\\resources");
+#endif  // defined(ARCH_CPU_X86_64)
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Get the directory that contains the ScreenAI component for testing.

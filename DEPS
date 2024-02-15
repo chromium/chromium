@@ -280,6 +280,8 @@ vars = {
   'screen_ai_linux': 'x8c4xOQj3V2uyBicjNa2YkN71brkj5FZg157RueHF_oC',
   'screen_ai_macos_amd64': 'STOrwjObcsaURUq2izEeXtnwtRhC5HLOTrcfXssSSioC',
   'screen_ai_macos_arm64': 'bxhon5NsSW9znRLRHd79tTy_bkPCZojzLWb57La9RxsC',
+  'screen_ai_windows_amd64': 'jxeZ_Mu4hREELgylzJLpMTOlHwJ_hfLSi8g3f4eIfwAC',
+  'screen_ai_windows_386': 'mQzGSGd8C3VtF9Rywg1s4yVKGobA6AkiwXWH5lab3PsC',
 
   # The path of the sysroots.json file.
   # This is used by vendor builds like Electron.
@@ -4251,6 +4253,28 @@ deps = {
           },
       ],
       'condition': 'checkout_mac',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/screen-ai/windows_amd64': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/screen-ai/windows-amd64',
+              'version': Var('screen_ai_windows_amd64'),
+          },
+      ],
+      'condition': 'checkout_win',
+      'dep_type': 'cipd',
+  },
+
+  'src/third_party/screen-ai/windows_386': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/screen-ai/windows-386',
+              'version': Var('screen_ai_windows_386'),
+          },
+      ],
+      'condition': 'checkout_win',
       'dep_type': 'cipd',
   },
 
