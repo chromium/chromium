@@ -284,19 +284,6 @@ async function openFileDialogSendEscapeKey(
 }
 
 /**
- * Waits for the dialog window and waits it to fully load.
- * @return dialog's id.
- */
-export async function waitForDialog(): Promise<string> {
-  const dialog = await remoteCall.waitForWindow();
-
-  // Wait for Files app to finish loading.
-  await remoteCall.waitFor('isFileManagerLoaded', dialog, true);
-
-  return dialog;
-}
-
-/**
  * Tests for display:none status of feedback panels in Files app.
  *
  * @param type Type of dialog to open.
@@ -304,7 +291,7 @@ export async function waitForDialog(): Promise<string> {
 async function checkFeedbackDisplayHidden(type: 'openFile'|'saveFile') {
   // Open dialog of the specified 'type'.
   await openEntryChoosingWindow({type});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -337,7 +324,7 @@ export async function openFileDialogDownloads() {
 export async function openFileDialogAriaMultipleSelect() {
   // Open File dialog.
   await openEntryChoosingWindow({type: 'openFile'});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -357,7 +344,7 @@ export async function openFileDialogAriaMultipleSelect() {
 export async function saveFileDialogAriaSingleSelect() {
   // Open Save as dialog.
   await openEntryChoosingWindow({type: 'saveFile'});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -384,7 +371,7 @@ export async function saveFileDialogDownloads() {
 export async function saveFileDialogDownloadsNewFolderButton() {
   // Open Save as dialog.
   await openEntryChoosingWindow({type: 'saveFile'});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -568,7 +555,7 @@ export async function openFileDialogDriveOfficeFile() {
 export async function openMultiFileDialogDriveOfficeFile() {
   await setUpFileEntrySet('drive');
   await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait for initial load to finish.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -618,7 +605,7 @@ export async function openFileDialogEscapeDrive() {
  */
 export async function openFileDialogUnload() {
   await openEntryChoosingWindow({type: 'openFile'});
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
   await unloadOpenFileDialog(dialog);
 }
 
@@ -633,7 +620,7 @@ export async function openFileDialogDefaultFilter() {
     acceptsAllTypes: true,
   };
   await openEntryChoosingWindow(params);
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
 
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
@@ -652,7 +639,7 @@ export async function saveFileDialogDefaultFilter() {
     acceptsAllTypes: true,
   };
   await openEntryChoosingWindow(params);
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
 
   // Check: 'All files' should be selected.
   const selectedFilter =
@@ -672,7 +659,7 @@ export async function saveFileDialogDefaultFilterKeyNavigation() {
     acceptsAllTypes: true,
   };
   await openEntryChoosingWindow(params);
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
 
   // Check: 'All files' should be selected.
   let selectedFilter =
@@ -832,7 +819,7 @@ export async function saveFileDialogSingleFilterNoAcceptAll() {
     acceptsAllTypes: false,
   };
   await openEntryChoosingWindow(params);
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
 
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
@@ -859,7 +846,7 @@ async function showSaveAndConfirmExpecting(
     accepts: [{extensions: ['jpg']}],
   };
   await openEntryChoosingWindow(Object.assign(params, extraParams));
-  const dialog = await waitForDialog();
+  const dialog = await remoteCall.waitForDialog();
 
   // Ensure the input field is ready.
   await remoteCall.waitForElement(dialog, '#filename-input-textbox');
@@ -921,7 +908,7 @@ export async function openFileDialogFileListShowContextMenu() {
 
   // Open file picker dialog.
   await openEntryChoosingWindow({type: 'openFile'});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -965,7 +952,7 @@ export async function openFileDialogFileListShowContextMenu() {
 export async function openFileDialogSelectAllDisabled() {
   // Open file picker dialog.
   await openEntryChoosingWindow({type: 'openFile'});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -993,7 +980,7 @@ export async function openMultiFileDialogSelectAllEnabled() {
 
   // Open file picker dialog with support for selecting multiple files.
   await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);

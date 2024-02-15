@@ -146,6 +146,19 @@ export class RemoteCall {
   }
 
   /**
+   * Waits for the dialog window and waits for it to fully load.
+   * @return dialog's id.
+   */
+  async waitForDialog(): Promise<string> {
+    const dialog = await this.waitForWindow();
+
+    // Wait for Files app to finish loading.
+    await this.waitFor('isFileManagerLoaded', dialog, true);
+
+    return dialog;
+  }
+
+  /**
    * Waits for the specified element appearing in the DOM.
    * @param appId App window Id.
    * @param query Query to specify the element.
@@ -884,7 +897,8 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
-   * Returns the menu as `ElementObject` and its menu-items (including separators) in the `items` property.
+   * Returns the menu as `ElementObject` and its menu-items (including
+   * separators) in the `items` property.
    * @param appId App window Id.
    * @param menu The name of the menu.
    * @return Promise to be fulfilled with the menu.

@@ -3,18 +3,14 @@
 // found in the LICENSE file.
 
 import {getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openEntryChoosingWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {waitForDialog} from './file_dialog.js';
 
 /**
  * Tests that the holding space welcome banner appears and that it can be
  * dismissed.
  */
-// @ts-ignore: error TS4111: Property 'holdingSpaceWelcomeBanner' comes from an
-// index signature, so it must be accessed with ['holdingSpaceWelcomeBanner'].
-testcase.holdingSpaceWelcomeBanner = async () => {
+export async function holdingSpaceWelcomeBanner() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -40,44 +36,35 @@ testcase.holdingSpaceWelcomeBanner = async () => {
 
   // Check: the holding space welcome banner should be hidden.
   await remoteCall.waitForElement(appId, holdingSpaceBannerHidden);
-};
+}
 
 /**
  * Tests that the holding space welcome banner will show for modal dialogs when
  * using the new banners framework.
  */
-// @ts-ignore: error TS4111: Property
-// 'holdingSpaceWelcomeBannerWillShowForModalDialogs' comes from an index
-// signature, so it must be accessed with
-// ['holdingSpaceWelcomeBannerWillShowForModalDialogs'].
-testcase.holdingSpaceWelcomeBannerWillShowForModalDialogs = async () => {
+export async function holdingSpaceWelcomeBannerWillShowForModalDialogs() {
   // Open Save as dialog in the foreground window.
   await openEntryChoosingWindow({type: 'saveFile'});
 
-  const appId = await waitForDialog();
+  const appId = await remoteCall.waitForDialog();
 
   // Ensure the Holding space welcome banner is the only banner prioritised.
   await remoteCall.isolateBannerForTesting(
       appId, 'holding-space-welcome-banner');
 
   // Wait to finish initial load.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Check: the holding space welcome banner should be visible.
   await remoteCall.waitForElement(
       appId, '#banners > holding-space-welcome-banner:not([hidden])');
-};
+}
 
 /**
  * Tests that the holding space welcome banner will update its text depending on
  * whether or not tablet mode is enabled.
  */
-// @ts-ignore: error TS4111: Property
-// 'holdingSpaceWelcomeBannerOnTabletModeChanged' comes from an index signature,
-// so it must be accessed with ['holdingSpaceWelcomeBannerOnTabletModeChanged'].
-testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
+export async function holdingSpaceWelcomeBannerOnTabletModeChanged() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -87,16 +74,13 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
 
   // Async function which repeats until the element matching the specified
   // `query` has a calculated display matching the specified `displayValue`.
-  // @ts-ignore: error TS7006: Parameter 'displayValue' implicitly has an 'any'
-  // type.
-  async function waitForElementWithDisplay(query, displayValue) {
+  async function waitForElementWithDisplay(
+      query: string[], displayValue: string) {
     await repeatUntil(async () => {
       const caller = getCaller();
       const el =
           await remoteCall.waitForElementStyles(appId, query, ['display']);
-      // @ts-ignore: error TS4111: Property 'display' comes from an index
-      // signature, so it must be accessed with ['display'].
-      if (el && el.styles && el.styles.display === displayValue) {
+      if (el && el.styles && el.styles['display'] === displayValue) {
         return el;
       }
       return pending(
@@ -138,4 +122,4 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
   // Check: `text` should be displayed but `textInTabletMode` should not.
   await waitForElementWithDisplay(text, expectedTextDisplayValue);
   await waitForElementWithDisplay(textInTabletMode, 'none');
-};
+}
