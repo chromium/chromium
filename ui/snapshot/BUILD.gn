@@ -73,6 +73,7 @@ component("snapshot") {
       "AppKit.framework",
       "CoreGraphics.framework",
     ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 14.4
   }
 }
 
