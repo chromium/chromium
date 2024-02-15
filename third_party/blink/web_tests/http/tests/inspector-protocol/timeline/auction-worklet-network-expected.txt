@@ -4,6 +4,7 @@ Auction winner:urn:uuid:(randomized)
 Tracing complete
 https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:
 ResourceSendRequest {
+    fetchPriorityHint : auto
     requestId : <string>
     resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
@@ -80,6 +81,7 @@ ResourceFinish {
 
 https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php:
 ResourceSendRequest {
+    fetchPriorityHint : auto
     requestId : <string>
     resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php

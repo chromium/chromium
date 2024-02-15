@@ -540,6 +540,20 @@ const char* ResourcePriorityString(ResourceLoadPriority priority) {
   return priority_string;
 }
 
+const char* FetchPriorityString(
+    mojom::blink::FetchPriorityHint fetch_priority) {
+  switch (fetch_priority) {
+    case mojom::blink::FetchPriorityHint::kAuto:
+      return "auto";
+    case mojom::blink::FetchPriorityHint::kLow:
+      return "low";
+    case mojom::blink::FetchPriorityHint::kHigh:
+      return "high";
+    default:
+      NOTREACHED();
+  }
+}
+
 void inspector_schedule_style_invalidation_tracking_event::IdChange(
     perfetto::TracedValue context,
     Element& element,
@@ -872,6 +886,8 @@ void inspector_send_request_event::Data(
   const char* priority = ResourcePriorityString(request.Priority());
   if (priority)
     dict.Add("priority", priority);
+  dict.Add("fetchPriorityHint",
+           FetchPriorityString(request.GetFetchPriorityHint()));
   SetCallStack(execution_context->GetIsolate(), dict);
 }
 
@@ -910,6 +926,8 @@ void inspector_send_navigation_request_event::Data(
       ResourcePriorityString(ResourceLoadPriority::kVeryHigh);
   if (priority)
     dict.Add("priority", priority);
+  dict.Add("fetchPriorityHint",
+           FetchPriorityString(mojom::blink::FetchPriorityHint::kAuto));
   SetCallStack(frame->DomWindow()->GetIsolate(), dict);
 }
 

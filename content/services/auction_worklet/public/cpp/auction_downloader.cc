@@ -196,6 +196,7 @@ AuctionDownloader::AuctionDownloader(
         // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
         // TODO: Import the enum strings directly
         dict.Add("resourceType", "Other");
+        dict.Add("fetchPriorityHint", "auto");
       });
 
   // Abort on redirects.

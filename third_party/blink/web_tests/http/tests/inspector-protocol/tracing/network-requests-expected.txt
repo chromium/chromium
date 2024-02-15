@@ -18,6 +18,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
 			priority: string
 			requestId: string
@@ -149,6 +150,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
 			isLinkPreload: false
 			priority: string
@@ -253,6 +255,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: high
 			frame: string
 			isLinkPreload: false
 			priority: string
@@ -373,6 +376,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
 			isLinkPreload: true
 			priority: string
