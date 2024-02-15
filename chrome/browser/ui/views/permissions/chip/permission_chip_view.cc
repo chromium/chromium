@@ -119,15 +119,9 @@ void PermissionChipView::OnThemeChanged() {
 }
 
 void PermissionChipView::UpdateBackgroundColor() {
-  if (theme_ == PermissionChipTheme::kIconStyle) {
-    // In pre-ChromeRefresh2023 and post-ChromeRefresh2023, content settings
-    // icons (which kIconStyle mimics) don't have a background.
-    SetBackground(nullptr);
-  } else {
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
             GetBackgroundColor(), GetCornerRadii())));
-  }
 }
 
 void PermissionChipView::AnimationEnded(const gfx::Animation* animation) {
@@ -203,6 +197,12 @@ const gfx::VectorIcon& PermissionChipView::GetIcon() const {
 }
 
 SkColor PermissionChipView::GetForegroundColor() const {
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kInUseActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipActivityIndicatorForeground);
+  }
+
   if (features::IsChromeRefresh2023()) {
     // 1. Default to the system primary color.
     SkColor text_and_icon_color = GetColorProvider()->GetColor(
@@ -244,10 +244,6 @@ SkColor PermissionChipView::GetForegroundColor() const {
     return text_and_icon_color;
   }
 
-  if (GetPermissionChipTheme() == PermissionChipTheme::kIconStyle) {
-    return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
-  }
-
   return GetColorProvider()->GetColor(
       GetPermissionChipTheme() == PermissionChipTheme::kLowVisibility
           ? kColorOmniboxChipForegroundLowVisibility
@@ -255,7 +251,12 @@ SkColor PermissionChipView::GetForegroundColor() const {
 }
 
 SkColor PermissionChipView::GetBackgroundColor() const {
-  DCHECK(theme_ != PermissionChipTheme::kIconStyle);
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kInUseActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipActivityIndicatorBackground);
+  }
+
   return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
 }
 
@@ -287,10 +288,6 @@ void PermissionChipView::OnAnimationValueMaybeChanged() {
 
 int PermissionChipView::GetIconSize() const {
   if (features::IsChromeRefresh2023()) {
-    // Mimic the sizing for other trailing icons.
-    if (theme_ == PermissionChipTheme::kIconStyle) {
-      return GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
-    }
     return GetLayoutConstant(LOCATION_BAR_CHIP_ICON_SIZE);
   }
 
@@ -298,7 +295,6 @@ int PermissionChipView::GetIconSize() const {
 }
 
 int PermissionChipView::GetCornerRadius() const {
-  DCHECK(theme_ != PermissionChipTheme::kIconStyle);
   if (features::IsChromeRefresh2023()) {
     return GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS);
   }

@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_THEME_H_
 
 // Icon, text, and background colors that should be used for different types
-// of Chip.
+// of PermissionChipView.
 enum class PermissionChipTheme {
+  // Used for the permission requests / confirmation chip.
   kNormalVisibility,
+  // Used for the quiet chip and for blocked activity indicators.
   kLowVisibility,
-  // Shows the chip with no background, and an icon color matching other icons
-  // in the omnibox. Suitable for collapsing the chip down to a less prominent
-  // icon.
-  kIconStyle,
+  // Used for in-use activity indicators.
+  kInUseActivityIndicator,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_THEME_H_
