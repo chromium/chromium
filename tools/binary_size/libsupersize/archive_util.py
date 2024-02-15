@@ -16,21 +16,24 @@ def ExtendSectionRange(section_range_by_name, section_name, delta_size):
   section_range_by_name[section_name] = (prev_address, prev_size + delta_size)
 
 
-def _NormalizeObjectPath(path):
+def _NormalizeObjectPath(path, obj_prefixes):
   """Normalizes object paths.
 
   Prefixes are removed: obj/, ../../
   Archive names made more pathy: foo/bar.a(baz.o) -> foo/bar.a/baz.o
   """
-  if path.startswith('obj/'):
-    # Convert obj/third_party/... -> third_party/...
-    path = path[4:]
-  elif path.startswith('../../'):
+  if path.startswith('../../'):
     # Convert ../../third_party/... -> third_party/...
     path = path[6:]
   elif path.startswith('/'):
     # Convert absolute paths to $SYSTEM/basename.o.
     path = os.path.join(models.SYSTEM_PREFIX_PATH, os.path.basename(path))
+  else:
+    # Convert obj/third_party/... -> third_party/...
+    for prefix in obj_prefixes:
+      if path.startswith(prefix):
+        path = path[len(prefix):]
+
   if path.endswith(')'):
     # Convert foo/bar.a(baz.o) -> foo/bar.a/baz.o so that hierarchical
     # breakdowns consider the .o part to be a separate node.
@@ -39,7 +42,7 @@ def _NormalizeObjectPath(path):
   return path
 
 
-def _NormalizeSourcePath(path, gen_dir_pattern):
+def _NormalizeSourcePath(path, gen_prefixes, gen_dir_pattern):
   """Returns (is_generated, normalized_path)"""
   # Don't change $APK/, or $NATIVE/ paths.
   if path.startswith('$'):
@@ -51,9 +54,6 @@ def _NormalizeSourcePath(path, gen_dir_pattern):
       return True, path[m.end():]
     return False, path
 
-  if path.startswith('gen/'):
-    # Convert gen/third_party/... -> third_party/...
-    return True, path[4:]
   if path.startswith('../../'):
     # Convert ../../third_party/... -> third_party/...
     return False, path[6:]
@@ -62,19 +62,31 @@ def _NormalizeSourcePath(path, gen_dir_pattern):
     # E.g.: /buildbot/src/android/ndk-release-r23/toolchain/llvm-project/
     #       libcxx/src/vector.cpp
     path = os.path.join(models.SYSTEM_PREFIX_PATH, os.path.basename(path))
+
+  # Convert gen/third_party/... -> third_party/...
+  for prefix in gen_prefixes:
+    if path.startswith(prefix):
+      return True, path[len(prefix):]
+
   return True, path
 
 
-def NormalizePaths(raw_symbols, gen_dir_regex=None):
+def NormalizePaths(raw_symbols, gen_dir_regex=None, toolchain_subdirs=None):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
   logging.info('Normalizing source and object paths')
   gen_dir_pattern = re.compile(gen_dir_regex) if gen_dir_regex else None
+  obj_prefixes = ['obj/']
+  gen_prefixes = ['gen/']
+  if toolchain_subdirs != None:
+    obj_prefixes.extend(f'{t}/obj/' for t in toolchain_subdirs)
+    gen_prefixes.extend(f'{t}/gen/' for t in toolchain_subdirs)
   for symbol in raw_symbols:
     if symbol.object_path:
-      symbol.object_path = _NormalizeObjectPath(symbol.object_path)
+      symbol.object_path = _NormalizeObjectPath(symbol.object_path,
+                                                obj_prefixes)
     if symbol.source_path:
       symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-          symbol.source_path, gen_dir_pattern)
+          symbol.source_path, gen_prefixes, gen_dir_pattern)
 
 
 def _ComputeAncestorPath(path_list, symbol_count):
