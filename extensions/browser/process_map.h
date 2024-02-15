@@ -199,10 +199,10 @@ class ProcessMap : public KeyedService {
   }
 
  private:
-  struct Item;
+  using ProcessId = int;
+  using Item = std::pair<ExtensionId, ProcessId>;
 
-  typedef std::set<Item> ItemSet;
-  ItemSet items_;
+  std::set<Item> items_;
 
   // Whether the process map belongs to the browser context used on Chrome OS
   // lock screen.
