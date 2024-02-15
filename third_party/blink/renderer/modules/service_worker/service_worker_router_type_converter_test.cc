@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -99,7 +100,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -160,7 +162,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -217,7 +220,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -282,7 +286,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -315,7 +320,8 @@ TEST(ServiceWorkerRouterTypeConverterTest,
   expected_rule.condition = blink::ServiceWorkerRouterCondition::WithUrlPattern(
       DefaultStringUrlPattern());
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -407,7 +413,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kRace;
+  expected_source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
   expected_source.race_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -447,7 +453,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
   expected_source.fetch_event_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -488,7 +495,8 @@ TEST(ServiceWorkerRouterTypeConverterTest,
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
   expected_source.fetch_event_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -522,7 +530,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithRequest(expected_request);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -555,7 +564,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
     expected_rule.condition =
         blink::ServiceWorkerRouterCondition::WithRequest(expected_request);
     blink::ServiceWorkerRouterSource expected_source;
-    expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+    expected_source.type =
+        network::mojom::ServiceWorkerRouterSourceType::kNetwork;
     expected_source.network_source.emplace();
     expected_rule.sources.emplace_back(expected_source);
 
@@ -599,7 +609,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
             blink::ServiceWorkerRouterCondition::WithRunningStatus(
                 expected_status);
         blink::ServiceWorkerRouterSource expected_source;
-        expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+        expected_source.type =
+            network::mojom::ServiceWorkerRouterSourceType::kNetwork;
         expected_source.network_source.emplace();
         expected_rule.sources.emplace_back(expected_source);
 
@@ -637,7 +648,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyOrConditionShouldBeAllowed) {
       blink::ServiceWorkerRouterCondition::WithOrCondition({});
 
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -700,7 +712,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, OrConditionWithMultipleElements) {
           expected_or_condition);
 
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -742,7 +755,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, NestedOrCondition) {
       blink::ServiceWorkerRouterCondition::WithOrCondition(expected_outer);
 
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_source.network_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -808,7 +822,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+  expected_source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
   expected_source.cache_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
@@ -849,7 +863,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+  expected_source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
   blink::ServiceWorkerRouterCacheSource cache_source;
   cache_source.cache_name = "cache_name";
   expected_source.cache_source = std::move(cache_source);

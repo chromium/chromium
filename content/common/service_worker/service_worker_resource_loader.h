@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 
@@ -119,14 +120,14 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // sources are used.
   bool ShouldAvoidRecordingServiceWorkerTimingInfo();
   void set_used_router_source_type(
-      blink::ServiceWorkerRouterSource::Type type) {
+      network::mojom::ServiceWorkerRouterSourceType type) {
     used_router_source_type_ = type;
   }
 
  private:
   FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
   DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
-  std::optional<blink::ServiceWorkerRouterSource::Type>
+  std::optional<network::mojom::ServiceWorkerRouterSourceType>
       used_router_source_type_;
 };
 }  // namespace content

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 
 namespace blink {
 
@@ -33,13 +34,13 @@ bool ServiceWorkerRouterSource::operator==(
     return false;
   }
   switch (type) {
-    case Type::kNetwork:
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return network_source == other.network_source;
-    case Type::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
       return race_source == other.race_source;
-    case Type::kFetchEvent:
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return fetch_event_source == other.fetch_event_source;
-    case Type::kCache:
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return cache_source == other.cache_source;
   }
 }

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -223,13 +224,13 @@ std::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
   switch (v8_source_enum.AsEnum()) {
     case V8RouterSourceEnum::Enum::kNetwork: {
       ServiceWorkerRouterSource source;
-      source.type = ServiceWorkerRouterSource::Type::kNetwork;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
       source.network_source.emplace();
       return source;
     }
     case V8RouterSourceEnum::Enum::kRaceNetworkAndFetchHandler: {
       ServiceWorkerRouterSource source;
-      source.type = ServiceWorkerRouterSource::Type::kRace;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
       source.race_source.emplace();
       return source;
     }
@@ -241,13 +242,13 @@ std::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
         return std::nullopt;
       }
       ServiceWorkerRouterSource source;
-      source.type = ServiceWorkerRouterSource::Type::kFetchEvent;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
       source.fetch_event_source.emplace();
       return source;
     }
     case V8RouterSourceEnum::Enum::kCache: {
       ServiceWorkerRouterSource source;
-      source.type = ServiceWorkerRouterSource::Type::kCache;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
       source.cache_source.emplace();
       return source;
     }
@@ -263,7 +264,7 @@ std::optional<ServiceWorkerRouterSource> RouterSourceToBlink(
   }
   ServiceWorkerRouterSource source;
   if (v8_source->hasCacheName()) {
-    source.type = ServiceWorkerRouterSource::Type::kCache;
+    source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
     ServiceWorkerRouterCacheSource cache_source;
     cache_source.cache_name = AtomicString(v8_source->cacheName()).Latin1();
     source.cache_source = std::move(cache_source);

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 
 namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
@@ -89,11 +90,11 @@ bool ServiceWorkerResourceLoader::
   }
 
   switch (*used_router_source_type_) {
-    case blink::ServiceWorkerRouterSource::Type::kNetwork:
-    case blink::ServiceWorkerRouterSource::Type::kCache:
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return true;
-    case blink::ServiceWorkerRouterSource::Type::kRace:
-    case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       // It is fine to record the ServiceWorker related metrics
       // because the fetch handler is executed.
       return false;

@@ -15,6 +15,7 @@ namespace network::mojom {
 
 enum class RequestMode : int32_t;
 enum class RequestDestination : int32_t;
+enum class ServiceWorkerRouterSourceType : int32_t;
 
 }  // namespace network::mojom
 
@@ -186,22 +187,7 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCacheSource {
 // This represents a source of the router rule.
 // TODO(crbug.com/1371756): implement other sources in the proposal.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
-  // Type of sources.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Type {
-    // Network is used as a source.
-    kNetwork = 0,
-    // Race network and fetch handler.
-    kRace = 1,
-    // Fetch Event is used as a source.
-    kFetchEvent = 2,
-    // Cache is used as a source.
-    kCache = 3,
-
-    kMaxValue = kCache,
-  };
-  Type type;
+  network::mojom::ServiceWorkerRouterSourceType type;
 
   std::optional<ServiceWorkerRouterNetworkSource> network_source;
   std::optional<ServiceWorkerRouterRaceSource> race_source;

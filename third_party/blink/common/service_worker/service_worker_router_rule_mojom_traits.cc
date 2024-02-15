@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
 
@@ -80,13 +81,13 @@ UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
             blink::ServiceWorkerRouterSource>::
     GetTag(const blink::ServiceWorkerRouterSource& data) {
   switch (data.type) {
-    case blink::ServiceWorkerRouterSource::Type::kNetwork:
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource;
-    case blink::ServiceWorkerRouterSource::Type::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource;
-    case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kFetchEventSource;
-    case blink::ServiceWorkerRouterSource::Type::kCache:
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kCacheSource;
   }
 }
@@ -97,19 +98,19 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
          blink::ServiceWorkerRouterSource* out) {
   switch (data.tag()) {
     case blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource:
-      out->type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+      out->type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
       out->network_source.emplace();
       return true;
     case blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource:
-      out->type = blink::ServiceWorkerRouterSource::Type::kRace;
+      out->type = network::mojom::ServiceWorkerRouterSourceType::kRace;
       out->race_source.emplace();
       return true;
     case blink::mojom::ServiceWorkerRouterSource::Tag::kFetchEventSource:
-      out->type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+      out->type = network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
       out->fetch_event_source.emplace();
       return true;
     case blink::mojom::ServiceWorkerRouterSource::Tag::kCacheSource:
-      out->type = blink::ServiceWorkerRouterSource::Type::kCache;
+      out->type = network::mojom::ServiceWorkerRouterSourceType::kCache;
       if (!data.ReadCacheSource(&out->cache_source)) {
         return false;
       }

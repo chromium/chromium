@@ -240,28 +240,28 @@ bool IsValidSources(
   // Currently, only network source is supported.
   for (const auto& s : sources) {
     switch (s.type) {
-      case blink::ServiceWorkerRouterSource::Type::kNetwork:
+      case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
         if (!s.network_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::Type::kRace:
+      case network::mojom::ServiceWorkerRouterSourceType::kRace:
         if (!s.race_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+      case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
         if (!s.fetch_event_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterSource::Type::kCache:
+      case network::mojom::ServiceWorkerRouterSourceType::kCache:
         if (!s.cache_source) {
           RecordSetupError(
               ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
@@ -616,7 +616,8 @@ void ServiceWorkerRouterEvaluator::Compile() {
     need_running_status_ |= rule->need_running_status();
     for (const auto& s : r.sources) {
       bool has_fetch_event =
-          (s.type == blink::ServiceWorkerRouterSource::Type::kFetchEvent);
+          (s.type ==
+           network::mojom::ServiceWorkerRouterSourceType::kFetchEvent);
       has_fetch_event_source_ |= has_fetch_event;
       has_non_fetch_event_source_ |= !has_fetch_event;
     }
@@ -672,17 +673,17 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
     base::Value::List source;
     for (const auto& s : r.sources) {
       switch (s.type) {
-        case blink::ServiceWorkerRouterSource::Type::kNetwork:
+        case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
           source.Append("network");
           break;
-        case blink::ServiceWorkerRouterSource::Type::kRace:
+        case network::mojom::ServiceWorkerRouterSourceType::kRace:
           // TODO(crbug.com/1371756): we may need to update the name per target.
           source.Append("race-network-and-fetch-handler");
           break;
-        case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+        case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
           source.Append("fetch-event");
           break;
-        case blink::ServiceWorkerRouterSource::Type::kCache:
+        case network::mojom::ServiceWorkerRouterSourceType::kCache:
           if (s.cache_source->cache_name) {
             base::Value::Dict out_s;
             out_s.Set("cache_name", *s.cache_source->cache_name);

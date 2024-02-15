@@ -383,7 +383,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
     auto source_type = sources[0].type;
     set_used_router_source_type(source_type);
     switch (source_type) {
-      case blink::ServiceWorkerRouterSource::Type::kNetwork:
+      case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
         // Network fallback is requested.
         {
           auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
@@ -392,13 +392,13 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
           OnFallback(std::nullopt, std::move(timing));
         }
         return;
-      case blink::ServiceWorkerRouterSource::Type::kRace:
+      case network::mojom::ServiceWorkerRouterSourceType::kRace:
         race_network_request_mode = kForced;
         break;
-      case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+      case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
         race_network_request_mode = kSkipped;
         break;
-      case blink::ServiceWorkerRouterSource::Type::kCache:
+      case network::mojom::ServiceWorkerRouterSourceType::kCache:
         controller_connector_->CallCacheStorageMatch(
             sources[0].cache_source->cache_name,
             blink::mojom::FetchAPIRequest::From(resource_request_),

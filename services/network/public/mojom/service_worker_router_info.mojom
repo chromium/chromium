@@ -4,6 +4,20 @@
 
 module network.mojom;
 
+// Type of sources.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ServiceWorkerRouterSourceType {
+  // Network is used as a source.
+  kNetwork = 0,
+  // Race network and fetch handler.
+  kRace = 1,
+  // Fetch Event is used as a source.
+  kFetchEvent = 2,
+  // Cache is used as a source.
+  kCache = 3,
+};
+
 // Represents information about ServiceWorker Static Routing API, especially,
 // details of the matched static router rule.
 struct ServiceWorkerRouterInfo {

@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -2740,22 +2741,24 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             return Status::kErrorCorrupted;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kNetworkSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+            source.type =
+                network::mojom::ServiceWorkerRouterSourceType::kNetwork;
             source.network_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kRaceSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kRace;
+            source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
             source.race_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kFetchEventSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+            source.type =
+                network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kCacheSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+            source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
             blink::ServiceWorkerRouterCacheSource cache_source;
             if (s.cache_source().has_cache_name()) {
               cache_source.cache_name = s.cache_source().cache_name();
@@ -2961,16 +2964,16 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
             v1->add_source();
         switch (s.type) {
-          case blink::ServiceWorkerRouterSource::Type::kNetwork:
+          case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
             source->mutable_network_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kRace:
+          case network::mojom::ServiceWorkerRouterSourceType::kRace:
             source->mutable_race_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+          case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
             source->mutable_fetch_event_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kCache:
+          case network::mojom::ServiceWorkerRouterSourceType::kCache:
             auto* cache_source = source->mutable_cache_source();
             if (s.cache_source->cache_name) {
               cache_source->set_cache_name(*s.cache_source->cache_name);

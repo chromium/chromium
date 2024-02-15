@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
@@ -62,31 +63,31 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::Type::kRace;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
       source.race_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
       source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
       source.cache_source.emplace();
       rule.sources.push_back(source);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+      source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example cache name";
       source.cache_source = cache_source;
