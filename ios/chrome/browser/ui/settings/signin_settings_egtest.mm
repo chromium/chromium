@@ -450,7 +450,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 - (void)testSyncOffRowOpensDialogIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
 
