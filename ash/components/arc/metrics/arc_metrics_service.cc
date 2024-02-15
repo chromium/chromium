@@ -680,8 +680,8 @@ void ArcMetricsService::ReportArcSystemHealthUpgrade(base::TimeDelta duration,
 
 void ArcMetricsService::ReportClipboardDragDropEvent(
     mojom::ArcClipboardDragDropEvent event_type) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramEnumeration("Arc.ClipboardDragDrop", event_type);
+  // This method is deprecated.
+  // TODO(yhanada): Remove this once all callers are removed.
 }
 
 void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {

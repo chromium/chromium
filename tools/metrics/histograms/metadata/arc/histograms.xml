@@ -776,13 +776,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
-<histogram name="Arc.ClipboardDragDrop" enum="ArcClipboardDragDropEvent"
-    expires_after="2024-03-17">
-  <owner>yhanada@google.com</owner>
-  <owner>arc-framework@google.com</owner>
-  <summary>The number of clipboard and drag-and-drop events.</summary>
-</histogram>
-
 <histogram
     name="Arc.CloudDpc{TimedCloudDpcOp}.TimeDelta{SuccessFailure}{ArcUserTypes}"
     units="ms" expires_after="2024-08-04">
