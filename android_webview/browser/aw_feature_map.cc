@@ -44,6 +44,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewInjectPlatformJsApis,
     &features::kWebViewMediaIntegrityApi,
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+    &features::kWebViewMuteAudio,
 };
 
 // static

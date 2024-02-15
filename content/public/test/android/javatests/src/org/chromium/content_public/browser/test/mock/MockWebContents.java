@@ -182,6 +182,9 @@ public class MockWebContents implements WebContents {
     public void setAudioMuted(boolean mute) {}
 
     @Override
+    public boolean isAudioMuted() { return false; }
+
+    @Override
     public boolean focusLocationBarByDefault() {
         return false;
     }

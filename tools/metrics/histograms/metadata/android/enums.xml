@@ -700,6 +700,10 @@ chromium-metrics-reviews@google.com.
   <int value="99" label="SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS">
     WebSettingsCompat#setWebViewMediaIntegrityApiStatus(int,Map(String,Integer))
   </int>
+  <int value="100" label="SET_AUDIO_MUTED">
+    WebViewCompat#setAudioMuted(boolean)
+  </int>
+  <int value="101" label="IS_AUDIO_MUTED">WebViewCompat#isAudioMuted()</int>
 </enum>
 
 <enum name="AppPackageNameAllowlistParseStatus">

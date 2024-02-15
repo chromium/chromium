@@ -83,6 +83,11 @@ BASE_FEATURE(kWebViewMixedContentAutoupgrades,
              "WebViewMixedContentAutoupgrades",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This enables WebView audio to be muted using an API.
+BASE_FEATURE(kWebViewMuteAudio,
+             "WebViewMuteAudio",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Only allow extra headers added via loadUrl() to be sent to the original
 // origin; strip them from the request if a cross-origin redirect occurs.
 BASE_FEATURE(kWebViewExtraHeadersSameOriginOnly,

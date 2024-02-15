@@ -3840,6 +3840,19 @@ public class AwContents implements SmartClipProvider {
         return mRendererPriorityWaivedWhenNotVisible;
     }
 
+    public void setAudioMuted(boolean mute) {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MUTE_AUDIO)) {
+            mWebContents.setAudioMuted(mute);
+        }
+    }
+
+    public boolean isAudioMuted() {
+        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_MUTE_AUDIO)) {
+            return mWebContents.isAudioMuted();
+        }
+        return false;
+    }
+
     public void setRendererPriorityPolicy(
             @RendererPriority int rendererRequestedPriority, boolean waivedWhenNotVisible) {
         if (TRACE) Log.i(TAG, "%s setRendererPriorityPolicy", this);
