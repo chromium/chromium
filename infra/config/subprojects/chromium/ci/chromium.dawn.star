@@ -1229,11 +1229,12 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|Nvidia",
-    #     short_name = "ex64",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Nvidia",
+        short_name = "ex64",
+    ),
     list_view = "chromium.gpu.experimental",
+    execution_timeout = 6 * time.hour,
 )
 
 ci.thin_tester(
