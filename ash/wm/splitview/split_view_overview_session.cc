@@ -100,11 +100,6 @@ chromeos::WindowStateType SplitViewOverviewSession::GetWindowStateType() const {
   return window_state->GetStateType();
 }
 
-void SplitViewOverviewSession::OnKeyEvent() {
-  MaybeEndOverview(SplitViewOverviewSessionExitPoint::kSkip,
-                   OverviewEnterExitType::kImmediateExit);
-}
-
 void SplitViewOverviewSession::HandleClickOrTap(const ui::LocatedEvent& event) {
   gfx::Point location_in_screen = event.location();
   aura::Window* target = static_cast<aura::Window*>(event.target());

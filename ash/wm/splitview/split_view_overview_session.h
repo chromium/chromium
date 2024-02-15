@@ -80,9 +80,7 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   void RecordSplitViewOverviewSessionExitPointMetrics(
       SplitViewOverviewSessionExitPoint user_action);
 
-  // Called by `OverviewSession` on a key or mouse event that isn't processed by
-  // overview session.
-  void OnKeyEvent();
+  // Handles mouse or touch event forwarded from `OverviewSession`.
   void HandleClickOrTap(const ui::LocatedEvent& event);
 
   // aura::WindowObserver:

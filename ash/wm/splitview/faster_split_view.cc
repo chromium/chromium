@@ -9,9 +9,11 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/wm_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -53,9 +55,13 @@ void FasterSplitViewToast::MaybeCloseFocusedView(bool primary_action) {}
 
 void FasterSplitViewToast::MaybeSwapFocusedView(bool right) {}
 
-void FasterSplitViewToast::OnFocusableViewFocused() {}
+void FasterSplitViewToast::OnFocusableViewFocused() {
+  ToggleA11yFocus();
+}
 
-void FasterSplitViewToast::OnFocusableViewBlurred() {}
+void FasterSplitViewToast::OnFocusableViewBlurred() {
+  ToggleA11yFocus();
+}
 
 BEGIN_METADATA(FasterSplitViewToast, SystemToastStyle)
 END_METADATA
@@ -65,7 +71,20 @@ FasterSplitViewSettingsButton::FasterSplitViewSettingsButton(
     : IconButton(std::move(settings_callback),
                  IconButton::Type::kLarge,
                  &kOverviewSettingsIcon,
-                 IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL) {}
+                 IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL) {
+  SetBackgroundColor(kColorAshShieldAndBase80);
+
+  views::FocusRing* focus_ring =
+      StyleUtil::SetUpFocusRingForView(this, kWindowMiniViewFocusRingHaloInset);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<FasterSplitViewSettingsButton>(view);
+        CHECK(v);
+        return v->is_focused();
+      }));
+}
 
 views::View* FasterSplitViewSettingsButton::GetView() {
   return this;
@@ -80,9 +99,13 @@ void FasterSplitViewSettingsButton::MaybeCloseFocusedView(bool primary_action) {
 
 void FasterSplitViewSettingsButton::MaybeSwapFocusedView(bool right) {}
 
-void FasterSplitViewSettingsButton::OnFocusableViewFocused() {}
+void FasterSplitViewSettingsButton::OnFocusableViewFocused() {
+  views::FocusRing::Get(this)->SchedulePaint();
+}
 
-void FasterSplitViewSettingsButton::OnFocusableViewBlurred() {}
+void FasterSplitViewSettingsButton::OnFocusableViewBlurred() {
+  views::FocusRing::Get(this)->SchedulePaint();
+}
 
 BEGIN_METADATA(FasterSplitViewSettingsButton, views::View)
 END_METADATA
@@ -100,13 +123,11 @@ FasterSplitView::FasterSplitView(
       AddChildView(std::make_unique<FasterSplitViewSettingsButton>(
           std::move(settings_callback)));
 
-  // TODO(b/323199185): Consider refactoring this from `SystemToastStyle`.
   const int toast_height = settings_button_->GetPreferredSize().height();
   const float toast_corner_radius = toast_height / 2.0f;
   settings_button_->SetBorder(std::make_unique<views::HighlightBorder>(
       toast_corner_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  settings_button_->SetBackgroundColor(kColorAshShieldAndBase80);
 }
 
 BEGIN_METADATA(FasterSplitView, views::BoxLayoutView)

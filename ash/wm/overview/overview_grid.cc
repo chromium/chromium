@@ -2008,7 +2008,6 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   // 2. In faster split screen setup, the `no_windows_widget_` show to indicate
   // either no windows available to pair or select a window to complete the
   // window layout.
-  // TODO(b/323199185): Move this to its own function.
   if (window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     UpdateFasterSplitViewWidget();
     return;
@@ -2918,8 +2917,6 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
                             weak_ptr_factory_.GetWeakPtr())));
     faster_splitview_widget_->Show();
   }
-
-  // TODO(b/323199185): UX needs to decide where to position this.
 
   gfx::Rect centered_bounds(GetGridEffectiveBounds());
   const gfx::Size preferred_size =

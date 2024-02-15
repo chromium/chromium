@@ -191,8 +191,7 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 SystemToastStyle::~SystemToastStyle() = default;
 
 bool SystemToastStyle::ToggleA11yFocus() {
-  if (!dismiss_button_ ||
-      !Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+  if (!dismiss_button_) {
     return false;
   }
 

@@ -1508,7 +1508,8 @@ void DesksController::MaybeDismissPersistentDeskRemovalToast() {
 }
 
 bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
-  if (!temporary_removed_desk_ ||
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
+      !temporary_removed_desk_ ||
       !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
     return false;
   }

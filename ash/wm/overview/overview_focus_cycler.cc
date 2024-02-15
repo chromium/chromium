@@ -268,6 +268,13 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
       }
     }
 
+    // UI elements in faster split screen partial overview will be traversed
+    // right after the overview items.
+    if (auto* faster_split_view = grid->GetFasterSplitView()) {
+      traversable_views.push_back(faster_split_view->toast());
+      traversable_views.push_back(faster_split_view->settings_button());
+    }
+
     AddDesksBarTraversableViews(grid.get(), traversable_views);
 
     if (grid->IsSaveDeskAsTemplateButtonVisible()) {
@@ -275,10 +282,6 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
     }
     if (grid->IsSaveDeskForLaterButtonVisible()) {
       traversable_views.push_back(grid->GetSaveDeskForLaterButton());
-    }
-    if (auto* faster_split_view = grid->GetFasterSplitView()) {
-      traversable_views.push_back(faster_split_view->toast());
-      traversable_views.push_back(faster_split_view->settings_button());
     }
   }
   return traversable_views;
