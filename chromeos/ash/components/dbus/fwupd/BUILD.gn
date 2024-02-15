@@ -14,6 +14,7 @@ component("fwupd") {
     "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
+    "//components/device_event_log",
     "//dbus",
     "//url",
   ]
