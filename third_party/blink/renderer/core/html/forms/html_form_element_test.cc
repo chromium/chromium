@@ -265,42 +265,27 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
             ListedElement::List{});
 }
 
-// This tree is created manually because innerHTML assignment doesn't invoke the
-// parser for declarative ShadowDOM. The created tree looks like this:
-//  <form id=form1>
-//    <input id=input1>
-//    <div id=div1>
-//      <template shadowrootmode=open>
-//        <input id=input2>
-//      </template>
-//    </div>
-//  </form>
 TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=form1>
+      <input id=input1>
+      <div id=div1>
+        <template shadowrootmode=open>
+          <input id=input2>
+        </template>
+      </div>
+    </form>
+  )HTML");
 
-  HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
-  body->AppendChild(form1);
-
-  HTMLInputElement* input1 =
-      MakeGarbageCollected<HTMLInputElement>(GetDocument());
-  form1->AppendChild(input1);
-
-  HTMLDivElement* form1div =
-      MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  form1->AppendChild(form1div);
-  ShadowRoot& form1root =
-      form1div->AttachShadowRootForTesting(ShadowRootType::kOpen);
-
-  HTMLInputElement* input2 =
-      MakeGarbageCollected<HTMLInputElement>(GetDocument());
-  form1root.AppendChild(input2);
-
-  EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
-  ListedElement::List list;
-  list.push_back(input1);
-  list.push_back(input2);
-  EXPECT_EQ(form1->ListedElements(/*include_shadow_trees=*/true), list);
-  EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
+  HTMLFormElement* form1 = GetFormElement("form1");
+  ASSERT_NE(form1, nullptr);
+  EXPECT_THAT(
+      form1->ListedElements(/*include_shadow_trees=*/true),
+      ElementsAre(
+          GetListedElement("input1"),
+          GetListedElement("input2", GetElementById("div1")->GetShadowRoot())));
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
 }
 
 TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
@@ -321,16 +306,13 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
     <input id=input1 form=form1>
   )HTML");
 
-  auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
-  auto* input1 = ListedElement::From(*GetElementById("input1"));
-  auto* input2 =
-      ListedElement::From(*GetElementById("shadowhost")
-                               ->GetShadowRoot()
-                               ->getElementById(AtomicString("input2")));
-
-  EXPECT_THAT(form1->ListedElements(), ElementsAre(input1));
-  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
-              ElementsAre(input2, input1));
+  HTMLFormElement* form1 = GetFormElement("form1");
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
+  EXPECT_THAT(
+      form1->ListedElements(/*include_shadow_trees=*/true),
+      ElementsAre(GetListedElement(
+                      "input2", GetElementById("shadowhost")->GetShadowRoot()),
+                  GetListedElement("input1")));
 }
 
 // Tests that form control elements inside nested forms are extracted if
