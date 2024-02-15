@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
 
@@ -61,6 +63,8 @@ class SigninView extends LinearLayout {
 
         ImageView headerImage = findViewById(R.id.signin_header_image);
         mAnimationLooper = new AnimationLooper(headerImage.getDrawable());
+
+        createButtons();
     }
 
     SigninScrollView getScrollView() {
@@ -127,15 +131,22 @@ class SigninView extends LinearLayout {
         mAnimationLooper.stop();
     }
 
-    void createButtons(boolean equallyWeighted) {
-        mRefuseButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
+    void createButtons() {
+        mRefuseButton =
+                DualControlLayout.createButtonForLayout(
+                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
         mRefuseButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        @DualControlLayout.ButtonType
+        int acceptButtonType =
+                SigninFeatureMap.isEnabled(
+                                SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+                        ? DualControlLayout.ButtonType.PRIMARY_TEXT
+                        : DualControlLayout.ButtonType.PRIMARY_FILLED;
         mAcceptButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), /* isPrimary= */ equallyWeighted, "", null);
+                DualControlLayout.createButtonForLayout(getContext(), acceptButtonType, "", null);
         mAcceptButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

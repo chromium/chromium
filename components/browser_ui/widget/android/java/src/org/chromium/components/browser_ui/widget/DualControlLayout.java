@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StyleRes;
 
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -56,29 +58,75 @@ public final class DualControlLayout extends ViewGroup {
         int APART = 2;
     }
 
+    @IntDef({ButtonType.PRIMARY_FILLED, ButtonType.PRIMARY_TEXT, ButtonType.SECONDARY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonType {
+        int PRIMARY_FILLED = 0;
+        int PRIMARY_TEXT = 1;
+        int SECONDARY = 2;
+    }
+
     /**
      * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
      *
      * @param isPrimary Whether or not the button is meant to act as a "Confirm" button.
-     * @param text      Text to display on the button.
-     * @param listener  Listener to alert when the button has been clicked.
+     * @param text Text to display on the button.
+     * @param listener Listener to alert when the button has been clicked.
+     * @return Button that can be used in the view.
+     * @deprecated Use the Button createButtonForLayout( Context context, @ButtonType int
+     *     buttonType, String text, OnClickListener listener) version instead.
+     */
+    @Deprecated
+    public static Button createButtonForLayout(
+            Context context, boolean isPrimary, String text, OnClickListener listener) {
+        // TODO(b/325429764): migrate clients and remove this deprecated method.
+        if (isPrimary) {
+            return createButtonForLayout(context, ButtonType.PRIMARY_FILLED, text, listener);
+        } else {
+            return createButtonForLayout(context, ButtonType.SECONDARY, text, listener);
+        }
+    }
+
+    /**
+     * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
+     *
+     * @param buttonType Determines button's function and appearance.
+     * @param text Text to display on the button.
+     * @param listener Listener to alert when the button has been clicked.
      * @return Button that can be used in the view.
      */
     public static Button createButtonForLayout(
-            Context context, boolean isPrimary, String text, OnClickListener listener) {
-        if (isPrimary) {
-            ButtonCompat primaryButton =
-                    new ButtonCompat(context, R.style.FilledButtonThemeOverlay_Flat);
-            primaryButton.setId(R.id.button_primary);
-            primaryButton.setOnClickListener(listener);
-            primaryButton.setText(text);
-            return primaryButton;
-        } else {
-            Button secondaryButton = new ButtonCompat(context, R.style.TextButtonThemeOverlay);
-            secondaryButton.setId(R.id.button_secondary);
-            secondaryButton.setOnClickListener(listener);
-            secondaryButton.setText(text);
-            return secondaryButton;
+            Context context, @ButtonType int buttonType, String text, OnClickListener listener) {
+        ButtonCompat button = new ButtonCompat(context, getButtonTheme(buttonType));
+        button.setId(getButtonId(buttonType));
+        button.setOnClickListener(listener);
+        button.setText(text);
+        return button;
+    }
+
+    private static @StyleRes int getButtonTheme(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+                return R.style.FilledButtonThemeOverlay_Flat;
+            case ButtonType.PRIMARY_TEXT:
+                return R.style.TextButtonThemeOverlay;
+            case ButtonType.SECONDARY:
+                return R.style.TextButtonThemeOverlay;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
+        }
+    }
+
+    private static @IdRes int getButtonId(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+                return R.id.button_primary;
+            case ButtonType.PRIMARY_TEXT:
+                return R.id.button_primary;
+            case ButtonType.SECONDARY:
+                return R.id.button_secondary;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
         }
     }
 
