@@ -521,7 +521,8 @@ namespace downloads {
     // when the item is opened for the first time. This method can only be called
     // in response to a user gesture.
     // |downloadId|: The identifier for the downloaded file.
-    static void open(long downloadId);
+    static void open(long downloadId,
+                     optional NullCallback callback);
 
     // Show the downloaded file in its folder in a file manager.
     // |downloadId|: The identifier for the downloaded file.
