@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_test_util.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -607,12 +609,15 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
       alert_row->footer_label()->GetText());
 }
 
-// Mocks a tab has normal memory usage and verifies that the string for normal
-// memory usage is shown on the hover card. Also tests for the hover card to
-// update this string and use the high memory usage string instead when the tab
-// uses memory above the threshold
+// With memory usage in hovercards pref set to enabled, mocks a tab with normal
+// memory usage and verifies that the string for normal memory usage is shown on
+// the hover card. Also tests that the hover card updates this string and use
+// the high memory usage string instead when the tab uses memory above the
+// threshold.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       HoverCardFooterShowsMemoryUsage) {
+                       HoverCardFooterMemoryUsagePrefEnabled) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kHoverCardMemoryUsageEnabled, true);
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
@@ -629,6 +634,43 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                 {ui::FormatBytes(bytes_used)}, nullptr),
             performance_row->footer_label()->GetText());
   EXPECT_FALSE(performance_row->icon()->GetImageModel().IsEmpty());
+
+  // Hover card updates and shows high memory usage when card is still open
+  bytes_used =
+      performance_manager::features::kMemoryUsageInHovercardsHighThresholdBytes
+          .Get() +
+      100;
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+  GetTabStrip(browser())
+      ->hover_card_controller_for_testing()
+      ->OnTabResourceMetricsRefreshed();
+  EXPECT_EQ(l10n_util::FormatString(
+                l10n_util::GetStringUTF16(IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE),
+                {ui::FormatBytes(bytes_used)}, nullptr),
+            performance_row->footer_label()->GetText());
+}
+
+// With memory usage in hovercards pref set to disabled, mocks a tab with normal
+// memory usage and verifies that the string for normal memory usage is not
+// shown on the hover card. Also tests that the hover card does show the high
+// memory usage string when the tab uses memory above the threshold.
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
+                       HoverCardFooterMemoryUsagePrefDisabled) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kHoverCardMemoryUsageEnabled, false);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  uint64_t bytes_used = 1000;
+  auto* const tab_resource_usage_tab_helper =
+      TabResourceUsageTabHelper::FromWebContents(GetWebContentsAt(1));
+  tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
+
+  // Don't show memory usage
+  FadePerformanceFooterRow* const performance_row =
+      GetPrimaryPerformanceRowFromHoverCard(SimulateHoverTab(browser(), 1));
+  EXPECT_TRUE(performance_row->footer_label()->GetText().empty());
+  EXPECT_TRUE(performance_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card updates and shows high memory usage when card is still open
   bytes_used =

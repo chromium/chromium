@@ -22,6 +22,7 @@ struct AlertFooterRowData {
 };
 
 struct PerformanceRowData {
+  bool show_memory_usage = false;
   bool is_high_memory_usage = false;
   uint64_t memory_usage_in_bytes = 0;
 };

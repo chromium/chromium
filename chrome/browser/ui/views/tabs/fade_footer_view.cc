@@ -159,7 +159,7 @@ END_METADATA
 // -----------------------------------------------------------------------
 
 void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
-  if (data.memory_usage_in_bytes > 0) {
+  if (data.show_memory_usage) {
     const std::u16string formatted_memory_usage =
         ui::FormatBytes(data.memory_usage_in_bytes);
     const std::u16string row_text = l10n_util::GetStringFUTF16(

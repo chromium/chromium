@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -29,8 +30,10 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -397,12 +400,20 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     thumbnail_view_->SetRoundedCorners(true, corner_radius_);
   }
 
-    footer_view_ = AddChildView(std::make_unique<FooterView>());
-    footer_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(
-            footer_view_->flex_layout()->GetDefaultFlexRule())
-            .WithWeight(0));
+  footer_view_ = AddChildView(std::make_unique<FooterView>());
+  footer_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          footer_view_->flex_layout()->GetDefaultFlexRule())
+          .WithWeight(0));
+
+  OnMemoryUsageInHovercardsPrefChanged();
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kHoverCardMemoryUsageEnabled,
+      base::BindRepeating(
+          &TabHoverCardBubbleView::OnMemoryUsageInHovercardsPrefChanged,
+          base::Unretained(this)));
 
   // Set up layout.
 
@@ -548,13 +559,19 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->is_high_memory_usage()
           : false;
-  bool show_footer = alert_state_.has_value() || show_discard_status ||
-                     tab_memory_usage_in_bytes > 0;
+  // High memory usage notification is considered a tab alert. Show it even
+  // if the memory usage in hovercards pref is disabled.
+  const bool show_memory_usage =
+      (memory_usage_in_hovercards_setting_ && tab_memory_usage_in_bytes > 0) ||
+      is_high_memory_usage;
+  bool show_footer =
+      alert_state_.has_value() || show_discard_status || show_memory_usage;
+
   footer_view_->SetAlertData({alert_state_, show_discard_status,
                               tab_data.discarded_memory_savings_in_bytes});
 
   footer_view_->SetPerformanceData(
-      {is_high_memory_usage, tab_memory_usage_in_bytes});
+      {show_memory_usage, is_high_memory_usage, tab_memory_usage_in_bytes});
 
   if (thumbnail_view_) {
     // We only clip the corners of the fade image when there isn't a footer.
@@ -612,6 +629,12 @@ std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   return start_percent >= 0.0
              ? std::make_optional(std::clamp(start_percent, 0.0, 1.0))
              : std::nullopt;
+}
+
+void TabHoverCardBubbleView::OnMemoryUsageInHovercardsPrefChanged() {
+  PrefService* const pref_service = g_browser_process->local_state();
+  memory_usage_in_hovercards_setting_ =
+      pref_service->GetBoolean(prefs::kHoverCardMemoryUsageEnabled);
 }
 
 gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {

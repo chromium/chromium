@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -79,6 +80,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
                            BackgroundTabHoverCardContentsHaveCorrectDimensions);
   class ThumbnailView;
 
+  void OnMemoryUsageInHovercardsPrefChanged();
+
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
 
@@ -89,6 +92,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   std::optional<TabAlertState> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
   const bool memory_usage_in_hovercards_enabled_;
+  PrefChangeRegistrar pref_change_registrar_;
+  bool memory_usage_in_hovercards_setting_ = false;
 
   int corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);

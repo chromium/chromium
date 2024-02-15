@@ -71,7 +71,9 @@ class TabHoverCardController : public views::ViewObserver,
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
+                           HoverCardFooterMemoryUsagePrefEnabled);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
+                           HoverCardFooterMemoryUsagePrefDisabled);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
                            HidePreviewsForDiscardedTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
