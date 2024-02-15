@@ -35,15 +35,22 @@ class FakeAccountCapabilitiesFetcherFactory
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
       override;
+  void PrepareForFetchingAccountCapabilities() override;
 
   void CompleteAccountCapabilitiesFetch(
       const CoreAccountId& account_id,
       const std::optional<AccountCapabilities> account_capabilities);
 
+  int GetNumCallsToPrepareForFetchingAccountCapabilities() const;
+
  private:
   void OnFetcherDestroyed(const CoreAccountId& account_id);
 
   std::map<CoreAccountId, FakeAccountCapabilitiesFetcher*> fetchers_;
+
+  // The number of times `PrepareForFetchingAccountCapabilities()` has been
+  // called.
+  int num_prepare_calls_ = 0;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_ACCOUNT_CAPABILITIES_FETCHER_FACTORY_H_

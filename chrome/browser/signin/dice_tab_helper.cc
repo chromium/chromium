@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -102,6 +105,15 @@ void DiceTabHelper::InitializeSigninFlow(
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kPreconnectAccountCapabilitiesBeforeSignIn)) {
+    // This profile creation may lead to the user signing in. To speed up a
+    // potential subsequent account capabililties fetch, notify IdentityManager.
+    IdentityManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
+        ->PrepareForAddingNewAccount();
   }
 
   if (!record_signin_started_metrics) {

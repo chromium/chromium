@@ -143,6 +143,11 @@ void AccountFetcherService::EnableAccountRemovalForTest() {
   enable_account_removal_for_test_ = true;
 }
 
+AccountCapabilitiesFetcherFactory*
+AccountFetcherService::GetAccountCapabilitiesFetcherFactoryForTest() {
+  return account_capabilities_fetcher_factory_.get();
+}
+
 void AccountFetcherService::EnableAccountCapabilitiesFetcherForTest(
     bool enabled) {
   enable_account_capabilities_fetcher_for_test_ = enabled;

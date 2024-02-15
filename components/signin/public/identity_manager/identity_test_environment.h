@@ -363,6 +363,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   void SetTestURLLoaderFactory(
       network::TestURLLoaderFactory* test_url_loader_factory);
 
+  // Gets the number of calls to PrepareForFetchingAccountCapabilities() in the
+  // account capabilities fetcher factory.
+  int GetNumCallsToPrepareForFetchingAccountCapabilities();
+
  private:
   friend class ::IdentityTestEnvironmentProfileAdaptor;
   friend class ::IdentityTestEnvironmentBrowserStateAdaptor;

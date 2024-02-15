@@ -103,6 +103,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // force-enable off.
   void EnableAccountCapabilitiesFetcherForTest(bool enabled);
 
+  // Returns the AccountCapabilitiesFetcherFactory, for use in tests only.
+  AccountCapabilitiesFetcherFactory*
+  GetAccountCapabilitiesFetcherFactoryForTest();
+
   // Calling this method provides a hint that Account Capabilities may be
   // fetched in the near future, and front-loads some processing to speed
   // up future fetches. This is purely a latency optimization; calling this

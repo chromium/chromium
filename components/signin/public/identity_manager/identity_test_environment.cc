@@ -769,4 +769,13 @@ void IdentityTestEnvironment::SetTestURLLoaderFactory(
   test_url_loader_factory_ = test_url_loader_factory;
 }
 
+int IdentityTestEnvironment::
+    GetNumCallsToPrepareForFetchingAccountCapabilities() {
+  return static_cast<FakeAccountCapabilitiesFetcherFactory*>(
+             identity_manager()
+                 ->GetAccountFetcherService()
+                 ->GetAccountCapabilitiesFetcherFactoryForTest())
+      ->GetNumCallsToPrepareForFetchingAccountCapabilities();
+}
+
 }  // namespace signin

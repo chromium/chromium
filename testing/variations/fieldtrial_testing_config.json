@@ -11572,12 +11572,13 @@
             ],
             "experiments": [
                 {
-                    "name": "LowDeadline",
+                    "name": "LowDeadlineWithPreconnect",
                     "params": {
                         "MinorModeRestrictionsFetchDeadlineMs": "400"
                     },
                     "enable_features": [
-                        "MinorModeRestrictionsForHistorySyncOptIn"
+                        "MinorModeRestrictionsForHistorySyncOptIn",
+                        "PreconnectAccountCapabilitiesBeforeSignIn"
                     ]
                 }
             ]
