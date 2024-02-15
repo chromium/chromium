@@ -84,7 +84,9 @@ using ::ash::holding_space_metrics::ItemAction;
 using ::ash::holding_space_metrics::PodAction;
 using ::ash::holding_space_wallpaper_nudge_metrics::IneligibleReason;
 using ::ash::holding_space_wallpaper_nudge_metrics::Interaction;
+using ::ash::holding_space_wallpaper_nudge_metrics::SuppressedReason;
 using ::base::Bucket;
+using ::base::BucketsAre;
 using ::base::BucketsAreArray;
 using ::testing::_;
 using ::testing::AllOf;
@@ -1081,6 +1083,14 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
   EXPECT_EQ(HasHelpBubble(tray), expect_eligibility);
   EXPECT_EQ(HasPing(tray), expect_eligibility);
 
+  // Verify that nudge suppression related metrics were recorded.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Ash.HoldingSpaceWallpaperNudge.SuppressedReason"),
+              Conditional(expect_eligibility, IsEmpty(),
+                          BucketsAre(Bucket(
+                              /*sample=*/SuppressedReason::kUserNotEligible,
+                              /*count=*/1))));
+
   // Reset the UI state, using zero-scaled animations to save time.
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -1231,6 +1241,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
       drop_to_pin_enabled().value_or(false);
 
   for (size_t day = 0; day < 3; ++day) {
+    base::HistogramTester histogram_tester;
+
     // Ensure a non-zero animation duration so there is sufficient time to
     // detect pings before they are automatically destroyed on animation
     // completion.
@@ -1252,6 +1264,10 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
 
     // The wallpaper highlight should also show if drop-to-pin is enabled.
     EXPECT_EQ(HasWallpaperHighlight(display_id), drop_to_pin_behavior_expected);
+
+    // Verify that no nudge suppression related metrics were recorded.
+    histogram_tester.ExpectTotalCount(
+        "Ash.HoldingSpaceWallpaperNudge.SuppressionReason", /*count=*/0);
 
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
@@ -1286,6 +1302,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     // drop-to-pin is enabled.
     EXPECT_EQ(HasWallpaperHighlight(display_id), drop_to_pin_behavior_expected);
 
+    // Verify that nudge suppression related metrics were recorded.
+    histogram_tester.ExpectUniqueSample(
+        "Ash.HoldingSpaceWallpaperNudge.SuppressionReason",
+        /*sample=*/SuppressedReason::kTimePeriod, /*count=*/0);
+
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -1296,6 +1317,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     // Every 24 hours, it should be possible for the nudge to show again once.
     task_environment()->AdvanceClock(base::Hours(24));
   }
+
+  base::HistogramTester histogram_tester;
 
   // After the 3rd time, the nudge should not show again even after 24 hours.
   SetAnimationDurationMultiplier(
@@ -1310,6 +1333,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
   EXPECT_NE(tray->GetVisible(), drop_to_pin_behavior_expected);
   EXPECT_EQ(HasWallpaperHighlight(display_id),
             drop_to_pin_enabled().value_or(false));
+
+  // Verify that nudge suppression related metrics were recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.HoldingSpaceWallpaperNudge.SuppressionReason",
+      /*sample=*/SuppressedReason::kCountLimitReached, /*count=*/0);
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
@@ -1361,6 +1389,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
+  base::HistogramTester histogram_tester;
+
   // Drag a file over the wallpaper, and expect that the nudge does not show.
   MoveMouseTo(widget.get());
   PressLeftButton();
@@ -1373,6 +1403,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
   // when the nudge is suppressed.
   EXPECT_EQ(HasWallpaperHighlight(display_id),
             drop_to_pin_enabled().value_or(false));
+
+  // Verify that nudge suppression related metrics were recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.HoldingSpaceWallpaperNudge.SuppressedReason",
+      /*sample=*/SuppressedReason::kUserHasPinned, /*count=*/1);
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
