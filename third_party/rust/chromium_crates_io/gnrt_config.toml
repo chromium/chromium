@@ -84,6 +84,9 @@ remove_crates = ['cc', 'link-cplusplus', 'wasi', 'winapi-i686-pc-windows-gnu', '
 [crate.anyhow]
 group = 'test'
 
+[crate.base64]
+group = 'test'
+
 [crate.bytes]
 group = 'test'
 

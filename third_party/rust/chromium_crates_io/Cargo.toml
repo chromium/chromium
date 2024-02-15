@@ -17,6 +17,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1"
+base64 = "0.13"
 bitflags = "2"
 bytes = "1"
 cfg-if = "1"
