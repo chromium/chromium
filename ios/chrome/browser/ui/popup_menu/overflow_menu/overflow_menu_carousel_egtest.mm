@@ -147,7 +147,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Sign in in butter mode while keeping sync disabled.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Verify that the error badge is shown.
   [ChromeEarlGreyUI openToolsMenu];
@@ -181,7 +181,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Verifies that the error badge is shown.
   [ChromeEarlGreyUI openToolsMenu];
@@ -229,7 +229,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
   // Open tools menu to click on "Learn more" family link footer.
