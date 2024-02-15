@@ -389,6 +389,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito));
 
   html_source->AddBoolean(
+      "enableLinkedServicesSetting",
+      base::FeatureList::IsEnabled(features::kLinkedServicesSetting));
+
+  html_source->AddBoolean(
       "enablePageContentSetting",
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(

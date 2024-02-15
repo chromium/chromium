@@ -505,6 +505,12 @@ BASE_FEATURE(kPrivacyGuidePreload,
              "PrivacyGuidePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Defines if the linked services setting is eligible to be shown in Chrome
+// settings.
+BASE_FEATURE(kLinkedServicesSetting,
+             "LinkedServicesSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacyGuideAndroid3,
              "PrivacyGuideAndroid3",
