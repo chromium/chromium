@@ -280,21 +280,6 @@
             ]
         }
     ],
-    "AllowWgcWindowCapturer": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AllowWgcWindowCapturer"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAnimatedImageDragShadow": [
         {
             "platforms": [
