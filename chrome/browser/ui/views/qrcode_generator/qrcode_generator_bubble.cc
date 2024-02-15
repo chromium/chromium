@@ -275,10 +275,13 @@ void QRCodeGeneratorBubble::Init() {
   textfield_url_ = AddChildView(std::move(textfield_url));
 
   // Lower error message.
-  // User-facing limit rounded down to 2000 characters for readability
-  // (QR code version 40 with M-level error correction can encode binary
-  // inputs of up to 2331 bytes, and digit-only inputs of up to 5596 bytes).
-  // See https://www.qrcode.com/en/about/version.html.
+  // User-facing limit rounded down to 2000 characters for readability.
+  // (QR code version 40 with M-level error correction can encode binary inputs
+  // of up to 2331 bytes, and digit-only inputs of up to 5596 bytes - see
+  // https://www.qrcode.com/en/about/version.html.)
+  //
+  // See also `MAX_URL_LENGTH` in
+  // `.../chrome/browser/share/qrcode/share_tab/QrCodeShareMediator.java`.
   const int kMaxInputLength = 2000;
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(

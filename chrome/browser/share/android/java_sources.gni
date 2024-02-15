@@ -33,7 +33,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetMediator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetProperties.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialog.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialogTab.java",

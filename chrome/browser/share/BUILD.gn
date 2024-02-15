@@ -43,8 +43,7 @@ source_set("share") {
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
-      "qr_code_generation_request.cc",
-      "qr_code_generation_request.h",
+      "qr_code_generator_android.cc",
     ]
     deps += [
       ":jni_headers",
