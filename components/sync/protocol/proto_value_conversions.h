@@ -25,6 +25,7 @@ class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
+class CollaborationSpecifics;
 class ContactInfoSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
@@ -133,6 +134,9 @@ base::Value BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);
 
 base::Value ClientConfigParamsToValue(const sync_pb::ClientConfigParams& proto);
+
+base::Value CollaborationSpecificsToValue(
+    const sync_pb::CollaborationSpecifics& proto);
 
 base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
