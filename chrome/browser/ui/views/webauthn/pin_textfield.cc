@@ -1,0 +1,88 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/webauthn/pin_textfield.h"
+
+#include "ui/base/ime/text_input_type.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/render_text.h"
+#include "ui/views/view.h"
+
+namespace {
+
+// Size specs of a pin cell.
+constexpr int kCellWidth = 28;
+constexpr int kCellHeight = 36;
+constexpr int kCellSpacing = 8;
+
+// Creates obscured render text for displaying a glyph in a specific pin cell.
+// TODO(rgod): Add correct font.
+std::unique_ptr<gfx::RenderText> CreatePinDigitRenderText() {
+  std::unique_ptr<gfx::RenderText> render_text =
+      gfx::RenderText::CreateRenderText();
+  render_text->SetCursorEnabled(false);
+  render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  render_text->SetObscured(true);
+  return render_text;
+}
+
+}  // namespace
+
+PinTextfield::PinTextfield(int pin_digits_amount)
+    : views::Textfield(), pin_digits_count_(pin_digits_amount) {
+  CHECK_GE(pin_digits_count_, 0);
+
+  SetCursorEnabled(false);
+  SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+
+  for (int i = 0; i < pin_digits_count_; i++) {
+    render_texts_.push_back(CreatePinDigitRenderText());
+  }
+}
+
+PinTextfield::~PinTextfield() = default;
+
+void PinTextfield::AppendDigit(std::u16string digit) {
+  if (digits_typed_count_ >= pin_digits_count_) {
+    return;
+  }
+
+  render_texts_[digits_typed_count_++]->SetText(std::move(digit));
+  SchedulePaint();
+}
+
+void PinTextfield::RemoveDigit() {
+  if (digits_typed_count_ <= 0) {
+    return;
+  }
+
+  render_texts_[--digits_typed_count_]->SetText(u"");
+  SchedulePaint();
+}
+
+void PinTextfield::OnPaint(gfx::Canvas* canvas) {
+  View::OnPaintBackground(canvas);
+
+  // TODO(rgod): Add correct specs.
+  cc::PaintFlags paint_flags;
+  paint_flags.setStrokeWidth(1);
+  paint_flags.setColor(SK_ColorGRAY);
+  paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  paint_flags.setAntiAlias(true);
+
+  for (int i = 0; i < pin_digits_count_; i++) {
+    gfx::Rect cell_rect(i * (kCellWidth + kCellSpacing), 0, kCellWidth,
+                        kCellHeight);
+    // Draw cell border.
+    canvas->DrawRoundRect(cell_rect, 2.f, paint_flags);
+    // Draw cell text.
+    render_texts_[i]->SetDisplayRect(cell_rect);
+    render_texts_[i]->Draw(canvas);
+  }
+}
+
+BEGIN_METADATA(PinTextfield)
+END_METADATA
