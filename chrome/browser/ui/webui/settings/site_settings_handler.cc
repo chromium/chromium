@@ -2612,8 +2612,8 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
     base::Value::Dict origin_file_system_permission_grants;
     base::Value::List view_grants;
     base::Value::List edit_grants;
-    std::vector<const std::string> directory_edit_grants_file_paths;
-    std::vector<const std::string> file_edit_grants_file_paths;
+    std::vector<std::string> directory_edit_grants_file_paths;
+    std::vector<std::string> file_edit_grants_file_paths;
 
     std::string origin_string = origin.GetURL().spec();
     origin_file_system_permission_grants.Set(site_settings::kOrigin,
