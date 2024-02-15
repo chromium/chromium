@@ -50,9 +50,12 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual std::unique_ptr<ash::AshWebView> CreateWebView(
       const ash::AshWebView::InitParams& params) = 0;
 
-  // Downloads a gif from `url`. If the download is successful, the gif is
-  // passed to `callback` as a string of encoded bytes in gif format. Otherwise,
-  // `callback` is run with an empty string.
+  // Downloads a gif or gif preview from `url`. If the download is successful,
+  // the gif is passed to `callback` as a string of encoded bytes in gif or png
+  // format. Otherwise, `callback` is run with an empty string.
+  // TODO: b/325370527 - Consider moving parts of this function to
+  // PickerAssetFetcher and making it clearer whether it should be downloading a
+  // gif or gif preview.
   virtual void DownloadGifToString(const ValidGifUrl& url,
                                    DownloadGifToStringCallback callback) = 0;
 

@@ -18,4 +18,8 @@ void MockPickerAssetFetcher::FetchGifFromUrl(
     const GURL& url,
     PickerGifFetchedCallback callback) {}
 
+void MockPickerAssetFetcher::FetchGifPreviewImageFromUrl(
+    const GURL& url,
+    PickerImageFetchedCallback callback) {}
+
 }  // namespace ash

@@ -12,6 +12,10 @@
 
 class GURL;
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace ash {
 
 namespace image_util {
@@ -25,6 +29,9 @@ class ASH_EXPORT PickerAssetFetcher {
   using PickerGifFetchedCallback =
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
 
+  using PickerImageFetchedCallback =
+      base::OnceCallback<void(const gfx::ImageSkia&)>;
+
   virtual ~PickerAssetFetcher() = default;
 
   // Fetches and decodes a gif from `url`. If successful, the decoded gif frames
@@ -32,6 +39,13 @@ class ASH_EXPORT PickerAssetFetcher {
   // vector of frames.
   virtual void FetchGifFromUrl(const GURL& url,
                                PickerGifFetchedCallback callback) = 0;
+
+  // Fetches and decodes a gif preview image from `url`. If successful, the
+  // decoded gif preview image will be returned via `callback`. Otherwise,
+  // `callback` is run with an empty ImageSkia.
+  virtual void FetchGifPreviewImageFromUrl(
+      const GURL& url,
+      PickerImageFetchedCallback callback) = 0;
 };
 
 }  // namespace ash

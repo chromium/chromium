@@ -34,6 +34,7 @@ constexpr base::TimeDelta kAdjustedDurationForShortFrames =
 }  // namespace
 
 PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
+                             PreviewImageFetcher preview_image_fetcher,
                              const gfx::Size& original_dimensions,
                              std::u16string accessible_name)
     : original_dimensions_(original_dimensions) {
@@ -46,6 +47,9 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
       .SetAccessibleName(std::move(accessible_name))
       .BuildChildren();
 
+  std::move(preview_image_fetcher)
+      .Run(base::BindOnce(&PickerGifView::OnPreviewImageFetched,
+                          weak_factory_.GetWeakPtr()));
   std::move(frames_fetcher)
       .Run(base::BindOnce(&PickerGifView::OnFramesFetched,
                           weak_factory_.GetWeakPtr()));
@@ -99,6 +103,13 @@ void PickerGifView::OnFramesFetched(
   // Start gif from the first frame.
   next_frame_index_ = 0;
   UpdateFrame();
+}
+
+void PickerGifView::OnPreviewImageFetched(const gfx::ImageSkia& preview_image) {
+  // Only show preview image if gif frames have not already been fetched.
+  if (frames_.empty()) {
+    SetImage(ui::ImageModel::FromImageSkia(preview_image));
+  }
 }
 
 BEGIN_METADATA(PickerGifView)

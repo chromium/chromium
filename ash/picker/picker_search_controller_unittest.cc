@@ -300,6 +300,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
   std::move(*client.gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
 }
 
@@ -344,6 +345,7 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
   std::move(first_callback)
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
 }
 
@@ -404,6 +406,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   std::move(*client.gif_search_callback())
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
 }
 

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -24,6 +25,14 @@ void PickerAssetFetcherImpl::FetchGifFromUrl(
     PickerGifFetchedCallback callback) {
   gif_url_loader_.Run(url, base::BindOnce(&image_util::DecodeAnimationData,
                                           std::move(callback)));
+}
+
+void PickerAssetFetcherImpl::FetchGifPreviewImageFromUrl(
+    const GURL& url,
+    PickerImageFetchedCallback callback) {
+  gif_url_loader_.Run(
+      url, base::BindOnce(&image_util::DecodeImageData, std::move(callback),
+                          data_decoder::mojom::ImageCodec::kDefault));
 }
 
 }  // namespace ash

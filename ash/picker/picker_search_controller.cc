@@ -74,6 +74,7 @@ void PickerSearchController::ResetResults() {
   });
   gif_results_ = std::vector({PickerSearchResult::Gif(
       GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
+      GURL("https://media.tenor.com/BzfS_9uPq_AAAAAe/cat-bonfire.png"),
       gfx::Size(140, 140), u"gif")});
   emoji_search_results_ = std::vector(
       {PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),

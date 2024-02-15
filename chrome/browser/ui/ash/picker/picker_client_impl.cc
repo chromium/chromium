@@ -55,7 +55,7 @@ void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
     std::move(callback).Run(*response_body);
     return;
   }
-  // TODO: b/316936723 - Add better handling of errors.
+  // TODO: b/325368650 - Add better handling of errors.
   std::move(callback).Run(std::string());
 }
 
@@ -63,7 +63,7 @@ void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
                          emoji_picker::mojom::Status status,
                          emoji_picker::mojom::TenorGifResponsePtr response) {
   if (status != emoji_picker::mojom::Status::kHttpOk) {
-    // TODO: b/316936418 - Add better handling of errors.
+    // TODO: b/325368650 - Add better handling of errors.
     std::move(callback).Run({});
     return;
   }
@@ -73,9 +73,12 @@ void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
   picker_results.reserve(response->results.size());
   for (const emoji_picker::mojom::GifResponsePtr& result : response->results) {
     CHECK(result);
+    // TODO: b/325339604 - Get an actual preview image for each gif from tenor.
     picker_results.push_back(ash::PickerSearchResult::Gif(
-        CHECK_DEREF(result->url.get()).preview, result->preview_size,
-        base::UTF8ToUTF16(result->content_description)));
+        CHECK_DEREF(result->url.get()).preview,
+        GURL("https://media.tenor.com/64BYBgDG41QAAAAF/"
+             "loading.png"),
+        result->preview_size, base::UTF8ToUTF16(result->content_description)));
   }
 
   std::move(callback).Run(std::move(picker_results));

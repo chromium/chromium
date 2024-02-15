@@ -31,9 +31,12 @@ class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
   // PickerAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
                        PickerGifFetchedCallback callback) override;
+  void FetchGifPreviewImageFromUrl(
+      const GURL& url,
+      PickerImageFetchedCallback callback) override;
 
  private:
-  // Helper for loading gifs as encoded strings from urls.
+  // Helper for loading gifs and gif previews as encoded strings from urls.
   GifUrlLoader gif_url_loader_;
 };
 
