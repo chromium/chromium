@@ -124,6 +124,14 @@ aura::client::DragDropClient* GetDragDropClientNearestPoint(
       GetDisplayNearestPoint(location_in_screen).id()));
 }
 
+gfx::Point GetLocationInScreen(const ui::DropTargetEvent* event) {
+  gfx::Point location_in_screen = event->root_location();
+  wm::ConvertPointToScreen(
+      static_cast<aura::Window*>(event->target())->GetRootWindow(),
+      &location_in_screen);
+  return location_in_screen;
+}
+
 Shelf* GetShelfNearestPoint(const gfx::Point& location_in_screen) {
   return Shelf::ForWindow(GetRootWindowForDisplayId(
       GetDisplayNearestPoint(location_in_screen).id()));
@@ -147,6 +155,13 @@ WallpaperView* GetWallpaperViewNearestPoint(
                  GetDisplayNearestPoint(location_in_screen).id()))
       ->wallpaper_widget_controller()
       ->wallpaper_view();
+}
+
+bool IsWallpaperViewTarget(const ui::DropTargetEvent* event) {
+  return static_cast<aura::Window*>(event->target())
+      ->Contains(GetWallpaperViewNearestPoint(GetLocationInScreen(event))
+                     ->GetWidget()
+                     ->GetNativeWindow());
 }
 
 // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
@@ -280,10 +295,15 @@ class DragDropSequenceTracker {
   bool IsTrackingSequence() const { return !!sequence_observer_; }
 
   // Initiates tracking a new sequence associated with the specified `client`.
-  // NOTE: This method may only be called while a drag-and-drop sequence is in
-  // progress.
-  void TrackNewSequence(aura::client::DragDropClient* client) {
+  // If the tracked sequence terminates in drag completion, the specified
+  // `drag_completed_callback` is invoked with the final `ui::DropTargetEvent`.
+  // NOTE: This method may only be called while a sequence is in progress.
+  void TrackNewSequence(
+      aura::client::DragDropClient* client,
+      base::OnceCallback<void(const ui::DropTargetEvent* event)>
+          drag_completed_callback) {
     CHECK(client->IsDragDropInProgress());
+    drag_completed_callback_ = std::move(drag_completed_callback);
     is_tracking_new_sequence_ = true;
     sequence_observer_ = std::make_unique<ScopedDragDropObserver>(
         client, base::BindRepeating(&DragDropSequenceTracker::OnDropTargetEvent,
@@ -295,8 +315,11 @@ class DragDropSequenceTracker {
                          const ui::DropTargetEvent* event) {
     is_tracking_new_sequence_ = false;
     switch (event_type) {
-      case ScopedDragDropObserver::EventType::kDragCancelled:
       case ScopedDragDropObserver::EventType::kDragCompleted:
+        std::move(drag_completed_callback_).Run(event);
+        [[fallthrough]];
+      case ScopedDragDropObserver::EventType::kDragCancelled:
+        drag_completed_callback_.Reset();
         sequence_observer_.reset();
         break;
       case ScopedDragDropObserver::EventType::kDragUpdated:
@@ -304,7 +327,16 @@ class DragDropSequenceTracker {
     }
   }
 
+  // Exists only while a sequence is actively being tracked and invoked only if
+  // the tracked sequence terminates in drag completion.
+  base::OnceCallback<void(const ui::DropTargetEvent* event)>
+      drag_completed_callback_;
+
+  // Whether a new sequence is actively being tracked. A sequence is new only
+  // until it receives its first drag update.
   bool is_tracking_new_sequence_ = false;
+
+  // Exists only while a sequence is actively being tracked.
   std::unique_ptr<ScopedDragDropObserver> sequence_observer_;
 };
 
@@ -346,10 +378,23 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
   void OnDragEntered(const ui::OSExchangeData& data,
                      const gfx::Point& location_in_screen) override {
+    // Record metrics.
+    holding_space_wallpaper_nudge_metrics::RecordInteraction(
+        holding_space_wallpaper_nudge_metrics::Interaction::
+            kDraggedFileOverWallpaper);
+
     // Start tracking the drag-and-drop sequence if necessary.
     if (!drag_drop_sequence_tracker_.IsTrackingSequence()) {
       drag_drop_sequence_tracker_.TrackNewSequence(
-          GetDragDropClientNearestPoint(location_in_screen));
+          GetDragDropClientNearestPoint(location_in_screen),
+          /*drag_completed_callback=*/base::BindOnce(
+              [](const ui::DropTargetEvent* event) {
+                if (IsWallpaperViewTarget(event)) {
+                  holding_space_wallpaper_nudge_metrics::RecordInteraction(
+                      holding_space_wallpaper_nudge_metrics::Interaction::
+                          kDroppedFileOnWallpaper);
+                }
+              }));
     }
 
     if (features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
@@ -484,12 +529,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     CHECK(drag_drop_observer_);
 
     std::optional<gfx::Point> location_in_screen;
-
     if (event_type == ScopedDragDropObserver::EventType::kDragUpdated) {
-      location_in_screen = event->root_location();
-      wm::ConvertPointToScreen(
-          static_cast<aura::Window*>(event->target())->GetRootWindow(),
-          &location_in_screen.value());
+      location_in_screen = GetLocationInScreen(event);
     }
 
     OnDragOrDropEvent(std::move(location_in_screen));

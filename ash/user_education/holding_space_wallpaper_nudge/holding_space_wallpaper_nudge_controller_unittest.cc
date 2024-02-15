@@ -1428,7 +1428,7 @@ class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             counterfactual_enabled(),
             drop_to_pin_enabled(),
-            /*force_eligibility_enabled=*/true,
+            /*force_eligibility_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // Whether the is-counterfactual feature parameter is enabled.
@@ -1439,6 +1439,18 @@ class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
   // Whether the drop-to-pin feature parameter is enabled.
   std::optional<bool> drop_to_pin_enabled() const {
     return std::get<0>(GetParam());
+  }
+
+ private:
+  // HoldingSpaceWallpaperNudgeControllerTestBase:
+  void SetUp() override {
+    HoldingSpaceWallpaperNudgeControllerTestBase::SetUp();
+
+    // Provide an implementation of `IsNewUser()` that always returns `true`.
+    // This test suite is not concerned with user new-ness.
+    ON_CALL(*user_education_delegate(), IsNewUser)
+        .WillByDefault(
+            testing::ReturnRefOfCopy(std::make_optional<bool>(true)));
   }
 };
 
@@ -1542,6 +1554,13 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   PressLeftButton();
   MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
 
+  // Verify an interaction metric was recorded.
+  constexpr char kInteractionMetric[] =
+      "Ash.HoldingSpaceWallpaperNudge.Interaction.Count";
+  histogram_tester.ExpectUniqueSample(
+      kInteractionMetric, /*sample=*/Interaction::kDraggedFileOverWallpaper,
+      /*count=*/1);
+
   // Verify the nudge shown metric was recorded. Note that this metric is
   // recorded even if the experiment is enabled counterfactually.
   histogram_tester.ExpectUniqueSample(kShownMetric, /*sample=*/1, /*count=*/1);
@@ -1567,6 +1586,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
     // holding space if the drop-to-pin behavior is enabled.
     ReleaseLeftButton();
     FlushMessageLoop();
+
+    // Verify an interaction metric was recorded.
+    histogram_tester.ExpectBucketCount(
+        kInteractionMetric, /*sample=*/Interaction::kDroppedFileOnWallpaper,
+        /*count=*/1);
 
     // Wait for the help bubble to close, if one exists, and verify that the
     // nudge duration metric was recorded. Note that this metric is recorded
