@@ -365,6 +365,17 @@ public class CookieManagerTest extends AwParameterizedTest {
     }
 
     @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Privacy"})
+    @CommandLineFlags.Add({AwSwitches.WEBVIEW_FORCE_DISABLE3PCS})
+    public void testForceDisable3pcs() {
+        mAwContents.getSettings().setAcceptThirdPartyCookies(true);
+        Assert.assertFalse(
+                "Third party cookies should stay disabled if they were forced disabled",
+                mAwContents.getSettings().getAcceptThirdPartyCookies());
+    }
+
+    @Test
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
     public void testRemoveSessionCookies() {

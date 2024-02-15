@@ -24,12 +24,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.AttributionBehavior;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -447,6 +449,10 @@ public class AwSettings {
      * @param accept true if we should accept third party cookies
      */
     public void setAcceptThirdPartyCookies(boolean accept) {
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_FORCE_DISABLE3PCS)) {
+            if (TRACE) Log.i(TAG, "setAcceptThirdPartyCookies force disabled");
+            return;
+        }
         if (TRACE) Log.i(TAG, "setAcceptThirdPartyCookies=" + accept);
         RecordHistogram.recordBooleanHistogram(
                 "Android.WebView.SetAcceptThirdPartyCookies", accept);

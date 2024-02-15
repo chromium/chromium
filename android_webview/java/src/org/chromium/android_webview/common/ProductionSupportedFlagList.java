@@ -891,6 +891,9 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FPS_COMPONENT,
                 "Enables installing the first party sets component to WebViews."),
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_FORCE_DISABLE3PCS,
+                "Force disables 3rd party cookies for all apps."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
