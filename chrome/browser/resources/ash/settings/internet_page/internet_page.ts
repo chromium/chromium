@@ -52,7 +52,6 @@ import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'c
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
@@ -601,7 +600,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       event: CustomEvent<{enabled: boolean, type: NetworkType}>): void {
     this.networkConfig_.setNetworkTypeEnabledState(
         event.detail.type, event.detail.enabled);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for enabling/disabling device.
   }
 
   private onShowConfig_(
@@ -866,7 +865,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for adding third party VPN.
   }
 
   private showNetworksSubpage_(type: NetworkType): void {

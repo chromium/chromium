@@ -1125,7 +1125,7 @@ export class SettingsInternetDetailPageElement extends
     if (!this.propertiesReceived_ || !this.guid || this.applyingChanges_) {
       return;
     }
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for updating network properties.
     const response = await this.networkConfig_.setProperties(this.guid, config);
     if (!response.success) {
       console.warn('Unable to set properties: ' + JSON.stringify(config));
@@ -1623,13 +1623,14 @@ export class SettingsInternetDetailPageElement extends
           {networkState: networkState, bypassConnectionDialog: bypassDialog},
     });
     this.dispatchEvent(networkConnectEvent);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for connecting to network.
   }
 
   private async handleDisconnectClick_(): Promise<void> {
-    recordSettingChange();
     const response = await this.networkConfig_.startDisconnect(this.guid);
-    if (!response.success) {
+    if (response.success) {
+      recordSettingChange(Setting.kDisconnectWifiNetwork);
+    } else {
       console.warn('Disconnect failed for: ' + this.guid);
     }
   }
@@ -1700,7 +1701,7 @@ export class SettingsInternetDetailPageElement extends
     if (this.managedProperties_!.type === NetworkType.kWiFi) {
       recordSettingChange(Setting.kForgetWifiNetwork);
     } else {
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for other network types.
     }
 
     const response = await this.networkConfig_.forgetNetwork(this.guid);
@@ -1724,7 +1725,7 @@ export class SettingsInternetDetailPageElement extends
         (this.isThirdPartyVpn_(this.managedProperties_) ||
          this.isArcVpn_(this.managedProperties_))) {
       this.browserProxy_.configureThirdPartyVpn(this.guid);
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for third party VPN configure.
       return;
     }
 

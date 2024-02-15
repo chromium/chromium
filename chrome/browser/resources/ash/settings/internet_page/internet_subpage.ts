@@ -38,7 +38,6 @@ import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'c
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
@@ -709,7 +708,7 @@ export class SettingsInternetSubpageElement extends
   private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    recordSettingChange();
+    // TODO(b/282233232) recordSettingChange() for adding third party VPN.
   }
 
   private knownNetworksIsVisible_(deviceState: OncMojo.DeviceStateProperties|
@@ -776,7 +775,7 @@ export class SettingsInternetSubpageElement extends
         detail: {networkState},
       });
       this.dispatchEvent(networkConnectEvent);
-      recordSettingChange();
+      // TODO(b/282233232) recordSettingChange() for connecting to network.
       return;
     }
 
