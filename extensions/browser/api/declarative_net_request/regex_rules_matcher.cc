@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -162,27 +163,11 @@ std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
   return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
 }
 
-std::optional<RequestAction>
-RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
-    const RequestParams& params) const {
+std::optional<RequestAction> RegexRulesMatcher::GetActionIgnoringAncestors(
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
-      potential_matches, [&params](const RegexRuleInfo& info) {
-        return !ActionTypeAllowsMultipleActions(
-                   info.regex_rule->action_type()) &&
-               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
-      });
-
-  return info == potential_matches.end() ? std::nullopt
-                                         : CreateActionFromInfo(params, *info);
-}
-
-std::optional<RequestAction>
-RegexRulesMatcher::GetHeadersReceivedActionIgnoringAncestors(
-    const RequestParams& params) const {
-  const std::vector<RegexRuleInfo>& potential_matches =
-      headers_received_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return !ActionTypeAllowsMultipleActions(
@@ -402,6 +387,19 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
 
   return CreateRedirectAction(params, *info.regex_rule->url_rule(),
                               std::move(redirect_url));
+}
+
+const RegexRulesMatcher::MatchHelper& RegexRulesMatcher::GetMatcherForStage(
+    RulesetMatchingStage stage) const {
+  switch (stage) {
+    case RulesetMatchingStage::kOnBeforeRequest:
+      return before_request_matcher_;
+    case RulesetMatchingStage::kOnHeadersReceived:
+      return headers_received_matcher_;
+  }
+
+  NOTREACHED();
+  return before_request_matcher_;
 }
 
 }  // namespace extensions::declarative_net_request

@@ -287,6 +287,8 @@ TEST_P(RulesetManagerTest, IncognitoRequests) {
 // Tests that
 // Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3
 // is only emitted when there are active rulesets.
+// TODO(crbug.com/40727004): Add a check for the HeadersReceived versions of the
+// below histograms.
 TEST_P(RulesetManagerTest, EvaluationHistograms) {
   WebRequestInfo example_com_request(
       GetRequestParamsForURL("http://example.com"));

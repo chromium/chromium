@@ -48,14 +48,11 @@ class RulesetMatcher {
 
   ~RulesetMatcher();
 
-  // Returns an action to be performed on the request before it is sent.
-  std::optional<RequestAction> GetBeforeRequestAction(
-      const RequestParams& params) const;
-
-  // Returns an action to be performed on the request after response headers
-  // have been received.
-  std::optional<RequestAction> GetOnHeadersReceivedAction(
-      const RequestParams& params) const;
+  // Returns an action to be performed on the request. `stage` denotes both the
+  // request stage and which pool of rules are to be matched against the
+  // request.
+  std::optional<RequestAction> GetAction(const RequestParams& params,
+                                         RulesetMatchingStage stage) const;
 
   // Returns a list of actions corresponding to all matched
   // modifyHeaders rules with priority greater than |min_priority| if specified.

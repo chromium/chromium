@@ -129,18 +129,22 @@ ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
 }
 
 std::optional<RequestAction>
-ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionIgnoringAncestors(
-    const RequestParams& params) const {
-  return GetMaxPriorityAction(GetActionHelper(params, before_request_matchers_),
-                              GetAllowAllRequestsAction(params));
-}
+ExtensionUrlPatternIndexMatcher::GetActionIgnoringAncestors(
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
+  switch (stage) {
+    case RulesetMatchingStage::kOnBeforeRequest:
+      return GetMaxPriorityAction(
+          GetActionHelper(params, before_request_matchers_),
+          GetAllowAllRequestsAction(params));
+    case RulesetMatchingStage::kOnHeadersReceived:
+      // TODO(crbug.com/1141166): Investigate how matching allowAllRequests
+      // rules from other request stages may affect which action to return.
+      return GetActionHelper(params, headers_received_matchers_);
+  }
 
-std::optional<RequestAction>
-ExtensionUrlPatternIndexMatcher::GetHeadersReceivedActionIgnoringAncestors(
-    const RequestParams& params) const {
-  // TODO(crbug.com/1141166): Investigate how matching allowAllRequests rules
-  // from other request stages may affect which action to return.
-  return GetActionHelper(params, headers_received_matchers_);
+  NOTREACHED();
+  return std::nullopt;
 }
 
 std::optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetActionHelper(

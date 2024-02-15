@@ -132,10 +132,9 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const override;
-  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetHeadersReceivedActionIgnoringAncestors(
-      const RequestParams& params) const override;
+  std::optional<RequestAction> GetActionIgnoringAncestors(
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
 
   // Returns a RequestAction for the given matched regex rule `info`.
   std::optional<RequestAction> CreateActionFromInfo(
@@ -146,6 +145,10 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   std::optional<RequestAction> CreateRegexSubstitutionRedirectAction(
       const RequestParams& params,
       const RegexRuleInfo& info) const;
+
+  // Returns the corresponding rule matching helper for the given rule matching
+  // `stage`.
+  const MatchHelper& GetMatcherForStage(RulesetMatchingStage stage) const;
 
   // A helper for matching regex rules in the onBeforeRequest stage.
   MatchHelper before_request_matcher_;

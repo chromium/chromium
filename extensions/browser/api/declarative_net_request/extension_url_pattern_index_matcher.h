@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 
 namespace extensions::declarative_net_request {
@@ -55,10 +56,9 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const override;
-  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetHeadersReceivedActionIgnoringAncestors(
-      const RequestParams& params) const override;
+  std::optional<RequestAction> GetActionIgnoringAncestors(
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
 
   // Returns the highest priority action from
   // |flat::IndexType_before_request_except_allow_all_requests| index.

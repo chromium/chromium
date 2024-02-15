@@ -142,7 +142,7 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
 
   for (const auto& matcher : matchers_) {
     std::optional<RequestAction> action =
-        matcher->GetBeforeRequestAction(params);
+        matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest);
     if (!action)
       continue;
 

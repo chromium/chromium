@@ -203,20 +203,11 @@ RulesetMatcherBase::RulesetMatcherBase(const ExtensionId& extension_id,
     : extension_id_(extension_id), ruleset_id_(ruleset_id) {}
 RulesetMatcherBase::~RulesetMatcherBase() = default;
 
-std::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
-    const RequestParams& params) const {
+std::optional<RequestAction> RulesetMatcherBase::GetAction(
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   std::optional<RequestAction> action =
-      GetBeforeRequestActionIgnoringAncestors(params);
-  std::optional<RequestAction> parent_action =
-      GetAllowlistedFrameAction(params.parent_routing_id);
-
-  return GetMaxPriorityAction(std::move(action), std::move(parent_action));
-}
-
-std::optional<RequestAction> RulesetMatcherBase::GetHeadersReceivedAction(
-    const RequestParams& params) const {
-  std::optional<RequestAction> action =
-      GetHeadersReceivedActionIgnoringAncestors(params);
+      GetActionIgnoringAncestors(params, stage);
   std::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(params.parent_routing_id);
 
