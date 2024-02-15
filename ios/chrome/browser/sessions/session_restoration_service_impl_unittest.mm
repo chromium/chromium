@@ -485,7 +485,7 @@ TEST_F(SessionRestorationServiceImplTest, LoadSession) {
     // Check that closing the all the tabs after disconnecting the Browser
     // does not delete the sesion.
     SnapshotFiles();
-    browser.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*browser.GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
     WaitForSessionSaveComplete();
     EXPECT_EQ(ModifiedFiles(), FilePathSet{});
@@ -893,7 +893,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteDataOnClose) {
       /*expect_session_metadata_storage=*/true, {});
 
   // Close all WebStates, check that the data is deleted.
-  browser.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser.GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   WaitForSessionSaveComplete();
 
@@ -946,7 +946,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteDataOnClose_AfterMove) {
   MoveWebStateBetweenWebStateList(browser0.GetWebStateList(),
                                   browser1.GetWebStateList());
 
-  browser1.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser1.GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   WaitForSessionSaveComplete();
 

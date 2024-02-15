@@ -503,7 +503,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession) {
     // Check that closing the all the tabs after disconnecting the Browser
     // does not cause the session to be saved again nor deleted.
     SnapshotFiles();
-    browser.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*browser.GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
     WaitForSessionSaveComplete();
     EXPECT_EQ(DeletedFiles(), FilePathSet{});

@@ -84,8 +84,8 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
 
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
-    browser_->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*browser_->GetWebStateList(),
+                      WebStateList::CLOSE_NO_FLAGS);
   }
 
   // Returns the AppLauncherBrowserAgent.

@@ -345,7 +345,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 - (void)closeAllItems {
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs.
-  _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*_webStateList, WebStateList::CLOSE_USER_ACTION);
   [_snapshotStorage removeAllImages];
 }
 

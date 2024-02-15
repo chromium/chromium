@@ -884,7 +884,7 @@ TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesPresent) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
@@ -913,7 +913,7 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
@@ -935,7 +935,7 @@ TEST_F(WebStateListTest, CloseAllNonPinnedWebStates_PinnedWebStatesNotPresent) {
   EXPECT_EQ(3, web_state_list_.count());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -961,7 +961,7 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_EQ(0, web_state_list_.active_index());
@@ -991,7 +991,7 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllNonPinnedWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(1, web_state_list_.count());
   EXPECT_EQ(0, web_state_list_.active_index());
@@ -1019,7 +1019,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -1038,7 +1038,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_NonPinned) {
   EXPECT_EQ(3, web_state_list_.count());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(0, web_state_list_.count());
 
@@ -1063,7 +1063,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinnedWithActiveWebState) {
   EXPECT_TRUE(observer_.pinned_state_changed());
 
   observer_.ResetStatistics();
-  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_EQ(0, web_state_list_.count());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
@@ -1118,7 +1118,7 @@ TEST_F(WebStateListTest, CloseAllWebStates_ObserverNotificationOrder) {
         observation2.Reset();
       });
 
-  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_USER_ACTION);
 
   EXPECT_TRUE(observer_.batch_operation_ended());
 }

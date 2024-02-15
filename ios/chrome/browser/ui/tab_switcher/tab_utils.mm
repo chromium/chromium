@@ -150,6 +150,8 @@ void CloseOtherWebStates(WebStateList* web_state_list,
     }
     indexes_to_close.push_back(index);
   }
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list->StartBatchOperation();
   web_state_list->CloseWebStatesAtIndices(
       close_flags, RemovingIndexes(std::move(indexes_to_close)));
 }

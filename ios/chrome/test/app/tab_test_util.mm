@@ -51,7 +51,7 @@ WebStateList* GetCurrentWebStateList() {
 void CloseAllTabsForBrowser(Browser* browser) {
   DCHECK(browser);
   const int close_flags = WebStateList::CLOSE_USER_ACTION;
-  browser->GetWebStateList()->CloseAllWebStates(close_flags);
+  CloseAllWebStates(*browser->GetWebStateList(), close_flags);
   ChromeBrowserState* browser_state = browser->GetBrowserState();
   SessionRestorationServiceFactory::GetForBrowserState(browser_state)
       ->SaveSessions();
@@ -189,7 +189,7 @@ NSUInteger GetIndexOfActiveNormalTab() {
 }
 
 void CloseAllTabsInCurrentMode() {
-  GetCurrentWebStateList()->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*GetCurrentWebStateList(), WebStateList::CLOSE_USER_ACTION);
 }
 
 void CloseAllTabs() {
@@ -295,8 +295,8 @@ BOOL CloseAllNormalTabs() {
   Browser* browser =
       main_controller.browserProviderInterface.mainBrowserProvider.browser;
   DCHECK(browser);
-  browser->GetWebStateList()->CloseAllWebStates(
-      WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*browser->GetWebStateList(),
+                    WebStateList::CLOSE_USER_ACTION);
   return YES;
 }
 
@@ -307,8 +307,8 @@ BOOL CloseAllIncognitoTabs() {
       GetMainController()
           .browserProviderInterface.incognitoBrowserProvider.browser;
   DCHECK(browser);
-  browser->GetWebStateList()->CloseAllWebStates(
-      WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*browser->GetWebStateList(),
+                    WebStateList::CLOSE_USER_ACTION);
   return YES;
 }
 

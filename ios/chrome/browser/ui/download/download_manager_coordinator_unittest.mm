@@ -590,7 +590,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
       }));
 
   // Web States are closed without user action only during app termination.
-  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   // Download task is destroyed before the download is complete.
   task = nullptr;

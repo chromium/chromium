@@ -157,8 +157,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
   void TearDown() override {
     @autoreleasepool {
-      browser_->GetWebStateList()->CloseAllWebStates(
-          WebStateList::CLOSE_NO_FLAGS);
+      CloseAllWebStates(*browser_->GetWebStateList(),
+                        WebStateList::CLOSE_NO_FLAGS);
     }
     PlatformTest::TearDown();
   }
@@ -399,7 +399,7 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
   session_restoration_agent_->SaveSession(/*immediately=*/true);
   [test_session_service_ setPerformIO:NO];
   // close all the webStates
-  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionWindowIOS* session_window =
@@ -448,7 +448,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
             browser_->GetWebStateList()->GetActiveWebState());
 
   // Close all the webStates
-  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionWindowIOS* session_window =
@@ -542,7 +542,7 @@ TEST_F(SessionRestorationBrowserAgentTest,
   InsertNewWebState(/*parent=*/nullptr, /*index=*/1,
                     /*pinned=*/false,
                     /*background=*/true);
-  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 7);
 }
 

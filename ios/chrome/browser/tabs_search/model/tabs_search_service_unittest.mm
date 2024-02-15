@@ -547,7 +547,7 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
   // Add a webstate which will not match `kSearchQueryMatchesAll`.
   AppendNewWebState(browser_.get(), u"X", GURL("http://abc.xyz"));
 
-  browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(

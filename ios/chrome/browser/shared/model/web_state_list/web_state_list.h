@@ -105,6 +105,10 @@ class WebStateList {
   //
   // In all case, the ScopedBatchOperation must have a smaller lifetime than
   // the WebStateList that returned it.
+  //
+  // Important note: the public API of WebStateList never performs an operation
+  // as part of a batch operation. It is the responsibility of the calling code
+  // the call StartBatchOperation() and to properly scope the returned object.
   class [[maybe_unused, nodiscard]] ScopedBatchOperation {
    public:
     ScopedBatchOperation(ScopedBatchOperation&& other)
@@ -260,14 +264,6 @@ class WebStateList {
   // is a bitwise combination of ClosingFlags values.
   void CloseWebStateAt(int index, int close_flags);
 
-  // Closes and destroys all non-pinned WebStates. The `close_flags` is a
-  // bitwise combination of ClosingFlags values.
-  void CloseAllNonPinnedWebStates(int close_flags);
-
-  // Closes and destroys all WebStates. The `close_flags` is a bitwise
-  // combination of ClosingFlags values.
-  void CloseAllWebStates(int close_flags);
-
   // Makes the WebState at the specified index the active WebState.
   void ActivateWebStateAt(int index);
 
@@ -287,7 +283,7 @@ class WebStateList {
   ScopedBatchOperation StartBatchOperation();
 
   // Invalid index.
-  static const int kInvalidIndex = -1;
+  static constexpr int kInvalidIndex = -1;
 
  private:
   friend class ScopedBatchOperation;
@@ -413,5 +409,17 @@ class WebStateList {
   // Weak pointer factory.
   base::WeakPtrFactory<WebStateList> weak_factory_{this};
 };
+
+// Helper function that closes all WebStates in `web_state_list`. The operation
+// is performed as a batch operation and thus cannot be called from another
+// batch operation. The `close_flags` is a bitwise combination of ClosingFlags
+// values.
+void CloseAllWebStates(WebStateList& web_state_list, int close_flags);
+
+// Helper function that closes all regular WebStates in `web_state_list`. The
+// operation is performed as a batch operation and thus cannot be called from
+// another batch operation. The `close_flags` is a bitwise combination of
+// ClosingFlags values.
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_

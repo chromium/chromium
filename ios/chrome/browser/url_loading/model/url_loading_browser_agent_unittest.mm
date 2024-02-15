@@ -92,11 +92,11 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   void TearDown() override {
     // Cleanup to avoid debugger crash in non empty observer lists.
     WebStateList* web_state_list = browser_->GetWebStateList();
-    web_state_list->CloseAllWebStates(
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
     WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
-    otr_web_state_list->CloseAllWebStates(
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*otr_web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
 
     BlockCleanupTest::TearDown();
   }

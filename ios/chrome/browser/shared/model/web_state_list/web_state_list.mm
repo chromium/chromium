@@ -315,21 +315,6 @@ void WebStateList::CloseWebStateAt(int index, int close_flags) {
   // Dropping detached_web_state will destroy it.
 }
 
-void WebStateList::CloseAllWebStates(int close_flags) {
-  CloseWebStatesAtIndices(close_flags, RemovingIndexes({
-                                           .start = 0,
-                                           .count = count(),
-                                       }));
-}
-
-void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
-  CloseWebStatesAtIndices(close_flags,
-                          RemovingIndexes({
-                              .start = pinned_tabs_count_,
-                              .count = count() - pinned_tabs_count_,
-                          }));
-}
-
 void WebStateList::ActivateWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index) || index == kInvalidIndex);
@@ -342,7 +327,6 @@ void WebStateList::CloseWebStatesAtIndices(int close_flags,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
 
-  ScopedBatchOperation batch = StartBatchOperation();
   const DetachParams detach_params =
       DetachParams::Closing(IsClosingFlagSet(close_flags, CLOSE_USER_ACTION));
 
@@ -778,5 +762,25 @@ void WebStateList::OnActiveWebStateChanged() {
   }
 }
 
-// static
-const int WebStateList::kInvalidIndex;
+void CloseAllWebStates(WebStateList& web_state_list, int close_flags) {
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(close_flags,
+                                         RemovingIndexes({
+                                             .start = 0,
+                                             .count = web_state_list.count(),
+                                         }));
+}
+
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
+  const int pinned_tabs_count = web_state_list.pinned_tabs_count();
+  const int regular_tabs_count = web_state_list.count() - pinned_tabs_count;
+
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(close_flags,
+                                         RemovingIndexes({
+                                             .start = pinned_tabs_count,
+                                             .count = regular_tabs_count,
+                                         }));
+}

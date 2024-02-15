@@ -146,10 +146,8 @@
         NewTabPageTabHelper* NTPTabHelper = NewTabPageTabHelper::FromWebState(
             detachChange.detached_web_state());
         if (status.active_web_state_change()) {
-          // The active WebState can be updated when multiple WebStates are
-          // closed by `CloseAllWebStates()` or `CloseAllNonPinnedWebStates()`.
-          // Call `-didNavigateAwayFromNTP:` to update NTP and record metrics
-          // before stopping NTP.
+          // Closing one or multiple WebStates may cause the active WebState to
+          // change. Need to update NTP and record metrics before stopping NTP.
           [self didChangeActiveWebState:status.new_active_web_state
                       oldActiveWebState:status.old_active_web_state
                              isInserted:NO];

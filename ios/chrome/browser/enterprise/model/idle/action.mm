@@ -50,12 +50,12 @@ class CloseTabsAction : public Action {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state);
     for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-      browser->GetWebStateList()->CloseAllWebStates(
-          WebStateList::CLOSE_NO_FLAGS);
+      CloseAllWebStates(*browser->GetWebStateList(),
+                        WebStateList::CLOSE_NO_FLAGS);
     }
     for (Browser* browser : browser_list->AllRegularBrowsers()) {
-      browser->GetWebStateList()->CloseAllWebStates(
-          WebStateList::CLOSE_NO_FLAGS);
+      CloseAllWebStates(*browser->GetWebStateList(),
+                        WebStateList::CLOSE_NO_FLAGS);
     }
 
     metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kCloseTabs,

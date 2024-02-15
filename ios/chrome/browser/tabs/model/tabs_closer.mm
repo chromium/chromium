@@ -183,8 +183,8 @@ void TabsCloser::UndoStorage::Drop() {
   WebStateList::ScopedBatchOperation original_browser_lock =
       original_browser_->GetWebStateList()->StartBatchOperation();
 
-  temporary_browser_->GetWebStateList()->CloseAllWebStates(
-      WebStateList::CLOSE_USER_ACTION);
+  CloseAllWebStates(*temporary_browser_->GetWebStateList(),
+                    WebStateList::CLOSE_USER_ACTION);
 }
 
 TabsCloser::TabsCloser(Browser* browser, ClosePolicy policy)

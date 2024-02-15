@@ -633,8 +633,8 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
 
     // Close all web states.
     [coordinator_ didNavigateAwayFromNTP];
-    browser_->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*browser_->GetWebStateList(),
+                      WebStateList::CLOSE_NO_FLAGS);
     [coordinator_ stopIfNeeded];
     if (!off_the_record) {
       histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 2);
