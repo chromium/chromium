@@ -132,7 +132,6 @@ source_set("permissions") {
     "//services/metrics/public/cpp:ukm_builders",
     "//sql",
     "//third_party/blink/public/common",
-    "//third_party/sqlite",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//url",
@@ -319,7 +318,6 @@ source_set("unit_tests") {
     "//sql",
     "//sql:test_support",
     "//testing/gtest",
-    "//third_party/sqlite",
     "//url",
   ]
   if (is_android) {
