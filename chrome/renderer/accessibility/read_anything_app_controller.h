@@ -296,6 +296,14 @@ class ReadAnythingAppController
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
 
+  // For metrics logging
+
+  // The time when the renderer constructor is first triggered.
+  base::TimeTicks renderer_load_triggered_time_ms_;
+
+  // The time when the WebUI connects i.e. when onConnected is called.
+  base::TimeTicks web_ui_connected_time_ms_;
+
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
 

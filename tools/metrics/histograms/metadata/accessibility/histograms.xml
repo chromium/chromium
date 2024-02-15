@@ -2187,6 +2187,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when opening the Read Anything side panel entry first
+    triggers the renderer and when the WebUI content has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when opening the Read Anything side panel entry first
+    triggers the renderer and when the WebUI connects.
+  </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded"
+    units="ms" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the time from when the Read Anything WebUI content connects and when
+    the content has loaded.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2023-11-30">
   <owner>aleventhal@chromium.org</owner>

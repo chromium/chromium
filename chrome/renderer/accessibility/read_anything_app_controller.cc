@@ -397,6 +397,7 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
     : frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()) {
+  renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   distiller_ = std::make_unique<AXTreeDistiller>(
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -1053,6 +1054,10 @@ const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
 }
 
 void ReadAnythingAppController::OnConnected() {
+  web_ui_connected_time_ms_ = base::TimeTicks::Now();
+  base::UmaHistogramLongTimes(
+      "Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected",
+      base::TimeTicks::Now() - web_ui_connected_time_ms_);
   mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_receiver =
           page_handler_factory_.BindNewPipeAndPassReceiver();
@@ -1351,6 +1356,12 @@ content::RenderFrame* ReadAnythingAppController::GetRenderFrame() {
 }
 
 void ReadAnythingAppController::ShouldShowUI() {
+  base::UmaHistogramLongTimes(
+      "Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded",
+      base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
+  base::UmaHistogramLongTimes(
+      "Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded",
+      base::TimeTicks::Now() - web_ui_connected_time_ms_);
   page_handler_factory_->ShouldShowUI();
 }
 
