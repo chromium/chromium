@@ -63,7 +63,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
   using DownloadToFileCompleteCallback =
       update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-  NetworkFetcher(const HINTERNET& session_handle,
+  NetworkFetcher(scoped_refptr<winhttp::SharedHInternet> session_handle,
                  scoped_refptr<winhttp::ProxyConfiguration> proxy_config);
   ~NetworkFetcher() override;
   NetworkFetcher(const NetworkFetcher&) = delete;
@@ -99,7 +99,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
 };
 
 NetworkFetcher::NetworkFetcher(
-    const HINTERNET& session_handle,
+    scoped_refptr<winhttp::SharedHInternet> session_handle,
     scoped_refptr<winhttp::ProxyConfiguration> proxy_config)
     : winhttp_network_fetcher_(
           base::MakeRefCounted<winhttp::NetworkFetcher>(session_handle,
@@ -186,20 +186,20 @@ class NetworkFetcherFactory::Impl {
                     policy_service_proxy_configuration)
       : proxy_configuration_(
             GetProxyConfiguration(policy_service_proxy_configuration)),
-        session_handle_(winhttp::CreateSessionHandle(
-            base::ASCIIToWide(GetUpdaterUserAgent()).c_str(),
-            proxy_configuration_->access_type())) {}
+        session_handle_(base::MakeRefCounted<winhttp::SharedHInternet>(
+            winhttp::CreateSessionHandle(
+                base::ASCIIToWide(GetUpdaterUserAgent()).c_str(),
+                proxy_configuration_->access_type()))) {}
 
   std::unique_ptr<update_client::NetworkFetcher> Create() {
-    return session_handle_.get()
-               ? std::make_unique<NetworkFetcher>(session_handle_.get(),
-                                                  proxy_configuration_)
-               : nullptr;
+    return session_handle_ ? std::make_unique<NetworkFetcher>(
+                                 session_handle_, proxy_configuration_)
+                           : nullptr;
   }
 
  private:
   scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
-  winhttp::ScopedHInternet session_handle_;
+  scoped_refptr<winhttp::SharedHInternet> session_handle_;
 };
 
 NetworkFetcherFactory::NetworkFetcherFactory(

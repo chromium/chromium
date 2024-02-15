@@ -66,7 +66,7 @@ void CrackUrl(const GURL& url,
 }  // namespace
 
 NetworkFetcher::NetworkFetcher(
-    const HINTERNET& session_handle,
+    scoped_refptr<SharedHInternet> session_handle,
     scoped_refptr<ProxyConfiguration> proxy_configuration)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       session_handle_(session_handle),
@@ -214,7 +214,7 @@ HRESULT NetworkFetcher::BeginFetch(
   }
 
   std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
-      proxy_configuration_->GetProxyForUrl(*session_handle_, url_);
+      proxy_configuration_->GetProxyForUrl(session_handle_->handle(), url_);
 
   request_handle_ = OpenRequest();
   if (!request_handle_.get()) {
@@ -271,7 +271,7 @@ HRESULT NetworkFetcher::BeginFetch(
 ScopedHInternet NetworkFetcher::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ScopedHInternet(::WinHttpConnect(
-      *session_handle_, base::SysUTF8ToWide(host_).c_str(), port_, 0));
+      session_handle_->handle(), base::SysUTF8ToWide(host_).c_str(), port_, 0));
 }
 
 ScopedHInternet NetworkFetcher::OpenRequest() {
