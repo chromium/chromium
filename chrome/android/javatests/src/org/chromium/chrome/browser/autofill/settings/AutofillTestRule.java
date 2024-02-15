@@ -61,26 +61,44 @@ class AutofillTestRule extends ChromeBrowserTestRule
         mFragmentShown.waitForCallback(callCount);
     }
 
-    protected void clickInEditorAndWait(final int resourceId) throws TimeoutException {
+    protected void clickInEditorAndWait(final int resourceId, boolean waitForPreferenceUpdate)
+            throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mEditorDialog.findViewById(resourceId).performClick());
+        int updateCallCount =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            int updateCallCountBeforeButtonClick = mPreferenceUpdate.getCallCount();
+                            mEditorDialog.findViewById(resourceId).performClick();
+                            return updateCallCountBeforeButtonClick;
+                        });
         mClickUpdate.waitForCallback(callCount);
+        if (waitForPreferenceUpdate) {
+            mPreferenceUpdate.waitForCallback(updateCallCount);
+        }
     }
 
     /**
      * @param button see {@link android.content.DialogInterface} for button int constants.
      */
-    protected void clickInConfirmationDialogAndWait(final int button) throws TimeoutException {
+    protected void clickInConfirmationDialogAndWait(
+            final int button, boolean waitForPreferenceUpdate) throws TimeoutException {
         if (mEditorDialog.getConfirmationDialogForTest() != null) {
             int callCount = mClickUpdate.getCallCount();
-            TestThreadUtils.runOnUiThreadBlockingNoException(
-                    () ->
-                            mEditorDialog
-                                    .getConfirmationDialogForTest()
-                                    .getButton(button)
-                                    .performClick());
+            int updateCallCount =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            () -> {
+                                int updateCallCountBeforeButtonClick =
+                                        mPreferenceUpdate.getCallCount();
+                                mEditorDialog
+                                        .getConfirmationDialogForTest()
+                                        .getButton(button)
+                                        .performClick();
+                                return updateCallCountBeforeButtonClick;
+                            });
             mClickUpdate.waitForCallback(callCount);
+            if (waitForPreferenceUpdate) {
+                mPreferenceUpdate.waitForCallback(updateCallCount);
+            }
         }
     }
 
@@ -112,11 +130,6 @@ class AutofillTestRule extends ChromeBrowserTestRule
                             .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
                 });
         mClickUpdate.waitForCallback(callCount);
-    }
-
-    protected void waitForThePreferenceUpdate() throws TimeoutException {
-        int callCount = mPreferenceUpdate.getCallCount();
-        mPreferenceUpdate.waitForCallback(callCount);
     }
 
     protected void setEditorDialogAndWait(EditorDialogView editorDialog) throws TimeoutException {
