@@ -87,7 +87,6 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        // Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         mDelegate =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
