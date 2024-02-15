@@ -206,7 +206,7 @@ void EditLabel::SetToDefault() {
 void EditLabel::SetToFocused() {
   SetEnabledTextColorIds(IsInputUnbound() && !action_->is_new()
                              ? cros_tokens::kCrosSysError
-                             : cros_tokens::kCrosSysHighlightText);
+                             : cros_tokens::kCrosSysOnSurface);
   SetBorder(views::CreateThemedRoundedRectBorder(
       /*thickness=*/2, kCornerRadius, cros_tokens::kCrosSysPrimary));
 }
