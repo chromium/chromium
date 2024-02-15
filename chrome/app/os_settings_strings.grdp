@@ -3419,7 +3419,7 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
     Click strength
   </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity.">
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity." meaning="A soft or gentle touch.">
     Light
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the touchpad haptic click sensitivity.">
