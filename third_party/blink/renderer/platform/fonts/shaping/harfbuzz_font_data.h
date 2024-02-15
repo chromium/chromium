@@ -78,7 +78,6 @@ struct HarfBuzzFontData final {
     return vertical_data_;
   }
 
-  hb::unique_ptr<hb_font_t> unscaled_font_;
   SkFont font_;
 
   // Capture these scaled fallback metrics from FontPlatformData so that a
