@@ -1299,11 +1299,6 @@
         }
       },
       'win11-arm64-rel-tests': {
-        # Some Win Arm64 bots aren't using 100% scaling, which some browser
-        # tests rely on.
-        'args': [
-          '--force-device-scale-factor=1',
-        ],
         'swarming': {
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
@@ -2181,13 +2176,6 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
-      'win11-arm64-rel-tests': {
-        # Some Win Arm64 bots aren't using 100% scaling, which some
-        # tests rely on.
-        'args': [
-          '--force-device-scale-factor=1',
-        ],
-      }
     },
   },
   'content_shell_crash_test': {
@@ -3321,11 +3309,6 @@
         }
       },
       'win11-arm64-dbg-tests': {
-        # Some Win Arm64 bots aren't using 100% scaling, which some browser
-        # tests rely on.
-        'args': [
-          '--force-device-scale-factor=1',
-        ],
         'swarming': {
           'shards': 9,
         },
