@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_mediator.h"
@@ -101,6 +102,11 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->NotifyEvent(feature_engagement::events::kDockingPromoRemindMeLater);
+
   [self hidePromo];
   [self.mediator registerPromoWithPromosManager];
   [self promoWasDismissed];

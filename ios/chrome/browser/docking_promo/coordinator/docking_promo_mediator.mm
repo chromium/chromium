@@ -54,7 +54,7 @@ NSString* const kDockingPromoAnimation = @"docking_promo";
   }
 
   self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::DockingPromo);
+      promos_manager::Promo::DockingPromoRemindMeLater);
 }
 
 #pragma mark - Private

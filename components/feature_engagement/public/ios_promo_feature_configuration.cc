@@ -318,10 +318,12 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->used = EventConfig("docking_promo_remind_me_later_used",
-                               Comparator(ANY, 0), 3650, 3650);
-    // Should not be subject to impression limits.
+                               Comparator(ANY, 0), 365, 365);
     config->trigger = EventConfig("docking_promo_remind_me_later_trigger",
-                                  Comparator(ANY, 0), 3650, 3650);
+                                  Comparator(ANY, 0), 365, 365);
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kDockingPromoRemindMeLater,
+                    Comparator(LESS_THAN, 1), 3, 365));
     return config;
   }
 
