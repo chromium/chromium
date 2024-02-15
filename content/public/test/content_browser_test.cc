@@ -83,10 +83,6 @@ ContentBrowserTest::ContentBrowserTest() {
 
   embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
   embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
-
-  // Fail as quickly as possible during tests, rather than attempting to reset
-  // accessibility and continue when unserialization fails.
-  RenderFrameHostImpl::max_accessibility_resets_ = 0;
 }
 
 ContentBrowserTest::~ContentBrowserTest() {

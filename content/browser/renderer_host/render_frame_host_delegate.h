@@ -303,6 +303,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void AccessibilityLocationChangesReceived(
       const std::vector<AXLocationChangeNotificationDetails>& details) {}
 
+  // Indicates an unrecoverable error in accessibility. Gracefully turns off
+  // accessibility in all frames.
+  virtual void AccessibilityFatalError() {}
+
   // Gets the GeolocationContext associated with this delegate.
   virtual device::mojom::GeolocationContext* GetGeolocationContext();
 
