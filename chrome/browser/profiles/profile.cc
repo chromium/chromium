@@ -274,10 +274,6 @@ Profile* Profile::FromWebUI(content::WebUI* web_ui) {
 }
 
 void Profile::AddObserver(ProfileObserver* observer) {
-  // Instrumentation for https://crbug.com/1359689.
-  CHECK(observer);
-  CHECK(!observers_.HasObserver(observer));
-
   observers_.AddObserver(observer);
 }
 
@@ -474,15 +470,10 @@ void Profile::MaybeSendDestroyedNotification() {
     return;
   sent_destroyed_notification_ = true;
 
-  // Instrumentation for https://crbug.com/1359689,
-  auto weak_this = GetWeakPtr();
-
   NotifyWillBeDestroyed();
-  CHECK(weak_this);
 
   for (auto& observer : observers_) {
     observer.OnProfileWillBeDestroyed(this);
-    CHECK(weak_this);
   }
 }
 
