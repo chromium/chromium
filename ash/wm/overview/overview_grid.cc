@@ -15,10 +15,12 @@
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -133,6 +135,13 @@ constexpr int kScrollingLayoutRow = 2;
 constexpr int kMinimumItemsForScrollingLayout = 6;
 
 constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
+
+// The padding applied to the side of the effective bounds without neighboring
+// widget.
+constexpr int kSpaciousPaddingForEffectiveBounds = 32;
+// The padding applied to the side of the effective bounds with neighboring
+// widget.
+constexpr int kCompactPaddingForEffectiveBounds = 16;
 
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
@@ -1532,7 +1541,46 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 
   gfx::Rect effective_bounds = bounds_;
   effective_bounds.Inset(gfx::Insets::TLBR(GetDesksBarHeight(), 0, 0, 0));
+  effective_bounds.Inset(GetGridEffectiveBoundsPaddings());
   return effective_bounds;
+}
+
+gfx::Insets OverviewGrid::GetGridEffectiveBoundsPaddings() const {
+  if (!features::IsForestFeatureEnabled() || InTabletMode()) {
+    return gfx::Insets();
+  }
+
+  // Use compact paddings for partial overview.
+  if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
+    return gfx::Insets(kCompactPaddingForEffectiveBounds);
+  }
+
+  gfx::Insets paddings;
+
+  // Use compact top padding for expanded desks bar and no padding for zero
+  // state.
+  const DeskBarViewBase::State state =
+      desks_bar_view_ ? desks_bar_view_->state()
+                      : LegacyDeskBarView::GetPerferredState(
+                            LegacyDeskBarView::Type::kOverview);
+  paddings.set_top(state == DeskBarViewBase::State::kZero
+                       ? 0
+                       : kCompactPaddingForEffectiveBounds);
+
+  // Use compact paddings for the side with shelf and spacious padding
+  // otherwise.
+  const ShelfAlignment alignment = Shelf::ForWindow(root_window_)->alignment();
+  paddings.set_left(alignment == ShelfAlignment::kLeft
+                        ? kCompactPaddingForEffectiveBounds
+                        : kSpaciousPaddingForEffectiveBounds);
+  paddings.set_right(alignment == ShelfAlignment::kRight
+                         ? kCompactPaddingForEffectiveBounds
+                         : kSpaciousPaddingForEffectiveBounds);
+  paddings.set_bottom(alignment == ShelfAlignment::kBottom ||
+                              alignment == ShelfAlignment::kBottomLocked
+                          ? kCompactPaddingForEffectiveBounds
+                          : kSpaciousPaddingForEffectiveBounds);
+  return paddings;
 }
 
 gfx::Insets OverviewGrid::GetGridInsets() const {

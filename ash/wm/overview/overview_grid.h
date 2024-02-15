@@ -294,6 +294,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // positioned, taking into account the availability of the Desks bar).
   gfx::Rect GetGridEffectiveBounds() const;
 
+  // Gets the paddings around the effective bounds (excluding the desk bar).
+  gfx::Insets GetGridEffectiveBoundsPaddings() const;
+
   // Gets the insets of the grid. Either |bounds_| or GetGridEffectiveBounds
   // does not exclude the insets from its bounds. But like PositionWindows needs
   // to position the overview windows in the bounds exclude the insets.
