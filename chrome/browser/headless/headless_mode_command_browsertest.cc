@@ -132,10 +132,10 @@ class HeadlessModeCommandBrowserTestWithTempDir
 
 // DumpDom command tests ----------------------------------------------
 
-class HeadlessModeDumpDomCommandBrowserTest
+class HeadlessModeDumpDomCommandBrowserTestBase
     : public HeadlessModeCommandBrowserTest {
  public:
-  HeadlessModeDumpDomCommandBrowserTest() = default;
+  HeadlessModeDumpDomCommandBrowserTestBase() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTest::SetUpCommandLine(command_line);
@@ -149,13 +149,27 @@ class HeadlessModeDumpDomCommandBrowserTest
   CaptureStdOut capture_stdout_;
 };
 
+class HeadlessModeDumpDomCommandBrowserTest
+    : public HeadlessModeDumpDomCommandBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  HeadlessModeDumpDomCommandBrowserTest() = default;
+
+ private:
+  bool IsIncognito() override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         HeadlessModeDumpDomCommandBrowserTest,
+                         ::testing::Bool());
+
 // TODO(crbug.com/1440917): Reenable once deflaked.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HeadlessDumpDom DISABLED_HeadlessDumpDom
 #else
 #define MAYBE_HeadlessDumpDom HeadlessDumpDom
 #endif
-IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTest,
+IN_PROC_BROWSER_TEST_P(HeadlessModeDumpDomCommandBrowserTest,
                        MAYBE_HeadlessDumpDom) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
@@ -171,12 +185,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTest,
 }
 
 class HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase
-    : public HeadlessModeDumpDomCommandBrowserTest {
+    : public HeadlessModeDumpDomCommandBrowserTestBase {
  public:
   HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeDumpDomCommandBrowserTest::SetUpCommandLine(command_line);
+    HeadlessModeDumpDomCommandBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kTimeout,
                                     base::ToString(timeout().InMilliseconds()));
   }
@@ -318,8 +332,9 @@ IN_PROC_BROWSER_TEST_P(
                     "div><scriptsrc=\"./script.js\"></script></body></html>"));
   }
 }
+
 HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
-    HeadlessModeDumpDomCommandBrowserTest,
+    HeadlessModeDumpDomCommandBrowserTestBase,
     DumpDomWithBeforeUnloadPreventDefault,
     "/before_unload_prevent_default.html") {
   // Make sure that 'beforeunload' that prevents default action does not stall

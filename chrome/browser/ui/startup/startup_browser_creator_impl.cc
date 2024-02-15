@@ -303,8 +303,11 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // Headless mode is restricted to only one url in the command line, so
     // just grab the first one assuming it's the target.
     if (first_tab && process_headless_commands) {
-      auto profile_keepalive = std::make_unique<ScopedProfileKeepAlive>(
-          profile_, ProfileKeepAliveOrigin::kHeadlessCommand);
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keepalive;
+      if (!profile_->IsOffTheRecord()) {
+        profile_keepalive = std::make_unique<ScopedProfileKeepAlive>(
+            profile_, ProfileKeepAliveOrigin::kHeadlessCommand);
+      }
       headless::ProcessHeadlessCommands(
           profile_, tab.url,
           base::BindOnce(

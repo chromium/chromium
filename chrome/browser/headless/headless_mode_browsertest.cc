@@ -88,8 +88,15 @@ void HeadlessModeBrowserTest::SetUpOnMainThread() {
   ASSERT_TRUE(headless::IsHeadlessMode() || headful_mode());
 }
 
+bool HeadlessModeBrowserTest::IsIncognito() {
+  return false;
+}
+
 void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
     base::CommandLine* command_line) {
+  if (IsIncognito()) {
+    command_line->AppendSwitch(::switches::kIncognito);
+  }
   if (command_line->HasSwitch(switches::kHeadfulMode)) {
     headful_mode_ = true;
   } else {
