@@ -60,7 +60,7 @@ TabOrganizationSession::~TabOrganizationSession() {
 
     if (organization->choice() == TabOrganization::UserChoice::kAccepted) {
       UMA_HISTOGRAM_COUNTS_100("Tab.Organization.Organization.TabRemovedCount",
-                               organization->GetTabRemovedCount());
+                               organization->user_removed_tab_ids().size());
 
       UMA_HISTOGRAM_BOOLEAN(
           "Tab.Organization.Organization.LabelEdited",
