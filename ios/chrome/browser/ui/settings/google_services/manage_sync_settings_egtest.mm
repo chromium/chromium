@@ -233,7 +233,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Open the "manage sync" view.
@@ -262,7 +262,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Open the "manage sync" view.
@@ -313,7 +313,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
 
@@ -353,7 +353,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
 
@@ -388,7 +388,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -422,7 +422,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -497,7 +497,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -517,7 +517,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:grey_tap()];
 
   // Sign in with another identity.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity2];
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Verify the account settings row is showing in the settings menu.
@@ -538,7 +538,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -562,7 +562,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Sign in with the same identity.
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Verify the account settings row is showing in the settings menu.
@@ -589,7 +589,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -647,7 +647,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -752,7 +752,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -1280,7 +1280,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -1315,7 +1315,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -1339,7 +1339,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -1372,7 +1372,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
@@ -1474,7 +1474,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Sign back in.
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
