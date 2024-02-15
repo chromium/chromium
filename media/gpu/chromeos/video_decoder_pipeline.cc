@@ -1130,10 +1130,26 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   } else {
     VLOGF(2) << "Initializing ImageProcessor; max buffers: "
              << estimated_num_buffers_for_renderer_;
+    // |output_storage_type| holds the storage type of frames created by
+    // |main_frame_pool_|, which are used as the output frames for the image
+    // processor.
+    // As part of b/277581596, |main_frame_pool_| will be changed to create
+    // NativePixmap frames instead of GPU memory buffer frames. There will be
+    // points during the transition where |main_frame_pool_| will use different
+    // storage types for different platforms. The plan is to migrate the
+    // ChromeOS Chrome browser frame pool first. Then later, Linux and ChromeOS
+    // ARC. To handle correctly configuring |image_processor| during this
+    // transition, the frame pool is being used as the source of truth for the
+    // |output_storage_type|.
+    // TODO(nhebert): Clean up this comment after the NativePixmap migration
+    // completes.
+    const VideoFrame::StorageType output_storage_type =
+        main_frame_pool_->GetFrameStorageType();
     image_processor = ImageProcessorFactory::CreateWithInputCandidates(
         candidates, /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
-        estimated_num_buffers_for_renderer_, decoder_task_runner_,
+        output_storage_type, estimated_num_buffers_for_renderer_,
+        decoder_task_runner_,
         base::BindRepeating(&PickRenderableFourcc, renderable_fourccs_),
         base::BindPostTaskToCurrentDefault(
             base::BindRepeating(&VideoDecoderPipeline::OnError,

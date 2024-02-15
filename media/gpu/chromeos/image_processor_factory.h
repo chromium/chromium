@@ -54,6 +54,7 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
       const gfx::Rect& input_visible_rect,
       const gfx::Size& output_size,
+      VideoFrame::StorageType output_storage_type,
       size_t num_buffers,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       PickFormatCB out_format_picker,
