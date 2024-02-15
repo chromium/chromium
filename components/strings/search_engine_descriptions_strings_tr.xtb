@@ -1,9 +1,12 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="tr">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft’un hızlı, doğru ve özel arama hizmeti</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Sizi takip etmeyiz. Gizlilik, basitleştirildi.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing, GPT-4 tarafından desteklenen bir AI arama motorudur</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Web'de gezinirken reklamları ve izleyicileri engelleyin.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Dünyanın en çok kullanılan arama motoruyla aradığınızı bulun.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Hızlı ve kolay arama</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">İzleme olmadan bağımsız bir Avrupa arama motoru</translation>

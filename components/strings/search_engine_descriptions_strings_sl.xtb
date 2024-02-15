@@ -1,9 +1,12 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="sl">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoftov iskalnik za hitro, natančno in zasebno iskanje.</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Ne sledimo vam. Poenostavljena zasebnost.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing je iskalnik AI, ki ga poganja GPT-4</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Sadite drevesa, medtem ko brskate. Posajenih je več kot 200 milijonov dreves.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Poiščite, kar potrebujete, z najpogosteje uporabljanim iskalnikom na svetu.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Hitro in enostavno iskanje</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Independent, evropska, ne-sledenje iskalnik</translation>

@@ -36,6 +36,7 @@
   <structure type="chrome_scaled_image" name="IDR_HK_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_ID_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_IN_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
+  <structure type="chrome_scaled_image" name="IDR_IT_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_YAHOO_CO_JP_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_MX_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
   <structure type="chrome_scaled_image" name="IDR_MALAYSIA_YAHOO_COM_PNG" file="search_engine_choice/yahoo_com.png" />
@@ -55,6 +56,7 @@
   <structure type="chrome_scaled_image" name="IDR_YANDEX_RU_PNG" file="search_engine_choice/yandex_by.png" />
   <structure type="chrome_scaled_image" name="IDR_YANDEX_COM_TR_PNG" file="search_engine_choice/yandex_by.png" />
   <structure type="chrome_scaled_image" name="IDR_YEP_COM_PNG" file="search_engine_choice/yep_com.png" />
+  <structure type="chrome_scaled_image" name="IDR_YOU_COM_PNG" file="search_engine_choice/you_com.png" />
   <structure type="chrome_scaled_image" name="IDR_INFO_COM_PNG" file="search_engine_choice/info_com.png" />
   <structure type="chrome_scaled_image" name="IDR_METAGER_DE_PNG" file="search_engine_choice/metager_de.png" />
   <structure type="chrome_scaled_image" name="IDR_OCEANHERO_TODAY_PNG" file="search_engine_choice/oceanhero_today.png" />

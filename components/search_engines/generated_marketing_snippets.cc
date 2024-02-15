@@ -117,6 +117,9 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::yahoo_in.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
+  if (engine_keyword == TemplateURLPrepopulateData::yahoo_it.keyword) {
+    return IDS_YAHOO_SEARCH_DESCRIPTION;
+  }
   if (engine_keyword == TemplateURLPrepopulateData::yahoo_jp.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
@@ -173,6 +176,9 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   }
   if (engine_keyword == TemplateURLPrepopulateData::yep.keyword) {
     return IDS_YEP_SEARCH_DESCRIPTION;
+  }
+  if (engine_keyword == TemplateURLPrepopulateData::you.keyword) {
+    return IDS_YOU_SEARCH_DESCRIPTION;
   }
   return -1;
 }

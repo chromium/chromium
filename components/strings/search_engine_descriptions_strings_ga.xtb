@@ -4,6 +4,6 @@
 <!-- This file is generated using
 google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
 Do not modify it manually. -->
-<translationbundle lang="fil">
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Hanapin ang kailangan mo sa pamamagitan ng pinakamadalas na ginagamit na search engine sa buong mundo.</translation>
+<translationbundle lang="ga">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Is inneall cuardaigh AI é Microsoft Bing atá cumhachtaithe ag GPT-4</translation>
 </translationbundle>
