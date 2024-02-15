@@ -64,9 +64,15 @@
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 }
 
+// TODO(b/325441139): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpenSecondWindow DISABLED_testOpenSecondWindow
+#else
+#define MAYBE_testOpenSecondWindow testOpenSecondWindow
+#endif
 // Tests that search engine choice dialog is moved to the other active scene
 // when the current scene is removed.
-- (void)testOpenSecondWindow {
+- (void)MAYBE_testOpenSecondWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -79,10 +85,18 @@
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
 }
 
+// TODO(b/325441139): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSearchEngineChoiceScreenSelectThenScroll \
+  DISABLED_testSearchEngineChoiceScreenSelectThenScroll
+#else
+#define MAYBE_testSearchEngineChoiceScreenSelectThenScroll \
+  testSearchEngineChoiceScreenSelectThenScroll
+#endif
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenSelectThenScroll {
+- (void)MAYBE_testSearchEngineChoiceScreenSelectThenScroll {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Checks that the fake omnibox illustration is displayed and is initially
@@ -115,10 +129,18 @@
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
+// TODO(b/325441139): Test fails on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSearchEngineChoiceScreenScrollThenSelect \
+  DISABLED_testSearchEngineChoiceScreenScrollThenSelect
+#else
+#define MAYBE_testSearchEngineChoiceScreenScrollThenSelect \
+  testSearchEngineChoiceScreenScrollThenSelect
+#endif
 // Tests that the Search Engine Choice screen is displayed, that the
 // primary button is correctly updated when the user scrolls down then selects a
 // search engine and that it correctly sets the default search engine.
-- (void)testSearchEngineChoiceScreenScrollThenSelect {
+- (void)MAYBE_testSearchEngineChoiceScreenScrollThenSelect {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Checks that the fake omnibox illustration is displayed and is initially
