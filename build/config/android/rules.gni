@@ -3618,7 +3618,7 @@ if (enable_java_templates && is_android) {
         data += invoker.data
       }
 
-      deps = [ "//testing/android/broker:broker_java" ]
+      deps = []
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }

@@ -16,7 +16,5 @@
          needed when building test cases. -->
     <application android:hardwareAccelerated="false">
         <uses-library android:name="android.test.runner" />
-        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
-            android:exported="true"/>
     </application>
 </manifest>
