@@ -484,7 +484,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // History Sync is still shown when tapping on the promo action button.
 - (void)testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Recent Tabs.
   OpenRecentTabsPanel();
@@ -571,8 +571,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that a promo to sync is shown to a signed-in non-syncing user.
 // kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testShowPromoIfSignedIn_SyncToSigninDisabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -600,7 +599,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Recent Tabs.
   OpenRecentTabsPanel();
@@ -664,7 +663,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testDelineHistorySyncIfSignedInAndTabsDisabled_SyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Open Recent Tabs
   OpenRecentTabsPanel();
@@ -717,8 +716,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // tab sync.
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [SigninEarlGreyAppInterface
       setSelectedType:(syncer::UserSelectableType::kTabs)
               enabled:YES];
@@ -757,8 +755,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -771,8 +768,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests no promo is shown to a syncing user with tab sync enabled.
 - (void)testNoPromoIfSyncing {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -786,8 +782,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests a promo is shown to a syncing user who disabled the tab sync toggle.
 // Tapping the promo opens the page to re-enable the toggle.
 - (void)testShowPromoIfSyncingAndDisabledTabs {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [SigninEarlGreyAppInterface
       setSelectedType:(syncer::UserSelectableType::kTabs)
               enabled:NO];
@@ -913,8 +908,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that the Recent Tabs can be opened while signed in (prevent regression
 // for https://crbug.com/1056613).
 - (void)testOpenWhileSignedIn {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
 }
