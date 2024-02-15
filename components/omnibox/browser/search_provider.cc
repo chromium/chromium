@@ -191,9 +191,9 @@ bool SearchProvider::CanSendCurrentPageURLInRequest(
   // already gets equivalent information in the form of the current page
   // classification.
   return !omnibox::IsNTPPage(page_classification) &&
-         CanSendPageURLInRequest(current_page_url) &&
-         CanSendSuggestRequestWithURL(current_page_url, template_url,
-                                      search_terms_data, client);
+         PageURLIsEligibleForSuggestRequest(current_page_url) &&
+         CanSendSuggestRequestWithPageURL(current_page_url, template_url,
+                                          search_terms_data, client);
 }
 
 SearchProvider::~SearchProvider() = default;

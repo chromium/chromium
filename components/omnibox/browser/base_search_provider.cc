@@ -330,12 +330,13 @@ void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
 }
 
 // static
-bool BaseSearchProvider::CanSendPageURLInRequest(const GURL& page_url) {
+bool BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
+    const GURL& page_url) {
   return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();
 }
 
 // static
-bool BaseSearchProvider::CanSendZeroSuggestRequest(
+bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
@@ -370,12 +371,13 @@ bool BaseSearchProvider::CanSendZeroSuggestRequest(
 }
 
 // static
-bool BaseSearchProvider::CanSendSuggestRequestWithURL(
+bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
     const GURL& current_page_url,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
-  if (!CanSendZeroSuggestRequest(template_url, search_terms_data, client)) {
+  if (!CanSendSuggestRequestWithoutPageURL(template_url, search_terms_data,
+                                           client)) {
     return false;
   }
 

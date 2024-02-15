@@ -110,10 +110,10 @@ bool AllowRemoteSendURL(const AutocompleteProviderClient* client,
 
   // Explicitly test the conditions for sending a suggest request without
   // sending the current URL are also met in case these two tests diverge.
-  return BaseSearchProvider::CanSendZeroSuggestRequest(
+  return BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
              default_provider, template_url_service->search_terms_data(),
              client) &&
-         BaseSearchProvider::CanSendSuggestRequestWithURL(
+         BaseSearchProvider::CanSendSuggestRequestWithPageURL(
              input.current_url(), default_provider,
              template_url_service->search_terms_data(), client);
 }
@@ -132,18 +132,16 @@ bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
     return false;
   }
 
-  const bool allow_remote_no_url =
-      BaseSearchProvider::CanSendZeroSuggestRequest(
-          default_provider, template_url_service->search_terms_data(), client);
-
   // Zero-suggest on the NTP is allowed only if the user is signed-in. This
   // check is done not for privacy reasons but to prevent signed-out users from
   // querying the server which does not have any suggestions for them.
   bool check_authentication_state = !base::FeatureList::IsEnabled(
       omnibox::kZeroSuggestOnNTPForSignedOutUsers);
 
-  return allow_remote_no_url &&
-         (!check_authentication_state || client->IsAuthenticated());
+  return (!check_authentication_state || client->IsAuthenticated()) &&
+         BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
+             default_provider, template_url_service->search_terms_data(),
+             client);
 }
 
 // Called in StoreRemoteResponse() and ReadStoredResponse() to determine if the
@@ -285,7 +283,7 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   // The following cases require sending the current page URL in the request.
   // Ensure the URL is valid with an HTTP(S) scheme and is not the NTP page URL.
   if (omnibox::IsNTPPage(page_class) ||
-      !BaseSearchProvider::CanSendPageURLInRequest(input.current_url())) {
+      !PageURLIsEligibleForSuggestRequest(input.current_url())) {
     return ResultType::kNone;
   }
 

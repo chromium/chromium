@@ -51,8 +51,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Returns the type of results that should be generated for the given context;
   // however, it does not check whether or not a suggest request can be made.
   // Those checks must be done using
-  // BaseSearchProvider::CanSendZeroSuggestRequest() for the kRemoteNoURL
-  // variant and BaseSearchProvider::CanSendSuggestRequestWithURL() for the
+  // BaseSearchProvider::CanSendSuggestRequestWithoutPageURL() for the
+  // kRemoteNoURL variant and
+  // BaseSearchProvider::CanSendSuggestRequestWithPageURL() for the
   // kRemoteSendURL variant.
   // This method is static to avoid depending on the provider state.
   static ResultType ResultTypeToRun(const AutocompleteInput& input);
