@@ -276,8 +276,7 @@ bool ProfilePicker::IsActive() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  return g_profile_picker_view->GetWidget() &&
-         g_profile_picker_view->GetWidget()->IsVisible();
+  return g_profile_picker_view->GetWidget()->IsVisible();
 #else
   return g_profile_picker_view->GetWidget()->IsActive();
 #endif
