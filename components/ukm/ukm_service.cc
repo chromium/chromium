@@ -120,7 +120,11 @@ void FilterReportElements(Predicate predicate,
   int entries_size = elements.size();
   int start = 0;
   int end = entries_size - 1;
-  while (start < end) {
+  // This loop ensures that everything to the left of start doesn't satisfy the
+  // predicate and everything to the right of end does. If start == end then we
+  // don't know if whether or predicate(elements.Get(start)) is true so the
+  // condition needs to be <=.
+  while (start <= end) {
     while (start < entries_size && !predicate(elements.Get(start))) {
       start++;
     }
@@ -129,6 +133,9 @@ void FilterReportElements(Predicate predicate,
     }
     if (start < end) {
       mutable_elements->SwapElements(start, end);
+      // Thanks to the swap predicate(elements.Get(start)) is now false and
+      // predicate(elements.Get(end)) is now true so it's safe unconditionally
+      // increment and decrement start and end respectively.
       start++;
       end--;
     }

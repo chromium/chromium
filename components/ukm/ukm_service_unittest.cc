@@ -424,13 +424,12 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   proto_source_2->set_id(source_id_2);
   proto_source_2->add_urls()->set_url(extension_url);
 
-  // Add some entries for both sources.
   Entry* entry_1 = report.add_entries();
   entry_1->set_source_id(source_id_2);
   Entry* entry_2 = report.add_entries();
   entry_2->set_source_id(source_id_1);
   Entry* entry_3 = report.add_entries();
-  entry_3->set_source_id(source_id_2);
+  entry_3->set_source_id(source_id_1);
 
   // Save the Report to the store.
   std::string serialized_log;
@@ -459,9 +458,10 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   EXPECT_EQ(source_id_1, filtered_report.sources(0).id());
   EXPECT_EQ(non_extension_url, filtered_report.sources(0).urls(0).url());
 
-  // Only entry_2 from the non-extension source is kept.
-  EXPECT_EQ(1, filtered_report.entries_size());
+  // Only entry_2 and entry_3 from the non-extension source is kept.
+  EXPECT_EQ(2, filtered_report.entries_size());
   EXPECT_EQ(source_id_1, filtered_report.entries(0).source_id());
+  EXPECT_EQ(source_id_1, filtered_report.entries(1).source_id());
 }
 
 TEST_F(UkmServiceTest, PurgeAppDataFromUnsentLogStore) {
