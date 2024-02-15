@@ -46,22 +46,22 @@
 #pragma mark - StandardPromoAlertProvider
 
 - (NSString*)title {
-  return l10n_util::GetNSString(
-      IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE);
+  return l10n_util::GetNSString(IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_TITLE);
 }
 
 - (NSString*)message {
-  return l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_DESCRIPTION);
+  return l10n_util::GetNSString(
+      IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_SUBTITLE);
 }
 
 - (NSString*)defaultActionButtonText {
   return l10n_util::GetNSString(
-      IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PRIMARY_ACTION);
+      IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_PRIMARY_ACTION);
 }
 
 - (NSString*)cancelActionButtonText {
   return l10n_util::GetNSString(
-      IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SECONDARY_ACTION);
+      IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_SECONDARY_ACTION);
 }
 
 @end

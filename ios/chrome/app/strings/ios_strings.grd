@@ -3470,6 +3470,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_POPUPS_BLOCKED_MOBILE" desc="Message shown in the infobar when a popup is blocked [length: 20em]">
         Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS">$1<ex>1</ex></ph>)
       </message>
+      <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_PRIMARY_ACTION" desc="The primary action string on the post-default browser abandonment system alert (title case) [iOS only]">
+        Go to Settings
+      </message>
+      <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_SECONDARY_ACTION" desc="The secondary action string on the post-default browser abandonment system alert (title case) [iOS only]">
+        No Thanks
+      </message>
+      <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_SUBTITLE" desc="The subtitle string on the post-default browser abandonment system alert [iOS only]">
+        There may have been a change to your default browser settings. You can check this in settings.
+      </message>
+      <message name="IDS_IOS_POST_DEFAULT_ABANDONMENT_PROMO_TITLE" desc="The title string on the post-default browser abandonment system alert (title case) [iOS only]">
+        Check Your Default Browser Settings
+      </message>
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PRIMARY_ACTION" desc="The text for the primary action button of the post restore default browser promo.">
         Make Default in Settings…
       </message>
