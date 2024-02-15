@@ -141,7 +141,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);

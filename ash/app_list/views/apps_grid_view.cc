@@ -355,7 +355,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   items_container_->SetPaintToLayer();
   items_container_->layer()->SetFillsBoundsOpaquely(false);
 
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   // Override the a11y name of top level apps grid.
   if (!folder_delegate) {

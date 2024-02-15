@@ -200,7 +200,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   }
 
   // A valid role must be set prior to setting the name.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListBox);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
       title_label_->GetText()));
