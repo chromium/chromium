@@ -18,7 +18,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
@@ -27,6 +26,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.interpolators.Interpolators;
@@ -304,13 +304,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         Animation exitAnimation =
                 getScaleAnimation(false, mContextMenuSourceXPx, contextMenuDestinationYPx);
         exitAnimation.setAnimationListener(
-                new AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {}
-
+                new EmptyAnimationListener() {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         ContextMenuDialog.super.dismiss();

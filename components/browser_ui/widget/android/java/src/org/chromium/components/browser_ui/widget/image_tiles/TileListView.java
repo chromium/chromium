@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
@@ -97,17 +97,11 @@ class TileListView {
 
     private void configureAnimationListener() {
         mView.setLayoutAnimationListener(
-                new AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {}
-
+                new EmptyAnimationListener() {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mView.setLayoutAnimation(null);
                     }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {}
                 });
     }
 

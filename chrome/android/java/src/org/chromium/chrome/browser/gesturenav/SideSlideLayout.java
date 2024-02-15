@@ -19,6 +19,7 @@ import android.view.animation.Transformation;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
+import org.chromium.ui.animation.EmptyAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
 
 /**
@@ -97,13 +98,7 @@ public class SideSlideLayout extends ViewGroup {
     private boolean mWillNavigate;
 
     private final AnimationListener mNavigateListener =
-            new AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {}
-
+            new EmptyAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     mArrowView.setFaded(false, false);
@@ -151,13 +146,7 @@ public class SideSlideLayout extends ViewGroup {
         mTotalDragDistance = RAW_SWIPE_LIMIT_DP * getResources().getDisplayMetrics().density;
 
         mAnimateToStartPosition.setAnimationListener(
-                new AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {}
-
+                new EmptyAnimationListener() {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         reset();

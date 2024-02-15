@@ -287,6 +287,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/UiSwitches.java",
     "java/src/org/chromium/ui/ViewProvider.java",
     "java/src/org/chromium/ui/animation/AnimationPerformanceTracker.java",
+    "java/src/org/chromium/ui/animation/EmptyAnimationListener.java",
     "java/src/org/chromium/ui/base/ActivityIntentRequestTrackerDelegate.java",
     "java/src/org/chromium/ui/base/ActivityKeyboardVisibilityDelegate.java",
     "java/src/org/chromium/ui/base/ActivityWindowAndroid.java",
