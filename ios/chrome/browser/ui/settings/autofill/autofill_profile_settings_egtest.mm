@@ -456,7 +456,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
 - (void)testRequiredFields {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -538,7 +538,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
 - (void)testDoneButtonByRequirementsOfCountries {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -611,7 +611,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
 - (void)testFooterWithMultipleErrors {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -639,8 +639,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 
 // Tests that the local profile is migrated to account.
 - (void)testMigrateToAccount {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
   [self
       openEditProfile:
@@ -707,8 +706,7 @@ id<GREYMatcher> MigrateToAccountButton() {
 // Tests that a local incomplete profile can be migrated to account after
 // editing the profile.
 - (void)testIncompleteProfileMigrateToAccount {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
 
   [self
