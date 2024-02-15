@@ -81,10 +81,8 @@ class Signer:
         self._certificate_password = certificate_password
         self._sign_flags = sign_flags
 
-    def _add_tagging_cert(self, in_file):
+    def _add_tagging_cert(self, in_file, out_file):
         """Adds the tagging cert. Returns the path to the tagged file."""
-        out_file = os.path.join(tempfile.mkdtemp(dir=self._tmpdir),
-                                'tagged_file')
         subprocess.run(
             [self._tagging_exe, '--set-tag',
              '--out=%s' % out_file, in_file],
@@ -186,6 +184,7 @@ class Signer:
 
     def sign_metainstaller(self,
                            in_file,
+                           out_file,
                            appid=None,
                            installer_path=None,
                            manifest_path=None,
@@ -202,7 +201,7 @@ class Signer:
         resed.UpdateResource('B7', 1033, resource, extracted_7z)
         resed.Commit()
         self._sign_item(out_metainstaller)
-        return self._add_tagging_cert(out_metainstaller)
+        return self._add_tagging_cert(out_metainstaller, out_file)
 
 
 def has_switch(switch_name: str) -> bool:
@@ -270,15 +269,12 @@ def main():
               'file with the corresponding values.'))
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as tmpdir:
-        shutil.move(
-            Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
-                   args.identity, args.certificate_file_path,
-                   args.certificate_password,
-                   []).sign_metainstaller(args.in_file, args.appid,
-                                          args.installer_path,
-                                          args.manifest_path,
-                                          args.manifest_dict_replacements),
-            args.out_file)
+        Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
+               args.identity, args.certificate_file_path,
+               args.certificate_password,
+               []).sign_metainstaller(args.in_file, args.out_file, args.appid,
+                                      args.installer_path, args.manifest_path,
+                                      args.manifest_dict_replacements)
 
 
 if __name__ == '__main__':
