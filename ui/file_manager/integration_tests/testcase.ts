@@ -12,7 +12,7 @@ import * as crostiniTests from './file_manager/crostini.js';
 import * as directoryTreeTests from './file_manager/directory_tree.js';
 import * as directoryTreeContextMenuTests from './file_manager/directory_tree_context_menu.js';
 import * as dlpTests from './file_manager/dlp.js';
-// import * as dlpEnterpriseConnectorsTests from './file_manager/dlp_enterprise_connectors.js';
+import * as dlpEnterpriseConnectorsTests from './file_manager/dlp_enterprise_connectors.js';
 import * as driveSpecificTests from './file_manager/drive_specific.js';
 import * as fileDialogTests from './file_manager/file_dialog.js';
 import * as fileDisplayTests from './file_manager/file_display.js';
@@ -70,7 +70,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...directoryTreeTests,
   ...directoryTreeContextMenuTests,
   ...dlpTests,
-  // ...dlpEnterpriseConnectorsTests,
+  ...dlpEnterpriseConnectorsTests,
   ...driveSpecificTests,
   ...fileDialogTests,
   ...fileDisplayTests,

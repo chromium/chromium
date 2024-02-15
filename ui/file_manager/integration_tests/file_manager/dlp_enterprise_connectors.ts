@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addEntries, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -54,9 +53,7 @@ const blockedFileEntry2 = new TestEntryInfo({
 
 // Tests that proceeding two warnings, the first is triggered by DLP and the
 // second is triggered by Enterprise Connectors, will move all the copied files.
-// @ts-ignore: error TS4111: Property 'twoWarningsProceeded' comes from an index
-// signature, so it must be accessed with ['twoWarningsProceeded'].
-testcase.twoWarningsProceeded = async () => {
+export async function twoWarningsProceeded() {
   // Add entry to Downloads.
   await addEntries(['local'], [allowedFileEntry, warnedFileEntry]);
 
@@ -111,9 +108,7 @@ testcase.twoWarningsProceeded = async () => {
   await remoteCall.focus(appId, ['#file-list:not([hidden])']);
 
   // Select all files.
-  const ctrlA = ['#file-list', 'a', true, false, false];
-  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-  // or be passed to a rest parameter.
+  const ctrlA = ['#file-list', 'a', true, false, false] as const;
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
@@ -168,14 +163,12 @@ testcase.twoWarningsProceeded = async () => {
   await remoteCall.waitForFiles(
       appId,
       [allowedFileEntry.getExpectedRow(), warnedFileEntry.getExpectedRow()]);
-};
+}
 
 // Tests that blocking different files by DLP and Enterprise Connectors will
 // copy all the file except the blocked ones. A block panel will be shown in the
 // end  with the blocked files count.
-// @ts-ignore: error TS4111: Property 'differentBlockPolicies' comes from an
-// index signature, so it must be accessed with ['differentBlockPolicies'].
-testcase.differentBlockPolicies = async () => {
+export async function differentBlockPolicies() {
   // Add entry to Downloads.
   await addEntries(
       ['local'], [allowedFileEntry, blockedFileEntry1, blockedFileEntry2]);
@@ -224,9 +217,7 @@ testcase.differentBlockPolicies = async () => {
   await remoteCall.focus(appId, ['#file-list:not([hidden])']);
 
   // Select all files.
-  const ctrlA = ['#file-list', 'a', true, false, false];
-  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-  // or be passed to a rest parameter.
+  const ctrlA = ['#file-list', 'a', true, false, false] as const;
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
@@ -257,4 +248,4 @@ testcase.differentBlockPolicies = async () => {
   await remoteCall.waitForFiles(
       appId,
       [allowedFileEntry.getExpectedRow(), blockedFileEntry1.getExpectedRow()]);
-};
+}
