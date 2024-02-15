@@ -3975,6 +3975,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "WallpaperSearchHatsDelayParam": "18s",
                         "en_site_id": "foo",
                         "probability": "1.0"
                     },
