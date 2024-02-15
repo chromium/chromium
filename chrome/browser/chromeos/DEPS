@@ -5,3 +5,10 @@ include_rules = [
 
   "+ash/constants",
 ]
+
+specific_include_rules = {
+  "kiosk_browser_session_unittest\.cc": [
+    # Included within #ifdef BUILD(IS_CHROMEOS_ASH).
+    "+chrome/browser/ash/policy/core/device_local_account.h"
+  ],
+}

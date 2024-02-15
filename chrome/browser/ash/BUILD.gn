@@ -2141,8 +2141,6 @@ source_set("ash") {
     "login/users/avatar/user_image_prefs.h",
     "login/users/avatar/user_image_sync_observer.cc",
     "login/users/avatar/user_image_sync_observer.h",
-    "login/users/chrome_user_manager.cc",
-    "login/users/chrome_user_manager.h",
     "login/users/chrome_user_manager_impl.cc",
     "login/users/chrome_user_manager_impl.h",
     "login/users/chrome_user_manager_util.cc",

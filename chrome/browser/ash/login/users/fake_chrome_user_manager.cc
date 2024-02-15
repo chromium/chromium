@@ -14,11 +14,11 @@
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -67,7 +67,9 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 namespace ash {
 
 FakeChromeUserManager::FakeChromeUserManager()
-    : ChromeUserManager(new FakeTaskRunner()) {
+    : UserManagerBase(
+          new FakeTaskRunner(),
+          g_browser_process ? g_browser_process->local_state() : nullptr) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 
@@ -287,15 +289,6 @@ void FakeChromeUserManager::ScheduleResolveLocale(
 
 bool FakeChromeUserManager::IsValidDefaultUserImageId(int image_index) const {
   return default_user_image::IsValidIndex(image_index);
-}
-
-// UserManager implementation:
-void FakeChromeUserManager::Initialize() {
-  return ChromeUserManager::Initialize();
-}
-
-void FakeChromeUserManager::Shutdown() {
-  ChromeUserManager::Shutdown();
 }
 
 const user_manager::UserList& FakeChromeUserManager::GetUsers() const {

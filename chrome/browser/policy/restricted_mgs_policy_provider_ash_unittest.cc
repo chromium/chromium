@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "components/policy/core/common/policy_bundle.h"

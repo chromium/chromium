@@ -277,7 +277,7 @@ user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
 
 // static
 void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
-  ChromeUserManager::RegisterPrefs(registry);
+  UserManagerBase::RegisterPrefs(registry);
 
   registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
@@ -312,9 +312,11 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
-    : ChromeUserManager(base::SingleThreadTaskRunner::HasCurrentDefault()
-                            ? base::SingleThreadTaskRunner::GetCurrentDefault()
-                            : nullptr),
+    : UserManagerBase(
+          base::SingleThreadTaskRunner::HasCurrentDefault()
+              ? base::SingleThreadTaskRunner::GetCurrentDefault()
+              : nullptr,
+          g_browser_process ? g_browser_process->local_state() : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
       multi_user_sign_in_policy_controller_(GetLocalState(), this),
@@ -431,7 +433,7 @@ ChromeUserManagerImpl::~ChromeUserManagerImpl() {
 void ChromeUserManagerImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  ChromeUserManager::Shutdown();
+  UserManagerBase::Shutdown();
 
   if (GetMinimumVersionPolicyHandler()) {
     GetMinimumVersionPolicyHandler()->RemoveObserver(this);
@@ -572,14 +574,14 @@ void ChromeUserManagerImpl::SaveUserOAuthStatus(
     const AccountId& account_id,
     user_manager::User::OAuthTokenStatus oauth_token_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChromeUserManager::SaveUserOAuthStatus(account_id, oauth_token_status);
+  UserManagerBase::SaveUserOAuthStatus(account_id, oauth_token_status);
 }
 
 void ChromeUserManagerImpl::SaveUserDisplayName(
     const AccountId& account_id,
     const std::u16string& display_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChromeUserManager::SaveUserDisplayName(account_id, display_name);
+  UserManagerBase::SaveUserDisplayName(account_id, display_name);
 }
 
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
@@ -635,7 +637,7 @@ void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
 }
 
 bool ChromeUserManagerImpl::CanCurrentUserLock() const {
-  if (!ChromeUserManager::CanCurrentUserLock()) {
+  if (!UserManagerBase::CanCurrentUserLock()) {
     return false;
   }
   bool can_lock = false;
@@ -748,7 +750,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
 void ChromeUserManagerImpl::GuestUserLoggedIn() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChromeUserManager::GuestUserLoggedIn();
+  UserManagerBase::GuestUserLoggedIn();
 
   // TODO(nkostylev): Add support for passing guest session cryptohome
   // mount point. Legacy (--login-profile) value will be used for now.
@@ -768,7 +770,7 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
     const AccountId& account_id,
     const user_manager::UserType user_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChromeUserManager::RegularUserLoggedIn(account_id, user_type);
+  UserManagerBase::RegularUserLoggedIn(account_id, user_type);
 
   MaybeStartBluetoothLogging(account_id);
 
@@ -786,7 +788,7 @@ void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
     const AccountId& account_id,
     const user_manager::UserType user_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ChromeUserManager::RegularUserLoggedInAsEphemeral(account_id, user_type);
+  UserManagerBase::RegularUserLoggedInAsEphemeral(account_id, user_type);
 
   // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
   for (auto& observer : observer_list_) {
@@ -881,7 +883,7 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
   UserSessionManager::OverrideHomedir();
   UpdateNumberOfUsers();
 
-  ChromeUserManager::NotifyOnLogin();
+  UserManagerBase::NotifyOnLogin();
 
   CheckProfileForSanity();
 
@@ -922,7 +924,7 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
   multi_user_sign_in_policy_controller_.RemoveCachedValues(
       account_id.GetUserEmail());
 
-  ChromeUserManager::RemoveNonCryptohomeData(account_id);
+  UserManagerBase::RemoveNonCryptohomeData(account_id);
 }
 
 void ChromeUserManagerImpl::
@@ -1182,7 +1184,7 @@ void ChromeUserManagerImpl::NotifyUserAddedToSession(
   }
 
   UpdateNumberOfUsers();
-  ChromeUserManager::NotifyUserAddedToSession(added_user, user_switch_pending);
+  UserManagerBase::NotifyUserAddedToSession(added_user, user_switch_pending);
 }
 
 void ChromeUserManagerImpl::UpdateNumberOfUsers() {

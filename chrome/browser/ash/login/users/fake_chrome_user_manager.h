@@ -13,12 +13,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
+#include "components/user_manager/user_manager_base.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
@@ -26,7 +26,7 @@ namespace ash {
 
 // Fake chrome user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
-class FakeChromeUserManager : public ChromeUserManager {
+class FakeChromeUserManager : public user_manager::UserManagerBase {
  public:
   FakeChromeUserManager();
 
@@ -69,7 +69,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   void SimulateUserProfileLoad(const AccountId& account_id);
 
   // user_manager::UserManager override.
-  void Shutdown() override;
   const user_manager::UserList& GetUsers() const override;
   user_manager::UserList GetUsersAllowedForMultiProfile() const override;
   const user_manager::UserList& GetLoggedInUsers() const override;
@@ -129,7 +128,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  void Initialize() override;
   user_manager::MultiUserSignInPolicyController*
   GetMultiUserSignInPolicyController() override;
 
@@ -145,7 +143,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   // Just make it public for tests.
   using UserManagerBase::SetOwnerId;
 
-  // ChromeUserManager override.
+  // UserManager:
   void SetUserAffiliation(
       const AccountId& account_id,
       const base::flat_set<std::string>& user_affiliation_ids) override;

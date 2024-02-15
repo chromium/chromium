@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -32,6 +31,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager_base.h"
 
 class PrefRegistrySimple;
 
@@ -49,7 +49,7 @@ class SessionLengthLimiter;
 
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
-    : public ChromeUserManager,
+    : public user_manager::UserManagerBase,
       public session_manager::SessionManagerObserver,
       public DeviceSettingsService::Observer,
       public policy::DeviceLocalAccountPolicyService::Observer,
@@ -91,6 +91,10 @@ class ChromeUserManagerImpl
   bool IsValidDefaultUserImageId(int image_index) const override;
   user_manager::MultiUserSignInPolicyController*
   GetMultiUserSignInPolicyController() override;
+  bool IsEnterpriseManaged() const override;
+  void SetUserAffiliation(
+      const AccountId& account_id,
+      const base::flat_set<std::string>& user_affiliation_ids) override;
 
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
@@ -117,12 +121,6 @@ class ChromeUserManagerImpl
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
-
-  // ChromeUserManager:
-  bool IsEnterpriseManaged() const override;
-  void SetUserAffiliation(
-      const AccountId& account_id,
-      const base::flat_set<std::string>& user_affiliation_ids) override;
 
  protected:
   const std::string& GetApplicationLocale() const override;
