@@ -13,13 +13,13 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -539,11 +539,10 @@ void GCMEncryptionProviderTest::TestEncryptionRoundTrip(
 
   switch (version) {
     case GCMMessageCryptographer::Version::DRAFT_03: {
-      std::string salt;
-
       // Creates a cryptographically secure salt of |salt_size| octets in size,
       // and calculate the shared secret for the message.
-      crypto::RandBytes(base::WriteInto(&salt, 16 + 1), 16);
+      std::string salt(16, '\0');
+      crypto::RandBytes(base::as_writable_byte_span(salt));
 
       std::string shared_secret;
       ASSERT_TRUE(

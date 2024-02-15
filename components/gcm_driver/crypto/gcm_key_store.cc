@@ -8,11 +8,11 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -137,12 +137,10 @@ void GCMKeyStore::CreateKeysAfterInitialize(
     return;
   }
 
-  std::string auth_secret;
-
   // Create the authentication secret, which has to be a cryptographically
   // secure random number of at least 128 bits (16 bytes).
-  crypto::RandBytes(base::WriteInto(&auth_secret, kAuthSecretBytes + 1),
-                    kAuthSecretBytes);
+  std::string auth_secret(kAuthSecretBytes, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(auth_secret));
 
   // Store the keys in a new EncryptionData object.
   EncryptionData encryption_data;

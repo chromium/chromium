@@ -8,9 +8,9 @@
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "crypto/ec_private_key.h"
@@ -323,9 +323,8 @@ class GCMMessageCryptographerTest
   // Generates a cryptographically secure random salt of 16-octets in size, the
   // required length as expected by the HKDF.
   std::string GenerateRandomSalt() {
-    std::string salt;
-
-    crypto::RandBytes(base::WriteInto(&salt, kSaltSize + 1), kSaltSize);
+    std::string salt(kSaltSize, '\0');
+    crypto::RandBytes(base::as_writable_byte_span(salt));
     return salt;
   }
 
@@ -514,12 +513,10 @@ TEST_P(GCMMessageCryptographerTest, InvalidRecordPadding) {
 }
 
 TEST_P(GCMMessageCryptographerTest, AuthSecretAffectsPRK) {
-  std::string first_auth_secret, second_auth_secret;
-
-  crypto::RandBytes(base::WriteInto(&first_auth_secret, kAuthSecretSize + 1),
-                    kAuthSecretSize);
-  crypto::RandBytes(base::WriteInto(&second_auth_secret, kAuthSecretSize + 1),
-                    kAuthSecretSize);
+  std::string first_auth_secret(kAuthSecretSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(first_auth_secret));
+  std::string second_auth_secret(kAuthSecretSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(second_auth_secret));
 
   ASSERT_NE(cryptographer_->encryption_scheme_->DerivePseudoRandomKey(
                 recipient_public_key_, sender_public_key_, ecdh_shared_secret_,

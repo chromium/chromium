@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
@@ -100,9 +100,8 @@ class GCMKeyStoreTest : public ::testing::Test {
 
     // Create the authentication secret, which has to be a cryptographically
     // secure random number of at least 128 bits (16 bytes).
-    std::string auth_secret;
-    crypto::RandBytes(base::WriteInto(&auth_secret, kAuthSecretBytes + 1),
-                      kAuthSecretBytes);
+    std::string auth_secret(kAuthSecretBytes, '\0');
+    crypto::RandBytes(base::as_writable_byte_span(auth_secret));
     encryption_data.set_auth_secret(auth_secret);
 
     // Add keys.
