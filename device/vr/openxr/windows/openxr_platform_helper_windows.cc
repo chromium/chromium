@@ -67,11 +67,9 @@ OpenXrPlatformHelperWindows::~OpenXrPlatformHelperWindows() = default;
 
 std::unique_ptr<OpenXrGraphicsBinding>
 OpenXrPlatformHelperWindows::GetGraphicsBinding(
-    D3D11TextureHelper* texture_helper) {
-  CHECK(texture_helper);
-
+    GlProvider gl_context_provider) {
   return std::make_unique<OpenXrGraphicsBindingD3D11>(
-      texture_helper, weak_ptr_factory_.GetWeakPtr());
+      gl_context_provider, weak_ptr_factory_.GetWeakPtr());
 }
 
 void OpenXrPlatformHelperWindows::GetPlatformCreateInfo(

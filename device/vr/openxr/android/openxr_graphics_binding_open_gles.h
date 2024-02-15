@@ -43,8 +43,15 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
   bool Render() override;
+  void CleanupWithoutSubmit() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
   bool ShouldFlipSubmittedImage() override;
+  void SetOverlayAndWebXrVisibility(bool overlay_visible,
+                                    bool webxr_visible) override;
+  bool SetOverlayTexture(mojo::PlatformHandle texture_handle,
+                         const gpu::SyncToken& sync_token,
+                         const gfx::RectF& left,
+                         const gfx::RectF& right) override;
 
  private:
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;

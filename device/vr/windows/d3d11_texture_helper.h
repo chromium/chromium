@@ -9,18 +9,23 @@
 #include <DXGI1_4.h>
 #include <wrl.h>
 
+#include "base/functional/callback.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+namespace gpu::gles2 {
+class GLES2Interface;
+}  // namespace gpu::gles2
+
 namespace device {
 
-class OpenXrRenderLoop;
+using GlProvider = base::RepeatingCallback<gpu::gles2::GLES2Interface*()>;
 
 class D3D11TextureHelper {
  public:
-  explicit D3D11TextureHelper(OpenXrRenderLoop* render_loop);
+  explicit D3D11TextureHelper(GlProvider context_gl_provider);
   ~D3D11TextureHelper();
 
   void Reset();
@@ -106,7 +111,7 @@ class D3D11TextureHelper {
     LayerData overlay_;
   };
 
-  const raw_ptr<OpenXrRenderLoop> render_loop_;
+  GlProvider context_gl_provider_;
 
   bool overlay_visible_ = true;
   bool source_visible_ = true;

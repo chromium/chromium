@@ -336,6 +336,11 @@ bool OpenXrGraphicsBindingOpenGLES::Render() {
   return true;
 }
 
+void OpenXrGraphicsBindingOpenGLES::CleanupWithoutSubmit() {
+  // Nothing to do, we store all of our necessary data on the active swapchain
+  // image, which gets recycled when the frame ends.
+}
+
 bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
   std::unique_ptr<gl::GLFence> local_fence =
       gl::GLFence::CreateFromGpuFence(gpu_fence);
@@ -353,6 +358,21 @@ void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
   CHECK(has_active_swapchain_image());
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
   ResizeSharedBuffer(color_swapchain_images_[active_swapchain_index()], sii);
+}
+
+void OpenXrGraphicsBindingOpenGLES::SetOverlayAndWebXrVisibility(
+    bool overlay_visible,
+    bool webxr_visible) {
+  // TODO(https://crbug.com/40901055): Implement overlay code.
+}
+
+bool OpenXrGraphicsBindingOpenGLES::SetOverlayTexture(
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  // TODO(https://crbug.com/40901055): Implement overlay code.
+  return true;
 }
 
 }  // namespace device

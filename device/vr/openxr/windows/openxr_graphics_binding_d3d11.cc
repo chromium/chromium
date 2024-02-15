@@ -35,9 +35,10 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 }
 
 OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
-    D3D11TextureHelper* texture_helper,
+    GlProvider gl_context_provider,
     base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
-    : texture_helper_(texture_helper),
+    : texture_helper_(
+          std::make_unique<D3D11TextureHelper>(gl_context_provider)),
       weak_platform_helper_(weak_platform_helper) {}
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
@@ -264,6 +265,15 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   return true;
 }
 
+bool OpenXrGraphicsBindingD3D11::Render() {
+  return texture_helper_->UpdateBackbufferSizes() &&
+         texture_helper_->CompositeToBackBuffer();
+}
+
+void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
+  texture_helper_->CleanupNoSubmit();
+}
+
 bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
   return IsUsingSharedImages();
 }
@@ -279,6 +289,33 @@ void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
 
   texture_helper_->SetBackbuffer(
       color_swapchain_images_[active_swapchain_index()].d3d11_texture.get());
+}
+
+void OpenXrGraphicsBindingD3D11::SetOverlayAndWebXrVisibility(
+    bool overlay_visible,
+    bool webxr_visible) {
+  texture_helper_->SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
+}
+
+void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
+                                              ? texture_handle.TakeHandle()
+                                              : base::win::ScopedHandle();
+  texture_helper_->SetSourceTexture(std::move(scoped_handle), sync_token, left,
+                                    right);
+}
+
+bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
+    mojo::PlatformHandle texture_handle,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  return texture_helper_->SetOverlayTexture(texture_handle.TakeHandle(),
+                                            sync_token, left, right);
 }
 
 }  // namespace device

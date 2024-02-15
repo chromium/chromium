@@ -6,7 +6,6 @@
 
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "device/vr/openxr/openxr_render_loop.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "mojo/public/c/system/platform_handle.h"
@@ -72,8 +71,8 @@ D3D11TextureHelper::RenderState::~RenderState() {}
 D3D11TextureHelper::LayerData::LayerData() = default;
 D3D11TextureHelper::LayerData::~LayerData() = default;
 
-D3D11TextureHelper::D3D11TextureHelper(OpenXrRenderLoop* render_loop)
-    : render_loop_(render_loop) {}
+D3D11TextureHelper::D3D11TextureHelper(GlProvider context_gl_provider)
+    : context_gl_provider_(context_gl_provider) {}
 
 D3D11TextureHelper::~D3D11TextureHelper() {}
 
@@ -205,7 +204,7 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
       // until GPU process has passed the sync token. This must happen before
       // AcquireSync(0) below otherwise the GPU process will be unable to
       // acquire the mutex and work will happen out of order.
-      gpu::gles2::GLES2Interface* gl = render_loop_->GetContextGL();
+      gpu::gles2::GLES2Interface* gl = context_gl_provider_.Run();
       gl->WaitSyncTokenCHROMIUM(
           render_state_.source_.sync_token_.GetConstData());
       gl->Finish();
@@ -228,7 +227,7 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
       // until GPU process has passed the sync token. This must happen before
       // AcquireSync(0) below otherwise the GPU process will be unable to
       // acquire the mutex and work will happen out of order.
-      gpu::gles2::GLES2Interface* gl = render_loop_->GetContextGL();
+      gpu::gles2::GLES2Interface* gl = context_gl_provider_.Run();
       gl->WaitSyncTokenCHROMIUM(
           render_state_.overlay_.sync_token_.GetConstData());
       gl->Finish();

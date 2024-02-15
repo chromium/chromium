@@ -26,7 +26,8 @@ OpenXrPlatformHelperAndroid::OpenXrPlatformHelperAndroid()
 OpenXrPlatformHelperAndroid::~OpenXrPlatformHelperAndroid() = default;
 
 std::unique_ptr<device::OpenXrGraphicsBinding>
-OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
+OpenXrPlatformHelperAndroid::GetGraphicsBinding(
+    device::GlProvider gl_context_provider) {
   return std::make_unique<device::OpenXrGraphicsBindingOpenGLES>();
 }
 

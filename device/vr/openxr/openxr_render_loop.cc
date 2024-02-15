@@ -29,12 +29,6 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <d3d11_4.h>
-
-#include "device/vr/windows/d3d11_texture_helper.h"
-#endif
-
 namespace {
 // Number of frames to use for sliding averages for pose timings,
 // as used for estimating prediction times.
@@ -108,9 +102,7 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   overlay_visible_ = false;
   overlay_receiver_.reset();
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(false, false);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(false, false);
 
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
@@ -282,11 +274,8 @@ void OpenXrRenderLoop::SubmitFrameWithTextureHandle(
     return;
   }
 
-  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
-                                              ? texture_handle.TakeHandle()
-                                              : base::win::ScopedHandle();
-  texture_helper_.SetSourceTexture(std::move(scoped_handle), sync_token,
-                                   left_webxr_bounds_, right_webxr_bounds_);
+  graphics_binding_->SetWebXrTexture(std::move(texture_handle), sync_token,
+                                     left_webxr_bounds_, right_webxr_bounds_);
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
@@ -409,9 +398,8 @@ void OpenXrRenderLoop::StartRuntimeFinish(
       FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));
   is_presenting_ = true;
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(overlay_visible_,
+                                                  webxr_visible_);
 }
 
 void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
@@ -433,8 +421,6 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
     return;
   }
 
-  // TODO(https://crbug.com/1454950): Unify OpenXr Rendering paths.
-#if BUILDFLAG(IS_WIN)
   bool copy_successful = false;
   bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
   bool has_overlay_content =
@@ -444,14 +430,10 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
   // Tell texture helper to composite, then grab the output texture, and submit.
   // If we submitted, set up the next frame, and send outstanding pose requests.
   if (can_submit) {
-    copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      texture_helper_.CompositeToBackBuffer();
+    copy_successful = graphics_binding_->Render();
   } else {
-    texture_helper_.CleanupNoSubmit();
+    graphics_binding_->CleanupWithoutSubmit();
   }
-#elif BUILDFLAG(IS_ANDROID)
-  bool copy_successful = true;
-#endif
 
   // A copy can only be successful if we actually tried to submit.
   if (copy_successful) {
@@ -531,13 +513,6 @@ void OpenXrRenderLoop::SubmitFrameMissing(int16_t frame_index,
     pending_frame_->waiting_for_webxr_ = false;
   }
   webxr_has_pose_ = false;
-#if (BUILDFLAG(IS_ANDROID))
-  // We haven't finished the rendering path on Android yet so are just calling
-  // this to ensure that the page stays un-stuck while we aren't actually
-  // rendering anything.
-  // TODO(alcooper): Clean this up.
-  pending_frame_->webxr_submitted_ = true;
-#endif
   MaybeCompositeAndSubmit();
 }
 
@@ -552,7 +527,8 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
   left_webxr_bounds_ = left_bounds;
   right_webxr_bounds_ = right_bounds;
 
-  // Swap top/bottom to account for differences between D3D and GL coordinates.
+  // Swap top/bottom to account for differences between mojom and GL
+  // coordinates.
   left_webxr_bounds_.set_y(
       1 - (left_webxr_bounds_.y() + left_webxr_bounds_.height()));
   right_webxr_bounds_.set_y(
@@ -584,14 +560,12 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), sync_token,
-                                    left_bounds, right_bounds);
+  graphics_binding_->SetOverlayTexture(std::move(texture_handle), sync_token,
+                                       left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
-#endif
 }
 
 void OpenXrRenderLoop::RequestNextOverlayPose(
@@ -624,10 +598,8 @@ void OpenXrRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
         pending_frame_->waiting_for_overlay_ && overlay_visible;
   }
 
-  // Update texture helper.
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(overlay_visible,
+                                                  webxr_visible);
 
   // Maybe composite and submit if we have a pending that is now valid to
   // submit.
@@ -732,13 +704,10 @@ void OpenXrRenderLoop::StartRuntime(
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
 
-  // TODO(https://crbug.com/1454938): Make the Windows Graphics Binding own the
-  // texture helper rather than need it passed in.
-#if BUILDFLAG(IS_WIN)
-  graphics_binding_ = platform_helper_->GetGraphicsBinding(&texture_helper_);
-#elif BUILDFLAG(IS_ANDROID)
-  graphics_binding_ = platform_helper_->GetGraphicsBinding();
-#endif
+  // Since we own the graphics_binding_ Unretained is safe here. Since this
+  // callback needs to return a value, it cannot be bound to a weak ptr.
+  graphics_binding_ = platform_helper_->GetGraphicsBinding(base::BindRepeating(
+      &OpenXrRenderLoop::GetContextGL, base::Unretained(this)));
 
   if (!graphics_binding_) {
     DVLOG(1) << "Could not create graphics binding";
@@ -816,9 +785,6 @@ void OpenXrRenderLoop::StopRuntime() {
   // Need to destroy the graphics binding *after* the OpenXrApiWrapper, which
   // depends on it; but *before* the texture helper on which it depends.
   graphics_binding_.reset();
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.Reset();
-#endif
   context_provider_.reset();
 }
 

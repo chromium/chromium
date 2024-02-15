@@ -15,13 +15,14 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_export.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "device/vr/windows/d3d11_texture_helper.h"
-#endif
+namespace gpu::gles2 {
+class GLES2Interface;
+}  // namespace gpu::gles2
 
 namespace device {
-
 class OpenXrGraphicsBinding;
+
+using GlProvider = base::RepeatingCallback<gpu::gles2::GLES2Interface*()>;
 
 // Simple struct containing the values that the platform will actually need to
 // create a session. Right now, Android needs the render_process_id and
@@ -64,23 +65,11 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // Must be called before making any calls to e.g. xrCreateInstance.
   bool EnsureInitialized();
 
-#if BUILDFLAG(IS_WIN)
   // Creates an OpenXrGraphicsBinding which is responsible for returning the
   // information about the graphics pipeline that is required to create an
   // XrInstance and/or XrSession.
-  // The caller is responsible for ensuring that the TextureHelper outlives the
-  // GraphicsBinding.
-  // TODO(https://crbug.com/1454938): D3D11TextureHelper should be entirely
-  // owned by the OpenXrGraphicsBinding and any relevant logic ported there with
-  // the necessary interfaces exposed on OpenXrGraphicsBinding.
   virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding(
-      D3D11TextureHelper* texture_helper) = 0;
-#else
-  // Creates an OpenXrGraphicsBinding which is responsible for returning the
-  // information about the graphics pipeline that is required to create an
-  // XrInstance and/or XrSession.
-  virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding() = 0;
-#endif
+      GlProvider gl_context_provider) = 0;
 
   // Gets the ExtensionEnumeration which is the list of extensions supported by
   // the platform.

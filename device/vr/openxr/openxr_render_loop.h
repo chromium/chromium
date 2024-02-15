@@ -40,7 +40,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/threading/thread.h"
-#include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -267,9 +266,6 @@ class OpenXrRenderLoop : public XRThread,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
-#if BUILDFLAG(IS_WIN)
-  D3D11TextureHelper texture_helper_{this};
-#endif
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
