@@ -852,8 +852,9 @@ void ManagePasswordsUIController::BlockMovingPasswordToAccountStore() {
 }
 
 void ManagePasswordsUIController::PromptSaveBubbleAfterDefaultStoreChanged() {
-  CHECK_EQ(GetState(),
-           password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE)
+  CHECK(GetState() ==
+            password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE ||
+        GetState() == password_manager::ui::PENDING_PASSWORD_STATE)
       << GetState();
   passwords_data_.TransitionToState(
       password_manager::ui::PENDING_PASSWORD_STATE);
