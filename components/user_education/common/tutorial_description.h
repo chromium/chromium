@@ -207,6 +207,7 @@ struct TutorialDescription {
     ui::CustomElementEventType event_type() const { return event_type_; }
     int title_text_id() const { return title_text_id_; }
     int body_text_id() const { return body_text_id_; }
+    int screenreader_text_id() const { return screenreader_text_id_; }
     HelpBubbleArrow arrow() const { return arrow_; }
     std::optional<bool> must_remain_visible() const {
       return must_remain_visible_;
@@ -253,6 +254,9 @@ struct TutorialDescription {
 
     // The body text to be populated in the bubble.
     int body_text_id_ = 0;
+
+    // The screenreader text to be populated in the bubble.
+    int screenreader_text_id_ = 0;
 
     // The positioning of the bubble arrow.
     HelpBubbleArrow arrow_ = HelpBubbleArrow::kNone;
@@ -326,6 +330,11 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleBodyText(int body_text_id) {
       body_text_id_ = body_text_id;
+      return *this;
+    }
+
+    BubbleStep& SetBubbleScreenreaderText(int screenreader_text_id) {
+      screenreader_text_id_ = screenreader_text_id;
       return *this;
     }
 

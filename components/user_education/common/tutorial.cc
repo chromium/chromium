@@ -186,11 +186,16 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
       step_.body_text_id() ? l10n_util::GetStringUTF16(step_.body_text_id())
                            : std::u16string();
 
+  const std::u16string screenreader_text =
+      step_.screenreader_text_id()
+          ? l10n_util::GetStringUTF16(step_.screenreader_text_id())
+          : std::u16string();
+
   return base::BindOnce(
       [](TutorialService* tutorial_service, std::u16string title_text_,
-         std::u16string body_text_, HelpBubbleArrow arrow_,
-         std::optional<std::pair<int, int>> progress, bool is_last_step,
-         bool can_be_restarted, int complete_button_text_id,
+         std::u16string body_text_, std::u16string screenreader_text_,
+         HelpBubbleArrow arrow_, std::optional<std::pair<int, int>> progress,
+         bool is_last_step, bool can_be_restarted, int complete_button_text_id,
          TutorialDescription::NextButtonCallback next_button_callback,
          HelpBubbleParams::ExtendedProperties extended_properties,
          ui::InteractionSequence* sequence, ui::TrackedElement* element) {
@@ -202,6 +207,7 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
         params.extended_properties = std::move(extended_properties);
         params.title_text = title_text_;
         params.body_text = body_text_;
+        params.screenreader_text = screenreader_text_;
         params.progress = progress;
         params.arrow = arrow_;
         params.timeout = base::TimeDelta();
@@ -269,9 +275,10 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
                 element, std::move(params));
         tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step);
       },
-      base::Unretained(tutorial_service), title_text, body_text, step_.arrow(),
-      progress_, is_last_step_, can_be_restarted_, complete_button_text_id_,
-      step_.next_button_callback(), step_.extended_properties());
+      base::Unretained(tutorial_service), title_text, body_text,
+      screenreader_text, step_.arrow(), progress_, is_last_step_,
+      can_be_restarted_, complete_button_text_id_, step_.next_button_callback(),
+      step_.extended_properties());
 }
 
 ui::InteractionSequence::StepEndCallback
