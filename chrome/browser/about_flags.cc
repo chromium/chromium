@@ -7688,10 +7688,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipDoubleTapToResize)},
 
-    {"enable-pip-pinch-to-resize", flag_descriptions::kPipPinchToResizeName,
-     flag_descriptions::kPipPinchToResizeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPipPinchToResize)},
-
     {"enable-pip-tilt", flag_descriptions::kPipTiltName,
      flag_descriptions::kPipTiltDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipTilt)},

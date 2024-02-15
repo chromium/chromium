@@ -1335,8 +1335,7 @@ TEST_F(ToplevelWindowEventHandlerDragTest,
 class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {
  public:
   ToplevelWindowEventHandlerPipPinchToResizeTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPipPinchToResize, true}, {features::kPipTilt, true}});
+    scoped_feature_list_.InitWithFeatureStates({{features::kPipTilt, true}});
   }
 
   ToplevelWindowEventHandlerPipPinchToResizeTest(

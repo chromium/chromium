@@ -697,9 +697,6 @@ extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
 extern const char kPipDoubleTapToResizeName[];
 extern const char kPipDoubleTapToResizeDescription[];
 
-extern const char kPipPinchToResizeName[];
-extern const char kPipPinchToResizeDescription[];
-
 extern const char kPipTiltName[];
 extern const char kPipTiltDescription[];
 

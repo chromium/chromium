@@ -3358,11 +3358,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-pip-pinch-to-resize",
-    "owners": [ "massan@chromium.org", "takise@chromium.org" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-pip-tilt",
     "owners": ["massan@chromium.org", "takise@chromium.org"],
     "expiry_milestone": 124

@@ -560,18 +560,11 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     case ui::ET_GESTURE_PINCH_END: {
-      if (!features::IsPipPinchToResizeEnabled()) {
-        return;
-      }
       CompletePinch();
       event->StopPropagation();
       return;
     }
     case ui::ET_GESTURE_PINCH_UPDATE:
-      if (!features::IsPipPinchToResizeEnabled()) {
-        return;
-      }
-
       // `ET_GESTURE_PINCH_UPDATE` is also called during two-finger edge resize,
       // but is handled with `ET_GESTURE_SCROLL_UPDATE`.
       if (window_resizer_ && window_resizer_->IsResize()) {
@@ -677,7 +670,7 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
   // initiated, during which time the gesture type may have changed. To
   // start the appropriate gesture, `this` keeps track of if the current
   // gesture is a drag or a pinch.
-  if (in_pinch_ && features::IsPipPinchToResizeEnabled()) {
+  if (in_pinch_) {
     return AttemptToStartPinch(window, point_in_parent, window_component,
                                /*update_gesture_target=*/true);
   }
@@ -754,9 +747,6 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
     // Transfer events for gesture if switching to new target.
     aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
         gesture_target_, window, ui::TransferTouchesBehavior::kDontCancel);
-  }
-  if (!features::IsPipPinchToResizeEnabled()) {
-    return false;
   }
 
   // `ET_GESTURE_PINCH_BEGIN` is also called during two-finger edge resize,
