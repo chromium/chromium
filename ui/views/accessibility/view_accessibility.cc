@@ -281,8 +281,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (ViewAccessibility::IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);
 
-  if (is_enabled_) {
-    if (*is_enabled_) {
+  if (overriden_is_enabled_) {
+    if (*overriden_is_enabled_) {
       // Take into account the possibility that the View is marked as readonly
       // but enabled. In other words, we can't just remove all restrictions,
       // unless the View is explicitly marked as disabled. Note that readonly is
@@ -411,6 +411,32 @@ ax::mojom::Role ViewAccessibility::GetViewAccessibilityRole() const {
 
 void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
   data_.relative_bounds.bounds = bounds;
+}
+
+void ViewAccessibility::SetIsEnabled(bool is_enabled) {
+  if (is_enabled == GetIsEnabled()) {
+    return;
+  }
+
+  if (!is_enabled) {
+    data_.SetRestriction(ax::mojom::Restriction::kDisabled);
+  } else if (data_.GetRestriction() == ax::mojom::Restriction::kDisabled) {
+    // Take into account the possibility that the View is marked as readonly
+    // but enabled. In other words, we can't just remove all restrictions,
+    // unless the View is explicitly marked as disabled. Note that readonly is
+    // another restriction state in addition to enabled and disabled, (see
+    // `ax::mojom::Restriction`).
+    data_.SetRestriction(ax::mojom::Restriction::kNone);
+  }
+
+  // TODO(crbug.com/1421682): We need a specific enabled-changed event for this.
+  // Some platforms have specific state-changed events and this generic event
+  // does not suggest what changed.
+  view()->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+}
+
+bool ViewAccessibility::GetIsEnabled() const {
+  return data_.GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
@@ -550,12 +576,15 @@ void ViewAccessibility::OverrideIsEnabled(bool enabled) {
   // is equal to kNone. Adding an IntAttribute that is equal to kNone is
   // ambiguous, since it is unclear what would be the difference between doing
   // this and not adding the attribute at all.
-  is_enabled_ = enabled;
+  overriden_is_enabled_ = enabled;
 }
 
 bool ViewAccessibility::IsAccessibilityEnabled() const {
-  if (is_enabled_)
-    return *is_enabled_;
+  // TODO(javiercon): Remove once views are migrated to use the new setter.
+  if (overriden_is_enabled_) {
+    return *overriden_is_enabled_;
+  }
+
   return view_->GetEnabled();
 }
 

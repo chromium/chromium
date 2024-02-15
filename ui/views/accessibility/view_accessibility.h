@@ -116,6 +116,14 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetBounds(const gfx::RectF& bounds);
 
+  // Sets/gets whether or not this view should be marked as "enabled" for the
+  // purpose exposing this state in the accessibility tree. As a general rule,
+  // it is not advisable to mark a View as enabled in the accessibility tree,
+  // while the real View is actually disabled, because such a View will not
+  // respond to user actions.
+  void SetIsEnabled(bool is_enabled);
+  bool GetIsEnabled() const;
+
   void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.
@@ -198,6 +206,7 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideIsIgnored(bool value);
   virtual bool IsIgnored() const;
 
+  // TODO(javiercon): Remove once views are migrated to use the new setter.
   // Marks this View either as enabled or disabled (grayed out) in the
   // accessibility tree and ignores the View's real enabled state. Does not
   // affect the View's focusable state (see "IsAccessibilityFocusable()").
@@ -377,9 +386,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // "presentational".
   bool is_ignored_ = false;
 
+  // TODO(javiercon): Remove once views are migrated to use the new setter.
   // Used to override the View's enabled state in case we need to mark the View
   // as enabled or disabled only in the accessibility tree.
-  std::optional<bool> is_enabled_ = std::nullopt;
+  std::optional<bool> overriden_is_enabled_ = std::nullopt;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
