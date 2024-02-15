@@ -4,6 +4,9 @@
 
 #include "media/gpu/v4l2/stateless/h264_delegate.h"
 
+#include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
+
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/stateless_decode_surface_handler.h"
 
@@ -49,14 +52,22 @@ constexpr uint8_t zigzag_8x8[] = {
 
 }  // namespace
 
+struct H264DelegateContext {
+  struct v4l2_ctrl_h264_sps v4l2_sps;
+  struct v4l2_ctrl_h264_pps v4l2_pps;
+  struct v4l2_ctrl_h264_scaling_matrix v4l2_scaling_matrix;
+  struct v4l2_ctrl_h264_decode_params v4l2_decode_param;
+  std::vector<uint8_t> slice_data;
+};
+
 std::vector<scoped_refptr<StatelessDecodeSurface>>
 H264Delegate::GetRefSurfacesFromDPB(const H264DPB& dpb) {
   std::vector<scoped_refptr<StatelessDecodeSurface>> ref_surfaces;
 
-  memset(v4l2_decode_param_.dpb, 0, sizeof(v4l2_decode_param_.dpb));
+  memset(ctx_->v4l2_decode_param.dpb, 0, sizeof(ctx_->v4l2_decode_param.dpb));
   size_t i = 0;
   for (const auto& pic : dpb) {
-    if (i >= std::size(v4l2_decode_param_.dpb)) {
+    if (i >= std::size(ctx_->v4l2_decode_param.dpb)) {
       VLOGF(1) << "Invalid DPB size";
       break;
     }
@@ -69,7 +80,7 @@ H264Delegate::GetRefSurfacesFromDPB(const H264DPB& dpb) {
       ref_surfaces.push_back(dec_surface);
     }
 
-    struct v4l2_h264_dpb_entry& entry = v4l2_decode_param_.dpb[i++];
+    struct v4l2_h264_dpb_entry& entry = ctx_->v4l2_decode_param.dpb[i++];
     entry.reference_ts = index;
     if (pic->long_term) {
       entry.frame_num = pic->long_term_pic_num;
@@ -94,7 +105,8 @@ H264Delegate::GetRefSurfacesFromDPB(const H264DPB& dpb) {
 }
 
 H264Delegate::H264Delegate(StatelessDecodeSurfaceHandler* surface_handler)
-    : surface_handler_(surface_handler) {
+    : surface_handler_(surface_handler),
+      ctx_(std::make_unique<H264DelegateContext>()) {
   DCHECK(surface_handler_);
 }
 
@@ -118,15 +130,15 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
     scoped_refptr<H264Picture> pic) {
-  memset(&v4l2_sps_, 0, sizeof(v4l2_sps_));
-  v4l2_sps_.constraint_set_flags =
+  memset(&ctx_->v4l2_sps, 0, sizeof(ctx_->v4l2_sps));
+  ctx_->v4l2_sps.constraint_set_flags =
       (sps->constraint_set0_flag ? V4L2_H264_SPS_CONSTRAINT_SET0_FLAG : 0) |
       (sps->constraint_set1_flag ? V4L2_H264_SPS_CONSTRAINT_SET1_FLAG : 0) |
       (sps->constraint_set2_flag ? V4L2_H264_SPS_CONSTRAINT_SET2_FLAG : 0) |
       (sps->constraint_set3_flag ? V4L2_H264_SPS_CONSTRAINT_SET3_FLAG : 0) |
       (sps->constraint_set4_flag ? V4L2_H264_SPS_CONSTRAINT_SET4_FLAG : 0) |
       (sps->constraint_set5_flag ? V4L2_H264_SPS_CONSTRAINT_SET5_FLAG : 0);
-#define SPS_TO_V4L2SPS(a) v4l2_sps_.a = sps->a
+#define SPS_TO_V4L2SPS(a) ctx_->v4l2_sps.a = sps->a
   SPS_TO_V4L2SPS(profile_idc);
   SPS_TO_V4L2SPS(level_idc);
   SPS_TO_V4L2SPS(seq_parameter_set_id);
@@ -140,11 +152,11 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
   SPS_TO_V4L2SPS(offset_for_top_to_bottom_field);
   SPS_TO_V4L2SPS(num_ref_frames_in_pic_order_cnt_cycle);
 
-  static_assert(std::extent<decltype(v4l2_sps_.offset_for_ref_frame)>() ==
+  static_assert(std::extent<decltype(ctx_->v4l2_sps.offset_for_ref_frame)>() ==
                     std::extent<decltype(sps->offset_for_ref_frame)>(),
                 "offset_for_ref_frame arrays must be same size");
-  for (size_t i = 0; i < std::size(v4l2_sps_.offset_for_ref_frame); ++i) {
-    v4l2_sps_.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
+  for (size_t i = 0; i < std::size(ctx_->v4l2_sps.offset_for_ref_frame); ++i) {
+    ctx_->v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
   }
   SPS_TO_V4L2SPS(max_num_ref_frames);
   SPS_TO_V4L2SPS(pic_width_in_mbs_minus1);
@@ -152,7 +164,7 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
 #undef SPS_TO_V4L2SPS
 
 #define SET_V4L2_SPS_FLAG_IF(cond, flag) \
-  v4l2_sps_.flags |= ((sps->cond) ? (flag) : 0)
+  ctx_->v4l2_sps.flags |= ((sps->cond) ? (flag) : 0)
   SET_V4L2_SPS_FLAG_IF(separate_colour_plane_flag,
                        V4L2_H264_SPS_FLAG_SEPARATE_COLOUR_PLANE);
   SET_V4L2_SPS_FLAG_IF(qpprime_y_zero_transform_bypass_flag,
@@ -168,8 +180,8 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
                        V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE);
 #undef SET_V4L2_SPS_FLAG_IF
 
-  memset(&v4l2_pps_, 0, sizeof(v4l2_pps_));
-#define PPS_TO_V4L2PPS(a) v4l2_pps_.a = pps->a
+  memset(&ctx_->v4l2_pps, 0, sizeof(ctx_->v4l2_pps));
+#define PPS_TO_V4L2PPS(a) ctx_->v4l2_pps.a = pps->a
   PPS_TO_V4L2PPS(pic_parameter_set_id);
   PPS_TO_V4L2PPS(seq_parameter_set_id);
   PPS_TO_V4L2PPS(num_slice_groups_minus1);
@@ -183,7 +195,7 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
 #undef PPS_TO_V4L2PPS
 
 #define SET_V4L2_PPS_FLAG_IF(cond, flag) \
-  v4l2_pps_.flags |= ((pps->cond) ? (flag) : 0)
+  ctx_->v4l2_pps.flags |= ((pps->cond) ? (flag) : 0)
   SET_V4L2_PPS_FLAG_IF(entropy_coding_mode_flag,
                        V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE);
   SET_V4L2_PPS_FLAG_IF(
@@ -202,26 +214,30 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
                        V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT);
 #undef SET_V4L2_PPS_FLAG_IF
 
-  memset(&v4l2_scaling_matrix_, 0, sizeof(v4l2_scaling_matrix_));
+  memset(&ctx_->v4l2_scaling_matrix, 0, sizeof(ctx_->v4l2_scaling_matrix));
 
   static_assert(
-      std::extent<decltype(v4l2_scaling_matrix_.scaling_list_4x4)>() <=
+      std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_4x4)>() <=
               std::extent<decltype(pps->scaling_list4x4)>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_4x4[0])>() <=
+          std::extent<
+              decltype(ctx_->v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
               std::extent<decltype(pps->scaling_list4x4[0])>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_8x8)>() <=
+          std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_8x8)>() <=
               std::extent<decltype(pps->scaling_list8x8)>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_8x8[0])>() <=
+          std::extent<
+              decltype(ctx_->v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
               std::extent<decltype(pps->scaling_list8x8[0])>(),
       "PPS scaling_lists must be of correct size");
   static_assert(
-      std::extent<decltype(v4l2_scaling_matrix_.scaling_list_4x4)>() <=
+      std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_4x4)>() <=
               std::extent<decltype(sps->scaling_list4x4)>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_4x4[0])>() <=
+          std::extent<
+              decltype(ctx_->v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
               std::extent<decltype(sps->scaling_list4x4[0])>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_8x8)>() <=
+          std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_8x8)>() <=
               std::extent<decltype(sps->scaling_list8x8)>() &&
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_8x8[0])>() <=
+          std::extent<
+              decltype(ctx_->v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
               std::extent<decltype(sps->scaling_list8x8[0])>(),
       "SPS scaling_lists must be of correct size");
 
@@ -232,27 +248,27 @@ H264Delegate::Status H264Delegate::SubmitFrameMetadata(
     scaling_list8x8 = &pps->scaling_list8x8[0];
   }
 
-  for (size_t i = 0; i < std::size(v4l2_scaling_matrix_.scaling_list_4x4);
+  for (size_t i = 0; i < std::size(ctx_->v4l2_scaling_matrix.scaling_list_4x4);
        ++i) {
-    for (size_t j = 0; j < std::size(v4l2_scaling_matrix_.scaling_list_4x4[i]);
-         ++j) {
+    for (size_t j = 0;
+         j < std::size(ctx_->v4l2_scaling_matrix.scaling_list_4x4[i]); ++j) {
       // Parser uses source (zigzag) order, while V4L2 API requires raster
       // order.
       static_assert(
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_4x4), 1>() ==
-          std::extent<decltype(zigzag_4x4)>());
-      v4l2_scaling_matrix_.scaling_list_4x4[i][zigzag_4x4[j]] =
+          std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_4x4),
+                      1>() == std::extent<decltype(zigzag_4x4)>());
+      ctx_->v4l2_scaling_matrix.scaling_list_4x4[i][zigzag_4x4[j]] =
           scaling_list4x4[i][j];
     }
   }
-  for (size_t i = 0; i < std::size(v4l2_scaling_matrix_.scaling_list_8x8);
+  for (size_t i = 0; i < std::size(ctx_->v4l2_scaling_matrix.scaling_list_8x8);
        ++i) {
-    for (size_t j = 0; j < std::size(v4l2_scaling_matrix_.scaling_list_8x8[i]);
-         ++j) {
+    for (size_t j = 0;
+         j < std::size(ctx_->v4l2_scaling_matrix.scaling_list_8x8[i]); ++j) {
       static_assert(
-          std::extent<decltype(v4l2_scaling_matrix_.scaling_list_8x8), 1>() ==
-          std::extent<decltype(zigzag_8x8)>());
-      v4l2_scaling_matrix_.scaling_list_8x8[i][zigzag_8x8[j]] =
+          std::extent<decltype(ctx_->v4l2_scaling_matrix.scaling_list_8x8),
+                      1>() == std::extent<decltype(zigzag_8x8)>());
+      ctx_->v4l2_scaling_matrix.scaling_list_8x8[i][zigzag_8x8[j]] =
           scaling_list8x8[i][j];
     }
   }
@@ -275,7 +291,7 @@ H264Delegate::Status H264Delegate::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-#define SHDR_TO_V4L2DPARM(a) v4l2_decode_param_.a = slice_hdr->a
+#define SHDR_TO_V4L2DPARM(a) ctx_->v4l2_decode_param.a = slice_hdr->a
   SHDR_TO_V4L2DPARM(frame_num);
   SHDR_TO_V4L2DPARM(idr_pic_id);
   SHDR_TO_V4L2DPARM(pic_order_cnt_lsb);
@@ -288,39 +304,39 @@ H264Delegate::Status H264Delegate::SubmitSlice(
 
   scoped_refptr<StatelessDecodeSurface> dec_surface =
       H264PictureToStatelessDecodeSurface(pic.get());
-  v4l2_decode_param_.nal_ref_idc = slice_hdr->nal_ref_idc;
+  ctx_->v4l2_decode_param.nal_ref_idc = slice_hdr->nal_ref_idc;
 
   std::vector<uint8_t> slice_data(
       sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
   slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
   slice_data.insert(slice_data.end(), data, data + size);
-  slice_data_ = slice_data;
+  ctx_->slice_data = slice_data;
 
   return H264Delegate::Status::kOk;
 }
 
 H264Delegate::Status H264Delegate::SubmitDecode(
     scoped_refptr<H264Picture> pic) {
-  v4l2_decode_param_.flags = 0;
+  ctx_->v4l2_decode_param.flags = 0;
   if (pic->idr) {
-    v4l2_decode_param_.flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
+    ctx_->v4l2_decode_param.flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
   }
-  v4l2_decode_param_.top_field_order_cnt = pic->top_field_order_cnt;
-  v4l2_decode_param_.bottom_field_order_cnt = pic->bottom_field_order_cnt;
+  ctx_->v4l2_decode_param.top_field_order_cnt = pic->top_field_order_cnt;
+  ctx_->v4l2_decode_param.bottom_field_order_cnt = pic->bottom_field_order_cnt;
 
   std::vector<struct v4l2_ext_control> ext_ctrls = {
       {.id = V4L2_CID_STATELESS_H264_SPS,
-       .size = sizeof(v4l2_sps_),
-       .ptr = &v4l2_sps_},
+       .size = sizeof(ctx_->v4l2_sps),
+       .ptr = &ctx_->v4l2_sps},
       {.id = V4L2_CID_STATELESS_H264_PPS,
-       .size = sizeof(v4l2_pps_),
-       .ptr = &v4l2_pps_},
+       .size = sizeof(ctx_->v4l2_pps),
+       .ptr = &ctx_->v4l2_pps},
       {.id = V4L2_CID_STATELESS_H264_SCALING_MATRIX,
-       .size = sizeof(v4l2_scaling_matrix_),
-       .ptr = &v4l2_scaling_matrix_},
+       .size = sizeof(ctx_->v4l2_scaling_matrix),
+       .ptr = &ctx_->v4l2_scaling_matrix},
       {.id = V4L2_CID_STATELESS_H264_DECODE_PARAMS,
-       .size = sizeof(v4l2_decode_param_),
-       .ptr = &v4l2_decode_param_},
+       .size = sizeof(ctx_->v4l2_decode_param),
+       .ptr = &ctx_->v4l2_decode_param},
       {.id = V4L2_CID_STATELESS_H264_DECODE_MODE,
        .value = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED},
   };
@@ -334,8 +350,8 @@ H264Delegate::Status H264Delegate::SubmitDecode(
   if (!stateless_h264_picture) {
     return H264Delegate::Status::kFail;
   }
-  if (!surface_handler_->SubmitFrame(&ctrls, &slice_data_[0],
-                                     slice_data_.size(),
+  if (!surface_handler_->SubmitFrame(&ctrls, &ctx_->slice_data[0],
+                                     ctx_->slice_data.size(),
                                      stateless_h264_picture->dec_surface())) {
     return H264Delegate::Status::kFail;
   }
@@ -352,7 +368,7 @@ bool H264Delegate::OutputPicture(scoped_refptr<H264Picture> pic) {
 }
 
 void H264Delegate::Reset() {
-  memset(v4l2_decode_param_.dpb, 0, sizeof(v4l2_decode_param_.dpb));
+  memset(ctx_->v4l2_decode_param.dpb, 0, sizeof(ctx_->v4l2_decode_param.dpb));
 }
 
 }  // namespace media

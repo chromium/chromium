@@ -8,9 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include <linux/v4l2-controls.h>
-#include <linux/videodev2.h>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h264_decoder.h"
@@ -20,6 +17,7 @@ namespace media {
 
 class StatelessDecodeSurface;
 class StatelessDecodeSurfaceHandler;
+struct H264DelegateContext;
 
 class H264Delegate : public H264Decoder::H264Accelerator {
  public:
@@ -59,11 +57,9 @@ class H264Delegate : public H264Decoder::H264Accelerator {
 
   raw_ptr<StatelessDecodeSurfaceHandler> const surface_handler_;
 
-  v4l2_ctrl_h264_sps v4l2_sps_;
-  v4l2_ctrl_h264_pps v4l2_pps_;
-  v4l2_ctrl_h264_scaling_matrix v4l2_scaling_matrix_;
-  v4l2_ctrl_h264_decode_params v4l2_decode_param_;
-  std::vector<uint8_t> slice_data_;
+  // Contains the kernel-specific structures that we don't want to expose
+  // outside of the compilation unit.
+  const std::unique_ptr<H264DelegateContext> ctx_;
 };
 
 }  // namespace media
