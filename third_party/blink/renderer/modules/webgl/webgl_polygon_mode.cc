@@ -11,10 +11,6 @@ namespace blink {
 WebGLPolygonMode::WebGLPolygonMode(WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_polygon_mode");
-  context->EmitGLWarning(
-      "this extension has very low support on mobile devices; "
-      "do not rely on it for rendering effects",
-      "WEBGL_polygon_mode");
 }
 
 WebGLExtensionName WebGLPolygonMode::GetName() const {
@@ -34,7 +30,19 @@ void WebGLPolygonMode::polygonModeWEBGL(GLenum face, GLenum mode) {
   if (scoped.IsLost()) {
     return;
   }
+  EmitDeferredPortabilityWarning(scoped.Context());
   scoped.Context()->ContextGL()->PolygonModeANGLE(face, mode);
+}
+
+void WebGLPolygonMode::EmitDeferredPortabilityWarning(
+    WebGLRenderingContextBase* context) {
+  if (!emitted_warning_) {
+    context->EmitGLWarning(
+        "this extension has very low support on mobile devices; do not rely on "
+        "it for rendering effects without implementing a fallback path",
+        "WEBGL_polygon_mode");
+    emitted_warning_ = true;
+  }
 }
 
 }  // namespace blink
