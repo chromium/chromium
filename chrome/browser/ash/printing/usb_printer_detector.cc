@@ -136,8 +136,10 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
   void OnGetDeviceId(DetectedPrinter entry,
                      std::string guid,
                      chromeos::UsbPrinterId printer_id) {
-    PRINTER_LOG(EVENT) << entry.ppd_search_data.make_and_model.front()
+    PRINTER_LOG(EVENT) << entry.printer.make_and_model()
                        << " returned USB device ID: " << printer_id.raw_id();
+
+    UpdateSearchDataFromDeviceId(printer_id, &entry);
     entry.ppd_search_data.printer_id = std::move(printer_id);
 
     // Add detected printer.
