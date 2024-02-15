@@ -87,7 +87,7 @@ Polymer({
 
   /** @private */
   ensureCountDownCalledWithInterval_(intervalMs) {
-    if (this.countDownIntervalMs_ == intervalMs) {
+    if (this.countDownIntervalMs_ === intervalMs) {
       return;
     }
     this.stopCountDownCalls_();
