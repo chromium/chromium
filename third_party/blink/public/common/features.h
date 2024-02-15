@@ -426,6 +426,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEditingNG);
 // layer tree frame sink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
+// Exposes Event Timing interactionId of keypress/keyboard events under
+// composition.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEventTimingKeypressAndCompositionInteractionId);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByAllowList);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByUserAndOrigin);

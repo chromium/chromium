@@ -83,8 +83,10 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
   // since EventCounts cannot be used to properly computed percentiles on those.
   // See spec: https://wicg.github.io/event-timing/#sec-events-exposed.
   // Need to be kept in sync with IsWebInteractionEvent
-  // (widget_event_handler.cc).
-  return event.isTrusted() &&
+  // (widget_event_handler.cc) except non-raw web input event types, for example
+  // kCompositionend.
+  return (event.isTrusted() ||
+          event.type() == event_type_names::kCompositionend) &&
          (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||
           IsA<TouchEvent>(event) || IsA<KeyboardEvent>(event) ||
           IsA<WheelEvent>(event) || event.IsInputEvent() ||
@@ -103,10 +105,10 @@ std::unique_ptr<EventTiming> EventTiming::Create(
     const Event& event,
     EventTarget* original_event_target) {
   auto* performance = DOMWindowPerformance::performance(*window);
-  if (!performance || !event.isTrusted() ||
-      (!IsEventTypeForEventTiming(event) &&
-       event.type() != event_type_names::kPointermove))
+  if (!performance || (!IsEventTypeForEventTiming(event) &&
+                       event.type() != event_type_names::kPointermove)) {
     return nullptr;
+  }
 
   // Most events track their performance in EventDispatcher::Dispatch but
   // some event types which can be filtered are tracked at the point

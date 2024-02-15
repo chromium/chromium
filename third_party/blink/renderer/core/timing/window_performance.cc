@@ -175,8 +175,10 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
          type == event_type_names::kPointerup ||
          type == event_type_names::kClick ||
          type == event_type_names::kKeydown ||
+         type == event_type_names::kKeypress ||
          type == event_type_names::kKeyup ||
          type == event_type_names::kCompositionstart ||
+         type == event_type_names::kCompositionupdate ||
          type == event_type_names::kCompositionend ||
          type == event_type_names::kInput;
 }
@@ -410,7 +412,10 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
   if (event_type == event_type_names::kPointermove) {
     // A trusted pointermove must be a PointerEvent.
-    DCHECK(event.IsPointerEvent());
+    if (!event.IsPointerEvent()) {
+      return;
+    }
+
     NotifyPotentialDrag(pointer_event->pointerId());
     SetCurrentEventTimingEvent(nullptr);
     return;

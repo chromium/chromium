@@ -809,6 +809,12 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 #endif
 );
 
+// Exposes Event Timing keyboard InteractionId of composition and keypress
+// events.
+BASE_FEATURE(kEventTimingKeypressAndCompositionInteractionId,
+             "EventTimingKeypressAndCompositionInteractionId",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables unload handler deprecation via Permissions-Policy.
 // https://crbug.com/1324111
 BASE_FEATURE(kDeprecateUnload,
