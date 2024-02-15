@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
+#include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 
 namespace ash {
 
@@ -23,7 +25,11 @@ EmojiSearchProxy::~EmojiSearchProxy() {}
 void EmojiSearchProxy::SearchEmoji(const std::string& query,
                                    SearchEmojiCallback callback) {
   CHECK(search_);
-  search_->SearchEmoji(query, std::move(callback));
+  emoji::EmojiSearchResult result = search_->SearchEmoji(query);
+  std::move(callback).Run(
+      emoji_search::mojom::SearchResults::New(std::move(result.emojis)),
+      emoji_search::mojom::SearchResults::New(std::move(result.symbols)),
+      emoji_search::mojom::SearchResults::New(std::move(result.emoticons)));
 }
 
 }  // namespace ash

@@ -5,8 +5,11 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
@@ -18,7 +21,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 #include "chromeos/ash/components/emoji/grit/emoji.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -168,6 +170,15 @@ std::vector<std::string> GetResultsFromMap(
 
 }  // namespace
 
+EmojiSearchResult::EmojiSearchResult(std::vector<std::string> emojis,
+                                     std::vector<std::string> symbols,
+                                     std::vector<std::string> emoticons)
+    : emojis(std::move(emojis)),
+      symbols(std::move(symbols)),
+      emoticons(std::move(emoticons)) {}
+
+EmojiSearchResult::~EmojiSearchResult() = default;
+
 EmojiSearch::EmojiSearch() {
   AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
                        emojis_);
@@ -179,15 +190,10 @@ EmojiSearch::EmojiSearch() {
 
 EmojiSearch::~EmojiSearch() = default;
 
-void EmojiSearch::SearchEmoji(
-    const std::string_view query,
-    emoji_search::mojom::EmojiSearch::SearchEmojiCallback callback) {
-  std::move(callback).Run(emoji_search::mojom::SearchResults::New(
-                              GetResultsFromMap(emojis_, query)),
-                          emoji_search::mojom::SearchResults::New(
-                              GetResultsFromMap(symbols_, query)),
-                          emoji_search::mojom::SearchResults::New(
-                              GetResultsFromMap(emoticons_, query)));
+EmojiSearchResult EmojiSearch::SearchEmoji(const std::string_view query) {
+  return EmojiSearchResult(GetResultsFromMap(emojis_, query),
+                           GetResultsFromMap(symbols_, query),
+                           GetResultsFromMap(emoticons_, query));
 }
 
 std::vector<std::string> EmojiSearch::AllResultsForTesting(

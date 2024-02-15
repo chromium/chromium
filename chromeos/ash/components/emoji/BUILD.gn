@@ -151,7 +151,6 @@ grit("resources") {
 
 source_set("emoji") {
   deps = [
-    ":mojo_bindings",
     ":resources",
     "//base",
     "//ui/base",

@@ -10,14 +10,23 @@
 #include <string_view>
 #include <vector>
 
-#include "chromeos/ash/components/emoji/emoji_search.mojom.h"
-
 namespace emoji {
 
 // Simple struct for storing a search weighting for a particular emoji.
 struct EmojiSearchEntry {
   double weighting;
   std::string emoji_string;
+};
+
+struct EmojiSearchResult {
+  EmojiSearchResult(std::vector<std::string> emojis,
+                    std::vector<std::string> symbols,
+                    std::vector<std::string> emoticons);
+  ~EmojiSearchResult();
+
+  std::vector<std::string> emojis;
+  std::vector<std::string> symbols;
+  std::vector<std::string> emoticons;
 };
 
 class EmojiSearch {
@@ -27,9 +36,7 @@ class EmojiSearch {
   EmojiSearch(const EmojiSearch&) = delete;
   EmojiSearch& operator=(const EmojiSearch&) = delete;
 
-  void SearchEmoji(
-      std::string_view query,
-      emoji_search::mojom::EmojiSearch::SearchEmojiCallback callback);
+  [[nodiscard]] EmojiSearchResult SearchEmoji(std::string_view query);
 
   std::vector<std::string> AllResultsForTesting(const std::string& query);
 
