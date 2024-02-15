@@ -7102,6 +7102,21 @@
             ]
         }
     ],
+    "EnablePixDetectionStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePixDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableReportingMultigenerationStorage": [
         {
             "platforms": [
