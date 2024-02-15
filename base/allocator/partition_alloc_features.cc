@@ -40,11 +40,20 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
         &kUnretainedDanglingPtrModeOption,
 };
 
-// TODO(crbug.com/324994233): Re-enable DPD once we annotate all
-// `DanglingUntriaged`.
+// TODO(crbug.com/324994233): Fully enable DPD once we annotate all
+// `DanglingUntriaged`. Disabled on Chrome OS because we have not finished
+// annotation work yet.
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if (BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG) &&                  \
+     !BUILDFLAG(IS_CHROMEOS)) ||                                         \
+    (BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && BUILDFLAG(IS_LINUX) && \
+     !defined(OFFICIAL_BUILD) && (!defined(NDEBUG) || DCHECK_IS_ON()))
+             FEATURE_ENABLED_BY_DEFAULT
+#else
+             FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 constexpr FeatureParam<DanglingPtrMode>::Option kDanglingPtrModeOption[] = {
     {DanglingPtrMode::kCrash, "crash"},
