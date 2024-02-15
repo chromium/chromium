@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, getCaller, pending, REPEAT_UNTIL_INTERVAL, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {createShortcut, isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -28,14 +28,8 @@ async function setupForDirectoryTreeContextMenuTest() {
   return appId;
 }
 
-/**
- * @const
- */
 const ITEMS_IN_DEST_DIR_BEFORE_PASTE = TestEntryInfo.getExpectedRows([]);
 
-/**
- * @const
- */
 const ITEMS_IN_DEST_DIR_AFTER_PASTE =
     TestEntryInfo.getExpectedRows([new TestEntryInfo({
       type: EntryType.DIRECTORY,
@@ -49,11 +43,11 @@ const ITEMS_IN_DEST_DIR_AFTER_PASTE =
 /**
  * Clicks context menu item of id in directory tree.
  *
- * @param {string} appId
- * @param {string} path Path of the tree item to trigger context menu.
- * @param {string} id The context menu id.
+ * @param path Path of the tree item to trigger context menu.
+ * @param id The context menu id.
  */
-async function clickDirectoryTreeContextMenuItem(appId, path, id) {
+async function clickDirectoryTreeContextMenuItem(
+    appId: string, path: string, id: string) {
   const contextMenu = '#directory-tree-context-menu:not([hidden])';
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -75,18 +69,13 @@ async function clickDirectoryTreeContextMenuItem(appId, path, id) {
  * whether the paste operation is done correctly or not. This method does NOT
  * check source entry is deleted or not for cut operation.
  */
-// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
-async function navigateToDestinationDirectoryAndTestPaste(appId) {
+async function navigateToDestinationDirectoryAndTestPaste(appId: string) {
   // Navigates to destination directory.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/destination');
 
   // Confirm files before paste.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, ITEMS_IN_DEST_DIR_BEFORE_PASTE, {ignoreLastModifiedTime: true});
 
   // Paste
@@ -95,23 +84,17 @@ async function navigateToDestinationDirectoryAndTestPaste(appId) {
 
   // Confirm the photos directory is pasted correctly.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, ITEMS_IN_DEST_DIR_AFTER_PASTE, {ignoreLastModifiedTime: true});
 }
 
 /**
  * Rename photos directory to specified name by using directory tree.
- *
- * @param {string} appId
- * @param {string} newName
- * @param {boolean} useKeyboardShortcut Set to true to use keyboard shortcut
- *     instead of mouse to trigger context menu.
- * @return {!Promise<void>}
+ * @param useKeyboardShortcut Set to true to use keyboard shortcut instead of
+ *     mouse to trigger context menu.
  */
-async function renamePhotosDirectoryTo(appId, newName, useKeyboardShortcut) {
+async function renamePhotosDirectoryTo(
+    appId: string, newName: string,
+    useKeyboardShortcut: boolean): Promise<void> {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   if (useKeyboardShortcut) {
     await directoryTree.triggerRenameWithKeyboardByLabel('photos');
@@ -127,9 +110,7 @@ async function renamePhotosDirectoryTo(appId, newName, useKeyboardShortcut) {
  * directory.
  */
 async function renameDirectoryFromDirectoryTreeSuccessCase(
-    // @ts-ignore: error TS7006: Parameter 'useKeyboardShortcut' implicitly has
-    // an 'any' type.
-    useKeyboardShortcut) {
+    useKeyboardShortcut: boolean) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -144,8 +125,8 @@ async function renameDirectoryFromDirectoryTreeSuccessCase(
 /**
  * Renames directory and confirms that an alert dialog is shown.
  */
-// @ts-ignore: error TS7006: Parameter 'newName' implicitly has an 'any' type.
-async function renameDirectoryFromDirectoryTreeAndConfirmAlertDialog(newName) {
+async function renameDirectoryFromDirectoryTreeAndConfirmAlertDialog(
+    newName: string) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -162,9 +143,7 @@ async function renameDirectoryFromDirectoryTreeAndConfirmAlertDialog(newName) {
  * Creates directory from directory tree.
  */
 async function createDirectoryFromDirectoryTree(
-    // @ts-ignore: error TS7006: Parameter 'changeCurrentDirectory' implicitly
-    // has an 'any' type.
-    useKeyboardShortcut, changeCurrentDirectory) {
+    useKeyboardShortcut: boolean, changeCurrentDirectory: boolean) {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -195,18 +174,18 @@ async function createDirectoryFromDirectoryTree(
 
 /**
  * Checks all visible items in the context menu for directory tree.
- * @param {!string} appId
- * @param {!string} breadcrumbsPath Path based on the entry labels like:
+ * @param breadcrumbsPath Path based on the entry labels like:
  *     /My files/Downloads/photos to item to be tested with context menu.
- * @param {!Array<!Array<string|boolean>>} menuStates Mapping each command to
- *     it's enabled state.
- * @param {boolean=} rootsMenu True if the item uses #roots-context-menu
- *     instead of #directory-tree-context-menu
- * @param {string=} shortcutToPath For shortcuts it navigates to a different
- *   breadcrumbs path, like /My Drive/ShortcutName.
+ * @param menuStates Mapping each command to it's enabled state.
+ * @param rootsMenu True if the item uses #roots-context-menu instead of
+ *     #directory-tree-context-menu
+ * @param shortcutToPath For shortcuts it navigates to a different breadcrumbs
+ *     path, like /My Drive/ShortcutName.
  */
 async function checkContextMenu(
-    appId, breadcrumbsPath, menuStates, rootsMenu, shortcutToPath) {
+    appId: string, breadcrumbsPath: string,
+    menuStates: Array<Array<string|boolean>>, rootsMenu?: boolean,
+    shortcutToPath?: string) {
   // Navigate to the folder that will test the context menu.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   const query =
@@ -228,8 +207,7 @@ async function checkContextMenu(
   // Wait for context menu to appear.
   await remoteCall.waitForElement(appId, menuQuery);
 
-  // @ts-ignore: error TS7006: Parameter 'state' implicitly has an 'any' type.
-  function stateString(state) {
+  function stateString(state?: boolean|string) {
     return state ? 'enabled' : 'disabled';
   }
 
@@ -237,8 +215,7 @@ async function checkContextMenu(
   async function isCommandsEnabledAndOrdered() {
     // Grab all commands together and check they are in the expected order and
     // state.
-    const actualItems = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, [menuQuery]);
+    const actualItems = await remoteCall.queryElements(appId, [menuQuery]);
     let correctCommands = true;
     msg = '\nContext menu in the wrong order/state for: ' + breadcrumbsPath;
     for (let i = 0; i < Math.max(menuStates.length, actualItems.length); i++) {
@@ -247,14 +224,12 @@ async function checkContextMenu(
       let actualCommand = undefined;
       let actualState = undefined;
       if (menuStates[i]) {
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        expectedCommand = menuStates[i][0];
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        expectedState = menuStates[i][1];
+        expectedCommand = menuStates[i]![0];
+        expectedState = menuStates[i]![1];
       }
       if (actualItems[i]) {
-        actualCommand = actualItems[i].attributes['command'];
-        actualState = actualItems[i].attributes['disabled'] ? false : true;
+        actualCommand = actualItems[i]!.attributes['command'];
+        actualState = actualItems[i]!.attributes['disabled'] ? false : true;
       }
       msg += '\n';
       if (expectedCommand !== actualCommand || expectedState !== actualState) {
@@ -292,22 +267,18 @@ async function checkContextMenu(
 /**
  * Tests copying a directory from directory tree with context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirCopyWithContextMenu' comes from an
-// index signature, so it must be accessed with ['dirCopyWithContextMenu'].
-testcase.dirCopyWithContextMenu = async () => {
+export async function dirCopyWithContextMenu() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await navigateToDestinationDirectoryAndTestPaste(appId);
-};
+}
 
 /**
  * Tests copying a directory from directory tree with the keyboard shortcut.
  */
-// @ts-ignore: error TS4111: Property 'dirCopyWithKeyboard' comes from an index
-// signature, so it must be accessed with ['dirCopyWithKeyboard'].
-testcase.dirCopyWithKeyboard = async () => {
+export async function dirCopyWithKeyboard() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
@@ -316,29 +287,24 @@ testcase.dirCopyWithKeyboard = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['body', 'c', true /* ctrl */, false, false]);
   await navigateToDestinationDirectoryAndTestPaste(appId);
-};
+}
 
 /**
  * Tests copying a directory without changing the current directory.
  */
-// @ts-ignore: error TS4111: Property 'dirCopyWithoutChangingCurrent' comes from
-// an index signature, so it must be accessed with
-// ['dirCopyWithoutChangingCurrent'].
-testcase.dirCopyWithoutChangingCurrent = async () => {
+export async function dirCopyWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.expandTreeItemByLabel('Downloads');
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await navigateToDestinationDirectoryAndTestPaste(appId);
-};
+}
 
 /**
  * Tests cutting a directory with the context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirCutWithContextMenu' comes from an
-// index signature, so it must be accessed with ['dirCutWithContextMenu'].
-testcase.dirCutWithContextMenu = async () => {
+export async function dirCutWithContextMenu() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
@@ -347,14 +313,12 @@ testcase.dirCutWithContextMenu = async () => {
 
   // Confirm that directory tree is updated.
   await directoryTree.waitForItemLostByPath('/Downloads/photos');
-};
+}
 
 /**
  * Tests cutting a directory with the keyboard shortcut.
  */
-// @ts-ignore: error TS4111: Property 'dirCutWithKeyboard' comes from an index
-// signature, so it must be accessed with ['dirCutWithKeyboard'].
-testcase.dirCutWithKeyboard = async () => {
+export async function dirCutWithKeyboard() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
@@ -366,15 +330,12 @@ testcase.dirCutWithKeyboard = async () => {
 
   // Confirm that directory tree is updated.
   await directoryTree.waitForItemLostByPath('/Downloads/photos');
-};
+}
 
 /**
  * Tests cutting a directory without changing the current directory.
  */
-// @ts-ignore: error TS4111: Property 'dirCutWithoutChangingCurrent' comes from
-// an index signature, so it must be accessed with
-// ['dirCutWithoutChangingCurrent'].
-testcase.dirCutWithoutChangingCurrent = async () => {
+export async function dirCutWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -382,14 +343,12 @@ testcase.dirCutWithoutChangingCurrent = async () => {
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'cut');
   await navigateToDestinationDirectoryAndTestPaste(appId);
   await directoryTree.waitForItemLostByPath('/Downloads/photos');
-};
+}
 
 /**
  * Tests pasting into folder with the context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirPasteWithContextMenu' comes from an
-// index signature, so it must be accessed with ['dirPasteWithContextMenu'].
-testcase.dirPasteWithContextMenu = async () => {
+export async function dirPasteWithContextMenu() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const destinationPath = '/Downloads/destination';
 
@@ -402,10 +361,6 @@ testcase.dirPasteWithContextMenu = async () => {
 
   // Confirm files before paste.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, ITEMS_IN_DEST_DIR_BEFORE_PASTE, {ignoreLastModifiedTime: true});
 
   await clickDirectoryTreeContextMenuItem(
@@ -413,10 +368,6 @@ testcase.dirPasteWithContextMenu = async () => {
 
   // Confirm the photos directory is pasted correctly.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, ITEMS_IN_DEST_DIR_AFTER_PASTE, {ignoreLastModifiedTime: true});
 
   // Expand the directory tree.
@@ -424,15 +375,12 @@ testcase.dirPasteWithContextMenu = async () => {
 
   // Confirm the copied directory is added to the directory tree.
   await directoryTree.waitForItemByPath(`${destinationPath}/photos`);
-};
+}
 
 /**
  * Tests pasting into a folder without changing the current directory.
  */
-// @ts-ignore: error TS4111: Property 'dirPasteWithoutChangingCurrent' comes
-// from an index signature, so it must be accessed with
-// ['dirPasteWithoutChangingCurrent'].
-testcase.dirPasteWithoutChangingCurrent = async () => {
+export async function dirPasteWithoutChangingCurrent() {
   const destinationPath = '/Downloads/destination';
 
   const appId = await setupForDirectoryTreeContextMenuTest();
@@ -448,26 +396,21 @@ testcase.dirPasteWithoutChangingCurrent = async () => {
 
   // Confirm the copied directory is added to the directory tree.
   await directoryTree.waitForItemByPath(`${destinationPath}/photos`);
-};
+}
 
 /**
  * Tests renaming a folder with the context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameWithContextMenu' comes from an
-// index signature, so it must be accessed with ['dirRenameWithContextMenu'].
-testcase.dirRenameWithContextMenu = () => {
+export async function dirRenameWithContextMenu() {
   return renameDirectoryFromDirectoryTreeSuccessCase(
       false /* do not use keyboard shortcut */);
-};
+}
 
 /**
  * Tests that a child folder breadcrumbs is updated when renaming its parent
  * folder. crbug.com/885328.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameUpdateChildrenBreadcrumbs' comes
-// from an index signature, so it must be accessed with
-// ['dirRenameUpdateChildrenBreadcrumbs'].
-testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
+export async function dirRenameUpdateChildrenBreadcrumbs() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Add child-folder inside /photos/
@@ -498,25 +441,20 @@ testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
   // match the path.
   await directoryTree.navigateToPath(
       '/My files/Downloads/photos-new/child-folder');
-};
+}
 
 /**
  * Tests renaming folder with the keyboard shortcut.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameWithKeyboard' comes from an
-// index signature, so it must be accessed with ['dirRenameWithKeyboard'].
-testcase.dirRenameWithKeyboard = () => {
+export async function dirRenameWithKeyboard() {
   return renameDirectoryFromDirectoryTreeSuccessCase(
       true /* use keyboard shortcut */);
-};
+}
 
 /**
  * Tests renaming folder without changing the current directory.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameWithoutChangingCurrent' comes
-// from an index signature, so it must be accessed with
-// ['dirRenameWithoutChangingCurrent'].
-testcase.dirRenameWithoutChangingCurrent = async () => {
+export async function dirRenameWithoutChangingCurrent() {
   const appId = await setupForDirectoryTreeContextMenuTest();
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.expandTreeItemByLabel('Downloads');
@@ -524,14 +462,12 @@ testcase.dirRenameWithoutChangingCurrent = async () => {
   await renamePhotosDirectoryTo(
       appId, 'New photos', false /* Do not use keyboard shortcut. */);
   await directoryTree.waitForItemByPath('/Downloads/New photos');
-};
+}
 
 /**
  * Tests renaming a folder to an empty string.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameToEmptyString' comes from an
-// index signature, so it must be accessed with ['dirRenameToEmptyString'].
-testcase.dirRenameToEmptyString = async () => {
+export async function dirRenameToEmptyString() {
   const appId = await setupForDirectoryTreeContextMenuTest();
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -542,24 +478,19 @@ testcase.dirRenameToEmptyString = async () => {
 
   // No dialog should be shown.
   await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
-};
+}
 
 /**
  * Tests renaming folder an existing name.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameToExisting' comes from an index
-// signature, so it must be accessed with ['dirRenameToExisting'].
-testcase.dirRenameToExisting = () => {
+export async function dirRenameToExisting() {
   return renameDirectoryFromDirectoryTreeAndConfirmAlertDialog('destination');
-};
+}
 
 /**
  * Tests renaming removable volume with the keyboard.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameRemovableWithKeyboard' comes
-// from an index signature, so it must be accessed with
-// ['dirRenameRemovableWithKeyboard'].
-testcase.dirRenameRemovableWithKeyboard = async () => {
+export async function dirRenameRemovableWithKeyboard() {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -582,15 +513,12 @@ testcase.dirRenameRemovableWithKeyboard = async () => {
   await directoryTree.triggerRenameWithKeyboardByLabel('fake-usb');
   await directoryTree.renameItemByLabel('fake-usb', 'usb-was-renamed');
   await directoryTree.waitForItemByLabel('usb-was-renamed');
-};
+}
 
 /**
  * Tests renaming removable volume with the context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirRenameRemovableWithContentMenu' comes
-// from an index signature, so it must be accessed with
-// ['dirRenameRemovableWithContentMenu'].
-testcase.dirRenameRemovableWithContentMenu = async () => {
+export async function dirRenameRemovableWithContentMenu() {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -624,16 +552,13 @@ testcase.dirRenameRemovableWithContentMenu = async () => {
   // Rename the USB.
   await directoryTree.renameItemByLabel('fake-usb', 'usb-was-renamed');
   await directoryTree.waitForItemByLabel('usb-was-renamed');
-};
+}
 
 /**
  * Tests that opening context menu in the rename input won't commit the
  * renaming.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuForRenameInput' comes from
-// an index signature, so it must be accessed with
-// ['dirContextMenuForRenameInput'].
-testcase.dirContextMenuForRenameInput = async () => {
+export async function dirContextMenuForRenameInput() {
   // Open Files app on local downloads.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -668,49 +593,40 @@ testcase.dirContextMenuForRenameInput = async () => {
   const focusedElement =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq(inputElement, focusedElement);
-};
+}
 
 /**
  * Tests creating a folder with the context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirCreateWithContextMenu' comes from an
-// index signature, so it must be accessed with ['dirCreateWithContextMenu'].
-testcase.dirCreateWithContextMenu = () => {
+export async function dirCreateWithContextMenu() {
   return createDirectoryFromDirectoryTree(
       false /* do not use keyboard shortcut */,
       true /* change current directory */);
-};
+}
 
 /**
  * Tests creating a folder with the keyboard shortcut.
  */
-// @ts-ignore: error TS4111: Property 'dirCreateWithKeyboard' comes from an
-// index signature, so it must be accessed with ['dirCreateWithKeyboard'].
-testcase.dirCreateWithKeyboard = () => {
+export async function dirCreateWithKeyboard() {
   return createDirectoryFromDirectoryTree(
       true /* use keyboard shortcut */, true /* change current directory */);
-};
+}
 
 /**
  * Tests creating folder without changing the current directory.
  */
-// @ts-ignore: error TS4111: Property 'dirCreateWithoutChangingCurrent' comes
-// from an index signature, so it must be accessed with
-// ['dirCreateWithoutChangingCurrent'].
-testcase.dirCreateWithoutChangingCurrent = () => {
+export async function dirCreateWithoutChangingCurrent() {
   return createDirectoryFromDirectoryTree(
       false /* Do not use keyboard shortcut */,
       false /* Do not change current directory */);
-};
+}
 
 /**
  * Tests the creation of new folders from the directory tree from the context
  * menu. Creates the new folders in random order to ensure directory tree
  * sorting does not break folder renaming. crbug.com/1004717
  */
-// @ts-ignore: error TS4111: Property 'dirCreateMultipleFolders' comes from an
-// index signature, so it must be accessed with ['dirCreateMultipleFolders'].
-testcase.dirCreateMultipleFolders = async () => {
+export async function dirCreateMultipleFolders() {
   const caller = getCaller();
 
   // Open Files app on local downloads.
@@ -718,8 +634,7 @@ testcase.dirCreateMultipleFolders = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
-  // @ts-ignore: error TS7006: Parameter 'name' implicitly has an 'any' type.
-  const createNewFolder = async (name) => {
+  const createNewFolder = async (name: string) => {
     // Ctrl+E to create a new folder in downloads.
     await directoryTree.focusTree();
     await directoryTree.selectItemByLabel('Downloads');
@@ -729,9 +644,7 @@ testcase.dirCreateMultipleFolders = async () => {
     await directoryTree.renameItemByLabel('New folder', name);
   };
 
-  // @ts-ignore: error TS7006: Parameter 'expectedLabels' implicitly has an
-  // 'any' type.
-  const checkDownloadsSubFolders = async (expectedLabels) => {
+  const checkDownloadsSubFolders = async (expectedLabels: string[]) => {
     const directoryItems =
         await directoryTree.getChildItemsByParentLabel('Downloads');
     const directoryItemsLabels =
@@ -746,6 +659,7 @@ testcase.dirCreateMultipleFolders = async () => {
             'Waiting for downloads subfolders to be created in sorted order');
       }
     }
+    return undefined;
   };
 
   // The folders in sorted order would be 111, aaa. Create these
@@ -756,21 +670,21 @@ testcase.dirCreateMultipleFolders = async () => {
       return Math.floor(Math.random() * Math.floor(names.length));
     };
     const name = names.splice(getRandomIndex(), 1);
-    await createNewFolder(name);
+    // TODO(b/40930516): This seems to be wrong here, it's an array being passed
+    // as string.
+    await createNewFolder(name as unknown as string);
   }
 
   // Check: the new folders should have been created in the right order.
   await repeatUntil(async () => {
     return checkDownloadsSubFolders(['111', 'aaa']);
   });
-};
+}
 
 /**
  * Tests context menu for Recent root, currently it doesn't show context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuRecent' comes from an index
-// signature, so it must be accessed with ['dirContextMenuRecent'].
-testcase.dirContextMenuRecent = async () => {
+export async function dirContextMenuRecent() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -791,14 +705,12 @@ testcase.dirContextMenuRecent = async () => {
   await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
   await remoteCall.waitForElement(
       appId, '#directory-tree-context-menu[hidden]');
-};
+}
 
 /**
  * Tests context menu for a ZIP root inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuZip' comes from an index
-// signature, so it must be accessed with ['dirContextMenuZip'].
-testcase.dirContextMenuZip = async () => {
+export async function dirContextMenuZip() {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
@@ -834,14 +746,12 @@ testcase.dirContextMenuZip = async () => {
   // Ensure the archive has been removed.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
-};
+}
 
 /**
  * Tests context menu on the Eject button of a ZIP root.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuZipEject' comes from an
-// index signature, so it must be accessed with ['dirContextMenuZipEject'].
-testcase.dirContextMenuZipEject = async () => {
+export async function dirContextMenuZipEject() {
   await sendTestMessage({
     name: 'expectFileTask',
     fileNames: [ENTRIES.zipArchive.targetPath],
@@ -875,28 +785,21 @@ testcase.dirContextMenuZipEject = async () => {
 
   // Ensure the archive has been removed.
   await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
-};
+}
 
 /**
  * Tests context menu for Shortcut roots.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuShortcut' comes from an
-// index signature, so it must be accessed with ['dirContextMenuShortcut'].
-testcase.dirContextMenuShortcut = async () => {
+export async function dirContextMenuShortcut() {
   const menus = [
     ['#rename', false],
     ['#unpin-folder', true],
     ['#share-with-linux', true],
   ];
-  // @ts-ignore: error TS4111: Property 'directoryD' comes from an index
-  // signature, so it must be accessed with ['directoryD'].
   const entry = ENTRIES.directoryD;
-  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   const entryName = entry.nameText;
 
   // Open Files app on Drive.
-  // @ts-ignore: error TS2322: Type 'TestEntryInfo | undefined' is not
-  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Create a shortcut to directory D.
@@ -906,15 +809,12 @@ testcase.dirContextMenuShortcut = async () => {
   await checkContextMenu(
       appId, `/${entryName}`, menus, true /* rootMenu */,
       `/My Drive/${entryName}`);
-};
+}
 
 /**
  * Tests context menu for MyFiles, Downloads and sub-folder.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuMyFilesWithPaste' comes
-// from an index signature, so it must be accessed with
-// ['dirContextMenuMyFilesWithPaste'].
-testcase.dirContextMenuMyFilesWithPaste = async () => {
+export async function dirContextMenuMyFilesWithPaste() {
   const myFilesMenus = [
     ['#share-with-linux', true],
     ['#new-folder', true],
@@ -1040,14 +940,12 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
         appId, '/My files/Downloads/photosTwo', photosTwoMenus,
         false /* rootMenu */);
   }
-};
+}
 
 /**
  * Tests context menu for MyFiles, Downloads and sub-folder.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuMyFiles' comes from an
-// index signature, so it must be accessed with ['dirContextMenuMyFiles'].
-testcase.dirContextMenuMyFiles = async () => {
+export async function dirContextMenuMyFiles() {
   const myFilesMenus = [
     ['#share-with-linux', true],
     ['#new-folder', true],
@@ -1094,19 +992,17 @@ testcase.dirContextMenuMyFiles = async () => {
   await wait(REPEAT_UNTIL_INTERVAL);
 
   // Fetch all visible cr-menu's.
-  const elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, ['cr-menu:not([hidden])']);
+  const elements =
+      await remoteCall.queryElements(appId, ['cr-menu:not([hidden])']);
 
   // Check: No context menus should be visible for FakeEntry.
   chrome.test.assertEq(0, elements.length);
-};
+}
 
 /**
  * Tests context menu for Crostini real root and a folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuCrostini' comes from an
-// index signature, so it must be accessed with ['dirContextMenuCrostini'].
-testcase.dirContextMenuCrostini = async () => {
+export async function dirContextMenuCrostini() {
   const linuxMenus = [
     ['#new-folder', true],
   ];
@@ -1124,8 +1020,6 @@ testcase.dirContextMenuCrostini = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Crostini, because the first right click doesn't show any context
@@ -1144,14 +1038,12 @@ testcase.dirContextMenuCrostini = async () => {
   // Check the context menu for a folder in Linux files.
   await checkContextMenu(
       appId, '/My files/Linux files/photos', folderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for ARC++/Play files root and a folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuPlayFiles' comes from an
-// index signature, so it must be accessed with ['dirContextMenuPlayFiles'].
-testcase.dirContextMenuPlayFiles = async () => {
+export async function dirContextMenuPlayFiles() {
   const playFilesMenus = [
     ['#new-folder', false],
   ];
@@ -1165,14 +1057,10 @@ testcase.dirContextMenuPlayFiles = async () => {
   ];
 
   // Add an Android folder.
-  // @ts-ignore: error TS4111: Property 'directoryDocuments' comes from an index
-  // signature, so it must be accessed with ['directoryDocuments'].
   await addEntries(['android_files'], [ENTRIES.directoryDocuments]);
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check the context menu for Play files.
@@ -1183,14 +1071,12 @@ testcase.dirContextMenuPlayFiles = async () => {
   await checkContextMenu(
       appId, '/My files/Play files/Documents', folderMenus,
       false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for USB root (single and multiple partitions).
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuUsbs' comes from an index
-// signature, so it must be accessed with ['dirContextMenuUsbs'].
-testcase.dirContextMenuUsbs = async () => {
+export async function dirContextMenuUsbs() {
   const ext4UsbMenus = [
     ['#unmount', true],
     ['#format', true],
@@ -1257,8 +1143,6 @@ testcase.dirContextMenuUsbs = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   if (await isSinglePartitionFormat(appId)) {
@@ -1328,14 +1212,12 @@ testcase.dirContextMenuUsbs = async () => {
     await checkContextMenu(
         appId, '/fake-usb', ntfsUsbMenus, true /* rootMenu */);
   }
-};
+}
 
 /**
  * Tests context menu for USB root with DCIM folder.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuUsbDcim' comes from an
-// index signature, so it must be accessed with ['dirContextMenuUsbDcim'].
-testcase.dirContextMenuUsbDcim = async () => {
+export async function dirContextMenuUsbDcim() {
   const usbMenus = [
     ['#unmount', true],
     ['#format', true],
@@ -1363,8 +1245,6 @@ testcase.dirContextMenuUsbDcim = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   if (await isSinglePartitionFormat(appId)) {
@@ -1383,14 +1263,12 @@ testcase.dirContextMenuUsbDcim = async () => {
     await checkContextMenu(
         appId, '/fake-usb/DCIM', dcimFolderMenus, false /* rootMenu */);
   }
-};
+}
 
 /*
  * Tests context menu for Mtp root and a folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuMtp' comes from an index
-// signature, so it must be accessed with ['dirContextMenuMtp'].
-testcase.dirContextMenuMtp = async () => {
+export async function dirContextMenuMtp() {
   const folderMenus = [
     ['#cut', true],
     ['#copy', true],
@@ -1405,8 +1283,6 @@ testcase.dirContextMenuMtp = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Recent root.
@@ -1427,14 +1303,12 @@ testcase.dirContextMenuMtp = async () => {
   // Check the context menu for a folder inside a MTP.
   await checkContextMenu(
       appId, '/fake-mtp/A', folderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for FSP root and a folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuFsp' comes from an index
-// signature, so it must be accessed with ['dirContextMenuFsp'].
-testcase.dirContextMenuFsp = async () => {
+export async function dirContextMenuFsp() {
   const fspMenus = [
     ['#unmount', true],
   ];
@@ -1453,8 +1327,6 @@ testcase.dirContextMenuFsp = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check the context menu for FSP root.
@@ -1463,15 +1335,12 @@ testcase.dirContextMenuFsp = async () => {
   // Check the context menu for a folder inside a FSP.
   await checkContextMenu(
       appId, '/Test (1)/folder', folderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for DocumentsProvider root and a folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuDocumentsProvider' comes
-// from an index signature, so it must be accessed with
-// ['dirContextMenuDocumentsProvider'].
-testcase.dirContextMenuDocumentsProvider = async () => {
+export async function dirContextMenuDocumentsProvider() {
   const folderMenus = [
     ['#cut', false],
     ['#copy', true],
@@ -1482,14 +1351,10 @@ testcase.dirContextMenuDocumentsProvider = async () => {
   ];
 
   // Add a DocumentsProvider folder.
-  // @ts-ignore: error TS4111: Property 'readOnlyFolder' comes from an index
-  // signature, so it must be accessed with ['readOnlyFolder'].
   await addEntries(['documents_provider'], [ENTRIES.readOnlyFolder]);
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Wait for DocumentsProvider to appear.
@@ -1517,14 +1382,12 @@ testcase.dirContextMenuDocumentsProvider = async () => {
   await checkContextMenu(
       appId, '/DocumentsProvider/Read-Only Folder', folderMenus,
       false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for My Drive, read-only and read-write folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuMyDrive' comes from an
-// index signature, so it must be accessed with ['dirContextMenuMyDrive'].
-testcase.dirContextMenuMyDrive = async () => {
+export async function dirContextMenuMyDrive() {
   const myDriveMenus = [
     ['#share-with-linux', true],
     ['#new-folder', true],
@@ -1577,16 +1440,14 @@ testcase.dirContextMenuMyDrive = async () => {
   // Check the context menu for read+write folder.
   await checkContextMenu(
       appId, '/My Drive/photos', readWriteFolderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for Shared drives grand-root, a read+write shared drive
  * root, a folder inside it, a read-only shared drive and a folder inside
  * it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuSharedDrive' comes from an
-// index signature, so it must be accessed with ['dirContextMenuSharedDrive'].
-testcase.dirContextMenuSharedDrive = async () => {
+export async function dirContextMenuSharedDrive() {
   const sharedDriveGrandRootMenus = [
     ['#share-with-linux', true],
   ];
@@ -1667,15 +1528,13 @@ testcase.dirContextMenuSharedDrive = async () => {
   await checkContextMenu(
       appId, '/Shared drives/Team Drive B/teamDriveBDirectory',
       readOnlyFolderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for Google Drive/Shared with me root, currently it
  * doesn't show context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuSharedWithMe' comes from an
-// index signature, so it must be accessed with ['dirContextMenuSharedWithMe'].
-testcase.dirContextMenuSharedWithMe = async () => {
+export async function dirContextMenuSharedWithMe() {
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -1697,15 +1556,13 @@ testcase.dirContextMenuSharedWithMe = async () => {
   await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
   await remoteCall.waitForElement(
       appId, '#directory-tree-context-menu[hidden]');
-};
+}
 
 /**
  * Tests context menu for Google Drive/Offline root, currently it doesn't show
  * context menu.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuOffline' comes from an
-// index signature, so it must be accessed with ['dirContextMenuOffline'].
-testcase.dirContextMenuOffline = async () => {
+export async function dirContextMenuOffline() {
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -1727,15 +1584,13 @@ testcase.dirContextMenuOffline = async () => {
   await remoteCall.waitForElement(appId, '#roots-context-menu[hidden]');
   await remoteCall.waitForElement(
       appId, '#directory-tree-context-menu[hidden]');
-};
+}
 
 /**
  * Tests context menu for Google Drive/Computer grand-root, a computer root, a
  * folder inside it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuComputers' comes from an
-// index signature, so it must be accessed with ['dirContextMenuComputers'].
-testcase.dirContextMenuComputers = async () => {
+export async function dirContextMenuComputers() {
   const computersGrandRootMenus = [
     ['#cut', true],
     ['#copy', true],
@@ -1789,14 +1644,12 @@ testcase.dirContextMenuComputers = async () => {
   // Check the context menu for a folder inside a computer.
   await checkContextMenu(
       appId, '/Computers/Computer A/A', folderMenus, false /* rootMenu */);
-};
+}
 
 /**
  * Tests context menu for Trash root.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuTrash' comes from an index
-// signature, so it must be accessed with ['dirContextMenuTrash'].
-testcase.dirContextMenuTrash = async () => {
+export async function dirContextMenuTrash() {
   const trashMenu = [
     ['#empty-trash', true],
   ];
@@ -1806,15 +1659,13 @@ testcase.dirContextMenuTrash = async () => {
 
   // Check the context menu for Trash.
   await checkContextMenu(appId, '/Trash', trashMenu, /*rootMenu=*/ false);
-};
+}
 
 /**
  * Tests that context menu in directory tree gets the focus, so ChromeVox can
  * announce it.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuFocus' comes from an index
-// signature, so it must be accessed with ['dirContextMenuFocus'].
-testcase.dirContextMenuFocus = async () => {
+export async function dirContextMenuFocus() {
   // Open Files app on local Downloads.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -1836,18 +1687,16 @@ testcase.dirContextMenuFocus = async () => {
 
   // Check currently focused element.
   const focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-  chrome.test.assertEq('menuitem', focusedElement.attributes['role']);
-};
+      await remoteCall.callRemoteTestUtil<ElementObject|null>(
+          'getActiveElement', appId, []);
+  chrome.test.assertEq('menuitem', focusedElement?.attributes['role']);
+}
 
 /**
  * Test that the directory tree context menu can be opened by keyboard
  * navigation.
  */
-// @ts-ignore: error TS4111: Property 'dirContextMenuKeyboardNavigation' comes
-// from an index signature, so it must be accessed with
-// ['dirContextMenuKeyboardNavigation'].
-testcase.dirContextMenuKeyboardNavigation = async () => {
+export async function dirContextMenuKeyboardNavigation() {
   // Open Files app on local Downloads.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -1889,4 +1738,4 @@ testcase.dirContextMenuKeyboardNavigation = async () => {
 
   // Ensure it's possible to navigate to the newly created folder.
   await directoryTree.navigateToPath('/My files/New folder');
-};
+}
