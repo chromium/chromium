@@ -8,6 +8,12 @@ layout( push_constant ) uniform fragmentConstants {
   // Takes into account offset from vertex shader push constants.
   layout(offset = 32) uvec2 codedDims;
   uvec2 visibleDims;
+
+  // Multiplication is much faster than division.
+  // Note: IEEE 754 single precision floating point guarantees us a 23-bit
+  // mantissa. This means that values up to 8388608 should be exactly
+  // representable. 4K is 8294400 pixels, so we're cutting it a little close.
+  highp vec2 inverseWidth;
 } pushConstants;
 
 layout(binding = 0) uniform texture2D yTexture;
@@ -23,36 +29,56 @@ const mat3 colorConversion = mat3(1.164, 1.164, 1.164,
 const uvec2 kYTileDims = uvec2(16, 32);
 const uvec2 kUVTileDims = uvec2(8, 16);
 
-vec3 detileTexel(uvec2 iCoord) {
-  vec3 yuv;
-  uint width = pushConstants.codedDims.x;
-  uint uvWidth = width / uint(2);
-  uint numTilesPerRow = pushConstants.codedDims.x / kYTileDims.x;
-  uvec2 tileCoords = iCoord / kYTileDims;
-  uint tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
-  uvec2 inTileCoord = iCoord % kYTileDims;
-  uint offsetInTile = (inTileCoord.y * kYTileDims.x) + inTileCoord.x;
-  highp uint linearIdx = tileIdx;
+// TODO(b/304781371): Re-write this shader to assume every input texture is
+// exactly 512 pixels wide. We can skip a large amount of these calculations
+// in that circumstance because detiledY just becomes tileIdx, and detiledX
+// just becomes offsetInTile. Unfortunately, that tactic requires a number of
+// hacks to "lie" to the GMB and SharedImage infrastructure.
+
+mat4x3 detileTexels(uvec4 iCoordX, uvec4 iCoordY) {
+  mat4x3 ret;
+
+  const uint width = pushConstants.codedDims.x;
+  const uint uvWidth = width / uint(2);
+  const uint numTilesPerRowY = width / kYTileDims.x;
+  const uint numTilesPerRowUV = uvWidth / kUVTileDims.x;
+
+  uvec4 tileX = iCoordX / kYTileDims.x;
+  uvec4 tileY = iCoordY / kYTileDims.y;
+  uvec4 tileIdx = (tileY * numTilesPerRowY) + tileX;
+  uvec4 inTileX = iCoordX % kYTileDims.x;
+  uvec4 inTileY = iCoordY % kYTileDims.y;
+  uvec4 offsetInTile = (inTileY * kYTileDims.x) + inTileX;
+  highp uvec4 linearIdx = tileIdx;
   linearIdx = linearIdx * kYTileDims.x;
   linearIdx = linearIdx * kYTileDims.y;
   linearIdx = linearIdx + offsetInTile;
-  uint detiledY = linearIdx / width;
-  uint detiledX = linearIdx % width;
-  yuv.r = texelFetch(yTexture, ivec2(detiledX, detiledY), 0).r;
-  iCoord = iCoord / uint(2);
-  tileCoords = iCoord / kUVTileDims;
-  numTilesPerRow = uvWidth / kUVTileDims.x;
-  tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
-  inTileCoord = iCoord % kUVTileDims;
-  offsetInTile = (inTileCoord.y * kUVTileDims.x) + inTileCoord.x;
+  highp uvec4 detiledY = uvec4(vec4(linearIdx) * pushConstants.inverseWidth.x);
+  highp uvec4 detiledX = linearIdx - (detiledY * width);
+
+  ret[0].r = texelFetch(yTexture, ivec2(detiledX.r, detiledY.r), 0).r;
+  ret[1].r = texelFetch(yTexture, ivec2(detiledX.g, detiledY.g), 0).r;
+  ret[2].r = texelFetch(yTexture, ivec2(detiledX.b, detiledY.b), 0).r;
+  ret[3].r = texelFetch(yTexture, ivec2(detiledX.a, detiledY.a), 0).r;
+
+  iCoordX = iCoordX / uint(2);
+  iCoordY = iCoordY / uint(2);
+  inTileX = iCoordX % kUVTileDims.x;
+  inTileY = iCoordY % kUVTileDims.y;
+  offsetInTile = (inTileY * kUVTileDims.x) + inTileX;
   linearIdx = tileIdx;
   linearIdx = linearIdx * kUVTileDims.x;
   linearIdx = linearIdx * kUVTileDims.y;
   linearIdx = linearIdx + offsetInTile;
-  detiledY = linearIdx / uvWidth;
-  detiledX = linearIdx % uvWidth;
-  yuv.gb = texelFetch(uvTexture, ivec2(detiledX, detiledY), 0).rg;
-  return yuv;
+  detiledY = uvec4(vec4(linearIdx) * pushConstants.inverseWidth.y);
+  detiledX = linearIdx - (detiledY * uvWidth);
+
+  ret[0].gb = texelFetch(uvTexture, ivec2(detiledX.r, detiledY.r), 0).rg;
+  ret[1].gb = texelFetch(uvTexture, ivec2(detiledX.g, detiledY.g), 0).rg;
+  ret[2].gb = texelFetch(uvTexture, ivec2(detiledX.b, detiledY.b), 0).rg;
+  ret[3].gb = texelFetch(uvTexture, ivec2(detiledX.a, detiledY.a), 0).rg;
+
+  return ret;
 }
 
 void main() {
@@ -66,10 +92,15 @@ void main() {
     uvec2(ceil(unnormalizedCoord.x), floor(unnormalizedCoord.y));
   uvec2 bottomLeftCoord =
     uvec2(floor(unnormalizedCoord.x), ceil(unnormalizedCoord.y));
-  vec3 topLeft = detileTexel(topLeftCoord);
-  vec3 topRight = detileTexel(topRightCoord);
-  vec3 bottomLeft = detileTexel(bottomLeftCoord);
-  vec3 bottomRight = detileTexel(bottomRightCoord);
+  uvec4 iCoordX = uvec4(topLeftCoord.x, topRightCoord.x,
+                        bottomLeftCoord.x, bottomRightCoord.x);
+  uvec4 iCoordY = uvec4(topLeftCoord.y, topRightCoord.y,
+                        bottomLeftCoord.y, bottomRightCoord.y);
+  mat4x3 pixels = detileTexels(iCoordX, iCoordY);
+  vec3 topLeft = pixels[0];
+  vec3 topRight = pixels[1];
+  vec3 bottomLeft = pixels[2];
+  vec3 bottomRight = pixels[3];
   vec3 top = mix(topRight, topLeft,
                  float(topRightCoord.x) - unnormalizedCoord.x);
   vec3 bottom = mix(bottomRight, bottomLeft,

@@ -824,7 +824,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create() {
   auto pipeline = VulkanPipeline::Create(
       binding_descriptions, attribute_descriptions, descriptor_bindings,
       std::move(vert_shader), std::move(frag_shader),
-      {4 * 2 * sizeof(float), 2 * 2 * sizeof(int)}, render_pass->Get(),
+      {4 * 2 * sizeof(float), 4 * 2 * sizeof(int)}, render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
   if (!pipeline) {
     return nullptr;
@@ -1017,9 +1017,23 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
                        VK_SHADER_STAGE_VERTEX_BIT, 0,
                        sizeof(vertex_push_constants), vertex_push_constants);
 
-    int dims_push_constants[4] = {
-        input_coded_size.width(), input_coded_size.height(),
-        input_visible_size.width(), input_visible_size.height()};
+    // We want to run these computations as doubles and then truncate down the
+    // single precision float to make sure this value is as accurate as
+    // possible. For 4K resolution, 23 bits of mantissa should be sufficient,
+    // but depending on how the floating point is actually computed, the
+    // inaccuracy can cause issues. This is also why we compute this value on
+    // the CPU rather than the GPU.
+    float inverseWidth = 1.0 / double(input_coded_size.width());
+    float inverseUVWidth = 2.0 / double(input_coded_size.width());
+    // We mostly only care that the bytes get to the GPU unscathed. The actual
+    // datatype is irrelevant, as long as they occupy the same memory. So, we
+    // push these floating point values by just reinterpret casting them as int.
+    int dims_push_constants[6] = {input_coded_size.width(),
+                                  input_coded_size.height(),
+                                  input_visible_size.width(),
+                                  input_visible_size.height(),
+                                  *reinterpret_cast<int*>(&inverseWidth),
+                                  *reinterpret_cast<int*>(&inverseUVWidth)};
     vkCmdPushConstants(record.handle(), pipeline_->GetPipelineLayout(),
                        VK_SHADER_STAGE_FRAGMENT_BIT,
                        sizeof(vertex_push_constants),
