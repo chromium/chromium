@@ -1531,6 +1531,8 @@ source_set("browser") {
     "preloading/anchor_element_interaction_host_impl.h",
     "preloading/preconnector.cc",
     "preloading/preconnector.h",
+    "preloading/prefetch/contamination_delay_navigation_throttle.cc",
+    "preloading/prefetch/contamination_delay_navigation_throttle.h",
     "preloading/prefetch/no_vary_search_helper.cc",
     "preloading/prefetch/no_vary_search_helper.h",
     "preloading/prefetch/prefetch_canary_checker.cc",

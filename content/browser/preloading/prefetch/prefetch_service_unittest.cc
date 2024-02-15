@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -69,10 +70,6 @@
 namespace content {
 namespace {
 
-const char kPrefetchProxyAddress[] = "https://testprefetchproxy.com";
-
-const char kApiKey[] = "APIKEY";
-
 const int kTotalTimeDuration = 4321;
 
 const int kConnectTimeDuration = 123;
@@ -87,61 +84,6 @@ const char kHTMLBody[] = R"(
         <head></head>
         <body></body>
       </html>)";
-
-class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
- public:
-  explicit MockPrefetchServiceDelegate(int num_on_prefetch_likely_calls = 1) {
-    // Sets default behavior for the delegate.
-    ON_CALL(*this, GetDefaultPrefetchProxyHost)
-        .WillByDefault(testing::Return(GURL(kPrefetchProxyAddress)));
-    ON_CALL(*this, GetAPIKey).WillByDefault(testing::Return(kApiKey));
-    ON_CALL(*this, IsOriginOutsideRetryAfterWindow(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(*this, DisableDecoysBasedOnUserSettings)
-        .WillByDefault(testing::Return(false));
-    ON_CALL(*this, IsSomePreloadingEnabled)
-        .WillByDefault(testing::Return(PreloadingEligibility::kEligible));
-    ON_CALL(*this, IsExtendedPreloadingEnabled)
-        .WillByDefault(testing::Return(false));
-    ON_CALL(*this, IsPreloadingPrefEnabled)
-        .WillByDefault(testing::Return(true));
-    ON_CALL(*this, IsDataSaverEnabled).WillByDefault(testing::Return(false));
-    ON_CALL(*this, IsBatterySaverEnabled).WillByDefault(testing::Return(false));
-    ON_CALL(*this, IsDomainInPrefetchAllowList(testing::_))
-        .WillByDefault(testing::Return(true));
-
-    EXPECT_CALL(*this, OnPrefetchLikely(testing::_))
-        .Times(num_on_prefetch_likely_calls);
-  }
-
-  ~MockPrefetchServiceDelegate() override = default;
-
-  MockPrefetchServiceDelegate(const MockPrefetchServiceDelegate&) = delete;
-  MockPrefetchServiceDelegate& operator=(const MockPrefetchServiceDelegate) =
-      delete;
-
-  // PrefetchServiceDelegate.
-  MOCK_METHOD(std::string, GetMajorVersionNumber, (), (override));
-  MOCK_METHOD(std::string, GetAcceptLanguageHeader, (), (override));
-  MOCK_METHOD(GURL, GetDefaultPrefetchProxyHost, (), (override));
-  MOCK_METHOD(std::string, GetAPIKey, (), (override));
-  MOCK_METHOD(GURL, GetDefaultDNSCanaryCheckURL, (), (override));
-  MOCK_METHOD(GURL, GetDefaultTLSCanaryCheckURL, (), (override));
-  MOCK_METHOD(void,
-              ReportOriginRetryAfter,
-              (const GURL&, base::TimeDelta),
-              (override));
-  MOCK_METHOD(bool, IsOriginOutsideRetryAfterWindow, (const GURL&), (override));
-  MOCK_METHOD(void, ClearData, (), (override));
-  MOCK_METHOD(bool, DisableDecoysBasedOnUserSettings, (), (override));
-  MOCK_METHOD(PreloadingEligibility, IsSomePreloadingEnabled, (), (override));
-  MOCK_METHOD(bool, IsExtendedPreloadingEnabled, (), (override));
-  MOCK_METHOD(bool, IsPreloadingPrefEnabled, (), (override));
-  MOCK_METHOD(bool, IsDataSaverEnabled, (), (override));
-  MOCK_METHOD(bool, IsBatterySaverEnabled, (), (override));
-  MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
-  MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
-};
 
 class ScopedPrefetchServiceContentBrowserClient
     : public TestContentBrowserClient {
@@ -455,7 +397,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         use_prefetch_proxy
             ? net::ProxyChain::FromSchemeHostAndPort(
                   net::ProxyServer::Scheme::SCHEME_HTTPS,
-                  PrefetchProxyHost(GURL(kPrefetchProxyAddress)).spec(),
+                  PrefetchProxyHost(
+                      GURL(MockPrefetchServiceDelegate::kPrefetchProxyAddress))
+                      .spec(),
                   std::nullopt)
             : net::ProxyChain::Direct();
 

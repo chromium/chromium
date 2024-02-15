@@ -201,6 +201,11 @@ struct URLResponseHead {
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache = false;
 
+  // True if this resource is served from the prefetch cache, and its success
+  // may have been influenced by cross-site state. Such responses may require
+  // special handling to make it harder to detect that this has happened.
+  bool is_prefetch_with_cross_site_contamination = false;
+
   // True if the request included a cookie.
   bool was_cookie_in_request = false;
 

@@ -734,6 +734,10 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
       redirect_info.new_url, referring_origin_));
 }
 
+void PrefetchContainer::MarkCrossSiteContaminated() {
+  is_cross_site_contaminated_ = true;
+}
+
 void PrefetchContainer::RegisterCookieListener(
     network::mojom::CookieManager* cookie_manager) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();

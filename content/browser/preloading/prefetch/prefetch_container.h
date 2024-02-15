@@ -276,6 +276,12 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
 
+  // Whether this prefetch is potentially contaminated by cross-site state.
+  // If so, it may need special handling for privacy.
+  // See https://crbug.com/1439246.
+  bool IsCrossSiteContaminated() const { return is_cross_site_contaminated_; }
+  void MarkCrossSiteContaminated();
+
   // Allows for |PrefetchCookieListener|s to be reigsitered for
   // `GetCurrentSinglePrefetchToPrefetch()`.
   void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
@@ -651,6 +657,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The result of probe when checked on navigation.
   std::optional<PrefetchProbeResult> probe_result_;
+
+  // If set, this prefetch's timing might be affected by cross-site state, so
+  // further processing may need to affect how the response is processed to make
+  // inferences about this logic less practical.
+  bool is_cross_site_contaminated_ = false;
 
   // Reference to metrics related to the page that considered using this
   // prefetch.

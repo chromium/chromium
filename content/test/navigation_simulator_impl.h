@@ -232,6 +232,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   void set_post_id(int64_t post_id) { post_id_ = post_id; }
 
+  void set_response_postprocess_hook(
+      base::RepeatingCallback<void(network::mojom::URLResponseHead&)> hook) {
+    response_postprocess_hook_ = std::move(hook);
+  }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,
@@ -428,6 +433,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool early_hints_preload_link_header_received_ = false;
 
   std::string supports_loading_mode_header_;
+
+  // A hook that can be used to tweak the response before it is processed.
+  // Called for both redirect and final responses.
+  base::RepeatingCallback<void(network::mojom::URLResponseHead&)>
+      response_postprocess_hook_;
 
   std::optional<bool> was_prerendered_page_activation_;
 

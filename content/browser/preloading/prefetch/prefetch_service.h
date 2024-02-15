@@ -85,6 +85,8 @@ class CONTENT_EXPORT PrefetchService {
   PrefetchServiceDelegate* GetPrefetchServiceDelegate() const {
     return delegate_.get();
   }
+  void SetPrefetchServiceDelegateForTesting(
+      std::unique_ptr<PrefetchServiceDelegate> delegate);
 
   PrefetchProxyConfigurator* GetPrefetchProxyConfigurator() const {
     return prefetch_proxy_configurator_.get();

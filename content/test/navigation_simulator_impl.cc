@@ -522,6 +522,9 @@ void NavigationSimulatorImpl::Redirect(const GURL& new_url) {
     redirect_headers_ = nullptr;
   }
 
+  if (response_postprocess_hook_) {
+    response_postprocess_hook_.Run(*response);
+  }
   url_loader->CallOnRequestRedirected(redirect_info, std::move(response));
 
   MaybeWaitForThrottleChecksComplete(base::BindOnce(
@@ -620,6 +623,9 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     response->ssl_info = ssl_info_;
     response->headers = response_headers_;
     response->dns_aliases = response_dns_aliases_;
+    if (response_postprocess_hook_) {
+      response_postprocess_hook_.Run(*response);
+    }
     static_cast<TestRenderFrameHost*>(frame_tree_node_->current_frame_host())
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             std::move(response), std::move(response_body_));
