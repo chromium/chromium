@@ -14,12 +14,16 @@ source_set("core") {
     "cloud_management_delegate.h",
     "constants.h",
     "dm_server_client.h",
+    "ec_private_key.h",
+    "ec_private_key_factory.h",
     "key_upload_client.h",
     "prefs.h",
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
     "store_error.h",
+    "unexportable_private_key.h",
+    "unexportable_private_key_factory.h",
     "upload_client_error.h",
   ]
 
@@ -29,14 +33,14 @@ source_set("core") {
     "client_identity.cc",
     "constants.cc",
     "ec_private_key.cc",
-    "ec_private_key.h",
     "ec_private_key_factory.cc",
-    "ec_private_key_factory.h",
     "key_upload_client.cc",
     "prefs.cc",
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "unexportable_private_key.cc",
+    "unexportable_private_key_factory.cc",
   ]
 
   public_deps = [
@@ -52,19 +56,6 @@ source_set("core") {
     "//components/prefs",
     "//net",
   ]
-
-  friend = [ ":unit_tests" ]
-
-  if (is_win) {
-    sources += [
-      "unexportable_private_key.cc",
-      "unexportable_private_key.h",
-      "unexportable_private_key_factory.cc",
-      "unexportable_private_key_factory.h",
-    ]
-
-    deps += [ "//crypto" ]
-  }
 }
 
 source_set("test_support") {

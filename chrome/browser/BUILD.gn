@@ -6336,6 +6336,14 @@ static_library("browser") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
+  if (enterprise_client_certificates) {
+    sources += [
+      "enterprise/client_certificates/certificate_store_factory.cc",
+      "enterprise/client_certificates/certificate_store_factory.h",
+    ]
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+
   if (is_linux || is_win || is_mac || is_chromeos_ash) {
     sources += [
       "enterprise/connectors/device_trust/consent_policy_observer.cc",
@@ -6396,10 +6404,6 @@ static_library("browser") {
       "enterprise/idle/idle_service_factory.h",
     ]
     deps += [ "//components/enterprise/idle" ]
-  }
-
-  if (is_win || is_mac) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (is_linux || is_win || is_mac) {
