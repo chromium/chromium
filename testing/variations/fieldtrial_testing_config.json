@@ -5404,6 +5404,22 @@
             ]
         }
     ],
+    "CrostiniTerminaDlcForceOta": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrostiniTerminaDlcForceOta"
+                    ],
+                    "min_os_version": "15771.0.0"
+                }
+            ]
+        }
+    ],
     "CursiveManagedStylusPreinstall": [
         {
             "platforms": [
