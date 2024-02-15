@@ -2704,6 +2704,36 @@ chromium-metrics-reviews@google.com.
   <token key="Operation" variants="RetriedOperation"/>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.{Type}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API{Function}.
+    Recorded when the asynchronous job has returned. This histogram is recording
+    the metric separately for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.{Type}.ConnectionResultCode"
+    enum="PasswordStoreAndroidBackendConnectionResultCode"
+    expires_after="2025-01-30">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The connection result status code returned by the GMS Core ChromeSync 1P
+    API{Function}. Recorded when the asynchronous job has returned with error
+    and only if ConnectionResult was set on the returned error. This histogram
+    is recording the metric separately for local and account store.
+  </summary>
+  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
+  <token key="Function" variants="PasswordStoreBackendFunction"/>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreAndroidBackend.{Type}.{Function}"
     enum="PasswordStoreAndroidBackendRequestStatus" expires_after="2025-01-30">
   <owner>izuzic@google.com</owner>
@@ -2832,36 +2862,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
     <variant name=".UpdateLoginAsync" summary="updating a login in"/>
   </token>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend{Function}.{Type}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-01-30">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    The error codes returned by the GMS Core ChromeSync 1P API{Function}.
-    Recorded when the asynchronous job has returned. This histogram is recording
-    the metric separately for local and account store.
-  </summary>
-  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
-  <token key="Function" variants="PasswordStoreBackendFunction"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend{Function}.{Type}.ConnectionResultCode"
-    enum="PasswordStoreAndroidBackendConnectionResultCode"
-    expires_after="2025-01-30">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    The connection result status code returned by the GMS Core ChromeSync 1P
-    API{Function}. Recorded when the asynchronous job has returned with error
-    and only if ConnectionResult was set on the returned error. This histogram
-    is recording the metric separately for local and account store.
-  </summary>
-  <token key="Type" variants="PasswordStoreAndroidBackendType"/>
-  <token key="Function" variants="PasswordStoreBackendFunction"/>
 </histogram>
 
 <histogram
