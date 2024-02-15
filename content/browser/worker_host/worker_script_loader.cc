@@ -93,7 +93,6 @@ void WorkerScriptLoader::Start() {
                        weak_factory_.GetWeakPtr(), interceptor_.get()),
         base::BindOnce(
             [](base::WeakPtr<WorkerScriptLoader> self,
-               bool /*reset_subresource_loader_params*/,
                ResponseHeadUpdateParams) {
               if (self) {
                 self->LoadFromNetwork();

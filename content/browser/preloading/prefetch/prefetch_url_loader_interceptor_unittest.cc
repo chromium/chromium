@@ -461,7 +461,7 @@ class PrefetchURLLoaderInterceptorTest
   }
 };
 
-void UnreachableFallback(bool, ResponseHeadUpdateParams) {
+void UnreachableFallback(ResponseHeadUpdateParams) {
   NOTREACHED();
 }
 

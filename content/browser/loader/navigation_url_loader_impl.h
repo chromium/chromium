@@ -147,7 +147,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // to initially elect to handle a request, and later decide to fallback to
   // the default behavior. This is needed for service worker network fallback.
   void FallbackToNonInterceptedRequest(
-      bool reset_subresource_loader_params,
       ResponseHeadUpdateParams head_update_params);
 
   scoped_refptr<network::SharedURLLoaderFactory>

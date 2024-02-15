@@ -350,8 +350,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                     ResponseHeadUpdateParams head_update_params;
                     head_update_params.router_info = std::move(router_info);
                     std::move(fallback_callback)
-                        .Run(false /* reset_subresource_loader_params */,
-                             std::move(head_update_params));
+                        .Run(std::move(head_update_params));
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -893,11 +892,12 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     // It'd be more correct and simpler to remove this path and show an error
     // page, but the risk is that the user will be stuck if there's a persistent
     // failure.
+    // The `SubresourceLoaderParams` previously returned by `loader_callback`
+    // will be reset by `NavigationURLLoaderImpl` by detecting the controller
+    // lost.
     container_host_->NotifyControllerLost();
     if (fallback_callback_) {
-      std::move(fallback_callback_)
-          .Run(true /* reset_subresource_loader_params */,
-               ResponseHeadUpdateParams());
+      std::move(fallback_callback_).Run(ResponseHeadUpdateParams());
     }
     return;
   }
@@ -927,9 +927,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     if (fallback_callback_) {
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info = response_head_->load_timing;
-      std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */,
-               std::move(head_update_params));
+      std::move(fallback_callback_).Run(std::move(head_update_params));
     }
     return;
   }

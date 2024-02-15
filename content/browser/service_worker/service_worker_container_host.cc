@@ -1948,6 +1948,7 @@ ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
     params.controller_service_worker_info->object_info =
         object_host->CreateIncompleteObjectInfo();
   }
+  params.container_host = container_host->GetWeakPtr();
 
   return params;
 }

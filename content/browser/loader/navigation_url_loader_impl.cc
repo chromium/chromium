@@ -721,11 +721,7 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
-    bool reset_subresource_loader_params,
     ResponseHeadUpdateParams head_update_params) {
-  if (reset_subresource_loader_params)
-    subresource_loader_params_ = {};
-
   head_update_params_ = std::move(head_update_params);
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
@@ -1631,6 +1627,22 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     if (response_head && response_head->headers) {
       early_hints.manager = std::move(early_hints_manager_);
     }
+  }
+
+  // When dispatching a ServiceWorker fetch event failed, controller is marked
+  // lost in `ServiceWorkerMainResourceLoader::DidDispatchFetchEvent`. In this
+  // case, the main resource loading should have already been fallen back to the
+  // network, and ServiceWorker subresource interception is reset here by
+  // detecting the controller lost, to completely cancel the ServiceWorker
+  // interception initially set in `MaybeCreateLoader()`.
+  //
+  // There might be other cases where the controller is lost here, but probably
+  // it's fine to reset ServiceWorker subresource interception as well, as the
+  // controller is anyway lost.
+  if (!subresource_loader_params_.container_host ||
+      !subresource_loader_params_.container_host->controller()) {
+    subresource_loader_params_.controller_service_worker_info = nullptr;
+    subresource_loader_params_.controller_service_worker_object_host = nullptr;
   }
 
   // TODO(scottmg): This needs to do more of what

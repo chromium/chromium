@@ -545,10 +545,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
 
   // The |fallback_callback| passed to the ServiceWorkerMainResourceLoader in
   // StartRequest().
-  void Fallback(bool reset_subresource_loader_params,
-                ResponseHeadUpdateParams) {
+  void Fallback(ResponseHeadUpdateParams) {
     did_call_fallback_callback_ = true;
-    reset_subresource_loader_params_ = reset_subresource_loader_params;
     if (quit_closure_for_fallback_callback_)
       std::move(quit_closure_for_fallback_callback_).Run();
   }
@@ -624,7 +622,6 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   ServiceWorkerRemoteContainerEndpoint container_endpoints_;
 
   bool did_call_fallback_callback_ = false;
-  bool reset_subresource_loader_params_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
 };
 
@@ -977,7 +974,6 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FallbackResponse) {
 
   // The fallback callback should be called.
   RunUntilFallbackCallback();
-  EXPECT_FALSE(reset_subresource_loader_params_);
 
   // The request should not be handled by the loader, but it shouldn't be a
   // failure.
@@ -1034,7 +1030,6 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FailFetchDispatch) {
 
   // The fallback callback should be called.
   RunUntilFallbackCallback();
-  EXPECT_TRUE(reset_subresource_loader_params_);
   EXPECT_FALSE(container_host_->controller());
 
   histogram_tester.ExpectUniqueSample(
