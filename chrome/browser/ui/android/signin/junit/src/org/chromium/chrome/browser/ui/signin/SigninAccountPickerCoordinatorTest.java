@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -27,12 +29,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
@@ -43,14 +43,13 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 
-/** Unit tests for {@link SigninAndHistoryOptInCoordinator}. */
+/** Unit tests for {@link SigninAccountPickerCoordinator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
-public class SigninAndHistoryOptInCoordinatorTest {
+public class SigninAccountPickerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -58,48 +57,50 @@ public class SigninAndHistoryOptInCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Profile mProfile;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
-    @Mock private AccountManagerFacade mAccountManagerFacade;
-    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private Profile mProfileMock;
+    @Mock private CoreAccountInfo mCoreAccountInfoMock;
+    @Mock private AccountManagerFacade mAccountManagerFacadeMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
-    @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
-    @Mock private SigninAndHistoryOptInCoordinator.Delegate mDelegate;
+    @Mock private WindowAndroid mWindowAndroidMock;
+    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncherMock;
+    @Mock private SigninAccountPickerCoordinator.Delegate mDelegateMock;
 
     private final @SigninAccessPoint int mAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     private Activity mActivity;
-    private SigninAndHistoryOptInCoordinator mCoordinator;
+    private ViewGroup mContainerView;
+    private SigninAccountPickerCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mActivity = activity;
+                            mContainerView = new FrameLayout(mActivity);
+                            mActivity.setContentView(mContainerView);
+                        });
         mJniMocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
-        when(mAccountManagerFacade.getCoreAccountInfos()).thenReturn(new Promise<>());
-        when(mIdentityServicesProviderMock.getSigninManager(any())).thenReturn(mSigninManagerMock);
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
+        when(mAccountManagerFacadeMock.getCoreAccountInfos()).thenReturn(new Promise<>());
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         mCoordinator =
-                new SigninAndHistoryOptInCoordinator(
-                        mWindowAndroid,
+                new SigninAccountPickerCoordinator(
+                        mWindowAndroidMock,
                         mActivity,
-                        mDelegate,
-                        mDeviceLockActivityLauncher,
-                        mProfile,
-                        mModalDialogManagerSupplier,
+                        mContainerView,
+                        mDelegateMock,
+                        mDeviceLockActivityLauncherMock,
+                        mSigninManagerMock,
                         mAccessPoint);
     }
 
     @Test
     @MediumTest
     public void testSignIn_signInComplete() {
-        when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
         doAnswer(
                         invocation -> {
                             SigninManager.SignInCallback callback = invocation.getArgument(2);
@@ -107,28 +108,27 @@ public class SigninAndHistoryOptInCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), anyInt(), any());
-        mCoordinator.signIn(mCoreAccountInfo, error -> {});
+                .signin(eq(mCoreAccountInfoMock), anyInt(), any());
+        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
 
         // Verify that the SigninManager starts sign-in then a dialog is shown for history opt-in.
-        verify(mSigninManagerMock, times(1)).signin(eq(mCoreAccountInfo), eq(mAccessPoint), any());
-        verify(mModalDialogManager, times(1))
-                .showDialog(
-                        any(),
-                        eq(ModalDialogManager.ModalDialogType.APP),
-                        eq(ModalDialogManager.ModalDialogPriority.VERY_HIGH));
+        verify(mSigninManagerMock, times(1))
+                .signin(eq(mCoreAccountInfoMock), eq(mAccessPoint), any());
+        verify(mDelegateMock, times(1)).onSignInComplete();
+        verify(mDelegateMock, never()).onSignInCancel();
     }
 
     @Test
     @MediumTest
     public void testSignIn_signInNotAllowed() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        mCoordinator.signIn(mCoreAccountInfo, error -> {});
+        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
 
         // Verify that the SigninManager never start sign-in and no dialog is shown for history
         // opt-in.
         verify(mSigninManagerMock, never()).signin(any(CoreAccountInfo.class), anyInt(), any());
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+        verify(mDelegateMock, never()).onSignInComplete();
+        verify(mDelegateMock, never()).onSignInCancel();
     }
 
     @Test
@@ -141,12 +141,17 @@ public class SigninAndHistoryOptInCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signin(eq(mCoreAccountInfo), anyInt(), any());
+                .signin(eq(mCoreAccountInfoMock), anyInt(), any());
 
-        mCoordinator.signIn(mCoreAccountInfo, error -> {});
+        mCoordinator.signIn(mCoreAccountInfoMock, error -> {});
 
         // Verify that the SigninManager starts sign-in but no dialog is shown for history opt-in.
-        verify(mSigninManagerMock, times(1)).signin(eq(mCoreAccountInfo), eq(mAccessPoint), any());
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+        // TODO(https://crbug.com/1520793): Update the verification when the final error states will
+        // be implemented, and add test to ensure that the delegate is called only once in the
+        // coordinator's lifetime.
+        verify(mSigninManagerMock, times(1))
+                .signin(eq(mCoreAccountInfoMock), eq(mAccessPoint), any());
+        verify(mDelegateMock, never()).onSignInComplete();
+        verify(mDelegateMock, never()).onSignInCancel();
     }
 }

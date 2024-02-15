@@ -11,12 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -39,6 +41,7 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         implements SigninAndHistoryOptInCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
 
+    private OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     private SigninAndHistoryOptInCoordinator mCoordinator;
 
     @Override
@@ -55,18 +58,13 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
                 getIntent().getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
 
-        ProfileProvider profileProvider = getProfileProviderSupplier().get();
-        // TODO(https://crbug.com/1520783): Update this logic when async initialization will be
-        // supported.
-        assert profileProvider != null;
-
         mCoordinator =
                 new SigninAndHistoryOptInCoordinator(
                         getWindowAndroid(),
                         this,
                         this,
                         DeviceLockActivityLauncherImpl.get(),
-                        profileProvider.getOriginalProfile(),
+                        mProfileSupplier,
                         getModalDialogManagerSupplier(),
                         signinAccessPoint);
 
@@ -81,14 +79,22 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
-        return new ActivityProfileProvider(getLifecycleDispatcher()) {
-            @Nullable
-            @Override
-            protected OTRProfileID createOffTheRecordProfileID() {
-                throw new IllegalStateException(
-                        "Attempting to access incognito in the sign-in & history sync opt-in flow");
-            }
-        };
+        ActivityProfileProvider profileProvider =
+                new ActivityProfileProvider(getLifecycleDispatcher()) {
+                    @Nullable
+                    @Override
+                    protected OTRProfileID createOffTheRecordProfileID() {
+                        throw new IllegalStateException(
+                                "Attempting to access incognito in the sign-in & history sync"
+                                        + " opt-in flow");
+                    }
+                };
+
+        profileProvider.onAvailable(
+                (provider) -> {
+                    mProfileSupplier.set(profileProvider.get().getOriginalProfile());
+                });
+        return profileProvider;
     }
 
     @Override
@@ -108,6 +114,12 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         // Remove activity animation to avoid visual glitches due to the semi-transparent
         // background.
         overridePendingTransition(0, R.anim.no_anim);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mCoordinator.destroy();
+        super.onDestroy();
     }
 
     public static @NonNull Intent createIntent(

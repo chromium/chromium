@@ -219,7 +219,7 @@ public class AccountPickerBottomSheetTest {
         onView(isRoot()).perform(pressBack());
 
         Assert.assertFalse(controller.isSheetOpen());
-        verify(mAccountPickerDelegateMock).destroy();
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
@@ -250,7 +250,7 @@ public class AccountPickerBottomSheetTest {
         onView(isRoot()).perform(pressBack());
 
         Assert.assertFalse(controller.isSheetOpen());
-        verify(mAccountPickerDelegateMock).destroy();
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
@@ -280,7 +280,7 @@ public class AccountPickerBottomSheetTest {
         onView(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
-        verify(mAccountPickerDelegateMock).destroy();
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
@@ -311,7 +311,7 @@ public class AccountPickerBottomSheetTest {
         onView(withText(R.string.cancel)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
-        verify(mAccountPickerDelegateMock).destroy();
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(

@@ -15,68 +15,66 @@ import android.widget.FrameLayout;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
-import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
 
-public class SigninAndHistoryOptInCoordinator implements AccountPickerDelegate {
+/** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
+public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoordinator.Delegate {
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final ViewGroup mContainerView;
 
     private final Delegate mDelegate;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final OneshotSupplier<Profile> mProfileSupplier;
     private final @SigninAccessPoint int mSigninAccessPoint;
-    private final SigninManager mSigninManager;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    private ScrimCoordinator mScrim;
-    private BottomSheetObserver mBottomSheetObserver;
-    private BottomSheetController mBottomSheetController;
-    private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+    private SigninAccountPickerCoordinator mAccountPickerCoordinator;
 
+    /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
+        /** Called when the whole flow finishes. */
         void onFlowComplete();
     }
 
+    /**
+     * Creates an instance of {@link SigninAndHistoryOptInCoordinator} and shows the sign-in bottom
+     * sheet.
+     *
+     * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
+     * @param activity The {@link Activity} that hosts the sign-in &opt-in flow.
+     * @param delegate The delegate for this coordinator.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param profileSupplier The supplier of the current profile.
+     * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}
+     * @param signinAccessPoint The entry point for the sign-in.
+     */
     public SigninAndHistoryOptInCoordinator(
             @NonNull WindowAndroid windowAndroid,
             @NonNull Activity activity,
             @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
-            @NonNull Profile profile,
+            @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mDelegate = delegate;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.onAvailable(this::onProfileAvailable);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninAccessPoint = signinAccessPoint;
         mContainerView =
@@ -84,121 +82,53 @@ public class SigninAndHistoryOptInCoordinator implements AccountPickerDelegate {
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.signin_history_opt_in_container, null);
 
-        initAndShowBottomSheet();
+        // TODO(https://crbug.com/1520783): Implement loading state UI when async
+        // initialization will be supported.
     }
 
+    /** Called when the sign-in successfully finishes. */
     @Override
-    public void destroy() {}
-
-    @Override
-    public void signIn(
-            CoreAccountInfo accountInfo, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
-        SigninManager.SignInCallback callback =
-                new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        showHistoryOptInDialog();
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        // onSignInErrorCallback was meant to be called by the WebSigninBridge which
-                        // is not used in this sign-in flow, as we do not need to wait for cookies
-                        // to propagate.
-                        // Instead of calling AccountPickerBottomSheetMediator.onSigninFailed()
-                        // from the signin bridge we directly perform the creation of the "try
-                        // again" bottom sheet view:
-                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
-                    }
-                };
-
-        if (mSigninManager.isSigninAllowed()) {
-            mSigninManager.signin(accountInfo, mSigninAccessPoint, callback);
-        } else {
-            makeSigninNotAllowedToast();
-            mBottomSheetController.hideContent(
-                    mBottomSheetController.getCurrentSheetContent(), true);
-        }
+    public void onSignInComplete() {
+        showHistoryOptInDialog();
     }
 
+    /** Called when the sign-in is aborted. */
     @Override
-    public @EntryPoint int getEntryPoint() {
-        // TODO(https://crbug.com/1520783): Add and use entry points for the new sign-in flow.
-        return EntryPoint.WEB_SIGNIN;
+    public void onSignInCancel() {
+        onFlowComplete();
     }
 
+    /** Provides the root view of the sign-in and history opt-in flow. */
     public @NonNull ViewGroup getView() {
         assert mContainerView != null;
         return mContainerView;
     }
 
-    private void initAndShowBottomSheet() {
-        ViewGroup sheetContainer = new FrameLayout(mActivity);
-        sheetContainer.setLayoutParams(
-                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mContainerView.addView(sheetContainer);
-        mScrim =
-                new ScrimCoordinator(
-                        mActivity,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {}
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {}
-                        },
-                        (ViewGroup) sheetContainer.getParent(),
-                        mActivity.getColor(android.R.color.transparent));
-
-        mBottomSheetController =
-                BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrim,
-                        (sheet) -> {},
-                        mActivity.getWindow(),
-                        KeyboardVisibilityDelegate.getInstance(),
-                        () -> sheetContainer,
-                        () -> 0);
-
-        mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
-                    @Override
-                    public void onSheetClosed(@StateChangeReason int reason) {
-                        onBottomSheetDismiss(reason);
-                        mBottomSheetController.removeObserver(this);
-                    }
-
-                    @Override
-                    public void onSheetStateChanged(int newState, @StateChangeReason int reason) {
-                        switch (newState) {
-                            case SheetState.PEEK:
-                            case SheetState.HALF:
-                            case SheetState.FULL:
-                                break;
-                            case SheetState.HIDDEN:
-                                onBottomSheetDismiss(reason);
-                                mBottomSheetController.removeObserver(this);
-                                break;
-                        }
-                    }
-                };
-
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        mAccountPickerBottomSheetCoordinator =
-                new AccountPickerBottomSheetCoordinator(
-                        mWindowAndroid,
-                        mBottomSheetController,
-                        this,
-                        new AccountPickerBottomSheetStrings() {},
-                        mDeviceLockActivityLauncher);
+    /**
+     * Call the child coordinators' `destroy` method to release resources, should be called when the
+     * hosting activity is destroyed.
+     */
+    public void destroy() {
+        mAccountPickerCoordinator.destroy();
     }
 
-    private void makeSigninNotAllowedToast() {
-        // TODO(https://crbug.com/1520783): Update the string & UI.
-        Toast.makeText(
-                        mWindowAndroid.getActivity().get(),
-                        R.string.sign_in_to_chrome_disabled_by_user_summary,
-                        Toast.LENGTH_SHORT)
-                .show();
+    private void onProfileAvailable(Profile profile) {
+        if (profile.isOffTheRecord()) {
+            throw new IllegalStateException(
+                    "Sign-in & history opt-in flow is using incognito profile");
+        }
+
+        SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
+        mAccountPickerCoordinator =
+                new SigninAccountPickerCoordinator(
+                        mWindowAndroid,
+                        mActivity,
+                        mContainerView,
+                        this,
+                        mDeviceLockActivityLauncher,
+                        signinManager,
+                        mSigninAccessPoint);
     }
 
     private void showHistoryOptInDialog() {
@@ -255,10 +185,6 @@ public class SigninAndHistoryOptInCoordinator implements AccountPickerDelegate {
         dialogContentView.setBackgroundColor(Color.CYAN);
         dialogContentView.setMinimumHeight(200);
         return dialogContentView;
-    }
-
-    private void onBottomSheetDismiss(@StateChangeReason int reason) {
-        // TODO(https://crbug.com/1520783): Handle different dismiss reasons.
     }
 
     private void onFlowComplete() {

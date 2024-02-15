@@ -15,7 +15,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
  */
 public interface AccountPickerDelegate {
     /** Releases resources used by this class. */
-    void destroy();
+    void onAccountPickerDestroy();
 
     /** Signs in the user with the given accountInfo. */
     void signIn(

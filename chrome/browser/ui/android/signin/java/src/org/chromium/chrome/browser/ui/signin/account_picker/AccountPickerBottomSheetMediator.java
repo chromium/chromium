@@ -184,7 +184,7 @@ class AccountPickerBottomSheetMediator
     }
 
     void destroy() {
-        mAccountPickerDelegate.destroy();
+        mAccountPickerDelegate.onAccountPickerDestroy();
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
         mModel.removeObserver(mModelPropertyChangedObserver);

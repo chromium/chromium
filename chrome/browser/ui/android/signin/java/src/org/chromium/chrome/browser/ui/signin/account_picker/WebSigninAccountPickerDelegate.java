@@ -52,7 +52,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     }
 
     @Override
-    public void destroy() {
+    public void onAccountPickerDestroy() {
         destroyWebSigninBridge();
     }
 

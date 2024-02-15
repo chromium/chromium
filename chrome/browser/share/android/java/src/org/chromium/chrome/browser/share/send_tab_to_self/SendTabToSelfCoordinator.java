@@ -110,7 +110,7 @@ public class SendTabToSelfCoordinator {
         }
 
         @Override
-        public void destroy() {}
+        public void onAccountPickerDestroy() {}
 
         @Override
         public void signIn(

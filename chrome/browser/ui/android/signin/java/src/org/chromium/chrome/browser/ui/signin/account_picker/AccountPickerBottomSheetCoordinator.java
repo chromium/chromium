@@ -106,7 +106,7 @@ public class AccountPickerBottomSheetCoordinator {
                 new AccountPickerBottomSheetMediator(
                         windowAndroid,
                         accountPickerDelegate,
-                        this::onDismissButtonClicked,
+                        this::dismiss,
                         accountPickerBottomSheetStrings,
                         deviceLockActivityLauncher);
         mView =
@@ -135,7 +135,7 @@ public class AccountPickerBottomSheetCoordinator {
     }
 
     @MainThread
-    private void onDismissButtonClicked() {
+    public void dismiss() {
         logMetricAndIncrementActiveDismissalCountIfWebSignin(
                 AccountConsistencyPromoAction.DISMISSED_BUTTON);
         mBottomSheetController.hideContent(mView, true);

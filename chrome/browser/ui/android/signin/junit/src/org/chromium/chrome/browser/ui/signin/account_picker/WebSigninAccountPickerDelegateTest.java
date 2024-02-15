@@ -102,7 +102,7 @@ public class WebSigninAccountPickerDelegateTest {
 
     @After
     public void tearDown() {
-        mDelegate.destroy();
+        mDelegate.onAccountPickerDestroy();
     }
 
     @Test
