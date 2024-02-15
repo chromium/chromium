@@ -485,7 +485,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   const bool report_upload_;
 
   DevToolsURLLoaderInterceptor* interceptor_;
-  InterceptionStage stage_;
+  DevToolsURLLoaderInterceptor::InterceptionStages stages_;
 
   std::unique_ptr<CreateLoaderParameters> create_loader_params_;
   const bool is_download_;
@@ -564,17 +564,18 @@ void DevToolsURLLoaderInterceptor::CreateJob(
       std::move(client), std::move(target_factory), std::move(cookie_manager));
 }
 
-InterceptionStage DevToolsURLLoaderInterceptor::GetInterceptionStage(
+DevToolsURLLoaderInterceptor::InterceptionStages
+DevToolsURLLoaderInterceptor::GetInterceptionStages(
     const GURL& url,
     blink::mojom::ResourceType resource_type) const {
-  InterceptionStage stage = InterceptionStage::DONT_INTERCEPT;
+  DevToolsURLLoaderInterceptor::InterceptionStages stages;
   std::string unused;
   std::string url_str = protocol::NetworkHandler::ExtractFragment(url, &unused);
   for (const auto& pattern : patterns_) {
     if (pattern.Matches(url_str, resource_type))
-      stage |= pattern.interception_stage;
+      stages.Put(pattern.interception_stage);
   }
-  return stage;
+  return stages;
 }
 
 class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
@@ -851,12 +852,13 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
   interceptor_->AddJob(current_id_, this);
 
   const network::ResourceRequest& request = create_loader_params_->request;
-  stage_ = interceptor_->GetInterceptionStage(
+  stages_ = interceptor_->GetInterceptionStages(
       request.url,
       static_cast<blink::mojom::ResourceType>(request.resource_type));
 
-  if (!(stage_ & InterceptionStage::REQUEST))
+  if (!stages_.Has(InterceptionStage::kRequest)) {
     return false;
+  }
 
   if (state_ == State::kRedirectReceived)
     state_ = State::kFollowRedirect;
@@ -903,7 +905,7 @@ void InterceptionJob::UpdateCORSFlag() {
 }
 
 bool InterceptionJob::CanGetResponseBody(std::string* error_reason) {
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     *error_reason =
         "Can only get response body on HeadersReceived pattern matched "
         "requests.";
@@ -969,7 +971,7 @@ void InterceptionJob::ContinueInterceptedRequest(
 }
 
 void InterceptionJob::Detach() {
-  stage_ = InterceptionStage::DONT_INTERCEPT;
+  stages_.Clear();
   interceptor_ = nullptr;
   if (!waiting_for_resolution_)
     return;
@@ -992,17 +994,8 @@ Response InterceptionJob::InnerContinueRequest(
   waiting_for_resolution_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
   if (modifications->intercept_response.has_value()) {
-    if (modifications->intercept_response.value()) {
-      if (stage_ == InterceptionStage::REQUEST)
-        stage_ = InterceptionStage::BOTH;
-      else
-        stage_ = InterceptionStage::RESPONSE;
-    } else {
-      if (stage_ == InterceptionStage::BOTH)
-        stage_ = InterceptionStage::REQUEST;
-      else if (stage_ == InterceptionStage::RESPONSE)
-        stage_ = InterceptionStage::DONT_INTERCEPT;
-    }
+    stages_.PutOrRemove(InterceptionStage::kResponse,
+                        modifications->intercept_response.value());
   }
 
   if (state_ == State::kAuthRequired) {
@@ -1611,7 +1604,7 @@ void InterceptionJob::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     client_->OnReceiveResponse(std::move(head), std::move(body),
                                std::move(cached_metadata));
     return;
@@ -1643,7 +1636,7 @@ void InterceptionJob::OnReceiveRedirect(
   response_metadata_->redirect_info =
       std::make_unique<net::RedirectInfo>(redirect_info);
 
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     client_->OnReceiveRedirect(redirect_info, std::move(head));
     return;
   }
@@ -1696,7 +1689,7 @@ void InterceptionJob::OnComplete(
     // If we haven't seen response and get an error completion,
     // treat it as a response and intercept (provided response are
     // being intercepted).
-    if (!(stage_ & InterceptionStage::RESPONSE) || !status.error_code) {
+    if (!stages_.Has(InterceptionStage::kResponse) || !status.error_code) {
       CompleteRequest(status);
       return;
     }
@@ -1723,7 +1716,7 @@ void InterceptionJob::OnAuthRequest(
   DCHECK(pending_auth_callback_.is_null());
   DCHECK(!waiting_for_resolution_);
 
-  if (!(stage_ & InterceptionStage::REQUEST) || !interceptor_ ||
+  if (!stages_.Has(InterceptionStage::kRequest) || !interceptor_ ||
       !interceptor_->handle_auth_) {
     std::move(callback).Run(true, std::nullopt);
     return;

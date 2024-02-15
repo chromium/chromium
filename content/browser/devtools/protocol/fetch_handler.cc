@@ -48,11 +48,11 @@ void FetchHandler::Wire(UberDispatcher* dispatcher) {
 DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
     const Fetch::RequestStage& stage) {
   if (stage == Fetch::RequestStageEnum::Request)
-    return DevToolsURLLoaderInterceptor::REQUEST;
+    return DevToolsURLLoaderInterceptor::kRequest;
   if (stage == Fetch::RequestStageEnum::Response)
-    return DevToolsURLLoaderInterceptor::RESPONSE;
+    return DevToolsURLLoaderInterceptor::kResponse;
   NOTREACHED();
-  return DevToolsURLLoaderInterceptor::REQUEST;
+  return DevToolsURLLoaderInterceptor::kRequest;
 }
 
 Response ToInterceptionPatterns(
@@ -61,7 +61,7 @@ Response ToInterceptionPatterns(
   result->clear();
   if (!maybe_patterns.has_value()) {
     result->emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
-                         DevToolsURLLoaderInterceptor::REQUEST);
+                         DevToolsURLLoaderInterceptor::kRequest);
     return Response::Success();
   }
   Array<Fetch::RequestPattern>& patterns = maybe_patterns.value();

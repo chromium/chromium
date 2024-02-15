@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -134,12 +135,10 @@ class DevToolsURLLoaderInterceptor {
   };
 
   enum InterceptionStage {
-    DONT_INTERCEPT = 0,
-    REQUEST = (1 << 0),
-    RESPONSE = (1 << 1),
-    // Note: Both is not sent from front-end. It is used if both Request
-    // and HeadersReceived was found it upgrades it to Both.
-    BOTH = (REQUEST | RESPONSE),
+    kRequest,
+    kResponse,
+    kMinValue = kRequest,
+    kMaxValue = kResponse,
   };
 
   struct Pattern {
@@ -214,6 +213,10 @@ class DevToolsURLLoaderInterceptor {
   friend class InterceptionJob;
   friend class DevToolsURLLoaderFactoryProxy;
 
+  using InterceptionStages = base::EnumSet<InterceptionStage,
+                                           InterceptionStage::kMinValue,
+                                           InterceptionStage::kMaxValue>;
+
   void CreateJob(
       const base::UnguessableToken& frame_token,
       int32_t process_id,
@@ -225,7 +228,7 @@ class DevToolsURLLoaderInterceptor {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager);
 
-  InterceptionStage GetInterceptionStage(
+  InterceptionStages GetInterceptionStages(
       const GURL& url,
       blink::mojom::ResourceType resource_type) const;
 
@@ -253,13 +256,6 @@ class DevToolsURLLoaderInterceptor {
 
   base::WeakPtrFactory<DevToolsURLLoaderInterceptor> weak_factory_;
 };
-
-inline DevToolsURLLoaderInterceptor::InterceptionStage& operator|=(
-    DevToolsURLLoaderInterceptor::InterceptionStage& a,
-    const DevToolsURLLoaderInterceptor::InterceptionStage& b) {
-  a = static_cast<DevToolsURLLoaderInterceptor::InterceptionStage>(a | b);
-  return a;
-}
 
 }  // namespace content
 

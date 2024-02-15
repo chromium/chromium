@@ -574,11 +574,11 @@ std::optional<DevToolsURLLoaderInterceptor::InterceptionStage>
 ToInterceptorStage(
     const protocol::Network::InterceptionStage& interceptor_stage) {
   if (interceptor_stage == protocol::Network::InterceptionStageEnum::Request) {
-    return DevToolsURLLoaderInterceptor::REQUEST;
+    return DevToolsURLLoaderInterceptor::kRequest;
   }
   if (interceptor_stage ==
       protocol::Network::InterceptionStageEnum::HeadersReceived) {
-    return DevToolsURLLoaderInterceptor::RESPONSE;
+    return DevToolsURLLoaderInterceptor::kResponse;
   }
   return std::nullopt;
 }
