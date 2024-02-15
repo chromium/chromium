@@ -5054,6 +5054,12 @@ const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
 const char kNtpSingleRowShortcutsDescription[] =
     "Shows shortcuts in a single wide row on the New Tab Page.";
 
+const char kNtpWallpaperSearchButtonName[] =
+    "Customize Chrome Wallpaper Search Button";
+const char kNtpWallpaperSearchButtonDescription[] =
+    "Enables entry point on New Tab Page for Customize Chrome Side Panel "
+    "Wallpaper Search.";
+
 const char kNtpWideModulesName[] = "NTP Wide Modules";
 const char kNtpWideModulesDescription[] =
     "Shows wide NTP modules if NTP provides enough space.";

@@ -6775,6 +6775,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpTabResumptionModuleVariations,
                                     "NtpTabResumptionModules")},
 
+    {"ntp-wallpaper-search-button",
+     flag_descriptions::kNtpWallpaperSearchButtonName,
+     flag_descriptions::kNtpWallpaperSearchButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpWallpaperSearchButton)},
+
     {"shopping-page-types", commerce::flag_descriptions::kShoppingPageTypesName,
      commerce::flag_descriptions::kShoppingPageTypesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kShoppingPageTypes)},

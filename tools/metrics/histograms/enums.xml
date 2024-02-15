@@ -16353,6 +16353,7 @@ from previous Chrome versions.
   <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989624484" label="StartSurfaceRefactor:disabled"/>
+  <int value="-1989570196" label="NtpWallpaperSearchButton:enabled"/>
   <int value="-1989134646" label="PhoneHubUseBle:disabled"/>
   <int value="-1989024058" label="SystemEmojiPickerSearchExtension:disabled"/>
   <int value="-1988840552" label="WebViewExtraHeadersSameOriginOnly:disabled"/>
@@ -20115,6 +20116,7 @@ from previous Chrome versions.
   <int value="-268224644" label="DeferTabSwitcherLayoutCreation:disabled"/>
   <int value="-265765164" label="FeedFollowUiUpdate:disabled"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
+  <int value="-265475987" label="NtpWallpaperSearchButton:disabled"/>
   <int value="-265277473" label="FastPairHandshakeLongTermRefactor:enabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>
   <int value="-263150202" label="BundledConnectionHelp:disabled"/>

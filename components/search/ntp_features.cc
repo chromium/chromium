@@ -36,7 +36,7 @@ BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
              "CustomizeChromeSidePanelExtensionsCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, shows wallpaper search within the Cusotmize Chrome Side Panel.
+// If enabled, shows wallpaper search within the Customize Chrome Side Panel.
 BASE_FEATURE(kCustomizeChromeWallpaperSearch,
              "CustomizeChromeWallpaperSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -404,6 +404,12 @@ BASE_FEATURE(kNtpTabResumptionModuleCategories,
 // Dummy feature to set how recent tabs must be to be shown.
 BASE_FEATURE(kNtpTabResumptionModuleTimeLimit,
              "NtpTabResumptionModuleTimeLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, shows entry point on New Tab Page for Customize Chrome Side Panel
+// Wallpaper Search.
+BASE_FEATURE(kNtpWallpaperSearchButton,
+             "NtpWallpaperSearchButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kNtpModuleIgnoredCriteriaThreshold[] =
