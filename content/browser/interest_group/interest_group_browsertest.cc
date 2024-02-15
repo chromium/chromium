@@ -9115,7 +9115,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
   }
 }
 
-// Run a single ad auction and ensure it fails when passed a badly formatted
+// Run a single ad auction and ensure it fails when passed badly formatted
 // replacements.
 IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
                        RunAdAuctionFailsWithBadRenderURLReplacements) {
@@ -9163,7 +9163,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
 }
 
 // Run a multi-seller auction with a single component seller with a winner and
-// ensure the render url replacements occur.
+// ensure it fails when passed badly formatted replacements.
 IN_PROC_BROWSER_TEST_F(
     DeprecatedRenderURLReplacementsEnabledTest,
     SingleComponentAuctionFailsWithBadRenderURLReplacements) {
@@ -9221,6 +9221,68 @@ IN_PROC_BROWSER_TEST_F(
         "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
         "argument rejected or resolved to invalid value.";
     EXPECT_EQ(result, expected_error_message);
+  }
+}
+
+// Run a multi-seller auction with a single component seller with a winner and
+// ensure the render url replacements occur.
+IN_PROC_BROWSER_TEST_F(
+    DeprecatedRenderURLReplacementsEnabledTest,
+    SingleComponentAuctionWithWinnerWithRenderURLReplacements) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL(embedded_https_test_server()
+                         .GetURL("c.test", "/%%echo%%?${INTEREST_GROUP_NAME}")
+                         .spec());
+  GURL expected_ad_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  for (bool use_promise : {false, true}) {
+    SCOPED_TRACE(use_promise);
+    ASSERT_TRUE(
+        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    std::string auction_config = JsReplace(
+        R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          // Signal to the bidder and component seller to allow participation in
+          // a component auction.
+          auctionSignals: "bidderAllowsComponentAuction,"+
+                          "sellerAllowsComponentAuction",
+          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        }]
+      })",
+        test_origin,
+        embedded_https_test_server().GetURL(
+            "a.test", "/interest_group/decision_logic.js"),
+        "${INTEREST_GROUP_NAME}");
+    auto result = RunAuctionAndWait(auction_config,
+                                    /*execution_target=*/std::nullopt);
+    GURL urn_url = GURL(result.ExtractString());
+    EXPECT_TRUE(urn_url.is_valid());
+    EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+    NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
   }
 }
 
