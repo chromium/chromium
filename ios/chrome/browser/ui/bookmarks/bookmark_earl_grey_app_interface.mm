@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -196,6 +197,30 @@
   if (accountBookmarkModel) {
     accountBookmarkModel->CommitPendingWriteForTest();
   }
+}
+
++ (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
+                      storageType:(bookmarks::StorageType)storageType {
+  SetLastUsedBookmarkFolder(
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs(), folder,
+      storageType);
+}
+
++ (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder {
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  return GetDefaultBookmarkFolder(
+      browserState->GetPrefs(),
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+          SyncServiceFactory::GetForBrowserState(browserState)),
+      [BookmarkEarlGreyAppInterface localOrSyncableBookmarkModel],
+      [BookmarkEarlGreyAppInterface accountBookmarkModel]);
+}
+
++ (bookmarks::StorageType)lastUsedBookmarkFolderStorageType {
+  return static_cast<bookmarks::StorageType>(
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->GetInteger(
+          prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
 }
 
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title

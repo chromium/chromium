@@ -11,6 +11,7 @@
 #import "url/gurl.h"
 
 namespace bookmarks {
+class BookmarkNode;
 enum class StorageType;
 }  // namespace bookmarks
 
@@ -49,13 +50,23 @@ const GURL GetFrenchUrl();
 - (void)setupBookmarksWhichExceedsScreenHeightInStorage:
     (bookmarks::StorageType)storageType;
 
-// Waits for the Bookmark model to be `loaded`. GREYAssert is induced if test
-// bookmarks can not be loaded.
+// Waits for both LocalOrSyncable and Account (if available) bookmark models to
+// be loaded.
 - (void)waitForBookmarkModelsLoaded;
 
 // Flush any pending bookmarks writes to disk now. This is useful before
 // terminating and restarting the app.
 - (void)commitPendingWrite;
+
+// Set the last used bookmark folder.
+- (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
+                      storageType:(bookmarks::StorageType)storageType;
+
+// Get the last used bookmark folder.
+- (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
+
+// Get the model of the last used bookmark folder.
+- (bookmarks::StorageType)lastUsedBookmarkFolderStorageType;
 
 #pragma mark - Common Helpers
 

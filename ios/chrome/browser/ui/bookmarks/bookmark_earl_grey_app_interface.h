@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 namespace bookmarks {
+class BookmarkNode;
 enum class StorageType;
 }  // namespace bookmarks
 
@@ -45,6 +46,16 @@ enum class StorageType;
 // Flush any pending bookmarks writes to disk now. This is useful before
 // terminating and restarting the app.
 + (void)commitPendingWrite;
+
+// Set the last used bookmark folder.
++ (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
+                      storageType:(bookmarks::StorageType)storageType;
+
+// Get the last used bookmark folder.
++ (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder;
+
+// Get the model of the last used bookmark folder.
++ (bookmarks::StorageType)lastUsedBookmarkFolderStorageType;
 
 // Asserts that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel.

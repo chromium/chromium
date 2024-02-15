@@ -70,6 +70,20 @@ const GURL GetFrenchUrl() {
   [BookmarkEarlGreyAppInterface commitPendingWrite];
 }
 
+- (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
+                      storageType:(bookmarks::StorageType)storageType {
+  [BookmarkEarlGreyAppInterface setLastUsedBookmarkFolder:folder
+                                              storageType:storageType];
+}
+
+- (const bookmarks::BookmarkNode*)lastUsedBookmarkFolder {
+  return [BookmarkEarlGreyAppInterface lastUsedBookmarkFolder];
+}
+
+- (bookmarks::StorageType)lastUsedBookmarkFolderStorageType {
+  return [BookmarkEarlGreyAppInterface lastUsedBookmarkFolderStorageType];
+}
+
 #pragma mark - Common Helpers
 
 - (void)verifyBookmarksWithTitle:(NSString*)title
