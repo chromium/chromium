@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -19,7 +22,6 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -177,12 +179,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference addProfile =
                 autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
-        Assert.assertNotNull(addProfile);
+        assertNotNull(addProfile);
 
         // Add a profile.
         updatePreferencesAndWait(
@@ -202,13 +204,13 @@ public class AutofillProfilesFragmentTest {
                 R.id.editor_dialog_done_button,
                 false);
 
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference addedProfile =
                 autofillProfileFragment.findPreference("Alice Doe");
-        Assert.assertNotNull(addedProfile);
-        Assert.assertEquals("111 Added St, 90291", addedProfile.getSummary());
+        assertNotNull(addedProfile);
+        assertEquals("111 Added St, 90291", addedProfile.getSummary());
     }
 
     @Test
@@ -218,12 +220,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference addProfile =
                 autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
-        Assert.assertNotNull(addProfile);
+        assertNotNull(addProfile);
 
         // Add an incomplete profile.
         updatePreferencesAndWait(
@@ -234,12 +236,12 @@ public class AutofillProfilesFragmentTest {
                 false);
 
         // Incomplete profile should still be added.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference addedProfile =
                 autofillProfileFragment.findPreference("Mike Doe");
-        Assert.assertNotNull(addedProfile);
+        assertNotNull(addedProfile);
     }
 
     @Test
@@ -249,12 +251,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference addProfile =
                 autofillProfileFragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
-        Assert.assertNotNull(addProfile);
+        assertNotNull(addProfile);
 
         // Try to add a profile with invalid phone.
         updatePreferencesAndWait(
@@ -285,16 +287,15 @@ public class AutofillProfilesFragmentTest {
 
     public void testDeleteProfile(String expectedConfirmationMessage) throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
-        Context context = autofillProfileFragment.getContext();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference sebProfile =
                 autofillProfileFragment.findPreference("Seb Doe");
-        Assert.assertNotNull(sebProfile);
-        Assert.assertEquals("Seb Doe", sebProfile.getTitle());
+        assertNotNull(sebProfile);
+        assertEquals("Seb Doe", sebProfile.getTitle());
 
         // Delete the profile, but cancel on confirmation.
         TestThreadUtils.runOnUiThreadBlocking(sebProfile::performClick);
@@ -304,16 +305,16 @@ public class AutofillProfilesFragmentTest {
 
         // Verify the confirmation message for non-account profile.
         AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
-        Assert.assertNotNull(confirmationDialog);
+        assertNotNull(confirmationDialog);
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
-        Assert.assertEquals(expectedConfirmationMessage, messageView.getText());
+        assertEquals(expectedConfirmationMessage, messageView.getText());
 
         // Get back to the profile list.
         rule.clickInConfirmationDialogAndWait(DialogInterface.BUTTON_NEGATIVE);
         rule.clickInEditorAndWait(R.id.payments_edit_cancel_button);
 
         // Make sure the profile is not deleted and the number of profiles didn't change.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profile. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
 
@@ -325,15 +326,15 @@ public class AutofillProfilesFragmentTest {
         rule.waitForThePreferenceUpdate();
 
         // Make sure the profile is deleted.
-        Assert.assertEquals(
+        assertEquals(
                 5 /* One toggle + one add button + three profile. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference remainedProfile =
                 autofillProfileFragment.findPreference("John Doe");
-        Assert.assertNotNull(remainedProfile);
+        assertNotNull(remainedProfile);
         AutofillProfileEditorPreference deletedProfile =
                 autofillProfileFragment.findPreference("Seb Doe");
-        Assert.assertNull(deletedProfile);
+        assertNull(deletedProfile);
     }
 
     @Test
@@ -349,12 +350,12 @@ public class AutofillProfilesFragmentTest {
         mHelper.setProfile(sAccountProfile);
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference artikProfile =
                 autofillProfileFragment.findPreference("Artik Doe");
-        Assert.assertNotNull(artikProfile);
+        assertNotNull(artikProfile);
 
         // Delete Artik's account profile.
         TestThreadUtils.runOnUiThreadBlocking(artikProfile::performClick);
@@ -364,23 +365,23 @@ public class AutofillProfilesFragmentTest {
 
         // Verify the message.
         AlertDialog confirmationDialog = editorDialog.getConfirmationDialogForTest();
-        Assert.assertNotNull(confirmationDialog);
+        assertNotNull(confirmationDialog);
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
         String expectedMessage =
                 context.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", email);
-        Assert.assertEquals(expectedMessage, messageView.getText());
+        assertEquals(expectedMessage, messageView.getText());
 
         rule.clickInConfirmationDialogAndWait(DialogInterface.BUTTON_POSITIVE);
         rule.waitForThePreferenceUpdate();
 
         // Make sure the profile is deleted.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + 5 profile. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference deletedProfile =
                 autofillProfileFragment.findPreference("Artik Doe");
-        Assert.assertNull(deletedProfile);
+        assertNull(deletedProfile);
     }
 
     @Test
@@ -390,13 +391,13 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference johnProfile =
                 autofillProfileFragment.findPreference("John Doe");
-        Assert.assertNotNull(johnProfile);
-        Assert.assertEquals("John Doe", johnProfile.getTitle());
+        assertNotNull(johnProfile);
+        assertEquals("John Doe", johnProfile.getTitle());
 
         // Edit a profile.
         TestThreadUtils.runOnUiThreadBlocking(johnProfile::performClick);
@@ -417,22 +418,22 @@ public class AutofillProfilesFragmentTest {
 
         // Verify the absence of the profile source notice.
         TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
-        Assert.assertEquals(View.GONE, footerMessage.getVisibility());
+        assertEquals(View.GONE, footerMessage.getVisibility());
 
         rule.clickInEditorAndWait(R.id.editor_dialog_done_button);
         rule.waitForThePreferenceUpdate();
 
         // Check if the preferences are updated correctly.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference editedProfile =
                 autofillProfileFragment.findPreference("Emily Doe");
-        Assert.assertNotNull(editedProfile);
-        Assert.assertEquals("111 Edited St, 90291", editedProfile.getSummary());
+        assertNotNull(editedProfile);
+        assertEquals("111 Edited St, 90291", editedProfile.getSummary());
         AutofillProfileEditorPreference oldProfile =
                 autofillProfileFragment.findPreference("John Doe");
-        Assert.assertNull(oldProfile);
+        assertNull(oldProfile);
     }
 
     @Test
@@ -461,12 +462,12 @@ public class AutofillProfilesFragmentTest {
         Context context = autofillProfileFragment.getContext();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + 5 profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference johnProfile =
                 autofillProfileFragment.findPreference("Account Updated #0");
-        Assert.assertNotNull(johnProfile);
+        assertNotNull(johnProfile);
 
         TestThreadUtils.runOnUiThreadBlocking(johnProfile::performClick);
         EditorDialogView editorDialog = autofillProfileFragment.getEditorDialogForTest();
@@ -474,11 +475,11 @@ public class AutofillProfilesFragmentTest {
 
         // Verify the profile source notice.
         TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
-        Assert.assertEquals(View.VISIBLE, footerMessage.getVisibility());
+        assertEquals(View.VISIBLE, footerMessage.getVisibility());
         String expectedMessage =
                 context.getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", email);
-        Assert.assertEquals(expectedMessage, footerMessage.getText());
+        assertEquals(expectedMessage, footerMessage.getText());
 
         // Invalid input.
         rule.setTextInEditorAndWait(
@@ -512,12 +513,12 @@ public class AutofillProfilesFragmentTest {
         rule.waitForThePreferenceUpdate();
 
         // Check if the preferences are updated correctly.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference editedProfile =
                 autofillProfileFragment.findPreference("Account Updated #2");
-        Assert.assertNotNull(editedProfile);
+        assertNotNull(editedProfile);
     }
 
     @Test
@@ -543,12 +544,12 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + 5 profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference johnProfile =
                 autofillProfileFragment.findPreference("Account Updated #0");
-        Assert.assertNotNull(johnProfile);
+        assertNotNull(johnProfile);
 
         // Edit profile.
         updatePreferencesAndWait(
@@ -568,12 +569,12 @@ public class AutofillProfilesFragmentTest {
                 R.id.editor_dialog_done_button,
                 false);
         // Check if the preferences are updated correctly.
-        Assert.assertEquals(
+        assertEquals(
                 7 /* One toggle + one add button + five profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference editedProfile =
                 autofillProfileFragment.findPreference("Account Updated #1");
-        Assert.assertNotNull(editedProfile);
+        assertNotNull(editedProfile);
     }
 
     @Test
@@ -583,19 +584,19 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference bobProfile =
                 autofillProfileFragment.findPreference("Bob Doe");
-        Assert.assertNotNull(bobProfile);
-        Assert.assertEquals("Bob Doe", bobProfile.getTitle());
+        assertNotNull(bobProfile);
+        assertEquals("Bob Doe", bobProfile.getTitle());
 
         // Open the profile.
         updatePreferencesAndWait(
                 autofillProfileFragment, bobProfile, null, R.id.editor_dialog_done_button, false);
 
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
     }
@@ -607,20 +608,20 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
         AutofillProfileEditorPreference billProfile =
                 autofillProfileFragment.findPreference("Bill Doe");
-        Assert.assertNotNull(billProfile);
-        Assert.assertEquals("Bill Doe", billProfile.getTitle());
+        assertNotNull(billProfile);
+        assertEquals("Bill Doe", billProfile.getTitle());
 
         // Open the profile.
         updatePreferencesAndWait(
                 autofillProfileFragment, billProfile, null, R.id.editor_dialog_done_button, false);
 
         // Check if the preferences are updated correctly.
-        Assert.assertEquals(
+        assertEquals(
                 6 /* One toggle + one add button + four profiles. */,
                 autofillProfileFragment.getPreferenceScreen().getPreferenceCount());
     }
@@ -632,7 +633,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
         AutofillProfileEditorPreference addProfile =
                 fragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
-        Assert.assertNotNull(addProfile);
+        assertNotNull(addProfile);
 
         // Open AutofillProfileEditorPreference.
         TestThreadUtils.runOnUiThreadBlocking(addProfile::performClick);
@@ -681,12 +682,12 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sLocalOrSyncProfile.getFullName())
@@ -705,12 +706,12 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sLocalOrSyncProfile.getFullName())
@@ -727,12 +728,12 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(
+        assertEquals(
                 R.layout.autofill_local_profile_icon,
                 autofillProfileFragment
                         .findPreference(sLocalOrSyncProfile.getFullName())
@@ -749,12 +750,12 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(
+        assertEquals(
                 R.layout.autofill_local_profile_icon,
                 autofillProfileFragment
                         .findPreference(sLocalOrSyncProfile.getFullName())
@@ -771,12 +772,12 @@ public class AutofillProfilesFragmentTest {
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(
+        assertEquals(
                 0,
                 autofillProfileFragment
                         .findPreference(sLocalOrSyncProfile.getFullName())
