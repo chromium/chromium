@@ -17714,13 +17714,12 @@
             ]
         }
     ],
-    "SharedStorageAPIEnableWALForDatabase": [
+    "SharedStorageEnableWALStudy": [
         {
             "platforms": [
                 "android",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
