@@ -29,6 +29,7 @@ generate_grd("build_grdp") {
     "icon_cancel.svg",
     "icon_copy_content.svg",
     "icon_file.png",
+    "icon_tab.svg",
     "icon_refresh.svg",
     "icon_search.svg",
     "open_in_new.svg",

@@ -1,4 +1,4 @@
-<style>
+<style include="cr-shared-style">
   :host {
     background-color: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-border-radius);
@@ -34,6 +34,10 @@
     margin: 8px;
   }
 
+  :host(:not([modules-redesigned_])) #tabs {
+    margin: 0 0 8px 0;
+  }
+
   .tab {
     align-items: center;
     display: flex;
@@ -51,6 +55,10 @@
     inset: 0;
     pointer-events: none;
     position: absolute;
+  }
+
+  :host(:not([modules-redesigned_])) .tab:hover #hover-layer {
+    background: var(--color-new-tab-page-control-background-hovered);
   }
 
   #hover-layer {
@@ -71,9 +79,20 @@
     border-radius: var(--ntp-module-item-border-radius);
   }
 
+  :host(:not([modules-redesigned_])) .tab {
+    border-radius: 0;
+  }
+
   .icon {
     background-color: var(--color-new-tab-page-module-background);
     margin-inline: 10px;
+  }
+
+  :host(:not([modules-redesigned_])) .icon {
+    background-position: unset;
+    height: 24px;
+    margin-inline: 18px 16px;
+    width: 24px;
   }
 
   .tab-info {
@@ -119,7 +138,7 @@
     white-space: nowrap;
   }
 </style>
-<ntp-module-header-v2
+<ntp-module-header-v2 hidden="[[!modulesRedesigned_]]"
     id="moduleHeaderElementV2"
     header-text="[[i18n('modulesTabResumptionTitle')]]"
     menu-item-groups="[[getMenuItemGroups_()]]"
@@ -131,6 +150,21 @@
     on-info-button-click="onInfoButtonClick_"
     on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
+<ntp-module-header hidden="[[modulesRedesigned_]]"
+    disable-text="[[i18nRecursive('',
+                              'modulesDisableButtonTextV2',
+                              'modulesThisTypeOfCardText')]]"
+    dismiss-text="[[i18n('modulesTabResumptionDismissButton')]]"
+    more-actions-text="[[i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesTabResumptionTitle')]]"
+    show-info-button show-dismiss-button
+    on-disable-button-click="onDisableButtonClick_"
+    on-dismiss-button-click="onDismissButtonClick_"
+    on-info-button-click="onInfoButtonClick_"
+    icon-src="chrome://resources/images/icon_tab.svg">
+    [[i18n('modulesTabResumptionTitle')]]
+</ntp-module-header>
 <div id="tabs">
   <template id="tabRepeat" is="dom-repeat" items="[[tabs]]">
     <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">

@@ -53,6 +53,16 @@ export class TabResumptionModuleElement extends I18nMixin
         reflectToAttribute: true,
         computed: `computeIsSingleTab_(tabs)`,
       },
+
+      /**
+       * Although this is a V2 class, we use this to make it work for V1
+       * modules.
+       */
+      modulesRedesigned_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
+      },
     };
   }
 
