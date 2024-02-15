@@ -420,7 +420,7 @@ using chrome_test_util::SettingsDoneButton;
 // kReplaceSyncPromosWithSignInPromos is disabled.
 - (void)testSyncPromoIfSyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
                         SigninPromoViewModeSignedInWithPrimaryAccount];
@@ -430,7 +430,7 @@ using chrome_test_util::SettingsDoneButton;
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testNoSyncPromoIfSyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off to ensure that the sync promo isn't ever shown.
   [SigninEarlGreyAppInterface
@@ -449,7 +449,7 @@ using chrome_test_util::SettingsDoneButton;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in only.
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [BookmarkEarlGreyUI openBookmarks];
   // Turn on sync using the sign-in promo.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
@@ -469,7 +469,7 @@ using chrome_test_util::SettingsDoneButton;
 // bookmarks.
 - (void)testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOff {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off.
@@ -509,7 +509,7 @@ using chrome_test_util::SettingsDoneButton;
 // in only and bookmarks account storage is already enabled.
 - (void)testAccountSettingsPromoIfSyncToSigninEnabledWithBookmarksOn {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -519,7 +519,7 @@ using chrome_test_util::SettingsDoneButton;
 // gets removed.
 - (void)testAccountSettingsViewedFromBookmarksManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off.
@@ -559,7 +559,7 @@ using chrome_test_util::SettingsDoneButton;
 // out from account settings.
 - (void)testSignOutFromAccountSettingsFromBookmarksManager {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off.
@@ -625,7 +625,7 @@ using chrome_test_util::SettingsDoneButton;
 // in.
 - (void)testSigninToReviewAccountSettingsPromo {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
   // turn it off.
