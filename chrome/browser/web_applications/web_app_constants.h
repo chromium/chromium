@@ -307,13 +307,10 @@ using ResultCallback = base::OnceCallback<void(Result)>;
 // source that returns true there can uninstall these types but not others, and
 // will CHECK-fail in RemoveWebAppJob otherwise.
 constexpr WebAppManagementTypes kUserUninstallableSources = {
-    WebAppManagement::kDefault,
-    WebAppManagement::kSync,
-    WebAppManagement::kWebAppStore,
-    WebAppManagement::kSubApp,
-    WebAppManagement::kOem,
-    WebAppManagement::kCommandLine,
-    WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kDefault,     WebAppManagement::kApsDefault,
+    WebAppManagement::kSync,        WebAppManagement::kWebAppStore,
+    WebAppManagement::kSubApp,      WebAppManagement::kOem,
+    WebAppManagement::kCommandLine, WebAppManagement::kOneDriveIntegration,
 };
 
 // Management types that resulted from a user web app install.
