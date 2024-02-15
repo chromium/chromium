@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {CloseReason, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
-import {ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote} from './compose.mojom-webui.js';
+import {ComposeClientUntrustedPageHandlerRemote, ComposeSessionUntrustedPageHandlerFactory, ComposeSessionUntrustedPageHandlerRemote, ComposeUntrustedDialogCallbackRouter} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
@@ -14,7 +14,7 @@ export interface ComposeApiProxy {
   compose(input: string, edited: boolean): void;
   rewrite(style: StyleModifiers|null): void;
   logEditInput(): void;
-  getRouter(): ComposeDialogCallbackRouter;
+  getRouter(): ComposeUntrustedDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeLearnMorePage(): void;
   openComposeSettings(): void;
@@ -30,13 +30,13 @@ export interface ComposeApiProxy {
 export class ComposeApiProxyImpl implements ComposeApiProxy {
   static instance: ComposeApiProxy|null = null;
 
-  composeSessionPageHandler = new ComposeSessionPageHandlerRemote();
-  composeClientPageHandler = new ComposeClientPageHandlerRemote();
-  router = new ComposeDialogCallbackRouter();
+  composeSessionPageHandler = new ComposeSessionUntrustedPageHandlerRemote();
+  composeClientPageHandler = new ComposeClientUntrustedPageHandlerRemote();
+  router = new ComposeUntrustedDialogCallbackRouter();
 
   constructor() {
-    const factoryRemote = ComposeSessionPageHandlerFactory.getRemote();
-    factoryRemote.createComposeSessionPageHandler(
+    const factoryRemote = ComposeSessionUntrustedPageHandlerFactory.getRemote();
+    factoryRemote.createComposeSessionUntrustedPageHandler(
         this.composeClientPageHandler.$.bindNewPipeAndPassReceiver(),
         this.composeSessionPageHandler.$.bindNewPipeAndPassReceiver(),
         this.router.$.bindNewPipeAndPassRemote());

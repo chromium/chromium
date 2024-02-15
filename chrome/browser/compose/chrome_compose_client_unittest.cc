@@ -133,7 +133,7 @@ class MockSessionWrapper
   raw_ref<MockSession> session_;
 };
 
-class MockComposeDialog : public compose::mojom::ComposeDialog {
+class MockComposeDialog : public compose::mojom::ComposeUntrustedDialog {
  public:
   MOCK_METHOD(void,
               ResponseReceived,
@@ -250,19 +250,19 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_page_handler_.reset();
     page_handler_.reset();
     // Setup Dialog Page Handler.
-    mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+    mojo::PendingReceiver<compose::mojom::ComposeClientUntrustedPageHandler>
         client_page_handler_pending_receiver =
             client_page_handler_.BindNewPipeAndPassReceiver();
-    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler>
+    mojo::PendingReceiver<compose::mojom::ComposeSessionUntrustedPageHandler>
         page_handler_pending_receiver =
             page_handler_.BindNewPipeAndPassReceiver();
 
     // Setup Compose Dialog.
     callback_router_.reset();
-    callback_router_ =
-        std::make_unique<mojo::Receiver<compose::mojom::ComposeDialog>>(
-            &compose_dialog());
-    mojo::PendingRemote<compose::mojom::ComposeDialog>
+    callback_router_ = std::make_unique<
+        mojo::Receiver<compose::mojom::ComposeUntrustedDialog>>(
+        &compose_dialog());
+    mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog>
         callback_router_pending_remote =
             callback_router_->BindNewPipeAndPassRemote();
 
@@ -292,14 +292,15 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
-  mojo::Remote<compose::mojom::ComposeClientPageHandler>&
+  mojo::Remote<compose::mojom::ComposeClientUntrustedPageHandler>&
   client_page_handler() {
     return client_page_handler_;
   }
 
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
-  mojo::Remote<compose::mojom::ComposeSessionPageHandler>& page_handler() {
+  mojo::Remote<compose::mojom::ComposeSessionUntrustedPageHandler>&
+  page_handler() {
     return page_handler_;
   }
 
@@ -403,11 +404,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 
-  std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
+  std::unique_ptr<mojo::Receiver<compose::mojom::ComposeUntrustedDialog>>
       callback_router_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  mojo::Remote<compose::mojom::ComposeClientPageHandler> client_page_handler_;
-  mojo::Remote<compose::mojom::ComposeSessionPageHandler> page_handler_;
+  mojo::Remote<compose::mojom::ComposeClientUntrustedPageHandler>
+      client_page_handler_;
+  mojo::Remote<compose::mojom::ComposeSessionUntrustedPageHandler>
+      page_handler_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };

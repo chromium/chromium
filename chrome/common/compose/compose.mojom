@@ -6,14 +6,14 @@ module compose.mojom;
 
 import "components/compose/core/browser/compose_enums.mojom";
 
-// Interface for setting up connection to allow calls between the compose dialog
-// web page and native code.
-interface ComposeSessionPageHandlerFactory {
-  // Called from dialog compose JS to set up native handler.
-  CreateComposeSessionPageHandler(
-      pending_receiver<ComposeClientPageHandler> client_handler,
-      pending_receiver<ComposeSessionPageHandler> handler,
-      pending_remote<ComposeDialog> dialog);
+// Interface for setting up connection to allow calls between the untrusted
+// compose dialog web page and native code.
+interface ComposeSessionUntrustedPageHandlerFactory {
+  // Called from untrusted dialog compose JS to set up native handler.
+  CreateComposeSessionUntrustedPageHandler(
+      pending_receiver<ComposeClientUntrustedPageHandler> client_handler,
+      pending_receiver<ComposeSessionUntrustedPageHandler> handler,
+      pending_remote<ComposeUntrustedDialog> dialog);
 };
 
 // Configuration parameter used in compose requests.
@@ -120,8 +120,9 @@ enum UserFeedback {
   kUserFeedbackNegative,
 };
 
-// Interface for calls from Compose dialog JS into the Browser process.
-interface ComposeSessionPageHandler {
+// Interface for calls from the untrusted Compose dialog JS into the Browser
+// process.
+interface ComposeSessionUntrustedPageHandler {
   // Asks the browser to track a cancel edit action for logging purposes.
   LogCancelEdit();
 
@@ -183,8 +184,9 @@ interface ComposeSessionPageHandler {
   SetUserFeedback(UserFeedback feedback);
 };
 
-// Interface for calls from Compose dialog JS into the Browser process.
-interface ComposeClientPageHandler {
+// Interface for calls from the untrusted Compose dialog JS into the Browser
+// process.
+interface ComposeClientUntrustedPageHandler {
   // Asks the receiver to show the compose dialog.
   ShowUI();
   // Asks the receiver to close the compose dialog. `reason` describes
@@ -197,8 +199,9 @@ interface ComposeClientPageHandler {
   OpenComposeSettings();
 };
 
-// Interface for calls from the Browser process into Compose dialog JS.
-interface ComposeDialog {
+// Interface for calls from the Browser process into the untrusted Compose
+// dialog JS.
+interface ComposeUntrustedDialog {
   // Called when a compose request is fulfilled, either by the model execution
   // service or due to an error. Because compose requests can outlive this
   // WebUI, this is an event rather than a callback on the original `Compose`

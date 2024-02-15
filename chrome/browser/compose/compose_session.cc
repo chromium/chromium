@@ -327,8 +327,9 @@ ComposeSession::~ComposeSession() {
 }
 
 void ComposeSession::Bind(
-    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
-    mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
+    mojo::PendingReceiver<compose::mojom::ComposeSessionUntrustedPageHandler>
+        handler,
+    mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog) {
   handler_receiver_.reset();
   handler_receiver_.Bind(std::move(handler));
 
@@ -341,7 +342,7 @@ void ComposeSession::LogCancelEdit() {
   session_events_.did_click_cancel_on_edit = true;
 }
 
-// ComposeSessionPageHandler
+// ComposeSessionUntrustedPageHandler
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   if (is_input_edited) {
     compose::LogComposeRequestReason(

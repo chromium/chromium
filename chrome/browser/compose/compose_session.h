@@ -65,7 +65,8 @@ class ComposeState;
 //
 //  This should be owned (indirectly) by the WebContents passed into its
 //  constructor, and the `executor` MUST outlive that WebContents.
-class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
+class ComposeSession
+    : public compose::mojom::ComposeSessionUntrustedPageHandler {
  public:
   // The callback to Autofill. When run, it fills the passed string into the
   // form field on which it was triggered.
@@ -82,9 +83,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
-  void Bind(
-      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
-      mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
+  void Bind(mojo::PendingReceiver<
+                compose::mojom::ComposeSessionUntrustedPageHandler> handler,
+            mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog);
 
   // ComposeSessionPageHandler
   // Tracks that there was a user action to cancel an input edit in the current
@@ -139,7 +140,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Saves the user feedback supplied form the UI to include in quality logs.
   void SetUserFeedback(compose::mojom::UserFeedback feedback) override;
 
-  // Non-ComposeSessionPageHandler Methods
+  // Non-ComposeSessionUntrustedPageHandler Methods
 
   // Notifies the session that a new dialog is opening and starts refreshing
   // inner text. Calls Compose immediately if the initial input is valid.
@@ -234,8 +235,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
-  mojo::Receiver<compose::mojom::ComposeSessionPageHandler> handler_receiver_;
-  mojo::Remote<compose::mojom::ComposeDialog> dialog_remote_;
+  mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandler>
+      handler_receiver_;
+  mojo::Remote<compose::mojom::ComposeUntrustedDialog> dialog_remote_;
 
   // Initialized during construction, and always remains valid during the
   // lifetime of ComposeSession.

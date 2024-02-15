@@ -39,7 +39,7 @@ class ComposeUIUntrustedConfig
 // TODO(b/317056725): update mojom to reflect that the page is untrusted.
 class ComposeUntrustedUI
     : public ui::UntrustedBubbleWebUIController,
-      public compose::mojom::ComposeSessionPageHandlerFactory {
+      public compose::mojom::ComposeSessionUntrustedPageHandlerFactory {
  public:
   explicit ComposeUntrustedUI(content::WebUI* web_ui);
 
@@ -47,8 +47,8 @@ class ComposeUntrustedUI
   ComposeUntrustedUI& operator=(const ComposeUntrustedUI&) = delete;
   ~ComposeUntrustedUI() override;
   void BindInterface(
-      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandlerFactory>
-          factory);
+      mojo::PendingReceiver<
+          compose::mojom::ComposeSessionUntrustedPageHandlerFactory> factory);
 
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
@@ -61,12 +61,14 @@ class ComposeUntrustedUI
   static constexpr std::string GetWebUIName() { return "Compose"; }
 
  private:
-  void CreateComposeSessionPageHandler(
-      mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+  void CreateComposeSessionUntrustedPageHandler(
+      mojo::PendingReceiver<compose::mojom::ComposeClientUntrustedPageHandler>
           close_handler,
-      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
-      mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) override;
-  mojo::Receiver<compose::mojom::ComposeSessionPageHandlerFactory>
+      mojo::PendingReceiver<compose::mojom::ComposeSessionUntrustedPageHandler>
+          handler,
+      mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog)
+      override;
+  mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandlerFactory>
       session_handler_factory_{this};
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;

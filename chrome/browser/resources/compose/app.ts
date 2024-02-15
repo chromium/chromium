@@ -26,7 +26,7 @@ import {Debouncer, microTask, PolymerElement, timeOut} from '//resources/polymer
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import type {ComposeDialogCallbackRouter, ComposeResponse, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
+import type {ComposeResponse, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse, StyleModifiers} from './compose.mojom-webui.js';
 import {CloseReason, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
 import {ComposeApiProxyImpl} from './compose_api_proxy.js';
@@ -239,7 +239,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private bodyResizeObserver_: ResizeObserver;
   enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
-  private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
+  private router_: ComposeUntrustedDialogCallbackRouter =
+      this.apiProxy_.getRouter();
   private showFirstRunDialog_: boolean;
   private showMainAppDialog_: boolean;
   private showSavedStateDialog_: boolean;
