@@ -227,7 +227,7 @@ void SignIn() {
   // Sign into a fake identity.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
   // Verify that the user has been signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 }
