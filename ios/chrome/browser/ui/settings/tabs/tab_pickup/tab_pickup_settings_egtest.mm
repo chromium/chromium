@@ -191,7 +191,7 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
 // History Sync is still shown when tapping on the tab switcher item.
 - (void)testTabPickupSettingsDelineRepeatedlyHistorySyncIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   OpenTabsSettings();
   [[EarlGrey selectElementWithMatcher:TabsSettingsTabPickupDetailText(false)]
