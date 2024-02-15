@@ -55,6 +55,9 @@ constexpr int kLeadingIconSize = 20;
 constexpr int kLeadingIconLeftPadding = 18;
 constexpr int kLeadingIconRightPadding = 14;
 
+// Inset for the focus ring around the dismiss button.
+constexpr int kDismissButtonFocusRingHaloInset = 1;
+
 // The label inside SystemToastStyle, which allows two lines at maximum.
 class SystemToastInnerLabel : public views::Label {
   METADATA_HEADER(SystemToastInnerLabel, views::Label)
@@ -194,6 +197,7 @@ bool SystemToastStyle::ToggleA11yFocus() {
   }
 
   auto* focus_ring = views::FocusRing::Get(dismiss_button_);
+  focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const SystemToastStyle* style, const views::View* view) {
