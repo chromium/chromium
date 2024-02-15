@@ -224,7 +224,7 @@ export class AssistantOptInFlow extends AssistantOptInFlowBase {
    * @param {AssistantUIState} step The step to be shown.
    */
   showStep(step) {
-    if (this.currentStep == step) {
+    if (this.currentStep === step) {
       return;
     }
     if (this.currentStep) {

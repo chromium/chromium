@@ -52,7 +52,7 @@ export class HtmlSanitizer {
    */
   sanitizeNode_(doc, node) {
     const name = node.nodeName.toLowerCase();
-    if (name == '#text') {
+    if (name === '#text') {
       return node;
     }
     if (!this.allowedTags.has(name)) {
@@ -61,8 +61,8 @@ export class HtmlSanitizer {
 
     const copy = doc.createElement(name);
     // Only allow 'href' attribute for tag 'a'.
-    if (name == 'a' && node.attributes.length == 1 &&
-        node.attributes.item(0).name == 'href') {
+    if (name === 'a' && node.attributes.length === 1 &&
+        node.attributes.item(0).name === 'href') {
       copy.setAttribute('href', node.getAttribute('href'));
     }
 

@@ -218,7 +218,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
    * Handles event when animation webview cannot be loaded.
    */
   onWebViewErrorOccurred(details) {
-    if (details && details.error == 'net::ERR_ABORTED') {
+    if (details && details.error === 'net::ERR_ABORTED') {
       // Retry triggers net::ERR_ABORTED, so ignore it.
       // TODO(b/232592745): Replace with a state machine to handle aborts
       // gracefully and avoid duplicate reloads.
@@ -267,14 +267,14 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
       return;
     }
     this.headerReceived_ = true;
-    if (details.statusCode == '404') {
-      if (details.url != this.getDefaultAnimationUrl_()) {
+    if (details.statusCode === 404) {
+      if (details.url !== this.getDefaultAnimationUrl_()) {
         this.reloadWithDefaultUrl_ = true;
         return;
       } else {
         this.onWebViewErrorOccurred();
       }
-    } else if (details.statusCode != '200') {
+    } else if (details.statusCode !== 200) {
       this.onWebViewErrorOccurred();
     }
   }
