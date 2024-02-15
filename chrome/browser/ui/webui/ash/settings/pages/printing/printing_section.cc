@@ -384,6 +384,7 @@ void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   static constexpr mojom::Setting kPrintingDetailsSettings[] = {
       mojom::Setting::kAddPrinter,
       mojom::Setting::kSavedPrinters,
+      mojom::Setting::kRemovePrinter,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kPrintingDetails,
                             kPrintingDetailsSettings, generator);

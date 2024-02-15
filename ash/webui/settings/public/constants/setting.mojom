@@ -259,6 +259,7 @@ enum Setting {
   kSavedPrinters = 1401,
   kPrintJobs = 1402,
   kScanningApp = 1403,
+  kRemovePrinter = 1404,
 
   // Accessibility section.
   kA11yQuickSettings = 1500,
