@@ -16,21 +16,6 @@ enum UserAction {
   kConfirmOrUploadToOneDrive,
 };
 
-// Options for which sub-page/flow we want to show.
-enum DialogPage {
-  // The user can choose between apps for handling office files.
-  kFileHandlerDialog,
-  // Set up OneDrive (multi-page).
-  kOneDriveSetup,
-  // Confirm that the user wants to move the file to OneDrive.
-  kMoveConfirmationOneDrive,
-  // Confirm that the user wants to move the file to Google Drive.
-  kMoveConfirmationGoogleDrive,
-
-  // A separate dialog when we're only connecting OneDrive by itself.
-  kConnectToOneDrive,
-};
-
 // Used for metrics to represent each individual page of the dialog, and should
 // be kept in sync with OfficeSetupPage in enums.xml.  These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
