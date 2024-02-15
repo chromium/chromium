@@ -148,6 +148,15 @@ chromium-metrics-reviews@google.com.
       summary="Feature is trying to be updated from an unknown source"/>
 </variants>
 
+<variants name="Autofill.NonInteractivePaymentMethodType">
+  <variant name="LocalCard" summary="local card"/>
+  <variant name="LocalIban" summary="local IBAN"/>
+  <variant name="ServerCard" summary="server card"/>
+  <variant name="ServerIban" summary="server IBAN"/>
+  <variant name="UnknownCard" summary="unknown card type"/>
+  <variant name="VirtualCard" summary="virtual card"/>
+</variants>
+
 <variants name="Autofill.OfferNotification.Type">
   <variant name="CardLinkedOffer"
       summary="The bubble/infobar for an offer that is linked to a credit
@@ -3304,7 +3313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.{CardType}.{AuthenticationMethod}"
+    name="Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.{PaymentMethodType}.{AuthenticationMethod}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-07-01">
   <owner>sujiezhu@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3315,10 +3324,11 @@ chromium-metrics-reviews@google.com.
     reauth flow during a payments autofill form fill, we will log the
     MandatoryReauthAuthEvent to this histogram. This is logged in order to get
     the reauth usages and corresponding success rate for each breakdown. This
-    subhistogram pertains to {CardType}s that used {AuthenticationMethod} during
-    the checkout flow.
+    subhistogram pertains to {PaymentMethodType}s that used
+    {AuthenticationMethod} during the checkout flow.
   </summary>
-  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="PaymentMethodType"
+      variants="Autofill.NonInteractivePaymentMethodType"/>
   <token key="AuthenticationMethod"
       variants="Autofill.MandatoryReauth.AuthenticationMethod"/>
 </histogram>

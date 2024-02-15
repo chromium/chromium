@@ -73,6 +73,7 @@ void MandatoryReauthManager::AuthenticateWithMessage(
 }
 
 void MandatoryReauthManager::StartDeviceAuthentication(
+    NonInteractivePaymentMethodType non_interactive_payment_method_type,
     base::OnceCallback<void(bool)> authentication_complete_callback) {
   MandatoryReauthAuthenticationMethod authentication_method =
       GetAuthenticationMethod();
@@ -86,9 +87,16 @@ void MandatoryReauthManager::StartDeviceAuthentication(
           payments::MandatoryReauthAuthenticationMethod::kUnknown ||
       authentication_method ==
           payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
+    LogMandatoryReauthCheckoutFlowUsageEvent(
+        non_interactive_payment_method_type, authentication_method,
+        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
     std::move(authentication_complete_callback).Run(true);
     return;
   }
+
+  LogMandatoryReauthCheckoutFlowUsageEvent(
+      non_interactive_payment_method_type, authentication_method,
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   AuthenticateWithMessage(

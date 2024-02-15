@@ -370,7 +370,7 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
 
   void SetUpDeviceAuthenticatorResponseMock(bool success) {
     ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
-        .WillByDefault(testing::WithArg<0>(
+        .WillByDefault(testing::WithArg<1>(
             testing::Invoke([success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
             })));
@@ -385,6 +385,7 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
 // Tests that retrieving local IBANs works correctly in the context of the
 // Mandatory Re-Auth feature.
 TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Local_Reauth_Success) {
+  base::HistogramTester histogram_tester;
   SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
 
   Suggestion suggestion(PopupItemId::kIbanEntry);
@@ -492,6 +493,134 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
       autofill_client_.GetFormDataImporter()
           ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
       NonInteractivePaymentMethodType::kServerIban);
+}
+
+// Tests that ReauthUsage is logged as `LocalIban` and `kFlowSucceeded` when
+// mandatory re-auth succeeds when fetching a local IBAN.
+TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Succcess) {
+  base::HistogramTester histogram_tester;
+  SetUpDeviceAuthenticatorResponseMock(
+      /*success=*/true);
+
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
+      .WillByDefault([this](NonInteractivePaymentMethodType
+                                non_interactive_payment_method_type,
+                            base::OnceCallback<void(bool)> callback) {
+        base::MockCallback<IbanAccessManager::OnIbanFetchedCallback>
+            on_iban_fetched_callback;
+        iban_access_manager_
+            ->OnDeviceAuthenticationResponseForFillingForTesting(
+                on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
+                NonInteractivePaymentMethodType::kLocalIban, /*success=*/true);
+      });
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalIban.Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded,
+      1);
+}
+
+// Tests that ReauthUsage is logged as `LocalIban` and `kFlowFailed` when
+// mandatory re-auth fails when fetching a local IBAN.
+TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_LocalIban_Fail) {
+  base::HistogramTester histogram_tester;
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/false);
+
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  Iban local_iban = test::GetLocalIban();
+  local_iban.set_value(kFullIbanValue);
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
+      .WillByDefault([this](NonInteractivePaymentMethodType
+                                non_interactive_payment_method_type,
+                            base::OnceCallback<void(bool)> callback) {
+        base::MockCallback<IbanAccessManager::OnIbanFetchedCallback>
+            on_iban_fetched_callback;
+        iban_access_manager_
+            ->OnDeviceAuthenticationResponseForFillingForTesting(
+                on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
+                NonInteractivePaymentMethodType::kLocalIban, /*success=*/false);
+      });
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalIban.Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowFailed, 1);
+}
+
+// Tests that ReauthUsage is logged as `kServerIban` and `kFlowSucceeded` when
+// mandatory re-auth succeeds when fetching a server IBAN.
+TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Succcess) {
+  base::HistogramTester histogram_tester;
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
+      .WillByDefault([this](NonInteractivePaymentMethodType
+                                non_interactive_payment_method_type,
+                            base::OnceCallback<void(bool)> callback) {
+        base::MockCallback<IbanAccessManager::OnIbanFetchedCallback>
+            on_iban_fetched_callback;
+        iban_access_manager_
+            ->OnDeviceAuthenticationResponseForFillingForTesting(
+                on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
+                NonInteractivePaymentMethodType::kServerIban, /*success=*/true);
+      });
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerIban.Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded,
+      1);
+}
+
+// Tests that ReauthUsage is logged as `ServerIban` and `kFlowFailed` when
+// mandatory re-auth fails when fetching a server IBAN.
+TEST_F(IbanAccessManagerMandatoryReauthTest, ReauthUsage_ServerIban_Fail) {
+  base::HistogramTester histogram_tester;
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/false);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
+      .WillByDefault([this](NonInteractivePaymentMethodType
+                                non_interactive_payment_method_type,
+                            base::OnceCallback<void(bool)> callback) {
+        base::MockCallback<IbanAccessManager::OnIbanFetchedCallback>
+            on_iban_fetched_callback;
+        iban_access_manager_
+            ->OnDeviceAuthenticationResponseForFillingForTesting(
+                on_iban_fetched_callback.Get(), std::u16string(kFullIbanValue),
+                NonInteractivePaymentMethodType::kServerIban,
+                /*success=*/false);
+      });
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerIban.Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowFailed, 1);
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

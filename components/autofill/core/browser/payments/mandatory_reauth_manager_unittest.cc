@@ -127,35 +127,6 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
 }
 
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Biometric) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
-
-  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
-  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
-}
-
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_ScreenLock) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
-
-  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
-  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
-}
-
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Unsupported) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
-
-  base::MockCallback<base::OnceCallback<void(bool)>> callback;
-  EXPECT_CALL(callback, Run(true));
-  mandatory_reauth_manager_->StartDeviceAuthentication(callback.Get());
-}
-
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
@@ -464,9 +435,14 @@ TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 class MandatoryReauthManagerOptInFlowTest
     : public MandatoryReauthManagerTest,
       public testing::WithParamInterface<NonInteractivePaymentMethodType> {
- public:
-  MandatoryReauthManagerOptInFlowTest() = default;
-  ~MandatoryReauthManagerOptInFlowTest() override = default;
+ protected:
+  void SetUp() override {
+    MandatoryReauthManagerTest::SetUp();
+    mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
+        std::make_unique<device_reauth::MockDeviceAuthenticator>());
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+        .WillByDefault(testing::Return(true));
+  }
 
   std::string GetOptInSource() {
     switch (GetParam()) {
@@ -485,6 +461,22 @@ class MandatoryReauthManagerOptInFlowTest
     }
   }
 
+  std::string GetHistogramStringForNonInteractivePaymentMethodType() {
+    switch (GetParam()) {
+      case NonInteractivePaymentMethodType::kLocalCard:
+        return "LocalCard";
+      case NonInteractivePaymentMethodType::kFullServerCard:
+      case NonInteractivePaymentMethodType::kMaskedServerCard:
+        return "ServerCard";
+      case NonInteractivePaymentMethodType::kVirtualCard:
+        return "VirtualCard";
+      case NonInteractivePaymentMethodType::kLocalIban:
+        return "LocalIban";
+      case NonInteractivePaymentMethodType::kServerIban:
+        return "ServerIban";
+    }
+  }
+
   void SetUpDeviceAuthenticator(bool success) {
     ON_CALL(device_authenticator(), AuthenticateWithMessage)
         .WillByDefault(testing::WithArg<1>(
@@ -493,6 +485,61 @@ class MandatoryReauthManagerOptInFlowTest
             }));
   }
 };
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_Biometric) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() + ".Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+}
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_ScreenLock) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(true));
+
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() +
+          ".ScreenLock",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+}
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_Unsupported) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(false));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       callback.Get());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() +
+          ".UnsupportedMethod",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped,
+      1);
+}
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 #if BUILDFLAG(IS_ANDROID)

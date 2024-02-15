@@ -43,10 +43,15 @@ class IbanAccessManager {
   virtual void FetchValue(const Suggestion& suggestion,
                           OnIbanFetchedCallback on_iban_fetched);
 
-  void StartDeviceAuthenticationForFillingForTesting(
+  void OnDeviceAuthenticationResponseForFillingForTesting(
       OnIbanFetchedCallback on_iban_fetched,
-      const std::u16string& value) {
-    StartDeviceAuthenticationForFilling(std::move(on_iban_fetched), value);
+      const std::u16string& value,
+      NonInteractivePaymentMethodType non_interactive_payment_method_type,
+      bool successful_auth) {
+    OnDeviceAuthenticationResponseForFilling(
+        std::move(on_iban_fetched), value, non_interactive_payment_method_type,
+        payments::MandatoryReauthAuthenticationMethod::kBiometric,
+        successful_auth);
   }
 
  private:
@@ -64,18 +69,24 @@ class IbanAccessManager {
   // response is received from the device authentication.
   // `value` is the full IBAN value that needs to be filled. This function
   // should only be called on platforms where DeviceAuthenticator is present.
+  // `non_interactive_payment_method_type` is passed in for logging purposes.
   void StartDeviceAuthenticationForFilling(
       OnIbanFetchedCallback on_iban_fetched,
-      const std::u16string& value);
+      const std::u16string& value,
+      NonInteractivePaymentMethodType non_interactive_payment_method_type);
 
   // Callback function invoked when we receive a response from a mandatory
   // re-auth authentication in a flow where we might fill the full IBAN value
   // after the response. If it is successful, we will fill `value` into the
-  // form, otherwise we will handle the error. `successful_auth` is true
-  // if the authentication was successful, false otherwise.
+  // form, otherwise we will handle the error.
+  // `non_interactive_payment_method_type` and `authentication_method` are
+  // passed in for logging purposes. `successful_auth` is true if the
+  // authentication was successful, false otherwise.
   void OnDeviceAuthenticationResponseForFilling(
       OnIbanFetchedCallback on_iban_fetched,
       const std::u16string& value,
+      NonInteractivePaymentMethodType non_interactive_payment_method_type,
+      payments::MandatoryReauthAuthenticationMethod authentication_method,
       bool successful_auth);
 
   // The associated autofill client.

@@ -40,14 +40,15 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
     const Iban* iban =
         client_->GetPersonalDataManager()->GetIbanByGUID(guid->value());
     if (iban) {
-      Iban copy_iban = *iban;
-      client_->GetPersonalDataManager()->RecordUseOfIban(copy_iban);
+      Iban iban_copy = *iban;
+      client_->GetPersonalDataManager()->RecordUseOfIban(iban_copy);
       if (client_->GetPersonalDataManager()
               ->IsPaymentMethodsMandatoryReauthEnabled()) {
-        StartDeviceAuthenticationForFilling(std::move(on_iban_fetched),
-                                            copy_iban.value());
+        StartDeviceAuthenticationForFilling(
+            std::move(on_iban_fetched), iban_copy.value(),
+            NonInteractivePaymentMethodType::kLocalIban);
       } else {
-        std::move(on_iban_fetched).Run(copy_iban.value());
+        std::move(on_iban_fetched).Run(iban_copy.value());
         if (auto* form_data_importer = client_->GetFormDataImporter()) {
           form_data_importer
               ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
@@ -83,8 +84,8 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
   if (!iban) {
     return;
   }
-  Iban copy_iban = *iban;
-  client_->GetPersonalDataManager()->RecordUseOfIban(copy_iban);
+  Iban iban_copy = *iban;
+  client_->GetPersonalDataManager()->RecordUseOfIban(iban_copy);
   payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
   request_details.billable_service_number =
       payments::kUnmaskPaymentMethodBillableServiceNumber;
@@ -124,8 +125,8 @@ void IbanAccessManager::OnUnmaskResponseReceived(
               // calling `Reset()` until the re-authentication flow is
               // complete.
               &IbanAccessManager::StartDeviceAuthenticationForFilling,
-              weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched),
-              value));
+              weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
+              NonInteractivePaymentMethodType::kServerIban));
     } else {
       client_->CloseAutofillProgressDialog(
           /*show_confirmation_before_closing=*/false);
@@ -152,19 +153,32 @@ void IbanAccessManager::OnServerIbanUnmaskCancelled() {
 
 void IbanAccessManager::StartDeviceAuthenticationForFilling(
     OnIbanFetchedCallback on_iban_fetched,
-    const std::u16string& value) {
+    const std::u16string& value,
+    NonInteractivePaymentMethodType non_interactive_payment_method_type) {
   client_->GetOrCreatePaymentsMandatoryReauthManager()
-      ->StartDeviceAuthentication(base::BindOnce(
-          &IbanAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value));
+      ->StartDeviceAuthentication(
+          non_interactive_payment_method_type,
+          base::BindOnce(
+              &IbanAccessManager::OnDeviceAuthenticationResponseForFilling,
+              weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
+              non_interactive_payment_method_type,
+              client_->GetOrCreatePaymentsMandatoryReauthManager()
+                  ->GetAuthenticationMethod()));
 }
 
 void IbanAccessManager::OnDeviceAuthenticationResponseForFilling(
     OnIbanFetchedCallback on_iban_fetched,
     const std::u16string& value,
+    NonInteractivePaymentMethodType non_interactive_payment_method_type,
+    payments::MandatoryReauthAuthenticationMethod authentication_method,
     bool successful_auth) {
-  // TODO(b/296651526): Add LogMandatoryReauthCheckoutFlowUsageEvent,
-  // kFlowSucceeded or kFlowFailed.
+  LogMandatoryReauthCheckoutFlowUsageEvent(
+      non_interactive_payment_method_type, authentication_method,
+      successful_auth
+          ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                kFlowSucceeded
+          : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                kFlowFailed);
   if (successful_auth) {
     std::move(on_iban_fetched).Run(value);
   }

@@ -1648,15 +1648,19 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
       authentication_method ==
           payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
     LogMandatoryReauthCheckoutFlowUsageEvent(
-        card->record_type(), authentication_method,
+        payments::MandatoryReauthManager::GetNonInteractivePaymentMethodType(
+            card->record_type()),
+        authentication_method,
         autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
     std::move(on_credit_card_fetched_callback_)
         .Run(CreditCardFetchResult::kSuccess, card);
     return;
   }
 
-  autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
-      card->record_type(), authentication_method,
+  LogMandatoryReauthCheckoutFlowUsageEvent(
+      payments::MandatoryReauthManager::GetNonInteractivePaymentMethodType(
+          card->record_type()),
+      authentication_method,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   client_->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
@@ -1684,8 +1688,10 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
   CHECK(card);
   CreditCard::RecordType record_type = card->record_type();
 
-  autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
-      record_type, authentication_method,
+  LogMandatoryReauthCheckoutFlowUsageEvent(
+      payments::MandatoryReauthManager::GetNonInteractivePaymentMethodType(
+          record_type),
+      authentication_method,
       successful_auth
           ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
                 kFlowSucceeded

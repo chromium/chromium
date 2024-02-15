@@ -38,7 +38,8 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
       (override));
   MOCK_METHOD(void,
               StartDeviceAuthentication,
-              (base::OnceCallback<void(bool)> authentication_complete_callback),
+              (NonInteractivePaymentMethodType type,
+               base::OnceCallback<void(bool)> authentication_complete_callback),
               (override));
   MOCK_METHOD(MandatoryReauthAuthenticationMethod,
               GetAuthenticationMethod,
