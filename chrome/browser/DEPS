@@ -543,7 +543,6 @@ include_rules = [
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/re2",
   "+third_party/smhasher",
-  "+third_party/sqlite",
   "+third_party/zlib",
 
   # No inclusion of WebKit from the browser, other than the ones in
