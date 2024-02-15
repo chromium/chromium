@@ -1009,9 +1009,7 @@ TEST_P(ParameterizedStyleResolverTest, EnsureComputedStyleSlotFallback) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <div id=host>
       <template shadowrootmode=open>
       </template>
@@ -1769,9 +1767,7 @@ TEST_P(ParameterizedStyleResolverTest, CascadeLayersInDifferentSheets) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, CascadeLayersInDifferentTreeScopes) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       @layer foo {
         #host { color: green; }
@@ -3437,9 +3433,7 @@ TEST_P(StyleResolverTestCQ, ContainerUnitContext) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorName) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <div id="outer-anchor" style="anchor-name: --outer"></div>
     <style>#host::part(anchor) { anchor-name: --part; }</style>
     <div id="host">
@@ -3474,9 +3468,7 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorName) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorDefault) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <div id="outer-anchor" style="anchor-default: --outer"></div>
     <style>#host::part(anchor) { anchor-default: --part; }</style>
     <div id="host">
@@ -3522,9 +3514,7 @@ static const TreeScope* GetAnchorQueryTreeScope(const Length& length) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorFunction) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       div { position: absolute; }
       #left { left: anchor(--a left); }
@@ -3599,9 +3589,7 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorFunction) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorSizeFunction) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       div { position: absolute; }
       #width { width: anchor-size(--a width); }

@@ -939,10 +939,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   String innerHTML() const;
   String outerHTML() const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
-  void setInnerHTMLWithDeclarativeShadowDOMForTesting(const String& html);
   void setOuterHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
-  // https://github.com/whatwg/html/pull/9538
-  void setHTMLUnsafe(const String& html, ExceptionState&);
+
+  // The setHTMLUnsafe method is like `setInnerHTML()` except that a) it parses
+  // declarative shadow DOM by default, and b) will eventually have a second
+  // argument to set Sanitizer parameters.
+  // See https://github.com/whatwg/html/pull/9538.
+  void setHTMLUnsafe(const String& html, ExceptionState& = ASSERT_NO_EXCEPTION);
 
   void setPointerCapture(PointerId poinetr_id, ExceptionState&);
   void releasePointerCapture(PointerId pointer_id, ExceptionState&);

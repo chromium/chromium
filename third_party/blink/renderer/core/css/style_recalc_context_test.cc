@@ -119,7 +119,7 @@ TEST_F(StyleRecalcContextTest, FromAncestors) {
 }
 
 TEST_F(StyleRecalcContextTest, FromAncestors_ShadowIncluding) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="outer_host" style="container-type:size">
       <template shadowrootmode="open">
         <div id="inner_host" style="container-type:size">

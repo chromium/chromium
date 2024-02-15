@@ -6691,12 +6691,6 @@ void Element::setInnerHTML(const String& html,
                        ForceHtml::kDontForce, exception_state);
 }
 
-void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
-    const String& html) {
-  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kDontForce, ASSERT_NO_EXCEPTION);
-}
-
 void Element::setOuterHTML(const String& html,
                            ExceptionState& exception_state) {
   Node* p = parentNode();

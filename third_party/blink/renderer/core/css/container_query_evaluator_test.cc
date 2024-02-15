@@ -872,9 +872,7 @@ TEST_F(ContainerQueryEvaluatorTest, FindSnapContainer) {
 }
 
 TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <div id="host" style="container-name: n1">
       <template shadowrootmode=open>
         <div style="container-name: n1">

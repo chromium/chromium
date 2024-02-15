@@ -284,7 +284,7 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
 TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
   HTMLBodyElement* body = GetDocument().FirstBodyElement();
 
-  body->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  body->setHTMLUnsafe(R"HTML(
     <form id=form1>
       <div id=shadowhost>
         <template shadowrootmode=open>
