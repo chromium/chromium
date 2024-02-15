@@ -21,7 +21,14 @@ import org.chromium.components.sync.SyncService;
 
 public class IdentityErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener {
+    public interface Listener {
+        /** Called when the user clicks the button. */
+        void onIdentityErrorCardButtonClicked(@SyncError int error);
+    }
+
     private SyncService mSyncService;
+    private Listener mListener;
+
     private @SyncError int mIdentityError;
 
     public IdentityErrorCardPreference(Context context, AttributeSet attrs) {
@@ -37,8 +44,9 @@ public class IdentityErrorCardPreference extends Preference
      * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
-    public void initialize(SyncService syncService) {
+    public void initialize(SyncService syncService, Listener listener) {
         mSyncService = syncService;
+        mListener = listener;
     }
 
     @Override
@@ -89,18 +97,18 @@ public class IdentityErrorCardPreference extends Preference
         error.setText(context.getString(error_card_details.message));
         button.setText(context.getString(error_card_details.buttonLabel));
 
-        // TODO(crbug.com/1503649): Add handlers for button click.
-    }
-
-    private boolean shouldShowErrorCard() {
-        return mIdentityError != SyncError.NO_ERROR
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS);
+        button.setOnClickListener(v -> mListener.onIdentityErrorCardButtonClicked(mIdentityError));
     }
 
     /** {@link SyncService.SyncStateChangedListener} implementation. */
     @Override
     public void syncStateChanged() {
         update();
+    }
+
+    private boolean shouldShowErrorCard() {
+        return mIdentityError != SyncError.NO_ERROR
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS);
     }
 }
