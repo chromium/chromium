@@ -2025,9 +2025,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to ensure crbug.com/1513330 won't reproduce.
+// TODO(b/41492287): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
+  DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
+#else
+#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
+  WindowSetResizableDoesntBlockMoveToAndMoveByApis
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
+    MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
