@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "HistoryDocumentProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+message HistoryQueryRequest {
+  // The history search query entered by the user.
+  string query = 1;
+}
+
+message HistoryQueryResponse {
+  // The embedding of the history search query.
+  Embedding embedding = 1;
+}
+
+message DocumentShown {
+  // The embedding of the document shown to the user.
+  repeated Embedding embeddings = 1;
+  // The full URL of the document shown to the user.
+  string url = 2;
+}
+
+message HistoryQueryQuality {
+  // The documents shown to the user after their query. Uses the same order they
+  // were shown to the user.
+  repeated DocumentShown documents_shown = 1;
+}
+
+// HistoryQueryLoggingData is the wrapper containing of ModelExecution
+// request, response, and quality data for one history query execution run.
+message HistoryQueryLoggingData {
+  HistoryQueryRequest request = 1;
+  HistoryQueryResponse response = 2;
+  HistoryQueryQuality quality = 3;
+}

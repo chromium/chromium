@@ -20,3 +20,13 @@ enum UserFeedback {
   USER_FEEDBACK_THUMBS_DOWN = 1;
   USER_FEEDBACK_THUMBS_UP = 2;
 }
+
+message FloatArray {
+  repeated float values = 1;
+}
+
+message Embedding {
+  // The embedding vector. Note that future versions of this proto might not
+  // have this field set, as a new field may be added for quantized embeddings.
+  FloatArray floats = 1;
+}
