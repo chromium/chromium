@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -775,6 +776,24 @@ void ExtensionBrowserTest::DisableExtension(
 void ExtensionBrowserTest::EnableExtension(
     const extensions::ExtensionId& extension_id) {
   extension_service()->EnableExtension(extension_id);
+}
+
+bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
+  return observer_->WaitForPageActionVisibilityChangeTo(count);
+}
+
+bool ExtensionBrowserTest::WaitForExtensionViewsToLoad() {
+  return observer_->WaitForExtensionViewsToLoad();
+}
+
+bool ExtensionBrowserTest::WaitForExtensionIdle(
+    const extensions::ExtensionId& extension_id) {
+  return observer_->WaitForExtensionIdle(extension_id);
+}
+
+bool ExtensionBrowserTest::WaitForExtensionNotIdle(
+    const extensions::ExtensionId& extension_id) {
+  return observer_->WaitForExtensionNotIdle(extension_id);
 }
 
 void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
