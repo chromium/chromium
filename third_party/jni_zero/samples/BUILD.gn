@@ -64,6 +64,22 @@ android_apk("sample_jni_apk") {
   srcjar_deps = [ ":sample_lib__jni_registration" ]
 }
 
+instrumentation_test_apk("test_sample_jni_apk") {
+  apk_name = "SampleJniTest"
+  apk_under_test = ":sample_jni_apk"
+  android_manifest = "javatests/AndroidManifest.xml"
+  sources = [ "javatests/src/org/jni_zero/test_sample/JniZeroSampleTest.java" ]
+  deps = [
+    ":sample_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/junit",
+  ]
+}
+
 # Serves to test that generated bindings compile properly.
 group("jni_generator_tests") {
   deps = [ ":sample_jni_apk" ]
