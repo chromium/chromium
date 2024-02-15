@@ -26,16 +26,22 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0xffff, 0xffff},
            {mojom::CustomizationRestriction::kDisallowCustomizations,
             mojom::MouseButtonConfig::kNoConfig}},
-          // Razer Naga Pro (USB Dongle)
-          {{0x1532, 0x0090},
-           {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites,
+          // Logitech M720 Triathlon (USB Dongle)
+          {{0x046d, 0x405e},
+           {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Logitech MX Master 2S (USB Dongle)
+          {{0x046d, 0x4069},
+           {mojom::CustomizationRestriction::kAllowTabEventRewrites,
+            mojom::MouseButtonConfig::kLogitechSixKeyWithTab}},
+          // Logitech MX Master 3 (USB Dongle)
+          {{0x046d, 0x4082},
+           {mojom::CustomizationRestriction::kAllowTabEventRewrites,
+            mojom::MouseButtonConfig::kLogitechSixKeyWithTab}},
           // Logitech ERGO M575 (USB Dongle)
           {{0x046d, 0x4096},
-           {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
           // Logitech M510 (USB Dongle)
           {{0x046d, 0x4051},
            {mojom::CustomizationRestriction::
@@ -43,20 +49,38 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
             mojom::MouseButtonConfig::kNoConfig}},
           // HP 690/695 Mouse
           {{0x03f0, 0x804a},
-           {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites,
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech M650 L
+          {{0x046d, 0xb02a},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
           // Logitech MX Master 3S (Bluetooth)
           {{0x046d, 0xb034},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kLogitechSixKey}},
+          // Logitech MX Master 3S B (Bluetooth)
+          {{0x046d, 0xb035},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kLogitechSixKey}},
           // Logitech MX Anywhere 3S (Bluetooth)
           {{0x046d, 0xb037},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
-          // Logitech MX Master 2S (Bluetooth)
-          {{0x046d, 0xb019},
-           {mojom::CustomizationRestriction::kAllowTabEventRewrites,
+          // Logitech M500 (USB)
+          {{0x046d, 0xc069},
+           {mojom::CustomizationRestriction::
+                kAllowHorizontalScrollWheelRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
+          // SteelSeries Aerox 9 WL (USB)
+          {{0x1038, 0x185a},
+           {mojom::CustomizationRestriction::
+                kAllowAlphabetOrNumberKeyEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
+          // Razer Naga Pro (USB Dongle)
+          {{0x1532, 0x0090},
+           {mojom::CustomizationRestriction::
+                kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
       });
   return *mouse_metadata_list;
@@ -157,10 +181,20 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
   const static base::NoDestructor<
       base::flat_map<VendorProductId, VendorProductId>>
       vid_pid_alias_list({
-          // Razer Naga Pro (Bluetooth -> USB Dongle)
-          {{0x1532, 0x0092}, {0x1532, 0x0090}},
           // Logitech ERGO M575 (Bluetooth -> USB Dongle)
           {{0x46d, 0xb027}, {0x46d, 0x4096}},
+          // Logitech MX Master 2S (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb019}, {0x046d, 0x4069}},
+          // Logitech MX Master 3 (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb023}, {0x046d, 0x4082}},
+          // Logitech M720 Triathlon (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb015}, {0x046d, 0x405e}},
+          // SteelSeries Aerox 9 WL (USB Dongle -> USB)
+          {{0x1038, 0x1858}, {0x1038, 0x185a}},
+          // SteelSeries Aerox 9 WL (Bluetooth -> USB)
+          {{0x0111, 0x185a}, {0x1038, 0x185a}},
+          // Razer Naga Pro (Bluetooth -> USB Dongle)
+          {{0x1532, 0x0092}, {0x1532, 0x0090}},
       });
   return *vid_pid_alias_list;
 }
@@ -322,6 +356,36 @@ std::vector<mojom::ButtonRemappingPtr> GetLogitechSixKeyButtonRemappingList() {
   return array;
 }
 
+std::vector<mojom::ButtonRemappingPtr>
+GetLogitechSixKeyWithTabButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_FORWARD_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_BACK_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_SIDE_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewVkey(ui::VKEY_TAB),
+      /*remapping_action=*/nullptr));
+  return array;
+}
+
 std::vector<mojom::ButtonRemappingPtr> GetButtonRemappingListForConfig(
     mojom::MouseButtonConfig mouse_button_config) {
   switch (mouse_button_config) {
@@ -331,6 +395,8 @@ std::vector<mojom::ButtonRemappingPtr> GetButtonRemappingListForConfig(
       return GetFiveKeyButtonRemappingList();
     case mojom::MouseButtonConfig::kLogitechSixKey:
       return GetLogitechSixKeyButtonRemappingList();
+    case mojom::MouseButtonConfig::kLogitechSixKeyWithTab:
+      return GetLogitechSixKeyWithTabButtonRemappingList();
   }
 }
 

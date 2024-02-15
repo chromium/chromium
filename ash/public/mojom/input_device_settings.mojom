@@ -374,6 +374,9 @@ enum MouseButtonConfig {
   kFiveKey = 1,
   // Logitech mouse with six customizable buttons.
   kLogitechSixKey = 2,
+  // Logitech mouse with six customizable buttons, where the 6th button sends
+  // tab.
+  kLogitechSixKeyWithTab = 3,
 };
 
 // Contains the valid set of static shortcut actions.
