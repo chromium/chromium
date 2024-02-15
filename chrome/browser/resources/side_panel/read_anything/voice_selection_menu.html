@@ -16,7 +16,7 @@
   }
   #voiceSelectionMenu::part(dialog) {
     min-width: 304px;
-    width: 304px;
+    width: 100%;
     margin-left: var(--sp-body-padding);
     max-height: 95%;
   }
@@ -27,11 +27,12 @@
     background-color: transparent;
     border: none;
     width: 100%;
+    padding: 0px 24px 0px 20px;
   }
-  .dropdown-voice-selection-button :active {
+  .dropdown-voice-selection-button:active {
     background-color: var(--cr-active-background-color);
   }
-  .dropdown-voice-selection-button :hover {
+  .dropdown-voice-selection-button:hover {
     background-color: var(--cr-hover-background-color);
   }
   .display-false {
@@ -40,10 +41,25 @@
   .dropdown-voice-selection-button cr-icon-button {
     margin: 0;
   }
+  .dropdown-line {
+    height: 32px;
+    align-items: center;
+  }
+  .check-mark {
+    margin: 0;
+  }
+  .lang-group-title {
+    display: grid;
+    font-size: 12px;
+    font-weight: 400;
+    padding-left: 20px;
+  }
   .voice-name {
     max-width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 500;
   }
   .item-invisible-true {
     visibility: hidden;
@@ -63,18 +79,17 @@
 <cr-action-menu id="voiceSelectionMenu" on-close="onClose_">
   <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
     <div id$="group-[[item.language]]">
-      <!-- TODO(crbug.com/1474951) Implement styling for the language groups -->
-      <span>
+      <span class="dropdown-line lang-group-title">
         [[item.language]]
       </span>
 
       <template is="dom-repeat" items="[[item.voices]]">
         <button data-test-id$="[[item.id]]"
-          class="dropdown-voice-selection-button"
+          class="dropdown-line dropdown-voice-selection-button"
           on-click="onVoiceSelectClick_">
           <span class="voice-name">
             <iron-icon id="check-mark"
-              class$="item-invisible-[[!item.selected]]"
+              class$="item-invisible-[[!item.selected]] check-mark"
               icon="read-anything-20:check-mark"></iron-icon>
             [[item.title]]
           </span>
