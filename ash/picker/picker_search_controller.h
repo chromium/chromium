@@ -44,6 +44,7 @@ class ASH_EXPORT PickerSearchController {
 
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
+  std::vector<PickerSearchResult> emoji_search_results_;
   std::u16string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};

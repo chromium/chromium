@@ -34,20 +34,6 @@ namespace {
 // TODO: b/316936687 - Use the icons from real search results.
 const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
 
-PickerSearchResults::Section GetFakeExpressionsSection(
-    base::span<const PickerSearchResult> gif_results) {
-  std::vector<PickerSearchResult> results = {
-      PickerSearchResult::Emoji(u"👍"),
-      PickerSearchResult::Emoji(u"😊"),
-      PickerSearchResult::Symbol(u"⊃"),
-      PickerSearchResult::Symbol(u"⊇"),
-      PickerSearchResult::Symbol(u"♬"),
-      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")};
-  results.insert(results.end(), gif_results.begin(), gif_results.end());
-  return PickerSearchResults::Section(u"Matching expressions",
-                                      std::move(results));
-}
-
 }  // namespace
 
 PickerSearchController::PickerSearchController(PickerClient* client)
@@ -89,14 +75,29 @@ void PickerSearchController::ResetResults() {
   gif_results_ = std::vector({PickerSearchResult::Gif(
       GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
       gfx::Size(140, 140), u"gif")});
+  emoji_search_results_ = std::vector(
+      {PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),
+       PickerSearchResult::Symbol(u"⊃"), PickerSearchResult::Symbol(u"⊇"),
+       PickerSearchResult::Symbol(u"♬"),
+       PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")});
 }
 
 void PickerSearchController::RunCallback() {
   if (!current_callback_) {
     return;
   }
+
+  std::vector<PickerSearchResult> expression_results;
+  expression_results.reserve(emoji_search_results_.size() +
+                             gif_results_.size());
+  expression_results.insert(expression_results.end(),
+                            emoji_search_results_.begin(),
+                            emoji_search_results_.end());
+  expression_results.insert(expression_results.end(), gif_results_.begin(),
+                            gif_results_.end());
+
   current_callback_.Run(PickerSearchResults({{
-      GetFakeExpressionsSection(gif_results_),
+      PickerSearchResults::Section(u"Matching expressions", expression_results),
       PickerSearchResults::Section(u"Matching links", omnibox_results_),
   }}));
 }
