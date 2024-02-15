@@ -436,6 +436,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "ios",
         short_name = "ninja",
     ),
+    xcode = xcode.xcode_default,
 )
 
 cq_build_perf_builder(
@@ -473,6 +474,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "ios",
         short_name = "siso",
     ),
+    xcode = xcode.xcode_default,
 )
 
 def developer_build_perf_builder(description_html, **kwargs):
