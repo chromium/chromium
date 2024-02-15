@@ -114,6 +114,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedKeyboardShortcuts);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletThreadRealtimePriority);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAutofillIncludeFormElementsInShadowDom);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAutofillIncludeShadowDomInUnassociatedListedElements);
 
 BLINK_COMMON_EXPORT

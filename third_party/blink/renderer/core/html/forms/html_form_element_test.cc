@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -13,9 +15,29 @@
 
 namespace blink {
 
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
 class HTMLFormElementTest : public PageTestBase {
  protected:
   void SetUp() override;
+
+  HTMLFormElement* GetFormElement(const char* id,
+                                  ShadowRoot* shadow_root = nullptr) {
+    return DynamicTo<HTMLFormElement>(
+        shadow_root ? shadow_root->getElementById(AtomicString(id))
+                    : GetElementById(id));
+  }
+
+  ListedElement* GetListedElement(const char* id,
+                                  ShadowRoot* shadow_root = nullptr) {
+    if (Element* element = shadow_root
+                               ? shadow_root->getElementById(AtomicString(id))
+                               : GetElementById(id)) {
+      return ListedElement::From(*element);
+    }
+    return nullptr;
+  }
 };
 
 void HTMLFormElementTest::SetUp() {
@@ -306,9 +328,42 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
                                ->GetShadowRoot()
                                ->getElementById(AtomicString("input2")));
 
-  EXPECT_THAT(form1->ListedElements(), ::testing::ElementsAre(input1));
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(input1));
   EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
-              ::testing::ElementsAre(input2, input1));
+              ElementsAre(input2, input1));
+}
+
+// Tests that form control elements inside nested forms are extracted if
+// `kAutofillIncludeFormElementsInShadowDom` is enabled.
+TEST_F(HTMLFormElementTest, ListedElementsInNestedForms) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillIncludeFormElementsInShadowDom};
+
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=f1>
+      <div id=shadowhost>
+        <template shadowrootmode=open>
+          <input id=i1>
+          <form id=f2>
+            <input id=i2>
+          </form>
+          <input id=i3 form=f2>
+        </template>
+      </div>
+    </form>
+  )HTML");
+
+  ShadowRoot* shadow_root = GetElementById("shadowhost")->GetShadowRoot();
+  ASSERT_NE(shadow_root, nullptr);
+  HTMLFormElement* f1 = GetFormElement("f1");
+  ASSERT_NE(f1, nullptr);
+
+  EXPECT_THAT(f1->ListedElements(), IsEmpty());
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement("i1", shadow_root),
+                          GetListedElement("i2", shadow_root),
+                          GetListedElement("i3", shadow_root)));
 }
 
 }  // namespace blink

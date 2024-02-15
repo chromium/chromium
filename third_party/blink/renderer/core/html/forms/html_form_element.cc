@@ -769,13 +769,25 @@ void HTMLFormElement::CollectListedElements(
     elements.clear();
   for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
-      // If there is a <form> in between |root| and |listed_element|, then we
-      // shouldn't include it in |elements_including_shadow_trees| in order to
-      // prevent multiple forms from "owning" the same |listed_element| as shown
-      // by their |elements_including_shadow_trees|. |elements| doesn't have
-      // this problem because it can check |listed_element->Form()|.
-      if (in_shadow_tree && !HasFormInBetween(&root, &element) &&
-          !listed_element->Form()) {
+      // There are two scenarios:
+      // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we
+      //   expect every form control element to belong to at most one form
+      //   element. This means that if there is a <form> in between `root` and
+      //   `listed_element, then we should not include it in
+      //   `elements_including_shadow_trees`. Otherwise, multiple forms would
+      //    "own" the same `listed_element` as indicated by their
+      //    `elements_including_shadow_trees`.
+      // - If `kAutofillIncludeFormElementsInShadowDom` is enabled, then
+      //   Autofill only considers top level forms - forms that have form
+      //   ancestors are ignored. In that case, we should include all form
+      //   control descendants of the form for which we collect the listed
+      //   elements.
+      // Note that `elements` does not have this problem because it can check
+      // `listed_element->Form()`.
+      if (in_shadow_tree &&
+          (base::FeatureList::IsEnabled(
+               features::kAutofillIncludeFormElementsInShadowDom) ||
+           (!HasFormInBetween(&root, &element) && !listed_element->Form()))) {
         elements_including_shadow_trees->push_back(listed_element);
       } else if (listed_element->Form() == this) {
         elements.push_back(listed_element);
@@ -784,7 +796,9 @@ void HTMLFormElement::CollectListedElements(
       }
     }
     if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
-        !HasFormInBetween(in_shadow_tree ? &root : this, &element)) {
+        (base::FeatureList::IsEnabled(
+             features::kAutofillIncludeFormElementsInShadowDom) ||
+         !HasFormInBetween(in_shadow_tree ? &root : this, &element))) {
       const Node& shadow = *element.AuthorShadowRoot();
       CollectListedElements(shadow, elements, elements_including_shadow_trees,
                             /*in_shadow_tree=*/true);

@@ -159,6 +159,15 @@ BASE_FEATURE(kAutofillIncludeShadowDomInUnassociatedListedElements,
              "AutofillIncludeShadowDomInUnassociatedListedElements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill extracts all top level shadow DOM form elements of a
+// document. Additionally, the shadow-tree-including form control elements of a
+// form `f` include all descendants that are form controls - even those whose
+// closest shadow-tree-including form ancestor is a different form `f2` (which
+// itself is a descendant of `f`).
+BASE_FEATURE(kAutofillIncludeFormElementsInShadowDom,
+             "AutofillIncludeFormElementsInShadowDom",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If disabled (default for many years), autofilling triggers KeyDown and
 // KeyUp events that do not send any key codes. If enabled, these events
 // contain the "Unidentified" key.
