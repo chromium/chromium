@@ -64,7 +64,8 @@ class MockDedicatedWorker
           /*script_url=*/GURL(), network::mojom::CredentialsMode::kSameOrigin,
           blink::mojom::FetchClientSettingsObject::New(),
           mojo::PendingRemote<blink::mojom::BlobURLToken>(),
-          receiver_.BindNewPipeAndPassRemote());
+          receiver_.BindNewPipeAndPassRemote(),
+          /*has_storage_access=*/false);
     } else {
       factory_->CreateWorkerHost(
           blink::DedicatedWorkerToken(), /*script_url=*/GURL(),

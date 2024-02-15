@@ -216,7 +216,8 @@ void DedicatedWorkerHost::StartScriptLoad(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
-    mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client) {
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
+    bool has_storage_access) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
@@ -333,8 +334,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
       ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
       token_.value(),
-      /*require_cross_site_request_for_cookies=*/false,
-      /*has_storage_access=*/false,
+      /*require_cross_site_request_for_cookies=*/false, has_storage_access,
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
 }
