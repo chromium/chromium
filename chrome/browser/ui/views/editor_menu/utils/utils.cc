@@ -17,11 +17,12 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
     const views::View* target,
     const gfx::Rect screen_work_area,
     const gfx::Point cursor_point) {
+  const int width_on_top_or_bottom =
+      std::max(kEditorMenuMinWidthDip, anchor_view_bounds.width());
   const int height_on_top_or_bottom =
-      target->GetHeightForWidth(anchor_view_bounds.width());
+      target->GetHeightForWidth(width_on_top_or_bottom);
 
-  const int height_on_side =
-      target->GetHeightForWidth(kEditorMenuWidthOnSideDip);
+  const int height_on_side = target->GetHeightForWidth(kEditorMenuMinWidthDip);
 
   // The vertical starting position of top side candidates which makes them be
   // included in context menu range but also closer to cursor point.
@@ -58,24 +59,47 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
 
   std::vector<gfx::Rect> candidates = {
 
-      // 1. top
+      // 1.a top (align with left edge).
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x(),
               /*y=*/anchor_view_bounds.y() - kEditorMenuMarginDip -
                   height_on_top_or_bottom),
           gfx::Size(
-              /*width=*/anchor_view_bounds.width(),
+              /*width=*/width_on_top_or_bottom,
               /*height=*/height_on_top_or_bottom),
       },
 
-      // 2. bottom
+      // 1.b top (align with right edge).
+      {
+          gfx::Point(
+              /*x=*/anchor_view_bounds.x() + anchor_view_bounds.width() -
+                  width_on_top_or_bottom,
+              /*y=*/anchor_view_bounds.y() - kEditorMenuMarginDip -
+                  height_on_top_or_bottom),
+          gfx::Size(
+              /*width=*/width_on_top_or_bottom,
+              /*height=*/height_on_top_or_bottom),
+      },
+
+      // 2.a bottom (align with left edge).
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x(),
               /*y=*/anchor_view_bounds.bottom() + kEditorMenuMarginDip),
           gfx::Size(
-              /*width=*/anchor_view_bounds.width(),
+              /*width=*/width_on_top_or_bottom,
+              /*height=*/height_on_top_or_bottom),
+      },
+
+      // 2.b bottom (align with right edge).
+      {
+          gfx::Point(
+              /*x=*/anchor_view_bounds.x() + anchor_view_bounds.width() -
+                  width_on_top_or_bottom,
+              /*y=*/anchor_view_bounds.bottom() + kEditorMenuMarginDip),
+          gfx::Size(
+              /*width=*/width_on_top_or_bottom,
               /*height=*/height_on_top_or_bottom),
       },
 
@@ -83,10 +107,10 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x() - kEditorMenuMarginDip -
-                  kEditorMenuWidthOnSideDip,
+                  kEditorMenuMinWidthDip,
               /*y=*/side_top_left),
           gfx::Size(
-              /*width=*/kEditorMenuWidthOnSideDip,
+              /*width=*/kEditorMenuMinWidthDip,
               /*height=*/height_on_side),
       },
 
@@ -96,7 +120,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
               /*x=*/anchor_view_bounds.right() + kEditorMenuMarginDip,
               /*y=*/side_top_right),
           gfx::Size(
-              /*width=*/kEditorMenuWidthOnSideDip,
+              /*width=*/kEditorMenuMinWidthDip,
               /*height=*/height_on_side),
       },
 
@@ -104,10 +128,10 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x() - kEditorMenuMarginDip -
-                  kEditorMenuWidthOnSideDip,
+                  kEditorMenuMinWidthDip,
               /*y=*/side_bottom_left),
           gfx::Size(
-              /*width=*/kEditorMenuWidthOnSideDip,
+              /*width=*/kEditorMenuMinWidthDip,
               /*height=*/height_on_side),
       },
 
@@ -117,7 +141,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
               /*x=*/anchor_view_bounds.right() + kEditorMenuMarginDip,
               /*y=*/side_bottom_right),
           gfx::Size(
-              /*width=*/kEditorMenuWidthOnSideDip,
+              /*width=*/kEditorMenuMinWidthDip,
               /*height=*/height_on_side),
       },
   };
