@@ -96,13 +96,14 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Mediator for business logic for the tab grid. This class should be initialized with a list of
@@ -2206,37 +2207,22 @@ class TabListMediator {
      */
     public void showQuickDeleteAnimation(
             @NonNull Runnable onAnimationEnd,
-            List<Tab> tabs,
+            @NonNull List<Tab> tabs,
             @NonNull TabListRecyclerView recyclerView) {
         recyclerView.setBlockTouchInput(true);
         Drawable originalForeground = recyclerView.getForeground();
 
-        HashMap<Integer, List<Integer>> tabIndexesToClose = new HashMap<>();
-        PriorityQueue<Integer> tabOrderForFading = new PriorityQueue<>(Collections.reverseOrder());
+        // Prepare the tabs that will be hidden by the animation.
+        TreeMap<Integer, List<Integer>> bottomValuesToTabIndexes = new TreeMap<>();
+        getOrderOfTabsForQuickDeleteAnimation(recyclerView, tabs, bottomValuesToTabIndexes);
 
-        // Prepare the order of tabs to be hidden with the animation.
-        for (Tab tab : tabs) {
-            int index = mModel.indexFromId(tab.getId());
-            Rect tabRect = recyclerView.getRectOfCurrentThumbnail(index, tab.getId());
+        setQuickDeleteAnimationStatusForTabIndexes(
+                bottomValuesToTabIndexes.values().stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList()),
+                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_PREPARE);
 
-            // Ignore tabs outside the screen view.
-            if (tabRect == null) continue;
-
-            int bottom = tabRect.bottom;
-            mModel.get(index)
-                    .model
-                    .set(
-                            TabProperties.QUICK_DELETE_ANIMATION_STATUS,
-                            ClosableTabGridView.QuickDeleteAnimationStatus.TAB_PREPARE);
-
-            if (tabIndexesToClose.containsKey(bottom)) {
-                tabIndexesToClose.get(bottom).add(index);
-            } else {
-                tabOrderForFading.add(bottom);
-                tabIndexesToClose.put(bottom, new ArrayList<>(List.of(index)));
-            }
-        }
-
+        // Create the gradient drawable and prepare the animator.
         int tabGridHeight = recyclerView.getHeight();
         int intersectionHeight =
                 QuickDeleteAnimationGradientDrawable.getAnimationsIntersectionHeight(tabGridHeight);
@@ -2248,12 +2234,15 @@ class TabListMediator {
 
         wipeAnimation.addUpdateListener(
                 valueAnimator -> {
-                    if (tabOrderForFading.isEmpty()) return;
+                    if (bottomValuesToTabIndexes.isEmpty()) return;
+
                     float value = (float) valueAnimator.getAnimatedValue();
-                    int bottomVal = tabOrderForFading.peek();
+                    int bottomVal = bottomValuesToTabIndexes.lastKey();
                     if (bottomVal >= Math.round(value) + intersectionHeight) {
-                        startQuickDeleteFadeAnimationForTabs(tabIndexesToClose.get(bottomVal));
-                        tabOrderForFading.poll();
+                        setQuickDeleteAnimationStatusForTabIndexes(
+                                bottomValuesToTabIndexes.get(bottomVal),
+                                ClosableTabGridView.QuickDeleteAnimationStatus.TAB_HIDE);
+                        bottomValuesToTabIndexes.remove(bottomVal);
                     }
                 });
 
@@ -2271,13 +2260,80 @@ class TabListMediator {
         wipeAnimation.start();
     }
 
-    private void startQuickDeleteFadeAnimationForTabs(List<Integer> indexes) {
+    /**
+     * Gets the order of tabs to be hidden with the animation starting from the bottom up.
+     *
+     * @param recyclerView to get the position of tabs within the {@link TabListRecyclerView}.
+     * @param tabs The tabs to fade with the animation.
+     * @param bottomValuesToTabIndexes the {@link TreeMap} to map a list of sorted bottom values to
+     *     tabs that have these bottom values.
+     */
+    @VisibleForTesting
+    void getOrderOfTabsForQuickDeleteAnimation(
+            TabListRecyclerView recyclerView,
+            List<Tab> tabs,
+            TreeMap<Integer, List<Integer>> bottomValuesToTabIndexes) {
+        Set<Tab> filteredTabs = filterQuickDeleteTabsForAnimation(tabs);
+
+        for (Tab tab : filteredTabs) {
+            int id = tab.getId();
+            int index = mModel.indexFromId(id);
+            Rect tabRect = recyclerView.getRectOfCurrentThumbnail(index, id);
+
+            // Ignore tabs that are outside the screen view.
+            if (tabRect == null) continue;
+
+            int bottom = tabRect.bottom;
+
+            if (bottomValuesToTabIndexes.containsKey(bottom)) {
+                bottomValuesToTabIndexes.get(bottom).add(index);
+            } else {
+                bottomValuesToTabIndexes.put(bottom, new ArrayList<>(List.of(index)));
+            }
+        }
+    }
+
+    /**
+     * @param tabs The full list of tabs that will be closed with Quick Delete.
+     * @return a filtered list of unique tabs that the animation should run on. This will ignore
+     *     tabs with other related tabs unless all of it's related tabs are included in the list of
+     *     tabs to be closed.
+     */
+    private Set<Tab> filterQuickDeleteTabsForAnimation(List<Tab> tabs) {
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        assert filter != null;
+
+        Set<Tab> unfilteredTabs = new HashSet<>(tabs);
+        Set<Tab> filteredTabs = new HashSet<>();
+        Set<Integer> checkedRootIds = new HashSet<>();
+
+        for (Tab tab : unfilteredTabs) {
+            if (!filter.hasOtherRelatedTabs(tab)) {
+                filteredTabs.add(tab);
+                continue;
+            }
+
+            if (checkedRootIds.contains(tab.getRootId())) continue;
+            checkedRootIds.add(tab.getRootId());
+
+            List<Tab> relatedTabs = filter.getRelatedTabList(tab.getId());
+            if (unfilteredTabs.containsAll(relatedTabs)) {
+                int groupIndex = filter.indexOf(tab);
+                Tab groupTab = filter.getTabAt(groupIndex);
+                filteredTabs.add(groupTab);
+            }
+        }
+
+        return filteredTabs;
+    }
+
+    private void setQuickDeleteAnimationStatusForTabIndexes(
+            List<Integer> indexes,
+            @ClosableTabGridView.QuickDeleteAnimationStatus int animationStatus) {
         for (int index : indexes) {
             mModel.get(index)
                     .model
-                    .set(
-                            TabProperties.QUICK_DELETE_ANIMATION_STATUS,
-                            ClosableTabGridView.QuickDeleteAnimationStatus.TAB_HIDE);
+                    .set(TabProperties.QUICK_DELETE_ANIMATION_STATUS, animationStatus);
         }
     }
 }
