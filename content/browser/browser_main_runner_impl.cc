@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -173,7 +174,13 @@ void BrowserMainRunnerImpl::Shutdown() {
     TRACE_EVENT0("shutdown", "BrowserMainRunner");
     GetExitedMainMessageLoopFlag().Set();
 
+    base::features::MakeFreeNoOp(
+        base::features::WhenFreeBecomesNoOp::kBeforeShutDownThreads);
+
     main_loop_->ShutdownThreadsAndCleanUp();
+
+    base::features::MakeFreeNoOp(
+        base::features::WhenFreeBecomesNoOp::kAfterShutDownThreads);
 
     ui::ShutdownInputMethod();
 #if BUILDFLAG(IS_WIN)

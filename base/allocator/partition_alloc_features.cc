@@ -8,6 +8,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
@@ -426,6 +427,52 @@ BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown,
+             "PartitionAllocMakeFreeNoOpOnShutdown",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr FeatureParam<WhenFreeBecomesNoOp>::Option
+    kPartitionAllocMakeFreeNoOpOnShutdownOptions[] = {
+        {
+            WhenFreeBecomesNoOp::kBeforeShutDownThreads,
+            "before-shutdown-threads",
+        },
+        {
+            WhenFreeBecomesNoOp::kInShutDownThreads,
+            "in-shutdown-threads",
+        },
+        {
+            WhenFreeBecomesNoOp::kAfterShutDownThreads,
+            "after-shutdown-threads",
+        },
+};
+
+const base::FeatureParam<WhenFreeBecomesNoOp>
+    kPartitionAllocMakeFreeNoOpOnShutdownParam{
+        &kPartitionAllocMakeFreeNoOpOnShutdown, "callsite",
+        WhenFreeBecomesNoOp::kBeforeShutDownThreads,
+        &kPartitionAllocMakeFreeNoOpOnShutdownOptions};
+
+void MakeFreeNoOp(WhenFreeBecomesNoOp callsite) {
+  CHECK(base::FeatureList::GetInstance());
+  // Ignoring `free()` during Shutdown would allow developers to introduce new
+  // dangling pointers. So we want to avoid ignoring free when it is enabled.
+  // Note: For now, the DanglingPointerDetector is only enabled on 5 bots, and
+  // on linux non-official configuration.
+  // TODO(b/40802063): Reconsider this decision after the experiment.
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  if (base::FeatureList::IsEnabled(features::kPartitionAllocDanglingPtr)) {
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+  if (base::FeatureList::IsEnabled(kPartitionAllocMakeFreeNoOpOnShutdown) &&
+      kPartitionAllocMakeFreeNoOpOnShutdownParam.Get() == callsite) {
+    allocator_shim::InsertNoOpOnFreeAllocatorShimOnShutDown();
+  }
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+}
 
 }  // namespace features
 }  // namespace base

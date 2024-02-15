@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
@@ -128,6 +129,9 @@ AllocatorDispatch allocator_dispatch = {
 }  // namespace
 
 void InsertNoOpOnFreeAllocatorShimOnShutDown() {
+  static bool called = false;
+  PA_CHECK(!called);
+  called = true;
   InsertAllocatorDispatch(&allocator_dispatch);
 }
 
