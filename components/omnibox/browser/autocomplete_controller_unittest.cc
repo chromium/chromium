@@ -1777,8 +1777,8 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURL>(std::move(*turl)));
   }
   {
-    SCOPED_TRACE("@google starter pack match get an extra header.");
-    auto match = CreateStarterPackMatch(u"@google");
+    SCOPED_TRACE("@gemini starter pack match get an extra header.");
+    auto match = CreateStarterPackMatch(u"@gemini");
     // searchbox_stats need to have been set.
     match.search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
@@ -1786,7 +1786,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.UpdateMatchDestinationURLWithAdditionalSearchboxStats(
         base::Milliseconds(123), &match);
-    EXPECT_EQ(match.extra_headers, kOmniboxGoogleHeader);
+    EXPECT_EQ(match.extra_headers, kOmniboxGeminiHeader);
   }
   {
     SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");

@@ -54,9 +54,9 @@ class VoiceSuggestProvider;
 class ZeroSuggestProvider;
 
 // The header used to report whether a navigation to google.com is coming from
-// omnibox. Only set when the navigation is initiated from the AskGoogle
+// omnibox. Only set when the navigation is initiated from the Gemini
 // built-in keyword.
-inline constexpr char kOmniboxGoogleHeader[] = "X-Omnibox-Google:1";
+inline constexpr char kOmniboxGeminiHeader[] = "X-Omnibox-Gemini:1";
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of

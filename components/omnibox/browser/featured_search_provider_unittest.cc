@@ -132,9 +132,9 @@ TEST_F(FeaturedSearchProviderTest, StarterPack) {
       {u"@bookmarksasld", {}},
       {u"tabs", {}},
 
-      // With the expansion flag disabled, typing the `@google` keyword should
-      // not provide the AskGoogle suggestion.
-      {u"@google", {}},
+      // With the expansion flag disabled, typing the `@gemini` keyword should
+      // not provide the Gemini suggestion.
+      {u"@gemini", {}},
 
       // Typing '@' should give all the starter pack suggestions.
       {u"@", {kBookmarksUrl, kHistoryUrl, kTabsUrl}},
@@ -170,7 +170,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
   const std::u16string kBookmarksKeyword = u"@bookmarks";
   const std::u16string kHistoryKeyword = u"@history";
   const std::u16string kTabsKeyword = u"@tabs";
-  const std::u16string kAskGoogleKeyword = u"@google";
+  const std::u16string kAskGoogleKeyword = u"@gemini";
 
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
@@ -190,7 +190,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {u"@historyasdjflk", {}},
       {u"@bookmarksasld", {}},
       {u"tabs", {}},
-      {u"goo", {}},
+      {u"gemi", {}},
 
       // Typing '@' should give all the starter pack suggestions.
       {u"@", {kBookmarksUrl, kAskGoogleUrl, kHistoryUrl, kTabsUrl}},
@@ -207,7 +207,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {kTabsKeyword.substr(0, 3), {kTabsUrl}},
       {kTabsKeyword, {kTabsUrl}},
 
-      // Typing a portion of "@google" should give the default urls.
+      // Typing a portion of "@gemini" should give the default urls.
       {kAskGoogleKeyword.substr(0, 3), {kAskGoogleUrl}},
       {kAskGoogleKeyword, {kAskGoogleUrl}},
   };

@@ -819,7 +819,7 @@ void AutocompleteController::SetMatchDestinationURL(
   // Append an extra header to navigations from the AskGoogle built-in keyword.
   if (turl &&
       turl->GetBuiltinEngineType() == KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE) {
-    match->extra_headers = kOmniboxGoogleHeader;
+    match->extra_headers = kOmniboxGeminiHeader;
   }
 
   auto url = ComputeURLFromSearchTermsArgs(turl, *match->search_terms_args);
