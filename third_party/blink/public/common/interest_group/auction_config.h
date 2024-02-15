@@ -368,6 +368,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.
     std::vector<AuctionConfig> component_auctions;
+
+    // The maximum length limit for the trusted scoring signal fetch URL. Can
+    // only be set as either 0 or a positive number. A value of 0 indicates that
+    // there is no limit.
+    int32_t max_trusted_scoring_signals_url_length = 0;
   };
 
   AuctionConfig();
@@ -409,11 +414,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   MaybePromiseDeprecatedRenderURLReplacements
       deprecated_render_url_replacements;
 
-  // The maximum length limit for the trusted scoring signal fetch URL. Can
-  // only be set as either 0 or a positive number. A value of 0 indicates that
-  // there is no limit.
-  int32_t max_trusted_scoring_signals_url_length = 0;
-
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   NonSharedParams non_shared_params;
 
@@ -454,6 +454,8 @@ If modifying AuctionConfig fields, please make sure to also modify:
 * Mojo serialization in:
     third_party/blink/public/common/interest_group/auction_config_mojom_traits.h
     third_party/blink/common/interest_group/auction_config_mojom_traits.cc
+* Fuzzer test in:
+    content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto
 * NumPromises() if it's a Promise.
 * SerializeForDevtools()
 * Add some non-trivial values for the type into CreateFullAuctionConfig() in

@@ -26,7 +26,6 @@ AuctionConfig CreateFullAuctionConfig() {
   AuctionConfig auction_config = CreateBasicAuctionConfig();
 
   auction_config.trusted_scoring_signals_url = GURL("https://seller.test/bar");
-  auction_config.max_trusted_scoring_signals_url_length = 2560;
   auction_config.seller_experiment_group_id = 1;
   auction_config.all_buyer_experiment_group_id = 2;
 
@@ -113,6 +112,7 @@ AuctionConfig CreateFullAuctionConfig() {
       SellerCapabilities::kLatencyStats};
 
   non_shared_params.auction_nonce = base::Uuid::GenerateRandomV4();
+  non_shared_params.max_trusted_scoring_signals_url_length = 2560;
 
   DirectFromSellerSignalsSubresource
       direct_from_seller_signals_per_buyer_signals_buyer;

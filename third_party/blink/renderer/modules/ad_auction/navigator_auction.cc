@@ -1355,9 +1355,11 @@ bool CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
         input, "maxTrustedScoringSignalsURLLength",
         String::Number(input.maxTrustedScoringSignalsURLLength()),
         "must not be negative."));
+    return false;
   }
 
-  output.max_trusted_scoring_signals_url_length =
+  output.auction_ad_config_non_shared_params
+      ->max_trusted_scoring_signals_url_length =
       input.maxTrustedScoringSignalsURLLength();
   return true;
 }

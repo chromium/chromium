@@ -139,10 +139,10 @@ actions {
               }
               m_component_auctions {
               }
+              m_max_trusted_scoring_signals_url_length: 0
             }
           }
 
-          m_max_trusted_scoring_signals_url_length: 0
           m_direct_from_seller_signals {
             old: 1
           }

@@ -324,6 +324,19 @@ TEST(AuctionConfigMojomTraitsTest, DuplicateAllSlotsRequestedSizes) {
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
+TEST(AuctionConfigMojomTraitsTest, MaxTrustedScoringSignalsUrlLength) {
+  AuctionConfig auction_config = CreateBasicAuctionConfig();
+  auction_config.non_shared_params.max_trusted_scoring_signals_url_length =
+      8000;
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.max_trusted_scoring_signals_url_length = 0;
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.max_trusted_scoring_signals_url_length = -1;
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
 TEST(AuctionConfigMojomTraitsTest,
      DirectFromSellerSignalsPrefixWithQueryString) {
   AuctionConfig auction_config = CreateFullAuctionConfig();

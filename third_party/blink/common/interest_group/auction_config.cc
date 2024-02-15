@@ -471,8 +471,6 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
   SerializeIntoDict("decisionLogicURL", decision_logic_url, result);
   SerializeIntoDict("trustedScoringSignalsURL", trusted_scoring_signals_url,
                     result);
-  SerializeIntoDict("maxTrustedScoringSignalsURLLength",
-                    max_trusted_scoring_signals_url_length, result);
   SerializeIntoDict("deprecatedRenderURLReplacements",
                     deprecated_render_url_replacements, result);
   SerializeIntoDict("interestGroupBuyers",
@@ -529,6 +527,10 @@ base::Value::Dict AuctionConfig::SerializeForDevtools() const {
     }
     result.Set("componentAuctions", std::move(component_auctions));
   }
+
+  SerializeIntoDict("maxTrustedScoringSignalsURLLength",
+                    non_shared_params.max_trusted_scoring_signals_url_length,
+                    result);
 
   // direct_from_seller_signals --- skipped.
   SerializeIntoDict("expectsDirectFromSellerSignalsHeaderAdSlot",

@@ -410,6 +410,11 @@ struct BLINK_COMMON_EXPORT
     return params.component_auctions;
   }
 
+  static int32_t max_trusted_scoring_signals_url_length(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.max_trusted_scoring_signals_url_length;
+  }
+
   static bool Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
                    blink::AuctionConfig::NonSharedParams* out);
 };
@@ -434,11 +439,6 @@ struct BLINK_COMMON_EXPORT
   static const std::optional<GURL>& trusted_scoring_signals_url(
       const blink::AuctionConfig& config) {
     return config.trusted_scoring_signals_url;
-  }
-
-  static int32_t max_trusted_scoring_signals_url_length(
-      const blink::AuctionConfig& config) {
-    return config.max_trusted_scoring_signals_url_length;
   }
 
   static const blink::AuctionConfig::NonSharedParams&

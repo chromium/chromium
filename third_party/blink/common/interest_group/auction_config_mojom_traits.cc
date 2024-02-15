@@ -219,6 +219,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     return false;
   }
 
+  // Negative length limit is invalid.
+  if (data.max_trusted_scoring_signals_url_length() < 0) {
+    return false;
+  }
+  out->max_trusted_scoring_signals_url_length =
+      data.max_trusted_scoring_signals_url_length();
+
   out->all_buyers_group_limit = data.all_buyers_group_limit();
 
   // Only one of `interest_group_buyers` or `component_auctions` may be
@@ -302,13 +309,6 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
           &out->deprecated_render_url_replacements)) {
     return false;
   }
-
-  // Negative length limit is invalid.
-  if (data.max_trusted_scoring_signals_url_length() < 0) {
-    return false;
-  }
-  out->max_trusted_scoring_signals_url_length =
-      data.max_trusted_scoring_signals_url_length();
 
   out->expects_additional_bids = data.expects_additional_bids();
   // An auction that expects additional bids must have an auction nonce provided
