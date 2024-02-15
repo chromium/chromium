@@ -29,15 +29,6 @@ copy("copy_ts") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-copy("copy_js") {
-  sources = [
-    "display_manager_types.js",
-    "oobe_select.js",
-    "oobe_types.js",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
 html_to_wrapper("html_wrapper_files") {
   in_files = [
                "oobe_icons.html",
@@ -49,7 +40,6 @@ html_to_wrapper("html_wrapper_files") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "api_keys_notice.js",
     "oobe_a11y_option.js",
     "oobe_i18n_dropdown.js",
   ]

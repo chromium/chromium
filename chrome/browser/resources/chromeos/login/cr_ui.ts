@@ -10,53 +10,61 @@
 
 import '//resources/js/cr.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {$} from '//resources/ash/common/util.js';
+import {assert} from '//resources/js/assert.js';
 
+import {ApiKeysNoticeElement} from './components/api_keys_notice.js';
 import {OobeTypes} from './components/oobe_types.js';
 import {DisplayManager} from './display_manager.js';
 import {loadTimeData} from './i18n_setup.js';
+import {GaiaSigninElement} from './screens/common/gaia_signin.js';
+import {EnterpriseEnrollmentElement} from './screens/oobe/enterprise_enrollment.js';
 
-/** @type {?Oobe} */
-let instance = null;
+let instance: Oobe|null = null;
+
+declare global {
+  interface HTMLElementEventMap {
+    'screenchanged': CustomEvent<string>;
+  }
+}
 
 /**
  * Out of box controller. It manages initialization of screens,
  * transitions, error messages display.
  */
 export class Oobe extends DisplayManager {
-  /** @return {!Oobe} */
-  static getInstance() {
+  static readyForTesting = false;
+
+  static getInstance(): Oobe {
     return instance || (instance = new Oobe());
   }
 
   /**
    * Handle the cancel accelerator.
    */
-  static handleCancel() {
+  static handleCancel(): void {
     Oobe.getInstance().handleCancel();
   }
 
   /**
    * Shows the given screen.
-   * @param {Object} screen Screen params dict, e.g. {id: screenId,
-   *   data: data}
+   * TODO(b/322313099): Either update data type to use some base screen data
+   * class or make `showScreen` to have only screen id as a parameter.
    */
-  static showScreen(screen) {
+  static showScreen(screen: {id: string, data: any}): void {
     Oobe.getInstance().showScreen(screen);
   }
 
   /**
    * Toggles system info visibility.
    */
-  static toggleSystemInfo() {
+  static toggleSystemInfo(): void {
     Oobe.getInstance().toggleSystemInfo();
   }
 
   /**
    * Does the initial transition to the OOBE flow after booting animation.
    */
-  static triggerDown() {
+  static triggerDown(): void {
     // Notify that we are going to play initial animation in the WebUI.
     document.dispatchEvent(new CustomEvent('about-to-shrink'));
     // Delay this call to reduce the load during animation.
@@ -64,107 +72,97 @@ export class Oobe extends DisplayManager {
   }
 
   /**
-   * Update body class to switch between OOBE UI and Login UI.
-   * @param {boolean} showOobe True if UI is in an OOBE mode (as opposed to
-   * login).
-   */
-  static showOobeUI(showOobe) {
-    if (showOobe) {
-      document.body.classList.add('oobe-display');
-    } else {
-      document.body.classList.remove('oobe-display');
-    }
-  }
-
-  /**
    * Enables keyboard driven flow.
-   * @param {boolean} value True if keyboard navigation flow is forced.
+   * @param value True if keyboard navigation flow is forced.
    */
-  static enableKeyboardFlow(value) {
+  static enableKeyboardFlow(value: boolean): void {
     Oobe.getInstance().forceKeyboardFlow = value;
   }
 
   /**
    * Changes some UI which depends on the virtual keyboard being shown/hidden.
    */
-  static setVirtualKeyboardShown(shown) {
+  static setVirtualKeyboardShown(shown: boolean): void {
     Oobe.getInstance().virtualKeyboardShown = shown;
   }
 
   /**
    * Sets the current height of the shelf area.
-   * @param {number} height current shelf height
+   * @param height current shelf height
    */
-  static setShelfHeight(height) {
+  static setShelfHeight(height: number): void {
     Oobe.getInstance().setShelfHeight(height);
   }
 
-  static setOrientation(isHorizontal) {
+  static setOrientation(isHorizontal: boolean): void {
     Oobe.getInstance().setOrientation(isHorizontal);
   }
 
   /**
    * Sets the required size of the oobe dialog.
-   * @param {number} width oobe dialog width
-   * @param {number} height oobe dialog height
+   * @param width oobe dialog width
+   * @param height oobe dialog height
    */
-  static setDialogSize(width, height) {
+  static setDialogSize(width: number, height: number): void {
     Oobe.getInstance().setDialogSize(width, height);
   }
 
   /**
    * Login for telemetry.
-   * @param {string} username Login username.
-   * @param {string} password Login password.
-   * @param {string} gaia_id GAIA ID.
-   * @param {boolean} enterpriseEnroll Login as an enterprise enrollment?
+   * @param username Login username.
+   * @param password Login password.
+   * @param gaiaId GAIA ID.
+   * @param enterpriseEnroll Login as an enterprise enrollment?
    */
   static loginForTesting(
-      username, password, gaia_id, enterpriseEnroll = false) {
+      username: string, password: string, gaiaId: string,
+      enterpriseEnroll: boolean = false): void {
     // Helper method that runs |fn| after |screenName| is visible.
-    function waitForOobeScreen(screenName, fn) {
+    function waitForOobeScreen(screenName: string, fn: () => void) {
       if (Oobe.getInstance().currentScreen &&
           Oobe.getInstance().currentScreen.id === screenName) {
         fn();
       } else {
-        $('oobe').addEventListener('screenchanged', function handler(e) {
-          if (e.detail == screenName) {
-            $('oobe').removeEventListener('screenchanged', handler);
-            fn();
-          }
-        });
+        const oobe = document.querySelector('#oobe');
+        assert(oobe instanceof HTMLElement);
+        oobe.addEventListener(
+            'screenchanged', function handler(e: CustomEvent<string>): void {
+              if (e.detail === screenName) {
+                oobe.removeEventListener('screenchanged', handler);
+                fn();
+              }
+            });
       }
     }
 
     chrome.send('OobeTestApi.skipToLoginForTesting');
 
     if (!enterpriseEnroll) {
-      chrome.send('completeLogin', [gaia_id, username, password, false]);
+      chrome.send('completeLogin', [gaiaId, username, password, false]);
     } else {
-      waitForOobeScreen('gaia-signin', function() {
+      waitForOobeScreen('gaia-signin', function(): void {
         // TODO(crbug.com/1100910): migrate logic to dedicated test api.
         chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
       });
 
-      waitForOobeScreen('enterprise-enrollment', function() {
+      waitForOobeScreen('enterprise-enrollment', function(): void {
         chrome.send(
             'toggleFakeEnrollmentAndCompleteLogin',
             [username, OobeTypes.LicenseType.ENTERPRISE],
         );
       });
     }
-  }  // loginForTesting
+  }
 
   /**
    * Returns true if enrollment was successful. Dismisses the enrollment
    * attribute screen if it's present.
-   *
-   * @suppress {missingProperties}
-   * $('enterprise-enrollment').uiStep
-   * TODO(crbug.com/1229130) - Remove this suppression.
    */
-  static isEnrollmentSuccessfulForTest() {
-    const step = $('enterprise-enrollment').uiStep;
+  static isEnrollmentSuccessfulForTest(): boolean {
+    const step = document
+                     .querySelector<EnterpriseEnrollmentElement>(
+                         '#enterprise-enrollment')
+                     ?.uiStep;
     // TODO(crbug.com/1229130) - Improve this check.
     if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
       chrome.send('oauthEnrollAttributes', ['', '']);
@@ -177,24 +175,25 @@ export class Oobe extends DisplayManager {
   /**
    * Click on the primary action button ("Next" usually) for Gaia. On the
    * Login or Enterprise Enrollment screen.
-   *
-   * @suppress {missingProperties}
-   * $('...').clickPrimaryButtonForTesting()
-   * TODO(crbug.com/1229130) - Remove this suppression.
    */
-  static clickGaiaPrimaryButtonForTesting() {
-    if (!$('gaia-signin').hidden) {
-      $('gaia-signin').clickPrimaryButtonForTesting();
+  static clickGaiaPrimaryButtonForTesting(): void {
+    const gaiaSignin = document.querySelector('#gaia-signin');
+    if (gaiaSignin instanceof GaiaSigninElement && !gaiaSignin.hidden) {
+      gaiaSignin.clickPrimaryButtonForTesting();
     } else {
-      assert(!$('enterprise-enrollment').hidden);
-      $('enterprise-enrollment').clickPrimaryButtonForTesting();
+      const enterpriseEnrollment =
+          document.querySelector('#enterprise-enrollment');
+      assert(
+          enterpriseEnrollment instanceof EnterpriseEnrollmentElement &&
+          !enterpriseEnrollment.hidden);
+      enterpriseEnrollment.clickPrimaryButtonForTesting();
     }
   }
   /**
    * Initializes the OOBE flow.  This will cause all C++ handlers to
    * be invoked to do final setup.
    */
-  static initialize() {
+  static initialize(): void {
     Oobe.getInstance().initialize();
     chrome.send('screenStateInitialize');
   }
@@ -202,9 +201,9 @@ export class Oobe extends DisplayManager {
   /**
    * Reloads content of the page (localized strings, options of the select
    * controls).
-   * @param {!Object} data New dictionary with i18n values.
+   * @param data New dictionary with i18n values.
    */
-  static reloadContent(data) {
+  static reloadContent(data: {[key: string]: string}): void {
     // Reload global local strings, process DOM tree again.
     loadTimeData.overrideValues(data);
     Oobe.updateDocumentLocalizedStrings();
@@ -218,7 +217,7 @@ export class Oobe extends DisplayManager {
    * These strings are used outside of a Polymer Element and cannot leverage
    * I18nBehavior for it.
    */
-  static updateDocumentLocalizedStrings() {
+  static updateDocumentLocalizedStrings(): void {
     // Update attributes used in the <html> tag.
     const attrToStrMap = {
       lang: 'language',
@@ -231,22 +230,24 @@ export class Oobe extends DisplayManager {
       document.documentElement.setAttribute(attribute, localizedString);
     }
 
-    $('api-keys-notice').updateLocaleAndMaybeShowNotice();
+    document.querySelector<ApiKeysNoticeElement>('#api-keys-notice')
+        ?.updateLocaleAndMaybeShowNotice();
   }
 
   /**
    * Updates "device in tablet mode" state when tablet mode is changed.
-   * @param {boolean} isInTabletMode True when in tablet mode.
+   * @param isInTabletMode True when in tablet mode.
    */
-  static setTabletModeState(isInTabletMode) {
+  static setTabletModeState(isInTabletMode: boolean): void {
     Oobe.getInstance().setTabletModeState_(isInTabletMode);
   }
 
   /**
    * Updates OOBE configuration when it is loaded.
-   * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
+   * @param configuration OOBE configuration.
    */
-  static updateOobeConfiguration(configuration) {
+  static updateOobeConfiguration(configuration: OobeTypes.OobeConfiguration):
+      void {
     Oobe.getInstance().updateOobeConfiguration_(configuration);
   }
 
@@ -258,6 +259,5 @@ export class Oobe extends DisplayManager {
  * In DOMContentLoaded, after Oobe.initialize() is done, this is marked to
  * true, indicating ForTesting methods can be called.
  * External script using ForTesting APIs should wait for this condition.
- * @type {boolean}
  */
 Oobe.readyForTesting = false;
