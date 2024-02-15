@@ -860,11 +860,11 @@ std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
   // Search through `local_ibans_` to ensure no IBAN that already saved has the
   // same value and nickname as `iban`, because we do not want to add two IBANs
   // with the exact same data.
-  if (base::ranges::any_of(
-          local_ibans_, [&iban](const std::unique_ptr<Iban>& iban_from_list) {
-            return iban.value().compare(iban_from_list->value()) == 0 &&
-                   iban.nickname().compare(iban_from_list->nickname());
-          })) {
+  if (base::ranges::any_of(local_ibans_,
+                           [&iban](const std::unique_ptr<Iban>& local_iban) {
+                             return iban.value() == local_iban->value() &&
+                                    iban.nickname() == local_iban->nickname();
+                           })) {
     return std::string();
   }
 
@@ -2204,7 +2204,7 @@ std::string PersonalDataManager::OnAcceptedLocalIbanSave(Iban imported_iban) {
   // database as of `Refresh()` which will be called by both `UpdateIban()` and
   // `AddAsLocalIban()`.
   for (auto& iban : local_ibans_) {
-    if (iban->value().compare(imported_iban.value()) == 0) {
+    if (iban->value() == imported_iban.value()) {
       // Set the GUID of the IBAN to the one that matches it in
       // `local_ibans_` so that UpdateIban() will be able to update the
       // specific IBAN.
