@@ -1245,12 +1245,11 @@ class LocalDeviceInstrumentationTestRun(
     else:
       test_mtime = os.path.getmtime(test_apk_path)
 
-    if not self._test_instance.wait_for_java_debugger:
-      try:
-        return instrumentation_test_instance.GetTestsFromPickle(
-            pickle_path, test_mtime)
-      except instrumentation_test_instance.TestListPickleException as e:
-        logging.info('Could not get tests from pickle: %s', e)
+    try:
+      return instrumentation_test_instance.GetTestsFromPickle(
+          pickle_path, test_mtime)
+    except instrumentation_test_instance.TestListPickleException as e:
+      logging.info('Could not get tests from pickle: %s', e)
     logging.info('Getting tests by having %s list them.',
                  self._test_instance.junit4_runner_class)
     def list_tests(d):
