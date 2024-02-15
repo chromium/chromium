@@ -494,7 +494,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.rate_limit.origins_per_site_window = base::Days(2);
        }},
-      {R"json({"randomized_response_epsilon":"inf"})json", false,
+      {R"json({"max_settable_event_level_epsilon":"inf"})json", false,
        [](AttributionInteropConfig& c) {
          c.max_event_level_epsilon = std::numeric_limits<double>::infinity();
        }},
@@ -534,7 +534,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "rate_limit_max_attributions":"10",
         "rate_limit_max_reporting_origins_per_source_reporting_site":"5",
         "rate_limit_origins_per_site_window_in_days":"5",
-        "randomized_response_epsilon":"0.2",
+        "max_settable_event_level_epsilon":"0.2",
         "max_event_level_reports_per_destination":"10",
         "max_navigation_info_gain":"5.5",
         "max_event_info_gain":"0.5",
@@ -676,35 +676,29 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   }
 }
 
-TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseEpsilon) {
+TEST(AttributionInteropParserTest, InvalidConfigMaxSettableEpsilon) {
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());
-    EXPECT_THAT(result,
-                base::test::ErrorIs(HasSubstr(
-                    "[\"randomized_response_epsilon\"]: must be \"inf\" or a "
-                    "non-negative double formated as a base-10 string")));
+    EXPECT_THAT(
+        result,
+        base::test::ErrorIs(HasSubstr(
+            "[\"max_settable_event_level_epsilon\"]: must be \"inf\" or a "
+            "non-negative double formated as a base-10 string")));
   }
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;
-    dict.Set("randomized_response_epsilon", "-1.5");
+    dict.Set("max_settable_event_level_epsilon", "-1.5");
     std::string error = MergeAttributionInteropConfig(dict, config);
     EXPECT_THAT(
         error,
-        HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
-                  "non-negative double formated as a base-10 string"));
+        HasSubstr(
+            "[\"max_settable_event_level_epsilon\"]: must be \"inf\" or a "
+            "non-negative double formated as a base-10 string"));
   }
 }
 
 TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
-  {
-    auto result = ParseAttributionInteropConfig(base::Value::Dict());
-    ASSERT_FALSE(result.has_value());
-    EXPECT_THAT(
-        result.error(),
-        HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
-                  "non-negative double formated as a base-10 string"));
-  }
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;

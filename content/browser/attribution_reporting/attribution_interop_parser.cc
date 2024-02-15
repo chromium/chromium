@@ -237,7 +237,7 @@ class AttributionInteropParser {
 
     ParseInt(dict, "max_event_level_reports_per_destination",
              config.event_level_limit.max_reports_per_destination, required);
-    ParseDouble(dict, "randomized_response_epsilon",
+    ParseDouble(dict, "max_settable_event_level_epsilon",
                 interop_config.max_event_level_epsilon, required);
     ParseInt(dict, "max_aggregatable_reports_per_destination",
              config.aggregate_limit.max_reports_per_destination, required);
