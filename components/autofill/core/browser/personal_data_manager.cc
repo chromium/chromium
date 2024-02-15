@@ -1259,7 +1259,9 @@ PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
   return GetCreditCardBenefitByInstrumentId<CreditCardCategoryBenefit>(
-      instrument_id);
+      instrument_id, [&benefit_category](CreditCardCategoryBenefit& b) {
+        return b.benefit_category() == benefit_category;
+      });
 }
 
 CreditCardMerchantBenefit*
