@@ -65,6 +65,8 @@ TrackingProtectionSettings::TrackingProtectionSettings(
     onboarding_observation_.Observe(onboarding_service_);
   }
 
+  // TODO(https://b/316171695): Remove.
+  pref_service_->ClearPref(prefs::kIpProtectionEnabled);
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
 }

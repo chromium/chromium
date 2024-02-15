@@ -524,7 +524,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               privacy_sandbox::kCookieSettingsUiAlignment));
   html_source->AddBoolean(
       "isIpProtectionV1Enabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1));
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx) && false);
   auto* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(profile);
   html_source->AddBoolean(
