@@ -341,8 +341,7 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
   test::OnLoginScreen()->SelectUserPod(user.account_id);
 }
 
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
-                       CancelLocalAuthenticationDialogRecovery) {
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, AuthenticateWithRecovery) {
   const auto& user = with_local_pw_recovery_;
 
   TriggerUserOnlineAuth(user, test::kGaiaPassword);
@@ -368,6 +367,16 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
   // Recovery password update confirmation.
   test::RecoveryPasswordUpdatedPageWaiter()->Wait();
   test::RecoveryPasswordUpdatedProceedAction();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
+                       LocalPasswordWithRecoveryCancelLAD) {
+  const auto& user = with_local_pw_;
+  // Start recovery flow without recovery auth factor.
+  TriggerUserOnlineAuth(user, FakeGaiaMixin::kFakeUserPassword);
+
+  // Wait for local data loss warning.
+  test::LocalDataLossWarningPageWaiter()->Wait();
 }
 
 }  // namespace ash
