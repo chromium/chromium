@@ -82,7 +82,7 @@ export class RemoteCall {
    * @return Promise to be fulfilled with the result of the remote utility.
    */
   async callRemoteTestUtil<T>(
-      func: string, appId: null|string, args?: null|unknown[],
+      func: string, appId: null|string, args?: null|readonly unknown[],
       callback?: (r: T) => void): Promise<T> {
     const stepByStep = await this.isStepByStepEnabled_();
     let finishCurrentStep;
