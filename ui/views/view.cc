@@ -5,6 +5,7 @@
 #include "ui/views/view.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -1193,8 +1194,20 @@ void View::SchedulePaintInRect(const gfx::Rect& rect) {
   SchedulePaintInRectImpl(rect);
 }
 
+// The following is temporary. It is present to help diagnose a potential UaF.
+std::string IntToHex(uint32_t value) {
+  std::stringstream stream;
+  stream << std::hex << std::setw(8) << std::setfill('0') << value;
+  return stream.str();
+}
+
 void View::Paint(const PaintInfo& parent_paint_info) {
-  CHECK_EQ(life_cycle_state_, LifeCycleState::kAlive);
+  CHECK_EQ(life_cycle_state_, LifeCycleState::kAlive)
+      // TODO (crbug/323752682): Add additional information to help identify
+      // where a potential failure lies. Remove once cause is found and fixed.
+      << "life_cycle_state_: 0x"
+      << IntToHex(static_cast<uint32_t>(life_cycle_state_))
+      << " Classname: " << GetClassName();
 
   if (!ShouldPaint())
     return;
