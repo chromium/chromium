@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -191,64 +190,6 @@ group("web_components") {
     "screens/oobe:web_components",
     "screens/osauth:web_components",
   ]
-}
-
-#############################
-#### CLOSURE COMPILATION ####
-#############################
-
-group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "components:closure_compile",
-    "test_api:closure_compile",
-
-    # TODO(crbug.com/1229130)
-    # Uncomment once most screens are migrated.
-    #"debug:closure_compile",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  closure_flags = default_closure_args
-  deps = [
-    ":cr_ui",
-    ":display_manager",
-  ]
-}
-
-js_library("cr_ui") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/cr_ui.js" ]
-  deps = [
-    ":display_manager",
-    "components:api_keys_notice",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:load_time_data.m",
-  ]
-  extra_deps = [ ":copy_js" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("display_manager") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/chromeos/login/display_manager.js",
-  ]
-  deps = [
-    "components:display_manager_types",
-    "components:oobe_types",
-  ]
-  extra_deps = [ ":copy_js" ]
-}
-
-# Copy existing files to output directory for closure compilation.
-copy("copy_js") {
-  sources = [
-    "cr_ui.js",
-    "display_manager.js",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {

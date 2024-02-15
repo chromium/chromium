@@ -2,50 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/css_to_wrapper.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":cr_card_radio_group_styles.css",
-    ":oobe_common_styles.css",
-    ":oobe_dialog_host_styles.css",
-    ":oobe_flex_layout_styles.css",
-  ]
-}
-
-js_library("oobe_common_styles.css") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_common_styles.css.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":css_wrapper_files" ]
-}
-
-js_library("oobe_dialog_host_styles.css") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_dialog_host_styles.css.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":css_wrapper_files" ]
-}
-
-js_library("cr_card_radio_group_styles.css") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/cr_card_radio_group_styles.css.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":css_wrapper_files" ]
-}
-
-js_library("oobe_flex_layout_styles.css") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_flex_layout_styles.css.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":css_wrapper_files" ]
-}
 
 css_to_wrapper("css_wrapper_files") {
   in_files = [

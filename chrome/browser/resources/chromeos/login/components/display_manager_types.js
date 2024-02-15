@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
- * Closure compiler type definitions used by display_manager.js .
- */
-
-/**
  * Possible types of UI.
  * @enum {string}
  */

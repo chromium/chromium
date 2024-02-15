@@ -16,7 +16,6 @@ html_to_wrapper("generate_web_component_html_wrapper_files") {
   in_files = rebase_path(buttons_html_files, "./components/buttons", ".")
 }
 
-# Copy to target_gen_dir for closure compilation.
 copy("copy_ts") {
   sources = rebase_path(buttons_ts_files, "./components/buttons", ".")
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]

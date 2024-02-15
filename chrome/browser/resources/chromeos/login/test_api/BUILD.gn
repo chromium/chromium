@@ -2,22 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [ ":test_api" ]
-}
-
-js_library("test_api") {
-  deps = [
-    "../:cr_ui",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources:util",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 # Copy existing files to output directory.
 copy("copy_js") {
   sources = [

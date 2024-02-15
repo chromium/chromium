@@ -2,18 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-
-# TODO(crbug.com/1229130)
-# Uncomment once most screens are migrated.
-# js_type_check("closure_compile") {
-#   is_polymer3 = true
-#   deps = [ ":debug" ]
-# }
-
-# js_library("debug") {
-# }
 
 # Copy existing files to output directory.
 copy("copy_js") {
