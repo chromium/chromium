@@ -116,6 +116,7 @@ message WebAppManifest {
   optional string id = 19;
   optional string dark_theme_color = 20;
   optional string dark_background_color = 21;
+  optional bool has_custom_name = 22;
 
   reserved 3, 7, 8, 13 to 16;
 }

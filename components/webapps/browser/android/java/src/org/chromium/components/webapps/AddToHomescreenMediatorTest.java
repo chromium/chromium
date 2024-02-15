@@ -79,7 +79,7 @@ public class AddToHomescreenMediatorTest {
 
         // Prepare test parameters.
         Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
-        addToHomescreenMediator.setWebAppInfo("Title", "google.com", false);
+        addToHomescreenMediator.setWebAppInfo("Title", "google.com", AppType.SHORTCUT);
         addToHomescreenMediator.setIcon(icon, true);
 
         // Assert #setWebAppInfoWithIcon assigns the correct properties to the model.

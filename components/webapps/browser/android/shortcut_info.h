@@ -167,6 +167,7 @@ struct ShortcutInfo {
   bool is_primary_icon_maskable = false;
   GURL splash_image_url;
   bool is_splash_image_maskable = false;
+  bool has_custom_title = false;
   std::vector<std::string> icon_urls;
   std::vector<GURL> screenshot_urls;
   std::optional<ShareTarget> share_target;

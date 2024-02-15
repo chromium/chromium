@@ -80,12 +80,12 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   // Sends the Web App info to the Java side.
   void SetWebAppInfo(const std::u16string& user_title,
                      const GURL& url,
-                     bool is_webapk);
+                     AddToHomescreenParams::AppType app_type);
 
   // AddToHomescreenDataFetcher::Observer:
   void OnUserTitleAvailable(const std::u16string& user_title,
                             const GURL& url,
-                            bool is_webapk_compatible) override;
+                            AddToHomescreenParams::AppType app_type) override;
 
   void OnDataAvailable(const ShortcutInfo& info,
                        const SkBitmap& display_icon,

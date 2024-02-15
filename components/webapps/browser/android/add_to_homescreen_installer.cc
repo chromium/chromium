@@ -30,6 +30,7 @@ void AddToHomescreenInstaller::Install(
       InstallOrOpenNativeApp(web_contents, params, event_callback);
       break;
     case AddToHomescreenParams::AppType::WEBAPK:
+    case AddToHomescreenParams::AppType::WEBAPK_DIY:
       WebappsClient::Get()->InstallWebApk(web_contents, params);
       break;
     case AddToHomescreenParams::AppType::SHORTCUT:

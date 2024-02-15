@@ -197,6 +197,26 @@ public class AddToHomescreenDialogViewTest {
         Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
     }
 
+    /** Tests the view for {@link AppType#WEBAPK_DIY}. */
+    @Test
+    @Feature({"Webapp"})
+    public void testDiyWebAPK() {
+        setUpDialog(/* showAddToHomeScreen= */ true);
+        initDialogView(AppType.WEBAPK_DIY);
+        mAddToHomescreenDialogView.setUrl(TEST_URL);
+
+        assertVisibility(R.id.spinny, false);
+        assertVisibility(R.id.icon, true);
+        assertVisibility(R.id.app_info, true);
+        assertVisibility(R.id.text, true);
+        assertVisibility(R.id.origin, true);
+        assertVisibility(R.id.control_rating, false);
+        assertVisibility(R.id.play_logo, false);
+
+        Assert.assertEquals(TEST_TITLE, getTextForViewWithId(R.id.name));
+        Assert.assertEquals(TEST_URL, getTextForViewWithId(R.id.origin));
+    }
+
     /** Tests the view for {@link AppType#SHORTCUT}. */
     @Test
     @Feature({"Webapp"})

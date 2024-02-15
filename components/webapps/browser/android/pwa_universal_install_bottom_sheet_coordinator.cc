@@ -33,9 +33,10 @@ class IconFetcher : public webapps::AddToHomescreenDataFetcher::Observer {
   }
 
  private:
-  void OnUserTitleAvailable(const std::u16string& title,
-                            const GURL& url,
-                            bool is_webapk_compatible) override {}
+  void OnUserTitleAvailable(
+      const std::u16string& title,
+      const GURL& url,
+      webapps::AddToHomescreenParams::AppType app_type) override {}
 
   void OnDataAvailable(
       const webapps::ShortcutInfo& info,

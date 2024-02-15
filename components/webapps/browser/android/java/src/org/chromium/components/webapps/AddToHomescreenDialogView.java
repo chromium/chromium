@@ -188,14 +188,27 @@ public class AddToHomescreenDialogView
     }
 
     void setType(@AppType int type) {
-        assert (type >= AppType.NATIVE && type <= AppType.SHORTCUT);
-
         mAppType = type;
-        mShortcutTitleInput.setVisibility(type == AppType.SHORTCUT ? View.VISIBLE : View.GONE);
-        mAppLayout.setVisibility(type != AppType.SHORTCUT ? View.VISIBLE : View.GONE);
-        mAppOriginView.setVisibility(type == AppType.WEBAPK ? View.VISIBLE : View.GONE);
-        mAppRatingBar.setVisibility(type == AppType.NATIVE ? View.VISIBLE : View.GONE);
-        mPlayLogoView.setVisibility(type == AppType.NATIVE ? View.VISIBLE : View.GONE);
+        resetAllVisibility();
+        switch (mAppType) {
+            case AppType.NATIVE:
+                mAppLayout.setVisibility(View.VISIBLE);
+                mAppRatingBar.setVisibility(View.VISIBLE);
+                mPlayLogoView.setVisibility(View.VISIBLE);
+                break;
+            case AppType.SHORTCUT:
+                mShortcutTitleInput.setVisibility(View.VISIBLE);
+                break;
+            case AppType.WEBAPK:
+                mAppLayout.setVisibility(View.VISIBLE);
+                mAppOriginView.setVisibility(View.VISIBLE);
+                break;
+            case AppType.WEBAPK_DIY:
+                mShortcutTitleInput.setVisibility(View.VISIBLE);
+                mAppLayout.setVisibility(View.VISIBLE);
+                mAppOriginView.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     void setNativeInstallButtonText(String installButtonText) {
@@ -226,6 +239,14 @@ public class AddToHomescreenDialogView
                         && TextUtils.isEmpty(mShortcutTitleInput.getText());
         mDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_DISABLED, !mCanSubmit || missingTitle);
+    }
+
+    private void resetAllVisibility() {
+        mShortcutTitleInput.setVisibility(View.GONE);
+        mAppLayout.setVisibility(View.GONE);
+        mAppOriginView.setVisibility(View.GONE);
+        mAppRatingBar.setVisibility(View.GONE);
+        mPlayLogoView.setVisibility(View.GONE);
     }
 
     /**
