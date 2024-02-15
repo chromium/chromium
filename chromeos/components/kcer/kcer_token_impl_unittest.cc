@@ -1882,6 +1882,143 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetryDestroyOnSessionError) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that RemoveCert can successfully remove a cert.
+TEST_F(KcerTokenImplTest, RemoveCertSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(GetCertDer().value());
+  scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
+      Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
+
+  // Contains the ids of found certs that should be deleted.
+  std::vector<ObjectHandle> cert_handles{ObjectHandle(10)};
+  uint32_t result_code = chromeos::PKCS11_CKR_OK;
+
+  chaps::AttributeList find_objects_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
+                      RunOnceCallback<2>(cert_handles, result_code)));
+
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, cert_handles, _))
+      .WillOnce(RunOnceCallback<2>(result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveCert(cert, waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get().has_value());
+  CK_OBJECT_CLASS cert_class = CKO_CERTIFICATE;
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&cert_class)));
+  EXPECT_TRUE(FindAttribute(find_objects_attrs, chromeos::PKCS11_CKA_VALUE,
+                            GetCertDer().value()));
+  expected_notifications_count_ = 1;
+}
+
+// Test that RemoveCert correctly fails when the search for objects
+// fails.
+TEST_F(KcerTokenImplTest, RemoveCertFailToSearch) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(GetCertDer().value());
+  scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
+      Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
+
+  std::vector<ObjectHandle> result_object_list{};
+  uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(result_object_list, result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveCert(cert, waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that RemoveCert retries several times when the search for objects
+// fails with a session error.
+TEST_F(KcerTokenImplTest, RemoveCertRetrySearchOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(GetCertDer().value());
+  scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
+      Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
+
+  std::vector<ObjectHandle> result_object_list{};
+  uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<2>(result_object_list, result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveCert(cert, waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that RemoveCert correctly fails when the removal of objects
+// fails.
+TEST_F(KcerTokenImplTest, RemoveCertFailToDestroy) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(GetCertDer().value());
+  scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
+      Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
+
+  std::vector<ObjectHandle> result_object_list{};
+  uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
+      .WillOnce(RunOnceCallback<2>(result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveCert(cert, waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToRemoveObjects);
+  expected_notifications_count_ = 1;
+}
+
+// Test that RemoveCert retries several times when the removal of objects
+// fails with a session error. RemoveCert has to retry all the previous
+// methods.
+TEST_F(KcerTokenImplTest, RemoveCertRetryDestroyOnSessionError) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  scoped_refptr<net::X509Certificate> x509_cert =
+      net::X509Certificate::CreateFromBytes(GetCertDer().value());
+  scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
+      Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
+
+  std::vector<ObjectHandle> result_object_list{};
+  uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(result_object_list,
+                                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_,
+              DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(result_code));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.RemoveCert(cert, waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that ListKeys can successfully list keys when there are no keys.
 TEST_F(KcerTokenImplTest, ListKeysSuccessWithNoKeys) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);

@@ -203,6 +203,22 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                                           uint32_t result_code);
   void DidRemoveKeyAndCerts(RemoveKeyAndCertsTask task, uint32_t result_code);
 
+  struct RemoveCertTask {
+    RemoveCertTask(scoped_refptr<const Cert> in_cert,
+                   Kcer::StatusCallback in_callback);
+    RemoveCertTask(RemoveCertTask&& other);
+    ~RemoveCertTask();
+
+    const scoped_refptr<const Cert> cert;
+    Kcer::StatusCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void RemoveCertImpl(RemoveCertTask task);
+  void RemoveCertWithHandles(RemoveCertTask task,
+                             std::vector<ObjectHandle> handles,
+                             uint32_t result_code);
+  void DidRemoveCert(RemoveCertTask task, uint32_t result_code);
+
   struct ListKeysTask {
     explicit ListKeysTask(TokenListKeysCallback in_callback);
     ListKeysTask(ListKeysTask&& other);

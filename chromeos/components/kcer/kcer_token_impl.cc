@@ -1054,9 +1054,95 @@ void KcerTokenImpl::DidRemoveKeyAndCerts(RemoveKeyAndCertsTask task,
 
 //==============================================================================
 
+KcerTokenImpl::RemoveCertTask::RemoveCertTask(scoped_refptr<const Cert> in_cert,
+                                              Kcer::StatusCallback in_callback)
+    : cert(std::move(in_cert)), callback(std::move(in_callback)) {}
+KcerTokenImpl::RemoveCertTask::RemoveCertTask(RemoveCertTask&& other) = default;
+KcerTokenImpl::RemoveCertTask::~RemoveCertTask() = default;
+
 void KcerTokenImpl::RemoveCert(scoped_refptr<const Cert> cert,
                                Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(
+        base::BindOnce(&KcerTokenImpl::RemoveCert, weak_factory_.GetWeakPtr(),
+                       std::move(cert), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  RemoveCertImpl(
+      RemoveCertTask(std::move(cert), std::move(unblocking_callback)));
+}
+
+// Searches for objects in Chaps containing the provided cert.
+void KcerTokenImpl::RemoveCertImpl(RemoveCertTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  if (!task.cert || !task.cert->GetX509Cert()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToRemoveCertificate));
+  }
+
+  const CRYPTO_BUFFER* buffer = task.cert->GetX509Cert()->cert_buffer();
+  base::span<const uint8_t> cert_der =
+      base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+
+  CK_OBJECT_CLASS cert_class = CKO_CERTIFICATE;
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_CLASS, MakeSpan(&cert_class));
+  AddAttribute(attributes, chromeos::PKCS11_CKA_VALUE, cert_der);
+
+  // Find all objects for the certificate. There should be at most one, but the
+  // code can handle multiple.
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::RemoveCertWithHandles,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Deletes all the found objects.
+void KcerTokenImpl::RemoveCertWithHandles(RemoveCertTask task,
+                                          std::vector<ObjectHandle> handles,
+                                          uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return RemoveCertImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+
+  chaps_client_->DestroyObjectsWithRetries(
+      pkcs_11_slot_id_, std::move(handles),
+      base::BindOnce(&KcerTokenImpl::DidRemoveCert, weak_factory_.GetWeakPtr(),
+                     std::move(task)));
+}
+
+void KcerTokenImpl::DidRemoveCert(RemoveCertTask task, uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::expected<void, Error> result;
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return RemoveCertImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    result = base::unexpected(Error::kFailedToRemoveObjects);
+  }
+  // Even if `DestroyObjectsWithRetries` fails, it might have removed the cert,
+  // so notify about possible changes.
+  NotifyCertsChanged(
+      base::BindOnce(std::move(task.callback), std::move(result)));
 }
 
 //==============================================================================
