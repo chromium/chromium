@@ -23,11 +23,13 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -403,13 +405,25 @@ TEST_P(DesktopMediaPickerViewsTest, CurrentTabAndAnyTabShareAudioState) {
 // This test takes it as an article of faith that no checkbox is visible
 // when GetAudioShareCheckbox() returns false.
 TEST_P(DesktopMediaPickerViewsTest, AudioCheckboxVisibility) {
+  bool is_system_audio_capture_supported =
+      DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+          DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia);
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
-  EXPECT_EQ(DesktopMediaPickerController::IsSystemAudioCaptureSupported(
-                DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia),
+  EXPECT_EQ(is_system_audio_capture_supported,
             test_api_.HasAudioShareControl());
+  if (!is_system_audio_capture_supported) {
+    EXPECT_EQ(test_api_.GetAudioLabelText(),
+              l10n_util::GetStringUTF16(
+                  IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB));
+  }
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
   EXPECT_FALSE(test_api_.HasAudioShareControl());
+  EXPECT_EQ(test_api_.GetAudioLabelText(),
+            l10n_util::GetStringUTF16(
+                is_system_audio_capture_supported
+                    ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN
+                    : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB));
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
   EXPECT_TRUE(test_api_.HasAudioShareControl());
@@ -633,8 +647,12 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
-  // Main expectation: System audio checkbox not shown to the user.
+  // Main expectation: System audio control not shown to the user, only a hint
+  // to select a tab instead.
   EXPECT_FALSE(test_api_.HasAudioShareControl());
+  EXPECT_EQ(
+      test_api_.GetAudioLabelText(),
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB));
 
   // Secondary expectation: No effect on the tab-audio checkbox.
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);

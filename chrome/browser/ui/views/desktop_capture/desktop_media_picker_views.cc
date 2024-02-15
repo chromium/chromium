@@ -389,6 +389,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       app_name_(params.app_name),
       audio_requested_(params.request_audio),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
+      is_system_audio_offered_(audio_requested_ &&
+                               !params.exclude_system_audio &&
+                               AudioSupported(DesktopMediaList::Type::kScreen)),
       capturer_global_id_(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
@@ -497,16 +500,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         screen_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
 
-        const bool audio_offered =
-            !params.exclude_system_audio &&
-            AudioSupported(DesktopMediaList::Type::kScreen);
-        std::unique_ptr<views::View> pane =
-            SetupPane(DesktopMediaList::Type::kScreen,
-                      std::move(list_controller), audio_offered,
-                      /*audio_checked=*/
-                      params.force_audio_checkboxes_to_default_checked &&
-                          !screen_capture_audio_default_unchecked,
-                      supports_reselect_button, std::move(screen_scroll_view));
+        std::unique_ptr<views::View> pane = SetupPane(
+            DesktopMediaList::Type::kScreen, std::move(list_controller),
+            /*audio_offered=*/is_system_audio_offered_,
+            /*audio_checked=*/
+            params.force_audio_checkboxes_to_default_checked &&
+                !screen_capture_audio_default_unchecked,
+            supports_reselect_button, std::move(screen_scroll_view));
         panes.emplace_back(screen_title_text, std::move(pane));
         break;
       }
@@ -856,8 +856,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
     const DisplaySurfaceCategory& category) const {
   if (!category.audio_offered) {
     return l10n_util::GetStringUTF16(
-        DesktopMediaPickerController::IsSystemAudioCaptureSupported(
-            request_source_)
+        is_system_audio_offered_
             ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN
             : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB);
   }

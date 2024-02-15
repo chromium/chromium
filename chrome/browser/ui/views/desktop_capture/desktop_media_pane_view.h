@@ -26,6 +26,10 @@ class DesktopMediaPaneView : public views::View {
   // was created with share_audio_view == nullptr.
   void SetAudioSharingApprovedByUser(bool is_on);
 
+  // Returns the text in the audio label if an audio label exists;
+  // returns the empty string otherwise.
+  std::u16string GetAudioLabelText() const;
+
  private:
   raw_ptr<ShareAudioView> share_audio_view_ = nullptr;
 };

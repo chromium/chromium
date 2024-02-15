@@ -163,6 +163,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   const std::u16string app_name_;
   const bool audio_requested_;
   const bool suppress_local_audio_playback_;  // Effective only if audio shared.
+  const bool is_system_audio_offered_;
   const content::GlobalRenderFrameHostId capturer_global_id_;
 
   raw_ptr<DesktopMediaPickerViews> parent_;

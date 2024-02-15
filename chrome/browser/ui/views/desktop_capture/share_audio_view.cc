@@ -25,18 +25,17 @@ ShareAudioView::ShareAudioView(const std::u16string& label_text,
       audio_offered ? ui::kColorIcon : ui::kColorIconDisabled,
       GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
 
-  views::Label* audio_toggle_label =
-      AddChildView(std::make_unique<views::Label>());
-  audio_toggle_label->SetHorizontalAlignment(
+  audio_toggle_label_ = AddChildView(std::make_unique<views::Label>());
+  audio_toggle_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
-  audio_toggle_label->SetText(label_text);
+  audio_toggle_label_->SetText(label_text);
 
   if (audio_offered) {
     audio_toggle_button_ =
         AddChildView(std::make_unique<views::ToggleButton>());
     audio_toggle_button_->SetAccessibleName(label_text);
   } else {
-    audio_toggle_label->SetTextStyle(views::style::TextStyle::STYLE_DISABLED);
+    audio_toggle_label_->SetTextStyle(views::style::TextStyle::STYLE_DISABLED);
   }
 
   views::BoxLayout* audio_toggle_layout =
@@ -45,7 +44,7 @@ ShareAudioView::ShareAudioView(const std::u16string& label_text,
   audio_toggle_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   audio_toggle_layout->set_between_child_spacing(8);
-  audio_toggle_layout->SetFlexForView(audio_toggle_label, 1);
+  audio_toggle_layout->SetFlexForView(audio_toggle_label_, 1);
 }
 
 ShareAudioView::~ShareAudioView() = default;
@@ -61,6 +60,11 @@ bool ShareAudioView::IsAudioSharingApprovedByUser() const {
 void ShareAudioView::SetAudioSharingApprovedByUser(bool is_on) {
   CHECK(audio_toggle_button_);
   audio_toggle_button_->SetIsOn(is_on);
+}
+
+std::u16string ShareAudioView::GetAudioLabelText() const {
+  return audio_toggle_label_ ? audio_toggle_label_->GetText()
+                             : std::u16string();
 }
 
 BEGIN_METADATA(ShareAudioView)

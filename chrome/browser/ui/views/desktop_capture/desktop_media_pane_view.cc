@@ -52,3 +52,8 @@ void DesktopMediaPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   CHECK(share_audio_view_);
   share_audio_view_->SetAudioSharingApprovedByUser(is_on);
 }
+
+std::u16string DesktopMediaPaneView::GetAudioLabelText() const {
+  return share_audio_view_ ? share_audio_view_->GetAudioLabelText()
+                           : std::u16string();
+}
