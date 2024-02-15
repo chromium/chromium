@@ -253,7 +253,6 @@ public class TabGroupUiCoordinator
     @Override
     public void resetStripWithListOfTabs(List<Tab> tabs) {
         if (tabs != null
-                && tabs.size() > 1
                 && mBottomSheetController.getSheetState()
                         == BottomSheetController.SheetState.HIDDEN) {
             TabGroupUtils.maybeShowIPH(

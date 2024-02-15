@@ -32,16 +32,13 @@ import androidx.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
@@ -50,7 +47,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -82,11 +78,8 @@ import java.util.List;
 /** Tests for {@link TabGroupUiMediator}. */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class TabGroupUiMediatorUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
@@ -208,10 +201,10 @@ public class TabGroupUiMediatorUnitTest {
 
         // Verify strip initial reset.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(currentTab.getId());
-        if (tabs.size() < 2) {
-            verifyResetStrip(false, null);
-        } else {
+        if (mTabGroupModelFilter.isTabInTabGroup(currentTab)) {
             verifyResetStrip(true, tabs);
+        } else {
+            verifyResetStrip(false, null);
         }
     }
 
@@ -257,6 +250,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(mTabGroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
         doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
@@ -376,6 +372,8 @@ public class TabGroupUiMediatorUnitTest {
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(newTab);
 
         // Mock selecting tab 1, and the last selected tab is tab 2 which is in different group.
         mTabModelObserverArgumentCaptor
@@ -456,14 +454,70 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_NotLastTabInGroup() {
+    public void tabClosure_NotLastTabInGroup_Selection_SingleTabGroupsDisabled() {
         initAndAssertProperties(mTab2);
 
-        // Mock closing tab 2, and tab 3 then gets selected. They are in the same group.
+        doReturn(TAB3_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB2_ROOT_ID);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
+
+        // Mock closing tab 2, and tab 3 then gets selected. They are in the same group assume that
+        // that Tab 3 is the last tab in the group.
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true, true);
+        verifyResetStrip(false, null);
+
+        mTabModelObserverArgumentCaptor
+                .getValue()
+                .didSelectTab(mTab3, TabSelectionType.FROM_CLOSE, TAB2_ID);
+
+        // Strip should not be reset again.
+        verifyNeverReset();
+    }
+
+    @Test
+    public void tabClosure_NotLastTabInGroup_Selection_SingleTabGroupsEnabled() {
+        initAndAssertProperties(mTab2);
+
+        doReturn(TAB3_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB2_ROOT_ID);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
+
+        // Mock closing tab 2, and tab 3 then gets selected. They are in the same group assume that
+        // that Tab 3 is the last tab in the group, but tab groups of size 1 are supported.
         mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab2, true, true);
         mTabModelObserverArgumentCaptor
                 .getValue()
                 .didSelectTab(mTab3, TabSelectionType.FROM_CLOSE, TAB2_ID);
+
+        // Strip should not be reset since we are still in this group.
+        verifyNeverReset();
+    }
+
+    @Test
+    public void tabClosure_NotLastTabInGroup_NoSelection_SingleTabGroupsDisabled() {
+        initAndAssertProperties(mTab2);
+
+        doReturn(TAB2_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB3_ROOT_ID);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
+
+        // Mock closing tab 3, and tab 2 remains selected.
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab3, true, true);
+
+        // Strip should reset since since we don't have a group anymore.
+        verifyResetStrip(false, null);
+    }
+
+    @Test
+    public void tabClosure_NotLastTabInGroup_NoSelection_SingleTabGroupsEnabled() {
+        initAndAssertProperties(mTab2);
+
+        doReturn(TAB2_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB3_ROOT_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
+
+        // Mock closing tab 3, and tab 2 remains selected.
+        mTabModelObserverArgumentCaptor.getValue().willCloseTab(mTab3, true, true);
 
         // Strip should not be reset since we are still in this group.
         verifyNeverReset();
@@ -540,6 +594,8 @@ public class TabGroupUiMediatorUnitTest {
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(newTab);
 
         mTabModelObserverArgumentCaptor
                 .getValue()
@@ -720,12 +776,11 @@ public class TabGroupUiMediatorUnitTest {
         // Simulate that newTab which was a tab in the same group as mTab1 is being undone from
         // closure.
         Tab newTab = prepareTab(TAB4_ID, TAB4_ID);
-        doReturn(new ArrayList<>(Arrays.asList(mTab1, newTab)))
-                .when(mTabGroupModelFilter)
-                .getRelatedTabList(TAB1_ID);
-        doReturn(new ArrayList<>(Arrays.asList(mTab1, newTab)))
-                .when(mTabGroupModelFilter)
-                .getRelatedTabList(TAB4_ID);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(newTab);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
 
         mTabModelObserverArgumentCaptor.getValue().tabClosureUndone(newTab);
@@ -861,9 +916,22 @@ public class TabGroupUiMediatorUnitTest {
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
         doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
+        doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
         mTabGroupModelFilterObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
 
         verifyResetStrip(false, null);
+    }
+
+    @Test
+    public void uiVisibleAfterDragCurrentTabOutOfGroup_GroupSize1() {
+        initAndAssertProperties(mTab3);
+
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
+        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
+        mTabGroupModelFilterObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
+
+        verifyResetStrip(true, tabs);
     }
 
     @Test

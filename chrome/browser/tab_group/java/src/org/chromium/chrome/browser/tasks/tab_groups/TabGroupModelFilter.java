@@ -243,13 +243,15 @@ public class TabGroupModelFilter extends TabModelFilter {
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, boolean isSameGroup, boolean notify) {
         int destinationRootId = destinationTab.getRootId();
+        // Check whether the destination tab is in a tab group before getOrCreateTabGroupId so we
+        // send the correct signal for whether a tab group was newly created.
+        boolean didCreateGroup = isTabInTabGroup(destinationTab);
         Token destinationTabGroupId = getOrCreateTabGroupId(destinationTab);
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-        boolean isDestinationTabGroup = hasOtherRelatedTabs(destinationTab);
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -299,7 +301,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         // If the destination tab is not part of a tab group and none of the tabs to merge were part
         // of a tab group, then this action is creating a new tab group.
-        if (!isDestinationTabGroup && (uniqueRootIds.size() == originalRootIds.size())) {
+        if (!didCreateGroup && (uniqueRootIds.size() == originalRootIds.size())) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didCreateNewGroup(destinationRootId);
             }
@@ -511,6 +513,19 @@ public class TabGroupModelFilter extends TabModelFilter {
         return group.size();
     }
 
+    @Override
+    public boolean isTabInTabGroup(Tab tab) {
+        int rootId = tab.getRootId();
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        boolean isInGroup = group != null && group.contains(tab.getId());
+        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+            return isInGroup && tab.getTabGroupId() != null;
+        } else {
+            return isInGroup && group.size() > 1;
+        }
+    }
+
+    @Deprecated
     @Override
     public boolean hasOtherRelatedTabs(Tab tab) {
         int rootId = tab.getRootId();
@@ -1064,8 +1079,13 @@ public class TabGroupModelFilter extends TabModelFilter {
         return mRootIdToGroupIndexMap.get(rootId);
     }
 
-    int getGroupLastShownTabIdForTesting(int rootId) {
-        return mRootIdToGroupMap.get(rootId).getLastShownTabId();
+    /**
+     * @param rootId The rootId of the group to lookup.
+     * @return the last shown tab in that group or Tab.INVALID_TAB_ID otherwise.
+     */
+    public int getGroupLastShownTabId(int rootId) {
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
     }
 
     /**
