@@ -122,7 +122,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // anonymized data collection is turned on as part of the flow to Sign in to
   // Chrome and Turn on sync. This matches the main user flow that enables
   // UKM.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       waitForSyncEngineInitialized:YES
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
