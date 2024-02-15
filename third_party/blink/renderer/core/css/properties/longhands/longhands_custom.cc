@@ -1736,20 +1736,9 @@ const CSSValue* ClipPath::ParseSingleValue(CSSParserTokenRange& range,
     return url;
   }
 
-  CSSValue* geometry_box = nullptr;
-  if (RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
-    geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
-  }
-  CSSValue* basic_shape = css_parsing_utils::ConsumeBasicShape(
-      range, context, css_parsing_utils::AllowPathValue::kAllow,
-      RuntimeEnabledFeatures::ClipPathXYWHAndRectEnabled()
-          ? css_parsing_utils::AllowBasicShapeRectValue::kAllow
-          : css_parsing_utils::AllowBasicShapeRectValue::kForbid,
-      RuntimeEnabledFeatures::ClipPathXYWHAndRectEnabled()
-          ? css_parsing_utils::AllowBasicShapeXYWHValue::kAllow
-          : css_parsing_utils::AllowBasicShapeXYWHValue::kForbid);
-  if (basic_shape && !geometry_box &&
-      RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
+  CSSValue* geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
+  CSSValue* basic_shape = css_parsing_utils::ConsumeBasicShape(range, context);
+  if (basic_shape && !geometry_box) {
     geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
   }
   if (basic_shape || geometry_box) {
@@ -5859,9 +5848,7 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(range);
   }
   auto* css_value = css_parsing_utils::ConsumeBasicShape(
-      range, context, css_parsing_utils::AllowPathValue::kForbid,
-      css_parsing_utils::AllowBasicShapeRectValue::kAllow,
-      css_parsing_utils::AllowBasicShapeXYWHValue::kAllow);
+      range, context, css_parsing_utils::AllowPathValue::kForbid);
 
   if (!css_value || css_value->IsBasicShapeInsetValue() ||
       css_value->IsBasicShapeRectValue() ||
@@ -7778,7 +7765,9 @@ const CSSValue* ShapeOutside::ParseSingleValue(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* box_value = css_parsing_utils::ConsumeShapeBox(range);
   CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
-      range, context, css_parsing_utils::AllowPathValue::kForbid);
+      range, context, css_parsing_utils::AllowPathValue::kForbid,
+      css_parsing_utils::AllowBasicShapeRectValue::kForbid,
+      css_parsing_utils::AllowBasicShapeXYWHValue::kForbid);
   if (shape_value) {
     list->Append(*shape_value);
     if (!box_value) {

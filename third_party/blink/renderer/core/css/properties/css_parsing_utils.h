@@ -520,9 +520,9 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeBasicShape(
     CSSParserTokenRange&,
     const CSSParserContext&,
-    AllowPathValue,
-    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kForbid,
-    AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kForbid);
+    AllowPathValue = AllowPathValue::kAllow,
+    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kAllow,
+    AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kAllow);
 bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   CSSValue* vertical_radii[4],
                   CSSParserTokenRange&,

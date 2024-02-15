@@ -269,11 +269,8 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   }
 
   if (object.IsSVGChild()) {
-    if (!RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
-      // Preserve the pre-geometry-box behavior of using the object bounding
-      // box.
-      geometry_box = GeometryBox::kFillBox;
-    } else if (clip_path.GetType() == ClipPathOperation::kReference) {
+    // Use the object bounding box for url() references.
+    if (clip_path.GetType() == ClipPathOperation::kReference) {
       geometry_box = GeometryBox::kFillBox;
     }
     gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(

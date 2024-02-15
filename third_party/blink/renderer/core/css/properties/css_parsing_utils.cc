@@ -6446,9 +6446,7 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
     offset_path = ConsumeRay(range, context);
   }
   if (!offset_path && IsBasicShapeSupportedByOffsetPath(function_id)) {
-    offset_path = ConsumeBasicShape(range, context, AllowPathValue::kAllow,
-                                    AllowBasicShapeRectValue::kAllow,
-                                    AllowBasicShapeXYWHValue::kAllow);
+    offset_path = ConsumeBasicShape(range, context);
   }
   if (!offset_path && RuntimeEnabledFeatures::CSSOffsetPathUrlEnabled()) {
     offset_path = ConsumeUrl(range, context);
