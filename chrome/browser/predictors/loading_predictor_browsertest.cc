@@ -2402,8 +2402,16 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
   EXPECT_EQ(1u, loading_predictor->GetTotalHintsActivatedForTesting());
 }
 
+// TODO(crbug.com/325336071): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BackForwardCacheNavigationNotObserved \
+  DISABLED_BackForwardCacheNavigationNotObserved
+#else
+#define MAYBE_BackForwardCacheNavigationNotObserved \
+  BackForwardCacheNavigationNotObserved
+#endif
 IN_PROC_BROWSER_TEST_F(LoadingPredictorMultiplePageBrowserTest,
-                       BackForwardCacheNavigationNotObserved) {
+                       MAYBE_BackForwardCacheNavigationNotObserved) {
   GURL url_1 = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_2 = embedded_test_server()->GetURL("b.com", "/title2.html");
   auto* loading_predictor =
