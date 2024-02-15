@@ -299,7 +299,8 @@ const SwapChainInfo& OpenXrGraphicsBindingOpenGLES::GetActiveSwapchainImage() {
   return color_swapchain_images_[active_swapchain_index()];
 }
 
-bool OpenXrGraphicsBindingOpenGLES::Render() {
+bool OpenXrGraphicsBindingOpenGLES::Render(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
   if (!has_active_swapchain_image() ||
       active_swapchain_index() >= color_swapchain_images_.size()) {
     return false;

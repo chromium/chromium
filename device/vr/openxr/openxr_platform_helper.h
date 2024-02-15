@@ -15,14 +15,8 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_export.h"
 
-namespace gpu::gles2 {
-class GLES2Interface;
-}  // namespace gpu::gles2
-
 namespace device {
 class OpenXrGraphicsBinding;
-
-using GlProvider = base::RepeatingCallback<gpu::gles2::GLES2Interface*()>;
 
 // Simple struct containing the values that the platform will actually need to
 // create a session. Right now, Android needs the render_process_id and
@@ -68,8 +62,7 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // Creates an OpenXrGraphicsBinding which is responsible for returning the
   // information about the graphics pipeline that is required to create an
   // XrInstance and/or XrSession.
-  virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding(
-      GlProvider gl_context_provider) = 0;
+  virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding() = 0;
 
   // Gets the ExtensionEnumeration which is the list of extensions supported by
   // the platform.

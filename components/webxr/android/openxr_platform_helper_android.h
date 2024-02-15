@@ -31,8 +31,7 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   bool CheckHardwareSupport(content::WebContents* web_contents);
 
   // OpenXrPlatformHelper
-  std::unique_ptr<device::OpenXrGraphicsBinding> GetGraphicsBinding(
-      device::GlProvider gl_context_provider) override;
+  std::unique_ptr<device::OpenXrGraphicsBinding> GetGraphicsBinding() override;
   void GetPlatformCreateInfo(
       const device::OpenXrCreateInfo& create_info,
       PlatformCreateInfoReadyCallback result_callback,

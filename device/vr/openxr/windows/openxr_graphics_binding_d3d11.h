@@ -23,7 +23,6 @@ class OpenXrPlatformHelperWindows;
 class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
  public:
   explicit OpenXrGraphicsBindingD3D11(
-      GlProvider gl_context_provider,
       base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper);
   ~OpenXrGraphicsBindingD3D11() override;
 
@@ -39,7 +38,8 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
-  bool Render() override;
+  bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) override;
   void CleanupWithoutSubmit() override;
   bool ShouldFlipSubmittedImage() override;
   void SetOverlayAndWebXrVisibility(bool overlay_visible,

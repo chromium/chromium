@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -142,7 +143,8 @@ class OpenXrGraphicsBinding {
   virtual bool WaitOnFence(gfx::GpuFence& gpu_fence) = 0;
 
   // Causes the GraphicsBinding to render the currently active swapchain image.
-  virtual bool Render() = 0;
+  virtual bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) = 0;
 
   // Called when a frame is going to end without any attempt at rendering, in
   // case there is any early cleanup to do that would otherwise occur during

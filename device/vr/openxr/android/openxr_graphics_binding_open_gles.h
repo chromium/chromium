@@ -42,7 +42,8 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
-  bool Render() override;
+  bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) override;
   void CleanupWithoutSubmit() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
   bool ShouldFlipSubmittedImage() override;

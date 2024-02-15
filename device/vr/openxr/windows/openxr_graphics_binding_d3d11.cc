@@ -35,10 +35,8 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 }
 
 OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
-    GlProvider gl_context_provider,
     base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
-    : texture_helper_(
-          std::make_unique<D3D11TextureHelper>(gl_context_provider)),
+    : texture_helper_(std::make_unique<D3D11TextureHelper>()),
       weak_platform_helper_(weak_platform_helper) {}
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
@@ -265,9 +263,10 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   return true;
 }
 
-bool OpenXrGraphicsBindingD3D11::Render() {
+bool OpenXrGraphicsBindingD3D11::Render(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
   return texture_helper_->UpdateBackbufferSizes() &&
-         texture_helper_->CompositeToBackBuffer();
+         texture_helper_->CompositeToBackBuffer(context_provider);
 }
 
 void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {

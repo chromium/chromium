@@ -430,7 +430,7 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
   // Tell texture helper to composite, then grab the output texture, and submit.
   // If we submitted, set up the next frame, and send outstanding pose requests.
   if (can_submit) {
-    copy_successful = graphics_binding_->Render();
+    copy_successful = graphics_binding_->Render(context_provider_);
   } else {
     graphics_binding_->CleanupWithoutSubmit();
   }
@@ -706,8 +706,7 @@ void OpenXrRenderLoop::StartRuntime(
 
   // Since we own the graphics_binding_ Unretained is safe here. Since this
   // callback needs to return a value, it cannot be bound to a weak ptr.
-  graphics_binding_ = platform_helper_->GetGraphicsBinding(base::BindRepeating(
-      &OpenXrRenderLoop::GetContextGL, base::Unretained(this)));
+  graphics_binding_ = platform_helper_->GetGraphicsBinding();
 
   if (!graphics_binding_) {
     DVLOG(1) << "Could not create graphics binding";
@@ -866,7 +865,6 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
                                gpu::SyncToken());
 #elif BUILDFLAG(IS_ANDROID)
   MarkFrameSubmitted(frame_index);
-  graphics_binding_->Render();
   MaybeCompositeAndSubmit();
 #endif
 
@@ -1008,11 +1006,6 @@ void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
     return;
   }
   anchor_manager->DetachAnchor(AnchorId(anchor_id));
-}
-
-gpu::gles2::GLES2Interface* OpenXrRenderLoop::GetContextGL() {
-  DCHECK(context_provider_);
-  return context_provider_->ContextGL();
 }
 
 void OpenXrRenderLoop::StartContextProviderIfNeeded(

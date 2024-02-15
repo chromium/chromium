@@ -10,25 +10,21 @@
 #include <wrl.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace gpu::gles2 {
-class GLES2Interface;
-}  // namespace gpu::gles2
-
+namespace viz {
+class ContextProvider;
+}
 namespace device {
-
-using GlProvider = base::RepeatingCallback<gpu::gles2::GLES2Interface*()>;
 
 class D3D11TextureHelper {
  public:
-  explicit D3D11TextureHelper(GlProvider context_gl_provider);
+  D3D11TextureHelper();
   ~D3D11TextureHelper();
-
-  void Reset();
 
   bool EnsureInitialized();
   bool SetAdapterLUID(const LUID& luid);
@@ -37,7 +33,8 @@ class D3D11TextureHelper {
   void CleanupNoSubmit();
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
-  bool CompositeToBackBuffer();
+  bool CompositeToBackBuffer(
+      const scoped_refptr<viz::ContextProvider>& context_provider);
   void SetSourceTexture(base::win::ScopedHandle texture_handle,
                         const gpu::SyncToken& sync_token,
                         gfx::RectF left,
@@ -110,8 +107,6 @@ class D3D11TextureHelper {
     LayerData source_;
     LayerData overlay_;
   };
-
-  GlProvider context_gl_provider_;
 
   bool overlay_visible_ = true;
   bool source_visible_ = true;

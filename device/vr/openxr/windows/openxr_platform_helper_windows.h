@@ -24,8 +24,7 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperWindows
   ~OpenXrPlatformHelperWindows() override;
 
   // OpenXrPlatformHelper
-  std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding(
-      GlProvider gl_context_provider) override;
+  std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding() override;
   void GetPlatformCreateInfo(
       const device::OpenXrCreateInfo& create_info,
       PlatformCreateInfoReadyCallback result_callback,
