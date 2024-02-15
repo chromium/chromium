@@ -7,6 +7,8 @@
 
 #define FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS 1
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -255,16 +257,29 @@ void OverloadedFunction() {
 }
 
 void OverloadedOperator() {
-  // It's not possible to bind to a functor with an overloaded `operator()()`.
+  // It's not possible to bind to a functor with an overloaded `operator()()`
+  // unless the caller supplies arguments that can invoke a unique overload.
   struct A {
-    int operator()(int x) { return x; }
-    A operator()(A a) { return a; }
+    int64_t operator()(int, int64_t x) { return x; }
+    uint64_t operator()(int, uint64_t x) { return x; }
+    A operator()(double, A a) { return a; }
   } a;
   // Using distinct types causes distinct template instantiations, so we get
-  // assertion failures below where we expect. This type facilitates that.
+  // assertion failures below where we expect. These types facilitate that.
   struct B : A {} b;
-  BindOnce(a);           // expected-error@*:* {{Could not determine how to invoke functor.}}
-  BindOnce(b, nullptr);  // expected-error@*:* {{Could not determine how to invoke functor.}}
+  struct C : A {} c;
+  struct D : A {} d;
+
+  // Partial function application isn't supported, even if it's sufficient to
+  // "narrow the field" to a single candidate that _could_ eventually match.
+  BindOnce(a);              // expected-error@*:* {{Could not determine how to invoke functor.}}
+  BindOnce(b, 1.0);         // expected-error@*:* {{Could not determine how to invoke functor.}}
+
+  // The supplied args don't match any candidates.
+  BindOnce(c, 1, nullptr);  // expected-error@*:* {{Could not determine how to invoke functor.}}
+
+  // The supplied args inexactly match multiple candidates.
+  BindOnce(d, 1, 1);        // expected-error@*:* {{Could not determine how to invoke functor.}}
 }
 
 // Define a type that disallows `Unretained()` via the internal customization

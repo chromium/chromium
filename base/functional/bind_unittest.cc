@@ -1766,6 +1766,33 @@ TEST_F(BindTest, ConvertibleArgs) {
   std::move(callback).Run();
 }
 
+TEST_F(BindTest, OverloadedOperator) {
+  // Bind should be able to pick the correct `operator()()` to invoke on a
+  // functor from the supplied args.
+  struct S {
+    int operator()(int x) { return x; }
+    std::string operator()(std::string s) { return s; }
+  } s;
+
+  EXPECT_EQ(42, BindOnce(s, 42).Run());
+  EXPECT_EQ("Hello", BindOnce(s, "Hello").Run());
+}
+
+TEST_F(BindTest, OverloadedOperatorInexactMatch) {
+  // The Bind machinery guesses signatures for overloaded `operator()()`s based
+  // on the decay_t<>s of the bound args. But as long as all args are bound and
+  // are convertible to exactly one overload's params, everything should work,
+  // even if the guess is slightly incorrect.
+  struct S {
+    int operator()(int x) { return x; }
+    // Machinery will guess that param type here is `std::string`.
+    std::string operator()(const std::string& s) { return s; }
+  } s;
+
+  EXPECT_EQ(42, BindOnce(s, 42).Run());
+  EXPECT_EQ("Hello", BindOnce(s, "Hello").Run());
+}
+
 }  // namespace
 
 // This simulates a race weak pointer that, unlike our `base::WeakPtr<>`,
