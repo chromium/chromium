@@ -67,7 +67,8 @@ class ExtensionTelemetryServiceBrowserTest
         /*enabled_features=*/
         {kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
-         kExtensionTelemetryTabsApiSignal},
+         kExtensionTelemetryTabsApiSignal,
+         kExtensionTelemetryTabsApiSignalCaptureVisibleTab},
         /*disabled_features=*/
         {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
@@ -502,10 +503,36 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
          "version": "0.1",
          "manifest_version": 3,
          "permissions":["tabs"],
+         "host_permissions": ["<all_urls>"],
          "background": { "service_worker" : "background.js" }
        })";
   static constexpr char kBackground[] =
       R"(
+        var pass = chrome.test.callbackPass;
+        function waitForAllTabs(callback) {
+          // Wait for all tabs to load.
+          function waitForTabs() {
+            chrome.windows.getAll({"populate": true}, function(windows) {
+              var ready = true;
+              for (var i in windows) {
+                for (var j in windows[i].tabs) {
+                  if (windows[i].tabs[j].status != "complete") {
+                    ready = false;
+                    break;
+                  }
+                }
+                if (!ready)
+                  break;
+              }
+              if (ready)
+                callback();
+              else
+                setTimeout(waitForTabs, 30);
+            });
+          }
+          waitForTabs();
+        }
+
         chrome.test.runTests([
           async function tabOps() {
             await chrome.tabs.create({url: 'http://www.google.com'});
@@ -514,6 +541,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
             await chrome.tabs.update({url:'http://www.example.com'});
             await chrome.tabs.remove(second_tab.id);
             chrome.test.succeed();
+          },
+          async function captureVisibleTabOp() {
+            await chrome.windows.create({url: 'http://www.google.com'},
+              pass(function(newWindow) {
+                waitForAllTabs(pass(function() {
+                  chrome.tabs.captureVisibleTab(newWindow.id, function() {
+                    chrome.test.succeed();
+                  });
+                }));
+              }));
           },
         ]);
       )";
@@ -562,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   // Verify the number of unique call details.
   using TabsApiInfo = ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo;
   const TabsApiInfo& tabs_api_info = signal.tabs_api_info();
-  ASSERT_EQ(tabs_api_info.call_details_size(), 3);
+  ASSERT_EQ(tabs_api_info.call_details_size(), 4);
 
   // Verify the contents of each call details.
   {
@@ -587,6 +624,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(call_details.count(), 1u);
     EXPECT_EQ(call_details.method(), TabsApiInfo::REMOVE);
     EXPECT_EQ(call_details.current_url(), "http://www.example.com/");
+    EXPECT_EQ(call_details.new_url(), "");
+  }
+  {
+    const TabsApiInfo::CallDetails& call_details =
+        tabs_api_info.call_details(3);
+    EXPECT_EQ(call_details.count(), 1u);
+    EXPECT_EQ(call_details.method(), TabsApiInfo::CAPTURE_VISIBLE_TAB);
+    EXPECT_EQ(call_details.current_url(), "http://www.google.com/");
     EXPECT_EQ(call_details.new_url(), "");
   }
 }

@@ -441,6 +441,12 @@ void NotifyExtensionTelemetry(Profile* profile,
     return;
   }
 
+  if (api_method == safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB &&
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryTabsApiSignalCaptureVisibleTab)) {
+    return;
+  }
+
   auto tabs_api_signal = std::make_unique<safe_browsing::TabsApiSignal>(
       extension->id(), api_method, current_url, new_url);
   extension_telemetry_service->AddSignal(std::move(tabs_api_signal));
@@ -2260,6 +2266,15 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   WebContents* contents = GetWebContentsForID(context_id, &error);
   if (!contents)
     return RespondNow(Error(std::move(error)));
+
+  // Get last committed URL.
+  std::string current_url = contents->GetLastCommittedURL().is_valid()
+                                ? contents->GetLastCommittedURL().spec()
+                                : std::string();
+  NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
+                           extension(),
+                           safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB,
+                           current_url, /*new_url=*/std::string());
 
   // NOTE: CaptureAsync() may invoke its callback from a background thread,
   // hence the BindPostTask().

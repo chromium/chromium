@@ -63,6 +63,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignal);
 
 // Enables collection of telemetry signal whenever an extension invokes the
+// chrome.tabs.captureVisibleTab API method.
+BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignalCaptureVisibleTab);
+
+// Enables collection of telemetry signal whenever an extension invokes the
 // tabs.executeScript API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 
