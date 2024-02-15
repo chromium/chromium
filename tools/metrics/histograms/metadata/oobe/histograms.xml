@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
   <token key="ConsumerUpdateType" variants="ConsumerUpdateType"/>
 </histogram>
 
-<histogram name="OOBE.DrivePinning.Enabled" enum="BooleanEnabled"
+<histogram name="OOBE.Drive-pinning.Enabled" enum="BooleanEnabled"
     expires_after="2024-05-12">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
