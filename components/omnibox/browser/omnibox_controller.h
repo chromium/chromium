@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -69,6 +70,11 @@ class OmniboxController : public AutocompleteController::Observer {
   // empty string if `suggestion_group_id` is not found in the results.
   std::u16string GetHeaderForSuggestionGroup(
       omnibox::GroupId suggestion_group_id) const;
+
+  // Returns whether or not the row for a particular match should be hidden in
+  // the UI. This is currently used to hide suggestions in the 'AskGoogle' scope
+  // when the starter pack expansion feature is enabled.
+  bool IsSuggestionHidden(const AutocompleteMatch& match) const;
 
   // Returns whether or not `suggestion_group_id` should be collapsed in the UI.
   // This method takes into account both the user's stored prefs as well as

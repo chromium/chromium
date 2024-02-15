@@ -26,9 +26,10 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
   KeywordLabelNames names;
   if (service) {
     bool is_extension_keyword = false;
-    names.short_name =
-        service->GetKeywordShortName(keyword, &is_extension_keyword);
-    names.full_name = is_extension_keyword
+    bool is_ask_google_keyword = false;
+    names.short_name = service->GetKeywordShortName(
+        keyword, &is_extension_keyword, &is_ask_google_keyword);
+    names.full_name = (is_extension_keyword || is_ask_google_keyword)
                           ? names.short_name
                           : l10n_util::GetStringFUTF16(
                                 IDS_OMNIBOX_KEYWORD_TEXT_MD, names.short_name);

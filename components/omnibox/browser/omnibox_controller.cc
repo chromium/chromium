@@ -10,13 +10,16 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
 OmniboxController::OmniboxController(OmniboxView* view,
@@ -165,6 +168,20 @@ std::u16string OmniboxController::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
   return autocomplete_controller_->result().GetHeaderForSuggestionGroup(
       suggestion_group_id);
+}
+
+bool OmniboxController::IsSuggestionHidden(
+    const AutocompleteMatch& match) const {
+  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+      match.from_keyword) {
+    TemplateURL* turl =
+        match.GetTemplateURL(client_->GetTemplateURLService(), false);
+    if (turl &&
+        turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool OmniboxController::IsSuggestionGroupHidden(
