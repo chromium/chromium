@@ -61,6 +61,10 @@ BASE_FEATURE(kEncryptedArchivesMetadata,
              "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEsbDownloadRowPromo,
+             "EsbDownloadRowPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
