@@ -65,6 +65,12 @@ enum class SessionEvent {
   kMaxValue = kCloseButtonClicked,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Used by ash window manager to place the caption bubble in the correct
+// container.
+extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
+#endif
+
 using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 
 ///////////////////////////////////////////////////////////////////////////////

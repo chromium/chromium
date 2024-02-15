@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
+#include "components/live_caption/views/caption_bubble.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -129,6 +130,12 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
       ui::ZOrderLevel::kSecuritySurface) {
     return target_root->GetChildById(
         kShellWindowId_DragImageAndTooltipContainer);
+  }
+
+  // Live caption bubble always goes into the shelf bubble container, above the
+  // float, always-on-top and shelf containers for example.
+  if (window->GetProperty(captions::kIsCaptionBubbleKey)) {
+    return target_root->GetChildById(kShellWindowId_SettingBubbleContainer);
   }
 
   switch (window->GetType()) {

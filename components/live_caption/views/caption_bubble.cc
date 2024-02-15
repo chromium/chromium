@@ -224,6 +224,10 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
 
 namespace captions {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsCaptionBubbleKey, false)
+#endif
+
 #if BUILDFLAG(IS_WIN)
 class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
   METADATA_HEADER(MediaFoundationRendererErrorMessageView, views::StyledLabel)
@@ -850,6 +854,9 @@ void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
   params->z_order = ui::ZOrderLevel::kFloatingWindow;
   params->visible_on_all_workspaces = true;
   params->name = "LiveCaptionWindow";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  params->init_properties_container.SetProperty(kIsCaptionBubbleKey, true);
+#endif
 }
 
 bool CaptionBubble::ShouldShowCloseButton() const {
