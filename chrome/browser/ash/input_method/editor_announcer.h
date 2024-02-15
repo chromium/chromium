@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/ui/announcement_view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -27,6 +28,9 @@ class EditorLiveRegionAnnouncer : public EditorAnnouncer {
  private:
   class LiveRegion : public views::WidgetObserver {
    public:
+    LiveRegion();
+    ~LiveRegion() override;
+
     // Triggers a ChromeVox announcement via the live region view.
     void Announce(const std::u16string& message);
 
@@ -40,6 +44,8 @@ class EditorLiveRegionAnnouncer : public EditorAnnouncer {
     // a raw_ptr due to the lifetime of the instance being handled by the
     // DialogDelegateView the class inherits from.
     raw_ptr<ui::ime::AnnouncementView> announcement_view_ = nullptr;
+
+    base::ScopedObservation<views::Widget, views::WidgetObserver> obs_{this};
   };
 
   LiveRegion live_region_;
