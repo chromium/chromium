@@ -14,7 +14,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SecureDnsInputElement, SettingsSecureDnsDialogElement, SettingsSecureDnsElement, SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
-import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, LocalizedLinkElement, SecureDnsUiManagementMode, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertNull, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -113,13 +113,17 @@ suite('SettingsSecureDnsInput', function() {
   });
 });
 
-suite('SettingsSecureDns', function() {
+suite('SettingsSecureDns', () => {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
   let secureDnsToggle: SettingsToggleButtonElement;
 
   const resolverList: ResolverOption[] = [
-    {name: 'Resolver 1', value: 'resolver', policy: ''},
+    {
+      name: 'Resolver 1',
+      value: 'resolver',
+      policy: 'https://resolver1_policy.com/',
+    },
   ];
 
   // Possible subtitle overrides.
@@ -139,7 +143,7 @@ suite('SettingsSecureDns', function() {
     assertFalse(testElement.$.resolverSelect.hidden);
   }
 
-  suiteSetup(function() {
+  suiteSetup(() => {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
       secureDnsOsSettingsDescription: defaultDescription,
@@ -149,11 +153,11 @@ suite('SettingsSecureDns', function() {
     });
   });
 
-  setup(async function() {
+  setup(async () => {
+    clearBody();
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-secure-dns');
     testElement.prefs = {
       dns_over_https:
@@ -171,10 +175,6 @@ suite('SettingsSecureDns', function() {
     assertResolverSelectShown();
     assertEquals(
         SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
-  });
-
-  teardown(function() {
-    testElement.remove();
   });
 
   function getResolverOptions(): HTMLElement {
@@ -311,6 +311,100 @@ suite('SettingsSecureDns', function() {
         loadTimeData.getString('secureDnsWithIdentifiersDescription'),
         displayConfig);
     assertEquals(expectedDescription, secureDnsToggle.subLabel);
+  });
+
+  suite('dropdown description', () => {
+    let networkDefaultDescription: HTMLElement|null;
+    let privacyPolicyDescription: LocalizedLinkElement|null;
+
+    function assertDropdownDescriptionVisibility(
+        networkDefault: boolean, privacyPolicy: boolean): void {
+      networkDefaultDescription =
+          testElement.shadowRoot!.querySelector('#networkDefaultDescription');
+      privacyPolicyDescription =
+          testElement.shadowRoot!.querySelector('#privacyPolicy');
+
+      assertEquals(networkDefault, isVisible(networkDefaultDescription));
+      assertEquals(privacyPolicy, isVisible(privacyPolicyDescription));
+    }
+
+    test(
+        'When Secure is selected, Privacy Policy description appears.',
+        async () => {
+          webUIListenerCallback('secure-dns-setting-changed', {
+            mode: SecureDnsMode.SECURE,
+            config: resolverList[0]!.value,
+            managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+          });
+          await flushTasks();
+
+          assertResolverSelectShown();
+          assertDropdownDescriptionVisibility(
+              /*networkDefault=*/ false, /*privacyPolicy=*/ true);
+        });
+
+    test(
+        'When Automatic is selected, description for Network Default appears.',
+        async () => {
+          webUIListenerCallback('secure-dns-setting-changed', {
+            mode: SecureDnsMode.AUTOMATIC,
+            config: '',
+            managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+          });
+          await flushTasks();
+
+          assertResolverSelectShown();
+          assertDropdownDescriptionVisibility(
+              /*networkDefault=*/ true, /*privacyPolicy=*/ false);
+        });
+
+    test(
+        'When switched from Automatic to OFF, no description appears.',
+        async () => {
+          webUIListenerCallback('secure-dns-setting-changed', {
+            mode: SecureDnsMode.OFF,
+            config: '',
+            managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+          });
+          await flushTasks();
+
+          assertDropdownDescriptionVisibility(
+              /*networkDefault=*/ false, /*privacyPolicy=*/ false);
+        });
+
+    test('When Custom is selected, no description appears.', async () => {
+      webUIListenerCallback('secure-dns-setting-changed', {
+        mode: SecureDnsMode.SECURE,
+        config: '',
+        managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      });
+      await flushTasks();
+
+      assertDropdownDescriptionVisibility(
+          /*networkDefault=*/ false, /*privacyPolicy=*/ false);
+    });
+
+    test(
+        'When switched from Secure to Custom, no description appears.',
+        async () => {
+          webUIListenerCallback('secure-dns-setting-changed', {
+            mode: SecureDnsMode.SECURE,
+            config: resolverList[0]!.value,
+            managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+          });
+          await flushTasks();
+
+          webUIListenerCallback('secure-dns-setting-changed', {
+            mode: SecureDnsMode.SECURE,
+            config: '',
+            managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+          });
+          await flushTasks();
+
+          assertResolverSelectShown();
+          assertDropdownDescriptionVisibility(
+              /*networkDefault=*/ false, /*privacyPolicy=*/ false);
+        });
   });
 });
 

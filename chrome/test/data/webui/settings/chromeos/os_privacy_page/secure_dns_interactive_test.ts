@@ -14,8 +14,9 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SecureDnsInputElement, SettingsSecureDnsElement, SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
-import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode, SettingsToggleButtonElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -220,7 +221,8 @@ suite('SettingsSecureDnsInteractive', function() {
     flush();
     assertEquals(
         SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
-    assertEquals('none', getComputedStyle(testElement.$.privacyPolicy).display);
+    assertFalse(
+        isVisible(testElement.shadowRoot!.querySelector('#privacyPolicy')));
     assertFalse(testElement.$.secureDnsInputContainer.hidden);
     assertEquals('', testElement.$.secureDnsInput.value);
   });
@@ -231,28 +233,32 @@ suite('SettingsSecureDnsInteractive', function() {
       config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
-    flush();
+    await flushTasks();
 
     const dropdownMenu = testElement.$.resolverSelect;
-    const privacyPolicyLine = testElement.$.privacyPolicy;
+    let privacyPolicyLine: LocalizedLinkElement|null =
+        testElement.shadowRoot!.querySelector('#privacyPolicy');
 
     // Currently selected resolver2.
     assertEquals('1', dropdownMenu.value);
     assertEquals(3, dropdownMenu.selectedIndex);
+    assertTrue(!!privacyPolicyLine);
+    assertTrue(isVisible(privacyPolicyLine));
     assertEquals(
-        'block', getComputedStyle(testElement.$.privacyPolicy).display);
-    assertEquals(
-        resolverList[1]!.policy, privacyPolicyLine.querySelector('a')!.href);
+        resolverList[1]!.policy,
+        privacyPolicyLine.shadowRoot!.querySelector('a')!.href);
 
     // Change to resolver3.
     dropdownMenu.value = '2';
     dropdownMenu.dispatchEvent(new Event('change'));
     assertEquals('2', dropdownMenu.value);
     assertEquals(4, dropdownMenu.selectedIndex);
+    privacyPolicyLine = testElement.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicyLine);
+    assertTrue(isVisible(privacyPolicyLine));
     assertEquals(
-        'block', getComputedStyle(testElement.$.privacyPolicy).display);
-    assertEquals(
-        resolverList[2]!.policy, privacyPolicyLine.querySelector('a')!.href);
+        resolverList[2]!.policy,
+        privacyPolicyLine.shadowRoot!.querySelector('a')!.href);
     assertEquals(
         resolverList[2]!.value,
         testElement.prefs.dns_over_https.templates.value);
@@ -261,9 +267,11 @@ suite('SettingsSecureDnsInteractive', function() {
     testBrowserProxy.reset();
     dropdownMenu.value = SecureDnsResolverType.CUSTOM;
     dropdownMenu.dispatchEvent(new Event('change'));
+    await flushTasks();
     assertEquals(SecureDnsResolverType.CUSTOM, dropdownMenu.value);
     assertEquals(1, dropdownMenu.selectedIndex);
-    assertEquals('none', getComputedStyle(testElement.$.privacyPolicy).display);
+    privacyPolicyLine = testElement.shadowRoot!.querySelector('#privacyPolicy');
+    assertFalse(isVisible(privacyPolicyLine));
     assertTrue(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.$.input.invalid);
     assertEquals(
@@ -304,7 +312,8 @@ suite('SettingsSecureDnsInteractive', function() {
     flush();
 
     const dropdownMenu = testElement.$.resolverSelect;
-    const privacyPolicyLine = testElement.$.privacyPolicy;
+    let privacyPolicyLine: LocalizedLinkElement|null =
+        testElement.shadowRoot!.querySelector('#privacyPolicy');
 
     assertEquals(SecureDnsResolverType.AUTOMATIC, dropdownMenu.value);
 
@@ -312,10 +321,12 @@ suite('SettingsSecureDnsInteractive', function() {
     dropdownMenu.value = '2';
     dropdownMenu.dispatchEvent(new Event('change'));
     assertEquals('2', dropdownMenu.value);
+    privacyPolicyLine = testElement.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicyLine);
+    assertTrue(isVisible(privacyPolicyLine));
     assertEquals(
-        'block', getComputedStyle(testElement.$.privacyPolicy).display);
-    assertEquals(
-        resolverList[2]!.policy, privacyPolicyLine.querySelector('a')!.href);
+        resolverList[2]!.policy,
+        privacyPolicyLine.shadowRoot!.querySelector('a')!.href);
     assertEquals(
         'resolver3_template', testElement.prefs.dns_over_https.templates.value);
 
@@ -335,19 +346,24 @@ suite('SettingsSecureDnsInteractive', function() {
     flush();
     assertFalse(getResolverOptions().hidden);
     assertEquals(SecureDnsResolverType.AUTOMATIC, dropdownMenu.value);
+    privacyPolicyLine = testElement.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicyLine);
+    assertTrue(isVisible(privacyPolicyLine));
     assertEquals(
-        'block', getComputedStyle(testElement.$.privacyPolicy).display);
-    assertEquals(
-        resolverList[1]!.policy, privacyPolicyLine.querySelector('a')!.href);
+        resolverList[1]!.policy,
+        privacyPolicyLine.shadowRoot!.querySelector('a')!.href);
 
     // Switch to resolver 2.
     dropdownMenu.value = '1';
     dropdownMenu.dispatchEvent(new Event('change'));
     assertFalse(getResolverOptions().hidden);
+    privacyPolicyLine = testElement.shadowRoot!.querySelector('#privacyPolicy');
+    assertTrue(!!privacyPolicyLine);
+    assertTrue(
+        isVisible(testElement.shadowRoot!.querySelector('#privacyPolicy')));
     assertEquals(
-        'block', getComputedStyle(testElement.$.privacyPolicy).display);
-    assertEquals(
-        resolverList[1]!.policy, privacyPolicyLine.querySelector('a')!.href);
+        resolverList[1]!.policy,
+        privacyPolicyLine.shadowRoot!.querySelector('a')!.href);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
     assertEquals(

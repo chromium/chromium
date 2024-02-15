@@ -6518,6 +6518,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF" desc="Text for secure DNS dialog to turn off DNS in Privacy options for ChromeOS">
     Turn off
   </message>
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in Network Default mode">
+    Network Default
+  </message>
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION" desc="Description when the user selects Network Default resolver from DNS dropdown menu">
+    Secure connections only work with some default providers. Consider selecting a different provider to ensure you're always using a secure connection.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
     System services
   </message>

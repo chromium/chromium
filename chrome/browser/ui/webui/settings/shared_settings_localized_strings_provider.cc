@@ -259,19 +259,6 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"secureDns", IDS_SETTINGS_SECURE_DNS},
       {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
-      {"secureDnsOsSettingsDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION},
-      {"secureDnsWithIdentifiersDescription",
-       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
-      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-      {"secureDnsDialogCancel",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-      {"secureDnsDialogTurnOff",
-       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
-#endif
       {"secureDnsDisabledForManagedEnvironment",
        IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
       {"secureDnsDisabledForParentalControl",
@@ -292,6 +279,23 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
       {"secureDnsCustomConnectionError",
        IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
+      {"secureDnsOsSettingsDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDnsWithIdentifiersDescription",
+       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+      {"secureDnsDialogCancel",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+      {"secureDnsDialogTurnOff",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
+      {"secureDnsAutomaticModeDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModeNetworkDefaultDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
