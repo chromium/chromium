@@ -488,7 +488,7 @@ def builder(
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
-        skip_profile_upload = False,
+        skip_profile_upload = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
         shadow_free_space = args.DEFAULT,
