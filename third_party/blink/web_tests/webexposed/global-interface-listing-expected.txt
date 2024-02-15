@@ -4952,10 +4952,14 @@ interface HTMLTemplateElement : HTMLElement
     getter content
     getter parseparts
     getter serializable
+    getter shadowRootClonable
+    getter shadowRootDelegatesFocus
     getter shadowRootMode
     method constructor
     setter parseparts
     setter serializable
+    setter shadowRootClonable
+    setter shadowRootDelegatesFocus
     setter shadowRootMode
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag

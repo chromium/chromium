@@ -3766,6 +3766,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      // Killswitch for the reflection of <template shadowrootdelegatesfocus>
+      // attribute. This can be removed in M126 assuming no issues are
+      // encountered.
+      name: "TemplateDelegatesFocusReflection",
+      status: "stable",
+    },
     // For unit tests.
     {
       name: "TestFeature",

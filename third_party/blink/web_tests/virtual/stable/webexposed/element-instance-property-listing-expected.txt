@@ -1037,6 +1037,7 @@ html element td
     property width
 html element template
     property content
+    property shadowRootDelegatesFocus
     property shadowRootMode
 html element textarea
     property autocomplete

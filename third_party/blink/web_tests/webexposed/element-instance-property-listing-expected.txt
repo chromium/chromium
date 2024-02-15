@@ -1107,6 +1107,8 @@ html element template
     property content
     property parseparts
     property serializable
+    property shadowRootClonable
+    property shadowRootDelegatesFocus
     property shadowRootMode
 html element textarea
     property autocomplete
