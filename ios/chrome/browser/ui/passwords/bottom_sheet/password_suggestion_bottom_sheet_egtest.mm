@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
@@ -250,8 +251,7 @@ id<GREYMatcher> OpenKeyboardButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(URL)];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -285,8 +285,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty_autofocus."
                                       "html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginAutofocusPage];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
@@ -301,8 +300,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty_autofocus."
                                       "html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [self loadLoginAutofocusPage];
 
@@ -318,8 +316,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty_passkey."
                                       "html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [self loadLoginPasskeyPage];
 
@@ -341,8 +338,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
@@ -365,8 +361,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -382,8 +377,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -447,8 +441,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetails {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -524,8 +517,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 // Verifies that Password Details is not revealed when local authentication
 // fails.
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
 
@@ -598,8 +590,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -653,8 +644,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetDeletePassword {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -728,8 +718,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetSelectPassword {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -800,8 +789,7 @@ id<GREYMatcher> OpenKeyboardButton() {
 
 // TODO(crbug.com/1474949): Fix flaky test & re-enable.
 - (void)DISABLED_testOpenPasswordBottomSheetExpand {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   NSURL* URL = net::NSURLWithGURL(
       self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
@@ -853,8 +841,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Dismiss #1.
   [self loadLoginPage];
@@ -916,8 +903,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty.html"))];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -957,8 +943,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                            password:@"password"
                                 URL:net::NSURLWithGURL(self.testServer->GetURL(
                                         "/simple_login_form_empty.html"))];
-    [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                  enableSync:NO];
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
     [self loadLoginPage];
 
     [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -1010,8 +995,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                                                   password:@"password2"
                                                        URL:URL
                                                     shared:NO];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -1074,8 +1058,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                                                   password:@"password2"
                                                        URL:URL
                                                     shared:YES];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -1117,8 +1100,7 @@ id<GREYMatcher> OpenKeyboardButton() {
                                       "/simple_login_form_empty.html"))
                            shared:YES];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
