@@ -646,6 +646,11 @@ BASE_FEATURE(kDisableDnsProxy,
              "DisableDnsProxy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disconnect WiFi when the device get connected to Ethernet.
+BASE_FEATURE(kDisconnectWiFiOnEthernetConnected,
+             "DisconnectWiFiOnEthernetConnected",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables indicators to hint where displays are connected.
 BASE_FEATURE(kDisplayAlignAssist,
              "DisplayAlignAssist",

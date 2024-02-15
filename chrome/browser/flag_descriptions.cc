@@ -6209,6 +6209,13 @@ const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
     "Chrome browser.";
 
+const char kDisconnectWiFiOnEthernetConnectedName[] =
+    "Disconnect WiFi on Ethernet";
+const char kDisconnectWiFiOnEthernetConnectedDescription[] =
+    "Automatically disconnect WiFi and prevent it from auto connecting when "
+    "the device gets an Ethernet connection. User are still allowed to connect "
+    "to WiFi manually.";
+
 const char kEnableRFC8925Name[] =
     "Enable RFC8925 (prefer IPv6-only on IPv6-only-capable network)";
 const char kEnableRFC8925Description[] =

@@ -3568,6 +3568,9 @@ extern const char kEnableDisplayPerformanceModeDescription[];
 extern const char kDisableDnsProxyName[];
 extern const char kDisableDnsProxyDescription[];
 
+extern const char kDisconnectWiFiOnEthernetConnectedName[];
+extern const char kDisconnectWiFiOnEthernetConnectedDescription[];
+
 extern const char kEnableRFC8925Name[];
 extern const char kEnableRFC8925Description[];
 

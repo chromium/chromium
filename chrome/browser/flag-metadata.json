@@ -1877,6 +1877,13 @@
     "expiry_milestone": 116
   },
   {
+    "name": "disconnect-wifi-on-ethernet-connected",
+    "owners": [
+      "taoyl@chromium.org", "cros-networking@google.com"
+    ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "discover-feed-sport-card",
     "owners": [
       "adamta@chromium.org", "chrome-feed-fundamentals@google.com"
