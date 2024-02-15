@@ -288,11 +288,20 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
     std::unique_ptr<viz::CopyOutputResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (result->IsEmpty() || result->size() != size_) {
+  if (result->IsEmpty() || result->size().width() < size_.width() - 1 ||
+      result->size().width() > size_.width() + 1 ||
+      result->size().height() < size_.height() - 1 ||
+      result->size().height() > size_.height() + 1) {
     // If the display size changed after the CopyOutputRequest was issued the
     // scale ratio might not produce the right sized output. Drop this result
     // since it's not usable. The next CopyOutputRequest to be issued will know
     // the new display size and have the correct scale ratio.
+    // Note that result->size() is computed, and so may be a +/- one pixel from
+    // the expected size_ value due to rounding and truncation of floating
+    // point values. See b/322075216.
+    LOG(WARNING)
+        << "Ignoring screen capture result due to size mismatch. Expected "
+        << size_.ToString() << " but received " << result->size().ToString();
     return;
   }
 
