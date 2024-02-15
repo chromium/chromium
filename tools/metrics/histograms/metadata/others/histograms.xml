@@ -6459,17 +6459,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InstanceID.GetToken.RequestStatus.FcmInvalidations"
-    enum="GCMRegistrationRequestStatus" expires_after="2024-02-20">
-  <owner>peter@chromium.org</owner>
-  <owner>rushans@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Status code of the outcome of GetToken request for FCM invalidations
-    (subtype was &quot;com.google.chrome.fcm.invalidations&quot;).
-  </summary>
-</histogram>
-
 <histogram name="InstanceID.GetToken.RequestStatus.SyncInvalidations"
     enum="GCMRegistrationRequestStatus" expires_after="2024-07-14">
   <owner>peter@chromium.org</owner>
