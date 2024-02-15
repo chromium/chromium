@@ -156,6 +156,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   gpu::SyncToken GenVerifiedSyncToken() override;
   gpu::SyncToken GenUnverifiedSyncToken() override;
+  void VerifySyncToken(gpu::SyncToken& sync_token) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
 
   void Flush() override;

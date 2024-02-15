@@ -415,9 +415,7 @@ void SharedImageInterfaceProxy::DestroySharedImage(const SyncToken& sync_token,
 
 SyncToken SharedImageInterfaceProxy::GenVerifiedSyncToken() {
   SyncToken sync_token = GenUnverifiedSyncToken();
-  // Force a synchronous IPC to validate sync token.
-  host_->VerifyFlush(UINT32_MAX);
-  sync_token.SetVerifyFlush();
+  VerifySyncToken(sync_token);
   return sync_token;
 }
 
@@ -427,6 +425,12 @@ SyncToken SharedImageInterfaceProxy::GenUnverifiedSyncToken() {
       CommandBufferNamespace::GPU_IO,
       CommandBufferIdFromChannelAndRoute(host_->channel_id(), route_id_),
       next_release_id_);
+}
+
+void SharedImageInterfaceProxy::VerifySyncToken(SyncToken& sync_token) {
+  // Force a synchronous IPC to validate sync token.
+  host_->VerifyFlush(UINT32_MAX);
+  sync_token.SetVerifyFlush();
 }
 
 void SharedImageInterfaceProxy::WaitSyncToken(const SyncToken& sync_token) {

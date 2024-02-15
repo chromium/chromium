@@ -83,9 +83,11 @@ class GPU_EXPORT ClientSharedImage
   explicit ClientSharedImage(
       const Mailbox& mailbox,
       const Metadata& metadata,
+      const SyncToken& sync_token,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder);
   ClientSharedImage(const Mailbox& mailbox,
                     const Metadata& metadata,
+                    const SyncToken& sync_token,
                     GpuMemoryBufferHandleInfo handle_info,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
@@ -118,16 +120,18 @@ class GPU_EXPORT ClientSharedImage
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
     return base::MakeRefCounted<ClientSharedImage>(
-        Mailbox::GenerateForSharedImage(), Metadata(), nullptr);
+        Mailbox::GenerateForSharedImage(), Metadata(), gpu::SyncToken(),
+        nullptr);
   }
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,
       const Metadata& metadata,
+      const SyncToken& sync_token,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
-    auto client_si =
-        base::MakeRefCounted<ClientSharedImage>(mailbox, metadata, sii_holder);
+    auto client_si = base::MakeRefCounted<ClientSharedImage>(
+        mailbox, metadata, sync_token, sii_holder);
     client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
     return client_si;
   }
@@ -138,6 +142,7 @@ class GPU_EXPORT ClientSharedImage
 
   const Mailbox mailbox_;
   const Metadata metadata_;
+  SyncToken creation_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 };

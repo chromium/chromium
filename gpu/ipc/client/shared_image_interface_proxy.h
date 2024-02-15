@@ -123,6 +123,7 @@ class SharedImageInterfaceProxy {
 
   SyncToken GenVerifiedSyncToken();
   SyncToken GenUnverifiedSyncToken();
+  void VerifySyncToken(SyncToken& sync_token);
   void WaitSyncToken(const SyncToken& sync_token);
   void Flush();
 

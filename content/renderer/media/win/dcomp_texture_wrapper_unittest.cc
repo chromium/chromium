@@ -44,7 +44,7 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
         gpu::Mailbox::GenerateForSharedImage(),
         gpu::ClientSharedImage::Metadata(format, size, color_space,
                                          surface_origin, alpha_type, usage),
-        holder_);
+        gpu::SyncToken(), holder_);
   }
 
  protected:

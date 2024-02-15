@@ -167,6 +167,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 #endif  // BUILDFLAG(IS_FUCHSIA)
   SyncToken GenUnverifiedSyncToken() override;
   SyncToken GenVerifiedSyncToken() override;
+  void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
   void Flush() override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(

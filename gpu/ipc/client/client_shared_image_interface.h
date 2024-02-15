@@ -43,6 +43,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
 #endif  // BUILDFLAG(IS_FUCHSIA)
   SyncToken GenUnverifiedSyncToken() override;
   SyncToken GenVerifiedSyncToken() override;
+  void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   void Flush() override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(

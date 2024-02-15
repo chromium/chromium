@@ -337,6 +337,9 @@ class GPU_EXPORT SharedImageInterface
   // commands on this interface have executed on the service side.
   virtual SyncToken GenVerifiedSyncToken() = 0;
 
+  // Verifies the SyncToken.
+  virtual void VerifySyncToken(gpu::SyncToken& sync_token) = 0;
+
   // Wait on this SyncToken to be released before executing new commands on
   // this interface on the service side. This is an async wait for all the
   // previous commands which will be sent to server on the next flush().

@@ -240,7 +240,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
@@ -303,7 +303,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
@@ -367,7 +367,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      GetGpuMemoryBufferHandleInfo(mailbox), holder_);
+      GenUnverifiedSyncToken(), GetGpuMemoryBufferHandleInfo(mailbox), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
@@ -483,6 +483,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
+      GenUnverifiedSyncToken(),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), format, size,
                                 buffer_usage),
       holder_);
@@ -525,7 +526,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 }
 SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
@@ -590,7 +591,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
       mailbox,
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 
   return shared_image_mapping;
 }
@@ -667,7 +668,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
           viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer->GetFormat()),
           gpu_memory_buffer->GetSize(), color_space, surface_origin, alpha_type,
           usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
@@ -826,8 +827,12 @@ SyncToken SharedImageInterfaceInProcess::GenUnverifiedSyncToken() {
 SyncToken SharedImageInterfaceInProcess::GenVerifiedSyncToken() {
   base::AutoLock lock(lock_);
   SyncToken sync_token = MakeSyncToken(next_fence_sync_release_ - 1);
-  sync_token.SetVerifyFlush();
+  VerifySyncToken(sync_token);
   return sync_token;
+}
+
+void SharedImageInterfaceInProcess::VerifySyncToken(SyncToken& sync_token) {
+  sync_token.SetVerifyFlush();
 }
 
 void SharedImageInterfaceInProcess::WaitSyncToken(const SyncToken& sync_token) {

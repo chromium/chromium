@@ -43,7 +43,7 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
       Mailbox(),
       ClientSharedImage::Metadata(format, size, color_space, surface_origin,
                                   alpha_type, usage),
-      holder_);
+      GenUnverifiedSyncToken(), holder_);
 }
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
