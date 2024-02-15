@@ -851,6 +851,7 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
       location_bar->navigation_params().url_typed_without_scheme;
   params.url_typed_with_http_scheme =
       location_bar->navigation_params().url_typed_with_http_scheme;
+  params.extra_headers = location_bar->navigation_params().extra_headers;
   auto result = Navigate(&params);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

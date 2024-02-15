@@ -1768,6 +1768,40 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
   }
 }
 
+TEST_F(AutocompleteControllerTest, ExtraHeaders) {
+  // Populate template URL service with starter pack entries.
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    controller_.template_url_service_->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+  {
+    SCOPED_TRACE("@google starter pack match get an extra header.");
+    auto match = CreateStarterPackMatch(u"@google");
+    // searchbox_stats need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
+    match.search_terms_args->searchbox_stats.set_client_name("chrome");
+
+    controller_.UpdateMatchDestinationURLWithAdditionalSearchboxStats(
+        base::Milliseconds(123), &match);
+    EXPECT_EQ(match.extra_headers, kOmniboxGoogleHeader);
+  }
+  {
+    SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");
+    auto match = CreateStarterPackMatch(u"@bookmarks");
+    // searchbox_stats need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
+    match.search_terms_args->searchbox_stats.set_client_name("chrome");
+
+    controller_.UpdateMatchDestinationURLWithAdditionalSearchboxStats(
+        base::Milliseconds(123), &match);
+    EXPECT_EQ(match.extra_headers, "");
+  }
+}
+
 TEST_F(AutocompleteControllerTest, ShouldRunProvider) {
   // Disable LimitKeywordModeSuggestions flag.
   base::test::ScopedFeatureList scoped_feature_list;

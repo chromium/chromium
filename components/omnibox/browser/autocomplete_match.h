@@ -710,6 +710,10 @@ struct AutocompleteMatch {
   // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
+  // Extra headers to add to the navigation. See `NavigateParams::extra_headers`
+  // for how headers should be represented.
+  std::string extra_headers;
+
   // Optional image information. Used for entity suggestions. The dominant color
   // can be used to paint the image placeholder while fetching the image.
   std::string image_dominant_color;

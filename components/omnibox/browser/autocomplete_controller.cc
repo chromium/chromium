@@ -75,6 +75,7 @@
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -814,9 +815,14 @@ void AutocompleteController::
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
-  auto url = ComputeURLFromSearchTermsArgs(
-      match->GetTemplateURL(template_url_service_, false),
-      *match->search_terms_args);
+  const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
+  // Append an extra header to navigations from the AskGoogle built-in keyword.
+  if (turl &&
+      turl->GetBuiltinEngineType() == KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE) {
+    match->extra_headers = kOmniboxGoogleHeader;
+  }
+
+  auto url = ComputeURLFromSearchTermsArgs(turl, *match->search_terms_args);
   if (url.is_valid()) {
     match->destination_url = std::move(url);
   }
@@ -826,7 +832,7 @@ void AutocompleteController::SetMatchDestinationURL(
 }
 
 GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
-    TemplateURL* template_url,
+    const TemplateURL* template_url,
     const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
   if (!template_url) {
     return GURL();

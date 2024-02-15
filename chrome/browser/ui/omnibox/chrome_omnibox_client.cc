@@ -477,7 +477,7 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
   location_bar_->set_navigation_params(LocationBar::NavigationParams(
       destination_url, disposition, transition, match_selection_timestamp,
       destination_url_entered_without_scheme,
-      destination_url_entered_with_http_scheme));
+      destination_url_entered_with_http_scheme, match.extra_headers));
 
   if (browser_) {
     auto navigation = chrome::OpenCurrentURL(browser_);

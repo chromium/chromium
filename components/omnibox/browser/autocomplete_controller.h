@@ -53,6 +53,11 @@ class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
 
+// The header used to report whether a navigation to google.com is coming from
+// omnibox. Only set when the navigation is initiated from the AskGoogle
+// built-in keyword.
+inline constexpr char kOmniboxGoogleHeader[] = "X-Omnibox-Google:1";
+
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
 // AutocompleteProviders to serve it.  The owning class can ask the controller
@@ -435,7 +440,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // TODO(1418077): look for a way to dissolve this function into direct
   // application where it's needed.
   GURL ComputeURLFromSearchTermsArgs(
-      TemplateURL* template_url,
+      const TemplateURL* template_url,
       const TemplateURLRef::SearchTermsArgs& args) const;
 
   // May remove company entity images if omnibox::kCompanyEntityIconAdjustment
