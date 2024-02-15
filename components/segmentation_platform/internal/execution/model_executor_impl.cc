@@ -208,11 +208,18 @@ void ModelExecutorImpl::OnModelExecutionComplete(
 
     const SegmentInfo* latest_info = segment_db_->GetCachedSegmentInfo(
         state->segment_id, state->model_source);
-    if (latest_info->model_version() != state->model_version) {
-      // The version could have changed if new model is downloaded during
-      // execution. This should not affect the metrics recording below.
-      LOG(ERROR) << "Model version changed during execution";
+    // The version could have changed if new model is downloaded during
+    // execution, or if the model was deleted.
+    if (!latest_info || latest_info->model_version() != state->model_version) {
+      VLOG(1) << "Segmentation model was updated during execution "
+              << proto::SegmentId_Name(state->segment_id);
+      RunModelExecutionCallback(
+          *state, std::move(state->callback),
+          std::make_unique<ModelExecutionResult>(
+              ModelExecutionStatus::kSkippedModelNotReady));
+      return;
     }
+
 
     const proto::SegmentationModelMetadata& model_metadata =
         latest_info->model_metadata();
