@@ -1,3 +1,16 @@
 This is a wdspec test.
-Harness Error. harness_status.status = 1 , harness_status.message = 
+[FAIL] test_find_by_locator_limit_return_count[css_single]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_find_by_locator_limit_return_count[xpath_single]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_find_by_locator_limit_return_count[inner_text_single]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_find_by_locator_limit_return_count[css_multiple]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_find_by_locator_limit_return_count[xpath_multiple]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_find_by_locator_limit_return_count[inner_text_multiple]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_several_context_nodes
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
 Harness: the test ran to completion.

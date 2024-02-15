@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_partition_context_frame
-  IndexError: list index out of range
-Harness: the test ran to completion.

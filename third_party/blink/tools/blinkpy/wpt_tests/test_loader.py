@@ -133,23 +133,27 @@ class TestLoader(testloader.TestLoader):
             # Temporarily expect PASS so that unexpected passes don't contribute
             # to retries or build failures.
             test_statuses.add(Status.PASS.name)
+        elif ResultType.Failure in exp_line.results or not harness_errors:
+            # Add `OK` for `[ Failure ]` lines or no explicit harness error in
+            # the baseline.
+            test_statuses.update(
+                chromium_to_wptrunner_statuses(frozenset([ResultType.Pass]),
+                                               test_type))
         elif len(harness_errors) > 1:
             raise ValueError(
                 f'testharness baseline for {exp_line.test!r} can only have up '
                 f'to one harness error; found {harness_errors!r}.')
-        elif harness_errors:
+        else:
             error = harness_errors.pop()
             test_statuses = test_statuses & {'CRASH', 'TIMEOUT'}
             test_statuses.update(status.name for status in error.statuses)
-        else:
-            test_statuses.add('OK')
 
         assert test_statuses, exp_line.to_string()
         test_ast = _build_expectation_ast(_test_basename(exp_line.test),
                                           normalize_statuses(test_statuses))
-        # If any failure is expected or the test is never expected to complete,
-        # the baseline is allowed to be anything. To mimic this, skip creating
-        # any explicit subtests, and rely on implicit subtest creation.
+        # If `[ Failure ]` is expected, the baseline is allowed to be anything.
+        # To mimic this, skip creating any explicit subtests, and rely on
+        # implicit subtest creation.
         if ResultType.Failure in exp_line.results:
             expect_any = wptnode.KeyValueNode('expect_any_subtests')
             expect_any.append(wptnode.AtomNode(True))

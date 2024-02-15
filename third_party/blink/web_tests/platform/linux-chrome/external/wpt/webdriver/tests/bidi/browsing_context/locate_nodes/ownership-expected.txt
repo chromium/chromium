@@ -1,3 +1,6 @@
 This is a wdspec test.
-Harness Error. harness_status.status = 1 , harness_status.message = 
+[FAIL] test_root_ownership_of_located_nodes[root-True]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_root_ownership_of_located_nodes[none-False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
 Harness: the test ran to completion.

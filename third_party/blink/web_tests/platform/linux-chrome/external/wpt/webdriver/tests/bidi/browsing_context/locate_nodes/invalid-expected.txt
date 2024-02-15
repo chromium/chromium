@@ -1,3 +1,106 @@
 This is a wdspec test.
-Harness Error. harness_status.status = 1 , harness_status.message = 
+[FAIL] test_params_context_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_context_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_context_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_context_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_context_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_value[]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_type_invalid_value[invalid]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_value_invalid_value[css-a*b]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_value_invalid_value[xpath-]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_value_invalid_value[innerText-]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_locator_xpath_unknown_error
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_type[string]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_type[1.5]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_value[0]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_max_node_count_invalid_value[9007199254740992]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_ownership_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_ownership_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_ownership_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_ownership_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_ownership_invalid_value
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_sandbox_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_sandbox_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_sandbox_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_sandbox_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_serialization_options_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_serialization_options_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_serialization_options_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_serialization_options_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_invalid_type[string]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_empty_list
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_not_dom_node[value0]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_not_dom_node[value1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_not_dom_node[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_not_dom_node[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.querySelector('input#button').attributes[0]]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.querySelector('#with-text-node').childNodes[0]]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.createProcessingInstruction("xml-stylesheet", "href='foo.css'")]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.querySelector('#with-comment').childNodes[0]]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.doctype]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.getElementsByTagName('div')]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
+[FAIL] test_params_start_nodes_dom_node_not_element[document.querySelectorAll('div')]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
 Harness: the test ran to completion.
