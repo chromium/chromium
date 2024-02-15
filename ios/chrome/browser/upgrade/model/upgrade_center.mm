@@ -223,18 +223,10 @@ class UpgradeInfoBarDismissObserver
 }
 @synthesize handler = _handler;
 
-+ (UpgradeCenter*)sharedInstance {
-  static UpgradeCenter* obj;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    obj = [[self alloc] init];
-  });
-  return obj;
-}
-
 - (instancetype)init {
   self = [super init];
   if (self) {
+    DCHECK(GetApplicationContext()->GetLocalState());
     _upgradeInfoBarDelegates = [[NSMutableDictionary alloc] init];
 
     // There is no dealloc and no unregister as this class is a never
@@ -450,7 +442,7 @@ class UpgradeInfoBarDismissObserver
 }
 
 - (void)resetForTests {
-  [[UpgradeCenter sharedInstance] hideUpgradeInfoBars];
+  [self hideUpgradeInfoBars];
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults removeObjectForKey:kIOSChromeUpToDateKey];

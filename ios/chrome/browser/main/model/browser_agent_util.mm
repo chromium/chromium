@@ -124,8 +124,13 @@ void AttachBrowserAgents(Browser* browser) {
     SyncErrorBrowserAgent::CreateForBrowser(browser);
   }
 
-  UpgradeCenterBrowserAgent::CreateForBrowser(browser,
-                                              [UpgradeCenter sharedInstance]);
+  // The UpgradeCenter may be null (e.g. in unit tests). Do not create the
+  // UpgradeCenterBrowserAgent in that case.
+  if (UpgradeCenter* upgrade_center =
+          GetApplicationContext()->GetUpgradeCenter()) {
+    UpgradeCenterBrowserAgent::CreateForBrowser(browser, upgrade_center);
+  }
+
   WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   ReadingListBrowserAgent::CreateForBrowser(browser);
 

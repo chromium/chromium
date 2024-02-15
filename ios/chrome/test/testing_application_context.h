@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace network {
 class TestNetworkConnectionTracker;
@@ -46,10 +46,14 @@ class TestingApplicationContext : public ApplicationContext {
   void SetVariationsService(variations::VariationsService* variations_service);
 
   // Sets the SystemIdentityManager.
-  // Must be set before `GetSystemIdentityManager`is called (i.e. before
+  // Must be set before `GetSystemIdentityManager` is called (i.e. before
   // creating a TestChromeBrowserState).
   void SetSystemIdentityManager(
       std::unique_ptr<SystemIdentityManager> system_identity_manager);
+
+  // Sets the UpgradeCenter.
+  // Must be set before `GetUpgradeCenter` is called.
+  void SetUpgradeCenter(UpgradeCenter* upgrade_center);
 
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
@@ -84,6 +88,7 @@ class TestingApplicationContext : public ApplicationContext {
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
+  UpgradeCenter* GetUpgradeCenter() override;
 
  private:
   base::ThreadChecker thread_checker_;
@@ -109,6 +114,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
+  __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

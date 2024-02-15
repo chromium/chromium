@@ -46,6 +46,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/update_client/model",
+    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/common",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",

@@ -58,7 +58,8 @@ NSString* const kStartProfileStartupTaskRunners =
   OmahaService::Start(
       GetApplicationContext()->GetSharedURLLoaderFactory()->Clone(),
       base::BindRepeating(^(const UpgradeRecommendedDetails& details) {
-        [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+        [GetApplicationContext()->GetUpgradeCenter()
+            upgradeNotificationDidOccur:details];
       }));
 }
 

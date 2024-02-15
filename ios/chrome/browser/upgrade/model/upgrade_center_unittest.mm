@@ -17,12 +17,19 @@ class UpgradeCenterTest : public PlatformTest {
 
  protected:
   void SetUp() override {
-    [[UpgradeCenter sharedInstance] resetForTests];
+    upgrade_center_ = [[UpgradeCenter alloc] init];
     count_ = 0;
   }
 
-  void TearDown() override { [[UpgradeCenter sharedInstance] resetForTests]; }
+  void TearDown() override {
+    @autoreleasepool {
+      [upgrade_center_ resetForTests];
+      upgrade_center_ = nil;
+    }
+  }
+
   IOSChromeScopedTestingLocalState scoped_local_state_;
+  __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
 }  // namespace
@@ -55,87 +62,87 @@ TEST_F(UpgradeCenterTest, NoUpgrade) {
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
+  [upgrade_center_ registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
-  [[UpgradeCenter sharedInstance] unregisterClient:fake];
+  [upgrade_center_ unregisterClient:fake];
 }
 
 TEST_F(UpgradeCenterTest, GoodUpgradeAfterRegistration) {
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
+  [upgrade_center_ registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   UpgradeRecommendedDetails details;
   details.next_version = "9999.9999.9999.9999";
   details.upgrade_url = GURL("http://foobar.org");
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 1u);
-  [[UpgradeCenter sharedInstance] unregisterClient:fake];
+  [upgrade_center_ unregisterClient:fake];
 }
 
 TEST_F(UpgradeCenterTest, GoodUpgradeBeforeRegistration) {
   UpgradeRecommendedDetails details;
   details.next_version = "9999.9999.9999.9999";
   details.upgrade_url = GURL("http://foobar.org");
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
+  [upgrade_center_ registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 1u);
-  [[UpgradeCenter sharedInstance] unregisterClient:fake];
+  [upgrade_center_ unregisterClient:fake];
 }
 
 TEST_F(UpgradeCenterTest, NoRepeatedDisplay) {
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
+  [upgrade_center_ registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   // First notification should display
   UpgradeRecommendedDetails details;
   details.next_version = "9999.9999.9999.9999";
   details.upgrade_url = GURL("http://foobar.org");
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 1u);
 
   // Second shouldn't, since it was just displayed.
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 1u);
 
   // After enough time has elapsed, it should again.
-  [[UpgradeCenter sharedInstance] setLastDisplayToPast];
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ setLastDisplayToPast];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 2u);
 
-  [[UpgradeCenter sharedInstance] unregisterClient:fake];
+  [upgrade_center_ unregisterClient:fake];
 }
 
 TEST_F(UpgradeCenterTest, NewVersionResetsInterval) {
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
+  [upgrade_center_ registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   // First notification should display
   UpgradeRecommendedDetails details;
   details.next_version = "9999.9999.9999.9998";
   details.upgrade_url = GURL("http://foobar.org");
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 1u);
 
   // Second shouldn't, since it was just displayed.
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 1u);
 
   // A new version should show right away though.
   details.next_version = "9999.9999.9999.9999";
-  [[UpgradeCenter sharedInstance] upgradeNotificationDidOccur:details];
+  [upgrade_center_ upgradeNotificationDidOccur:details];
   EXPECT_EQ(count_, 2u);
 
-  [[UpgradeCenter sharedInstance] unregisterClient:fake];
+  [upgrade_center_ unregisterClient:fake];
 }
 
 }  // namespace

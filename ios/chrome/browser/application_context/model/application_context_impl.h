@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace base {
 class CommandLine;
@@ -84,6 +84,7 @@ class ApplicationContextImpl : public ApplicationContext {
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
+  UpgradeCenter* GetUpgradeCenter() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -156,6 +157,8 @@ class ApplicationContextImpl : public ApplicationContext {
       segmentation_otr_web_state_observer_;
 
   std::unique_ptr<PushNotificationService> push_notification_service_;
+
+  __strong UpgradeCenter* upgrade_center_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

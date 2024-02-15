@@ -91,6 +91,12 @@ void TestingApplicationContext::SetSystemIdentityManager(
   system_identity_manager_ = std::move(system_identity_manager);
 }
 
+void TestingApplicationContext::SetUpgradeCenter(
+    UpgradeCenter* upgrade_center) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  upgrade_center_ = upgrade_center;
+}
+
 void TestingApplicationContext::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
@@ -268,4 +274,9 @@ TestingApplicationContext::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
+}
+
+UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return upgrade_center_;
 }
