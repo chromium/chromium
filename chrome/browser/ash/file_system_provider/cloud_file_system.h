@@ -137,7 +137,7 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   const std::string GetFileSystemId() const;
   void OnTimer();
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
-  raw_ptr<ContentCache> content_cache_;  // Not owned.
+  raw_ptr<ContentCache, DanglingUntriaged> content_cache_;  // Not owned.
   base::MetronomeTimer timer_;
   int file_manager_watchers_ = 0;
 

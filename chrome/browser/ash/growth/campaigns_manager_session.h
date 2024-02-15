@@ -36,7 +36,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver {
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  raw_ptr<Profile> profile_for_testing_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
 
   base::WeakPtrFactory<CampaignsManagerSession> weak_ptr_factory_{this};
 };

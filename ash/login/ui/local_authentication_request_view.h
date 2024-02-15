@@ -69,7 +69,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
     LocalAuthenticationRequestViewState state() const;
 
    private:
-    raw_ptr<LocalAuthenticationRequestView> view_;
+    raw_ptr<LocalAuthenticationRequestView, DanglingUntriaged> view_;
   };
 
   // Creates local authentication request view that will enable the user to

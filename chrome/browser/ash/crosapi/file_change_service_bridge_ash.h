@@ -38,7 +38,7 @@ class FileChangeServiceBridgeAsh : public mojom::FileChangeServiceBridge {
 
   // The Ash profile associated with the `FileChangeService` for which this
   // bridge exists.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // The set of receivers bound to `this` for use by crosapi.
   mojo::ReceiverSet<mojom::FileChangeServiceBridge> receivers_;

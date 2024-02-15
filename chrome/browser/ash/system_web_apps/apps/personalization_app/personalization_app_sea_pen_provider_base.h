@@ -102,7 +102,7 @@ class PersonalizationAppSeaPenProviderBase
   manta::proto::FeatureName feature_name_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // When recent sea pen images are fetched, store the valid file paths in the
   // set. This is checked when the SWA requests thumbnail data or sets an image

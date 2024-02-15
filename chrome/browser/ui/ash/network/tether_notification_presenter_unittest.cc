@@ -82,7 +82,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     }
 
    private:
-    raw_ptr<Profile> last_profile_ = nullptr;
+    raw_ptr<Profile, DanglingUntriaged> last_profile_ = nullptr;
     std::string last_settings_subpage_;
   };
 
