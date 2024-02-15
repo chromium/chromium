@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -23,7 +24,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
@@ -1111,8 +1111,8 @@ bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
     return false;
   }
 
-  base::StringPiece cka_id_str(reinterpret_cast<char*>(cka_id->data),
-                               cka_id->len);
+  std::string_view cka_id_str(reinterpret_cast<char*>(cka_id->data),
+                              cka_id->len);
 
   // Only keys generated/stored by extensions/Chrome should be visible to
   // extensions. Oemcrypto stores its key in the TPM, but that should not
