@@ -2153,78 +2153,25 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   EXPECT_EQ(3U, credit_cards.size());
 }
 
-TEST_F(PersonalDataManagerTest, RecordUseOf) {
-  // Create the test clock and set the time to a specific value.
+TEST_F(PersonalDataManagerTest, RecordUseOfCard) {
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime);
-
-  auto Check = [](const AutofillDataModel& data_model, size_t use_count,
-                  base::Time use_date, base::Time modification_date) {
-    EXPECT_EQ(use_count, data_model.use_count());
-    EXPECT_EQ(use_date, data_model.use_date());
-    EXPECT_EQ(modification_date, data_model.modification_date());
-  };
-
-  AutofillProfile profile(test::GetFullProfile());
-  Check(profile, 1u, kArbitraryTime, kArbitraryTime);
-  AddProfileToPersonalDataManager(profile);
-
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card, "John Dillinger",
-                          "4234567890123456" /* Visa */, "01", "2999", "1");
-  Check(credit_card, 1u, kArbitraryTime, kArbitraryTime);
-  personal_data_->AddCreditCard(credit_card);
-
-  // Make sure everything is set up correctly.
+  CreditCard card = test::GetCreditCard();
+  ASSERT_EQ(card.use_count(), 1u);
+  ASSERT_EQ(card.use_date(), kArbitraryTime);
+  ASSERT_EQ(card.modification_date(), kArbitraryTime);
+  personal_data_->AddCreditCard(card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
-  // Set the current time to another value.
   test_clock.SetNow(kSomeLaterTime);
+  personal_data_->RecordUseOf(&card);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
-  // Notify the PDM that the profile and credit card were used.
-  AutofillProfile* added_profile =
-      personal_data_->GetProfileByGUID(profile.guid());
-  ASSERT_TRUE(added_profile);
-  EXPECT_EQ(*added_profile, profile);
-  Check(*added_profile, 1u, kArbitraryTime, kArbitraryTime);
-
-  CreditCard* added_card =
-      personal_data_->GetCreditCardByGUID(credit_card.guid());
-  ASSERT_TRUE(added_card);
-  EXPECT_EQ(*added_card, credit_card);
-  Check(*added_card, 1u, kArbitraryTime, kArbitraryTime);
-
-  // Use |profile|, then verify usage stats.
-  {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-    personal_data_->RecordUseOf(&profile);
-    std::move(waiter).Wait();
-  }
-
-  added_profile = personal_data_->GetProfileByGUID(profile.guid());
-  added_card = personal_data_->GetCreditCardByGUID(credit_card.guid());
-  ASSERT_TRUE(added_profile);
-  ASSERT_TRUE(added_card);
-  Check(*added_profile, 2u, kSomeLaterTime, kArbitraryTime);
-  Check(*added_card, 1u, kArbitraryTime, kArbitraryTime);
-
-  // Use |credit_card|, then verify usage stats.
-  {
-    PersonalDataProfileTaskWaiter waiter(*personal_data_);
-    EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-    personal_data_->RecordUseOf(&credit_card);
-    std::move(waiter).Wait();
-  }
-
-  added_profile = personal_data_->GetProfileByGUID(profile.guid());
-  added_card = personal_data_->GetCreditCardByGUID(credit_card.guid());
-  ASSERT_TRUE(added_profile);
-  ASSERT_TRUE(added_card);
-  Check(*added_profile, 2u, kSomeLaterTime, kArbitraryTime);
-  Check(*added_card, 2u, kSomeLaterTime, kArbitraryTime);
+  CreditCard* pdm_card = personal_data_->GetCreditCardByGUID(card.guid());
+  ASSERT_TRUE(pdm_card);
+  EXPECT_EQ(pdm_card->use_count(), 2u);
+  EXPECT_EQ(pdm_card->use_date(), kSomeLaterTime);
+  EXPECT_EQ(pdm_card->modification_date(), kArbitraryTime);
 }
 
 TEST_F(PersonalDataManagerTest, ClearAllLocalData) {

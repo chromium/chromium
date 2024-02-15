@@ -766,6 +766,27 @@ TEST_F(AddressDataManagerTest,
   EXPECT_EQ(personal_data_->GetProfiles()[0]->use_date(), newer_use_data);
 }
 
+TEST_F(AddressDataManagerTest, RecordUseOf) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  AutofillProfile profile = test::GetFullProfile();
+  ASSERT_EQ(profile.use_count(), 1u);
+  ASSERT_EQ(profile.use_date(), kArbitraryTime);
+  ASSERT_EQ(profile.modification_date(), kArbitraryTime);
+  AddProfileToPersonalDataManager(profile);
+
+  test_clock.SetNow(kSomeLaterTime);
+  personal_data_->RecordUseOf(&profile);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  AutofillProfile* adm_profile =
+      personal_data_->GetProfileByGUID(profile.guid());
+  ASSERT_TRUE(adm_profile);
+  EXPECT_EQ(adm_profile->use_count(), 2u);
+  EXPECT_EQ(adm_profile->use_date(), kSomeLaterTime);
+  EXPECT_EQ(adm_profile->modification_date(), kArbitraryTime);
+}
+
 }  // namespace
 
 }  // namespace autofill
