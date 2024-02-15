@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ADDRESS_ACCESSORY_CONTROLLER_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ADDRESS_ACCESSORY_CONTROLLER_H_
 
-#include "chrome/browser/autofill/accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -43,4 +43,4 @@ class AddressAccessoryController : public AccessoryController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ADDRESS_ACCESSORY_CONTROLLER_H_

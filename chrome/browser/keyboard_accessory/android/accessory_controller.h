@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_CONTROLLER_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_CONTROLLER_H_
 
 #include <optional>
 
@@ -55,4 +55,4 @@ class AccessoryController {
                                bool enabled) = 0;
 };
 
-#endif  // CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ACCESSORY_CONTROLLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/manual_filling_controller_impl.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 
 #include <numeric>
 #include <optional>
@@ -18,12 +18,12 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "chrome/browser/autofill/address_accessory_controller.h"
-#include "chrome/browser/autofill/credit_card_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
-#include "chrome/browser/password_manager/android/password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 

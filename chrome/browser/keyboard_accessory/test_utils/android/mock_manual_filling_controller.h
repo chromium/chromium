@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_TEST_UTILS_ANDROID_MOCK_MANUAL_FILLING_CONTROLLER_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_TEST_UTILS_ANDROID_MOCK_MANUAL_FILLING_CONTROLLER_H_
 
-#include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockManualFillingController : public ManualFillingController {
@@ -73,4 +73,4 @@ class MockManualFillingController : public ManualFillingController {
   base::WeakPtrFactory<MockManualFillingController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_TEST_UTILS_ANDROID_MOCK_MANUAL_FILLING_CONTROLLER_H_

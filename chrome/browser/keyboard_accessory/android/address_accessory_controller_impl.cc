@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/address_accessory_controller_impl.h"
+#include "chrome/browser/keyboard_accessory/android/address_accessory_controller_impl.h"
 
 #include <utility>
 
@@ -11,8 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
-#include "chrome/browser/autofill/manual_filling_controller.h"
-#include "chrome/browser/autofill/manual_filling_utils.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"

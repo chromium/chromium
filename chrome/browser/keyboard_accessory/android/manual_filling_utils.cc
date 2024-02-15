@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/manual_filling_utils.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 
 #include <utility>
 #include <vector>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/address_accessory_controller_impl.h"
+#include "chrome/browser/keyboard_accessory/android/address_accessory_controller_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -11,8 +11,8 @@
 #include <vector>
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/autofill/accessory_controller.h"
-#include "chrome/browser/autofill/mock_manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill/credit_card_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/credit_card_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -115,4 +115,4 @@ class CreditCardAccessoryControllerImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_

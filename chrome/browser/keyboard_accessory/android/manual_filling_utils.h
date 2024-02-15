@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_UTILS_H_
-#define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_UTILS_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_MANUAL_FILLING_UTILS_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_MANUAL_FILLING_UTILS_H_
 
 #include <vector>
 
@@ -21,4 +21,4 @@ AccessorySheetData CreateAccessorySheetData(
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_UTILS_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_MANUAL_FILLING_UTILS_H_

@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill/manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/common/password_generation_util.h"
