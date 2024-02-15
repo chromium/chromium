@@ -10030,7 +10030,7 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_proxy_a_ip_protection_phase_0_2023-09-28",
+                    "name": "enabled_proxy_a_ip_protection_phase_02_15_2024",
                     "params": {
                         "IpPrivacyDirectOnly": "false"
                     },
@@ -10040,13 +10040,16 @@
                     ]
                 },
                 {
-                    "name": "enabled_direct_ip_protection_phase_0_2023-09-28",
+                    "name": "control_ip_protection_phase_02_15_2024",
                     "params": {
+                        "IpPrivacyAuthTokenCacheBatchSize": "1",
+                        "IpPrivacyAuthTokenCacheLowWaterMark": "1",
                         "IpPrivacyDirectOnly": "true",
                         "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
-                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
+                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/darklaunch/getInitialData",
                         "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
-                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth"
+                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/darklaunch/auth",
+                        "MaskedDomainListExperimentalVersion": "3d"
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
@@ -10054,13 +10057,16 @@
                     ]
                 },
                 {
-                    "name": "control_prestable_phase0_2023-09-28",
+                    "name": "enabled_proxy_a_ip_protection_phase_02_15_2024",
                     "params": {
-                        "IpPrivacyDirectOnly": "false",
+                        "IpPrivacyAuthTokenCacheBatchSize": "1",
+                        "IpPrivacyAuthTokenCacheLowWaterMark": "1",
+                        "IpPrivacyDirectOnly": "true",
                         "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
-                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
+                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/darklaunch/getInitialData",
                         "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
-                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth"
+                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/darklaunch/auth",
+                        "MaskedDomainListExperimentalVersion": "3c"
                     },
                     "disable_features": [
                         "EnableIpPrivacyProxy",
