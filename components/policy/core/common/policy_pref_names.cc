@@ -159,6 +159,9 @@ const char kForcePermissionPolicyUnloadDefaultEnabled[] =
 // applied when a AlwaysOn VPN is active but not connected.
 const char kAlwaysOnVpnPreConnectUrlAllowlist[] =
     "policy.alwayson_vpn_pre_connect_url_allowlist";
+
+// Boolean value for the FloatingWorkspaceEnabled policy
+const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 #endif
 }  // namespace policy_prefs
 }  // namespace policy

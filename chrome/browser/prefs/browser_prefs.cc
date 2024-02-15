@@ -1920,6 +1920,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterListPref(
       chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
       PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(policy::policy_prefs::kFloatingWorkspaceEnabled,
+                                false);
   ::reporting::RegisterProfilePrefs(registry);
 #if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);

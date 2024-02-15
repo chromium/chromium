@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -41,7 +42,6 @@ PrefService* GetActiveUserPrefService() {
 namespace floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kFloatingWorkspaceEnabled, false);
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
 }
 
@@ -56,13 +56,15 @@ bool IsFloatingWorkspaceV2Enabled() {
     return false;
   }
   const PrefService::Preference* floating_workspace_pref =
-      pref_service->FindPreference(prefs::kFloatingWorkspaceEnabled);
+      pref_service->FindPreference(
+          policy::policy_prefs::kFloatingWorkspaceEnabled);
 
   DCHECK(floating_workspace_pref);
 
   if (floating_workspace_pref->IsManaged()) {
     // If there is a policy managing the pref, return what is set by policy.
-    return pref_service->GetBoolean(prefs::kFloatingWorkspaceEnabled);
+    return pref_service->GetBoolean(
+        policy::policy_prefs::kFloatingWorkspaceEnabled);
   }
 
   // TODO(b/297795546): Remove external ash feature flag.

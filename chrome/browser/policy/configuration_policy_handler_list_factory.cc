@@ -1011,6 +1011,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebPrintingBlockedForUrls,
     prefs::kManagedWebPrintingBlockedForUrls,
     base::Value::Type::LIST },
+  { key::kFloatingWorkspaceEnabled,
+    policy_prefs::kFloatingWorkspaceEnabled,
+    base::Value::Type::BOOLEAN
+  },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1530,9 +1534,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kProjectorDogfoodForFamilyLinkEnabled,
     ash::prefs::kProjectorDogfoodForFamilyLinkEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kFloatingWorkspaceEnabled,
-    ash::prefs::kFloatingWorkspaceEnabled,
     base::Value::Type::BOOLEAN },
   { key::kFloatingWorkspaceV2Enabled,
     ash::prefs::kFloatingWorkspaceV2Enabled,

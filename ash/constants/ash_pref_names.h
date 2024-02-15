@@ -1563,10 +1563,6 @@ inline constexpr char kFilesAppTrashEnabled[] = "ash.filesapp.trash_enabled";
 inline constexpr char kLoginScreenWebUILazyLoading[] =
     "ash.login.LoginScreenWebUILazyLoading";
 
-// Boolean value for the FloatingWorkspaceEnabled policy
-inline constexpr char kFloatingWorkspaceEnabled[] =
-    "ash.floating_workspace_enabled";
-
 // Boolean value for the FloatingWorkspaceV2Enabled policy
 inline constexpr char kFloatingWorkspaceV2Enabled[] =
     "ash.floating_workspace_v2_enabled";
