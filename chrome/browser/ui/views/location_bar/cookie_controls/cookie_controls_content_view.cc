@@ -82,18 +82,18 @@ void CookieControlsContentView::AddContentLabels() {
   const int side_margin =
       provider->GetInsetsMetric(views::INSETS_DIALOG).left();
 
-  auto* label_wrapper = AddChildView(std::make_unique<views::View>());
-  label_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  label_wrapper_ = AddChildView(std::make_unique<views::View>());
+  label_wrapper_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets::VH(vertical_margin, side_margin));
-  title_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
+  label_wrapper_->SetProperty(views::kMarginsKey,
+                              gfx::Insets::VH(vertical_margin, side_margin));
+  title_ = label_wrapper_->AddChildView(std::make_unique<views::Label>());
   title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_->SetProperty(views::kElementIdentifierKey, kTitle);
 
-  description_ = label_wrapper->AddChildView(std::make_unique<views::Label>());
+  description_ = label_wrapper_->AddChildView(std::make_unique<views::Label>());
   description_->SetTextContext(views::style::CONTEXT_LABEL);
   if (features::IsChromeRefresh2023()) {
     description_->SetTextStyle(views::style::STYLE_BODY_5);
@@ -222,8 +222,8 @@ void CookieControlsContentView::UpdateContentLabels(
 }
 
 void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
-  title_->SetVisible(visible);
-  description_->SetVisible(visible);
+  // Set visibility on the wrapper to ensure that margins are correctly updated.
+  label_wrapper_->SetVisible(visible);
   PreferredSizeChanged();
 }
 

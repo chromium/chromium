@@ -65,6 +65,7 @@ class CookieControlsContentView : public views::View {
   void AddContentLabels();
   void AddToggleRow();
   void AddFeedbackSection();
+  raw_ptr<views::View> label_wrapper_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<RichControlsContainerView> toggle_row_ = nullptr;
