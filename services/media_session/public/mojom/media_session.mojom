@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 21
+// Next MinVersion: 22
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -97,6 +97,9 @@ struct MediaMetadata {
   // session. This could be the name of the app or the name of the site playing
   // media.
   mojo_base.mojom.String16 source_title;
+
+  // Also defined in the spec: https://wicg.github.io/mediasession/
+  [MinVersion=21] array<ChapterInformation>? chapters;
 };
 
 // The color type of the bitmap.

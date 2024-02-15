@@ -1343,6 +1343,77 @@ TEST_F(MediaSessionImplServiceRoutingTest, RouteAudioVideoState) {
   }
 }
 
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverWithChaptersWhenServicePresent) {
+  client_.SetShouldHideMetadata(false);
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  std::vector<media_session::ChapterInformation> expected_chapters;
+
+  media_session::MediaImage test_image_1;
+  test_image_1.src = GURL("https://www.google.com");
+  media_session::MediaImage test_image_2;
+  test_image_2.src = GURL("https://www.example.org");
+
+  media_session::ChapterInformation test_chapter_1(
+      /*title=*/u"chapter1", /*startTime=*/base::Seconds(10),
+      /*artwork=*/{test_image_1});
+
+  media_session::ChapterInformation test_chapter_2(
+      /*title=*/u"chapter2", /*startTime=*/base::Seconds(20),
+      /*artwork=*/{test_image_2});
+
+  expected_chapters.push_back(test_chapter_1);
+  expected_chapters.push_back(test_chapter_2);
+
+  media_session::MediaMetadata expected_metadata;
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
+  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
+  expected_metadata.chapters = expected_chapters;
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    observer.WaitForExpectedMetadata(empty_metadata());
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    blink::mojom::SpecMediaMetadataPtr spec_metadata(
+        blink::mojom::SpecMediaMetadata::New());
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
+    spec_metadata->chapterInfo.push_back(test_chapter_1);
+    spec_metadata->chapterInfo.push_back(test_chapter_2);
+
+    services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    ClearPlayersForFrame(main_frame_);
+
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+}
+
 // Test duration duration update throttle behavior for routed service.
 // TODO (jazzhsu): Remove these tests once media session supports livestream.
 class MediaSessionImplServiceRoutingThrottleTest

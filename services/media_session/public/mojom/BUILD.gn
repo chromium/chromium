@@ -36,6 +36,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media_session.mojom.ChapterInformation"
+          cpp = "::media_session::ChapterInformation"
+        },
+        {
           mojom = "media_session.mojom.MediaImage"
           cpp = "::media_session::MediaImage"
         },

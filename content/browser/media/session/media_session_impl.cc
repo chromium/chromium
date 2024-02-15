@@ -1321,7 +1321,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
   }
 #endif
 
-  // We should make sure |image| is in |images_|.
+  // We should make sure `image` is in `images_`.
   bool found = false;
   bool source_icon = false;
   for (auto& image_type : images_) {
@@ -1331,6 +1331,17 @@ void MediaSessionImpl::GetMediaImageBitmap(
       if (image_type.first ==
           media_session::mojom::MediaSessionImageType::kSourceIcon) {
         source_icon = true;
+      }
+      break;
+    }
+  }
+
+  // Or the `image` is in chapters.
+  if (!found) {
+    for (auto& chapter : metadata_.chapters) {
+      if (base::Contains(chapter.artwork(), image)) {
+        found = true;
+        break;
       }
     }
   }
@@ -1820,6 +1831,7 @@ void MediaSessionImpl::BuildMetadata(
     metadata.title = routed_service_->metadata()->title;
     metadata.artist = routed_service_->metadata()->artist;
     metadata.album = routed_service_->metadata()->album;
+    metadata.chapters = routed_service_->metadata()->chapterInfo;
     artwork = routed_service_->metadata()->artwork;
   }
 

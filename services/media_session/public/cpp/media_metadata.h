@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "services/media_session/public/cpp/chapter_information.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -52,6 +53,9 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaMetadata {
   // session. This could be the name of the app or the name of the site playing
   // media.
   std::u16string source_title;
+
+  // The chapters associated to the MediaSession.
+  std::vector<ChapterInformation> chapters;
 
   // Returns whether |this| contains no metadata.
   bool IsEmpty() const;

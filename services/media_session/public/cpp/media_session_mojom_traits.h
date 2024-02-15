@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "services/media_session/public/cpp/chapter_information.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/media_position.h"
@@ -54,6 +55,11 @@ struct StructTraits<media_session::mojom::MediaMetadataDataView,
   static const std::u16string& album(
       const media_session::MediaMetadata& metadata) {
     return metadata.album;
+  }
+
+  static const std::vector<media_session::ChapterInformation>& chapters(
+      const media_session::MediaMetadata& metadata) {
+    return metadata.chapters;
   }
 
   static const std::u16string& source_title(
@@ -110,6 +116,28 @@ struct StructTraits<media_session::mojom::MediaPositionDataView,
 
   static bool Read(media_session::mojom::MediaPositionDataView data,
                    media_session::MediaPosition* out);
+};
+
+template <>
+struct StructTraits<media_session::mojom::ChapterInformationDataView,
+                    media_session::ChapterInformation> {
+  static const std::u16string& title(
+      const media_session::ChapterInformation& chapter_information) {
+    return chapter_information.title_;
+  }
+
+  static base::TimeDelta startTime(
+      const media_session::ChapterInformation& chapter_information) {
+    return chapter_information.startTime_;
+  }
+
+  static const std::vector<media_session::MediaImage>& artwork(
+      const media_session::ChapterInformation& chapter_information) {
+    return chapter_information.artwork_;
+  }
+
+  static bool Read(media_session::mojom::ChapterInformationDataView data,
+                   media_session::ChapterInformation* out);
 };
 
 }  // namespace mojo

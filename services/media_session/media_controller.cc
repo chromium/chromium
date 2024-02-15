@@ -182,6 +182,8 @@ void MediaController::MediaSessionMetadataChanged(
   for (auto& observer : observers_)
     observer->MediaSessionMetadataChanged(metadata);
 
+  // TODO(b/323614414) Implement the observer's `ChapterInfoChanged` method.
+
   session_metadata_ = metadata;
 }
 

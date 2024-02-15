@@ -7,6 +7,8 @@ component("base_cpp") {
   output_name = "media_session_base_cpp"
 
   sources = [
+    "chapter_information.cc",
+    "chapter_information.h",
     "media_image.cc",
     "media_image.h",
     "media_metadata.cc",
