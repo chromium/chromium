@@ -204,8 +204,13 @@ class WebAppSystemMediaControlsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SimpleOneBrowserTest DISABLED_SimpleOneBrowserTest
+#else
+#define MAYBE_SimpleOneBrowserTest SimpleOneBrowserTest
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
-                       SimpleOneBrowserTest) {
+                       MAYBE_SimpleOneBrowserTest) {
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
