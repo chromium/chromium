@@ -1911,7 +1911,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ReShow) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
+// TODO(crbug.com/325310963): Re-enable this flaky test on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenProfile DISABLED_OpenProfile
+#else
+#define MAYBE_OpenProfile OpenProfile
+#endif
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       MAYBE_OpenProfile) {
   base::HistogramTester histogram_tester;
 
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
