@@ -22,13 +22,19 @@
 
 <script>
 test((t) => {
+  t.add_cleanup(() => {
+    multiple1.remove();
+    multiple2.remove();
+  });
   let shadow = multiple1.shadowRoot;
   assert_true(!!shadow,'Remaining shadow root should be open');
   assert_equals(shadow.textContent,"Open");
+  assert_equals(multiple1.childElementCount, 1);
+  assert_equals(multiple1.firstElementChild.shadowRootMode, "closed");
   shadow = multiple2.shadowRoot;
   assert_false(!!shadow,'Remaining shadow root should be closed');
-  multiple1.remove(); // Cleanup
-  multiple2.remove();
+  assert_equals(multiple2.childElementCount, 1);
+  assert_equals(multiple2.firstElementChild.shadowRootMode, "open");
 },'Repeated declarative shadow roots keep only the first');
 </script>
 
@@ -59,20 +65,16 @@ test((t) => {
 test((t) => {
   assert_throws_dom("NotSupportedError",() => {
     open2.attachShadow({mode: "closed", delegatesFocus: true, slotAssignment: "named", clonable: true});
-  },'Mismatched shadow root type should throw');
-  assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: false, slotAssignment: "named", clonable: true});
-  },'Mismatched shadow root delegatesFocus should throw');
-  assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "manual", clonable: true});
-  },'Mismatched shadow root slotAssignment should throw');
-  assert_throws_dom("NotSupportedError",() => {
-    open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "named", clonable: false});
-  },'Mismatched shadow root clonable should throw');
+  },'Mismatched shadow root mode should throw');
 
   const initialShadow = open2.shadowRoot;
   const shadow = open2.attachShadow({mode: "open", delegatesFocus: true, slotAssignment: "named", clonable: true}); // Shouldn't throw
   assert_equals(shadow,initialShadow,'Same shadow should be returned');
   assert_equals(shadow.textContent,'','Shadow should be empty');
+
+  assert_throws_dom("NotSupportedError",() => {
+    open2.attachShadow({mode: "open"});
+  },'Invoking attachShadow() on a non-declarative shadow root should throw');
+
 },'Calling attachShadow() on declarative shadow root must match all parameters');
 </script>
