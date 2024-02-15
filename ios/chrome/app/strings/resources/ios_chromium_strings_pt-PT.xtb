@@ -88,7 +88,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3634039384458740619">Abrir Definições do Chromium</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava a utilizar o Chromium e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
-<translation id="3688710892786762883">O Chromium vai detetar números de acompanhamento de embalagens nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos.</translation>
+<translation id="3688710892786762883">O Chromium vai detetar números de acompanhamento de encomendas nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos.</translation>
 <translation id="372658070733623520">Para usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade.</translation>
 <translation id="3780779443901618967">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chromium.</translation>
 <translation id="3784369638459513223">Abre um novo separador anónimo do Chromium.</translation>
@@ -183,7 +183,7 @@ Aspetos a considerar:
 <translation id="6154098560469640583">Use o Chromium sempre que tocar em links de mensagens, documentos e outras apps</translation>
 <translation id="6170619162539716595">Permita que o Chromium use o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
 <translation id="6175967839221456271">Partilhar Chromium</translation>
-<translation id="6197255575340902638">Se ocultar "<ph name="MODULE_NAME" />", o Chromium vai deixar de acompanhar automaticamente as suas embalagens futuras e vai eliminar todos os dados de acompanhamento de embalagens anteriores.</translation>
+<translation id="6197255575340902638">Se ocultar "<ph name="MODULE_NAME" />", o Chromium vai deixar de acompanhar automaticamente as suas embalagens futuras e vai eliminar todos os dados de acompanhamento de encomendas anteriores.</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="6324041800010509197">Aceda à grelha de separadores no Chromium</translation>
@@ -285,7 +285,7 @@ Aspetos a considerar:
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
 <translation id="88376265765385899">Abre os marcadores do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs no Chromium na Navegação anónima</translation>
-<translation id="8866191443434488382">O Chromium vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para o Chromium para oferecer esta funcionalidade e melhorar as funcionalidades de compras para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
+<translation id="8866191443434488382">O Chromium vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para o Chromium para oferecer esta funcionalidade e melhorar as funcionalidades de compras para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de encomendas<ph name="END_LINK" />.</translation>
 <translation id="8909995017390087892">Chromium para iOS</translation>
 <translation id="8924617840944134898">Abra um separador anónimo do Chromium</translation>
 <translation id="894437814105052438">Quando terminar sessão, o Chromium não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>

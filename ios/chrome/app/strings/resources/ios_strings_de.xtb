@@ -1231,7 +1231,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7436239899443308800">{count,plural, =1{1 Tab}other{{count} Tabs}}</translation>
 <translation id="7438481509621345350">Ab jetzt wirst du beim Öffnen eines neuen Tabs Artikel von <ph name="CHANNEL_NAME" /> sehen.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Lesezeichen in „{title}“ gespeichert}other{Lesezeichen in „{title}“ gespeichert}}</translation>
-<translation id="7454057999980797137">Bundesl./Landkr.</translation>
+<translation id="7454057999980797137">Bundesland/Landkr.</translation>
 <translation id="745899714366929493">Ganztägig</translation>
 <translation id="7459628154744868585">Erweiterter Schutz ist aktiviert</translation>
 <translation id="7465351360025415755">Inhalte erhalten, die dich interessieren</translation>
