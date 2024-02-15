@@ -183,7 +183,6 @@ try_.orchestrator_builder(
             "no_secondary_abi",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
-            "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
     compilator = "android-arm64-rel-compilator",
