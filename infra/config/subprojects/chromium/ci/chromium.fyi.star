@@ -184,7 +184,8 @@ This builder builds public image and runs tests on DUTs in the lab.
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-skylab-ci",
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
             gs_extra = "ash",
         ),
     ),
@@ -237,7 +238,8 @@ This builder builds public image and runs tests on octopus DUTs in the lab.
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-skylab-ci",
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
             gs_extra = "ash",
         ),
     ),

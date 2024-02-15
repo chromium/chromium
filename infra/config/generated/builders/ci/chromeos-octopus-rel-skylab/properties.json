@@ -37,7 +37,7 @@
                 "config": "chromium"
               },
               "skylab_upload_location": {
-                "gs_bucket": "chromium-skylab-ci",
+                "gs_bucket": "chromium-skylab-try",
                 "gs_extra": "ash"
               }
             }
