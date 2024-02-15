@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesCoordinator.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediator.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/magic_stack/ModuleConfigChecker.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegateHost.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleProvider.java",
