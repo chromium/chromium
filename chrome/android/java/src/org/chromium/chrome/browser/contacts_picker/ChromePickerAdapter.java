@@ -35,6 +35,8 @@ import java.util.Collections;
  * AccountManagerFacade}.
  */
 public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCache.Observer {
+    private final Profile mProfile;
+
     // The profile data cache to consult when figuring out the signed in user.
     private ProfileDataCache mProfileDataCache;
 
@@ -44,7 +46,8 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // Whether owner info is being fetched asynchronously.
     private boolean mWaitingOnOwnerInfo;
 
-    public ChromePickerAdapter(Context context) {
+    public ChromePickerAdapter(Context context, Profile profile) {
+        mProfile = profile;
         mProfileDataCache =
                 ProfileDataCache.createWithoutBadge(context, R.dimen.contact_picker_icon_size);
     }
@@ -158,8 +161,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         // Since this is read-only operation to obtain email address, always using regular profile
         // for both regular and off-the-record profile is safe.
         IdentityManager identityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+                IdentityServicesProvider.get().getIdentityManager(mProfile.getOriginalProfile());
         return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
     }
 }

@@ -78,7 +78,7 @@ public final class ContactsPicker {
         }
         sPicker =
                 sContactsPickerDelegate.showContactsPicker(
-                        webContents.getTopLevelNativeWindow(),
+                        webContents,
                         listener,
                         allowMultiple,
                         includeNames,

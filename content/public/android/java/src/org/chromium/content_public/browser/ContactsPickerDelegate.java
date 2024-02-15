@@ -4,27 +4,25 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.ui.base.WindowAndroid;
-
 /** A delegate interface for the contacts picker. */
 public interface ContactsPickerDelegate {
     /**
      * Called to display the contacts picker.
-     * @param windowAndroid The window of the Web Contents that triggered the dialog.
-     * @param listener The listener that will be notified of the action the user took in the
-     *                 picker.
+     *
+     * @param webContents The Web Contents that triggered the dialog.
+     * @param listener The listener that will be notified of the action the user took in the picker.
      * @param allowMultiple Whether to allow multiple contacts to be picked.
      * @param includeNames Whether to include names of the shared contacts.
      * @param includeEmails Whether to include emails of the shared contacts.
      * @param includeTel Whether to include telephone numbers of the shared contacts.
      * @param includeAddresses Whether to include addresses of the shared contacts.
      * @param includeIcons Whether to include icons of the shared contacts.
-     * @param formattedOrigin The origin the data will be shared with, formatted for display
-     *                        with the scheme omitted.
+     * @param formattedOrigin The origin the data will be shared with, formatted for display with
+     *     the scheme omitted.
      * @return the contacts picker object.
      */
     Object showContactsPicker(
-            WindowAndroid windowAndroid,
+            WebContents webContents,
             ContactsPickerListener listener,
             boolean allowMultiple,
             boolean includeNames,

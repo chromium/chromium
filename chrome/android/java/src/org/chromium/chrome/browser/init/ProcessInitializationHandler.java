@@ -107,6 +107,7 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
@@ -234,7 +235,7 @@ public class ProcessInitializationHandler {
                 });
 
         ContactsPicker.setContactsPickerDelegate(
-                (WindowAndroid windowAndroid,
+                (WebContents webContents,
                         ContactsPickerListener listener,
                         boolean allowMultiple,
                         boolean includeNames,
@@ -243,10 +244,13 @@ public class ProcessInitializationHandler {
                         boolean includeAddresses,
                         boolean includeIcons,
                         String formattedOrigin) -> {
+                    WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
                     ContactsPickerDialog dialog =
                             new ContactsPickerDialog(
                                     windowAndroid,
-                                    new ChromePickerAdapter(windowAndroid.getContext().get()),
+                                    new ChromePickerAdapter(
+                                            windowAndroid.getContext().get(),
+                                            Profile.fromWebContents(webContents)),
                                     listener,
                                     allowMultiple,
                                     includeNames,

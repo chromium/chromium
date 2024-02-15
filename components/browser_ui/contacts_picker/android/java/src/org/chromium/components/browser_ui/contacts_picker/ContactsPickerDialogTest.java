@@ -230,7 +230,7 @@ public class ContactsPickerDialogTest
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContactsPicker.setContactsPickerDelegate(
-                            (WindowAndroid windowAndroid,
+                            (WebContents webContents,
                                     ContactsPickerListener listener,
                                     boolean multiple,
                                     boolean names,
@@ -241,7 +241,7 @@ public class ContactsPickerDialogTest
                                     String formattedOrigin) -> {
                                 mDialog =
                                         new ContactsPickerDialog(
-                                                windowAndroid,
+                                                webContents.getTopLevelNativeWindow(),
                                                 new PickerAdapter() {
                                                     @Override
                                                     protected String findOwnerEmail() {
