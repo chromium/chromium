@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/token.h"
+#include "base/trace_event/named_trigger.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -43,9 +44,11 @@ class TracingDelegate;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingDatabase);
 
-class BackgroundTracingManagerImpl : public BackgroundTracingManager,
-                                     public TraceUploadList,
-                                     public TracingScenario::Delegate {
+class BackgroundTracingManagerImpl
+    : public BackgroundTracingManager,
+      public base::trace_event::NamedTriggerManager,
+      public TraceUploadList,
+      public TracingScenario::Delegate {
  public:
   class AgentObserver {
    public:

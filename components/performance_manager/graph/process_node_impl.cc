@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_util.h"
@@ -35,7 +36,7 @@ content::ProcessType ValidateBrowserChildProcessType(
 void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::BackgroundTracingManager::EmitNamedTrigger(
+  base::trace_event::EmitNamedTrigger(
       content::BackgroundTracingManager::kContentTriggerConfig);
 }
 

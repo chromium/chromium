@@ -196,7 +196,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
-  EXPECT_FALSE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {

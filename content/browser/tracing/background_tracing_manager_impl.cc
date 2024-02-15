@@ -205,15 +205,6 @@ void BackgroundTracingManager::SetInstance(
 }
 
 // static
-bool BackgroundTracingManager::EmitNamedTrigger(
-    const std::string& trigger_name) {
-  if (g_background_tracing_manager) {
-    return g_background_tracing_manager->DoEmitNamedTrigger(trigger_name);
-  }
-  return false;
-}
-
-// static
 void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
   UMA_HISTOGRAM_ENUMERATION("Tracing.Background.ScenarioState", metric,
                             Metrics::NUMBER_OF_BACKGROUND_TRACING_METRICS);
@@ -248,7 +239,8 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       trace_database_(nullptr,
                       base::OnTaskRunnerDeleter(database_task_runner_)) {
-  SetInstance(this);
+  BackgroundTracingManager::SetInstance(this);
+  NamedTriggerManager::SetInstance(this);
   g_background_tracing_manager_impl = this;
   BackgroundStartupTracingObserver::GetInstance();
 }
@@ -265,7 +257,8 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   if (legacy_active_scenario_) {
     legacy_active_scenario_->AbortScenario();
   }
-  SetInstance(nullptr);
+  BackgroundTracingManager::SetInstance(nullptr);
+  NamedTriggerManager::SetInstance(nullptr);
   g_background_tracing_manager_impl = nullptr;
 }
 

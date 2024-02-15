@@ -31,12 +31,6 @@ class BackgroundTracingManager {
   // Returns the global instance created with CreateInstance().
   CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
 
-  // Notifies that a manual trigger event has occurred. Returns true if the
-  // trigger caused a scenario to either begin recording or finalize the trace
-  // depending on the config, or false if the trigger had no effect. If the
-  // trigger specified isn't active in the config, this will do nothing.
-  CONTENT_EXPORT static bool EmitNamedTrigger(const std::string& trigger_name);
-
   CONTENT_EXPORT static const char kContentTriggerConfig[];
 
   // Enabled state observers get a callback when the state of background tracing
@@ -160,8 +154,6 @@ class BackgroundTracingManager {
   // Sets the instance returns by GetInstance() globally to |tracing_manager|.
   CONTENT_EXPORT static void SetInstance(
       BackgroundTracingManager* tracing_manager);
-
-  virtual bool DoEmitNamedTrigger(const std::string& trigger_name) = 0;
 };
 
 }  // namespace content

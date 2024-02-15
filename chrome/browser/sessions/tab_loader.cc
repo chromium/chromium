@@ -14,6 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/favicon/content/content_favicon_driver.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -33,7 +33,7 @@ using resource_coordinator::TabLoadTracker;
 namespace {
 
 void BackgroundTracingTrigger() {
-  content::BackgroundTracingManager::EmitNamedTrigger("session-restore-config");
+  base::trace_event::EmitNamedTrigger("session-restore-config");
 }
 
 const base::TickClock* GetDefaultTickClock() {

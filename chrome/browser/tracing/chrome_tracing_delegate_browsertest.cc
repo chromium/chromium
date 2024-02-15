@@ -16,6 +16,7 @@
 #include "base/strings/pattern.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -136,7 +137,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerPreemptiveScenario(const std::string& trigger_name = "test") {
-    content::BackgroundTracingManager::EmitNamedTrigger(trigger_name);
+    base::trace_event::EmitNamedTrigger(trigger_name);
   }
 
   void TriggerPreemptiveScenarioWithCrash() {

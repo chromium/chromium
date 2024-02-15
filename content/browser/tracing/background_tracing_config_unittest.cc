@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_proto_loader.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
@@ -693,9 +694,9 @@ TEST_F(BackgroundTracingConfigTest, RuleActivatesAfterDelay) {
   }));
 
   // Rule is not activated yet.
-  EXPECT_FALSE(BackgroundTracingManager::EmitNamedTrigger("test_rule"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("test_rule"));
   task_environment_.FastForwardBy(base::Seconds(10));
-  EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("test_rule"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("test_rule"));
   run_loop.Run();
   rule->Uninstall();
 }
