@@ -145,19 +145,41 @@ TEST(QRCodeGeneratorTest, HugeInput) {
   // Adding another character means that the inputs will no longer fit into QR
   // code version 40 (as of year 2023 there are no further versions defined by
   // the spec).
-  huge_numeric_input.push_back('0');
-  huge_binary_input.push_back('\0');
-  ASSERT_FALSE(GenerateCode(huge_numeric_input).has_value());
-  ASSERT_FALSE(GenerateCode(huge_binary_input).has_value());
+  {
+    huge_numeric_input.push_back('0');
+    auto failure = GenerateCode(huge_numeric_input);
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kInputTooLong);
+  }
+  {
+    huge_binary_input.push_back('\0');
+    auto failure = GenerateCode(huge_binary_input);
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kInputTooLong);
+  }
 }
 
 TEST(QRCodeGeneratorTest, InvalidMinVersion) {
   std::vector<uint8_t> input(123);  // Arbitrary valid input.
-  ASSERT_FALSE(GenerateCode(input, std::make_optional(41)).has_value());
-  ASSERT_FALSE(
-      GenerateCode(input, std::make_optional(std::numeric_limits<int>::max()))
-          .has_value());
-  ASSERT_FALSE(GenerateCode(input, std::make_optional(-1)).has_value());
+
+  {
+    auto failure = GenerateCode(input, std::make_optional(41));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
+
+  {
+    auto failure = GenerateCode(
+        input, std::make_optional(std::numeric_limits<int>::max()));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
+
+  {
+    auto failure = GenerateCode(input, std::make_optional(-1));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
 }
 
 }  // namespace qr_code_generator

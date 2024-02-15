@@ -31,11 +31,12 @@ base::expected<GeneratedCode, Error> GenerateCode(
 
   std::vector<uint8_t> result_pixels;
   size_t result_width = 0;
+  Error result_error = Error::kUnknownError;
   bool result_is_success = generate_qr_code_using_rust(
-      rs_in, rs_min_version, result_pixels, result_width);
+      rs_in, rs_min_version, result_pixels, result_width, result_error);
 
   if (!result_is_success) {
-    return base::unexpected(Error::kUnknownError);
+    return base::unexpected(result_error);
   }
   GeneratedCode code;
   code.data = std::move(result_pixels);

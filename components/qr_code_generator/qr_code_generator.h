@@ -12,18 +12,9 @@
 
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "components/qr_code_generator/error.h"
 
 namespace qr_code_generator {
-
-enum class Error {
-  kUnknownError = 0,
-
-  // Input string was too long.
-  //
-  // TODO(https://crbug.com/1431991): Plumb input-too-long errors from the
-  // third-party Rust crate.
-  kInputTooLong = 1,
-};
 
 // Contains output data from Generate().
 // The default state contains no data.
