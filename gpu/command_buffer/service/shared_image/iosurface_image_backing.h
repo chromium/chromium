@@ -245,6 +245,13 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // this cache should use as keys rather than raw pointers.
   base::flat_map<WGPUDevice, SharedTextureData> shared_texture_data_cache_;
 
+  // Tracks the number of currently-ongoing accesses to a given WGPU texture.
+  base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_;
+
+  bool WGPUTextureHasOngoingAccess(wgpu::Texture texture);
+  void IncrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
+  void DecrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
+
   // Returns a pointer to the WGPUTextureCache instance for this device, or
   // nullptr if there is no instance.
   WGPUTextureCache* GetWGPUTextureCache(wgpu::Device device);

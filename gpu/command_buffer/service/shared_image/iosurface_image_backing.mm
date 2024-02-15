@@ -777,6 +777,21 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
 
   usage_ = wgpu_texture_usage;
 
+  auto texture = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+  if (texture && iosurface_backing->WGPUTextureHasOngoingAccess(texture)) {
+    // If there is already an ongoing access for this texture, then the
+    // necessary work for starting the access (i.e., waiting on fences and
+    // informing SharedTextureMemory) already happened as part of the initial
+    // BeginAccess(). Short-circuit out here, but ensure that the backing knows
+    // that there is now another ongoing access on this texture.  NOTE:
+    // SharedTextureMemory does not allow a BeginAccess() call on a texture
+    // that already has an ongoing access (at the internal wgpu::Texture
+    // level), so short-circuiting out here is not simply an optimization but
+    // is actually necessary.
+    iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture);
+    return texture;
+  }
+
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
 
@@ -832,6 +847,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     iosurface_backing->EndAccess(readonly);
   }
 
+  iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
   return texture_.Get();
 }
 
@@ -842,6 +858,15 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
 
   IOSurfaceImageBacking* iosurface_backing =
       static_cast<IOSurfaceImageBacking*>(backing());
+
+  iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
+  if (iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
+    // If there is still an ongoing access on this texture, do not consume
+    // fences or end the access at the level of SharedTextureMemory. That work
+    // will happen when the last ongoing access finishes.
+    return;
+  }
+
   const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
 
   wgpu::SharedTextureMemoryEndAccessState end_access_desc;
@@ -1210,6 +1235,29 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
 }
 
 #if BUILDFLAG(USE_DAWN)
+bool IOSurfaceImageBacking::WGPUTextureHasOngoingAccess(wgpu::Texture texture) {
+  return wgpu_texture_ongoing_accesses_.contains(texture.Get());
+}
+
+void IOSurfaceImageBacking::IncrementNumberOfOngoingWGPUTextureAccesses(
+    wgpu::Texture texture) {
+  wgpu_texture_ongoing_accesses_[texture.Get()]++;
+}
+
+void IOSurfaceImageBacking::DecrementNumberOfOngoingWGPUTextureAccesses(
+    wgpu::Texture texture) {
+  if (!wgpu_texture_ongoing_accesses_.contains(texture.Get())) {
+    return;
+  }
+
+  wgpu_texture_ongoing_accesses_[texture.Get()]--;
+  CHECK_GE(wgpu_texture_ongoing_accesses_[texture.Get()], 0);
+
+  if (!wgpu_texture_ongoing_accesses_[texture.Get()]) {
+    wgpu_texture_ongoing_accesses_.erase(texture.Get());
+  }
+}
+
 IOSurfaceImageBacking::WGPUTextureCache*
 IOSurfaceImageBacking::GetWGPUTextureCache(wgpu::Device device) {
   auto iter = shared_texture_data_cache_.find(device.Get());
