@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, AmbientModeDisallowed) {
 IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, WallpaperSubpage) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
-      "runMochaSuite('ambient mode disallowed')");
+      "runMochaSuite('wallpaper subpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, DynamicColor) {
