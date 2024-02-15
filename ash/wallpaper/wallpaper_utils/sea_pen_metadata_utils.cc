@@ -4,12 +4,31 @@
 
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 
+#include "ash/webui/common/mojom/sea_pen_generated.mojom-shared.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
 namespace ash {
+
+namespace {
+
+// Converts a base::Value `time_value` into human-readable string representation
+// of the date, such as "Dec 30, 2023". The string is translated into the user's
+// current locale. Returns null on failure.
+std::optional<std::u16string> GetCreationTimeInfo(
+    const base::Value& time_value) {
+  auto time = base::ValueToTime(time_value);
+  if (!time) {
+    DVLOG(2) << __func__ << " invalid time value received";
+    return std::nullopt;
+  }
+  return base::TimeFormatShortDate(*time);
+}
+
+}  // namespace
 
 base::Value::Dict SeaPenQueryToDict(
     const personalization_app::mojom::SeaPenQueryPtr& query) {
@@ -52,6 +71,40 @@ std::string QueryDictToXmpString(const base::Value::Dict& query_dict) {
             </x:xmpmeta>)";
   return base::StringPrintf(kXmpData,
                             base::WriteJson(query_dict).value_or("").c_str());
+}
+
+personalization_app::mojom::RecentSeaPenImageInfoPtr
+SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict) {
+  auto* creation_time = query_dict.Find(kSeaPenCreationTimeKey);
+  if (!creation_time) {
+    DVLOG(2) << __func__
+             << " missing creation time information in extracted data";
+    return nullptr;
+  }
+
+  auto* freeform_query = query_dict.FindString(kSeaPenFreeformQueryKey);
+  if (freeform_query) {
+    return personalization_app::mojom::RecentSeaPenImageInfo::New(
+        personalization_app::mojom::SeaPenUserVisibleQuery::New(
+            /*text=*/*freeform_query, /*template_title=*/std::string()),
+        GetCreationTimeInfo(*creation_time));
+  }
+
+  auto* user_visible_query_text =
+      query_dict.FindString(kSeaPenUserVisibleQueryTextKey);
+  auto* user_visible_query_template =
+      query_dict.FindString(kSeaPenUserVisibleQueryTemplateKey);
+
+  if (!user_visible_query_text || !user_visible_query_template) {
+    DVLOG(2) << __func__
+             << " missing user visible query information in extracted data";
+    return nullptr;
+  }
+
+  return personalization_app::mojom::RecentSeaPenImageInfo::New(
+      personalization_app::mojom::SeaPenUserVisibleQuery::New(
+          *user_visible_query_text, *user_visible_query_template),
+      GetCreationTimeInfo(*creation_time));
 }
 
 }  // namespace ash

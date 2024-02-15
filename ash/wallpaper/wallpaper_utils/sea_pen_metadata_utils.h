@@ -47,6 +47,10 @@ ASH_EXPORT base::Value::Dict SeaPenQueryToDict(
 ASH_EXPORT std::string QueryDictToXmpString(
     const base::Value::Dict& query_dict);
 
+// Converts the extracted Sea Pen metadata base::Value::Dict `query_dict` into
+// RecentSeaPenImageInfo.
+ASH_EXPORT personalization_app::mojom::RecentSeaPenImageInfoPtr
+SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict);
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_

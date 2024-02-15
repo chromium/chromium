@@ -6,6 +6,7 @@ module ash.personalization_app.mojom;
 
 import "ash/webui/common/mojom/sea_pen_generated.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -61,6 +62,22 @@ union SeaPenQuery {
 
   // Set if the query is from template input.
   SeaPenTemplateQuery template_query;
+};
+
+// The information of a recent Sea Pen image including the query information
+// and its creation time.
+struct RecentSeaPenImageInfo {
+  // The visible query information that the user used to generate the recent
+  // image, including the prompt text and the template title.
+  // If the image was generated from a freeform query, `user_visible_query`
+  // includes the freeform text and an empty template title.
+  // TODO(b/304581483): update SeaPenUserVisibleQuery to SeaPenQuery.
+  SeaPenUserVisibleQuery user_visible_query;
+
+  // Human-readable string representation of the date the image was
+  // created, e.g., "Dec 30, 2023", translated into the user's current
+  // locale. `creation_time` is null on failure.
+  mojo_base.mojom.String16? creation_time;
 };
 
 // Maximum allowable search text length, in bytes.
