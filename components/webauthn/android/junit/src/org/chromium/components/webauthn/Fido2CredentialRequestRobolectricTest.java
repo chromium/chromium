@@ -219,8 +219,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
-        testValues.addFeatureFlagOverride(
-                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID, true);
         FeatureList.setTestValues(testValues);
 
         final byte[] clientDataHash = new byte[] {1, 2, 3};
@@ -435,8 +433,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
-        testValues.addFeatureFlagOverride(
-                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID, true);
         FeatureList.setTestValues(testValues);
 
         mRequest.setIsHybridRequest(true);

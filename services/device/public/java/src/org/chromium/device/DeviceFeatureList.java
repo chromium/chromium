@@ -16,8 +16,6 @@ import org.jni_zero.JNINamespace;
 public abstract class DeviceFeatureList {
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
     public static final String WEBAUTHN_ANDROID_CRED_MAN = "WebAuthenticationAndroidCredMan";
-    public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID =
-            "WebAuthenticationAndroidCredManForHybrid";
     public static final String WEBAUTHN_ANDROID_FIDO_JSON = "WebAuthenticationAndroidFidoJson";
     public static final String WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS =
             "WebAuthenticationHybridLinkWithoutNotifications";

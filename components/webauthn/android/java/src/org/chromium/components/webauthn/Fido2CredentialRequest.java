@@ -45,8 +45,6 @@ import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
@@ -134,19 +132,14 @@ public class Fido2CredentialRequest
 
     private Barrier.Mode getBarrierMode() {
         @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        if (support != CredManSupport.DISABLED
-                && mIsHybridRequest
-                && DeviceFeatureMap.isEnabled(
-                        DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID)) {
+        if (support != CredManSupport.DISABLED && mIsHybridRequest) {
             return Barrier.Mode.ONLY_CRED_MAN;
         }
         switch (support) {
             case CredManSupport.DISABLED:
                 return Barrier.Mode.ONLY_FIDO_2_API;
             case CredManSupport.IF_REQUIRED:
-                if (mIsHybridRequest
-                        && DeviceFeatureMap.isEnabled(
-                                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID)) {
+                if (mIsHybridRequest) {
                     return Barrier.Mode.ONLY_CRED_MAN;
                 }
                 return Barrier.Mode.ONLY_FIDO_2_API;

@@ -37,10 +37,6 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
     &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
-
-// Use the Android 14 Credential Manager API for hybrid requests.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Advertise hybrid prelinking on Android even if the app doesn't have
