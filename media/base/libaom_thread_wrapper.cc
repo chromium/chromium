@@ -12,8 +12,9 @@ namespace media {
 void InitLibAomThreadWrapper() {
   const AVxWorkerInterface interface =
       CodecWorkerImpl<AVxWorkerInterface, AVxWorkerImpl, AVxWorker,
-                      AVxWorkerStatus, NOT_OK, OK,
-                      WORK>::GetCodecWorkerInterface();
+                      AVxWorkerStatus, AVX_WORKER_STATUS_NOT_OK,
+                      AVX_WORKER_STATUS_OK,
+                      AVX_WORKER_STATUS_WORKING>::GetCodecWorkerInterface();
   CHECK(aom_set_worker_interface(&interface));
 }
 

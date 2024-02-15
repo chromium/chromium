@@ -775,6 +775,7 @@ aom_sources = [
 ]
 
 aom_util_sources = [
+  "//third_party/libaom/source/libaom/aom_util/aom_pthread.h",
   "//third_party/libaom/source/libaom/aom_util/aom_thread.c",
   "//third_party/libaom/source/libaom/aom_util/aom_thread.h",
   "//third_party/libaom/source/libaom/aom_util/endian_inl.h",
