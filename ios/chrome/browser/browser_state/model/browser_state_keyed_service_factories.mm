@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
@@ -156,6 +157,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ChromeAccountManagerServiceFactory::GetInstance();
   ChromePasswordProtectionServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
+  ContextualPanelModelServiceFactory::GetInstance();
   DeviceSharingManagerFactory::GetInstance();
   DiscoverFeedServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
