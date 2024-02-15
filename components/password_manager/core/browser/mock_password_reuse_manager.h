@@ -19,6 +19,7 @@ class MockPasswordReuseManager : public PasswordReuseManager {
   MOCK_METHOD(void,
               Init,
               (PrefService * prefs,
+               PrefService* local_prefs,
                PasswordStoreInterface* profile_store,
                PasswordStoreInterface* account_store,
                std::unique_ptr<PasswordReuseDetector> password_reuse_detector,

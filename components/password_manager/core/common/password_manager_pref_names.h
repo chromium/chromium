@@ -148,7 +148,16 @@ inline constexpr char kTimesAttemptedToReenrollToGoogleMobileServices[] =
 // should not be displayed again.
 inline constexpr char kUserAcknowledgedLocalPasswordsMigrationWarning[] =
     "user_acknowledged_local_passwords_migration_warning";
+#endif
 
+// Maintains a list of password hashes of enterprise passwords. This pref
+// differs from |kPasswordHashDataList| in two ways: it only stores password
+// hashes for enterprise passwords and it is stored as a local state
+// preference.
+inline constexpr char kLocalPasswordHashDataList[] =
+    "local.password_hash_data_list";
+
+#if BUILDFLAG(IS_ANDROID)
 // The timestamp at which the last UPM local passwords migration warning was
 // shown to the user in microseconds since Windows epoch. This is needed to
 // ensure that the UI is prompted only once per given time interval (currently
@@ -238,7 +247,8 @@ inline constexpr char kLastTimePasswordCheckCompleted[] =
 inline constexpr char kLastTimePasswordStoreMetricsReported[] =
     "profile.last_time_password_store_metrics_reported";
 
-// List that contains captured password hashes.
+// List that contains captured password hashes. Only includes gaia password
+// hashes.
 inline constexpr char kPasswordHashDataList[] =
     "profile.password_hash_data_list";
 

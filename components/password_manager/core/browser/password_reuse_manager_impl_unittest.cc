@@ -161,7 +161,8 @@ class PasswordReuseManagerImplTest : public testing::Test {
                                            false);
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
-
+    local_prefs_.registry()->RegisterListPref(
+        prefs::kLocalPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
     profile_store_ = base::MakeRefCounted<TestPasswordStore>();
     profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     account_store_ = base::MakeRefCounted<TestPasswordStore>();
@@ -181,12 +182,14 @@ class PasswordReuseManagerImplTest : public testing::Test {
     password_reuse_detector_ = mock_password_reuse_detector.get();
 #endif
     if (should_mock_password_reuse_detector) {
-      reuse_manager_.Init(&prefs(), profile_store(), account_store(),
+      reuse_manager_.Init(&prefs(), &local_prefs(), profile_store(),
+                          account_store(),
                           std::move(mock_password_reuse_detector),
                           identity_test_env_.identity_manager(),
                           std::move(mock_shared_pref_delegate_android));
     } else {
-      reuse_manager_.Init(&prefs(), profile_store(), account_store(),
+      reuse_manager_.Init(&prefs(), &local_prefs(), profile_store(),
+                          account_store(),
                           std::make_unique<PasswordReuseDetectorImpl>(),
                           identity_test_env_.identity_manager(),
                           std::move(mock_shared_pref_delegate_android));
@@ -210,6 +213,7 @@ class PasswordReuseManagerImplTest : public testing::Test {
   TestPasswordStore* account_store() { return account_store_.get(); }
   PasswordReuseManager* reuse_manager() { return &reuse_manager_; }
   TestingPrefServiceSimple& prefs() { return prefs_; }
+  TestingPrefServiceSimple& local_prefs() { return local_prefs_; }
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }
@@ -225,6 +229,7 @@ class PasswordReuseManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
+  TestingPrefServiceSimple local_prefs_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
   signin::IdentityTestEnvironment identity_test_env_;

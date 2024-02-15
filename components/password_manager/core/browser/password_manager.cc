@@ -377,6 +377,8 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(prefs::kHadBiometricsAvailable, false);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterListPref(prefs::kLocalPasswordHashDataList,
+                             PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)

@@ -323,6 +323,7 @@ static_library("hash_password_manager") {
     ":password_hash_data",
     "//base:base",
     "//components/os_crypt/sync",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs",
   ]
@@ -478,6 +479,7 @@ source_set("unit_tests") {
     "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/favicon/core/test:test_support",
+    "//components/os_crypt/sync:os_crypt",
     "//components/os_crypt/sync:test_support",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",

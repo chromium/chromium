@@ -63,6 +63,9 @@ BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 BASE_DECLARE_FEATURE(kIOSPasswordSignInUff);
 #endif
 
+// Enables saving enterprise password hashes to a local state preference.
+BASE_DECLARE_FEATURE(kLocalStateEnterprisePasswordHashes);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Enables new confirmation bubble flow if generated password was used in a
 // form.

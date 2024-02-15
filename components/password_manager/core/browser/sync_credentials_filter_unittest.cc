@@ -76,9 +76,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterStringPref(
-        prefs::kPasswordProtectionChangePasswordURL, "");
-    prefs_->registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
-    prefs_->SetString(prefs::kPasswordProtectionChangePasswordURL,
+        ::prefs::kPasswordProtectionChangePasswordURL, "");
+    prefs_->registry()->RegisterListPref(::prefs::kPasswordProtectionLoginURLs);
+    prefs_->SetString(::prefs::kPasswordProtectionChangePasswordURL,
                       kEnterpriseURL);
   }
 
@@ -298,7 +298,7 @@ TEST_F(CredentialsFilterTest, ShouldSave_SignIn_Form) {
 }
 
 TEST_F(CredentialsFilterTest, ShouldSaveIfBrowserSigninDisabled) {
-  client_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  client_->GetPrefs()->SetBoolean(::prefs::kSigninAllowed, false);
   EXPECT_TRUE(filter_->ShouldSave(SimpleGaiaForm("user@gmail.com")));
 }
 

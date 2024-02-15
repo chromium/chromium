@@ -39,6 +39,7 @@ class PasswordReuseManager : public KeyedService {
   // Always call this on the UI thread.
   virtual void Init(
       PrefService* prefs,
+      PrefService* local_prefs,
       PasswordStoreInterface* profile_store,
       PasswordStoreInterface* account_store,
       std::unique_ptr<PasswordReuseDetector> password_reuse_detector,

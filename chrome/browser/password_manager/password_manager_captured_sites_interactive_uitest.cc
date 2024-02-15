@@ -64,8 +64,6 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 }  // namespace
 
-namespace password_manager {
-
 using autofill::test::ServerCacheReplayer;
 using autofill::test::ServerUrlLoader;
 
@@ -158,8 +156,8 @@ class CapturedSitesPasswordManagerBrowserTest
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         ProfilePasswordStoreFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
-    FakePasswordStoreBackend* fake_backend =
-        static_cast<FakePasswordStoreBackend*>(
+    password_manager::FakePasswordStoreBackend* fake_backend =
+        static_cast<password_manager::FakePasswordStoreBackend*>(
             password_store->GetBackendForTesting());
 
     auto found = fake_backend->stored_passwords().find(origin);
@@ -222,7 +220,7 @@ class CapturedSitesPasswordManagerBrowserTest
         ChromePasswordManagerClient::FromWebContents(WebContents());
     client->SetTestObserver(&observer_);
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+    browser()->profile()->GetPrefs()->SetBoolean(::prefs::kSafeBrowsingEnabled,
                                                  false);
   }
 
@@ -301,4 +299,3 @@ INSTANTIATE_TEST_SUITE_P(
     CapturedSitesPasswordManagerBrowserTest,
     testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
     GetParamAsString());
-}  // namespace password_manager

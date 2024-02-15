@@ -64,6 +64,10 @@ BASE_FEATURE(kIOSPasswordSignInUff,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
+BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
+             "LocalStateEnterprisePasswordHashes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
              "NewConfirmationBubbleForGeneratedPasswords",
