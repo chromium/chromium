@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("credentialmanagement") {
   sources = [
+    "authentication_credentials_container.cc",
+    "authentication_credentials_container.h",
     "authenticator_assertion_response.cc",
     "authenticator_assertion_response.h",
     "authenticator_attestation_response.cc",

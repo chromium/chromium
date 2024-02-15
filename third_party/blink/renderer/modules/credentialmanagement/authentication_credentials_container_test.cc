@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/authentication_credentials_container.h"
 
 #include <memory>
 #include <utility>
@@ -150,7 +150,7 @@ class MockPublicKeyCredential : public Credential {
 // The completion callbacks for pending mojom::CredentialManager calls each own
 // a persistent handle to a ScriptPromiseResolver instance. Ensure that if the
 // document is destroyed while a call is pending, it can still be freed up.
-TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
+TEST(AuthenticationCredentialsContainerTest, PendingGetRequest_NoGCCycles) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   GCObjectLivenessObserver<Document> document_observer;
@@ -158,7 +158,7 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
   {
     CredentialManagerTestingContext context(&mock_credential_manager);
     document_observer.Observe(context.DomWindow().document());
-    CredentialsContainer::credentials(*context.DomWindow().navigator())
+    AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
         ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
               IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
@@ -175,14 +175,14 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
 
 // If the document is detached before the request is resolved, the promise
 // should be left unresolved, and there should be no crashes.
-TEST(CredentialsContainerTest,
+TEST(AuthenticationCredentialsContainerTest,
      PendingGetRequest_NoCrashOnResponseAfterDocumentShutdown) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
   auto promise =
-      CredentialsContainer::credentials(*context.DomWindow().navigator())
+      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
           ->get(context.GetScriptState(), CredentialRequestOptions::Create(),
                 IGNORE_EXCEPTION_FOR_TESTING);
   mock_credential_manager.WaitForCallToGet();
@@ -194,13 +194,13 @@ TEST(CredentialsContainerTest,
   EXPECT_EQ(v8::Promise::kPending, promise.V8Promise()->State());
 }
 
-TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
+TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
   auto promise =
-      CredentialsContainer::credentials(*context.DomWindow().navigator())
+      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
           ->store(context.GetScriptState(),
                   MakeGarbageCollected<MockPublicKeyCredential>());
 
@@ -209,7 +209,7 @@ TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
 
 // Test that navigator.credentials.get() increments the feature use counter when
 // one of the identity providers is a digital identity credential.
-TEST(CredentialsContainerTest, IdentityDigitalCredentialUseCounter) {
+TEST(AuthenticationCredentialsContainerTest, IdentityDigitalCredentialUseCounter) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
@@ -230,7 +230,7 @@ TEST(CredentialsContainerTest, IdentityDigitalCredentialUseCounter) {
   options->setIdentity(identity_credential_request);
 
   auto promise =
-      CredentialsContainer::credentials(*context.DomWindow().navigator())
+      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
           ->get(context.GetScriptState(), options,
                 IGNORE_EXCEPTION_FOR_TESTING);
 
