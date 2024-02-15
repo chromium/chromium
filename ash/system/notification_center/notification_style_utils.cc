@@ -58,9 +58,16 @@ gfx::ImageSkia CreateNotificationAppIcon(
 
 gfx::ImageSkia CreateNotificationItemIcon(
     const message_center::NotificationItem* item) {
-  // TODO(b/284512022): Return a resized image provided in `item` or a
-  // default contact icon. Remove the temporary implementation returning a
-  // hardcoded chrome icon.
+  if (item->icon().has_value()) {
+    gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
+        item->icon().value().GetImage().AsImageSkia(),
+        skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+        gfx::Size(kNotificationAppIconViewSize, kNotificationAppIconViewSize));
+
+    return resized;
+  }
+  // TODO(b/284512022): Remove the temporary implementation returning a
+  // hardcoded chrome icon as a default icon.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kNotificationAppIconViewSize / 2, SK_ColorRED,
       gfx::CreateVectorIcon(message_center::kProductIcon,

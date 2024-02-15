@@ -132,11 +132,13 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
     notifier_id.group_key = data->group_key;
   }
 
-  const auto notification_type =
+  auto notification_type =
       render_on_chrome
-          ? ((data->indeterminate_progress || data->progress_max != -1)
-                 ? message_center::NOTIFICATION_TYPE_PROGRESS
-                 : message_center::NOTIFICATION_TYPE_SIMPLE)
+          ? (data->messages
+                 ? message_center::NOTIFICATION_TYPE_CONVERSATION
+                 : ((data->indeterminate_progress || data->progress_max != -1)
+                        ? message_center::NOTIFICATION_TYPE_PROGRESS
+                        : message_center::NOTIFICATION_TYPE_SIMPLE))
           : message_center::NOTIFICATION_TYPE_CUSTOM;
 
   auto notification = CreateNotificationFromArcNotificationData(
