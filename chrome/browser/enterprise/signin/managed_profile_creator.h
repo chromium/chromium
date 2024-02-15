@@ -78,7 +78,7 @@ class ManagedProfileCreator : public ProfileAttributesStorageObserver {
   void OnNewProfileCreated(Profile* new_profile);
   void OnNewProfileInitialized(Profile* new_profile);
 
-  raw_ptr<Profile> source_profile_;
+  raw_ptr<Profile, DanglingUntriaged> source_profile_;
   const std::string id_;
   std::unique_ptr<ManagedProfileCreationDelegate> delegate_;
   base::FilePath expected_profile_path_;

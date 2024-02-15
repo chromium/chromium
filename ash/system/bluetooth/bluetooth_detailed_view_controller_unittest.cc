@@ -69,7 +69,8 @@ class FakeBluetoothDetailedViewFactory : public BluetoothDetailedView::Factory {
     return bluetooth_detailed_view;
   }
 
-  raw_ptr<FakeBluetoothDetailedView> bluetooth_detailed_view_ = nullptr;
+  raw_ptr<FakeBluetoothDetailedView, DanglingUntriaged>
+      bluetooth_detailed_view_ = nullptr;
 };
 
 class FakeBluetoothDeviceListControllerFactory

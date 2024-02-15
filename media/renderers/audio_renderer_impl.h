@@ -394,7 +394,8 @@ class MEDIA_EXPORT AudioRendererImpl
   // End variables which must be accessed under |lock_|. ----------------------
 
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<SpeechRecognitionClient> speech_recognition_client_;
+  raw_ptr<SpeechRecognitionClient, DanglingUntriaged>
+      speech_recognition_client_;
   TranscribeAudioCallback transcribe_audio_callback_;
 #endif
 

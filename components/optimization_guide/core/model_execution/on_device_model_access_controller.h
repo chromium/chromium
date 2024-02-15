@@ -37,7 +37,7 @@ class OnDeviceModelAccessController {
   void OnSessionTimedOut();
 
  private:
-  raw_ref<PrefService> pref_service_;
+  raw_ref<PrefService, LeakedDanglingUntriaged> pref_service_;
   bool is_gpu_blocked_ = false;
 };
 

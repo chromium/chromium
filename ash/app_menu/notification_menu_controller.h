@@ -65,7 +65,7 @@ class APP_MENU_EXPORT NotificationMenuController
   const std::string app_id_;
 
   // The top level MenuItemView. Owned by |AppMenuModelAdapter::menu_runner_|.
-  const raw_ptr<views::MenuItemView> root_menu_;
+  const raw_ptr<views::MenuItemView, DanglingUntriaged> root_menu_;
 
   // Manages showing the menu. Owned by the view requesting a menu.
   const raw_ptr<AppMenuModelAdapter> app_menu_model_adapter_;

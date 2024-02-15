@@ -159,7 +159,7 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   WidgetAutoclosePtr anchor_widget_;
   raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   WidgetAutoclosePtr bubble_widget_;
-  raw_ptr<QRCodeGeneratorBubble> bubble_;
+  raw_ptr<QRCodeGeneratorBubble, DanglingUntriaged> bubble_;
 };
 
 // This test is a bit fiddly because mojo imposes asynchronicity on both sender

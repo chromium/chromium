@@ -146,7 +146,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
-  raw_ptr<GlanceablesTasksView> view_;
+  raw_ptr<GlanceablesTasksView, DanglingUntriaged> view_;
   std::unique_ptr<views::Widget> widget_;
 
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
