@@ -460,6 +460,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     OverlayLock(SkiaRenderer* renderer, const gpu::Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_OZONE)
+    explicit OverlayLock(const gpu::Mailbox& solid_color_buffer_mailbox);
+#endif  // BUILDFLAG(IS_OZONE)
+
     ~OverlayLock();
 
     OverlayLock(OverlayLock&& other);
@@ -474,6 +478,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
         return render_pass_lock->mailbox();
       }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_OZONE)
+      if (solid_color_buffer.has_value()) {
+        return solid_color_buffer.value();
+      }
+#endif  // BUILDFLAG(IS_OZONE)
 
       DCHECK(resource_lock.has_value());
       return resource_lock->mailbox();
@@ -505,6 +515,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
     std::optional<ScopedInFlightRenderPassOverlayBackingRef> render_pass_lock;
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_OZONE)
+    std::optional<gpu::Mailbox> solid_color_buffer;
+#endif  // BUILDFLAG(IS_OZONE)
   };
 
   // Locks for overlays that are pending for SwapBuffers().

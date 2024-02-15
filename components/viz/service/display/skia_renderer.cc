@@ -3070,7 +3070,7 @@ void SkiaRenderer::ScheduleOverlays() {
         overlay.resource_size_in_pixels = gfx::Size(1, 1);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
-        locks.emplace_back(this, overlay.mailbox);
+        locks.emplace_back(overlay.mailbox);
       }
 #else
       // All other platforms that support solid color overlays don't need fake
@@ -4379,6 +4379,10 @@ SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer::OverlayLock&& other) {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   render_pass_lock = std::move(other.render_pass_lock);
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_OZONE)
+  solid_color_buffer = std::move(other.solid_color_buffer);
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
@@ -4389,6 +4393,10 @@ SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
   render_pass_lock = std::move(other.render_pass_lock);
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_OZONE)
+  solid_color_buffer = std::move(other.solid_color_buffer);
+#endif  // BUILDFLAG(IS_OZONE)
+
   return *this;
 }
 
@@ -4398,6 +4406,12 @@ SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
   render_pass_lock.emplace(renderer, mailbox);
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_OZONE)
+SkiaRenderer::OverlayLock::OverlayLock(
+    const gpu::Mailbox& solid_color_buffer_mailbox)
+    : solid_color_buffer(solid_color_buffer_mailbox) {}
+#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
 bool SkiaRenderer::OverlayLockComparator::operator()(
