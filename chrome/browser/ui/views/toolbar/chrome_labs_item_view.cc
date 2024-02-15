@@ -157,7 +157,7 @@ ChromeLabsItemView::ChromeLabsItemView(
   // See crbug.com/1145666 Accessibility review.
   experiment_name_->GetViewAccessibility().OverrideIsIgnored(true);
   experiment_description->GetViewAccessibility().OverrideIsIgnored(true);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   if (!lab.visible_name.empty())
     GetViewAccessibility().OverrideName(lab.visible_name);
 

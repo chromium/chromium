@@ -38,7 +38,7 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     // Dialogs that take focus must have a name and role to pass accessibility
     // checks.
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ChildModalDialogDelegate(const ChildModalDialogDelegate&) = delete;

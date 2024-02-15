@@ -243,7 +243,7 @@ PopupRowView::PopupRowView(
   content_view_ = AddChildView(std::move(content_view));
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   content_view_->AddObserver(this);
-  content_view_->GetViewAccessibility().OverrideRole(
+  content_view_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kListBoxOption);
   content_view_->GetViewAccessibility().OverrideName(GetSuggestionA11yString(
       suggestion,

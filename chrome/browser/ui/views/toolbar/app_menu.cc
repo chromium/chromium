@@ -679,7 +679,7 @@ class AppMenu::ZoomView : public AppMenuView {
 
     // An accessibility role of kAlert will ensure that any updates to the zoom
     // level can be picked up by screen readers.
-    zoom_label->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
+    zoom_label->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
     zoom_label_ = AddChildView(std::move(zoom_label));
 

@@ -453,7 +453,7 @@ void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {
   }
 
   views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();
-  ax.OverrideRole(ax::mojom::Role::kAlert);
+  ax.SetRole(ax::mojom::Role::kAlert);
   ax.OverrideName(accessibility_alert_text);
   accessibility_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
                                                  true);

@@ -586,7 +586,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // Make the accessibility role of this view an alert dialog, and
   // put focus on the action button. This causes screen readers to
   // immediately announce the text of this view.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive())
     action_button_->RequestFocus();
 }
