@@ -70,10 +70,15 @@ PaymentsNetworkInterface::UnmaskDetails& PaymentsNetworkInterface::UnmaskDetails
 PaymentsNetworkInterface::UnmaskDetails::~UnmaskDetails() = default;
 
 PaymentsNetworkInterface::UnmaskRequestDetails::UnmaskRequestDetails() = default;
+
 PaymentsNetworkInterface::UnmaskRequestDetails::UnmaskRequestDetails(
     const UnmaskRequestDetails& other) {
   *this = other;
 }
+
+PaymentsNetworkInterface::UnmaskRequestDetails::UnmaskRequestDetails(
+    UnmaskRequestDetails&&) = default;
+
 PaymentsNetworkInterface::UnmaskRequestDetails&
 PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
     const PaymentsNetworkInterface::UnmaskRequestDetails& other) {
@@ -95,6 +100,11 @@ PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
   client_behavior_signals = other.client_behavior_signals;
   return *this;
 }
+
+PaymentsNetworkInterface::UnmaskRequestDetails&
+PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
+    UnmaskRequestDetails&&) = default;
+
 PaymentsNetworkInterface::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 
 PaymentsNetworkInterface::UnmaskResponseDetails::UnmaskResponseDetails() = default;

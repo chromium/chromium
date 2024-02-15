@@ -106,7 +106,9 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   struct UnmaskRequestDetails {
     UnmaskRequestDetails();
     UnmaskRequestDetails(const UnmaskRequestDetails& other);
+    UnmaskRequestDetails(UnmaskRequestDetails&&);
     UnmaskRequestDetails& operator=(const UnmaskRequestDetails& other);
+    UnmaskRequestDetails& operator=(UnmaskRequestDetails&&);
     ~UnmaskRequestDetails();
 
     int64_t billing_customer_number = 0;
