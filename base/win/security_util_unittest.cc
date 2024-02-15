@@ -4,9 +4,12 @@
 
 #include "base/win/security_util.h"
 
+// clang-format off
+#include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
+
 #include <aclapi.h>
 #include <sddl.h>
-#include <windows.h>
 
 #include <utility>
 
