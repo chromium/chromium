@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/325427167): Re-enable the test.
+#if BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
 #define MAYBE_InvokeUi_Notice DISABLED_InvokeUi_Notice
 #else
 #define MAYBE_InvokeUi_Notice InvokeUi_Notice
