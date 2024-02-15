@@ -1438,6 +1438,9 @@ void DisplayManager::ClearMirroringSourceAndDestination() {
 }
 
 void DisplayManager::SetUnifiedDesktopEnabled(bool enable) {
+  if (unified_desktop_enabled_ == enable) {
+    return;
+  }
   DISPLAY_LOG(EVENT) << "Unified Desktop is now " << (enable ? "" : "not ")
                      << "allowed."
                      << (IsInMirrorMode()
