@@ -12295,6 +12295,25 @@
             ]
         }
     ],
+    "NtpTabResumption": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpTabResumptionModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [
