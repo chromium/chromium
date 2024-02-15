@@ -57,10 +57,6 @@ declare_args() {
 # Extension for shared library files (including leading dot).
 if (is_apple) {
   shlib_extension = ".dylib"
-} else if (is_android && is_component_build) {
-  # By appending .cr, we prevent name collisions with libraries already
-  # loaded by the Android zygote.
-  shlib_extension = ".cr.so"
 } else if (is_posix || is_fuchsia) {
   shlib_extension = ".so"
 } else if (is_win) {

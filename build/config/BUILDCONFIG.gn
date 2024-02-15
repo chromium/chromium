@@ -572,8 +572,6 @@ foreach(_target_type,
 
         if (defined(output_extension)) {
           _shlib_extension = ".$output_extension"
-        } else if (is_component_build && _target_type != "loadable_module") {
-          _shlib_extension = ".cr.so"
         } else {
           _shlib_extension = ".so"
         }
@@ -629,6 +627,11 @@ template("component") {
   target(_component_mode, target_name) {
     if (defined(_output_name)) {
       output_name = _output_name
+    }
+    if (is_component_build && is_android) {
+      # By appending .cr, we prevent name collisions with libraries already
+      # loaded by the Android zygote.
+      output_extension = "cr.so"
     }
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)

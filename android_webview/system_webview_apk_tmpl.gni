@@ -200,15 +200,6 @@ template("system_webview_apk_or_module_tmpl") {
           secondary_native_lib_placeholders = [ "libplaceholder.so" ]
           static_library_provider_use_secondary_abi = true
         }
-
-        # http://crbug.com/1042107.
-        if (is_component_build) {
-          if (_is_64_bit_browser) {
-            main_component_library = "libmonochrome_64.cr.so"
-          } else {
-            main_component_library = "libmonochrome.cr.so"
-          }
-        }
       } else {
         native_lib_placeholders = [ "libplaceholder.so" ]
       }

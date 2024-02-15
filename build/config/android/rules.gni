@@ -468,12 +468,6 @@ if (enable_java_templates && is_android) {
             rebase_path(depfile, root_build_dir),
           ]
         }
-        if (defined(invoker.main_component_library)) {
-          args += [
-            "--main-component-library",
-            invoker.main_component_library,
-          ]
-        }
         if (defined(invoker.enable_chromium_linker) &&
             invoker.enable_chromium_linker) {
           args += [ "--enable-chromium-linker" ]
@@ -2011,9 +2005,8 @@ if (enable_java_templates && is_android) {
   #   loadable_modules: List of paths to native libraries to include. Different
   #     from |shared_libraries| in that:
   #       * dependencies of this .so are not automatically included
-  #       * ".cr.so" is never added
   #       * they are not side-loaded when incremental_install=true.
-  #       * use_chromium_linker, and enable_relocation_packing do not apply
+  #       * they are not included in NativeLibraries.java
   #     Use this instead of shared_libraries when you are going to load the library
   #     conditionally, and only when shared_libraries doesn't work for you.
   #   secondary_abi_loadable_modules: This is the loadable_modules analog to
@@ -2094,9 +2087,6 @@ if (enable_java_templates && is_android) {
   #     compiling sources given to this target (optional).
   #   bundles_supported: Enable Java code to treat this target as a bundle
   #     whether (by default determined by the target type).
-  #   main_component_library: Specifies the name of the base component's library
-  #     in a component build. If given, the system will find dependent native
-  #     libraries at runtime by inspecting this library (optional).
   #   expected_libs_and_assets: Verify the list of included native libraries
   #     and assets is consistent with the given expectation file.
   #   expected_libs_and_assets_base: Treat expected_libs_and_assets as a diff
@@ -2556,8 +2546,6 @@ if (enable_java_templates && is_android) {
     }
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
-        forward_variables_from(invoker, [ "main_component_library" ])
-
         # Do not add a dep on the generated_file target in order to avoid having
         # to build the native libraries before this target. The dependency is
         # instead captured via a depfile.
@@ -3268,7 +3256,6 @@ if (enable_java_templates && is_android) {
             "max_sdk_version",
             "mergeable_android_manifests",
             "product_config_java_packages",
-            "main_component_library",
             "min_sdk_version",
             "native_lib_placeholders",
             "never_incremental",
@@ -3403,7 +3390,6 @@ if (enable_java_templates && is_android) {
             "javac_args",
             "loadable_modules",
             "product_config_java_packages",
-            "main_component_library",
             "manifest_package",
             "max_sdk_version",
             "min_sdk_version",
