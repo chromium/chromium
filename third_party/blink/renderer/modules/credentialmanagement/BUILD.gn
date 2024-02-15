@@ -22,6 +22,8 @@ blink_modules_sources("credentialmanagement") {
     "credential_manager_type_converters.h",
     "credentials_container.cc",
     "credentials_container.h",
+    "digital_identity_credential.cc",
+    "digital_identity_credential.h",
     "federated_credential.cc",
     "federated_credential.h",
     "identity_credential.cc",

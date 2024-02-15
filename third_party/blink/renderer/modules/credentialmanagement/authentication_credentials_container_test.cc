@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -205,37 +204,6 @@ TEST(AuthenticationCredentialsContainerTest, RejectPublicKeyCredentialStoreOpera
                   MakeGarbageCollected<MockPublicKeyCredential>());
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
-}
-
-// Test that navigator.credentials.get() increments the feature use counter when
-// one of the identity providers is a digital identity credential.
-TEST(AuthenticationCredentialsContainerTest, IdentityDigitalCredentialUseCounter) {
-  test::TaskEnvironment task_environment;
-  MockCredentialManager mock_credential_manager;
-  CredentialManagerTestingContext context(&mock_credential_manager);
-
-  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
-      /*enabled=*/true);
-
-  IdentityProviderRequestOptions* identity_provider_request =
-      IdentityProviderRequestOptions::Create();
-  identity_provider_request->setHolder(DigitalCredentialProvider::Create());
-  HeapVector<Member<IdentityProviderRequestOptions>> identity_providers;
-  identity_providers.push_back(identity_provider_request);
-
-  IdentityCredentialRequestOptions* identity_credential_request =
-      IdentityCredentialRequestOptions::Create();
-  identity_credential_request->setProviders(identity_providers);
-  CredentialRequestOptions* options = CredentialRequestOptions::Create();
-  options->setIdentity(identity_credential_request);
-
-  auto promise =
-      AuthenticationCredentialsContainer::credentials(*context.DomWindow().navigator())
-          ->get(context.GetScriptState(), options,
-                IGNORE_EXCEPTION_FOR_TESTING);
-
-  EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
-      blink::mojom::WebFeature::kIdentityDigitalCredentials));
 }
 
 }  // namespace blink

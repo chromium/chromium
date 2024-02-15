@@ -429,6 +429,7 @@ source_set("unit_tests") {
     "content_index/content_description_type_converter_test.cc",
     "credentialmanagement/authentication_credentials_container_test.cc",
     "credentialmanagement/credential_manager_type_converters_unittest.cc",
+    "credentialmanagement/digital_identity_credential_test.cc",
     "credentialmanagement/password_credential_test.cc",
     "credentialmanagement/web_identity_requester_test.cc",
     "csspaint/document_paint_definition_test.cc",

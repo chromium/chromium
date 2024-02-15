@@ -59,18 +59,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
                                const IdentityCredentialRequestOptions&,
                                ExceptionState&);
 
-  // get() implementation for WebIdentityDigitalCredential.
-  // Returns std::nullopt if the passed-in CredentialRequestOptions are not for
-  // a WebIdentityDigitalCredential.
-  std::optional<ScriptPromise> GetForDigitalCredential(
-      ScriptState*,
-      ScriptPromiseResolver*,
-      const ScriptPromise&,
-      const CredentialRequestOptions&,
-      const IdentityProviderRequestOptions& first_identity_provider,
-      size_t num_identity_providers,
-      ExceptionState&);
-
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
 
