@@ -21407,6 +21407,7 @@
                         "VulkanFromANGLE"
                     ],
                     "hardware_classes": [
+                        "brya",
                         "rex"
                     ]
                 }
