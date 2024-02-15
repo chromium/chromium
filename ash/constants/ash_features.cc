@@ -1412,6 +1412,12 @@ BASE_FEATURE(kHelpAppLauncherSearch,
              "HelpAppLauncherSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables opening the Help App's What's New page immediately instead of showing
+// a notification to open the help app.
+BASE_FEATURE(kHelpAppOpensInsteadOfReleaseNotesNotification,
+             "HelpAppOpensInsteadOfReleaseNotesNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable showing the welcome tips page in the help app. This feature
 // is dependent on the 'ScalableIph' feature being enabled as well.
 BASE_FEATURE(kHelpAppWelcomeTips,
@@ -2402,6 +2408,14 @@ BASE_FEATURE(kQuickUnlockPinAutosubmitBackfill,
 // channels. Used for testing.
 BASE_FEATURE(kReleaseNotesNotificationAllChannels,
              "ReleaseNotesNotificationAllChannels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Makes the user always eligible to see the release notes notification.
+// Normally there are conditions that prevent the notification from appearing.
+// For example: channel, profile type, and whether or not the notification had
+// already been shown this milestone.
+BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
+             "ReleaseNotesNotificationAlwaysEligible",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables rendering ARC notifications using ChromeOS notification framework

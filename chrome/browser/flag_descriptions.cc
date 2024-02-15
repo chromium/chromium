@@ -6679,6 +6679,12 @@ const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
 
+const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[] =
+    "Help App opens instead of release notes notification";
+const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
+    "Enables opening the Help App's What's New page immediately instead of "
+    "showing a notification to open the help app.";
+
 const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
     "Enable diacritics and variant character selection on PK longpress.";
 const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
@@ -7072,6 +7078,13 @@ const char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all ChromeOS channels";
+
+const char kReleaseNotesNotificationAlwaysEligibleName[] =
+    "Release Notes Notification always eligible";
+const char kReleaseNotesNotificationAlwaysEligibleDescription[] =
+    "Makes the release notes notification always appear regardless of channel, "
+    "profile type, and whether or not the notification had already been shown "
+    "this milestone. For testing.";
 
 const char kRenderArcNotificationsByChromeName[] =
     "Render ARC notifications by ChromeOS";

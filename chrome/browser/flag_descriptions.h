@@ -3850,6 +3850,9 @@ extern const char kHelpAppHomePageAppArticlesDescription[];
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
+extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
+extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
+
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 
@@ -4064,6 +4067,9 @@ extern const char kProjectorServerSideSpeechRecognitionDescription[];
 
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
+
+extern const char kReleaseNotesNotificationAlwaysEligibleName[];
+extern const char kReleaseNotesNotificationAlwaysEligibleDescription[];
 
 extern const char kRenderArcNotificationsByChromeName[];
 extern const char kRenderArcNotificationsByChromeDescription[];

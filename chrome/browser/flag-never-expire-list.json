@@ -113,6 +113,7 @@
   "record-web-app-debug-info",
   "related-website-sets-permission-grants",
   "release-notes-notification-all-channels",
+  "release-notes-notification-always-eligible",
   "restore-session-from-cache",
   "scheduler-configuration",
   "set-market-url-for-testing",

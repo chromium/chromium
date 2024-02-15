@@ -4696,6 +4696,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "help-app-opens-instead-of-release-notes-notification",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "hide-incognito-media-metadata",
     "owners": [
       "fsenra@google.com",
@@ -7080,6 +7085,13 @@
   },
   {
     "name": "release-notes-notification-all-channels",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    // This is required by test teams to verify functionality on dev/beta
+    // channels on devices which have no access to commandline flags.
+    "expiry_milestone": -1
+  },
+  {
+    "name": "release-notes-notification-always-eligible",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     // This is required by test teams to verify functionality on dev/beta
     // channels on devices which have no access to commandline flags.

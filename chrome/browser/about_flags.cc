@@ -8027,6 +8027,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"help-app-launcher-search", flag_descriptions::kHelpAppLauncherSearchName,
      flag_descriptions::kHelpAppLauncherSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHelpAppLauncherSearch)},
+    {"help-app-opens-instead-of-release-notes-notification",
+     flag_descriptions::kHelpAppOpensInsteadOfReleaseNotesNotificationName,
+     flag_descriptions::
+         kHelpAppOpensInsteadOfReleaseNotesNotificationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kHelpAppOpensInsteadOfReleaseNotesNotification)},
     {"media-app-pdf-a11y-ocr", flag_descriptions::kMediaAppPdfA11yOcrName,
      flag_descriptions::kMediaAppPdfA11yOcrDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfA11yOcr)},
@@ -8035,6 +8042,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReleaseNotesNotificationAllChannelsDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kReleaseNotesNotificationAllChannels)},
+    {"release-notes-notification-always-eligible",
+     flag_descriptions::kReleaseNotesNotificationAlwaysEligibleName,
+     flag_descriptions::kReleaseNotesNotificationAlwaysEligibleDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kReleaseNotesNotificationAlwaysEligible)},
     {"use-android-staging-smds", flag_descriptions::kUseAndroidStagingSmdsName,
      flag_descriptions::kUseAndroidStagingSmdsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kUseAndroidStagingSmds)},

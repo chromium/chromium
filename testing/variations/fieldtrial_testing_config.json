@@ -9058,6 +9058,22 @@
             ]
         }
     ],
+    "HelpAppOpensInsteadOfReleaseNotesNotification": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HelpAppOpensInsteadOfReleaseNotesNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "HideDelegatedFrameHostMac": [
         {
             "platforms": [

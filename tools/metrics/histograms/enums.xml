@@ -19168,6 +19168,8 @@ from previous Chrome versions.
   <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
+  <int value="-691977647"
+      label="ReleaseNotesNotificationAlwaysEligible:enabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-689481289" label="EnablePerDeskZOrder:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
@@ -20138,6 +20140,8 @@ from previous Chrome versions.
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>
+  <int value="-246946362"
+      label="HelpAppOpensInsteadOfReleaseNotesNotification:disabled"/>
   <int value="-245813749"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
@@ -20997,6 +21001,8 @@ from previous Chrome versions.
   <int value="147982046" label="OfflineAutoFetch:enabled"/>
   <int value="148142535" label="ShortcutCustomization:disabled"/>
   <int value="148280309" label="ReadAloudInOverflowMenuInCCT:disabled"/>
+  <int value="148744974"
+      label="HelpAppOpensInsteadOfReleaseNotesNotification:enabled"/>
   <int value="149272550" label="OmitCorsClientCert:disabled"/>
   <int value="149336730" label="UseMojoVideoDecoderForPepper:enabled"/>
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
@@ -23738,6 +23744,8 @@ from previous Chrome versions.
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428027882" label="SidePanelPinning:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
+  <int value="1428634887"
+      label="ReleaseNotesNotificationAlwaysEligible:disabled"/>
   <int value="1429031731"
       label="CrossOriginEmbedderPolicyCredentialless:enabled"/>
   <int value="1429923065" label="enable-media-internals:enabled"/>
