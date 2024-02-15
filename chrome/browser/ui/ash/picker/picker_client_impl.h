@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -112,6 +113,8 @@ class PickerClientImpl
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
   PickerAppListControllerDelegate app_list_controller_delegate_;
+
+  ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>
