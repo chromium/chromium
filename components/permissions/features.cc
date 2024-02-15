@@ -133,6 +133,12 @@ BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
              "ShowRelatedWebsiteSetsPermissionGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Quiet prompts triggered by CPSS will have "Get Notifications?"
+// as the the chip text instead of the usual "Notifications Blocked".
+BASE_FEATURE(kCpssQuietChipTextUpdate,
+             "CpssQuietChipTextUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 namespace feature_params {
 
