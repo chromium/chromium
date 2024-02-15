@@ -15631,6 +15631,40 @@
             ]
         }
     ],
+    "RemotePageMetadataAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240214",
+                    "enable_features": [
+                        "RemotePageMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RemotePageMetadataDesktopExpansion": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240214",
+                    "enable_features": [
+                        "RemotePageMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveDataUrlInSvgUse": [
         {
             "platforms": [
