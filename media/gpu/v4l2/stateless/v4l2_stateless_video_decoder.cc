@@ -15,6 +15,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/h264_delegate.h"
+#include "media/gpu/v4l2/stateless/h265_delegate.h"
 #include "media/gpu/v4l2/stateless/utils.h"
 #include "media/gpu/v4l2/stateless/vp8_delegate.h"
 #include "media/gpu/v4l2/stateless/vp9_delegate.h"
@@ -515,6 +516,12 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<H264Delegate>(this), profile, color_space);
       break;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      decoder_ = std::make_unique<H265Decoder>(
+          std::make_unique<H265Delegate>(this), profile, color_space);
+      break;
+#endif
     case VideoCodec::kVP8:
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<VP8Delegate>(this), color_space);

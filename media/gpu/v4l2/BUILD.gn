@@ -75,6 +75,8 @@ source_set("v4l2") {
 
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [
+      "stateless/h265_delegate.cc",
+      "stateless/h265_delegate.h",
       "v4l2_video_decoder_delegate_h265.cc",
       "v4l2_video_decoder_delegate_h265.h",
     ]
