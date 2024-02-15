@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
+#include "url/origin.h"
 
 namespace ash::file_system_provider {
 
@@ -25,6 +27,14 @@ namespace {
 // The frequency that the FSP syncs with the cloud when the File Manager is a
 // watcher.
 constexpr base::TimeDelta kFileManagerWatcherInterval = base::Seconds(15);
+
+const GURL GetContentCacheURL() {
+  return GURL("chrome://content-cache/");
+}
+
+const base::FilePath RootFilePath() {
+  return base::FilePath("/");
+}
 
 std::ostream& operator<<(std::ostream& out,
                          const std::vector<base::FilePath>& entry_paths) {
@@ -83,9 +93,28 @@ CloudFileSystem::CloudFileSystem(
 CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system,
     ContentCache* content_cache)
-    : file_system_(std::move(file_system)), content_cache_(content_cache) {}
+    : file_system_(std::move(file_system)), content_cache_(content_cache) {
+  if (content_cache_) {
+    // Add watcher to keep content cache up to date. Notifications are received
+    // though Notify() so no notification_callback is needed.
+    AddWatcher(GetContentCacheURL(), RootFilePath(),
+               /*recursive=*/true, /*persistent=*/false,
+               base::BindOnce([](base::File::Error result) {
+                 VLOG(1) << "Added file watcher on root: " << result;
+               }),
+               base::DoNothing());
+  }
+}
 
-CloudFileSystem::~CloudFileSystem() = default;
+CloudFileSystem::~CloudFileSystem() {
+  if (content_cache_) {
+    RemoveWatcher(GetContentCacheURL(), RootFilePath(),
+                  /*recursive=*/true,
+                  base::BindOnce([](base::File::Error result) {
+                    VLOG(1) << "Removed file watcher on root: " << result;
+                  }));
+  }
+}
 
 AbortCallback CloudFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
