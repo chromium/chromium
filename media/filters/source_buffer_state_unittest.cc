@@ -165,6 +165,37 @@ class SourceBufferStateTest : public ::testing::Test {
   StreamParser::NewConfigCB new_config_cb_;
 };
 
+TEST_F(SourceBufferStateTest, InitSourceBufferWithRelaxedCodecChecks) {
+  std::unique_ptr<SourceBufferState> sbs = CreateSourceBufferState();
+  EXPECT_CALL(*mock_stream_parser_, Init(_, _, _, _, _, _, _))
+      .WillOnce([&](auto init_cb, auto config_cb, auto new_buffers_cb,
+                    auto encrypted_media_init_data_cb, auto new_segment_cb,
+                    auto end_of_segment_cb,
+                    auto media_log) { new_config_cb_ = config_cb; });
+
+  sbs->Init(
+      base::BindOnce(&SourceBufferStateTest::SourceInitDone,
+                     base::Unretained(this)),
+      std::nullopt,
+      base::BindRepeating(&SourceBufferStateTest::StreamParserEncryptedInitData,
+                          base::Unretained(this)));
+
+  sbs->SetTracksWatcher(base::BindRepeating(
+      &SourceBufferStateTest::OnMediaTracksUpdated, base::Unretained(this)));
+
+  EXPECT_CALL(*this, OnParseWarningMock(_)).Times(0);
+
+  sbs->SetParseWarningCallback(base::BindRepeating(
+      &SourceBufferStateTest::OnParseWarningMock, base::Unretained(this)));
+
+  std::unique_ptr<MediaTracks> tracks(new MediaTracks());
+  AddAudioTrack(tracks, AudioCodec::kVorbis, 1);
+
+  EXPECT_FOUND_CODEC_NAME(Audio, "vorbis");
+  EXPECT_CALL(*this, MediaTracksUpdatedMock(_));
+  EXPECT_TRUE(AppendDataAndReportTracks(sbs, std::move(tracks)));
+}
+
 TEST_F(SourceBufferStateTest, InitSingleAudioTrack) {
   std::unique_ptr<SourceBufferState> sbs =
       CreateAndInitSourceBufferState("vorbis");

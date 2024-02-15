@@ -142,7 +142,7 @@ SourceBufferState::~SourceBufferState() {
 }
 
 void SourceBufferState::Init(StreamParser::InitCB init_cb,
-                             const std::string& expected_codecs,
+                             std::optional<std::string_view> expected_codecs,
                              const StreamParser::EncryptedMediaInitDataCB&
                                  encrypted_media_init_data_cb) {
   DCHECK_EQ(state_, UNINITIALIZED);
@@ -519,12 +519,16 @@ bool SourceBufferState::IsSeekWaitingForData() const {
   return false;
 }
 
-void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
+void SourceBufferState::InitializeParser(
+    std::optional<std::string_view> expected_codecs) {
   expected_audio_codecs_.clear();
   expected_video_codecs_.clear();
 
   std::vector<std::string> expected_codecs_parsed;
-  SplitCodecs(expected_codecs, &expected_codecs_parsed);
+  if ((strict_codec_expectations_ = expected_codecs.has_value())) {
+    DVLOG(1) << __func__ << " expected_codecs=" << expected_codecs.value();
+    SplitCodecs(expected_codecs.value(), &expected_codecs_parsed);
+  }
 
   std::vector<AudioCodec> expected_acodecs;
   std::vector<VideoCodec> expected_vcodecs;
@@ -546,7 +550,7 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
       base::BindOnce(&SourceBufferState::OnSourceInitDone,
                      base::Unretained(this)),
       base::BindRepeating(&SourceBufferState::OnNewConfigs,
-                          base::Unretained(this), expected_codecs),
+                          base::Unretained(this)),
       base::BindRepeating(&SourceBufferState::OnNewBuffers,
                           base::Unretained(this)),
       base::BindRepeating(&SourceBufferState::OnEncryptedMediaInitData,
@@ -558,11 +562,8 @@ void SourceBufferState::InitializeParser(const std::string& expected_codecs) {
       media_log_);
 }
 
-bool SourceBufferState::OnNewConfigs(std::string expected_codecs,
-                                     std::unique_ptr<MediaTracks> tracks) {
+bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
   DCHECK(tracks.get());
-  DVLOG(1) << __func__ << " expected_codecs=" << expected_codecs
-           << " tracks=" << tracks->tracks().size();
   DCHECK_GE(state_, PENDING_PARSER_CONFIG);
 
   // Check that there is no clashing bytestream track ids.
@@ -602,15 +603,17 @@ bool SourceBufferState::OnNewConfigs(std::string expected_codecs,
                << " config: " << audio_config.AsHumanReadableString();
       DCHECK(audio_config.IsValidConfig());
 
-      const auto& it =
-          base::ranges::find(expected_acodecs, audio_config.codec());
-      if (it == expected_acodecs.end()) {
-        MEDIA_LOG(ERROR, media_log_) << "Audio stream codec "
-                                     << GetCodecName(audio_config.codec())
-                                     << " doesn't match SourceBuffer codecs.";
-        return false;
+      if (strict_codec_expectations_) {
+        const auto& it =
+            base::ranges::find(expected_acodecs, audio_config.codec());
+        if (it == expected_acodecs.end()) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "Audio stream codec " << GetCodecName(audio_config.codec())
+              << " doesn't match SourceBuffer codecs.";
+          return false;
+        }
+        expected_acodecs.erase(it);
       }
-      expected_acodecs.erase(it);
 
       ChunkDemuxerStream* stream = nullptr;
       if (!first_init_segment_received_) {
@@ -684,15 +687,17 @@ bool SourceBufferState::OnNewConfigs(std::string expected_codecs,
       }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
-      const auto& it =
-          base::ranges::find(expected_vcodecs, video_config.codec());
-      if (it == expected_vcodecs.end()) {
-        MEDIA_LOG(ERROR, media_log_) << "Video stream codec "
-                                     << GetCodecName(video_config.codec())
-                                     << " doesn't match SourceBuffer codecs.";
-        return false;
+      if (strict_codec_expectations_) {
+        const auto& it =
+            base::ranges::find(expected_vcodecs, video_config.codec());
+        if (it == expected_vcodecs.end()) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "Video stream codec " << GetCodecName(video_config.codec())
+              << " doesn't match SourceBuffer codecs.";
+          return false;
+        }
+        expected_vcodecs.erase(it);
       }
-      expected_vcodecs.erase(it);
 
       ChunkDemuxerStream* stream = nullptr;
       if (!first_init_segment_received_) {

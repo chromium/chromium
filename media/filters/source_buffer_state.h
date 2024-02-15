@@ -43,7 +43,7 @@ class MEDIA_EXPORT SourceBufferState {
   ~SourceBufferState();
 
   void Init(StreamParser::InitCB init_cb,
-            const std::string& expected_codecs,
+            std::optional<std::string_view> expected_codecs,
             const StreamParser::EncryptedMediaInitDataCB&
                 encrypted_media_init_data_cb);
 
@@ -198,14 +198,13 @@ class MEDIA_EXPORT SourceBufferState {
 
   // Initializes |stream_parser_|. Also, updates |expected_audio_codecs| and
   // |expected_video_codecs|.
-  void InitializeParser(const std::string& expected_codecs);
+  void InitializeParser(std::optional<std::string_view> expected_codecs);
 
   // Called by the |stream_parser_| when a new initialization segment is
   // encountered.
   // Returns true on a successful call. Returns false if an error occurred while
   // processing decoder configurations.
-  bool OnNewConfigs(std::string expected_codecs,
-                    std::unique_ptr<MediaTracks> tracks);
+  bool OnNewConfigs(std::unique_ptr<MediaTracks> tracks);
 
   // Called by the |stream_parser_| at the beginning of a new media segment.
   void OnNewMediaSegment();
@@ -284,6 +283,11 @@ class MEDIA_EXPORT SourceBufferState {
   bool new_configs_possible_ = false;
   bool first_init_segment_received_ = false;
   bool encrypted_media_init_data_reported_ = false;
+
+  // Initialization can happen with an optional set of codecs, which much be
+  // strictly matched, if provided. If no strict codecs are provided, then
+  // non-strict mode is enabled, and codecs are not checked.
+  bool strict_codec_expectations_ = true;
 
   std::vector<AudioCodec> expected_audio_codecs_;
   std::vector<VideoCodec> expected_video_codecs_;
