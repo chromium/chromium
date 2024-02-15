@@ -57,6 +57,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedOut];
 }
 
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
+  [self verifySignedInWithFakeIdentity:identity];
+}
+
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   BOOL fakeIdentityIsNonNil = fakeIdentity != nil;
   EG_TEST_HELPER_ASSERT_TRUE(fakeIdentityIsNonNil, @"Need to give an identity");

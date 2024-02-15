@@ -24,6 +24,7 @@ enum class ConsentLevel;
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
 // Adds `fakeIdentity` to the fake identity service.
+// Does nothing if the identity is already added.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake system identity interaction manager. This
@@ -51,6 +52,20 @@ enum class ConsentLevel;
 // Signs the user out of the primary account. Induces a GREYAssert if the
 // app fails to sign out.
 - (void)signOut;
+
+// Signs in with the fake identity and access point Settings.
+// Adds the fake-identity to the identity manager if necessary.
+// Only intended for tests requiring sign-in but not covering the sign-in UI
+// behavior to speed up and simplify those tests.
+// Will bypass the usual verifications before signin and other
+// entry-point-implemented behavior (e.g. history & tabs sync will be disabled,
+// no check for management status, sign-in related
+// metrics will not be sent)
+// Note that, when sync-the-feature is enabled, this function differs from
+// `[SigninEarlGreyAppInterfaceUI signinWithFakeIdentity:identity]`. The
+// UI function enable sync too.
+// TODO(crbug.com/40067025): Remove this last remark when sync is disabled.
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Induces a GREYAssert if `fakeIdentity` is not signed in to the active
 // profile.

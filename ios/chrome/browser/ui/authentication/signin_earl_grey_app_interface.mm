@@ -101,6 +101,16 @@
                                   /*force_clear_browsing_data=*/false, nil);
 }
 
++ (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [self addFakeIdentity:identity];
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  authenticationService->SignIn(
+      identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+}
+
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
   FakeSystemIdentityInteractionManager.identity = identity;
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);

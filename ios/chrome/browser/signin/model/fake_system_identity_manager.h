@@ -39,9 +39,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       SystemIdentityManager* manager);
 
   // Adds `identity` to the available idendities.
+  // Does nothing if the identity is already in the manager.
   void AddIdentity(id<SystemIdentity> identity);
 
-  // Adds fake identities given their names.
+  // Adds fake identities given their names. Ignore the identities that are
+  // already added.
   void AddIdentities(NSArray<NSString*>* names);
 
   // Adds fake managed identities given their names.
