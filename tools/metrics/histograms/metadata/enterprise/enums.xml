@@ -2036,6 +2036,7 @@ chromium-metrics-reviews@google.com.
   <int value="1219" label="DefaultWebPrintingSetting"/>
   <int value="1220" label="WebPrintingAllowedForUrls"/>
   <int value="1221" label="WebPrintingBlockedForUrls"/>
+  <int value="1222" label="DocumentScanAPITrustedExtensions"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
