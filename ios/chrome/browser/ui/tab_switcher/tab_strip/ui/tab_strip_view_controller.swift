@@ -151,7 +151,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
 
-    if #unavailable(iOS 17.0) {
+    // TODO(crbug.com/325415449): Update this when #unavailable is rocognized by
+    // the formatter.
+    if #available(iOS 17.0, *) {
+    } else {
       layout.cellAnimatediOS16 = true
     }
 
@@ -376,7 +379,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   /// Scrolls the collection view to the given horizontal `offset`.
   func scrollToContentOffset(_ offset: CGFloat) {
-    if #unavailable(iOS 17.0) {
+    // TODO(crbug.com/325415449): Update this when #unavailable is rocognized by
+    // the formatter.
+    if #available(iOS 17.0, *) {
+    } else {
       if offset != targetedScrollOffsetiOS16 { return }
     }
     self.collectionView.setContentOffset(
