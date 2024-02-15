@@ -753,6 +753,7 @@ class IOSurfaceImageBacking::DawnRepresentation final
 
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage) final;
   void EndAccess() final;
+  bool SupportsMultipleConcurrentReadAccess() final;
 
  private:
   static constexpr wgpu::TextureUsage kReadOnlyUsage =
@@ -921,6 +922,11 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   iosurface_backing->EndAccess(readonly);
 }
 #endif  // BUILDFLAG(USE_DAWN)
+
+bool IOSurfaceImageBacking::DawnRepresentation::
+    SupportsMultipleConcurrentReadAccess() {
+  return true;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBacking
