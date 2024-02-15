@@ -181,6 +181,12 @@
         z-index: var(--cr-slider-ripple-z-index, auto);
       }
 
+      :host-context([dir=rtl]) paper-ripple {
+        left: auto;
+        right: 50%;
+        transform: translate(50%, -50%);
+      }
+
       :host([disabled_]) {
         pointer-events: none;
       }
