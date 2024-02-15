@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/pam_epsilon.h"
+#include "components/attribution_reporting/epoch.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
@@ -64,7 +65,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   bool debug_reporting = false;
   std::optional<SuitableOrigin> aggregation_coordinator_origin;
   AggregatableTriggerConfig aggregatable_trigger_config;
+  
   PamEpsilon pam_epsilon;
+  std::vector<Epoch> epochs;
+  // std::vector<> requested_source_ids;
+
 };
 
 }  // namespace attribution_reporting

@@ -412,4 +412,31 @@ object_value {
       }
     }
   }
+  field {
+    name: "epochs"
+    value {
+      array_value {
+        value {
+          object_value {
+            field {
+              name: "epoch_start"
+              value: {
+                integer_value {
+                  value: 0
+                }
+              }
+            }
+            field {
+              name: "epoch_end"
+              value: {
+                integer_value {
+                  value: 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

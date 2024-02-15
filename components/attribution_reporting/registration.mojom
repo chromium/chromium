@@ -59,6 +59,11 @@ struct AggregatableTriggerData {
   FilterPair filters;
 };
 
+struct Epoch {
+  uint64 epoch_start;
+  uint64 epoch_end;
+};
+
 // Target site(s) where a source can be attributed.
 struct DestinationSet {
   array<network.mojom.SchemefulSite> destinations;
@@ -201,6 +206,10 @@ struct TriggerRegistration {
 
   // Controls the epsilon parameter requested to be consumed by user. Must be greater than or equal to 0.
   double pam_epsilon;
+
+  // The epochs in which the attribution logic will look for matching sources
+  array<Epoch> epochs;
+
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

@@ -51,4 +51,10 @@ enum TriggerRegistrationError {
 
   kPamEpsilonWrongType = 39,
   kPamEpsilonValueInvalid = 40,
+
+  kEpochWrongType = 41,
+  kEpochValueInvalid = 42,
+  kEpochStartMissing = 43,
+  kEpochEndMissing = 44,
+  kEpochListWrongType = 45,
 };

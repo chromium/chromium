@@ -283,6 +283,23 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::EpochDataView,
+                 attribution_reporting::Epoch> {
+  static uint64_t epoch_start(const attribution_reporting::Epoch& epoch) {
+    return epoch.epoch_start();
+  }
+
+  static uint64_t epoch_end(const attribution_reporting::Epoch& epoch) {
+    return epoch.epoch_end();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::EpochDataView data,
+      attribution_reporting::Epoch* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
                  attribution_reporting::AggregatableTriggerData> {
   static absl::uint128 key_piece(
@@ -368,6 +385,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static double pam_epsilon(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.pam_epsilon;
+  }
+  
+  static const std::vector<attribution_reporting::Epoch>& epochs(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.epochs;
   }
 
   static bool Read(

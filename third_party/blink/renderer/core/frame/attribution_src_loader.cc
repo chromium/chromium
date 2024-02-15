@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -947,6 +948,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
       headers.LogTriggerIgnored(loader_->local_frame_->DomWindow());
       return;
     }
+    LOG(INFO) << "HandleTriggerRegistration" ;
+    LOG(INFO) << StringUTF8Adaptor(headers.web_trigger).AsStringPiece();
 
     auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
         StringUTF8Adaptor(headers.web_trigger).AsStringPiece());

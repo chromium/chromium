@@ -10210,6 +10210,11 @@ experimental domain Storage
       array of string sourceKeys
       AttributionReportingFilterPair filters
 
+  experimental type AttributionReportingEpoch extends object
+    properties
+      UnsignedInt64AsBase10 epoch_start
+      UnsignedInt64AsBase10 epoch_end
+
   experimental type AttributionReportingAggregatableDedupKey extends object
     properties
       optional UnsignedInt64AsBase10 dedupKey
@@ -10228,6 +10233,7 @@ experimental domain Storage
       AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
       optional string triggerContextId
       optional number pamEpsilon
+      array of AttributionReportingEpoch epochs
 
   experimental type AttributionReportingEventLevelResult extends string
     enum

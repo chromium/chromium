@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/storage_handler.h"
 
 #include <stdint.h>
+#include "base/logging.h"
 
 #include <memory>
 #include <optional>
@@ -12,7 +13,6 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
-
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -2008,6 +2008,21 @@ ToEventTriggerData(const std::vector<attribution_reporting::EventTriggerData>&
   return out;
 }
 
+
+std::unique_ptr<Array<Storage::AttributionReportingEpoch>>
+ToEpochs(const std::vector<attribution_reporting::Epoch>& epochs) {
+  auto out = std::make_unique<Array<Storage::AttributionReportingEpoch>>();
+  for (const auto& epoch : epochs) {
+    out->emplace_back(
+        Storage::AttributionReportingEpoch::Create()
+            .SetEpoch(epoch)
+            .Build());
+  }
+
+  return out;
+}
+
+
 std::unique_ptr<Array<Storage::AttributionReportingAggregatableTriggerData>>
 ToAggregatableTriggerData(
     const std::vector<attribution_reporting::AggregatableTriggerData>&
@@ -2131,6 +2146,7 @@ void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
               registration.aggregatable_trigger_config
                   .source_registration_time_config()))
           .SetPamEpsilon(registration.pam_epsilon)
+          .SetEpochs(registration.epochs)
           .Build();
 
   if (registration.debug_key.has_value()) {

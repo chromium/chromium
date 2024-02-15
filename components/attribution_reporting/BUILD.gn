@@ -51,8 +51,6 @@ component("attribution_reporting") {
     "constants.h",
     "destination_set.cc",
     "destination_set.h",
-    "pam_epsilon.cc",
-    "pam_epsilon.h",
     "event_level_epsilon.cc",
     "event_level_epsilon.h",
     "event_report_windows.cc",
@@ -79,6 +77,10 @@ component("attribution_reporting") {
     "trigger_config.h",
     "trigger_registration.cc",
     "trigger_registration.h",
+    "pam_epsilon.cc",
+    "pam_epsilon.h",
+    "epoch.cc",
+    "epoch.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

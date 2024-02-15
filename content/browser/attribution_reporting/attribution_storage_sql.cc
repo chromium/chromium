@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "base/logging.h"
 
 #include <functional>
 #include <iterator>
@@ -508,6 +509,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     const StorableSource& source,
     bool debug_cookie_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(INFO) << "STORING SOURCE" ;
 
   CHECK(!source.registration().debug_key.has_value() || debug_cookie_set);
 
@@ -936,6 +938,15 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
+
+  LOG(INFO) << trigger_registration.ToJson() ;
+
+  LOG(INFO) << "Epochs" ;
+  for (auto epoch : trigger_registration.epochs) {
+    LOG(INFO) <<  epoch.epoch_start;
+    LOG(INFO) <<  epoch.epoch_end;
+  }
+  
   const base::Time trigger_time = base::Time::Now();
 
   AttributionInfo attribution_info(

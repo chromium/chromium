@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include <type_traits>
+#include "base/logging.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
@@ -17,6 +19,7 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/epoch.h"
 #include "components/attribution_reporting/pam_epsilon.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
@@ -42,6 +45,7 @@ constexpr char kAggregatableDeduplicationKeys[] =
 constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
+constexpr char kEpochs[] = "epochs";
 
 base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
 ParseAggregationCoordinator(const base::Value* value) {
@@ -117,7 +121,7 @@ void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   static_assert(
       TriggerRegistrationError::kMaxValue ==
           TriggerRegistrationError::
-              kPamEpsilonValueInvalid,
+              kEpochListWrongType,
       "Bump version of Conversions.TriggerRegistrationError9 histogram.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
 }
@@ -155,6 +159,19 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   
   ASSIGN_OR_RETURN(registration.pam_epsilon,
                    PamEpsilon::Parse(dict));
+
+  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
+  LOG(INFO) << registration.ToJson() ;
+
+  ASSIGN_OR_RETURN(
+      registration.epochs,
+      ParseList<Epoch>(
+          dict.Find(kEpochs),
+          TriggerRegistrationError::kEpochListWrongType,
+          &Epoch::FromJSON));
+
+  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
+  LOG(INFO) << registration.ToJson() ;
 
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
@@ -239,6 +256,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   aggregatable_trigger_config.Serialize(dict);
   pam_epsilon.Serialize(dict);
 
+  SerializeListIfNotEmpty(dict, kEpochs, epochs);
   return dict;
 }
 

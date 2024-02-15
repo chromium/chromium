@@ -279,6 +279,16 @@ bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::EpochDataView,
+                  attribution_reporting::Epoch>::
+    Read(attribution_reporting::mojom::EpochDataView data,
+         attribution_reporting::Epoch* out) {
+  *out = std::move(*attribution_reporting::Epoch::Create(data.epoch_start(), data.epoch_end()));
+  return true;
+}
+
+
+// static
 bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
                   attribution_reporting::AggregatableTriggerData>::
     Read(attribution_reporting::mojom::AggregatableTriggerDataDataView data,
@@ -382,6 +392,11 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   if (!out->pam_epsilon.SetIfValid(data.pam_epsilon())) {
     return false;
   }
+
+  if (!data.ReadEpochs(&out->epochs)) {
+    return false;
+  }
+
   return true;
 }
 
