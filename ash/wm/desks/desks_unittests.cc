@@ -11095,20 +11095,13 @@ class DeskButtonTest
 
 // Tests functionalities for `DeskSwitchButton`s.
 TEST_P(DeskButtonTest, DeskSwitchButtons) {
-  // With only one desk, the previous desk button is hidden and the next
-  // desk button is visible but disabled.
+  // With only one desk, both switch buttons are hidden.
   views::ImageButton* prev_desk_button = GetPrevDeskButton();
   views::ImageButton* next_desk_button = GetNextDeskButton();
   ASSERT_TRUE(prev_desk_button);
   ASSERT_TRUE(next_desk_button);
-  if (GetParam().alignment == ShelfAlignment::kBottom) {
-    EXPECT_FALSE(prev_desk_button->GetVisible());
-    EXPECT_TRUE(next_desk_button->GetVisible());
-    EXPECT_FALSE(next_desk_button->GetEnabled());
-  } else {
-    EXPECT_FALSE(prev_desk_button->GetVisible());
-    EXPECT_FALSE(next_desk_button->GetVisible());
-  }
+  EXPECT_FALSE(prev_desk_button->GetVisible());
+  EXPECT_FALSE(next_desk_button->GetVisible());
 
   // Create a new desk. The previous desk button should be hidden and
   // the next desk button should be enabled.

@@ -128,8 +128,9 @@ void DeskSwitchButton::UpdateUi(const Desk* active_desk) {
     SetVisible(desk_button_container_->IsHorizontalShelf() &&
                active_desk_index - 1 >= 0);
   } else {
-    SetVisible(desk_button_container_->IsHorizontalShelf());
-    SetEnabled(active_desk_index + 1 < desk_controller->GetNumberOfDesks());
+    const int desk_count = desk_controller->GetNumberOfDesks();
+    SetVisible(desk_count > 1 && desk_button_container_->IsHorizontalShelf());
+    SetEnabled(active_desk_index + 1 < desk_count);
   }
 
   SetImageModel(
