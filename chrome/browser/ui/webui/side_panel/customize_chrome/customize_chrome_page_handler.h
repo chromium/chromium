@@ -47,7 +47,8 @@ enum class NtpChromeWebStoreOpen {
   kWritingEssentialsCollectionPage = 2,
   kWorkflowPlanningCategoryPage = 3,
   kShoppingCategoryPage = 4,
-  kMaxValue = kShoppingCategoryPage,
+  kHomePage = 5,
+  kMaxValue = kHomePage,
 };
 
 class CustomizeChromePageHandler
@@ -98,6 +99,7 @@ class CustomizeChromePageHandler
       side_panel::mojom::ChromeWebStoreCategory category) override;
   void OpenChromeWebStoreCollectionPage(
       side_panel::mojom::ChromeWebStoreCollection collection) override;
+  void OpenChromeWebStoreHomePage() override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;

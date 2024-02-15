@@ -199,6 +199,10 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.openChromeWebStoreCategoryPage(
         ChromeWebStoreCategory.kWorkflowPlanning);
   }
+
+  private onChromeWebStoreLinkClick_() {
+    this.pageHandler_.openChromeWebStoreHomePage();
+  }
 }
 
 declare global {

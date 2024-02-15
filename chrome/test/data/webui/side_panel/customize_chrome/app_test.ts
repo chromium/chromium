@@ -169,6 +169,15 @@ suite('AppTest', () => {
           assertEquals(
               1, handler.getCallCount('openChromeWebStoreCategoryPage'));
         });
+
+    test(
+        'clicking Chrome Web Store link opens Chrome Web Store home page',
+        async () => {
+          ((customizeChromeApp.shadowRoot!.querySelector('#chromeWebstoreLink')!
+            ) as HTMLElement)
+              .click();
+          assertEquals(1, handler.getCallCount('openChromeWebStoreHomePage'));
+        });
   });
 
   [true, false].forEach((flagEnabled) => {

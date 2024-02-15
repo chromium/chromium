@@ -354,6 +354,17 @@ void CustomizeChromePageHandler::OpenChromeWebStoreCollectionPage(
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen", page);
 }
 
+void CustomizeChromePageHandler::OpenChromeWebStoreHomePage() {
+  NavigateParams navigate_params(profile_,
+                                 GURL("https://chromewebstore.google.com/"),
+                                 ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
+                            NtpChromeWebStoreOpen::kHomePage);
+}
+
 void CustomizeChromePageHandler::SetMostVisitedSettings(
     bool custom_links_enabled,
     bool visible) {

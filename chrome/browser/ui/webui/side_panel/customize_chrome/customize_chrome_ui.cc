@@ -215,6 +215,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchDescriptorsChangedA11yMessage",
        IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE},
       // Side Panel Extension Card.
+      {"customizeWithChromeWebstoreLabel",
+       IDS_NTP_CUSTOMIZE_CHROME_WEBSTORE_LABEL},
       {"webstoreShoppingCategoryLabel",
        IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL},
       {"webstoreWritingHelpCollectionLabel",

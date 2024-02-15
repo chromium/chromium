@@ -727,6 +727,19 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCollectionPage) {
             1);
 }
 
+TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreHomePage) {
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  handler().OpenChromeWebStoreHomePage();
+  ASSERT_EQ(1, browser().tab_strip_model()->count());
+  ASSERT_EQ("https://chromewebstore.google.com/",
+            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
+
+  ASSERT_EQ(histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",
+                                              NtpChromeWebStoreOpen::kHomePage),
+            1);
+}
+
 TEST_F(CustomizeChromePageHandlerTest, SetDailyRefreshCollectionId) {
   EXPECT_CALL(mock_ntp_custom_background_service_, SetCustomBackgroundInfo)
       .Times(1);

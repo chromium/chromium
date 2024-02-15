@@ -152,6 +152,9 @@ interface CustomizeChromePageHandler {
   // Open Chrome Web Store's theme page in a new tab.
   OpenChromeWebStore();
 
+  // Open Chrome Web Store's home page in a new tab.
+  OpenChromeWebStoreHomePage();
+
   // Opens link to Chrome Web Store theme in a new tab.
   OpenThirdPartyThemePage(string theme_id);
 
