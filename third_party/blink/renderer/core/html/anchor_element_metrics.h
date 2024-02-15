@@ -19,6 +19,7 @@ Document* GetTopDocument(const HTMLAnchorElement& anchor);
 
 uint32_t AnchorElementId(const HTMLAnchorElement& element);
 
+// Returns null if the given element should not be evaluated.
 // Exported for testing only.
 CORE_EXPORT
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(

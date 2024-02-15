@@ -47,13 +47,14 @@ bool ContainsImage(const HTMLAnchorElement& anchor_element) {
 }
 
 // Whether the link target has the same host as the root document.
-bool IsSameHost(const HTMLAnchorElement& anchor_element) {
+bool IsSameHost(const HTMLAnchorElement& anchor_element,
+                const KURL& anchor_href) {
   Document* top_document = GetTopDocument(anchor_element);
   if (!top_document) {
     return false;
   }
-  String source_host = top_document->Url().Host();
-  String target_host = anchor_element.Href().Host();
+  StringView source_host = top_document->Url().HostView();
+  StringView target_host = anchor_href.HostView();
   return source_host == target_host;
 }
 
@@ -61,11 +62,14 @@ bool IsSameHost(const HTMLAnchorElement& anchor_element) {
 // the second number equals the first number plus one. Examples:
 // example.com/page9/cat5, example.com/page10/cat5 => true
 // example.com/page9/cat5, example.com/page10/cat10 => false
+// Note that this may misinterpret a non-ASCII character as being an ASCII
+// digit.
 bool IsStringIncrementedByOne(const String& source, const String& target) {
   // Consecutive numbers should differ in length by at most 1.
   int length_diff = target.length() - source.length();
-  if (length_diff < 0 || length_diff > 1)
+  if (length_diff < 0 || length_diff > 1) {
     return false;
+  }
 
   // The starting position of difference.
   unsigned int left = 0;
@@ -76,18 +80,20 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 
   // There is no difference, or the difference is not a digit.
   if (left == source.length() || left == target.length() ||
-      !u_isdigit(source[left]) || !u_isdigit(target[left])) {
+      !IsASCIIDigit(source[left]) || !IsASCIIDigit(target[left])) {
     return false;
   }
 
   // Expand towards right to extract the numbers.
   unsigned int source_right = left + 1;
-  while (source_right < source.length() && u_isdigit(source[source_right]))
+  while (source_right < source.length() && IsASCIIDigit(source[source_right])) {
     source_right++;
+  }
 
   unsigned int target_right = left + 1;
-  while (target_right < target.length() && u_isdigit(target[target_right]))
+  while (target_right < target.length() && IsASCIIDigit(target[target_right])) {
     target_right++;
+  }
 
   int source_number = source.Substring(left, source_right - left).ToInt();
   int target_number = target.Substring(left, target_right - left).ToInt();
@@ -95,12 +101,13 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
   // The second number should increment by one and the rest of the strings
   // should be the same.
   return source_number + 1 == target_number &&
-         source.Substring(source_right) == target.Substring(target_right);
+         StringView(source, source_right) == StringView(target, target_right);
 }
 
 // Extract source and target link url, and return IsStringIncrementedByOne().
-bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
-  if (!IsSameHost(anchor_element)) {
+bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element,
+                           const KURL& anchor_href) {
+  if (!IsSameHost(anchor_element, anchor_href)) {
     return false;
   }
 
@@ -110,26 +117,35 @@ bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
   }
 
   String source_url = top_document->Url().GetString();
-  String target_url = anchor_element.Href().GetString();
+  String target_url = anchor_href.GetString();
   return IsStringIncrementedByOne(source_url, target_url);
 }
 
 // Returns the bounding box rect of a layout object, including visual
-// overflows.
+// overflows. Overflow is included as part of the clickable area of an anchor,
+// so we account for it as well.
 gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   Vector<PhysicalRect> rects = layout_object.OutlineRects(
       nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
   return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
-bool IsNonEmptyTextNode(Node* node) {
-  if (!node) {
-    return false;
+bool HasTextSibling(const HTMLAnchorElement& anchor_element) {
+  for (auto* text = DynamicTo<Text>(anchor_element.previousSibling()); text;
+       text = DynamicTo<Text>(text->previousSibling())) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
   }
-  if (!node->IsTextNode()) {
-    return false;
+
+  for (auto* text = DynamicTo<Text>(anchor_element.nextSibling()); text;
+       text = DynamicTo<Text>(text->nextSibling())) {
+    if (!text->ContainsOnlyWhitespaceOrEmpty()) {
+      return true;
+    }
   }
-  return !To<Text>(node)->wholeText().ContainsOnlyWhitespaceOrEmpty();
+
+  return false;
 }
 
 }  // anonymous namespace
@@ -158,23 +174,47 @@ uint32_t AnchorElementId(const HTMLAnchorElement& element) {
 
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
     const HTMLAnchorElement& anchor_element) {
+  const KURL anchor_href = anchor_element.Href();
+  if (!anchor_href.ProtocolIsInHTTPFamily()) {
+    return nullptr;
+  }
+
+  // If the anchor doesn't have a valid frame/root document, skip it.
   LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
-  if (!local_frame) {
+  if (!local_frame || !GetTopDocument(anchor_element)) {
+    return nullptr;
+  }
+
+  const bool is_in_iframe = IsInIFrame(anchor_element);
+
+  // Only anchors with width/height should be evaluated.
+  LayoutObject* layout_object = anchor_element.GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+  // For the main frame case, we need the bounding box including overflow for
+  // calculations later in this function. These bounding box calculations are
+  // expensive, so we don't want to calculate both. We'll use the overflow
+  // version for this empty check as well.
+  // For the subframe case, we don't need the overflow for subsequent
+  // calculations, so we exclude it from this check, as it's faster to do so.
+  gfx::Rect bounding_box = is_in_iframe
+                               ? layout_object->AbsoluteBoundingBoxRect()
+                               : AbsoluteElementBoundingBoxRect(*layout_object);
+  if (bounding_box.IsEmpty()) {
     return nullptr;
   }
 
   mojom::blink::AnchorElementMetricsPtr metrics =
       mojom::blink::AnchorElementMetrics::New();
   metrics->anchor_id = AnchorElementId(anchor_element);
-  metrics->is_in_iframe = IsInIFrame(anchor_element);
+  metrics->is_in_iframe = is_in_iframe;
   metrics->contains_image = ContainsImage(anchor_element);
-  metrics->is_same_host = IsSameHost(anchor_element);
-  metrics->is_url_incremented_by_one = IsUrlIncrementedByOne(anchor_element);
-  metrics->target_url = anchor_element.Href();
-
-  metrics->has_text_sibling =
-      IsNonEmptyTextNode(anchor_element.nextSibling()) ||
-      IsNonEmptyTextNode(anchor_element.previousSibling());
+  metrics->is_same_host = IsSameHost(anchor_element, anchor_href);
+  metrics->is_url_incremented_by_one =
+      IsUrlIncrementedByOne(anchor_element, anchor_href);
+  metrics->target_url = anchor_href;
+  metrics->has_text_sibling = HasTextSibling(anchor_element);
 
   const ComputedStyle& computed_style = anchor_element.ComputedStyleRef();
   metrics->font_weight =
@@ -182,12 +222,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   metrics->font_size_px = computed_style.FontSize();
 
   // Don't record size metrics for subframe document Anchors.
-  if (metrics->is_in_iframe) {
-    return metrics;
-  }
-
-  LayoutObject* layout_object = anchor_element.GetLayoutObject();
-  if (!layout_object) {
+  if (is_in_iframe) {
     return metrics;
   }
 
@@ -208,7 +243,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   float base_height = static_cast<float>(viewport.height());
   float base_width = static_cast<float>(viewport.width());
 
-  gfx::Rect target = AbsoluteElementBoundingBoxRect(*layout_object);
+  gfx::Rect target = bounding_box;
 
   // Limit the element size to the viewport size.
   float ratio_area = std::min(1.0f, target.height() / base_height) *

@@ -29,6 +29,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -138,6 +139,7 @@ class PLATFORM_EXPORT KURL {
 
   String Protocol() const;
   String Host() const;
+  StringView HostView() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   // Returns 0 when there is no port or the default port was specified, or the
   // URL is invalid.

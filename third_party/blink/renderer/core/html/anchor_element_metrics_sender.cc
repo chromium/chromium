@@ -402,23 +402,12 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
 
   for (const auto& member_element : anchor_elements_to_report_) {
     HTMLAnchorElement& anchor_element = *member_element;
-    if (!anchor_element.Href().ProtocolIsInHTTPFamily()) {
-      continue;
-    }
 
-    // If the anchor doesn't have a valid frame/root document, skip it.
-    if (!anchor_element.GetDocument().GetFrame() ||
-        !GetTopDocument(anchor_element)) {
-      continue;
-    }
-
-    // Only anchors with width/height should be evaluated.
-    if (!anchor_element.GetLayoutObject() ||
-        anchor_element.GetLayoutObject()->AbsoluteBoundingBoxRect().IsEmpty()) {
-      continue;
-    }
     mojom::blink::AnchorElementMetricsPtr anchor_element_metrics =
         CreateAnchorElementMetrics(anchor_element);
+    if (!anchor_element_metrics) {
+      continue;
+    }
 
     int random = base::RandInt(1, random_anchor_sampling_period_);
     if (random == 1) {

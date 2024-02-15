@@ -102,6 +102,7 @@ TEST(KURLTest, Getters) {
     // contents are printed on failure.
     EXPECT_EQ(String(c.protocol), kurl.Protocol()) << url;
     EXPECT_EQ(String(c.host), kurl.Host()) << url;
+    EXPECT_EQ(String(c.host), kurl.HostView()) << url;
     EXPECT_EQ(c.port, kurl.Port()) << url;
     EXPECT_EQ(String(c.user), kurl.User()) << url;
     EXPECT_EQ(String(c.pass), kurl.Pass()) << url;

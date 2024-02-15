@@ -385,6 +385,10 @@ String KURL::Host() const {
   return ComponentString(parsed_.host);
 }
 
+StringView KURL::HostView() const {
+  return ComponentStringView(parsed_.host);
+}
+
 uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
