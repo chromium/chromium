@@ -131,6 +131,8 @@ class BLINK_EXPORT WebView {
   // frame. Set on create to avoid races. Passing in nullopt indicates the
   // default base background color should be used.
   // TODO(yuzus): Remove |is_hidden| and start using |PageVisibilityState|.
+  // |color_provider_colors| is used to create color providers that live in the
+  // Page. Passing in nullptr indicates the default color maps should be used.
   static WebView* Create(
       WebViewClient*,
       bool is_hidden,
@@ -146,7 +148,8 @@ class BLINK_EXPORT WebView {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info);
+      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const ColorProviderColorMaps* color_provider_colors);
 
   // Destroys the WebView synchronously.
   virtual void Close() = 0;
@@ -369,12 +372,6 @@ class BLINK_EXPORT WebView {
 
   virtual void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) = 0;
-
-  // Sets the initial color maps for this WebView. All frames in a WebView
-  // share the same color map; updates to the color map will be broadcast
-  // over the `UpdateColorProviders()` Mojo IPC.
-  virtual void SetColorProviders(
-      const ColorProviderColorMaps& color_provider_colors) = 0;
 
   // Scheduling -----------------------------------------------------------
 

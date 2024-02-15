@@ -88,11 +88,13 @@ ColorProvider COMPONENT_EXPORT(COLOR)
 ColorProvider COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProviderForTest();
 
-// Creates a color provider for use in blink tests. Some Blink tests do not use
-// a renderer process and thus don't use the normal machinery to establish a
-// color provider in the renderer.
+// Creates a default color provider for Blink Pages that are not associated with
+// a web view. This includes tests, dummy pages,  and non ordinary pages. These
+// scenarios do not use the normal machinery to establish color providers in the
+// renderer. The color mappings for this provider are derived from old Aura
+// colors for controls.
 ColorProvider COMPONENT_EXPORT(COLOR)
-    CreateColorProviderForBlinkTests(bool dark_mode);
+    CreateDefaultColorProviderForBlink(bool dark_mode);
 
 // Scrollbars have three main colors. This function completes the
 // definition of colors for all scrollbar parts in relation to the three main
@@ -104,6 +106,19 @@ void COMPONENT_EXPORT(COLOR)
 // NativeThemeBase::ControlColorId when in forced colors mode.
 void COMPONENT_EXPORT(COLOR)
     CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer);
+
+// Completes default color definitions for the RendererColorIds that are non
+// web native.
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultNonWebNativeRendererColorIdsDefinition(
+        ui::ColorMixer& mixer);
+
+// Returns a default set of color maps for tests and non ordinary pages. These
+// places do not use the normal machinery to establish a color provider in the
+// renderer since they are not associated with a web view.
+RendererColorMap COMPONENT_EXPORT(COLOR)
+    GetDefaultBlinkColorProviderColorMaps(bool dark_mode,
+                                          bool is_forced_colors);
 
 // Returns true if `color_provider` and `renderer_color_map` map renderer
 // color ids to the same SkColor.

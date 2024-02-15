@@ -15,6 +15,19 @@ struct BLINK_COMMON_EXPORT ColorProviderColorMaps {
   ui::RendererColorMap dark_colors_map;
   ui::RendererColorMap forced_colors_map;
 
+  // Creates a default set of color maps for tests and places where we might not
+  // have access to ColorProvider objects.
+  static ColorProviderColorMaps CreateDefault() {
+    return ColorProviderColorMaps{
+        ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/false,
+                                                  /*is_forced_colors=*/false),
+        ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/true,
+                                                  /*is_forced_colors=*/false),
+        ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/false,
+                                                  /*is_forced_colors=*/true),
+    };
+  }
+
   // Returns true if any of the maps are empty.
   bool IsEmpty() const {
     return light_colors_map.empty() || dark_colors_map.empty() ||

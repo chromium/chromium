@@ -159,7 +159,8 @@ class WebRtcAudioRendererTest : public testing::Test {
             *agent_group_scheduler_,
             /*session_storage_namespace_id=*/std::string(),
             /*page_base_background_color=*/std::nullopt,
-            blink::BrowsingContextGroupInfo::CreateUnique())),
+            blink::BrowsingContextGroupInfo::CreateUnique(),
+            /*color_provider_colors=*/nullptr)),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
             web_view_,
             &web_local_frame_client_,

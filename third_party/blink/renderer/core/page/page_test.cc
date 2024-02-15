@@ -23,7 +23,8 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, bcg_info);
+      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, bcg_info,
+                           /*color_provider_colors=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(),
             bcg_info.browsing_context_group_token);
@@ -50,7 +51,8 @@ TEST(PageTest, BrowsingContextGroupUpdate) {
   auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page = Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler,
-                                    initial_bcg_info);
+                                    initial_bcg_info,
+                                    /*color_provider_colors=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(),
             initial_bcg_info.browsing_context_group_token);
@@ -78,7 +80,8 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   auto group_a = BrowsingContextGroupInfo::CreateUnique();
 
   Page* page1 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_a);
+      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_a,
+                           /*color_provider_colors=*/nullptr);
 
   auto pauser_for_group_a =
       std::make_unique<ScopedBrowsingContextGroupPauser>(*page1);
@@ -89,7 +92,8 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   ASSERT_FALSE(page1->Paused());
 
   Page* page2 =
-      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_b);
+      Page::CreateOrdinary(client, /*opener=*/nullptr, *scheduler, group_b,
+                           /*color_provider_colors=*/nullptr);
   ASSERT_FALSE(page2->Paused());
 
   page2->UpdateBrowsingContextGroup(group_a);

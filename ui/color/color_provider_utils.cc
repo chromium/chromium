@@ -405,6 +405,21 @@ ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
       kColorForcedHighlight};
   mixer[kColorWebNativeControlScrollbarCorner] = {kColorForcedBtnFace};
   CompleteControlsForcedColorsDefinition(mixer);
+
+  // Set these color ids as some non web native RendererColorIds depend on their
+  // values.
+  mixer[kColorPrimaryBackground] = {kColorForcedWindow};
+  mixer[kColorEndpointForeground] =
+      GetColorWithMaxContrast(kColorPrimaryBackground);
+  mixer[kColorEndpointBackground] =
+      GetColorWithMaxContrast(kColorEndpointForeground);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
+  mixer[kColorMidground] = {kColorForcedWindowText};
+  mixer[kColorSeparator] = {kColorMidground};
+  CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
+
   color_provider.GenerateColorMap();
   return color_provider;
 }
@@ -465,9 +480,23 @@ ColorProvider CreateEmulatedForcedColorsColorProviderForTest() {
 }
 
 ColorProvider COMPONENT_EXPORT(COLOR)
-    CreateColorProviderForBlinkTests(bool dark_mode) {
+    CreateDefaultColorProviderForBlink(bool dark_mode) {
   ColorProvider color_provider;
   ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  mixer[kColorPrimaryBackground] = {dark_mode ? SkColorSetRGB(0x29, 0x2A, 0x2D)
+                                              : SK_ColorWHITE};
+  mixer[kColorEndpointForeground] =
+      GetColorWithMaxContrast(kColorPrimaryBackground);
+  mixer[kColorEndpointBackground] =
+      GetColorWithMaxContrast(kColorEndpointForeground);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
+  mixer[kColorMidground] = {dark_mode ? gfx::kGoogleGrey800
+                                      : gfx::kGoogleGrey300};
+  mixer[kColorSeparator] = {kColorMidground};
+  CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
 
   if (dark_mode) {
     mixer[kColorWebNativeControlAccent] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
@@ -677,6 +706,50 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlSliderHovered] = {kColorForcedHighlight};
   mixer[kColorWebNativeControlSliderPressed] = {kColorForcedHighlight};
   CompleteScrollbarColorsDefinition(mixer);
+}
+
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultNonWebNativeRendererColorIdsDefinition(
+        ui::ColorMixer& mixer) {
+  mixer[kColorMenuBackground] = {kColorPrimaryBackground};
+  mixer[kColorMenuItemBackgroundSelected] = {kColorMenuSelectionBackground};
+  mixer[kColorMenuSeparator] = {kColorSeparator};
+  mixer[kColorOverlayScrollbarFill] =
+      SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillHovered] =
+      SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarStroke] =
+      SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillDark),
+               gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillLight),
+               gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeHovered] =
+      SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredDark),
+               gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
+               gfx::kGoogleGreyAlpha500);
+}
+
+RendererColorMap COMPONENT_EXPORT(COLOR)
+    GetDefaultBlinkColorProviderColorMaps(bool dark_mode,
+                                          bool is_forced_colors) {
+  return CreateRendererColorMap(
+      is_forced_colors ? CreateEmulatedForcedColorsColorProvider(dark_mode)
+                       : CreateDefaultColorProviderForBlink(dark_mode));
 }
 
 bool IsRendererColorMappingEquivalent(

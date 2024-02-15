@@ -152,17 +152,19 @@ Page* Page::CreateNonOrdinary(ChromeClient& chrome_client,
                               AgentGroupScheduler& agent_group_scheduler) {
   return MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      BrowsingContextGroupInfo::CreateUnique(), /*is_ordinary=*/false);
+      BrowsingContextGroupInfo::CreateUnique(),
+      /*color_provider_colors=*/nullptr, /*is_ordinary=*/false);
 }
 
 Page* Page::CreateOrdinary(
     ChromeClient& chrome_client,
     Page* opener,
     AgentGroupScheduler& agent_group_scheduler,
-    const BrowsingContextGroupInfo& browsing_context_group_info) {
+    const BrowsingContextGroupInfo& browsing_context_group_info,
+    const ColorProviderColorMaps* color_provider_colors) {
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
-      browsing_context_group_info, /*is_ordinary=*/true);
+      browsing_context_group_info, color_provider_colors, /*is_ordinary=*/true);
 
   if (opener) {
     // Before: ... -> opener -> next -> ...
@@ -194,6 +196,7 @@ Page::Page(base::PassKey<Page>,
            ChromeClient& chrome_client,
            AgentGroupScheduler& agent_group_scheduler,
            const BrowsingContextGroupInfo& browsing_context_group_info,
+           const ColorProviderColorMaps* color_provider_colors,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -251,6 +254,10 @@ Page::Page(base::PassKey<Page>,
             "HistoryNavigation",
             WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
   }
+  UpdateColorProviders(color_provider_colors &&
+                               !color_provider_colors->IsEmpty()
+                           ? *color_provider_colors
+                           : ColorProviderColorMaps::CreateDefault());
 }
 
 Page::~Page() {
@@ -491,9 +498,9 @@ void Page::DisableEmulatedForcedColors() {
 
 void Page::UpdateColorProviders(
     const ColorProviderColorMaps& color_provider_colors) {
-  if (color_provider_colors.IsEmpty()) {
-    return;
-  }
+  // Color maps should not be empty as they are needed to create the color
+  // providers.
+  CHECK(!color_provider_colors.IsEmpty());
 
   // TODO(samomekarajr): Might want to only create new ColorProviders if the
   // renderer color maps do not match the existing ColorProviders.
@@ -514,9 +521,9 @@ void Page::UpdateColorProviders(
 
 void Page::UpdateColorProvidersForTest() {
   light_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateColorProviderForBlinkTests(/*dark_mode=*/false));
+      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/false));
   dark_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateColorProviderForBlinkTests(/*dark_mode=*/true));
+      ui::CreateDefaultColorProviderForBlink(/*dark_mode=*/true));
   forced_colors_color_provider_ = std::make_unique<ui::ColorProvider>(
       ui::CreateEmulatedForcedColorsColorProviderForTest());
 }
@@ -524,6 +531,11 @@ void Page::UpdateColorProvidersForTest() {
 const ui::ColorProvider* Page::GetColorProviderForPainting(
     mojom::blink::ColorScheme color_scheme,
     bool in_forced_colors) const {
+  // All providers should be initialized and non-null before this function is
+  // called.
+  CHECK(light_color_provider_);
+  CHECK(dark_color_provider_);
+  CHECK(forced_colors_color_provider_);
   if (in_forced_colors) {
     if (emulated_forced_colors_provider_) {
       return emulated_forced_colors_provider_.get();

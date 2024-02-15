@@ -10,6 +10,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/gfx/color_palette.h"
 
 using ColorProviderUtilsTest = ::testing::Test;
 
@@ -87,4 +88,44 @@ TEST_F(ColorProviderUtilsTest, ColorProviderRendererColorMapEquivalence) {
   new_color_provider.GenerateColorMap();
   EXPECT_FALSE(
       IsRendererColorMappingEquivalent(new_color_provider, renderer_color_map));
+}
+
+TEST_F(ColorProviderUtilsTest, DefaultBlinkColorProviderColorMapsValidity) {
+  const auto has_valid_colors =
+      [](const ui::RendererColorMap renderer_color_map) {
+        for (const auto& value : renderer_color_map) {
+          if (value.second == gfx::kPlaceholderColor) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+  // Get the default color maps for light, dark, and forced colors modes.
+  ui::RendererColorMap light_color_map =
+      ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/false,
+                                                /*is_forced_colors=*/false);
+  ui::RendererColorMap dark_color_map =
+      ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/true,
+                                                /*is_forced_colors=*/false);
+  ui::RendererColorMap forced_colors_color_map =
+      ui::GetDefaultBlinkColorProviderColorMaps(/*dark_mode=*/false,
+                                                /*is_forced_colors=*/true);
+
+  // The default color maps should not contain any placeholder colors for any
+  // RendererColorId.
+  EXPECT_TRUE(has_valid_colors(light_color_map));
+  EXPECT_TRUE(has_valid_colors(dark_color_map));
+  EXPECT_TRUE(has_valid_colors(forced_colors_color_map));
+
+  ui::ColorProvider random_color_provider;
+  ui::ColorMixer& mixer = random_color_provider.AddMixer();
+  mixer[ui::kColorPrimaryBackground] = {SK_ColorWHITE};
+  random_color_provider.GenerateColorMap();
+  ui::RendererColorMap random_color_map =
+      ui::CreateRendererColorMap(random_color_provider);
+
+  // The random color map should contain placeholder colors for some
+  // RendererColorIds.
+  EXPECT_FALSE(has_valid_colors(random_color_map));
 }

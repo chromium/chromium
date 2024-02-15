@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -735,7 +736,8 @@ void WebViewHelper::InitializeWebView(
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/std::string(),
                       /*page_base_background_color=*/std::nullopt,
-                      std::move(browsing_context_group_info)));
+                      std::move(browsing_context_group_info),
+                      /*color_provider_colors=*/nullptr));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);
@@ -777,7 +779,8 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/std::string(),
                       /*page_base_background_color=*/std::nullopt,
-                      BrowsingContextGroupInfo::CreateUnique()));
+                      BrowsingContextGroupInfo::CreateUnique(),
+                      /*color_provider_colors=*/nullptr));
 }
 
 int TestWebFrameClient::loads_in_progress_ = 0;

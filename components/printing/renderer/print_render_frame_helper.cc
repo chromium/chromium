@@ -714,7 +714,8 @@ class HeaderAndFooterContext {
         *source_frame.GetAgentGroupScheduler(),
         /*session_storage_namespace_id=*/std::string(),
         /*page_base_background_color=*/std::nullopt,
-        blink::BrowsingContextGroupInfo::CreateUnique());
+        blink::BrowsingContextGroupInfo::CreateUnique(),
+        /*color_provider_colors=*/nullptr);
     view->GetSettings()->SetJavaScriptEnabled(true);
     return view;
   }
@@ -990,7 +991,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       *agent_group_scheduler_,
       /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt,
-      blink::BrowsingContextGroupInfo::CreateUnique());
+      blink::BrowsingContextGroupInfo::CreateUnique(),
+      /*color_provider_colors=*/nullptr);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, blink::LocalFrameToken(), blink::DocumentToken(),
