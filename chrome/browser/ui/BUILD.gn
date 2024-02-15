@@ -4509,7 +4509,6 @@ static_library("ui") {
     ]
     weak_frameworks = [
       "LocalAuthenticationEmbeddedUI.framework",  # macOS 12+
-      "ScreenTime.framework",  # macOS 11+
     ]
   }
 

@@ -5422,11 +5422,6 @@ const char kRetryGetVideoCaptureDeviceInfosDescription[] =
     "after a crash. The capture service is restarted without loading external "
     "DAL plugins which could have caused the crash.";
 
-const char kScreenTimeName[] = "Screen Time";
-const char kScreenTimeDescription[] =
-    "Integrate with the macOS Screen Time system. Only enabled on macOS 12.1 "
-    "and later.";
-
 const char kSonomaAccessibilityActivationRefinementsName[] =
     "Sonoma Accessibility Activation Refinements";
 const char kSonomaAccessibilityActivationRefinementsDescription[] =

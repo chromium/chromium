@@ -3129,9 +3129,6 @@ extern const char kMacSyscallSandboxDescription[];
 extern const char kRetryGetVideoCaptureDeviceInfosName[];
 extern const char kRetryGetVideoCaptureDeviceInfosDescription[];
 
-extern const char kScreenTimeName[];
-extern const char kScreenTimeDescription[];
-
 extern const char kSonomaAccessibilityActivationRefinementsName[];
 extern const char kSonomaAccessibilityActivationRefinementsDescription[];
 

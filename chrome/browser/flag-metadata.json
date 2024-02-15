@@ -7302,11 +7302,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "screentime",
-    "owners": [ "lgrey@chromium.org", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist@chromium.org" ],
     "expiry_milestone": 130
