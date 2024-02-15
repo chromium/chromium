@@ -633,11 +633,14 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kBlockedByPromo;
   }
 
-  // Defer to the session policy to determine if the promo can show.
-  if (const auto result = session_policy_->CanShowPromo(
-          session_policy_->SpecificationToPromoInfo(*spec), current_promo);
-      !result) {
-    return result;
+  // When not in demo mode, refer to the session policy to determine if the
+  // promo can show.
+  if (!for_demo && !in_iph_demo_mode_) {
+    const auto result = session_policy_->CanShowPromo(
+        session_policy_->SpecificationToPromoInfo(*spec), current_promo);
+    if (!result) {
+      return result;
+    }
   }
 
   // Some contexts and anchors are not appropriate for showing normal promos.
