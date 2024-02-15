@@ -370,7 +370,7 @@ namespace {
 
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Open Privacy Safe Browsing settings.
   [self openPrivacySafeBrowsingSettings];
 
