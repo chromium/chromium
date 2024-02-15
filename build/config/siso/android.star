@@ -198,7 +198,8 @@ def __android_compile_java_handler(ctx, cmd):
         # read .sources file.
         if arg.startswith("@"):
             sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
-            inputs += sources
+            for source in sources:
+                inputs.append(ctx.fs.canonpath(source))
         for k in ["--classpath=", "--bootclasspath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
