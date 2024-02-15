@@ -593,8 +593,8 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnEmoji) {
                                kDefaultFocusedWindowBounds, &delegate);
   widget->Show();
   bool called = false;
-  ui::SetShowEmojiKeyboardCallback(
-      base::BindRepeating([](bool* called) { *called = true; }, &called));
+  ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
+      [&](ui::EmojiPickerCategory) { called = true; }));
 
   LeftClickOn(GetCategoryItemView(GetPickerViewFromWidget(*widget)));
 

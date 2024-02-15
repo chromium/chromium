@@ -100,7 +100,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client) {
   return input_client != nullptr;
 }
 
-void EmojiUI::Show() {
+void EmojiUI::Show(ui::EmojiPickerCategory category) {
   if (display::Screen::GetScreen()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;

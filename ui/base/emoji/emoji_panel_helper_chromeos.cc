@@ -5,14 +5,17 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 
 namespace ui {
 
 namespace {
 
-base::RepeatingClosure& GetShowEmojiKeyboardCallback() {
-  static base::NoDestructor<base::RepeatingClosure> callback;
+base::RepeatingCallback<void(EmojiPickerCategory)>&
+GetShowEmojiKeyboardCallback() {
+  static base::NoDestructor<base::RepeatingCallback<void(EmojiPickerCategory)>>
+      callback;
   return *callback;
 }
 
@@ -31,7 +34,12 @@ bool IsEmojiPanelSupported() {
 
 void ShowEmojiPanel() {
   DCHECK(GetShowEmojiKeyboardCallback());
-  GetShowEmojiKeyboardCallback().Run();
+  GetShowEmojiKeyboardCallback().Run(EmojiPickerCategory::kEmojis);
+}
+
+void ShowEmojiPanelInSpecificMode(EmojiPickerCategory category) {
+  DCHECK(GetShowEmojiKeyboardCallback());
+  GetShowEmojiKeyboardCallback().Run(category);
 }
 
 void ShowTabletModeEmojiPanel() {
@@ -39,7 +47,8 @@ void ShowTabletModeEmojiPanel() {
   GetTabletModeShowEmojiKeyboardCallback().Run();
 }
 
-void SetShowEmojiKeyboardCallback(base::RepeatingClosure callback) {
+void SetShowEmojiKeyboardCallback(
+    base::RepeatingCallback<void(EmojiPickerCategory)> callback) {
   GetShowEmojiKeyboardCallback() = callback;
 }
 
