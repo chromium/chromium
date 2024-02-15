@@ -319,6 +319,30 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher(
       JNIEnv* env);
 
+  static base::android::ScopedJavaLocalRef<jobject> CreateJavaIbanFromNative(
+      JNIEnv* env,
+      const Iban& iban);
+
+  static void PopulateNativeIbanFromJava(
+      const base::android::JavaRef<jobject>& jiban,
+      JNIEnv* env,
+      Iban* iban);
+
+  // Return IBAN with the specified `jguid`, or Null if there is no IBAN with
+  // the specified `jguid`.
+  base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj,
+      const base::android::JavaParamRef<jstring>& jguid);
+
+  // Adds or modifies a local IBAN. If `jiban`'s GUID is an empty string we
+  // create a new IBAN, otherwise we update the existing IBAN. Always returns
+  // the GUID for this IBAN; the GUID may have just been created.
+  base::android::ScopedJavaLocalRef<jstring> AddOrUpdateLocalIban(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj,
+      const base::android::JavaParamRef<jobject>& jiban);
+
  private:
   ~PersonalDataManagerAndroid() override;
 
