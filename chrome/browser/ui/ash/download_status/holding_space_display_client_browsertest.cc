@@ -777,4 +777,61 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   EXPECT_NE(test_api().GetHoldingSpaceItemId(download_chips[0]), item_id);
 }
 
+// Verifies viewing a download's details in browser via context menu.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       ViewDownloadDetailsInBrowser) {
+  // Create an in-progress download that can be canceled and paused.
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
+  download->cancellable = true;
+  download->pausable = true;
+  download->resumable = false;
+  Update(download->Clone());
+  test_api().Show();
+
+  // Verify the existence of a single download chip.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+
+  // Right click the download chip. Because `download` is cancelable and
+  // pausable, the context menu should not contain "View details in browser".
+  RightClick(download_chips[0]);
+  EXPECT_FALSE(SelectMenuItemWithCommandId(
+      HoldingSpaceCommandId::kViewItemDetailsInBrowser));
+
+  // Close the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+
+  // Update `download` to disable canceling, pausing or resuming. In reality,
+  // this could happen when a dangerous download is blocked.
+  download->cancellable = false;
+  download->pausable = false;
+  Update(download->Clone());
+
+  // Right click the download chip. Verify that the context menu contains a
+  // "View details in browser" command.
+  download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+  RightClick(download_chips[0]);
+  EXPECT_TRUE(SelectMenuItemWithCommandId(
+      HoldingSpaceCommandId::kViewItemDetailsInBrowser));
+
+  // Press ENTER to execute the "View details in browser" command. Then check
+  // that the download is shown in browser.
+  base::RunLoop run_loop;
+  EXPECT_CALL(download_status_updater_client(),
+              ShowInBrowser(download->guid, _))
+      .WillOnce(
+          [&](const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::ShowInBrowserCallback
+                  callback) {
+            std::move(callback).Run(/*handled=*/true);
+            run_loop.Quit();
+          });
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  run_loop.Run();
+}
+
 }  // namespace ash::download_status

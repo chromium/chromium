@@ -46,6 +46,8 @@ HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
       return HoldingSpaceCommandId::kOpenItem;
     case CommandType::kShowInFolder:
       return HoldingSpaceCommandId::kShowInFolder;
+    case CommandType::kViewDetailsInBrowser:
+      return HoldingSpaceCommandId::kViewItemDetailsInBrowser;
   }
 }
 

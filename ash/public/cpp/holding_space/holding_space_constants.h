@@ -48,6 +48,7 @@ enum class HoldingSpaceCommandId {
   kOpenItem,
   kPauseItem,
   kResumeItem,
+  kViewItemDetailsInBrowser,
 
   // Tray commands.
   kHidePreviews,

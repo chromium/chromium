@@ -185,6 +185,7 @@ bool IsInProgressCommand(HoldingSpaceCommandId command_id) {
     case HoldingSpaceCommandId::kOpenItem:
     case HoldingSpaceCommandId::kPauseItem:
     case HoldingSpaceCommandId::kResumeItem:
+    case HoldingSpaceCommandId::kViewItemDetailsInBrowser:
       return true;
     default:
       return false;

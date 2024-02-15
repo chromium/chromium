@@ -27,6 +27,7 @@ enum class CommandType {
   kResume,
   kShowInBrowser,
   kShowInFolder,
+  kViewDetailsInBrowser,
 };
 
 // The metadata to display a download command.

@@ -133,6 +133,8 @@ int GetCommandTextId(CommandType command_type) {
       NOTREACHED_NORETURN();
     case CommandType::kShowInFolder:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER;
+    case CommandType::kViewDetailsInBrowser:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_VIEW_DETAILS_IN_BROWSER;
   }
 }
 
@@ -848,6 +850,73 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ShowInFolder) {
   test::Click(*show_in_folder_button_iter, ui::EF_NONE);
   run_loop.Run();
   EXPECT_EQ(tester.GetActionCount("DownloadNotificationV2.Button_ShowInFolder"),
+            1);
+}
+
+// Checks the button that enables users to view a download's details in browser.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
+                       ViewDownloadDetailsInBrowser) {
+  // Create an in-progress download that can be canceled and paused.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
+  download->cancellable = true;
+  download->pausable = true;
+  download->resumable = false;
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const std::u16string button_text = l10n_util::GetStringUTF16(
+      GetCommandTextId(CommandType::kViewDetailsInBrowser));
+
+  // Verify that the notification view does not have a "View details in browser"
+  // button because `download` is cancelable and pausable.
+  EXPECT_THAT(popup_view->GetActionButtonsForTest(),
+              Each(Pointee(Property(&views::LabelButton::GetText,
+                                    Not(Eq(button_text))))));
+
+  // Update `download` to disable canceling, pausing or resuming. In reality,
+  // this could happen when a dangerous download is blocked.
+  download->cancellable = false;
+  download->pausable = false;
+  Update(download->Clone());
+
+  // Find the "View details in browser" button.
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const auto action_buttons = popup_view->GetActionButtonsForTest();
+  auto button_iter = base::ranges::find(action_buttons, button_text,
+                                        &views::LabelButton::GetText);
+  ASSERT_NE(button_iter, action_buttons.end());
+
+  // Click the "View details in browser" button and wait until showing downloads
+  // in browser. Verify that click is recorded.
+  base::UserActionTester tester;
+  base::RunLoop run_loop;
+  EXPECT_CALL(download_status_updater_client(),
+              ShowInBrowser(download->guid, _))
+      .WillOnce(
+          [&run_loop](
+              const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::ShowInBrowserCallback
+                  callback) {
+            std::move(callback).Run(/*handled=*/true);
+            run_loop.Quit();
+          });
+  test::Click(*button_iter, ui::EF_NONE);
+  run_loop.Run();
+  EXPECT_EQ(tester.GetActionCount(
+                "DownloadNotificationV2.Button_ViewDetailsInBrowser"),
             1);
 }
 

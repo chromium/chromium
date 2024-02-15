@@ -9522,6 +9522,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotificationV2.Button_ViewDetailsInBrowser">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;View details in browser&quot; button on a download
+    notification with the downloads integration V2 feature enabled.
+  </description>
+</action>
+
 <action name="DownloadNotificationV2.Click_Completed">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-system-ui-productivity-eng@google.com</owner>

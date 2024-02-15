@@ -371,8 +371,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     sources += [ "nearby_share.icon" ]
   }
 
-  if (enable_vr && !is_android) {
-    # Used on desktop VR headsets and Linux unit tests.
+  if ((enable_vr && !is_android) || is_chromeos_ash) {
     sources += [ "open_in_browser.icon" ]
   }
 
