@@ -213,6 +213,8 @@ static_library("utility") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/components/mahi:content_extraction",
+      "//chromeos/components/mahi/public/mojom",
       "//chromeos/components/quick_answers/public/cpp",
       "//chromeos/components/quick_answers/public/mojom",
     ]

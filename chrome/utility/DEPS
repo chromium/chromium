@@ -39,6 +39,8 @@ include_rules = [
   "+chromeos/ash/services/recording/recording_service.h",
   "+chromeos/ash/services/quick_pair/quick_pair_service.h",
   "+chromeos/constants/chromeos_features.h",
+  "+chromeos/components/mahi/content_extraction_service.h",
+  "+chromeos/components/mahi/public/mojom",
   "+chromeos/components/quick_answers/public",
   "+chromeos/services/tts",
   "+components/crash/core/common/crash_keys.h",

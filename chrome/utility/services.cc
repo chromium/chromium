@@ -127,7 +127,6 @@
 #include "chromeos/ash/services/orca/orca_library.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 #include "chromeos/ash/services/recording/recording_service.h"
-#include "chromeos/constants/chromeos_features.h"  // nogncheck
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
@@ -138,8 +137,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mahi/content_extraction_service.h"
+#include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
+#include "chromeos/constants/chromeos_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -417,6 +419,12 @@ auto RunQuickAnswersSpellCheckService(
   return std::make_unique<quick_answers::SpellCheckService>(
       std::move(receiver));
 }
+
+auto RunMahiContentExtractionServiceFactory(
+    mojo::PendingReceiver<mahi::mojom::ContentExtractionServiceFactory>
+        receiver) {
+  return std::make_unique<mahi::ContentExtractionService>(std::move(receiver));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
@@ -523,6 +531,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunQuickAnswersSpellCheckService);
+  if (chromeos::features::IsMahiEnabled()) {
+    services.Add(RunMahiContentExtractionServiceFactory);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
