@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -17,6 +19,7 @@
 #include "url/gurl.h"
 
 class RemovingIndexes;
+class TabGroup;
 class WebStateListDelegate;
 class WebStateListObserver;
 
@@ -32,6 +35,9 @@ class WebState;
 // observer, or indirectly via code invoked from the observer).
 //
 // The WebStateList takes ownership of the WebStates that it manages.
+//
+// WebStates can be pinned, grouped, or ungrouped, which are mutually exclusive
+// states. Pinned tabs are always at the beginning of the list.
 class WebStateList {
  public:
   // Parameters used when inserting WebStates.
@@ -272,6 +278,18 @@ class WebStateList {
   void CloseWebStatesAtIndices(int close_flags,
                                RemovingIndexes removing_indexes);
 
+  // Returns the tab group the WebState belongs to, if any. Otherwise, returns
+  // `nullptr`.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  const TabGroup* GetGroupOfWebStateAt(int index) const;
+
+  // Returns the range of WebStates belonging to the tab group. The group must
+  // be valid and belong to this WebStateList.
+  Range GetWebStates(const TabGroup* group) const;
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -384,6 +402,9 @@ class WebStateList {
   // state.
   void SetActiveIndex(int active_index);
 
+  // Returns true if the specified group is contained by the model.
+  bool ContainsGroup(const TabGroup* group) const;
+
   // Takes action when the active WebState changes. Does nothing it
   // there is no active WebState.
   void OnActiveWebStateChanged();
@@ -395,6 +416,9 @@ class WebStateList {
 
   // Wrappers to the WebStates hosted by the WebStateList.
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
+
+  // The current set of groups.
+  std::map<std::unique_ptr<TabGroup>, Range, base::UniquePtrComparator> groups_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;

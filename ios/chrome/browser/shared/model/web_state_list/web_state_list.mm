@@ -10,10 +10,12 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
+#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -88,8 +90,8 @@ class WebStateList::WebStateWrapper {
   // Returns ownership of the wrapped WebState.
   std::unique_ptr<web::WebState> ReleaseWebState();
 
-  // Replaces the wrapped WebState (and clear associated state) and returns the
-  // old WebState after forfeiting ownership.
+  // Replaces the wrapped WebState and returns the old WebState after forfeiting
+  // ownership. The opener is cleared, but the group is kept.
   std::unique_ptr<web::WebState> ReplaceWebState(
       std::unique_ptr<web::WebState> web_state);
 
@@ -103,9 +105,14 @@ class WebStateList::WebStateWrapper {
   bool ShouldResetOpenerOnActiveWebStateChange() const;
   void SetShouldResetOpenerOnActiveWebStateChange(bool should_reset_opener);
 
+  // Gets and sets information about this WebState group.
+  const TabGroup* group() const { return group_; }
+  void SetGroup(const TabGroup* group) { group_ = group; }
+
  private:
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
+  raw_ptr<const TabGroup> group_ = nullptr;
   bool should_reset_opener_ = false;
 };
 
@@ -122,6 +129,7 @@ WebStateList::WebStateWrapper::ReleaseWebState() {
   std::unique_ptr<web::WebState> web_state;
   std::swap(web_state, web_state_);
   opener_ = WebStateOpener();
+  group_ = nullptr;
   return web_state;
 }
 
@@ -336,6 +344,21 @@ void WebStateList::CloseWebStatesAtIndices(int close_flags,
   // quadratic behavior if observers iterate the WebStateList.
   std::vector<std::unique_ptr<web::WebState>> detached_web_states =
       DetachWebStatesAtIndicesImpl(removing_indexes, detach_params);
+}
+
+const TabGroup* WebStateList::GetGroupOfWebStateAt(int index) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(ContainsIndex(index));
+  const TabGroup* group = web_state_wrappers_[index]->group();
+  DCHECK(!group || ContainsGroup(group));
+  return group;
+}
+
+WebStateList::Range WebStateList::GetWebStates(const TabGroup* group) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(group);
+  DCHECK(ContainsGroup(group));
+  return groups_.find(group)->second;
 }
 
 base::AutoReset<bool> WebStateList::LockForMutation() {
@@ -762,6 +785,11 @@ void WebStateList::SetActiveIndex(int active_index) {
 
   active_index_ = active_index;
   OnActiveWebStateChanged();
+}
+
+bool WebStateList::ContainsGroup(const TabGroup* group) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return groups_.contains(group);
 }
 
 void WebStateList::OnActiveWebStateChanged() {

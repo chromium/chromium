@@ -15,6 +15,7 @@ source_set("web_state_list") {
     "order_controller_source_from_web_state_list.mm",
     "removing_indexes.h",
     "removing_indexes.mm",
+    "tab_group.h",
     "web_state_list.h",
     "web_state_list.mm",
     "web_state_list_delegate.h",
@@ -27,6 +28,7 @@ source_set("web_state_list") {
   ]
   deps = [
     "//base",
+    "//components/tab_groups",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",

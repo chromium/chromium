@@ -1474,3 +1474,52 @@ TEST_F(WebStateListTest, WebStateListAsWeakPtr) {
   EXPECT_FALSE(weak_web_state_list);
 }
 
+TEST_F(WebStateListTest, GetGroupOfUngroupedWebState) {
+  EXPECT_TRUE(web_state_list_.empty());
+
+  AppendNewWebState(kURL0);
+
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+}
+
+TEST_F(WebStateListTest, InsertWebState_NoGroup) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+
+  web_state_list_.InsertWebState(CreateWebState(kURL1));
+
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(1));
+}
+
+TEST_F(WebStateListTest, MoveWebStateAt_NoGroup) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+  AppendNewWebState(kURL3);
+
+  web_state_list_.MoveWebStateAt(1, 3);
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL0);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL2);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(1));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL3);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(2));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(3));
+}
+
+TEST_F(WebStateListTest, ReplaceWebStateAt_NoGroup) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+
+  web_state_list_.ReplaceWebStateAt(0, CreateWebState(kURL1));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+}
