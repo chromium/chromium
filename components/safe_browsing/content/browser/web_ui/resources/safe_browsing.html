@@ -136,6 +136,47 @@
         <div class="content">
           <p id="received-client-download-response-list"></p>
         </div>
+        <h2>Download TailoredVerdict override</h2>
+        <div class="content">
+          <p id="tailored-verdict-override-content"></p>
+        </div>
+        <div class="content">
+          <form id="tailored-verdict-override-form">
+            <fieldset>
+              <legend>TailoredVerdictType</legend>
+              <label>
+                <input type="radio" name="tailored_verdict_type"
+                    value="VERDICT_TYPE_UNSPECIFIED">
+                VERDICT_TYPE_UNSPECIFIED
+              </label>
+              <label>
+                <input type="radio" name="tailored_verdict_type"
+                    value="COOKIE_THEFT">
+                COOKIE_THEFT
+              </label>
+              <label>
+                <input type="radio" name="tailored_verdict_type"
+                    value="SUSPICIOUS_ARCHIVE">
+                SUSPICIOUS_ARCHIVE
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>ExperimentalWarningAdjustment</legend>
+              <label>
+                <input type="checkbox" name="adjustments"
+                    value="ADJUSTMENT_UNSPECIFIED">
+                ADJUSTMENT_UNSPECIFIED
+              </label>
+              <label>
+                <input type="checkbox" name="adjustments"
+                    value="ACCOUNT_INFO_STRING">
+                ACCOUNT_INFO_STRING
+              </label>
+            </fieldset>
+            <button type="submit">Submit override</button>
+            <button id="tailored-verdict-override-clear">Clear override</button>
+          </form>
+        </div>
       </div>
       <div slot="panel">
         <h2>Deep Scans</h2>

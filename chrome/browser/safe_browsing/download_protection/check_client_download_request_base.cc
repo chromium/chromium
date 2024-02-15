@@ -599,8 +599,11 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     GetAdditionalPromptResult(response, &result, &reason, &token);
 
     if (!token.empty()) {
-      SetDownloadProtectionData(token, response.verdict(),
-                                response.tailored_verdict());
+      const TailoredVerdictOverrideData& local_override =
+          WebUIInfoSingleton::GetInstance()->tailored_verdict_override();
+      SetDownloadProtectionData(
+          token, response.verdict(),
+          local_override.override_value.value_or(response.tailored_verdict()));
     }
 
     bool upload_requested = response.upload();

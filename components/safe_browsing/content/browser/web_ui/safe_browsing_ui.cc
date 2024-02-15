@@ -471,13 +471,52 @@ void WebUIInfoSingleton::AddToDeepScanResponses(
 void WebUIInfoSingleton::ClearDeepScans() {
   base::flat_map<std::string, DeepScanDebugData>().swap(deep_scan_requests_);
 }
-#endif
+
+void WebUIInfoSingleton::SetTailoredVerdictOverride(
+    ClientDownloadResponse::TailoredVerdict new_value,
+    const SafeBrowsingUIHandler* new_source) {
+  tailored_verdict_override_.Set(std::move(new_value), new_source);
+
+  // Notify other listeners of the change. The source itself is notified by the
+  // caller.
+  for (SafeBrowsingUIHandler* listener : webui_instances()) {
+    if (!tailored_verdict_override_.IsFromSource(listener)) {
+      listener->NotifyTailoredVerdictOverrideJsListener();
+    }
+  }
+}
+
+void WebUIInfoSingleton::ClearTailoredVerdictOverride() {
+  tailored_verdict_override_.Clear();
+
+  // Notify other listeners of the change. The source itself is notified by the
+  // caller.
+  for (SafeBrowsingUIHandler* listener : webui_instances()) {
+    if (!tailored_verdict_override_.IsFromSource(listener)) {
+      listener->NotifyTailoredVerdictOverrideJsListener();
+    }
+  }
+}
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
 void WebUIInfoSingleton::RegisterWebUIInstance(SafeBrowsingUIHandler* webui) {
   webui_instances_.push_back(webui);
 }
 
 void WebUIInfoSingleton::UnregisterWebUIInstance(SafeBrowsingUIHandler* webui) {
   base::Erase(webui_instances_, webui);
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Notify other WebUIs that the source of the tailored verdict override is
+  // going away.
+  if (tailored_verdict_override_.IsFromSource(webui)) {
+    tailored_verdict_override_.Clear();
+    for (SafeBrowsingUIHandler* listener : webui_instances()) {
+      listener->NotifyTailoredVerdictOverrideJsListener();
+    }
+  }
+#endif
+
   MaybeClearData();
 }
 
@@ -534,6 +573,7 @@ void WebUIInfoSingleton::MaybeClearData() {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     ClearDeepScans();
+    ClearTailoredVerdictOverride();
 #endif
   }
 }
@@ -542,6 +582,26 @@ void WebUIInfoSingleton::MaybeClearData() {
 DeepScanDebugData::DeepScanDebugData() = default;
 DeepScanDebugData::DeepScanDebugData(const DeepScanDebugData&) = default;
 DeepScanDebugData::~DeepScanDebugData() = default;
+
+TailoredVerdictOverrideData::TailoredVerdictOverrideData() = default;
+TailoredVerdictOverrideData::~TailoredVerdictOverrideData() = default;
+
+void TailoredVerdictOverrideData::Set(
+    ClientDownloadResponse::TailoredVerdict new_value,
+    const SafeBrowsingUIHandler* new_source) {
+  override_value = std::move(new_value);
+  source = reinterpret_cast<SourceId>(new_source);
+}
+
+bool TailoredVerdictOverrideData::IsFromSource(
+    const SafeBrowsingUIHandler* maybe_source) const {
+  return reinterpret_cast<SourceId>(maybe_source) == source;
+}
+
+void TailoredVerdictOverrideData::Clear() {
+  override_value.reset();
+  source = 0u;
+}
 #endif
 
 namespace {
@@ -1096,6 +1156,39 @@ std::string ClientDownloadResponseVerdictToString(
   }
 }
 
+base::Value::Dict SerializeTailoredVerdict(
+    const ClientDownloadResponse::TailoredVerdict& tv) {
+  base::Value::Dict dict_tailored_verdict;
+  std::string tailored_verdict_type;
+  switch (tv.tailored_verdict_type()) {
+    case ClientDownloadResponse::TailoredVerdict::VERDICT_TYPE_UNSPECIFIED:
+      tailored_verdict_type = "VERDICT_TYPE_UNSPECIFIED";
+      break;
+    case ClientDownloadResponse::TailoredVerdict::COOKIE_THEFT:
+      tailored_verdict_type = "COOKIE_THEFT";
+      break;
+    case ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE:
+      tailored_verdict_type = "SUSPICIOUS_ARCHIVE";
+      break;
+  }
+  dict_tailored_verdict.Set("tailored_verdict_type", tailored_verdict_type);
+  base::Value::List adjustments;
+  for (const auto& adjustment : tv.adjustments()) {
+    std::string adjustment_string;
+    switch (adjustment) {
+      case ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED:
+        adjustment_string = "ADJUSTMENT_UNSPECIFIED";
+        break;
+      case ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING:
+        adjustment_string = "ACCOUNT_INFO_STRING";
+        break;
+    }
+    adjustments.Append(adjustment_string);
+  }
+  dict_tailored_verdict.Set("adjustments", std::move(adjustments));
+  return dict_tailored_verdict;
+}
+
 std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   base::Value::Dict dict;
 
@@ -1122,36 +1215,8 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   }
 
   if (cdr.has_tailored_verdict()) {
-    base::Value::Dict dict_tailored_verdict;
     auto tailored_verdict = cdr.tailored_verdict();
-    std::string tailored_verdict_type;
-    switch (tailored_verdict.tailored_verdict_type()) {
-      case ClientDownloadResponse::TailoredVerdict::VERDICT_TYPE_UNSPECIFIED:
-        tailored_verdict_type = "VERDICT_TYPE_UNSPECIFIED";
-        break;
-      case ClientDownloadResponse::TailoredVerdict::COOKIE_THEFT:
-        tailored_verdict_type = "COOKIE_THEFT";
-        break;
-      case ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE:
-        tailored_verdict_type = "SUSPICIOUS_ARCHIVE";
-        break;
-    }
-    dict_tailored_verdict.Set("tailored_verdict_type", tailored_verdict_type);
-    base::Value::List adjustments;
-    for (const auto& adjustment : tailored_verdict.adjustments()) {
-      std::string adjustment_string;
-      switch (adjustment) {
-        case ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED:
-          adjustment_string = "ADJUSTMENT_UNSPECIFIED";
-          break;
-        case ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING:
-          adjustment_string = "ACCOUNT_INFO_STRING";
-          break;
-      }
-      adjustments.Append(adjustment_string);
-    }
-    dict_tailored_verdict.Set("adjustments", std::move(adjustments));
-    dict.Set("tailored_verdict", std::move(dict_tailored_verdict));
+    dict.Set("tailored_verdict", SerializeTailoredVerdict(tailored_verdict));
   }
 
   std::string request_serialized;
@@ -2738,7 +2803,7 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
   return value;
 }
 
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }  // namespace
 
 SafeBrowsingUI::SafeBrowsingUI(content::WebUI* web_ui)
@@ -3338,6 +3403,96 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
+base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
+  base::Value::Dict override_dict;
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  const char kStatusKey[] = "status";
+  const char kOverrideValueKey[] = "override_value";
+  const TailoredVerdictOverrideData& override_data =
+      WebUIInfoSingleton::GetInstance()->tailored_verdict_override();
+  if (!override_data.override_value) {
+    override_dict.Set(kStatusKey, base::Value("No override set."));
+  } else {
+    if (override_data.IsFromSource(this)) {
+      override_dict.Set(kStatusKey, base::Value("Override set from this tab."));
+    } else {
+      override_dict.Set(kStatusKey,
+                        base::Value("Override set from another tab."));
+    }
+    override_dict.Set(kOverrideValueKey,
+                      SerializeTailoredVerdict(*override_data.override_value));
+  }
+#endif
+  return override_dict;
+}
+
+void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
+    const base::Value::List& args) {
+  DCHECK_GE(args.size(), 2U);
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  ClientDownloadResponse::TailoredVerdict tv;
+  const base::Value::Dict& input = args[1].GetDict();
+
+  const std::string* tailored_verdict_type =
+      input.FindString("tailored_verdict_type");
+  CHECK(tailored_verdict_type);
+  if (*tailored_verdict_type == "VERDICT_TYPE_UNSPECIFIED") {
+    tv.set_tailored_verdict_type(
+        ClientDownloadResponse::TailoredVerdict::VERDICT_TYPE_UNSPECIFIED);
+  } else if (*tailored_verdict_type == "COOKIE_THEFT") {
+    tv.set_tailored_verdict_type(
+        ClientDownloadResponse::TailoredVerdict::COOKIE_THEFT);
+  } else if (*tailored_verdict_type == "SUSPICIOUS_ARCHIVE") {
+    tv.set_tailored_verdict_type(
+        ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE);
+  }
+
+  const base::Value::List* adjustments = input.FindList("adjustments");
+  CHECK(adjustments);
+  for (const base::Value& adjustment : *adjustments) {
+    if (adjustment.GetString() == "ADJUSTMENT_UNSPECIFIED") {
+      tv.add_adjustments(
+          ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED);
+    } else if (adjustment.GetString() == "ACCOUNT_INFO_STRING") {
+      tv.add_adjustments(
+          ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING);
+    }
+  }
+
+  WebUIInfoSingleton::GetInstance()->SetTailoredVerdictOverride(std::move(tv),
+                                                                this);
+#endif
+
+  ResolveTailoredVerdictOverrideCallback(args[0].GetString());
+}
+
+void SafeBrowsingUIHandler::GetTailoredVerdictOverride(
+    const base::Value::List& args) {
+  ResolveTailoredVerdictOverrideCallback(args[0].GetString());
+}
+
+void SafeBrowsingUIHandler::ClearTailoredVerdictOverride(
+    const base::Value::List& args) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  WebUIInfoSingleton::GetInstance()->ClearTailoredVerdictOverride();
+#endif
+
+  ResolveTailoredVerdictOverrideCallback(args[0].GetString());
+}
+
+void SafeBrowsingUIHandler::ResolveTailoredVerdictOverrideCallback(
+    const std::string& callback_id) {
+  AllowJavascript();
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            GetFormattedTailoredVerdictOverride());
+}
+
+void SafeBrowsingUIHandler::NotifyTailoredVerdictOverrideJsListener() {
+  AllowJavascript();
+  FireWebUIListener("tailored-verdict-override-update",
+                    GetFormattedTailoredVerdictOverride());
+}
+
 void SafeBrowsingUIHandler::NotifyDownloadUrlCheckedJsListener(
     const std::vector<GURL>& urls,
     DownloadCheckResult result) {
@@ -3595,6 +3750,18 @@ void SafeBrowsingUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getDeepScans", base::BindRepeating(&SafeBrowsingUIHandler::GetDeepScans,
                                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getTailoredVerdictOverride",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetTailoredVerdictOverride,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setTailoredVerdictOverride",
+      base::BindRepeating(&SafeBrowsingUIHandler::SetTailoredVerdictOverride,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "clearTailoredVerdictOverride",
+      base::BindRepeating(&SafeBrowsingUIHandler::ClearTailoredVerdictOverride,
+                          base::Unretained(this)));
 }
 
 void SafeBrowsingUIHandler::SetWebUIForTesting(content::WebUI* web_ui) {
