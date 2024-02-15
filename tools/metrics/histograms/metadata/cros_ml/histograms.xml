@@ -156,6 +156,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MachineLearningService.MlCore.DlcBeginInstallDlcServiceError"
+    enum="MachineLearningServiceDlcBeginInstallResult"
+    expires_after="2024-09-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    The detailed error code received from DLC Service while trying to request to
+    install the ML Core DLC.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.MlCore.DlcBeginInstallResult"
+    enum="MachineLearningServiceDlcBeginInstallResult"
+    expires_after="2024-09-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    Result of an attempt to request DLC Service to begin installation of the ML
+    Core DLC. See the related histogram .DlcBeginInstallDlcServiceError for
+    detailed error codes returned from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.MlCore.DlcFinalInstallDlcServiceError"
+    enum="MachineLearningServiceDlcFinalInstallResult"
+    expires_after="2024-09-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    The final detailed error code received from DLC Service after the completion
+    of a request to install the ML Core DLC.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.MlCore.DlcFinalInstallResult"
+    enum="MachineLearningServiceDlcFinalInstallResult"
+    expires_after="2024-09-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    Final result of an attempt to install the ML Core DLC. See the related
+    histogram .DlcFinalInstallDlcServiceError for detailed error codes returned
+    from DLC Service.
+  </summary>
+</histogram>
+
+<histogram name="MachineLearningService.MlCore.DlcInstallAttemptCount"
+    units="attmpts" expires_after="2024-09-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>dgrebenyuk@chromium.org</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    Indicates at least n attempts were made to install the ML Core DLC. Note
+    that the buckets are cumulative: If e.g. 3 attempts are made, then the
+    &quot;1&quot;, &quot;2&quot;, and &quot;3&quot; buckets will all be
+    incremented.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.MojoConnectionEvent"
     enum="MachineLearningServiceMojoConnectionEvent" expires_after="2024-06-30">
   <owner>alanlxl@chromium.org</owner>
