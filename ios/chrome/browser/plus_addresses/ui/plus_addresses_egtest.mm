@@ -79,7 +79,7 @@ void ExpectModalTimeSample(
   // Ensure a fake identity is available, as this is required by the
   // plus_addresses feature.
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:_fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:_fakeIdentity];
 
   [self loadPlusAddressEligiblePage];
 }
