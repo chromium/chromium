@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -1350,6 +1351,7 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
       DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
     }
   } else {
+    base::ElapsedTimer timer;
     BrowsingContextGroupSwap ignored_bcg_swap_info =
         BrowsingContextGroupSwap::CreateDefault();
     auto result = GetFrameHostForNavigation(request, &ignored_bcg_swap_info);
@@ -1361,6 +1363,12 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
           ->speculative_frame_host()
           ->RecordMetricsForBlockedGetFrameHostAttempt(
               /* commit_attempt=*/false);
+    }
+    if (request->GetURL().SchemeIsHTTPOrHTTPS()) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Navigation.GetFrameHostForNavigationTime"
+          ".InDidCreateNavigationRequest.IsHTTPOrHTTPS",
+          timer.Elapsed());
     }
   }
 }

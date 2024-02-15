@@ -764,6 +764,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.GetFrameHostForNavigationTime.InDidCreateNavigationRequest.IsHTTPOrHTTPS"
+    units="microseconds" expires_after="2024-05-15">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent processing GetFrameHostForNavigation() in
+    RenderFrameHostManager::DidCreateNavigationRequest() that can prepare a
+    SpeculativeRenderFrameHost. SpeculativeRenderFrameHost might not be created
+    in some cases, but this UMA records such cases as well. This is recorded on
+    each navigation if the navigation requires GetFrameHostForNavigation() to be
+    called for http or https URLs. Calling GetFrameHostForNavigation() is not
+    required for the same document navigations or back/forward cache
+    navigations.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Guest.IsHTTPOrHTTPS"
     enum="BooleanHttpBasedOrOtherScheme" expires_after="2024-07-21">
   <owner>alexmos@chromium.org</owner>
