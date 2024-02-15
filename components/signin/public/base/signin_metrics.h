@@ -107,8 +107,10 @@ enum class ProfileSignout {
   // Profile signout when IdleTimeoutActions enterprise policy triggers sign
   // out.
   kIdleTimeoutPolicyTriggeredSignOut = 31,
+  // User adds the primary account through the sync flow then aborts.
+  kCancelSyncConfirmationRemoveAccount = 32,
   // Keep this as the last enum.
-  kMaxValue = kIdleTimeoutPolicyTriggeredSignOut
+  kMaxValue = kCancelSyncConfirmationRemoveAccount
 };
 
 // Enum values which enumerates all access points where sign in could be

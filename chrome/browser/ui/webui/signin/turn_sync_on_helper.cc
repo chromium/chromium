@@ -755,13 +755,6 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
-  // The lock is needed here because the `SigninManager` should unset the
-  // primary account before the `AccountReconcilor` runs. The
-  // `AccountReconcilor` does not support the case where the primary account has
-  // no token.
-  AccountReconcilor::Lock lock(
-      AccountReconcilorFactory::GetForProfile(profile_));
-
   // If the initial primary account is still valid, reset it. This is only on
   // Lacros or if the UNO Desktop model is enabled, because the `SigninManager`
   // does it automatically with DICE.
@@ -772,54 +765,53 @@ void TurnSyncOnHelper::AbortAndDelete() {
   }
 
   switch (signin_aborted_mode_) {
-    case SigninAbortedMode::REMOVE_ACCOUNT: {
-      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-          ->ShutdownCloudPolicyManager();
-
-      // The account being removed may be the current primary account. Unblock
-      // the `SigninManager` so that it can handle the state where there is a
-      // primary account with no token. See https://crbug.com/1404961
-      account_change_blocker_.reset();
-
-      // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
-      // will take care of invalidating the cookies.
-      auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-      accounts_mutator->RemoveAccount(
-          account_info_.account_id,
-          signin_metrics::SourceForRefreshTokenOperation::
-              kTurnOnSyncHelper_Abort);
+    case SigninAbortedMode::REMOVE_ACCOUNT:
+    case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
+      RemoveAccount();
       break;
-    }
-    case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
-      CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental));
-      if (account_info_.account_id ==
-          identity_manager_
-              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .account_id) {
-        policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-            ->ShutdownCloudPolicyManager();
 
-        // The account being removed may be the current primary account. Unblock
-        // the `SigninManager` so that it can handle the state where there is a
-        // primary account with no token. See https://crbug.com/1404961
-        account_change_blocker_.reset();
-
-        auto* primary_account_mutator =
-            identity_manager_->GetPrimaryAccountMutator();
-        primary_account_mutator->RemovePrimaryAccountButKeepTokens(
-            signin_metrics::ProfileSignout::
-                kCancelSyncConfirmationOnWebOnlySignedIn,
-            signin_metrics::SignoutDelete::kIgnoreMetric);
-      }
-      break;
-    }
     case SigninAbortedMode::KEEP_ACCOUNT:
       // Do nothing.
       break;
   }
 
   delete this;
+}
+
+void TurnSyncOnHelper::RemoveAccount() {
+  CHECK(signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT ||
+        signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY);
+  bool is_primary_account =
+      account_info_.account_id ==
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .account_id;
+  if (is_primary_account) {
+    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+        ->ShutdownCloudPolicyManager();
+    auto* primary_account_mutator =
+        identity_manager_->GetPrimaryAccountMutator();
+    if (signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
+      primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+          signin_metrics::ProfileSignout::
+              kCancelSyncConfirmationOnWebOnlySignedIn,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
+    } else {
+      primary_account_mutator->ClearPrimaryAccount(
+          signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
+          signin_metrics::SignoutDelete::kIgnoreMetric);
+    }
+    return;
+  }
+
+  if (signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
+    return;
+  }
+  // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
+  // will take care of invalidating the cookies.
+  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+  accounts_mutator->RemoveAccount(
+      account_info_.account_id,
+      signin_metrics::SourceForRefreshTokenOperation::kTurnOnSyncHelper_Abort);
 }
 
 // static

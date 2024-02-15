@@ -135,6 +135,9 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // to the web only before showing the sync confirmation dialog. The account
     // was signed in to the profile in order to show the sync confirmation.
     signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn,
+    // Allowed as the user wasn't signed in initially and data has not been
+    // synced yet.
+    signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
 };
 
 // Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.
