@@ -378,7 +378,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // avoid memory allocation for the OnceCallback state. Allocation and
   // destruction of this callback in the hot path (when timer is already
   // running) is expensive.
-  void ExtractFormsForPasswordAutofillAgent(base::OneShotTimer& timer);
+  void ExtractFormsAndNotifyPasswordAutofillAgent(base::OneShotTimer& timer);
 
   void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback);
 

@@ -1113,7 +1113,7 @@ void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
                              base::Unretained(this), std::move(callback)));
 }
 
-void AutofillAgent::ExtractFormsForPasswordAutofillAgent(
+void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
     base::OneShotTimer& timer) {
   if (!is_dom_content_loaded_ || timer.IsRunning()) {
     return;
@@ -1184,7 +1184,7 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
   }
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
-  ExtractFormsForPasswordAutofillAgent(
+  ExtractFormsAndNotifyPasswordAutofillAgent(
       process_forms_after_dynamic_change_timer_);
 }
 
