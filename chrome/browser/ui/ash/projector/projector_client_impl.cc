@@ -51,6 +51,8 @@
 
 namespace {
 
+constexpr char kUSMExperimentRoutingId[] = "screencast_experimental_usm2b";
+
 inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
 }
@@ -169,6 +171,9 @@ void ProjectorClientImpl::StartSpeechRecognition() {
       availability.use_on_device
           ? GetLocale()
           : GetLocaleOrLanguageForServerSideRecognition();
+  const std::string experiment_recognizer_routing_key =
+      ash::features::IsProjectorUseUSMForS3Enabled() ? kUSMExperimentRoutingId
+                                                     : "";
 
   speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
@@ -177,7 +182,9 @@ void ProjectorClientImpl::StartSpeechRecognition() {
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/true, locale,
           /*is_server_based=*/!availability.use_on_device,
-          media::mojom::RecognizerClientType::kProjector));
+          media::mojom::RecognizerClientType::kProjector,
+          /*skip_continuously_empty_audio=*/false,
+          experiment_recognizer_routing_key));
   if (!availability.use_on_device) {
     RecordOnDeviceToServerSpeechRecognitionFallbackReason(
         GetFallbackReason(availability.on_device_availability));

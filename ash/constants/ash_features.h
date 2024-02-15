@@ -1217,6 +1217,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorRedirectToPwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorTranscriptChapterTitleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUseUSMForS3Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskZOrderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPersonalizationJellyEnabled();
