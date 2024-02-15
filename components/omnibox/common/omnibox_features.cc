@@ -535,6 +535,11 @@ BASE_FEATURE(kPolicyIndicationForManagedDefaultSearch,
              "PolicyIndicationForManagedDefaultSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables additional site search providers for the Site search Starter Pack.
+BASE_FEATURE(kStarterPackExpansion,
+             "StarterPackExpansion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, prefer to use the new recovery module to recover the
 // `ShortcutsDatabase` database. See https://crbug.com/1385500 for details.
 // This is a kill switch and is not intended to be used in a field trial.

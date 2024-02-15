@@ -19,6 +19,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "third_party/icu/source/i18n/unicode/ucol.h"
@@ -111,6 +112,13 @@ void TemplateURLTableModel::Reload() {
       extension_entries;
   // Keywords that can be made the default first.
   for (TemplateURL* template_url : urls) {
+    // Don't include the expanded set of starter pack keywords if the expansion
+    // feature flag is not enabled.
+    if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+        template_url->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+      continue;
+    }
+
     if (template_url_service_->ShowInDefaultList(template_url)) {
       default_entries.push_back(template_url);
     } else if (!template_url_service_->HiddenFromLists(template_url)) {

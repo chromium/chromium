@@ -6184,6 +6184,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-starter-pack-expansion",
+    "owners": [
+      "yoangela@chromium.org",
+      "chrome-omnibox-team@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

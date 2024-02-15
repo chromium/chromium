@@ -789,6 +789,12 @@ extern const base::FeatureParam<int>
     kTouchDownTriggerForPrefetchMaxPrefetchesPerOmniboxSession;
 // <- Touch Down Trigger For Prefetch
 // ---------------------------------------------------------
+// Site Search Starter Pack ->
+
+// Whether the expansion pack for the site search starter pack is enabled.
+bool IsStarterPackExpansionEnabled();
+// <- Site Search Starter Pack
+// ---------------------------------------------------------
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

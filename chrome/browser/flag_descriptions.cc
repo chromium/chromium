@@ -2633,6 +2633,11 @@ const char kOmniboxUIMaxAutocompleteMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "Omnibox UI.";
 
+const char kOmniboxStarterPackExpansionName[] =
+    "Expansion pack for the Site search starter pack";
+const char kOmniboxStarterPackExpansionDescription[] =
+    "Enables additional providers for the Site search starter pack feature";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kOmnibox2023RefreshConnectionSecurityIndicatorsName[] =
     "Omnibox 2023 refresh connection security indicators";

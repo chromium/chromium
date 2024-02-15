@@ -1502,6 +1502,9 @@ extern const char kOmniboxSimplifiedUiUniformRowHeightDescription[];
 extern const char kOmniboxSimplifiedUiSquareSuggestIconName[];
 extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 
+extern const char kOmniboxStarterPackExpansionName[];
+extern const char kOmniboxStarterPackExpansionDescription[];
+
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 

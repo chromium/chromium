@@ -20732,6 +20732,7 @@ from previous Chrome versions.
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
+  <int value="25864495" label="StarterPackExpansion:disabled"/>
   <int value="26632553"
       label="NtpHistoryClustersModuleUseModelRanking:enabled"/>
   <int value="26875005" label="disable-explicit-dma-fences"/>
@@ -24057,6 +24058,7 @@ from previous Chrome versions.
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
   <int value="1575011129" label="WelcomeTour:disabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
+  <int value="1576879780" label="StarterPackExpansion:enabled"/>
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1577544798" label="StartSurfaceWithAccessibility:disabled"/>

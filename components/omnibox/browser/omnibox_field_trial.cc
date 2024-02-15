@@ -1140,6 +1140,12 @@ const base::FeatureParam<int>
         5);
 // <- Touch Down Trigger For Prefetch
 // ---------------------------------------------------------
+// Site Search Starter Pack ->
+bool IsStarterPackExpansionEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
+}
+// <- Site Search Starter Pack
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

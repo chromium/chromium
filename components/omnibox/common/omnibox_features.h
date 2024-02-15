@@ -155,12 +155,10 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
 // suggestions and only controls whether the signal is sent.
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 
-// Enables the |SiteSearchSettings| policy, which allows admins to configure
-// intranet site search engines.
+// Site search/Keyword mode related features.
 BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
-
-// Unifies the UI for managed search engines in chrome://settings.
 BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
+BASE_DECLARE_FEATURE(kStarterPackExpansion);
 
 // Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
 BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);

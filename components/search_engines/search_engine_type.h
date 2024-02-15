@@ -89,6 +89,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_BRAVE = 70,
   SEARCH_ENGINE_KARMA = 71,
   SEARCH_ENGINE_YOU = 72,
+  SEARCH_ENGINE_STARTER_PACK_ASK_GOOGLE = 73,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
@@ -102,6 +103,7 @@ enum BuiltinEngineType {
   KEYWORD_MODE_STARTER_PACK_BOOKMARKS = 2,
   KEYWORD_MODE_STARTER_PACK_HISTORY = 3,
   KEYWORD_MODE_STARTER_PACK_TABS = 4,
+  KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE = 5,
 
   KEYWORD_MODE_ENGINE_TYPE_MAX  // Bounding value needed for UMA histogram
                                 // macro.

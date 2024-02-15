@@ -6038,6 +6038,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::LimitKeywordModeSuggestions::
                             kLimitKeywordModeSuggestions)},
+
+    {"omnibox-starter-pack-expansion",
+     flag_descriptions::kOmniboxStarterPackExpansionName,
+     flag_descriptions::kOmniboxStarterPackExpansionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kStarterPackExpansion)},
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 

@@ -116,6 +116,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="@bookmarks starter pack engine"/>
   <int value="3" label="@history starter pack engine"/>
   <int value="4" label="@tabs starter pack engine"/>
+  <int value="5" label="@google starter pack engine"/>
 </enum>
 
 <enum name="OmniboxEnteredKeywordMode2">
