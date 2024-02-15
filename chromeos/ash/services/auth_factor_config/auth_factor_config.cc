@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/feature_list.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -33,7 +34,10 @@ AuthFactorConfig::~AuthFactorConfig() = default;
 
 // static
 void AuthFactorConfig::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior, false);
+  const bool default_for_enterprise = base::FeatureList::IsEnabled(
+      ash::features::kCryptohomeRecoveryByDefaultForEnterprise);
+  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior,
+                                default_for_enterprise);
 }
 
 void AuthFactorConfig::BindReceiver(

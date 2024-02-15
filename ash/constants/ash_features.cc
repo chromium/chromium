@@ -585,6 +585,22 @@ BASE_FEATURE(kCryptohomeRecoveryBeforeFlowSplit,
              "CryptohomeRecoveryBeforeFlowSplit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the default value for the option to set up
+// cryptohome recovery presented for consumer users.
+// - if enabled, recovery would set up by default (opt-out mode)
+// - if disabled, user have to explicitly opt-in to use recovery
+BASE_FEATURE(kCryptohomeRecoveryByDefaultForConsumers,
+             "CryptohomeRecoveryByDefaultForConsumers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the behavior during onboarding when the RecoveryFactorBehavior
+// policy is unset.
+// - if enabled, treat as "recommended enable recovery" policy value.
+// - if disabled, treat as "recommended disable recovery" policy value.
+BASE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise,
+             "CryptohomeRecoveryByDefaultForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Toggle different display features based on user setting and power state
 BASE_FEATURE(kDisplayPerformanceMode,
              "DisplayPerformanceMode",
