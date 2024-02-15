@@ -8480,6 +8480,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PushMessaging.SilentNotification" enum="SilentPushEvent"
+    expires_after="2025-01-31">
+  <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    When a new silent push message is received, this records wether a generic
+    notification is shown or not. Additionally it records if the &quot;No silent
+    pushes&quot; enforcement is skipped.
+  </summary>
+</histogram>
+
 <histogram name="PushMessaging.TimeToReadPersistedMessages" units="ms"
     expires_after="M98">
   <owner>peter@chromium.org</owner>

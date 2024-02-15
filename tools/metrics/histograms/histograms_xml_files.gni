@@ -150,6 +150,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/oobe/histograms.xml",
   "//tools/metrics/histograms/metadata/optimization/enums.xml",
   "//tools/metrics/histograms/metadata/optimization/histograms.xml",
+  "//tools/metrics/histograms/metadata/others/enums.xml",
   "//tools/metrics/histograms/metadata/others/histograms.xml",
   "//tools/metrics/histograms/metadata/page/enums.xml",
   "//tools/metrics/histograms/metadata/page/histograms.xml",

@@ -19,6 +19,16 @@
 class GURL;
 class Profile;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SilentPushEvent {
+  kSilentRequest = 0,
+  kNotificationEnforcementSkipped = 1,
+  kAllowedWithoutNotification = 2,
+  kAllowedWithGenericNotification = 3,
+  kMaxValue = kAllowedWithGenericNotification,
+};
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -93,6 +103,8 @@ class PushMessagingNotificationManager {
       EnforceRequirementsCallback message_handled_callback,
       bool success,
       const std::string& notification_id);
+
+  void LogSilentPushEvent(SilentPushEvent event);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // For extensions builds, skip userVisibleOnly requirement for worker-based

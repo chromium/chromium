@@ -118,6 +118,7 @@ void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
                                             requested_user_visible_only)) {
     std::move(message_handled_callback)
         .Run(/* did_show_generic_notification= */ false);
+    LogSilentPushEvent(SilentPushEvent::kNotificationEnforcementSkipped);
     return;
   }
 
@@ -232,11 +233,13 @@ void PushMessagingNotificationManager::ProcessSilentPush(
     EnforceRequirementsCallback message_handled_callback,
     bool silent_push_allowed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  LogSilentPushEvent(SilentPushEvent::kSilentRequest);
 
   // If the origin was allowed to issue a silent push, just return.
   if (silent_push_allowed) {
     std::move(message_handled_callback)
         .Run(/* did_show_generic_notification= */ false);
+    LogSilentPushEvent(SilentPushEvent::kAllowedWithoutNotification);
     return;
   }
 
@@ -269,6 +272,7 @@ void PushMessagingNotificationManager::DidWriteNotificationData(
 
   std::move(message_handled_callback)
       .Run(/* did_show_generic_notification= */ true);
+  LogSilentPushEvent(SilentPushEvent::kAllowedWithGenericNotification);
 }
 
 bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
@@ -284,6 +288,11 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
   // Returning true is an exception, so default to deny for anything we don't
   // explicitly identify.
   return false;
+}
+
+void PushMessagingNotificationManager::LogSilentPushEvent(
+    SilentPushEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("PushMessaging.SilentNotification", event);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
