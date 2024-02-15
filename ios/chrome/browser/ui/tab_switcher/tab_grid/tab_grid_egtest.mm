@@ -2797,7 +2797,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   // Sign-in with fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -2819,8 +2819,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // sheet but only the history opt-in.
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testPromoInTabsFromOtherDevicesListensToSignin {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
