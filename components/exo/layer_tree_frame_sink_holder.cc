@@ -118,9 +118,13 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
     return;
   }
 
-  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
-
   DiscardCachedFrame(&frame);
+
+  // Needs to be after DiscardCachedFrame(), because discarding a frame will
+  // reset the frame arrival information in `frame_timing_history_`.
+  frame_timing_history_->FrameArrived();
+
+  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
 
   ObserveBeginFrameSource(true);
 
@@ -298,6 +302,7 @@ bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
     const viz::BeginFrameArgs& args) {
   DCHECK(reactive_frame_submission_);
 
+  frame_timing_history_->BeginFrameArrived(args.frame_id);
   frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/false);
 
   pending_begin_frames_.emplace();
@@ -332,8 +337,8 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   DCHECK(!is_lost_);
 
   if (frame_timing_history_) {
-    frame_timing_history_->FrameSubmitted(frame->metadata.frame_token,
-                                          base::TimeTicks::Now());
+    frame_timing_history_->FrameSubmitted(
+        frame->metadata.begin_frame_ack.frame_id, frame->metadata.frame_token);
   }
 
   last_frame_resources_.clear();
@@ -441,9 +446,10 @@ void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
     frame_sink_->DidNotProduceFrame(pending_begin_frame.begin_frame_ack,
                                     cc::FrameSkippedReason::kNoDamage);
 
-    pending_begin_frames_.pop();
+    frame_timing_history_->FrameDidNotProduce(
+        pending_begin_frame.begin_frame_ack.frame_id);
 
-    frame_timing_history_->FrameDidNotProduce();
+    pending_begin_frames_.pop();
 
     bool should_pause_begin_frame =
         frame_sink_->auto_needs_begin_frame() &&
