@@ -177,14 +177,12 @@ void GrabViewSnapshotAsync(gfx::NativeView view,
     if (base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots)) {
       GrabViewSnapshotScreenCaptureKitImpl(view, source_rect,
                                            std::move(callback));
-    } else {
-      gfx::Image image = GrabViewSnapshotCGWindowListImpl(view, source_rect);
-      std::move(callback).Run(image);
+      return;
     }
-  } else {
-    gfx::Image image = GrabViewSnapshotCGWindowListImpl(view, source_rect);
-    std::move(callback).Run(image);
   }
+
+  gfx::Image image = GrabViewSnapshotCGWindowListImpl(view, source_rect);
+  std::move(callback).Run(image);
 }
 
 }  // namespace ui
