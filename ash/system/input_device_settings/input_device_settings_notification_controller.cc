@@ -83,6 +83,10 @@ constexpr auto kSixPackKeyToPrefName =
          {prefs::kSixPackKeyInsertNotificationsRemaining}},
     });
 
+// Device key of the virutal mouse often used by integration tests, avoid
+// showing notification in this case.
+const char kVirtualMouseDeviceKey[] = "0000:0000";
+
 const char kNotifierId[] = "input_device_settings_controller";
 const char kAltRightClickRewriteNotificationId[] =
     "alt_right_click_rewrite_blocked_by_setting";
@@ -414,6 +418,11 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse) {
   if (!IsActiveUserSession()) {
+    return;
+  }
+
+  // Avoid showing notification for the virtual mouse device.
+  if (mouse.device_key == kVirtualMouseDeviceKey) {
     return;
   }
 
