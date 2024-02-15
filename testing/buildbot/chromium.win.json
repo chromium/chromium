@@ -5952,7 +5952,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -5967,7 +5968,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -5982,7 +5984,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -5998,7 +6001,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6013,7 +6017,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6028,7 +6033,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6043,7 +6049,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6058,7 +6065,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6073,7 +6081,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6096,7 +6105,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6111,7 +6121,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6126,7 +6137,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6144,7 +6156,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6159,7 +6172,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6174,7 +6188,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6189,7 +6204,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6204,7 +6220,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6219,7 +6236,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6234,7 +6252,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6249,7 +6268,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6264,7 +6284,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6279,7 +6300,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -6295,7 +6317,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6310,7 +6333,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6325,7 +6349,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6340,7 +6365,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6355,7 +6381,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6370,7 +6397,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6385,7 +6413,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6400,7 +6429,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6415,7 +6445,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6430,7 +6461,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6446,7 +6478,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6461,7 +6494,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6476,7 +6510,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6491,7 +6526,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6506,7 +6542,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6521,7 +6558,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6536,7 +6574,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6551,7 +6590,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6566,7 +6606,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6581,7 +6622,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6596,7 +6638,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6611,7 +6654,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6626,7 +6670,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6641,7 +6686,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6656,7 +6702,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6672,7 +6719,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6687,7 +6735,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
@@ -6703,7 +6752,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6718,7 +6768,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6734,7 +6785,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6749,7 +6801,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6764,7 +6817,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6779,7 +6833,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6794,7 +6849,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6809,7 +6865,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6824,7 +6881,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6839,7 +6897,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6854,7 +6913,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6869,7 +6929,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6884,7 +6945,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6899,7 +6961,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6914,7 +6977,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6930,7 +6994,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6945,7 +7010,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6961,7 +7027,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6976,7 +7043,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -6991,7 +7059,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7006,7 +7075,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7022,7 +7092,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7037,7 +7108,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7052,7 +7124,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7067,7 +7140,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7082,7 +7156,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7097,7 +7172,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7112,7 +7188,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -7128,7 +7205,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7143,7 +7221,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7158,7 +7237,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7173,7 +7253,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7188,7 +7269,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7203,7 +7285,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7218,7 +7301,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7233,7 +7317,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7248,7 +7333,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7263,7 +7349,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7278,7 +7365,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7293,7 +7381,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7308,7 +7397,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7323,7 +7413,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7338,7 +7429,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7353,7 +7445,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7373,7 +7466,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7394,7 +7488,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7415,7 +7510,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7430,7 +7526,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7451,7 +7548,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7470,7 +7568,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7489,7 +7588,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7507,7 +7607,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7532,7 +7633,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 960,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -7552,7 +7654,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -7574,7 +7677,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7593,7 +7697,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7608,7 +7713,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7623,7 +7729,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7639,7 +7746,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7654,7 +7762,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7669,7 +7778,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7684,7 +7794,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7699,7 +7810,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7714,7 +7826,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7737,7 +7850,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7752,7 +7866,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7767,7 +7882,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7782,7 +7898,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
@@ -7801,7 +7918,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7816,7 +7934,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7831,7 +7950,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7846,7 +7966,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7861,7 +7982,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7876,7 +7998,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7891,7 +8014,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7906,7 +8030,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7921,7 +8046,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7936,7 +8062,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -7952,7 +8079,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7967,7 +8095,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -7994,7 +8123,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8009,7 +8139,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8024,7 +8155,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8039,7 +8171,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8054,7 +8187,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8069,7 +8203,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8084,7 +8219,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8099,7 +8235,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8114,7 +8251,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8130,7 +8268,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8145,7 +8284,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8160,7 +8300,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8175,7 +8316,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8190,7 +8332,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8205,7 +8348,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8220,7 +8364,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8235,7 +8380,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8250,7 +8396,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8265,7 +8412,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8280,7 +8428,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8295,7 +8444,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8310,7 +8460,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8325,7 +8476,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8340,7 +8492,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8356,7 +8509,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8371,7 +8525,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -8387,7 +8542,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8402,7 +8558,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8418,7 +8575,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8433,7 +8591,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8448,7 +8607,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8463,7 +8623,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8478,7 +8639,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8493,7 +8655,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8508,7 +8671,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8523,7 +8687,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8538,7 +8703,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8553,7 +8719,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8568,7 +8735,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8583,7 +8751,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8609,7 +8778,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8624,7 +8794,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8640,7 +8811,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8655,7 +8827,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8671,7 +8844,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8686,7 +8860,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8701,7 +8876,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8716,7 +8892,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8732,7 +8909,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8747,7 +8925,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8762,7 +8941,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8777,7 +8957,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8792,7 +8973,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8807,7 +8989,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8822,7 +9005,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -8838,7 +9022,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8853,7 +9038,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8868,7 +9054,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8883,7 +9070,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8898,7 +9086,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8913,7 +9102,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8928,7 +9118,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8951,7 +9142,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8966,7 +9158,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8981,7 +9174,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -8996,7 +9190,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9011,7 +9206,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9026,7 +9222,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9041,7 +9238,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9056,7 +9254,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9071,7 +9270,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9086,7 +9286,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9106,7 +9307,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9133,7 +9335,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
@@ -9161,7 +9364,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
@@ -9183,7 +9387,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9204,7 +9409,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9219,7 +9425,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9240,7 +9447,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9259,7 +9467,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9278,7 +9487,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9296,7 +9506,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9312,7 +9523,8 @@
           "dimensions": {
             "cpu": "arm64",
             "integrity": "high",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9330,7 +9542,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9346,7 +9559,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9370,7 +9584,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9388,7 +9603,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -9407,7 +9623,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9428,7 +9645,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -9446,7 +9664,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Windows-11"
+            "os": "Windows-11",
+            "screen_scaling_percent": "100"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

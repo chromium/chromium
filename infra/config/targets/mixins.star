@@ -1664,6 +1664,9 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
+            # Screen scaling is mostly to ensure that pixel test output is
+            # consistent.
+            "screen_scaling_percent": "100",
             "cpu": "arm64",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
@@ -1685,6 +1688,9 @@ targets.mixin(
     name = "win-arm64",
     swarming = targets.swarming(
         dimensions = {
+            # Certain tests require 100 percent screen scaling, and all devices
+            # should be configured for this.
+            "screen_scaling_percent": "100",
             "cpu": "arm64",
             "os": "Windows-11",
         },

@@ -22489,7 +22489,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22516,7 +22517,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22548,7 +22550,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22573,7 +22576,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22599,7 +22603,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22623,7 +22628,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22644,7 +22650,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22669,7 +22676,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22695,7 +22703,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22722,7 +22731,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -22760,7 +22770,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -22805,7 +22816,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -22841,7 +22853,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -22877,7 +22890,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -22917,7 +22931,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -22963,7 +22978,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -23000,7 +23016,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -23037,7 +23054,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -23074,7 +23092,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -23113,7 +23132,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -23152,7 +23172,8 @@
             "display_attached": "1",
             "gpu": "qcom:043a-27.20.1870.0",
             "os": "Windows-11-22621.3007",
-            "pool": "chromium.tests"
+            "pool": "chromium.tests",
+            "screen_scaling_percent": "100"
           },
           "hard_timeout": 1800,
           "idempotent": false,
