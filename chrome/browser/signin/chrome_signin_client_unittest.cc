@@ -217,7 +217,6 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kAbortSignin:
     case signin_metrics::ProfileSignout::
         kCancelSyncConfirmationOnWebOnlySignedIn:
-    case signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount:
     // Allow signout for tests that want to force it.
     case signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest:
     case signin_metrics::ProfileSignout::kUserClickedRevokeSyncConsentSettings:
@@ -367,7 +366,6 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kRevokeSyncFromSettings,
     signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn,
     signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
-    signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.

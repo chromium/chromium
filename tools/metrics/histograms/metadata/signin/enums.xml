@@ -721,11 +721,6 @@ chromium-metrics-reviews@google.com.
     value included `sign_out`. When the user has been idle for the time
     specified in the policy value, they will be signed out.
   </int>
-  <int value="32"
-      label="User cancelled sync confirmation removes primary account">
-    User added the primary account through the sync flow. On abort, the primary
-    account is cleared.
-  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
