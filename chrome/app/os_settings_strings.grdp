@@ -6522,7 +6522,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Network Default
   </message>
   <message name="IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION" desc="Description when the user selects Network Default resolver from DNS dropdown menu">
-    Secure connections only work with some default providers. Consider selecting a different provider to ensure you're always using a secure connection.
+    Secure connections might not always be available when using the network default. Consider selecting a different provider to ensure you're always using a secure connection.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
     System services
