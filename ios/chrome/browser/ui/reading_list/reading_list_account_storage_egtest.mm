@@ -330,7 +330,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testPromoHiddenAfterSignInWithFullSync {
   // Sign-in with full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Verify that the promo is hidden in the Reading List.
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -341,7 +341,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testPromoHiddenAfterSignInWithoutAccountStorageOrSync {
   // Sign-in without full sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   // Verify that the promo is hidden in the Reading List.
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -436,8 +436,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // data during sign-out.
 - (void)testPromoShownWhenSyncDataIsRemoved {
   // Sign-in with sync with `fakeIdentity1`.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   // Sign-out and remove data.
   [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
 
