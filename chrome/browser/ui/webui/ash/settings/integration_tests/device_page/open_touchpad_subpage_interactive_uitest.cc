@@ -4,7 +4,7 @@
 
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
+#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_base_test.h"
 #include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
@@ -22,7 +22,6 @@ const ui::TouchpadDevice kSampleTouchpadInternal(1,
 
 class DeviceSettingsTouchpadInteractiveUiTest : public DeviceSettingsBaseTest {
  public:
-
   // Query to pierce through Shadow DOM to find the touchpad row.
   const DeepQuery kTouchpadRowQuery{
       "os-settings-ui",       "os-settings-main",      "main-page-container",

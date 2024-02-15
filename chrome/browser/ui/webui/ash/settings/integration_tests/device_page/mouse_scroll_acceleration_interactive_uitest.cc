@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
-#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
+#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_base_test.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -14,7 +14,6 @@ const ui::InputDevice kMouse(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse");
 
 class DeviceSettingsMouseInteractiveUiTest : public DeviceSettingsBaseTest {
  public:
-
   // Query to pierce through Shadow DOM to find the mouse row.
   const DeepQuery kMouseRowQuery{
       "os-settings-ui",       "os-settings-main",   "main-page-container",

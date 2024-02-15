@@ -5,7 +5,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
+#include "chrome/browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_base_test.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
