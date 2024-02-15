@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -114,7 +111,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
 
     if (should_server_fail_model_execution_) {
       response->set_code(net::HTTP_NOT_FOUND);
-      model_execution_request_run_loop_->Quit();
       return std::move(response);
     }
 
@@ -130,7 +126,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     execute_response.SerializeToString(&serialized_response);
     response->set_code(net::HTTP_OK);
     response->set_content(serialized_response);
-    model_execution_request_run_loop_->Quit();
     return std::move(response);
   }
 
@@ -149,9 +144,6 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-
-  // RunLoop to wait for model execution request to be received.
-  std::unique_ptr<base::RunLoop> model_execution_request_run_loop_;
 };
 
 class ModelExecutionValidationBrowserTest
@@ -172,10 +164,7 @@ class ModelExecutionValidationBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionSuccess) {
-  model_execution_request_run_loop_ = std::make_unique<base::RunLoop>();
   EnableSignin();
-
-  model_execution_request_run_loop_->Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 
@@ -195,11 +184,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionFailsServerFailure) {
-  model_execution_request_run_loop_ = std::make_unique<base::RunLoop>();
   EnableServerModelExecutionFailure();
   EnableSignin();
-
-  model_execution_request_run_loop_->Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 
