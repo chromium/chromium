@@ -5057,11 +5057,6 @@
       "expiry_milestone": 128
   },
   {
-      "name": "ip-protection-v1",
-      "owners": [ "fmacintosh@google.com", "koilos@google.com" ],
-      "expiry_milestone": 133
-  },
-  {
     "name": "iph-extensions-menu-feature",
     "owners": [
       "emiliapaz@chromium.org"
