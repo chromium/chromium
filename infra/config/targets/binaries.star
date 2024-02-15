@@ -1106,11 +1106,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
-    name = "lacros_chrome_unittests",
-    label = "//chrome/test:lacros_chrome_unittests",
-)
-
-targets.binaries.console_test_launcher(
     name = "latency_unittests",
     label = "//ui/latency:latency_unittests",
 )

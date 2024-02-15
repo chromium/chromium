@@ -4589,7 +4589,6 @@
     },
 
     'linux_lacros_specific_gtests': {
-      'lacros_chrome_unittests': {},
       'ozone_unittests': {},
     },
 

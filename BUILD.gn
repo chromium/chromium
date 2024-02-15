@@ -173,10 +173,6 @@ group("gn_all") {
       ]
     }
 
-    if (is_chromeos_lacros) {
-      deps += [ "//chrome/test:lacros_chrome_unittests" ]
-    }
-
     if (!is_ios && !is_castos) {
       if (!is_fuchsia) {
         deps += [ "//chrome/test:unit_tests" ]

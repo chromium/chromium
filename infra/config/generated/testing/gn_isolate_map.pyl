@@ -1035,10 +1035,6 @@
       "--test-launcher-jobs=1",
     ],
   },
-  "lacros_chrome_unittests": {
-    "label": "//chrome/test:lacros_chrome_unittests",
-    "type": "console_test_launcher",
-  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",

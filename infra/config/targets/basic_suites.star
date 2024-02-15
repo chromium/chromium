@@ -4229,7 +4229,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "linux_lacros_specific_gtests",
     tests = {
-        "lacros_chrome_unittests": targets.legacy_test_config(),
         "ozone_unittests": targets.legacy_test_config(),
     },
 )

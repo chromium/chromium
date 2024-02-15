@@ -1413,10 +1413,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "lacros_chrome_unittests",
-)
-
-targets.tests.gtest_test(
     name = "latency_unittests",
 )
 
