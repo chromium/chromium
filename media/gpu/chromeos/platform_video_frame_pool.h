@@ -42,9 +42,6 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   PlatformVideoFramePool& operator=(const PlatformVideoFramePool&) = delete;
   ~PlatformVideoFramePool() override;
 
-  // Returns the ID of the GpuMemoryBuffer wrapped by |frame|.
-  static gfx::GpuMemoryBufferId GetGpuMemoryBufferId(const VideoFrame& frame);
-
   // DmabufVideoFramePool implementation.
   PlatformVideoFramePool* AsPlatformVideoFramePool() override;
   CroStatus::Or<GpuBufferLayout> Initialize(const Fourcc& fourcc,
@@ -124,8 +121,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // should be the same as |format_| and |coded_size_|.
   base::circular_deque<scoped_refptr<VideoFrame>> free_frames_
       GUARDED_BY(lock_);
-  // Mapping from the frame's GpuMemoryBuffer's ID to the original frame.
-  std::map<gfx::GpuMemoryBufferId, VideoFrame*> frames_in_use_
+  // Mapping from the frame's shared memory ID to the original frame.
+  std::map<gfx::GenericSharedMemoryId, VideoFrame*> frames_in_use_
       GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.

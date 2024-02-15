@@ -78,15 +78,6 @@ PlatformVideoFramePool::~PlatformVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-// static
-gfx::GpuMemoryBufferId PlatformVideoFramePool::GetGpuMemoryBufferId(
-    const VideoFrame& frame) {
-  DCHECK_EQ(frame.storage_type(),
-            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
-  DCHECK(frame.GetGpuMemoryBuffer());
-  return frame.GetGpuMemoryBuffer()->GetId();
-}
-
 scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
@@ -153,8 +144,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       origin_frame, format, visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  frames_in_use_.emplace(GetGpuMemoryBufferId(*wrapped_frame),
-                         origin_frame.get());
+  frames_in_use_.emplace(GetSharedMemoryId(*wrapped_frame), origin_frame.get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -280,7 +270,7 @@ VideoFrame* PlatformVideoFramePool::UnwrapFrame(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  auto it = frames_in_use_.find(GetGpuMemoryBufferId(wrapped_frame));
+  auto it = frames_in_use_.find(GetSharedMemoryId(wrapped_frame));
   return (it == frames_in_use_.end()) ? nullptr : it->second;
 }
 
@@ -337,7 +327,7 @@ void PlatformVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  gfx::GpuMemoryBufferId frame_id = GetGpuMemoryBufferId(*origin_frame);
+  gfx::GenericSharedMemoryId frame_id = GetSharedMemoryId(*origin_frame);
   auto it = frames_in_use_.find(frame_id);
   DCHECK(it != frames_in_use_.end());
   frames_in_use_.erase(it);
