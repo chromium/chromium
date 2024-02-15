@@ -104,7 +104,6 @@ source_set("tests") {
       "dml/command_recorder_test.cc",
       "dml/context_impl_test.cc",
       "dml/graph_builder_test.cc",
-      "dml/graph_impl_test.cc",
       "dml/platform_functions_test.cc",
       "dml/tensor_desc_test.cc",
       "dml/test_base.cc",
@@ -112,8 +111,8 @@ source_set("tests") {
     ]
   }
 
-  if (is_mac) {
-    sources += [ "coreml/graph_impl_test.cc" ]
+  if (is_mac || is_win) {
+    sources += [ "webnn_graph_impl_backend_test.cc" ]
   }
 
   deps = [
@@ -125,6 +124,7 @@ source_set("tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//services/webnn/public/mojom",
     "//testing/gtest",
+    "//third_party/fp16",
   ]
 
   if (is_win) {
