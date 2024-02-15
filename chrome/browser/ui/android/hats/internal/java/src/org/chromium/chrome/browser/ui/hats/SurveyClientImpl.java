@@ -200,7 +200,7 @@ class SurveyClientImpl implements SurveyClient {
         mController.showSurveyIfAvailable(
                 mActivityRef.get(),
                 mConfig.mTriggerId,
-                0,
+                R.drawable.fre_product_logo,
                 mLifecycleDispatcher,
                 mAggregatedSurveyPsd);
         if (mLifecycleDispatcher != null && mLifecycleObserver != null) {
