@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {mountCrostini, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -48,18 +48,17 @@ const RECENT_PROVIDED_HELLO = new TestEntryInfo({
 
 /**
  * Enum for supported recent filter types.
- * @enum {string}
  */
-const RecentFilterType = {
-  ALL: 'all',
-  AUDIO: 'audio',
-  IMAGE: 'image',
-  VIDEO: 'video',
-  DOCUMENT: 'document',
-};
+enum RecentFilterType {
+  ALL = 'all',
+  AUDIO = 'audio',
+  IMAGE = 'image',
+  VIDEO = 'video',
+  DOCUMENT = 'document',
+}
 
 /**
- * Add file entries to the Play Files folder and update media view root.
+ * Adds file entries to the Play Files folder and update media view root.
  */
 async function addPlayFileEntries() {
   // We can't add file entries to Play Files ('android_files') directly,
@@ -74,12 +73,12 @@ async function addPlayFileEntries() {
 }
 
 /**
- * Navigate to Recent folder with specific type and verify the breadcrumb path.
- *
- * @param {string} appId Files app windowId.
- * @param {!RecentFilterType=} type Recent file type.
+ * Navigates to Recent folder with specific type and verify the breadcrumb path.
+ * @param appId Files app windowId.
+ * @param type Recent file type.
  */
-async function navigateToRecent(appId, type = RecentFilterType.ALL) {
+async function navigateToRecent(
+    appId: string, type: RecentFilterType = RecentFilterType.ALL) {
   const breadcrumbMap = {
     [RecentFilterType.ALL]: '/Recent',
     [RecentFilterType.AUDIO]: '/Audio',
@@ -99,22 +98,20 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
   await remoteCall.waitForElement(
       appId, [`[file-type-filter="${type}"].active`]);
   // Breadcrumb should always be "/Recents" if the flag is on.
-  // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
-  // assignable to parameter of type 'string'.
   await verifyBreadcrumbsPath(appId, breadcrumbMap[RecentFilterType.ALL]);
 }
 
 /**
- * Verifies the current folder has the expected entries and checks the
- * delete button is hidden after selecting these files.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Verifies the current folder has the expected entries and checks the delete
+ * button is hidden after selecting these files.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
 async function verifyCurrentEntries(
-    appId, expectedEntries, trashButton = false) {
+    appId: string, expectedEntries: TestEntryInfo[],
+    trashButton: boolean = false) {
   // Verify Recents contains the expected files - those with an mtime in the
   // future.
   const files = TestEntryInfo.getExpectedRows(expectedEntries);
@@ -136,97 +133,98 @@ async function verifyCurrentEntries(
 }
 
 /**
- * Opens the Recent folder and checks the expected entries are showing
- * there.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>=} expectedEntries Expected file
- *     entries, by default `RECENT_ENTRY_SET` is used.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Opens the Recent folder and checks the expected entries are showing there.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries, by default `RECENT_ENTRY_SET`
+ *     is used.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
 async function verifyRecents(
-    appId, expectedEntries = RECENT_ENTRY_SET, trashButton = false) {
+    appId: string, expectedEntries: TestEntryInfo[] = RECENT_ENTRY_SET,
+    trashButton: boolean = false) {
   await navigateToRecent(appId);
   await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
- * Opens the Recent Audio folder and checks the expected entries are
- * showing there.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Opens the Recent Audio folder and checks the expected entries are showing
+ * there.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
-async function verifyRecentAudio(appId, expectedEntries, trashButton = false) {
+async function verifyRecentAudio(
+    appId: string, expectedEntries: TestEntryInfo[],
+    trashButton: boolean = false) {
   await navigateToRecent(appId, RecentFilterType.AUDIO);
   await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
- * Opens the Recent Image folder and checks the expected entries are
- * showing there.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Opens the Recent Image folder and checks the expected entries are showing
+ * there.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
-async function verifyRecentImages(appId, expectedEntries, trashButton = false) {
+async function verifyRecentImages(
+    appId: string, expectedEntries: TestEntryInfo[],
+    trashButton: boolean = false) {
   await navigateToRecent(appId, RecentFilterType.IMAGE);
   await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
- * Opens the Recent Video folder and checks the expected entries are
- * showing there.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Opens the Recent Video folder and checks the expected entries are showing
+ * there.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
-async function verifyRecentVideos(appId, expectedEntries, trashButton = false) {
+async function verifyRecentVideos(
+    appId: string, expectedEntries: TestEntryInfo[],
+    trashButton: boolean = false) {
   await navigateToRecent(appId, RecentFilterType.VIDEO);
   await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
- * Opens the Recent Document folder and checks the expected entries are
- * showing there.
- *
- * @param {string} appId Files app windowId.
- * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
- * @param {boolean=} trashButton If the file system doesn't support trash,
- *     a delete button will show instead of a trash button.
+ * Opens the Recent Document folder and checks the expected entries are showing
+ * there.
+ * @param appId Files app windowId.
+ * @param expectedEntries Expected file entries.
+ * @param trashButton If the file system doesn't support trash, a delete button
+ *     will show instead of a trash button.
  */
 async function verifyRecentDocuments(
-    appId, expectedEntries, trashButton = false) {
+    appId: string, expectedEntries: TestEntryInfo[],
+    trashButton: boolean = false) {
   await navigateToRecent(appId, RecentFilterType.DOCUMENT);
   await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
  * Verifies the breadcrumb has the expected path.
- *
- * @param {string} appId Files app windowId.
- * @param {string} expectedPath Expected breadcrumb path.
+ * @param appId Files app windowId.
+ * @param expectedPath Expected breadcrumb path.
  */
-async function verifyBreadcrumbsPath(appId, expectedPath) {
+async function verifyBreadcrumbsPath(appId: string, expectedPath: string) {
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, expectedPath);
 }
 
 /**
- * Select a file and right click to show the context menu, then click the
+ * Selects a file and right click to show the context menu, then click the
  * specified context menu item.
- *
- * @param {string} appId Files app windowId.
- * @param {string} fileName Name of the file to right click.
- * @param {string} commandId The command id for the context menu item.
+ * @param appId Files app windowId.
+ * @param fileName Name of the file to right click.
+ * @param commandId The command id for the context menu item.
  */
-async function rightClickContextMenu(appId, fileName, commandId) {
+async function rightClickContextMenu(
+    appId: string, fileName: string, commandId: string) {
   // Select the item.
   await remoteCall.waitUntilSelected(appId, fileName);
 
@@ -242,23 +240,22 @@ async function rightClickContextMenu(appId, fileName, commandId) {
 /**
  * Opens given file's containing folder by choosing "Go to file location"
  * context menu item.
- *
- * @param {string} appId Files app windowId.
- * @param {string} fileName Name of the file to open containing folder.
+ * @param appId Files app windowId.
+ * @param fileName Name of the file to open containing folder.
  */
-async function goToFileLocation(appId, fileName) {
+async function goToFileLocation(appId: string, fileName: string) {
   await rightClickContextMenu(appId, fileName, 'go-to-file-location');
 }
 
 /**
- * Delete a given file by choosing "Delete" context menu item.
- *
- * @param {string} appId Files app windowId.
- * @param {string} fileName Name of the file to delete.
- * @param {boolean=} confirmDeletion If the file system doesn't support trash,
- *     need to confirm the deletion.
+ * Deletes a given file by choosing "Delete" context menu item.
+ * @param appId Files app windowId.
+ * @param fileName Name of the file to delete.
+ * @param confirmDeletion If the file system doesn't support trash, need to
+ *     confirm the deletion.
  */
-async function deleteFile(appId, fileName, confirmDeletion = false) {
+async function deleteFile(
+    appId: string, fileName: string, confirmDeletion: boolean = false) {
   const command = (confirmDeletion) ? 'delete' : 'move-to-trash';
   await rightClickContextMenu(appId, fileName, command);
   if (confirmDeletion) {
@@ -269,13 +266,12 @@ async function deleteFile(appId, fileName, confirmDeletion = false) {
 }
 
 /**
- * Rename a given file by choosing "Rename" context menu item.
- *
- * @param {string} appId Files app windowId.
- * @param {string} fileName Name of the file to rename.
- * @param {string} newName The new file name.
+ * Renames a given file by choosing "Rename" context menu item.
+ * @param appId Files app windowId.
+ * @param fileName Name of the file to rename.
+ * @param newName The new file name.
  */
-async function renameFile(appId, fileName, newName) {
+async function renameFile(appId: string, fileName: string, newName: string) {
   const textInput = '#file-list .table-row[renaming] input.rename';
   await rightClickContextMenu(appId, fileName, 'rename');
   // Wait for the rename input field.
@@ -294,14 +290,14 @@ async function renameFile(appId, fileName, newName) {
 }
 
 /**
- * Cut a given file by choosing "Cut" context menu item and paste the file
- * to the new folder.
- *
- * @param {string} appId Files app windowId.
- * @param {string} fileName Name of the file to cut.
- * @param {string} newFolder Full breadcrumb path for the new folder to paste.
+ * Cuts a given file by choosing "Cut" context menu item and paste the file to
+ * the new folder.
+ * @param appId Files app windowId.
+ * @param fileName Name of the file to cut.
+ * @param newFolder Full breadcrumb path for the new folder to paste.
  */
-async function cutFileAndPasteTo(appId, fileName, newFolder) {
+async function cutFileAndPasteTo(
+    appId: string, fileName: string, newFolder: string) {
   await rightClickContextMenu(appId, fileName, 'cut');
   // Go to the new folder to paste.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -333,13 +329,13 @@ async function cutFileAndPasteTo(appId, fileName, newFolder) {
 }
 
 /**
- * Wait for the empty folder element to show and assert the content to
- * match the expected message.
- *
- * @param {string} appId Files app windowId.
- * @param {string} expectedMessage The expected empty folder message
+ * Waits for the empty folder element to show and assert the content to match
+ * the expected message.
+ * @param appId Files app windowId.
+ * @param expectedMessage The expected empty folder message
  */
-async function waitForEmptyFolderMessage(appId, expectedMessage) {
+async function waitForEmptyFolderMessage(
+    appId: string, expectedMessage: string) {
   const caller = getCaller();
   // Use repeatUntil() here because when we switch between different filters,
   // the message changes but the element itself will always show there.
@@ -361,9 +357,7 @@ async function waitForEmptyFolderMessage(appId, expectedMessage) {
  * Tests that file entries populated in the Downloads folder recently will be
  * displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsDownloads' comes from an index
-// signature, so it must be accessed with ['recentsDownloads'].
-testcase.recentsDownloads = async () => {
+export async function recentsDownloads() {
   // Populate downloads.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
@@ -378,15 +372,13 @@ testcase.recentsDownloads = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
   await verifyBreadcrumbsPath(appId, '/My files/Downloads');
-};
+}
 
 /**
  * Tests that file entries populated in My Drive folder recently will be
  * displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsDrive' comes from an index
-// signature, so it must be accessed with ['recentsDrive'].
-testcase.recentsDrive = async () => {
+export async function recentsDrive() {
   // Populate drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
@@ -400,22 +392,16 @@ testcase.recentsDrive = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_DRIVE_ENTRY_SET));
   await verifyBreadcrumbsPath(appId, '/My Drive');
-};
+}
 
 /**
  * Tests that file entries populated in Play Files folder recently will be
  * displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsPlayFiles' comes from an index
-// signature, so it must be accessed with ['recentsPlayFiles'].
-testcase.recentsPlayFiles = async () => {
+export async function recentsPlayFiles() {
   // Populate Play Files.
   await addPlayFileEntries();
-  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-  // parameter of type 'FilesAppState'.
   const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Verifies file list in Recents. Audio files from Play Files folder are
@@ -425,21 +411,16 @@ testcase.recentsPlayFiles = async () => {
     RECENT_MODIFIED_ANDROID_IMAGE,
     RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
-};
+}
 
 /**
  * Tests what happens if listing play files is interspersed with plain listing
  * of another directory.
  */
-// @ts-ignore: error TS4111: Property 'recentsSearchPlayFilesShowDownloads'
-// comes from an index signature, so it must be accessed with
-// ['recentsSearchPlayFilesShowDownloads'].
-testcase.recentsSearchPlayFilesShowDownloads = async () => {
+export async function recentsSearchPlayFilesShowDownloads() {
   // Populate Play Files.
   await addPlayFileEntries();
   const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
   // Verify that the Recent view is correct.
   await verifyRecents(appId, [
@@ -458,15 +439,13 @@ testcase.recentsSearchPlayFilesShowDownloads = async () => {
     await directoryTree.selectItemByLabel('Recent');
     await directoryTree.selectItemByLabel('Downloads');
   }
-};
+}
 
 /**
  * Tests that file entries populated in the My Files folder recently will be
  * displayed in the Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsMyFiles' comes from an index
-// signature, so it must be accessed with ['recentsMyFiles'].
-testcase.recentsMyFiles = async () => {
+export async function recentsMyFiles() {
   // Populate My Files.
   addEntries(['my_files'], [ENTRIES.beautiful, ENTRIES.photos]);
 
@@ -474,15 +453,13 @@ testcase.recentsMyFiles = async () => {
 
   // Verify file list in Recents.
   await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
-};
+}
 
 /**
  * Tests that file entries populated in Crostini folder recently won't be
  * displayed in Recent folder when Crostini has not been mounted.
  */
-// @ts-ignore: error TS4111: Property 'recentsCrostiniNotMounted' comes from an
-// index signature, so it must be accessed with ['recentsCrostiniNotMounted'].
-testcase.recentsCrostiniNotMounted = async () => {
+export async function recentsCrostiniNotMounted() {
   // Add entries to crostini volume, but do not mount.
   // The crostini entries should not show up in recents.
   await addEntries(['crostini'], BASIC_CROSTINI_ENTRY_SET);
@@ -490,44 +467,37 @@ testcase.recentsCrostiniNotMounted = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
   await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
-};
+}
 
 /**
  * Tests that file entries populated in Downloads folder and Crostini folder
  * recently will be displayed in Recent folder when Crostini has been mounted.
  */
-// @ts-ignore: error TS4111: Property 'recentsCrostiniMounted' comes from an
-// index signature, so it must be accessed with ['recentsCrostiniMounted'].
-testcase.recentsCrostiniMounted = async () => {
+export async function recentsCrostiniMounted() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
   // Mount crostini and both downloads and crostini entries will be in recents.
   await mountCrostini(appId);
   await verifyRecents(appId);
-};
+}
 
 /**
  * Tests that file entries populated in Downloads folder and My Drive folder
  * recently will be displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDrive' comes from an
-// index signature, so it must be accessed with ['recentsDownloadsAndDrive'].
-testcase.recentsDownloadsAndDrive = async () => {
+export async function recentsDownloadsAndDrive() {
   // Populate both downloads and drive with disjoint sets of files.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.hello, ENTRIES.photos],
       [ENTRIES.desktop, ENTRIES.world, ENTRIES.testDocument]);
   await verifyRecents(appId);
-};
+}
 
 /**
  * Tests that file entries populated in Downloads, Drive and Play Files folder
  * recently will be displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDriveAndPlayFiles'
-// comes from an index signature, so it must be accessed with
-// ['recentsDownloadsAndDriveAndPlayFiles'].
-testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
+export async function recentsDownloadsAndDriveAndPlayFiles() {
   // Populate downloads, drive and play files.
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
@@ -539,30 +509,25 @@ testcase.recentsDownloadsAndDriveAndPlayFiles = async () => {
     RECENT_MODIFIED_ANDROID_IMAGE,
     RECENT_MODIFIED_ANDROID_VIDEO,
   ]));
-};
+}
 
 /**
  * Tests that the same file entries populated in Downloads folder and My Drive
  * folder recently will be displayed in Recent folder twice when the file
  * entries are the same.
  */
-// @ts-ignore: error TS4111: Property 'recentsDownloadsAndDriveWithOverlap'
-// comes from an index signature, so it must be accessed with
-// ['recentsDownloadsAndDriveWithOverlap'].
-testcase.recentsDownloadsAndDriveWithOverlap = async () => {
+export async function recentsDownloadsAndDriveWithOverlap() {
   // Populate both downloads and drive with overlapping sets of files.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await verifyRecents(appId, RECENT_ENTRY_SET.concat(RECENT_ENTRY_SET));
-};
+}
 
 
 /**
  * Tests that the nested file entries populated in Downloads folder recently
  * will be displayed in Recent folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsNested' comes from an index
-// signature, so it must be accessed with ['recentsNested'].
-testcase.recentsNested = async () => {
+export async function recentsNested() {
   // Populate downloads with nested folder structure. |desktop| is added to
   // ensure Recents has different files to Downloads/A/B/C
   const appId = await setupAndWaitUntilReady(
@@ -585,30 +550,25 @@ testcase.recentsNested = async () => {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('C');
   await directoryTree.waitForFocusableItemByLabel('C');
-};
+}
 
 /**
  * Tests that the audio file entries populated in Downloads folder recently
  * will be displayed in Recent Audio folder.
  */
-// @ts-ignore: error TS4111: Property 'recentAudioDownloads' comes from an index
-// signature, so it must be accessed with ['recentAudioDownloads'].
-testcase.recentAudioDownloads = async () => {
+export async function recentAudioDownloads() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.beautiful is recently-modified and has .ogg file extension.
   await verifyRecentAudio(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
-};
+}
 
 /**
- * Tests that if the audio file entries without MIME type are being populated
- * in both Downloads folder and My Drive folder, only the ones from Downloads
+ * Tests that if the audio file entries without MIME type are being populated in
+ * both Downloads folder and My Drive folder, only the ones from Downloads
  * folder will be displayed in Recent Audio folder.
  */
-// @ts-ignore: error TS4111: Property 'recentAudioDownloadsAndDrive' comes from
-// an index signature, so it must be accessed with
-// ['recentAudioDownloadsAndDrive'].
-testcase.recentAudioDownloadsAndDrive = async () => {
+export async function recentAudioDownloadsAndDrive() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
@@ -624,16 +584,13 @@ testcase.recentAudioDownloadsAndDrive = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
   await verifyBreadcrumbsPath(appId, '/My files/Downloads');
-};
+}
 
 /**
  * Tests that the audio file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Audio folder.
  */
-// @ts-ignore: error TS4111: Property 'recentAudioDownloadsAndDriveAndPlayFiles'
-// comes from an index signature, so it must be accessed with
-// ['recentAudioDownloadsAndDriveAndPlayFiles'].
-testcase.recentAudioDownloadsAndDriveAndPlayFiles = async () => {
+export async function recentAudioDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET);
@@ -644,31 +601,25 @@ testcase.recentAudioDownloadsAndDriveAndPlayFiles = async () => {
   // Play Files recents doesn't support audio root, so audio file in Play
   // Files won't be included.
   await verifyRecentAudio(appId, [ENTRIES.beautiful, ENTRIES.beautiful]);
-};
+}
 
 /**
  * Tests that the image file entries populated in Downloads folder recently will
  * be displayed in Recents Image folder.
  */
-// @ts-ignore: error TS4111: Property 'recentImagesDownloads' comes from an
-// index signature, so it must be accessed with ['recentImagesDownloads'].
-testcase.recentImagesDownloads = async () => {
+export async function recentImagesDownloads() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.desktop is recently-modified and has .png file extension.
   await verifyRecentImages(appId, [ENTRIES.desktop], /*trashButton=*/ true);
-};
+}
 
 /**
- * Tests that if the image file entries with MIME type are being populated
- * in both Downloads folder and My Drive folder, the file entries will be
- * displayed in Recent Audio folder regardless of whether it's from Downloads
- * or My Drive.
+ * Tests that if the image file entries with MIME type are being populated in
+ * both Downloads folder and My Drive folder, the file entries will be displayed
+ * in Recent Audio folder regardless of whether it's from Downloads or My Drive.
  */
-// @ts-ignore: error TS4111: Property 'recentImagesDownloadsAndDrive' comes from
-// an index signature, so it must be accessed with
-// ['recentImagesDownloadsAndDrive'].
-testcase.recentImagesDownloadsAndDrive = async () => {
+export async function recentImagesDownloadsAndDrive() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // TODO(b:267515423): Fix MIME type for Entries.beautiful.
   // ENTRIES.desktop has 'image/png' mime type, too. Both the file in Downloads
@@ -678,16 +629,12 @@ testcase.recentImagesDownloadsAndDrive = async () => {
     ENTRIES.desktop,
     ENTRIES.desktop,
   ]);
-};
+}
 
 /**
  * Tests that the image file entries populated in Downloads, Drive and Play
- * Files folder recently will be displayed in Recents Image folder.
  */
-// @ts-ignore: error TS4111: Property
-// 'recentImagesDownloadsAndDriveAndPlayFiles' comes from an index signature, so
-// it must be accessed with ['recentImagesDownloadsAndDriveAndPlayFiles'].
-testcase.recentImagesDownloadsAndDriveAndPlayFiles = async () => {
+export async function recentImagesDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await verifyRecentImages(appId, [
@@ -696,15 +643,13 @@ testcase.recentImagesDownloadsAndDriveAndPlayFiles = async () => {
     ENTRIES.desktop,
     RECENT_MODIFIED_ANDROID_IMAGE,
   ]);
-};
+}
 
 /**
  * Tests that the video file entries populated in Downloads folder recently will
  * be displayed in Recent Videos folder.
  */
-// @ts-ignore: error TS4111: Property 'recentVideosDownloads' comes from an
-// index signature, so it must be accessed with ['recentVideosDownloads'].
-testcase.recentVideosDownloads = async () => {
+export async function recentVideosDownloads() {
   // RECENTLY_MODIFIED_VIDEO is recently-modified and has .ogv file extension.
   // It should be shown in Videos.
   const appId = await setupAndWaitUntilReady(
@@ -715,18 +660,14 @@ testcase.recentVideosDownloads = async () => {
   await verifyRecentVideos(
       appId, [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO],
       /*trashButton=*/ true);
-};
+}
 
 /**
- * Tests that if the video file entries with MIME type are being populated
- * in both Downloads folder and My Drive folder, the file entries will be
- * displayed in Recent Video folder regardless of whether it's from Downloads
- * or My Drive.
+ * Tests that if the video file entries with MIME type are being populated in
+ * both Downloads folder and My Drive folder, the file entries will be displayed
+ * in Recent Video folder regardless of whether it's from Downloads or My Drive.
  */
-// @ts-ignore: error TS4111: Property 'recentVideosDownloadsAndDrive' comes from
-// an index signature, so it must be accessed with
-// ['recentVideosDownloadsAndDrive'].
-testcase.recentVideosDownloadsAndDrive = async () => {
+export async function recentVideosDownloadsAndDrive() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
       BASIC_LOCAL_ENTRY_SET.concat([RECENTLY_MODIFIED_VIDEO]),
@@ -741,16 +682,13 @@ testcase.recentVideosDownloadsAndDrive = async () => {
     RECENTLY_MODIFIED_VIDEO,
     RECENTLY_MODIFIED_VIDEO,
   ]);
-};
+}
 
 /**
  * Tests that the video file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Image folder.
  */
-// @ts-ignore: error TS4111: Property
-// 'recentVideosDownloadsAndDriveAndPlayFiles' comes from an index signature, so
-// it must be accessed with ['recentVideosDownloadsAndDriveAndPlayFiles'].
-testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
+export async function recentVideosDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS,
@@ -765,31 +703,26 @@ testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
     RECENTLY_MODIFIED_VIDEO,
     RECENT_MODIFIED_ANDROID_VIDEO,
   ]);
-};
+}
 
 /**
  * Tests that the document file entries populated in Downloads folder recently
  * will be displayed in Recent Document folder.
  */
-// @ts-ignore: error TS4111: Property 'recentDocumentsDownloads' comes from an
-// index signature, so it must be accessed with ['recentDocumentsDownloads'].
-testcase.recentDocumentsDownloads = async () => {
+export async function recentDocumentsDownloads() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT], []);
   await verifyRecentDocuments(
       appId, [RECENTLY_MODIFIED_DOCUMENT], /*trashButton=*/ true);
-};
+}
 
 /**
- * Tests that if the video file entries with MIME type are being populated
- * in both Downloads folder and My Drive folder, the file entries will be
- * displayed in Recent Document folder regardless of whether it's from Downloads
- * or My Drive.
+ * Tests that if the video file entries with MIME type are being populated in
+ * both Downloads folder and My Drive folder, the file entries will be displayed
+ * in Recent Document folder regardless of whether it's from Downloads or My
+ * Drive.
  */
-// @ts-ignore: error TS4111: Property 'recentDocumentsDownloadsAndDrive' comes
-// from an index signature, so it must be accessed with
-// ['recentDocumentsDownloadsAndDrive'].
-testcase.recentDocumentsDownloadsAndDrive = async () => {
+export async function recentDocumentsDownloadsAndDrive() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
       [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_VIDEO]);
@@ -798,16 +731,13 @@ testcase.recentDocumentsDownloadsAndDrive = async () => {
   // be included because it's not a Document.
   await verifyRecentDocuments(
       appId, [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT]);
-};
+}
 
 /**
  * Tests that the document file entries populated in Downloads, Drive and Play
  * Files folder recently will be displayed in Recent Document folder.
  */
-// @ts-ignore: error TS4111: Property
-// 'recentDocumentsDownloadsAndDriveAndPlayFiles' comes from an index signature,
-// so it must be accessed with ['recentDocumentsDownloadsAndDriveAndPlayFiles'].
-testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
+export async function recentDocumentsDownloadsAndDriveAndPlayFiles() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
@@ -817,15 +747,13 @@ testcase.recentDocumentsDownloadsAndDriveAndPlayFiles = async () => {
     RECENTLY_MODIFIED_DOCUMENT,
     RECENT_MODIFIED_ANDROID_DOCUMENT,
   ]);
-};
+}
 
 /**
  * Tests if an active filter button is clicked again, it will become inactive
  * and the "All" filter button will become active and focus.
  */
-// @ts-ignore: error TS4111: Property 'recentsFilterResetToAll' comes from an
-// index signature, so it must be accessed with ['recentsFilterResetToAll'].
-testcase.recentsFilterResetToAll = async () => {
+export async function recentsFilterResetToAll() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   await navigateToRecent(appId, RecentFilterType.AUDIO);
@@ -835,24 +763,23 @@ testcase.recentsFilterResetToAll = async () => {
   // Verifies the "All" button is focus and all recent files are shown.
   await remoteCall.waitForElement(appId, ['[file-type-filter="all"].active']);
   const focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-  chrome.test.assertEq('all', focusedElement.attributes['file-type-filter']);
+      await remoteCall.callRemoteTestUtil<ElementObject|null>(
+          'getActiveElement', appId, []);
+  chrome.test.assertEq('all', focusedElement?.attributes['file-type-filter']);
   await verifyCurrentEntries(appId, RECENT_ENTRY_SET, /*trashButton=*/ true);
-};
+}
 
 /**
  * Tests when we switch the active filter button between All and others, the
  * correct a11y messages will be announced.
  */
-// @ts-ignore: error TS4111: Property 'recentsA11yMessages' comes from an index
-// signature, so it must be accessed with ['recentsA11yMessages'].
-testcase.recentsA11yMessages = async () => {
+export async function recentsA11yMessages() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   await navigateToRecent(appId, RecentFilterType.IMAGE);
   // Checks "images filter on" a11y message is announced.
-  let a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  let a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', appId, []);
   chrome.test.assertEq(
       'Images filter is on.', a11yMessages[a11yMessages.length - 1]);
 
@@ -876,29 +803,25 @@ testcase.recentsA11yMessages = async () => {
   chrome.test.assertEq(
       'Videos filter is off. Filter is reset.',
       a11yMessages[a11yMessages.length - 1]);
-};
+}
 
 /**
  * Tests the read only flag on Recents view should be hidden.
  */
-// @ts-ignore: error TS4111: Property 'recentsReadOnlyHidden' comes from an
-// index signature, so it must be accessed with ['recentsReadOnlyHidden'].
-testcase.recentsReadOnlyHidden = async () => {
+export async function recentsReadOnlyHidden() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await navigateToRecent(appId);
   const readOnlyIndicator =
       await remoteCall.waitForElement(appId, ['#read-only-indicator']);
   chrome.test.assertTrue(
       readOnlyIndicator.hidden, 'Read only indicator should be hidden');
-};
+}
 
 /**
  * Tests delete operation can be performed in Recents view on files from
  * Downloads, Drive and Play Files.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowDeletion' comes from an index
-// signature, so it must be accessed with ['recentsAllowDeletion'].
-testcase.recentsAllowDeletion = async () => {
+export async function recentsAllowDeletion() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
@@ -937,16 +860,13 @@ testcase.recentsAllowDeletion = async () => {
   const files3 = TestEntryInfo.getExpectedRows(
       [RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_VIDEO]);
   await remoteCall.waitForFiles(appId, files3);
-};
+}
 
 /**
  * Tests delete operation can be performed in Recents view with multiple files
  * from different sources including Downloads, Drive and Play Files.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowMultipleFilesDeletion' comes
-// from an index signature, so it must be accessed with
-// ['recentsAllowMultipleFilesDeletion'].
-testcase.recentsAllowMultipleFilesDeletion = async () => {
+export async function recentsAllowMultipleFilesDeletion() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
@@ -990,15 +910,13 @@ testcase.recentsAllowMultipleFilesDeletion = async () => {
 
   // Check all files should be deleted.
   await remoteCall.waitForFiles(appId, []);
-};
+}
 
 /**
  * Tests rename operation can be performed in Recents view on files from
  * Downloads, Drive.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowRename' comes from an index
-// signature, so it must be accessed with ['recentsAllowRename'].
-testcase.recentsAllowRename = async () => {
+export async function recentsAllowRename() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
   await navigateToRecent(appId);
@@ -1023,16 +941,13 @@ testcase.recentsAllowRename = async () => {
     newBeautiful,
   ]);
   await remoteCall.waitForFiles(appId, files2);
-};
+}
 
 /**
- * Tests rename operation is not allowed in Recents view for files from
- * Play files.
+ * Tests rename operation is not allowed in Recents view for files from Play
+ * files.
  */
-// @ts-ignore: error TS4111: Property 'recentsNoRenameForPlayFiles' comes from
-// an index signature, so it must be accessed with
-// ['recentsNoRenameForPlayFiles'].
-testcase.recentsNoRenameForPlayFiles = async () => {
+export async function recentsNoRenameForPlayFiles() {
   await addPlayFileEntries();
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
@@ -1056,16 +971,12 @@ testcase.recentsNoRenameForPlayFiles = async () => {
   const renameMenu = '#file-context-menu:not([hidden]) ' +
       '[command="#rename"][disabled]:not([hidden])';
   await remoteCall.waitForElement(appId, renameMenu);
-};
+}
 
 /**
- * Tests cut operation can be performed in Recents view on files from
- * Downloads.
+ * Tests cut operation can be performed in Recents view on files from Downloads.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowCutForDownloads' comes from
-// an index signature, so it must be accessed with
-// ['recentsAllowCutForDownloads'].
-testcase.recentsAllowCutForDownloads = async () => {
+export async function recentsAllowCutForDownloads() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA], []);
   const files = [ENTRIES.beautiful.getExpectedRow()];
@@ -1088,15 +999,12 @@ testcase.recentsAllowCutForDownloads = async () => {
   await goToFileLocation(appId, ENTRIES.beautiful.nameText);
   await remoteCall.waitForFiles(appId, files);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
-};
+}
 
 /**
- * Tests cut operation can be performed in Recents view on files from
- * Drive.
+ * Tests cut operation can be performed in Recents view on files from Drive.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowCutForDrive' comes from an
-// index signature, so it must be accessed with ['recentsAllowCutForDrive'].
-testcase.recentsAllowCutForDrive = async () => {
+export async function recentsAllowCutForDrive() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], [ENTRIES.desktop]);
   const files = TestEntryInfo.getExpectedRows([ENTRIES.desktop]);
@@ -1118,16 +1026,13 @@ testcase.recentsAllowCutForDrive = async () => {
   await goToFileLocation(appId, ENTRIES.desktop.nameText);
   await remoteCall.waitForFiles(appId, files);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
-};
+}
 
 /**
- * Tests cut operation can be performed in Recents view on files from
- * Play Files.
+ * Tests cut operation can be performed in Recents view on files from Play
+ * Files.
  */
-// @ts-ignore: error TS4111: Property 'recentsAllowCutForPlayFiles' comes from
-// an index signature, so it must be accessed with
-// ['recentsAllowCutForPlayFiles'].
-testcase.recentsAllowCutForPlayFiles = async () => {
+export async function recentsAllowCutForPlayFiles() {
   await addPlayFileEntries();
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
@@ -1157,14 +1062,12 @@ testcase.recentsAllowCutForPlayFiles = async () => {
   await goToFileLocation(appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText);
   await remoteCall.waitForFiles(appId, filesInNewDir);
   await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
-};
+}
 
 /**
  * Tests the time-period group heading can be displayed in Recents.
  */
-// @ts-ignore: error TS4111: Property 'recentsTimePeriodHeadings' comes from an
-// index signature, so it must be accessed with ['recentsTimePeriodHeadings'].
-testcase.recentsTimePeriodHeadings = async () => {
+export async function recentsTimePeriodHeadings() {
   const todayFile = ENTRIES.hello.cloneWithModifiedDate(getDateWithDayDiff(0));
   const yesterdayFile =
       ENTRIES.desktop.cloneWithModifiedDate(getDateWithDayDiff(1));
@@ -1179,43 +1082,40 @@ testcase.recentsTimePeriodHeadings = async () => {
       });
   // Check headings in list view mode.
   await remoteCall.waitForElementsCount(appId, ['.group-heading'], 2);
-  const groupHeadings = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['.group-heading']);
-  const fileItems = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['.group-heading + .table-row']);
+  const groupHeadings =
+      await remoteCall.queryElements(appId, ['.group-heading']);
+  const fileItems =
+      await remoteCall.queryElements(appId, ['.group-heading + .table-row']);
   chrome.test.assertEq(2, fileItems.length);
 
-  chrome.test.assertEq('Today', groupHeadings[0].text);
+  chrome.test.assertEq('Today', groupHeadings[0]?.text);
   chrome.test.assertEq(
-      todayFile.nameText, fileItems[0].attributes['file-name']);
-  chrome.test.assertEq('Yesterday', groupHeadings[1].text);
+      todayFile.nameText, fileItems[0]?.attributes['file-name']);
+  chrome.test.assertEq('Yesterday', groupHeadings[1]?.text);
   chrome.test.assertEq(
-      yesterdayFile.nameText, fileItems[1].attributes['file-name']);
+      yesterdayFile.nameText, fileItems[1]?.attributes['file-name']);
 
   // Switch to grid view.
   await remoteCall.waitAndClickElement(appId, '#view-button');
   await remoteCall.waitForElementsCount(appId, ['.grid-title'], 2);
   // Check headings in grid view mode.
-  const groupTitles = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['.grid-title']);
-  const gridItems = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['.grid-title + .thumbnail-item']);
+  const groupTitles = await remoteCall.queryElements(appId, ['.grid-title']);
+  const gridItems =
+      await remoteCall.queryElements(appId, ['.grid-title + .thumbnail-item']);
   chrome.test.assertEq(2, gridItems.length);
 
-  chrome.test.assertEq('Today', groupTitles[0].text);
+  chrome.test.assertEq('Today', groupTitles[0]?.text);
   chrome.test.assertEq(
-      todayFile.nameText, gridItems[0].attributes['file-name']);
-  chrome.test.assertEq('Yesterday', groupTitles[1].text);
+      todayFile.nameText, gridItems[0]?.attributes['file-name']);
+  chrome.test.assertEq('Yesterday', groupTitles[1]?.text);
   chrome.test.assertEq(
-      yesterdayFile.nameText, gridItems[1].attributes['file-name']);
-};
+      yesterdayFile.nameText, gridItems[1]?.attributes['file-name']);
+}
 
 /**
  * Tests message will show in Recents for empty folder.
  */
-// @ts-ignore: error TS4111: Property 'recentsEmptyFolderMessage' comes from an
-// index signature, so it must be accessed with ['recentsEmptyFolderMessage'].
-testcase.recentsEmptyFolderMessage = async () => {
+export async function recentsEmptyFolderMessage() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
   await navigateToRecent(appId);
@@ -1234,17 +1134,13 @@ testcase.recentsEmptyFolderMessage = async () => {
   // Activates to videos filter.
   await remoteCall.waitAndClickElement(appId, [`[file-type-filter="video"]`]);
   await waitForEmptyFolderMessage(appId, 'No recent videos');
-};
+}
 
 
 /**
- * Tests message will show in Recents after the last file is
- * deleted.
+ * Tests message will show in Recents after the last file is deleted.
  */
-// @ts-ignore: error TS4111: Property 'recentsEmptyFolderMessageAfterDeletion'
-// comes from an index signature, so it must be accessed with
-// ['recentsEmptyFolderMessageAfterDeletion'].
-testcase.recentsEmptyFolderMessageAfterDeletion = async () => {
+export async function recentsEmptyFolderMessageAfterDeletion() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
   await navigateToRecent(appId);
@@ -1252,14 +1148,13 @@ testcase.recentsEmptyFolderMessageAfterDeletion = async () => {
   await remoteCall.waitForFiles(appId, files);
   await deleteFile(appId, ENTRIES.beautiful.nameText);
   await waitForEmptyFolderMessage(appId, 'No recent files');
-};
+}
 
 /**
  * Construct a file with modified date as 1am today in a specific timezone.
- * @param {string} timezone the timezone string
- * @return {!TestEntryInfo}
+ * @param timezone the timezone string
  */
-function prepareFileFor1AMToday(timezone) {
+function prepareFileFor1AMToday(timezone: string): TestEntryInfo {
   const nowDate = new Date();
   nowDate.setHours(1, 0, 0, 0);
   // Format: "May 2, 2021, 11:25 AM GMT+1000"
@@ -1280,10 +1175,7 @@ function prepareFileFor1AMToday(timezone) {
  * Tests the group heading and modified date column in the list view will
  * change once the timezone changes.
  */
-// @ts-ignore: error TS4111: Property
-// 'recentsRespondToTimezoneChangeForListView' comes from an index signature, so
-// it must be accessed with ['recentsRespondToTimezoneChangeForListView'].
-testcase.recentsRespondToTimezoneChangeForListView = async () => {
+export async function recentsRespondToTimezoneChangeForListView() {
   // Set timezone to Brisbane (GMT+10).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
   const testFile = prepareFileFor1AMToday('Australia/Brisbane');
@@ -1294,10 +1186,6 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, TestEntryInfo.getExpectedRows([testFile]), {
         // Ignore last modified time because it will show Today/Yesterday
         // instead of the actual date.
@@ -1305,8 +1193,8 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
       });
   // Check date modified column.
   const filesBefore =
-      await remoteCall.callRemoteTestUtil('getFileList', appId, []);
-  chrome.test.assertEq(filesBefore[0][3], 'Today 1:00 AM');
+      await remoteCall.callRemoteTestUtil<string[][]>('getFileList', appId, []);
+  chrome.test.assertEq(filesBefore[0]![3], 'Today 1:00 AM');
   // Check group heading.
   const groupHeadingBefore =
       await remoteCall.waitForElement(appId, ['.group-heading']);
@@ -1327,35 +1215,31 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
   // Check date modified column.
   const caller = getCaller();
   await repeatUntil(async () => {
-    const filesAfter =
-        await remoteCall.callRemoteTestUtil('getFileList', appId, []);
+    const filesAfter = await remoteCall.callRemoteTestUtil<string[][]>(
+        'getFileList', appId, []);
     // We need to assert the exact time here, so the timezones before/after
     // should not involve daylight savings.
-    if (filesAfter[0][3] === `${targetDate} ${targetTime}`) {
+    if (filesAfter[0]![3] === `${targetDate} ${targetTime}`) {
       return;
     }
 
     return pending(
         caller,
         `Expected modified date to be "${targetDate} ${targetTime}", got "${
-            filesAfter[0][3]}"`);
+            filesAfter[0]![3]}"`);
   });
 
   // Check group heading.
   const groupHeadingAfter =
       await remoteCall.waitForElement(appId, ['.group-heading']);
   chrome.test.assertEq(targetDate, groupHeadingAfter.text);
-};
-
+}
 
 /**
- * Tests the group heading in the grid view will change once the
- * timezone changes.
+ * Tests the group heading in the grid view will change once the timezone
+ * changes.
  */
-// @ts-ignore: error TS4111: Property
-// 'recentsRespondToTimezoneChangeForGridView' comes from an index signature, so
-// it must be accessed with ['recentsRespondToTimezoneChangeForGridView'].
-testcase.recentsRespondToTimezoneChangeForGridView = async () => {
+export async function recentsRespondToTimezoneChangeForGridView() {
   // Set timezone to Brisbane (GMT+10).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
   const testFile = prepareFileFor1AMToday('Australia/Brisbane');
@@ -1366,10 +1250,6 @@ testcase.recentsRespondToTimezoneChangeForGridView = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [testFile], []);
   await navigateToRecent(appId);
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, TestEntryInfo.getExpectedRows([testFile]), {
         // Ignore last modified time because it will show Today/Yesterday
         // instead of the actual date.
@@ -1401,17 +1281,13 @@ testcase.recentsRespondToTimezoneChangeForGridView = async () => {
         `Expected group heading to be "${targetDate}", got "${
             groupHeadingAfter.text}"`);
   });
-};
-
+}
 
 /**
  * Tests the search term will be respected when switching between different
  * filter buttons.
  */
-// @ts-ignore: error TS4111: Property 'recentsRespectSearchWhenSwitchingFilter'
-// comes from an index signature, so it must be accessed with
-// ['recentsRespectSearchWhenSwitchingFilter'].
-testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
+export async function recentsRespectSearchWhenSwitchingFilter() {
   // tall.txt
   const txtFile1 =
       ENTRIES.tallText.cloneWithModifiedDate(getDateWithDayDiff(4));
@@ -1441,15 +1317,12 @@ testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
   // Check there is still only tall.txt in the file list (no utf8.txt).
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([txtFile1]));
-};
+}
 
 /**
  * Checks that Recents folder shows files from file system provider.
  */
-// @ts-ignore: error TS4111: Property 'recentFileSystemProviderFiles' comes from
-// an index signature, so it must be accessed with
-// ['recentFileSystemProviderFiles'].
-testcase.recentFileSystemProviderFiles = async () => {
+export async function recentFileSystemProviderFiles() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // Add 4 levels of folders to the provided file system. We wish to test that
@@ -1508,4 +1381,4 @@ testcase.recentFileSystemProviderFiles = async () => {
   await remoteCall.waitForFiles(
       appId,
       TestEntryInfo.getExpectedRows(RECENT_ENTRY_SET.concat(testEntries)));
-};
+}
