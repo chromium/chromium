@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

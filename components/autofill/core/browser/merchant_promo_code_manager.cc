@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"

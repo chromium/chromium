@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 
 #import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

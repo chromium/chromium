@@ -20,6 +20,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/ui/fast_checkout_enums.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/signatures.h"

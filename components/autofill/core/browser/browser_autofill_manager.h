@@ -38,12 +38,10 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
-#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
@@ -70,10 +68,17 @@ class AutofillClient;
 class AutofillSuggestionGenerator;
 class AutofillProfile;
 class CreditCard;
+class CreditCardAccessManager;
 
 struct FormData;
 struct FormFieldData;
 struct SuggestionsContext;
+
+namespace autofill_metrics {
+
+class CreditCardFormEventLogger;
+
+}  // namespace autofill_metrics
 
 // Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
 enum class PhoneCollectionMetricState {
