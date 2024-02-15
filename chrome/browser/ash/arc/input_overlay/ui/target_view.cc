@@ -268,6 +268,12 @@ void TargetView::OnPaintBackground(gfx::Canvas* canvas) {
                              UIState::kDefault, center_);
 }
 
+void TargetView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // Repaint to update colors.
+  SchedulePaint();
+}
+
 BEGIN_METADATA(TargetView)
 END_METADATA
 }  // namespace arc::input_overlay

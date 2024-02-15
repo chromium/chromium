@@ -60,6 +60,7 @@ class TargetView : public views::View {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   const raw_ptr<DisplayOverlayController> controller_;
   const ActionType action_type_;
