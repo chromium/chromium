@@ -72,8 +72,8 @@ dependencies {
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // This library version is hard-coded as it does not match the
     // version of the filepath in the snapshot.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.0.0-alpha01'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.0.0-alpha01'
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta04'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta04'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
