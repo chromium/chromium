@@ -1230,31 +1230,31 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
 }
 
 template <typename T>
-T* PersonalDataManager::GetCreditCardBenefitByInstrumentId(
+std::optional<T> PersonalDataManager::GetCreditCardBenefitByInstrumentId(
     CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     base::FunctionRef<bool(T&)> filter) {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
-    return nullptr;
+    return std::nullopt;
   }
   base::Time now = AutofillClock::Now();
   for (CreditCardBenefit& benefit : credit_card_benefits_) {
     if (auto* b = absl::get_if<T>(&benefit);
         b && b->linked_card_instrument_id() == instrument_id &&
         b->start_time() <= now && now < b->expiry_time() && filter(*b)) {
-      return b;
+      return *b;
     }
   }
-  return nullptr;
+  return std::nullopt;
 }
 
-CreditCardFlatRateBenefit*
+std::optional<CreditCardFlatRateBenefit>
 PersonalDataManager::GetFlatRateBenefitByInstrumentId(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) {
   return GetCreditCardBenefitByInstrumentId<CreditCardFlatRateBenefit>(
       instrument_id);
 }
 
-CreditCardCategoryBenefit*
+std::optional<CreditCardCategoryBenefit>
 PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
@@ -1264,7 +1264,7 @@ PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
       });
 }
 
-CreditCardMerchantBenefit*
+std::optional<CreditCardMerchantBenefit>
 PersonalDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
     const url::Origin& merchant_origin) {

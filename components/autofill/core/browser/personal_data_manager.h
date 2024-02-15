@@ -401,26 +401,22 @@ class PersonalDataManager : public KeyedService,
 
   // Return the first valid flat rate benefit linked with the card with the
   // specific `instrument_id`.
-  // To avoid dangling pointers, callers should not keep a pointer to the
-  // returned benefits as state.
-  CreditCardFlatRateBenefit* GetFlatRateBenefitByInstrumentId(
+  std::optional<CreditCardFlatRateBenefit> GetFlatRateBenefitByInstrumentId(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id);
 
   // Return the first valid category benefit for the specific
   // `benefit_category` and linked with the card with the specific
   // `instrument_id`.
-  // To avoid dangling pointers, callers should not keep a pointer to the
-  // returned benefits as state.
-  CreditCardCategoryBenefit* GetCategoryBenefitByInstrumentIdAndCategory(
+  std::optional<CreditCardCategoryBenefit>
+  GetCategoryBenefitByInstrumentIdAndCategory(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
       CreditCardCategoryBenefit::BenefitCategory benefit_category);
 
   // Return the first valid merchant benefit for the specific
   // `merchant_origin` and linked with the card with the specific
   // `instrument_id`.
-  // To avoid dangling pointers, callers should not keep a pointer to the
-  // returned benefits as state.
-  CreditCardMerchantBenefit* GetMerchantBenefitByInstrumentIdAndOrigin(
+  std::optional<CreditCardMerchantBenefit>
+  GetMerchantBenefitByInstrumentIdAndOrigin(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
       const url::Origin& merchant_origin);
 
@@ -942,7 +938,7 @@ class PersonalDataManager : public KeyedService,
   size_t GetServerCardWithArtImageCount() const;
 
   template <typename T>
-  T* GetCreditCardBenefitByInstrumentId(
+  std::optional<T> GetCreditCardBenefitByInstrumentId(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
       base::FunctionRef<bool(T&)> filter = [](T&) { return true; });
 

@@ -3142,7 +3142,7 @@ TEST_F(PersonalDataManagerTest, GetActiveCreditCardBenefits) {
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_merchant_benefit =
           merchant_benefit.linked_card_instrument_id();
-  const url::Origin& merchant_origin_for_merchant_benefit =
+  url::Origin merchant_origin_for_merchant_benefit =
       *merchant_benefit.merchant_domains().begin();
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
@@ -3154,7 +3154,7 @@ TEST_F(PersonalDataManagerTest, GetActiveCreditCardBenefits) {
                 ->linked_card_instrument_id(),
             instrument_id_for_flat_rate_benefit);
 
-  CreditCardCategoryBenefit* category_benefit_result =
+  std::optional<CreditCardCategoryBenefit> category_benefit_result =
       personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
           instrument_id_for_category_benefit,
           benefit_category_for_category_benefit);
@@ -3163,7 +3163,7 @@ TEST_F(PersonalDataManagerTest, GetActiveCreditCardBenefits) {
   EXPECT_EQ(category_benefit_result->benefit_category(),
             benefit_category_for_category_benefit);
 
-  CreditCardMerchantBenefit* merchant_benefit_result =
+  std::optional<CreditCardMerchantBenefit> merchant_benefit_result =
       personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
           instrument_id_for_merchant_benefit,
           merchant_origin_for_merchant_benefit);
@@ -3174,17 +3174,14 @@ TEST_F(PersonalDataManagerTest, GetActiveCreditCardBenefits) {
 
   // Disable autofill credit card pref. Check that no benefits are returned.
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
-  EXPECT_EQ(personal_data_->GetFlatRateBenefitByInstrumentId(
-                instrument_id_for_flat_rate_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-                instrument_id_for_category_benefit,
-                benefit_category_for_category_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-                instrument_id_for_merchant_benefit,
-                merchant_origin_for_merchant_benefit),
-            nullptr);
+  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
+      instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
+      instrument_id_for_category_benefit,
+      benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
+      instrument_id_for_merchant_benefit,
+      merchant_origin_for_merchant_benefit));
 }
 
 // Tests benefit getters will not return inactive benefits.
@@ -3217,22 +3214,19 @@ TEST_F(PersonalDataManagerTest, GetInactiveCreditCardBenefits) {
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_merchant_benefit =
           merchant_benefit.linked_card_instrument_id();
-  const url::Origin& merchant_origin_for_merchant_benefit =
+  url::Origin merchant_origin_for_merchant_benefit =
       *merchant_benefit.merchant_domains().begin();
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
   // Should not return any benefits as no benefit is currently active.
-  EXPECT_EQ(personal_data_->GetFlatRateBenefitByInstrumentId(
-                instrument_id_for_flat_rate_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-                instrument_id_for_category_benefit,
-                benefit_category_for_category_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-                instrument_id_for_merchant_benefit,
-                merchant_origin_for_merchant_benefit),
-            nullptr);
+  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
+      instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
+      instrument_id_for_category_benefit,
+      benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
+      instrument_id_for_merchant_benefit,
+      merchant_origin_for_merchant_benefit));
 }
 
 // Tests benefit getters will not return expired benefits.
@@ -3265,22 +3259,19 @@ TEST_F(PersonalDataManagerTest, GetExpiredCreditCardBenefits) {
   const CreditCardBenefitBase::LinkedCardInstrumentId
       instrument_id_for_merchant_benefit =
           merchant_benefit.linked_card_instrument_id();
-  const url::Origin& merchant_origin_for_merchant_benefit =
+  url::Origin merchant_origin_for_merchant_benefit =
       *merchant_benefit.merchant_domains().begin();
   personal_data_->AddCreditCardBenefitForTest(std::move(merchant_benefit));
 
   // Should not return any benefits as all of the benefits are expired.
-  EXPECT_EQ(personal_data_->GetFlatRateBenefitByInstrumentId(
-                instrument_id_for_flat_rate_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
-                instrument_id_for_category_benefit,
-                benefit_category_for_category_benefit),
-            nullptr);
-  EXPECT_EQ(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
-                instrument_id_for_merchant_benefit,
-                merchant_origin_for_merchant_benefit),
-            nullptr);
+  EXPECT_FALSE(personal_data_->GetFlatRateBenefitByInstrumentId(
+      instrument_id_for_flat_rate_benefit));
+  EXPECT_FALSE(personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
+      instrument_id_for_category_benefit,
+      benefit_category_for_category_benefit));
+  EXPECT_FALSE(personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
+      instrument_id_for_merchant_benefit,
+      merchant_origin_for_merchant_benefit));
 }
 
 }  // namespace autofill
