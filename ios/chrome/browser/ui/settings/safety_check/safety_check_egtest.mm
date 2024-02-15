@@ -5,6 +5,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
@@ -118,7 +119,7 @@ void ResetLastPasswordCheckTimestamp() {
           password_manager::BulkLeakCheckServiceInterface::State::kIdle];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Mock local authentication for opening Password Checkup.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
