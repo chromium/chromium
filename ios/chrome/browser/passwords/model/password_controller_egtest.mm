@@ -193,7 +193,7 @@ BOOL WaitForKeyboardToAppear() {
 - (void)testShowAccountStorageNoticeBeforeSaving {
   [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -222,8 +222,7 @@ BOOL WaitForKeyboardToAppear() {
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form.html"))];
   [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self loadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -254,8 +253,7 @@ BOOL WaitForKeyboardToAppear() {
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
                                       "/simple_login_form_empty.html"))];
   [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Loads simple login page with empty fields on localhost (it is considered a
   // secure context).
@@ -334,7 +332,7 @@ BOOL WaitForKeyboardToAppear() {
 #define MAYBE_testPasswordGeneration testPasswordGeneration
 #endif
 - (void)MAYBE_testPasswordGeneration {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
@@ -371,7 +369,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that password generation is offered for signed in not syncing users.
 - (void)testPasswordGenerationForSignedInNotSyncingAccount {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
@@ -407,7 +405,7 @@ BOOL WaitForKeyboardToAppear() {
 // Tests that password generation is not offered for signed in not syncing users
 // with passwords toggle disabled.
 - (void)testPasswordGenerationForSignedInNotSyncingWithPasswordsDisabled {
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
@@ -448,8 +446,7 @@ BOOL WaitForKeyboardToAppear() {
   // the signed in account.
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
