@@ -66,7 +66,7 @@ Polymer({
 
     // Otherwise, connect.
     this.networkConfig_.startConnect(networkState.guid).then(response => {
-      if (response.result == StartConnectResult.kSuccess) {
+      if (response.result === StartConnectResult.kSuccess) {
         return;
       }
       chrome.send('showNetworkConfig', [networkState.guid]);

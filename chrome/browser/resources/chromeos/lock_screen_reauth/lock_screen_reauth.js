@@ -396,7 +396,7 @@ class LockReauth extends LockReauthBase {
         return;
       }
 
-      if (confirmPasswordInput.value != this.$.passwordInput.value) {
+      if (confirmPasswordInput.value !== this.$.passwordInput.value) {
         this.$.passwordInput.invalid = true;
         confirmPasswordInput.invalid = true;
         return;
