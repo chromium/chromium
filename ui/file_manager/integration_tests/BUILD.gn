@@ -14,7 +14,6 @@ js_files = [
   "file_manager/directory_tree_context_menu.js",
   "file_manager/dlp.js",
   "file_manager/dlp_enterprise_connectors.js",
-  "file_manager/drive_specific.js",
   "file_manager/file_dialog.js",
   "file_manager/file_transfer_connector.js",
   "file_manager/gear_menu.js",
@@ -55,7 +54,7 @@ ts_files = [
 
   # "file_manager/dlp_enterprise_connectors.ts",
 
-  # "file_manager/drive_specific.ts",
+  "file_manager/drive_specific.ts",
 
   # "file_manager/file_dialog.ts",
 
@@ -156,6 +155,8 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/file_system.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
+    "//ui/file_manager/file_manager/definitions/file_manager_private.d.ts",
+    "//ui/file_manager/file_manager/definitions/navigator_connection.d.ts",
     "definitions.d.ts",
   ]
 

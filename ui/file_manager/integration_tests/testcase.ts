@@ -13,7 +13,7 @@ import * as directoryTreeTests from './file_manager/directory_tree.js';
 // import * as directoryTreeContextMenuTests from './file_manager/directory_tree_context_menu.js';
 // import * as dlpTests from './file_manager/dlp.js';
 // import * as dlpEnterpriseConnectorsTests from './file_manager/dlp_enterprise_connectors.js';
-// import * as driveSpecificTests from './file_manager/drive_specific.js';
+import * as driveSpecificTests from './file_manager/drive_specific.js';
 // import * as fileDialogTests from './file_manager/file_dialog.js';
 import * as fileDisplayTests from './file_manager/file_display.js';
 import * as fileListTests from './file_manager/file_list.js';
@@ -71,7 +71,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...directoryTreeContextMenuTests,
   // ...dlpTests,
   // ...dlpEnterpriseConnectorsTests,
-  // ...driveSpecificTests,
+  ...driveSpecificTests,
   // ...fileDialogTests,
   ...fileDisplayTests,
   ...fileListTests,
