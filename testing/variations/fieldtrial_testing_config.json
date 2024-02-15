@@ -15364,6 +15364,21 @@
             ]
         }
     ],
+    "QuickAnswersRichCard": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickAnswersRichCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuotaDatabaseDisableFullFSync": [
         {
             "platforms": [
