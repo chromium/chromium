@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, SharedOption, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPUTERS_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
- * @param {string} appId The ID that identifies the files app.
- * @param {string} type The search option type (location, recency, type).
- * @return {Promise<string>} The text of the element with 'selected-option' ID.
+ * @param appId The ID that identifies the files app.
+ * @param type The search option type (location, recency, type).
+ * @return The text of the element with 'selected-option' ID.
  */
-async function getSelectedOptionText(appId, type) {
+async function getSelectedOptionText(appId: string, type: string): Promise<string> {
   // Force refresh of the element by showing the dropdown menu.
   await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [
     [
@@ -34,9 +34,7 @@ async function getSelectedOptionText(appId, type) {
 /**
  * Tests searching inside Downloads with results.
  */
-// @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from an
-// index signature, so it must be accessed with ['searchDownloadsWithResults'].
-testcase.searchDownloadsWithResults = async () => {
+export async function searchDownloadsWithResults() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -48,21 +46,18 @@ testcase.searchDownloadsWithResults = async () => {
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
 
   // Check that a11y message for results has been issued.
-  const a11yMessages =
+  const a11yMessages: string[] =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq('Showing results for hello.', a11yMessages[0]);
 
   return appId;
-};
+}
 
 /**
  * Tests searching inside Downloads without results.
  */
-// @ts-ignore: error TS4111: Property 'searchDownloadsWithNoResults' comes from
-// an index signature, so it must be accessed with
-// ['searchDownloadsWithNoResults'].
-testcase.searchDownloadsWithNoResults = async () => {
+export async function searchDownloadsWithNoResults() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -73,82 +68,57 @@ testcase.searchDownloadsWithNoResults = async () => {
   await remoteCall.waitForFiles(appId, []);
 
   // Check that a11y message for no results has been issued.
-  const a11yMessages =
+  const a11yMessages: string[] =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq(
       'There are no results for INVALID TERM.', a11yMessages[0]);
-};
+}
 
 /**
  * Tests that clearing the search box announces the A11y.
  */
-// @ts-ignore: error TS4111: Property 'searchDownloadsClearSearch' comes from an
-// index signature, so it must be accessed with ['searchDownloadsClearSearch'].
-testcase.searchDownloadsClearSearch = async () => {
+export async function searchDownloadsClearSearch() {
   // Perform a normal search, to be able to clear the search box.
-  // @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from
-  // an index signature, so it must be accessed with
-  // ['searchDownloadsWithResults'].
-  const appId = await testcase.searchDownloadsWithResults();
+  const appId = await searchDownloadsWithResults();
 
   // Click on the clear search button.
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
 
   // Wait for the search box to fully collapse.
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 
   // Wait for file list to display all files.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string'.
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
 
   // Check that a11y message for clearing the search term has been issued.
-  const a11yMessages =
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string | null'.
+  const a11yMessages: string[] =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(
       2, a11yMessages.length,
       `Want 2 messages got ${JSON.stringify(a11yMessages)}`);
   chrome.test.assertEq(
       'Search text cleared, showing all files and folders.', a11yMessages[1]);
-};
+}
 
 /**
  * Tests that clearing the search box with keydown crbug.com/910068.
  */
-// @ts-ignore: error TS4111: Property 'searchDownloadsClearSearchKeyDown' comes
-// from an index signature, so it must be accessed with
-// ['searchDownloadsClearSearchKeyDown'].
-testcase.searchDownloadsClearSearchKeyDown = async () => {
+export async function searchDownloadsClearSearchKeyDown() {
   // Perform a normal search, to be able to clear the search box.
-  // @ts-ignore: error TS4111: Property 'searchDownloadsWithResults' comes from
-  // an index signature, so it must be accessed with
-  // ['searchDownloadsWithResults'].
-  const appId = await testcase.searchDownloadsWithResults();
+  const appId = await searchDownloadsWithResults();
 
   const clearButton = '#search-box .clear';
   // Wait for clear button.
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, clearButton);
 
   // Send a enter key to the clear button.
-  const enterKey = [clearButton, 'Enter', false, false, false];
-  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-  // or be passed to a rest parameter.
+  const enterKey = [clearButton, 'Enter', false, false, false] as const;
   await remoteCall.fakeKeyDown(appId, ...enterKey);
 
   // Check: Search input field is empty.
   const searchInput =
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string'.
       await remoteCall.waitForElement(appId, '#search-box [type="search"]');
   chrome.test.assertEq('', searchInput.value);
 
@@ -156,27 +126,23 @@ testcase.searchDownloadsClearSearchKeyDown = async () => {
   // Use repeatUntil() here because the focus won't shift to search button
   // until the CSS animation is finished.
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
-    const activeElement =
-        // @ts-ignore: error TS2345: Argument of type 'void' is not assignable
-        // to parameter of type 'string | null'.
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-    if (activeElement.attributes['id'] !== 'search-button') {
+    const activeElement = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+      'getActiveElement', appId, []);
+    if (activeElement && activeElement.attributes['id'] !== 'search-button') {
       return pending(
           caller, 'Expected active element should be search-button, got %s',
           activeElement.attributes['id']);
     }
+    return;
   });
-};
+}
 
 /**
  * Tests that the search text entry box stays expanded until the end of user
  * interaction.
  */
-// @ts-ignore: error TS4111: Property 'searchHidingTextEntryField' comes from an
-// index signature, so it must be accessed with ['searchHidingTextEntryField'].
-testcase.searchHidingTextEntryField = async () => {
+export async function searchHidingTextEntryField() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
@@ -210,19 +176,15 @@ testcase.searchHidingTextEntryField = async () => {
   textInputElement =
       await remoteCall.waitForElement(appId, ['#search-box cr-input', 'input']);
   chrome.test.assertEq(undefined, textInputElement.attributes['disabled']);
-};
+}
 
 /**
  * Tests that the search box collapses when empty and Tab out of the box.
  */
-// @ts-ignore: error TS4111: Property 'searchHidingViaTab' comes from an index
-// signature, so it must be accessed with ['searchHidingViaTab'].
-testcase.searchHidingViaTab = async () => {
+export async function searchHidingViaTab() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
-  // @ts-ignore: error TS2322: Type 'TestEntryInfo | undefined' is not
-  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Search box should start collapsed.
@@ -235,8 +197,8 @@ testcase.searchHidingViaTab = async () => {
   await remoteCall.waitForElementLost(appId, '#search-wrapper[collapsed]');
 
   // Verify the search input has focus.
-  const input =
-      await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
+  const input = await remoteCall.callRemoteTestUtil<ElementObject>(
+    'deepGetActiveElement', appId, []);
   chrome.test.assertEq(input.attributes['id'], 'input');
   chrome.test.assertEq(input.attributes['aria-label'], 'Search');
 
@@ -246,14 +208,12 @@ testcase.searchHidingViaTab = async () => {
 
   // Check: the search box should collapse.
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-};
+}
 
 /**
  * Tests that clicking the search button expands and collapses the search box.
  */
-// @ts-ignore: error TS4111: Property 'searchButtonToggles' comes from an index
-// signature, so it must be accessed with ['searchButtonToggles'].
-testcase.searchButtonToggles = async () => {
+export async function searchButtonToggles() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
@@ -274,15 +234,13 @@ testcase.searchButtonToggles = async () => {
 
   // Check: The search box width should have increased.
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElementStyles(
         appId, '#search-wrapper', ['width']);
-    // @ts-ignore: error TS18048: 'element.renderedWidth' is possibly
-    // 'undefined'.
-    if (collapsedSearchBox.renderedWidth >= element.renderedWidth) {
+    if (collapsedSearchBox.renderedWidth! >= element.renderedWidth!) {
       return pending(caller, 'Waiting search box to expand');
     }
+    return;
   });
 
   // Click the toolbar search button again.
@@ -292,25 +250,21 @@ testcase.searchButtonToggles = async () => {
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 
   // Check: the search box width should decrease.
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const element = await remoteCall.waitForElementStyles(
         appId, '#search-wrapper', ['width']);
-    // @ts-ignore: error TS18048: 'element.renderedWidth' is possibly
-    // 'undefined'.
-    if (collapsedSearchBox.renderedWidth < element.renderedWidth) {
+    if (collapsedSearchBox.renderedWidth! < element.renderedWidth!) {
       return pending(caller, 'Waiting search box to collapse');
     }
+    return;
   });
-};
+}
 
 /**
  * Tests that Files app performs a search at app start up when
  * LaunchParam.searchQuery is specified.
  */
-// @ts-ignore: error TS4111: Property 'searchQueryLaunchParam' comes from an
-// index signature, so it must be accessed with ['searchQueryLaunchParam'].
-testcase.searchQueryLaunchParam = async () => {
+export async function searchQueryLaunchParam() {
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
   const appState = {searchQuery: query};
@@ -319,13 +273,13 @@ testcase.searchQueryLaunchParam = async () => {
 
   // Check: search box should be filled with the query.
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const searchBoxInput =
         await remoteCall.waitForElement(appId, '#search-box cr-input');
     if (searchBoxInput.value !== query) {
       return pending(caller, 'Waiting search box to be filled with the query.');
     }
+    return;
   });
 
   // Check: "My Drive" directory should be selected because it is the sole
@@ -336,21 +290,15 @@ testcase.searchQueryLaunchParam = async () => {
 
   // Check: Query-matched files should be shown in the files list.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    // @ts-ignore: error TS4111: Property 'testDocument' comes from an index
-    // signature, so it must be accessed with ['testDocument'].
     ENTRIES.testDocument,
-    // @ts-ignore: error TS4111: Property 'testSharedDocument' comes from an
-    // index signature, so it must be accessed with ['testSharedDocument'].
     ENTRIES.testSharedDocument,
   ]));
-};
+}
 
 /**
  * Checks that changing location options correctly filters search results.
  */
-// @ts-ignore: error TS4111: Property 'searchWithLocationOptions' comes from an
-// index signature, so it must be accessed with ['searchWithLocationOptions'].
-testcase.searchWithLocationOptions = async () => {
+export async function searchWithLocationOptions() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -359,8 +307,6 @@ testcase.searchWithLocationOptions = async () => {
   const nestedHello = ENTRIES.hello.cloneWith({
     targetPath: 'A/hello.txt',
   });
-  // @ts-ignore: error TS4111: Property 'directoryA' comes from an index
-  // signature, so it must be accessed with ['directoryA'].
   addEntries(['local'], [ENTRIES.directoryA, nestedHello]);
 
   // Start in the nested directory, as the default search location
@@ -390,14 +336,12 @@ testcase.searchWithLocationOptions = async () => {
     ENTRIES.hello,
     nestedHello,
   ]));
-};
+}
 
 /**
  * Checks that changing recency options correctly filters search results.
  */
-// @ts-ignore: error TS4111: Property 'searchWithRecencyOptions' comes from an
-// index signature, so it must be accessed with ['searchWithRecencyOptions'].
-testcase.searchWithRecencyOptions = async () => {
+export async function searchWithRecencyOptions() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -433,36 +377,27 @@ testcase.searchWithRecencyOptions = async () => {
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     todayHello,
   ]));
-};
+}
 
 /**
  * Checks that when searching Google Drive we correctly match on name, not on
  * contents.
  */
-// @ts-ignore: error TS4111: Property 'matchDriveFilesByName' comes from an
-// index signature, so it must be accessed with ['matchDriveFilesByName'].
-testcase.matchDriveFilesByName = async () => {
+export async function matchDriveFilesByName() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, BASIC_LOCAL_ENTRY_SET, [
-        // @ts-ignore: error TS4111: Property 'image2' comes from an index
-        // signature, so it must be accessed with ['image2'].
         ENTRIES.image2,
       ]);
   await remoteCall.typeSearchText(appId, 'image2');
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS4111: Property 'image2' comes from an index
-      // signature, so it must be accessed with ['image2'].
       appId, TestEntryInfo.getExpectedRows([ENTRIES.image2]));
-};
+}
 
 /**
  * Checks that changing recency options correctly filters search results on
  * drive.
  */
-// @ts-ignore: error TS4111: Property 'searchDriveWithRecencyOptions' comes from
-// an index signature, so it must be accessed with
-// ['searchDriveWithRecencyOptions'].
-testcase.searchDriveWithRecencyOptions = async () => {
+export async function searchDriveWithRecencyOptions() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -499,15 +434,13 @@ testcase.searchDriveWithRecencyOptions = async () => {
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     recentHello,
   ]));
-};
+}
 
 /**
  * Checks that changing file types options correctly filters local
  * search results.
  */
-// @ts-ignore: error TS4111: Property 'searchLocalWithTypeOptions' comes from an
-// index signature, so it must be accessed with ['searchLocalWithTypeOptions'].
-testcase.searchLocalWithTypeOptions = async () => {
+export async function searchLocalWithTypeOptions() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -525,19 +458,15 @@ testcase.searchLocalWithTypeOptions = async () => {
 
   // Expect only world, which is a video file.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    // @ts-ignore: error TS4111: Property 'world' comes from an index signature,
-    // so it must be accessed with ['world'].
     ENTRIES.world,
   ]));
-};
+}
 
 /**
  * Checks that changing file types options correctly filters
  * Drive search results.
  */
-// @ts-ignore: error TS4111: Property 'searchDriveWithTypeOptions' comes from an
-// index signature, so it must be accessed with ['searchDriveWithTypeOptions'].
-testcase.searchDriveWithTypeOptions = async () => {
+export async function searchDriveWithTypeOptions() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -551,11 +480,7 @@ testcase.searchDriveWithTypeOptions = async () => {
   await remoteCall.typeSearchText(appId, 'b');
 
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    // @ts-ignore: error TS4111: Property 'desktop' comes from an index
-    // signature, so it must be accessed with ['desktop'].
     ENTRIES.desktop,
-    // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-    // signature, so it must be accessed with ['beautiful'].
     ENTRIES.beautiful,
   ]));
 
@@ -565,25 +490,23 @@ testcase.searchDriveWithTypeOptions = async () => {
       'Failed to click "Audio" type selector');
 
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-    // signature, so it must be accessed with ['beautiful'].
     ENTRIES.beautiful,
   ]));
-};
+}
 
 /**
- * @param {boolean} withPartitions Whether or not USB has partitions.
- * @return {string} The label that can be used to query for elements.
+ * @param withPartitions Whether or not USB has partitions.
+ * @return The label that can be used to query for elements.
  */
-function getUsbVolumeQuery(withPartitions) {
+function getUsbVolumeQuery(withPartitions: boolean): string {
   return withPartitions ? 'Drive Label' : 'fake-usb';
 }
 
 /**
- * @param {string} appId The ID of the files app under test.
- * @param {boolean} withPartitions Whether or not USB has partitions.
+ * @param appId The ID of the files app under test.
+ * @param withPartitions Whether or not USB has partitions.
  */
-async function mountUsb(appId, withPartitions) {
+async function mountUsb(appId: string, withPartitions: boolean) {
   const nameSuffix = withPartitions ? 'UsbWithPartitions' : 'FakeUsb';
   await sendTestMessage({name: `mount${nameSuffix}`});
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -593,9 +516,7 @@ async function mountUsb(appId, withPartitions) {
 /**
  * Checks that the new search correctly finds files on a USB drive.
  */
-// @ts-ignore: error TS4111: Property 'searchRemovableDevice' comes from an
-// index signature, so it must be accessed with ['searchRemovableDevice'].
-testcase.searchRemovableDevice = async () => {
+export async function searchRemovableDevice() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // Mount a USB with no partitions.
   await mountUsb(appId, false);
@@ -610,16 +531,13 @@ testcase.searchRemovableDevice = async () => {
         ENTRIES.hello,
       ]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Checks that the new search correctly finds files on a USB drive with multiple
  * partitions.
  */
-// @ts-ignore: error TS4111: Property 'searchPartitionedRemovableDevice' comes
-// from an index signature, so it must be accessed with
-// ['searchPartitionedRemovableDevice'].
-testcase.searchPartitionedRemovableDevice = async () => {
+export async function searchPartitionedRemovableDevice() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await mountUsb(appId, /* withPartitions= */ true);
 
@@ -648,14 +566,11 @@ testcase.searchPartitionedRemovableDevice = async () => {
         ENTRIES.hello,
       ]),
       {ignoreLastModifiedTime: true});
-};
+}
 /**
  * Checks that the search options are reset to default on folder change.
  */
-// @ts-ignore: error TS4111: Property 'resetSearchOptionsOnFolderChange' comes
-// from an index signature, so it must be accessed with
-// ['resetSearchOptionsOnFolderChange'].
-testcase.resetSearchOptionsOnFolderChange = async () => {
+export async function resetSearchOptionsOnFolderChange() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Type something into the search query to see search options.
@@ -688,16 +603,13 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
   chrome.test.assertEq(
       'Any time', await getSelectedOptionText(appId, 'recency'));
   chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));
-};
+}
 
 /**
  * Checks that we are showing the correct message in breadcrumbs when search is
  * active.
  */
-// @ts-ignore: error TS4111: Property 'showSearchResultMessageWhenSearching'
-// comes from an index signature, so it must be accessed with
-// ['showSearchResultMessageWhenSearching'].
-testcase.showSearchResultMessageWhenSearching = async () => {
+export async function showSearchResultMessageWhenSearching() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check that we start with My Files
@@ -726,14 +638,12 @@ testcase.showSearchResultMessageWhenSearching = async () => {
   const afterSearchPath =
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
   chrome.test.assertEq(beforeSearchPath, afterSearchPath);
-};
+}
 
 /**
  * Checks that search works correctly when starting in My Files.
  */
-// @ts-ignore: error TS4111: Property 'searchFromMyFiles' comes from an index
-// signature, so it must be accessed with ['searchFromMyFiles'].
-testcase.searchFromMyFiles = async () => {
+export async function searchFromMyFiles() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files');
@@ -766,17 +676,14 @@ testcase.searchFromMyFiles = async () => {
     ENTRIES.desktop,
     ENTRIES.debPackage,
   ]));
-};
+}
 
 /**
  * Checks that the selection path correctly reflects paths of elements found by
  * search.
  */
-// @ts-ignore: error TS4111: Property 'selectionPath' comes from an index
-// signature, so it must be accessed with ['selectionPath'].
-testcase.selectionPath = async () => {
+export async function selectionPath() {
   const appId =
-      // @ts-ignore: error TS2769: No overload matches this call.
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, NESTED_ENTRY_SET.concat([
         ENTRIES.hello,
         ENTRIES.desktop,
@@ -796,9 +703,7 @@ testcase.selectionPath = async () => {
   chrome.test.assertFalse(breadcrumbSingleSelection.hidden);
   chrome.test.assertEq(
       'My files/Downloads/' + ENTRIES.hello.nameText,
-      // @ts-ignore: error TS4111: Property 'path' comes from an index
-      // signature, so it must be accessed with ['path'].
-      breadcrumbSingleSelection.attributes.path);
+      breadcrumbSingleSelection.attributes['path']);
   // Select now the desktop entry, too. Two or more selected files,
   // regardless of the directory in which they sit, result in no path.
   await remoteCall.waitAndClickElement(
@@ -808,9 +713,7 @@ testcase.selectionPath = async () => {
     '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(breadcrumbDoubleSelection.hidden);
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq('', breadcrumbDoubleSelection.attributes.path);
+  chrome.test.assertEq('', breadcrumbDoubleSelection.attributes['path']);
   await remoteCall.waitAndClickElement(
       appId,
       `#file-list [file-name="${ENTRIES.deeplyBuriedSmallJpeg.nameText}"]`,
@@ -819,9 +722,7 @@ testcase.selectionPath = async () => {
     '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(breadcrumbTripleSelection.hidden);
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq('', breadcrumbTripleSelection.attributes.path);
+  chrome.test.assertEq('', breadcrumbTripleSelection.attributes['path']);
 
   // Close search. Select any file. Confirm that the path display is not shown,
   // now that the search is inactive.
@@ -831,7 +732,7 @@ testcase.selectionPath = async () => {
     '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(pathDisplayWhileNotSearching.hidden);
-};
+}
 
 /**
  * Checks that we correctly traverse search hierarchy. If you start searching in
@@ -841,9 +742,7 @@ testcase.selectionPath = async () => {
  * under the root folder. Finally, search everywhere should search everything
  * we can search (Google Doc, removable drives, local file syste, * etc.).
  */
-// @ts-ignore: error TS4111: Property 'searchHierarchy' comes from an index
-// signature, so it must be accessed with ['searchHierarchy'].
-testcase.searchHierarchy = async () => {
+export async function searchHierarchy() {
   // hello file stored in My files/Downloads/photos.
   const photosHello = ENTRIES.hello.cloneWith({
     targetPath: 'photos/photos-hello.txt',
@@ -935,63 +834,52 @@ testcase.searchHierarchy = async () => {
         usbHello,
       ]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Checks that search is not visible when in the Trash volume.
  */
-// @ts-ignore: error TS4111: Property 'hideSearchInTrash' comes from an index
-// signature, so it must be accessed with ['hideSearchInTrash'].
-testcase.hideSearchInTrash = async () => {
+export async function hideSearchInTrash() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   // Make sure that the search button is visible in Downloads.
   await remoteCall.waitForElement(appId, '#search-button');
   let searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['display']);
-  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
-  chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
+  chrome.test.assertTrue(searchButton.styles!['display'] !== 'none');
 
   // Navigate to Trash and confirm that the search button is now hidden.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/Trash');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
-  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
-  chrome.test.assertTrue(searchButton.styles['visibility'] === 'hidden');
+  chrome.test.assertTrue(searchButton.styles!['visibility'] === 'hidden');
 
   // Try to use keyboard shortcuts Ctrl+F to launch search anyway.
-  const ctrlF = ['#file-list', 'f', true, false, false];
-  // @ts-ignore: error TS2556: A spread argument must either have a tuple type
-  // or be passed to a rest parameter.
+  const ctrlF = ['#file-list', 'f', true, false, false] as const;
   await remoteCall.fakeKeyDown(appId, ...ctrlF);
 
   const searchWrapper =
       await remoteCall.waitForElement(appId, ['#search-wrapper']);
   // Confirm that search wrapper is still in collapsed state.
-  // @ts-ignore: error TS4111: Property 'collapsed' comes from an index
-  // signature, so it must be accessed with ['collapsed'].
-  chrome.test.assertEq(searchWrapper.attributes.collapsed, '');
+  chrome.test.assertEq(searchWrapper.attributes['collapsed'], '');
 
   // Go back to Downloads and confirm that the search button is visible again.
   await directoryTree.navigateToPath('/My files/Downloads');
   searchButton = await remoteCall.waitForElementStyles(
       appId, ['#search-button'], ['visibility']);
-  // @ts-ignore: error TS18048: 'searchButton.styles' is possibly 'undefined'.
-  chrome.test.assertTrue(searchButton.styles['visibility'] !== 'hidden');
+  chrome.test.assertTrue(searchButton.styles!['visibility'] !== 'hidden');
 
   // Make sure that search still works.
   await remoteCall.typeSearchText(appId, 'hello');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
-};
+}
 
 /**
  * Checks that files in trash do not appear in the search results when trash
  * is enabled, and appear when it is disabled.
  */
-// @ts-ignore: error TS4111: Property 'searchTrashedFiles' comes from an index
-// signature, so it must be accessed with ['searchTrashedFiles'].
-testcase.searchTrashedFiles = async () => {
+export async function searchTrashedFiles() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Search for all files with "hello" in their name.
@@ -1027,15 +915,13 @@ testcase.searchTrashedFiles = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello, helloTrashinfo]),
       {ignoreLastModifiedTime: true, ignoreFileSize: true});
-};
+}
 
 /**
  * Checcks that finding files directly in Shared with me, or in folders nested
  * in Shared with me, works.
  */
-// @ts-ignore: error TS4111: Property 'searchSharedWithMe' comes from an index
-// signature, so it must be accessed with ['searchSharedWithMe'].
-testcase.searchSharedWithMe = async () => {
+export async function searchSharedWithMe() {
   // Create a shared file for nested directory. It must have SHARED_WITH_ME
   // attribute on it, as NESTED_SHARED_WITH_ME does not have shared metadata
   // set on it.
@@ -1063,15 +949,13 @@ testcase.searchSharedWithMe = async () => {
   await remoteCall.typeSearchText(appId, 'nested.txt');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([nestedTestSharedFile]));
-};
+}
 
 /**
  * Checks that the simple search from the root of a documents provider directory
  * works. No file category or modified time filters are used.
  */
-// @ts-ignore: error TS4111: Property 'searchDocumentsProvider' comes from an
-// index signature, so it must be accessed with ['searchDocumentsProvider'].
-testcase.searchDocumentsProvider = async () => {
+export async function searchDocumentsProvider() {
   await addEntries(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -1087,16 +971,13 @@ testcase.searchDocumentsProvider = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.renamableFile]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Checks that changing file types options correctly filters
  * files exposed via Documents Provider.
  */
-// @ts-ignore: error TS4111: Property 'searchDocumentsProviderWithTypeOptions'
-// comes from an index signature, so it must be accessed with
-// ['searchDocumentsProviderWithTypeOptions'].
-testcase.searchDocumentsProviderWithTypeOptions = async () => {
+export async function searchDocumentsProviderWithTypeOptions() {
   await addEntries(
       ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -1124,16 +1005,13 @@ testcase.searchDocumentsProviderWithTypeOptions = async () => {
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.readOnlyFile,
   ]));
-};
+}
 
 /**
  * Checks that changing file types options correctly filters
  * files exposed via Documents Provider.
  */
-// @ts-ignore: error TS4111: Property
-// 'searchDocumentsProviderWithRecencyOptions' comes from an index signature, so
-// it must be accessed with ['searchDocumentsProviderWithRecencyOptions'].
-testcase.searchDocumentsProviderWithRecencyOptions = async () => {
+export async function searchDocumentsProviderWithRecencyOptions() {
   const recentHellos = [];
   for (let i = 0; i < 10; ++i) {
     recentHellos.push(ENTRIES.hello.cloneWith({
@@ -1170,14 +1048,12 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   // Expect all rececent hello files to be present.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(recentHellos));
-};
+}
 
 /**
  * Checks that search works on volumes mounted via fileSystemProvider.
  */
-// @ts-ignore: error TS4111: Property 'searchFileSystemProvider' comes from an
-// index signature, so it must be accessed with ['searchFileSystemProvider'].
-testcase.searchFileSystemProvider = async () => {
+export async function searchFileSystemProvider() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await sendTestMessage({
     name: 'launchProviderExtension',
@@ -1199,7 +1075,7 @@ testcase.searchFileSystemProvider = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([expectedFolder]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Test searching images by content. There are two modes supported: search by
@@ -1211,9 +1087,7 @@ testcase.searchFileSystemProvider = async () => {
  * search service. So that's all we test: that we can find images by terms
  * associated with them.
  */
-// @ts-ignore: error TS4111: Property 'searchImageByContent' comes from an index
-// signature, so it must be accessed with ['searchImageByContent'].
-testcase.searchImageByContent = async () => {
+export async function searchImageByContent() {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.desktop, ENTRIES.image3]);
 
@@ -1247,16 +1121,13 @@ testcase.searchImageByContent = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.image3]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Checks that any search, regardless if it has results or not, is closed if we
  * navigate to another directory.
  */
-// @ts-ignore: error TS4111: Property 'changingDirectoryClosesSearch' comes from
-// an index signature, so it must be accessed with
-// ['changingDirectoryClosesSearch'].
-testcase.changingDirectoryClosesSearch = async () => {
+export async function changingDirectoryClosesSearch() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.typeSearchText(appId, 'hello');
   await remoteCall.waitForFiles(
@@ -1264,16 +1135,14 @@ testcase.changingDirectoryClosesSearch = async () => {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files/Downloads/photos');
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
-};
+}
 
 /**
  * Check that if we are either at the top directory of Google Drive or in one of
  * the nested directories, we show the correct location. As we always search the
  * entire Google Drive, we should always show My Drive as the selected location.
  */
-// @ts-ignore: error TS4111: Property 'verifyDriveLocationOption' comes from an
-// index signature, so it must be accessed with ['verifyDriveLocationOption'].
-testcase.verifyDriveLocationOption = async () => {
+export async function verifyDriveLocationOption() {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
     ENTRIES.hello,
@@ -1306,17 +1175,13 @@ testcase.verifyDriveLocationOption = async () => {
   ]));
   chrome.test.assertEq(
       'Google Drive', await getSelectedOptionText(appId, 'location'));
-};
+}
 
 /*
  * Checks that search with non-current folder in Downloads should unselect the
  * current directory item in the tree.
  */
-// @ts-ignore: error TS4111: Property
-// 'unselectCurrentDirectoryInTreeOnSearchInDownloads' comes from an index
-// signature, so it must be accessed with
-// ['unselectCurrentDirectoryInTreeOnSearchInDownloads'].
-testcase.unselectCurrentDirectoryInTreeOnSearchInDownloads = async () => {
+export async function unselectCurrentDirectoryInTreeOnSearchInDownloads() {
   // Setup default file set within Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -1355,17 +1220,13 @@ testcase.unselectCurrentDirectoryInTreeOnSearchInDownloads = async () => {
     // Expect the search will be cleared.
     await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
   }
-};
+}
 
 /**
  * Checks that search with non-root folder in Drive should unselect the current
  * directory item in the tree.
  */
-// @ts-ignore: error TS4111: Property
-// 'unselectCurrentDirectoryInTreeOnSearchInDrive' comes from an index
-// signature, so it must be accessed with
-// ['unselectCurrentDirectoryInTreeOnSearchInDrive'].
-testcase.unselectCurrentDirectoryInTreeOnSearchInDrive = async () => {
+export async function unselectCurrentDirectoryInTreeOnSearchInDrive() {
   // Setup Drive with Computers files.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
@@ -1412,4 +1273,4 @@ testcase.unselectCurrentDirectoryInTreeOnSearchInDrive = async () => {
     // Expect the search will be cleared.
     await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
   }
-};
+}

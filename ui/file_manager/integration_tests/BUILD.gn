@@ -11,7 +11,6 @@ js_files = [
   "test_util.ts",
 
   # File Manager.
-  "file_manager/search.js",
   "file_manager/transfer.js",
 ]
 
@@ -76,7 +75,7 @@ ts_files = [
 
   "file_manager/restore_prefs.ts",
 
-  # "file_manager/search.ts",
+  "file_manager/search.ts",
 
   "file_manager/share.ts",
   "file_manager/sort_columns.ts",
