@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "chromeos-octopus-rel-skylab-fyi",
+              "builder": "chromeos-octopus-rel-skylab",
               "project": "chromium"
             },
             "builder_spec": {
@@ -47,7 +47,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "chromeos-octopus-rel-skylab-fyi",
+          "builder": "chromeos-octopus-rel-skylab",
           "project": "chromium"
         }
       ]

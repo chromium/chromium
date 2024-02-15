@@ -155,11 +155,11 @@ ci.builder(
     notifies = ["Site Isolation Android"],
 )
 
+# TODO(b/299215988): Move to chromium.chromiumos.star.
 ci.builder(
-    name = "chromeos-jacuzzi-rel-skylab-fyi",
+    name = "chromeos-jacuzzi-rel-skylab",
     description_html = """\
-This builder builds public image and runs tests on DUTs in the lab.<br/>\
-This is experimental.
+This builder builds public image and runs tests on DUTs in the lab.
 """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -208,11 +208,11 @@ This is experimental.
     contact_team_email = "chromeos-velocity@google.com",
 )
 
+# TODO(b/299215988): Move to chromium.chromiumos.star.
 ci.builder(
-    name = "chromeos-octopus-rel-skylab-fyi",
+    name = "chromeos-octopus-rel-skylab",
     description_html = """\
-This builder builds public image and runs tests on octopus DUTs in the lab.<br/>\
-This is experimental.
+This builder builds public image and runs tests on octopus DUTs in the lab.
 """,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

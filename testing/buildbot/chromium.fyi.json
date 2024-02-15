@@ -3567,7 +3567,7 @@
       }
     ]
   },
-  "chromeos-jacuzzi-rel-skylab-fyi": {
+  "chromeos-jacuzzi-rel-skylab": {
     "additional_compile_targets": [
       "chrome"
     ],
@@ -3638,7 +3638,7 @@
       }
     ]
   },
-  "chromeos-octopus-rel-skylab-fyi": {
+  "chromeos-octopus-rel-skylab": {
     "additional_compile_targets": [
       "chrome"
     ],

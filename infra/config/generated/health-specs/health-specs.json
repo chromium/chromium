@@ -8059,7 +8059,7 @@
           }
         ]
       },
-      "chromeos-jacuzzi-rel-skylab-fyi": {
+      "chromeos-jacuzzi-rel-skylab": {
         "contact_team_email": "chromeos-velocity@google.com",
         "problem_specs": [
           {
@@ -8133,7 +8133,7 @@
           }
         ]
       },
-      "chromeos-octopus-rel-skylab-fyi": {
+      "chromeos-octopus-rel-skylab": {
         "contact_team_email": "chromeos-velocity@google.com",
         "problem_specs": [
           {
