@@ -697,6 +697,45 @@ void Document::MarkUnassociatedListedElementsDirty() {
   unassociated_listed_elements_.MarkDirty();
 }
 
+void Document::TopLevelFormsList::MarkDirty() {
+  dirty_ = true;
+  list_.clear();
+}
+
+void Document::TopLevelFormsList::Trace(Visitor* visitor) const {
+  visitor->Trace(list_);
+}
+
+const HeapVector<Member<HTMLFormElement>>& Document::TopLevelFormsList::Get(
+    Document& owner) {
+  if (dirty_) {
+    // Use BFS to avoid unnecessarily visiting the descendants of form elements.
+    HeapDeque<Member<Node>> nodes_to_visit;
+    nodes_to_visit.push_back(&owner.GetTreeScope().RootNode());
+    while (!nodes_to_visit.empty()) {
+      Node* current = nodes_to_visit.TakeFirst();
+      if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(*current)) {
+        list_.push_back(form);
+      } else {
+        for (Node& child :
+             ShadowIncludingTreeOrderTraversal::ChildrenOf(*current)) {
+          nodes_to_visit.push_back(&child);
+        }
+      }
+    }
+    dirty_ = false;
+  }
+  return list_;
+}
+
+const HeapVector<Member<HTMLFormElement>>& Document::GetTopLevelForms() {
+  return top_level_forms_.Get(*this);
+}
+
+void Document::MarkTopLevelFormsDirty() {
+  top_level_forms_.MarkDirty();
+}
+
 ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
     Element* element) {
   DCHECK(element);
@@ -9108,6 +9147,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(data_);
   visitor->Trace(meta_theme_color_elements_);
   visitor->Trace(unassociated_listed_elements_);
+  visitor->Trace(top_level_forms_);
   visitor->Trace(intrinsic_size_observer_);
   visitor->Trace(lazy_loaded_auto_sized_img_observer_);
   visitor->Trace(anchor_element_interaction_tracker_);

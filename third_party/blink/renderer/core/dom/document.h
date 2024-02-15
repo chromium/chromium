@@ -569,6 +569,13 @@ class CORE_EXPORT Document : public ContainerNode,
   const ListedElement::List& UnassociatedListedElements() const;
   void MarkUnassociatedListedElementsDirty();
 
+  // Returns all `HTMLFormElement`s that have no shadow-including
+  // `HTMLFormElement` ancestor. Note that the form elements are returned in BFS
+  // order.
+  const HeapVector<Member<HTMLFormElement>>& GetTopLevelForms();
+  // Invalidates the cache for top level form elements.
+  void MarkTopLevelFormsDirty();
+
   // "defaultView" attribute defined in HTML spec.
   DOMWindow* defaultView() const;
 
@@ -2113,6 +2120,20 @@ class CORE_EXPORT Document : public ContainerNode,
     bool dirty_ = false;
   };
 
+  // Helper class to cache the top level <form> elements of a document.
+  class TopLevelFormsList {
+    DISALLOW_NEW();
+
+   public:
+    void MarkDirty();
+    const HeapVector<Member<HTMLFormElement>>& Get(Document& owner);
+    void Trace(Visitor*) const;
+
+   private:
+    HeapVector<Member<HTMLFormElement>> list_;
+    bool dirty_ = false;
+  };
+
   friend class AXContext;
   void AddAXContext(AXContext*);
   void RemoveAXContext(AXContext*);
@@ -2649,6 +2670,8 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<PropertyRegistry> property_registry_;
 
   UnassociatedListedElementsList unassociated_listed_elements_;
+
+  TopLevelFormsList top_level_forms_;
 
   // |ukm_recorder_| and |source_id_| will allow objects that are part of
   // the document to record UKM.
