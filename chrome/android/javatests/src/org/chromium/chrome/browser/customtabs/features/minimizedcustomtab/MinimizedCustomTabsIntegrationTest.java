@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -71,6 +72,7 @@ public class MinimizedCustomTabsIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/325487558")
     public void testMinimize() {
         var intent = createIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
