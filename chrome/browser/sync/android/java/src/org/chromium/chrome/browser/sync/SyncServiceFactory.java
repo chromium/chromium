@@ -35,21 +35,6 @@ public class SyncServiceFactory {
     }
 
     /**
-     * DEPRECATED. Use {@link #getForProfile(Profile)}
-     *
-     * This will return the SyncService associated with the last used regular profile, so even
-     * if the user is currently off-the-record, this will return the SyncService associated with
-     * the regular profile.
-     */
-    @Nullable
-    @Deprecated
-    public static SyncService get() {
-        ThreadUtils.assertOnUiThread();
-        if (sSyncServiceForTest != null) return sSyncServiceForTest;
-        return SyncServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-    }
-
-    /**
      * Overrides the initialization for tests. The tests should call resetForTests() at shutdown.
      */
     public static void setInstanceForTesting(SyncService syncService) {
