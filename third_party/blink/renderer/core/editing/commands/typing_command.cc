@@ -1014,7 +1014,7 @@ static Position ComputeExtentForForwardDeleteUndo(
     const VisibleSelection& selection,
     const Position& extent) {
   if (extent.ComputeContainerNode() != selection.End().ComputeContainerNode())
-    return selection.Extent();
+    return selection.Focus();
   const int extra_characters =
       selection.Start().ComputeContainerNode() ==
               selection.End().ComputeContainerNode()
@@ -1103,7 +1103,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
 
   const VisibleSelection& selection_to_delete = selection_modifier.Selection();
   if (!StartingSelection().IsRange() ||
-      MostBackwardCaretPosition(selection_to_delete.Base()) !=
+      MostBackwardCaretPosition(selection_to_delete.Anchor()) !=
           StartingSelection().Start()) {
     ForwardDeleteKeyPressedInternal(
         SelectionForUndoStep::From(selection_to_delete.AsSelection()),

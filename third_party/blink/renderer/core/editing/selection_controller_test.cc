@@ -108,15 +108,16 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
                                          .Build(),
                                      TextGranularity::kCharacter);
   EXPECT_EQ(VisibleSelectionInDOMTree().Start(),
-            VisibleSelectionInDOMTree().Base());
+            VisibleSelectionInDOMTree().Anchor());
   EXPECT_EQ(VisibleSelectionInDOMTree().End(),
-            VisibleSelectionInDOMTree().Extent());
+            VisibleSelectionInDOMTree().Focus());
   EXPECT_EQ(Position(top, 1), VisibleSelectionInDOMTree().Start());
   EXPECT_EQ(Position(top, 3), VisibleSelectionInDOMTree().End());
 
-  EXPECT_EQ(PositionInFlatTree(top, 1), GetVisibleSelectionInFlatTree().Base());
+  EXPECT_EQ(PositionInFlatTree(top, 1),
+            GetVisibleSelectionInFlatTree().Anchor());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
-            GetVisibleSelectionInFlatTree().Extent());
+            GetVisibleSelectionInFlatTree().Focus());
   EXPECT_EQ(PositionInFlatTree(top, 1),
             GetVisibleSelectionInFlatTree().Start());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
@@ -130,16 +131,16 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
           .Build(),
       TextGranularity::kCharacter);
   EXPECT_EQ(VisibleSelectionInDOMTree().End(),
-            VisibleSelectionInDOMTree().Base());
+            VisibleSelectionInDOMTree().Anchor());
   EXPECT_EQ(VisibleSelectionInDOMTree().Start(),
-            VisibleSelectionInDOMTree().Extent());
+            VisibleSelectionInDOMTree().Focus());
   EXPECT_EQ(Position(bottom, 0), VisibleSelectionInDOMTree().Start());
   EXPECT_EQ(Position(bottom, 3), VisibleSelectionInDOMTree().End());
 
   EXPECT_EQ(PositionInFlatTree(bottom, 3),
-            GetVisibleSelectionInFlatTree().Base());
+            GetVisibleSelectionInFlatTree().Anchor());
   EXPECT_EQ(PositionInFlatTree(top, 1),
-            GetVisibleSelectionInFlatTree().Extent());
+            GetVisibleSelectionInFlatTree().Focus());
   EXPECT_EQ(PositionInFlatTree(top, 1),
             GetVisibleSelectionInFlatTree().Start());
   EXPECT_EQ(PositionInFlatTree(bottom, 3),

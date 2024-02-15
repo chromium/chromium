@@ -157,7 +157,7 @@ bool DOMSelection::isCollapsed() const {
     return true;
   Node* node = Selection()
                    .ComputeVisibleSelectionInDOMTreeDeprecated()
-                   .Base()
+                   .Anchor()
                    .AnchorNode();
   if (node && node->IsInShadowTree() &&
       DomWindow()->document()->AncestorInThisScope(node)) {
@@ -534,7 +534,7 @@ Range* DOMSelection::PrimaryRangeOrNull() const {
 
 EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   const VisibleSelection& selection = GetVisibleSelection();
-  const Position& anchor = selection.Base().ParentAnchoredEquivalent();
+  const Position& anchor = selection.Anchor().ParentAnchoredEquivalent();
   if (IsSelectionOfDocument() && !anchor.AnchorNode()->IsInShadowTree())
     return FirstEphemeralRangeOf(selection);
 
@@ -542,13 +542,14 @@ EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   if (!anchor_node)  // crbug.com/595100
     return EphemeralRange();
 
-  const Position& focus = selection.Extent().ParentAnchoredEquivalent();
+  const Position& focus = selection.Focus().ParentAnchoredEquivalent();
   const Position shadow_adjusted_focus =
       Position(ShadowAdjustedNode(focus), ShadowAdjustedOffset(focus));
   const Position shadow_adjusted_anchor =
       Position(anchor_node, ShadowAdjustedOffset(anchor));
-  if (selection.IsBaseFirst())
+  if (selection.IsAnchorFirst()) {
     return EphemeralRange(shadow_adjusted_anchor, shadow_adjusted_focus);
+  }
   return EphemeralRange(shadow_adjusted_focus, shadow_adjusted_anchor);
 }
 

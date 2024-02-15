@@ -400,7 +400,7 @@ void FrameSelection::DidChangeFocus() {
 
 static DispatchEventResult DispatchSelectStart(
     const VisibleSelection& selection) {
-  Node* select_start_target = selection.Extent().ComputeContainerNode();
+  Node* select_start_target = selection.Focus().ComputeContainerNode();
   if (!select_start_target)
     return DispatchEventResult::kNotCanceled;
 
@@ -1082,7 +1082,7 @@ gfx::Rect FrameSelection::ComputeRectToScroll(
   DCHECK(selection.IsRange());
   if (reveal_extent_option == kRevealExtent) {
     return AbsoluteCaretBoundsOf(
-        CreateVisiblePosition(selection.Extent()).ToPositionWithAffinity());
+        CreateVisiblePosition(selection.Focus()).ToPositionWithAffinity());
   }
   layout_selection_->SetHasPendingSelection();
   return layout_selection_->AbsoluteSelectionBounds();

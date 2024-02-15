@@ -225,7 +225,7 @@ bool Editor::CanEditRichly() const {
       GetFrame()
           .Selection()
           .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .Base());
+          .Anchor());
 }
 
 bool Editor::CanCut() const {

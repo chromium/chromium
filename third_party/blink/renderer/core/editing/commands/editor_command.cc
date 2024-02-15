@@ -1190,7 +1190,7 @@ static bool EnabledInRichlyEditableText(LocalFrame& frame,
     return false;
   const VisibleSelection& selection =
       frame.Selection().ComputeVisibleSelectionInDOMTree();
-  return !selection.IsNone() && IsRichlyEditablePosition(selection.Base()) &&
+  return !selection.IsNone() && IsRichlyEditablePosition(selection.Anchor()) &&
          selection.RootEditableElement();
 }
 
@@ -1228,7 +1228,7 @@ static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
     return false;
   const VisibleSelection& selection =
       frame.Selection().ComputeVisibleSelectionInDOMTree();
-  return selection.IsRange() && IsRichlyEditablePosition(selection.Base());
+  return selection.IsRange() && IsRichlyEditablePosition(selection.Anchor());
 }
 
 static bool EnabledRedo(LocalFrame& frame, Event*, EditorCommandSource) {

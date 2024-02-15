@@ -61,7 +61,7 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
   EXPECT_TRUE(frame->Selection().GetSelectionInDOMTree().IsCaret());
   EXPECT_EQ(Position(div, 0), frame->Selection()
                                   .ComputeVisibleSelectionInDOMTree()
-                                  .Base()
+                                  .Anchor()
                                   .ToOffsetInAnchor());
 }
 

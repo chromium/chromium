@@ -748,8 +748,8 @@ TEST_F(FrameSelectionTest, SelectInvalidPositionInFlatTreeDoesntCrash) {
       Selection().ComputeVisibleSelectionInFlatTree();
 
   // This only records the current behavior. It might be changed in the future.
-  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Base());
-  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Extent());
+  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Anchor());
+  EXPECT_EQ(PositionInFlatTree(foo, 0), selection.Focus());
 }
 
 TEST_F(FrameSelectionTest, CaretInShadowTree) {

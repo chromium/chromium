@@ -82,7 +82,7 @@ class CORE_EXPORT SelectionModifier {
       SelectionModifyAlteration,
       SelectionModifyDirection) const;
   TextDirection DirectionOfEnclosingBlock() const;
-  TextDirection LineDirectionOfExtent() const;
+  TextDirection LineDirectionOfFocus() const;
   VisiblePositionInFlatTree PositionForPlatform(bool is_get_start) const;
   VisiblePositionInFlatTree StartForPlatform() const;
   VisiblePositionInFlatTree EndForPlatform() const;

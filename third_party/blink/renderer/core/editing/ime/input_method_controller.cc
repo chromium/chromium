@@ -630,7 +630,7 @@ bool InputMethodController::FinishComposingText(
         GetFrame()
             .Selection()
             .ComputeVisibleSelectionInDOMTreeDeprecated()
-            .IsBaseFirst();
+            .IsAnchorFirst();
     RevealSelectionScope reveal_selection_scope(GetFrame());
 
     if (is_too_long) {

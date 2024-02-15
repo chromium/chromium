@@ -432,7 +432,7 @@ bool SelectionController::HandleSingleClick(
 
   if (frame_->GetEditor().Behavior().ShouldToggleMenuWhenCaretTapped() &&
       is_editable && event.Event().FromTouch() && selection.IsCaret() &&
-      selection.Base() == position_to_use.GetPosition()) {
+      selection.Anchor() == position_to_use.GetPosition()) {
     mouse_down_was_single_click_on_caret_ = true;
     HandleTapOnCaret(event, selection.AsSelection());
     return false;
@@ -959,7 +959,7 @@ void SelectionController::SetNonDirectionalSelectionIfNeeded(
                              adjusted_selection.Extent());
   } else if (original_base.IsNotNull()) {
     if (CreateVisiblePosition(
-            Selection().ComputeVisibleSelectionInFlatTree().Base())
+            Selection().ComputeVisibleSelectionInFlatTree().Anchor())
             .DeepEquivalent() ==
         CreateVisiblePosition(new_selection.Base()).DeepEquivalent()) {
       builder.SetBaseAndExtent(original_base.GetPosition(),

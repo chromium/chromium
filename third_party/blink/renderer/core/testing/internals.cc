@@ -3263,7 +3263,7 @@ Node* Internals::visibleSelectionAnchorNode() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Base();
+                          .Anchor();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3273,7 +3273,7 @@ unsigned Internals::visibleSelectionAnchorOffset() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Base();
+                          .Anchor();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 
@@ -3283,7 +3283,7 @@ Node* Internals::visibleSelectionFocusNode() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Extent();
+                          .Focus();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3293,7 +3293,7 @@ unsigned Internals::visibleSelectionFocusOffset() {
   Position position = GetFrame()
                           ->Selection()
                           .ComputeVisibleSelectionInDOMTreeDeprecated()
-                          .Extent();
+                          .Focus();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 
