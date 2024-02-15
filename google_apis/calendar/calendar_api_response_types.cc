@@ -60,6 +60,12 @@ constexpr char kStart[] = "start";
 constexpr char kStatus[] = "status";
 constexpr char kSummary[] = "summary";
 
+// Attachment
+constexpr char kAttachments[] = "attachments";
+constexpr char kAttachmentTitle[] = "title";
+constexpr char kAttachmentFileUrl[] = "fileUrl";
+constexpr char kAttachmentIconLink[] = "iconLink";
+
 constexpr auto kEventStatuses =
     base::MakeFixedFlatMap<std::string_view, CalendarEvent::EventStatus>(
         {{"cancelled", CalendarEvent::EventStatus::kCancelled},
@@ -105,8 +111,9 @@ bool ConvertEventStatus(const base::Value* value,
 std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
     const base::Value& value) {
   const auto* event = value.GetIfDict();
-  if (!event)
+  if (!event) {
     return std::nullopt;
+  }
 
   const auto* attendees_raw_value = event->Find(kAttendees);
   if (!attendees_raw_value) {
@@ -132,13 +139,15 @@ std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
   }
 
   const auto* attendees = attendees_raw_value->GetIfList();
-  if (!attendees)
+  if (!attendees) {
     return std::nullopt;
+  }
 
   for (const auto& x : *attendees) {
     const auto* attendee = x.GetIfDict();
-    if (!attendee)
+    if (!attendee) {
       return std::nullopt;
+    }
 
     const bool is_self = attendee->FindBool(kAttendeesSelf).value_or(false);
     if (!is_self) {
@@ -150,8 +159,9 @@ std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
     }
 
     const auto* responseStatus = attendee->FindString(kAttendeesResponseStatus);
-    if (!responseStatus)
+    if (!responseStatus) {
       return std::nullopt;
+    }
 
     const auto* it = kAttendeesResponseStatuses.find(*responseStatus);
     if (it != kAttendeesResponseStatuses.end()) {
@@ -199,6 +209,48 @@ GURL GetConferenceDataUri(const base::Value::Dict& dict) {
   return GURL();
 }
 
+// Pulls the attachments out of the attachments field, if there is one on the
+// event. Returns all attachments or an empty vector if there is none.
+std::vector<Attachment> GetAttachments(const base::Value::Dict& dict) {
+  const auto* attachments = dict.FindList(kAttachments);
+  std::vector<Attachment> result;
+
+  if (!attachments) {
+    return result;
+  }
+
+  for (const auto& it : *attachments) {
+    const base::Value::Dict* attachment_dict = it.GetIfDict();
+    if (!attachment_dict) {
+      continue;
+    }
+
+    Attachment attachment;
+    const std::string* title = attachment_dict->FindString(kAttachmentTitle);
+    if (title) {
+      attachment.set_title(*title);
+    }
+
+    const std::string* file_url_string =
+        attachment_dict->FindString(kAttachmentFileUrl);
+    if (file_url_string) {
+      auto file_url = GURL(*file_url_string);
+      attachment.set_file_url(file_url.is_valid() ? file_url : GURL());
+    }
+
+    const std::string* icon_link_string =
+        attachment_dict->FindString(kAttachmentIconLink);
+    if (icon_link_string) {
+      auto icon_link = GURL(*icon_link_string);
+      attachment.set_icon_link(icon_link.is_valid() ? icon_link : GURL());
+    }
+
+    result.push_back(std::move(attachment));
+  }
+
+  return result;
+}
+
 // Converts the `items` field from the response. This method helps to use the
 // custom conversion entrypoint `CalendarEvent::CreateFrom`.
 // Returns false when the conversion fails (e.g. the value is structurally
@@ -220,6 +272,8 @@ bool ConvertResponseItems(const base::Value* value, CalendarEvent* event) {
 
   GURL conference_data_uri = GetConferenceDataUri(value->GetDict());
   event->set_conference_data_uri(conference_data_uri);
+
+  event->set_attachments(GetAttachments(value->GetDict()));
 
   return true;
 }
@@ -270,6 +324,18 @@ bool DateTime::CreateDateTimeFromValue(const base::Value* value,
   }
   return true;
 }
+
+Attachment::Attachment() = default;
+
+Attachment::Attachment(const Attachment&) = default;
+
+Attachment& Attachment::operator=(const Attachment&) = default;
+
+Attachment::Attachment(Attachment&&) noexcept = default;
+
+Attachment& Attachment::operator=(Attachment&&) noexcept = default;
+
+Attachment::~Attachment() = default;
 
 CalendarEvent::CalendarEvent() = default;
 
