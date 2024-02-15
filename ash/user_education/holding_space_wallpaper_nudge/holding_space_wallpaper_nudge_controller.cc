@@ -45,6 +45,7 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -133,6 +134,10 @@ HoldingSpaceTray* GetHoldingSpaceTrayNearestPoint(
   return GetShelfNearestPoint(location_in_screen)
       ->status_area_widget()
       ->holding_space_tray();
+}
+
+PrefService* GetPrimaryUserPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
 WallpaperView* GetWallpaperViewNearestPoint(
@@ -635,7 +640,33 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   }
 
   // SessionObserver:
-  void OnChromeTerminating() override { session_observer_.Reset(); }
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override {
+    pref_change_registrar_.Reset();
+
+    // Only observe the `pref_service` for the primary user and, even then, only
+    // if the primary user has never pinned a file to holding space.
+    if (pref_service != GetPrimaryUserPrefService() ||
+        holding_space_prefs::GetTimeOfFirstPin(pref_service).has_value()) {
+      return;
+    }
+
+    // Observe the primary user's `pref_service` only until their first pin, at
+    // which time the appropriate metrics should be recorded.
+    pref_change_registrar_.Init(pref_service);
+    holding_space_prefs::AddTimeOfFirstPinChangedCallback(
+        &pref_change_registrar_,
+        base::BindRepeating(
+            [](PrefChangeRegistrar& pref_change_registrar) {
+              holding_space_wallpaper_nudge_metrics::RecordFirstPin();
+              pref_change_registrar.Reset();
+            },
+            std::ref(pref_change_registrar_)));
+  }
+
+  void OnChromeTerminating() override {
+    pref_change_registrar_.Reset();
+    session_observer_.Reset();
+  }
 
   void OnSessionStateChanged(session_manager::SessionState state) override {
     // Eligibility is only determined on primary account activation.
@@ -768,6 +799,10 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     return !time_of_last_nudge.has_value() ||
            base::Time::Now() - time_of_last_nudge.value() >= timeout;
   }
+
+  // Used to observe the primary user's first pin to holding space so as to
+  // facilitate the recording of metrics.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // A pointer to the `HoldingSpaceTray` anchoring the currently open help
   // bubble. Used to determine if the help bubble should be dismissed to prevent

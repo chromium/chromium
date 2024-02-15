@@ -38,6 +38,14 @@ void RecordFirstPin() {
     return;
   }
 
+  // This metric should only be recorded for users who were eligible to see the
+  // nudge in the first place.
+  const auto first_session_time =
+      holding_space_wallpaper_nudge_prefs::GetTimeOfFirstEligibleSession(prefs);
+  if (!first_session_time.has_value()) {
+    return;
+  }
+
   auto nudge_shown_count =
       holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs);
 

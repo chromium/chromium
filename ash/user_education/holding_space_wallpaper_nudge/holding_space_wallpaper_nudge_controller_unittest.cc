@@ -106,6 +106,10 @@ HoldingSpaceTray* GetHoldingSpaceTrayForShelf(Shelf* shelf) {
   return shelf->GetStatusAreaWidget()->holding_space_tray();
 }
 
+PrefService* GetLastActiveUserPrefService() {
+  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+}
+
 aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
   return Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
       display_id);
@@ -532,7 +536,7 @@ TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
   holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      GetLastActiveUserPrefService());
 
   // Cache both shelves and holding space trays.
   auto* const primary_shelf = GetShelfForDisplayId(primary_display_id);
@@ -669,7 +673,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
   holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      GetLastActiveUserPrefService());
 
   // Create and show a widget on the primary display from which data can be
   // drag-and-dropped.
@@ -990,10 +994,10 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest,
 
   const auto after = base::Time::Now();
 
-  auto* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  auto first_session_time =
-      holding_space_wallpaper_nudge_prefs::GetTimeOfFirstEligibleSession(prefs);
+  const std::optional<base::Time> first_session_time =
+      holding_space_wallpaper_nudge_prefs::GetTimeOfFirstEligibleSession(
+          GetLastActiveUserPrefService());
+
   EXPECT_THAT(first_session_time,
               Conditional(expect_first_session_marked,
                           AllOf(Ge(before), Le(after)), Eq(std::nullopt)));
@@ -1351,8 +1355,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
   // Modify prefs directly to indicate that the user has pinned a file. Note
   // that it doesn't matter if a file is currently pinned, only that they have
   // used the functionality at some point.
-  holding_space_prefs::MarkTimeOfFirstPin(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+  holding_space_prefs::MarkTimeOfFirstPin(GetLastActiveUserPrefService());
 
   // Make animations non-zero so that the checks below don't miss them.
   SetAnimationDurationMultiplier(
@@ -1455,7 +1458,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
   holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      GetLastActiveUserPrefService());
 
   if (expect_drop_to_pin) {
     EXPECT_CALL(holding_space_client,
@@ -1605,6 +1608,36 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*nudge_enabled=*/testing::Bool());
 
 // Tests -----------------------------------------------------------------------
+
+// Verifies that when the user pins their first file to holding space the
+// appropriate histograms are recorded.
+TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordsFirstPin) {
+  base::HistogramTester histogram_tester;
+
+  PrefService* const prefs = GetLastActiveUserPrefService();
+
+  // Simulate the holding space wallpaper nudge having been shown if, and only
+  // if, the feature is enabled.
+  constexpr size_t kShowNudgeCount = 2u;
+  if (IsHoldingSpaceWallpaperNudgeEnabled()) {
+    for (size_t i = 0u; i < kShowNudgeCount; ++i) {
+      holding_space_wallpaper_nudge_prefs::MarkNudgeShown(prefs);
+    }
+  }
+
+  // Simulate the user pinning their first file to holding space.
+  holding_space_prefs::MarkTimeOfFirstPin(prefs);
+
+  // Verify that the holding space wallpaper nudge metrics associated with the
+  // user pinning their first file to holding space are recorded if, and only
+  // if, the feature is enabled.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin"),
+      Conditional(IsHoldingSpaceWallpaperNudgeEnabled(),
+                  BucketsAre(Bucket(/*sample=*/kShowNudgeCount, /*count=*/1)),
+                  IsEmpty()));
+}
 
 // Verifies that when item action histograms are recorded from the production
 // holding space metrics code path, the corresponding interaction histograms
@@ -1860,7 +1893,7 @@ TEST_P(HoldingSpaceWallpaperNudgePlaceholderTest, HasPinnedFilesPlaceholder) {
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
   holding_space_prefs::MarkTimeOfFirstAvailability(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      GetLastActiveUserPrefService());
 
   auto* const tray = GetHoldingSpaceTrayForShelf(
       GetShelfForDisplayId(GetPrimaryDisplay().id()));

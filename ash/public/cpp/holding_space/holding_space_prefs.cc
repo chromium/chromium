@@ -81,6 +81,11 @@ void AddTimeOfFirstAddChangedCallback(PrefChangeRegistrar* registrar,
   registrar->Add(kTimeOfFirstAdd, std::move(callback));
 }
 
+void AddTimeOfFirstPinChangedCallback(PrefChangeRegistrar* registrar,
+                                      base::RepeatingClosure callback) {
+  registrar->Add(kTimeOfFirstPin, std::move(callback));
+}
+
 bool IsPreviewsEnabled(PrefService* prefs) {
   return prefs->GetBoolean(kPreviewsEnabled);
 }

@@ -91,6 +91,18 @@ TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordFirstPin) {
 
   base::HistogramTester histogram_tester;
 
+  // Case: Ineligible user.
+  for (size_t i = 1u; i < 4u; ++i) {
+    RecordFirstPin();
+    histogram_tester.ExpectTotalCount(kMetricName, /*count=*/0);
+  }
+
+  // Mark the user as eligible so that metrics will be emitted.
+  EXPECT_TRUE(
+      holding_space_wallpaper_nudge_prefs::MarkTimeOfFirstEligibleSession(
+          prefs));
+
+  // Case: Eligible user.
   for (size_t i = 1u; i < 4u; ++i) {
     holding_space_wallpaper_nudge_prefs::MarkNudgeShown(prefs);
 
