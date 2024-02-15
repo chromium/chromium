@@ -97,7 +97,7 @@ void SelectFeedMenu() {
   // Sign into a fake identity.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   SelectFeedMenu();
 
@@ -122,7 +122,7 @@ void SelectFeedMenu() {
   // Sign into a fake identity.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
 
   SelectFeedMenu();
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
