@@ -350,6 +350,13 @@ suite('PrintManagementTest', () => {
     return mojoApi_.whenCalled('observePrintJobs');
   }
 
+  function initializePrintManagementAppBeforePrintJobs(): void {
+    page = document.createElement('print-management') as PrintManagementElement;
+    document.body.appendChild(page);
+    assertTrue(!!page);
+    flush();
+  }
+
   function simulateCancelPrintJob(
       jobEntryElement: PrintJobEntryElement,
       mojoApi: FakePrintingMetadataProvider, shouldAttemptCancel: boolean,
@@ -776,12 +783,22 @@ suite('PrintManagementTest', () => {
     loadTimeData.overrideValues({
       isSetupAssistanceEnabled: true,
     });
-    await initializePrintManagementApp(/*expectedArr=*/[]);
-    await mojoApi_.whenCalled('getPrintJobs');
-    flush();
+    initializePrintManagementAppBeforePrintJobs();
+
+    // Assert that printer setup UI is hidden and ongoing empty state message is
+    // hidden when flag enabled before the print jobs have loaded.
+    assertTrue(
+        querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
+        boolean);
+    assertTrue(
+        querySelector<PrinterSetupInfoElement>(
+            page!, PrinterSetupInfoElement.is)
+            ?.hidden as boolean);
 
     // Assert that printer setup UI is not hidden and ongoing empty state
-    // message is hidden when flag enabled and there are no printer jobs.
+    // message is hidden when flag enabled and the print jobs loaded as empty.
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
     assertTrue(
         querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
         boolean);
