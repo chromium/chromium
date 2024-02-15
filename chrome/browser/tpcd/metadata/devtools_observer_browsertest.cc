@@ -83,8 +83,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                        const std::string& third_party_site) {
     ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(this), &https_server_,
                                     third_party_site,
-                                    /*is_secure_cookie_set=*/true,
-                                    /*is_ad_tagged=*/false));
+                                    /*is_secure_cookie_set=*/true));
     ASSERT_TRUE(content::NavigateToURL(
         GetActiveWebContents(this),
         embedded_test_server()->GetURL(first_party_site, "/title1.html")));

@@ -111,8 +111,7 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
 bool NavigateToSetCookie(content::WebContents* web_contents,
                          const net::EmbeddedTestServer* server,
                          base::StringPiece host,
-                         bool is_secure_cookie_set,
-                         bool is_ad_tagged);
+                         bool is_secure_cookie_set);
 
 // Helper function for creating an image with a cookie access on the provided
 // WebContents.
