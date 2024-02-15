@@ -737,12 +737,37 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
                        ExpectedCodecs(content_type, codecs));
 }
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+ChunkDemuxer::Status ChunkDemuxer::AddAutoDetectedCodecsId(
+    const std::string& id,
+    RelaxedParserSupportedType mime_type) {
+  DVLOG(1) << __func__ << " id=" << id
+           << " content_type=" << static_cast<int>(mime_type);
+  base::AutoLock auto_lock(lock_);
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) ||
+      IsValidId_Locked(id)) {
+    return kReachedIdLimit;
+  }
+
+  CHECK(init_cb_);
+
+  std::unique_ptr<media::StreamParser> stream_parser =
+      StreamParserFactory::CreateRelaxedParser(mime_type);
+  if (!stream_parser) {
+    DVLOG(1) << __func__ << " failed: unsupported mime type for relaxed parser";
+    return kNotSupported;
+  }
+
+  return AddIdInternal(id, std::move(stream_parser), std::nullopt);
+}
+#endif
+
 ChunkDemuxer::Status ChunkDemuxer::AddIdInternal(
     const std::string& id,
     std::unique_ptr<media::StreamParser> stream_parser,
-    std::string expected_codecs) {
+    std::optional<std::string_view> expected_codecs) {
   DVLOG(2) << __func__ << " id=" << id
-           << " expected_codecs=" << expected_codecs;
+           << " expected_codecs=" << expected_codecs.value_or("None");
   lock_.AssertAcquired();
 
   std::unique_ptr<FrameProcessor> frame_processor =

@@ -27,6 +27,7 @@
 #include "media/filters/source_buffer_parse_warnings.h"
 #include "media/filters/source_buffer_state.h"
 #include "media/filters/source_buffer_stream.h"
+#include "media/filters/stream_parser_factory.h"
 
 namespace media {
 
@@ -271,6 +272,15 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   [[nodiscard]] Status AddId(const std::string& id,
                              std::unique_ptr<VideoDecoderConfig> video_config);
 
+  // `AddAutoDetectedCodecsId` operates similarly to the `AddId` methods, except
+  // that it creates parsers which are capable of auto-detecting the codecs
+  // present. It is used internally by the HLS demuxer.
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  [[nodiscard]] Status AddAutoDetectedCodecsId(
+      const std::string& id,
+      RelaxedParserSupportedType mime_type);
+#endif
+
   // Notifies a caller via `tracks_updated_cb` that the set of media tracks
   // for a given `id` has changed. This callback must be set before any calls to
   // AppendToParseBuffer() for this `id`.
@@ -468,7 +478,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   ChunkDemuxer::Status AddIdInternal(
       const std::string& id,
       std::unique_ptr<media::StreamParser> stream_parser,
-      std::string expected_codecs);
+      std::optional<std::string_view> expected_codecs);
 
   // Helper for video and audio track changing. For the `track_type`, enables
   // tracks associated with `track_ids` and disables the rest. Fires
