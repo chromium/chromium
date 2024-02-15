@@ -56,6 +56,10 @@ source_set("browser_tests") {
     "web_app_uninstall_browsertest.cc",
   ]
 
+  if (is_chromeos) {
+    sources += [ "sub_apps_admin_policy_browsertest.cc" ]
+  }
+
   if (!is_chromeos_lacros) {
     sources += [
       # Tests are not valid on Lacros as web apps are only enabled in the main

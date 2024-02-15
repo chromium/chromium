@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -143,10 +144,14 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
-  // TODO(crbug.com/1326843): Maybe we don't need user activation if
-  // the right policy is set.
-  if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
+  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
+  bool needsUserActivation =
+      frame->GetSettings()
+          ->GetRequireTransientActivationAndAuthorizationForSubAppsAPI();
+
+  // We don't need user activation if the right policy is set.
+  if (needsUserActivation &&
+      !LocalFrame::ConsumeTransientUserActivation(frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Unable to add sub-app. This API can only be called shortly after a "
@@ -154,10 +159,11 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  // TODO(crbug.com/1326843): Maybe we don't need to limit add() if the
-  // right policy is set, we mainly want to avoid overwhelming the user with
-  // a permissions prompt that lists dozens of apps to install.
-  if (sub_apps_to_add.size() > kMaximumNumberOfSubappsPerAddCall) {
+  // We don't need to limit add() if the right policy is set, we mainly want to
+  // avoid overwhelming the user with a permissions prompt that lists dozens of
+  // apps to install.
+  if (needsUserActivation &&
+      sub_apps_to_add.size() > kMaximumNumberOfSubappsPerAddCall) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "Unable to add sub-apps. The maximum number of apps added per call "
