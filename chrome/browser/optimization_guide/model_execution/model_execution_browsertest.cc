@@ -7,16 +7,20 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test.pb.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -69,6 +73,26 @@ proto::ExecuteResponse BuildTestErrorExecuteResponse(
   return execute_response;
 }
 
+class ScopedSetMetricsConsent {
+ public:
+  // Enables or disables metrics consent based off of |consent|.
+  explicit ScopedSetMetricsConsent(bool consent) : consent_(consent) {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &consent_);
+  }
+
+  ScopedSetMetricsConsent(const ScopedSetMetricsConsent&) = delete;
+  ScopedSetMetricsConsent& operator=(const ScopedSetMetricsConsent&) = delete;
+
+  ~ScopedSetMetricsConsent() {
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
+  }
+
+ private:
+  const bool consent_;
+};
+
 }  // namespace
 
 class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
@@ -91,7 +115,18 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     model_execution_server_->RegisterRequestHandler(base::BindRepeating(
         &ModelExecutionBrowserTestBase::HandleGetModelExecutionRequest,
         base::Unretained(this)));
+
+    // Start ModelQualityLogsUploaderService to upload the model quality logs on
+    // receiving it from model execution.
+    model_quality_logs_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    model_quality_logs_server_->SetSSLConfig(cert_config);
+    model_quality_logs_server_->RegisterRequestHandler(base::BindRepeating(
+        &ModelExecutionBrowserTestBase::HandleGetModelQualityLogsUploadRequest,
+        base::Unretained(this)));
+
     ASSERT_TRUE(model_execution_server_->Start());
+    ASSERT_TRUE(model_quality_logs_server_->Start());
     InProcessBrowserTest::SetUp();
   }
 
@@ -120,10 +155,18 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
                 GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
                 "/")
             .spec());
+    cmd->AppendSwitchASCII(
+        switches::kModelQualityServiceURL,
+        model_quality_logs_server_
+            ->GetURL(
+                GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).host(),
+                "/")
+            .spec());
   }
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(model_execution_server_->ShutdownAndWaitUntilComplete());
+    EXPECT_TRUE(model_quality_logs_server_->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -164,6 +207,17 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  // Uploads the model quality logs for the feature, waits until the response is
+  // received and no response is returned from the server.
+  void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry,
+                              Profile* profile = nullptr) {
+    if (!profile) {
+      profile = browser()->profile();
+    }
+    GetOptimizationGuideKeyedService(profile)->UploadModelQualityLogs(
+        std::move(log_entry));
+  }
+
   void SetExpectedBearerAccessToken(
       const std::string& expected_bearer_access_token) {
     expected_bearer_access_token_ = expected_bearer_access_token;
@@ -171,6 +225,10 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   void SetResponseType(ModelExecutionRemoteResponseType response_type) {
     response_type_ = response_type;
+  }
+
+  void SetMetricsConsent(bool consent) {
+    scoped_metrics_consent_.emplace(consent);
   }
 
  protected:
@@ -203,6 +261,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     } else {
       model_execution_result_ = base::unexpected(result.error());
     }
+    UploadModelQualityLogs(std::move(log_entry));
     std::move(on_model_execution_closure).Run();
   }
 
@@ -254,6 +313,26 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     return std::move(response);
   }
 
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleGetModelQualityLogsUploadRequest(
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    EXPECT_EQ(request.method, net::test_server::METHOD_POST);
+    EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
+
+    // Access token should be set.
+    EXPECT_TRUE(base::Contains(request.headers,
+                               net::HttpRequestHeaders::kAuthorization));
+    EXPECT_EQ(expected_bearer_access_token_,
+              request.headers.at(net::HttpRequestHeaders::kAuthorization));
+
+    std::string serialized_response;
+    response->set_code(net::HTTP_OK);
+    response->set_content(serialized_response);
+
+    return std::move(response);
+  }
+
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
@@ -264,6 +343,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> model_execution_server_;
+  std::unique_ptr<net::EmbeddedTestServer> model_quality_logs_server_;
   base::HistogramTester histogram_tester_;
 
   ModelExecutionRemoteResponseType response_type_ =
@@ -276,6 +356,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
+
+  std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   // The expected authorization header holding the bearer access token.
   std::string expected_bearer_access_token_;
@@ -304,8 +386,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kOptimizationGuideModelExecution);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOptimizationGuideModelExecution,
+         features::kModelQualityLogging},
+        {});
   }
 
   OptimizationGuideKeyedService* GetOptGuideKeyedService() {
@@ -346,6 +430,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                 kGenericFailure,
             model_execution_result_->error().error());
   EXPECT_TRUE(model_execution_result_->error().transient());
+
+  // The logs shouldn't be uploaded because model execution is disabled for
+  // incognito and we wouldn't be receiving any log entry.
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -359,6 +448,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                 kPermissionDenied,
             model_execution_result_->error().error());
   EXPECT_FALSE(model_execution_result_->error().transient());
+
+  // The logs shouldn't be uploaded because model execution is denied without
+  // user signin, also model quality logs.
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -374,6 +468,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   auto response = ParsedAnyMetadata<proto::ComposeResponse>(
       model_execution_result_->value());
   EXPECT_EQ("foo response", response->output());
+
+  // The logs shouldn't be uploaded because there is no metrics consent.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -381,6 +480,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   EnableSignin();
   SetExpectedBearerAccessToken("Bearer access_token");
   SetResponseType(ModelExecutionRemoteResponseType::kUnsuccessful);
+
+  // Enable metrics consent for logging.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
@@ -391,6 +495,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                 kGenericFailure,
             model_execution_result_->error().error());
   EXPECT_TRUE(model_execution_result_->error().transient());
+
+  // The logs shouldn't be uploaded when model execution fails for unsuccessful
+  // response.
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -432,6 +541,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetExpectedBearerAccessToken("Bearer access_token");
   SetResponseType(ModelExecutionRemoteResponseType::kUnsupportedLanguage);
 
+  // Enable metrics consent for logging.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
@@ -440,6 +554,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kUnsupportedLanguage,
             model_execution_result_->error().error());
+
+  // The logs should be attempted to be uploaded but flagged behind enterprise
+  // check.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::
+          kDisabledDueToEnterprisePolicy,
+      1);
 }
 
 class ModelExecutionInternalsPageBrowserTest
@@ -608,6 +730,7 @@ class ModelExecutionEnterprisePolicyBrowserTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
+         features::kModelQualityLogging,
          features::internal::kTabOrganizationSettingsVisibility},
         {});
   }
@@ -692,6 +815,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableCompose) {
   EnableSignin();
 
+  SetExpectedBearerAccessToken("Bearer access_token");
+  SetResponseType(ModelExecutionRemoteResponseType::kUnsupportedLanguage);
+
+  // Enable metrics consent for logging.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(
@@ -721,7 +852,18 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 
-  // Enable via the enterprise policy.
+  proto::ComposeRequest request_1;
+  request_1.mutable_generate_params()->set_user_input("a user typed this");
+  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request_1);
+
+  // The logs should be disabled via enterprise policy.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::
+          kDisabledDueToEnterprisePolicy,
+      1);
+
+  // Enable via the enterprise policy and check upload.
   policies.Set(
       policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -739,6 +881,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  proto::ComposeRequest request_2;
+  request_2.mutable_generate_params()->set_user_input("a user typed this");
+  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request_2);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
