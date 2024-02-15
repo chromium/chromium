@@ -29,7 +29,6 @@ copy("copy_ts") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-# Copy existing files to output directory for closure compilation.
 copy("copy_js") {
   sources = [
     "display_manager_types.js",
@@ -53,6 +52,5 @@ html_to_js("web_components_local") {
     "api_keys_notice.js",
     "oobe_a11y_option.js",
     "oobe_i18n_dropdown.js",
-    "oobe_screens_list.js",
   ]
 }

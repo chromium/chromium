@@ -38,7 +38,7 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
   base::Value::List screens_list;
   for (auto screen : screens) {
     base::Value::Dict screen_dict;
-    screen_dict.Set("screenID", base::Value(screen.screen_id.name));
+    screen_dict.Set("screenId", base::Value(screen.screen_id.name));
     screen_dict.Set("title", base::Value(screen.title_id));
     if (screen.subtitle_resource.has_value()) {
       screen_dict.Set("subtitle",
@@ -46,9 +46,9 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
     }
     screen_dict.Set("icon", base::Value(screen.icon_id));
     screen_dict.Set("selected", false);
-    screen_dict.Set("is_revisitable", screen.is_revisitable);
-    screen_dict.Set("is_synced", screen.is_synced);
-    screen_dict.Set("is_completed", screen.is_completed.value_or(false));
+    screen_dict.Set("isRevisitable", screen.is_revisitable);
+    screen_dict.Set("isSynced", screen.is_synced);
+    screen_dict.Set("isCompleted", screen.is_completed.value_or(false));
 
     screens_list.Append(std::move(screen_dict));
   }

@@ -22,7 +22,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import {OobeScreensList, ScreenItem} from '../../components/oobe_screens_list.js';
+import {OobeScreensList, OobeScreensListData} from '../../components/oobe_screens_list.js';
 
 import {getTemplate} from './choobe.html.js';
 
@@ -47,7 +47,7 @@ enum UserAction {
 }
 
 interface ChoobeScreenData {
-  screens: ScreenItem[];
+  screens: OobeScreensListData;
 }
 
 class ChoobeScreen extends ChoobeScreenElementBase {

@@ -202,35 +202,35 @@
   }
 </style>
 <div id="screensList">
-  <template is="dom-repeat" items="{{screensList_}}" as="screen">
-    <cr-button id="[[getScreenID(screen.screenID)]]"
-        visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
-        disabled="[[isScreenDisabled(screen.is_revisitable , screen.is_completed)]]"
+  <template is="dom-repeat" items="{{screensList}}">
+    <cr-button id="[[getScreenId(item.screenId)]]"
+        visited$="[[isScreenVisited(item.selected , item.isCompleted)]]"
+        disabled="[[isScreenDisabled(item.isRevisitable , item.isCompleted)]]"
         class="screen-item"
         role="checkbox"
-        aria-checked="[[screen.selected]]"
-        aria-label$="[[getAriaLabelToggleButtons_(locale,
-                  screen.title ,
-                  screen.subtitle ,
-                  screen.is_synced ,
-                  screen.is_completed,
-                  screen.screenID,
-                  screen.selected)]]"
-        on-click="onClick_">
+        aria-checked="[[item.selected]]"
+        aria-label$="[[getAriaLabelToggleButtons(locale,
+                  item.title ,
+                  item.subtitle ,
+                  item.isSynced ,
+                  item.isCompleted,
+                  item.screenId,
+                  item.selected)]]"
+        on-click="onClick">
       <div class="flex horizontal layout">
         <div class="icon">
-          <iron-icon class="screen-icon" icon="[[screen.icon]]"></iron-icon>
+          <iron-icon class="screen-icon" icon="[[item.icon]]"></iron-icon>
         </div>
         <div class="text-container" aria-hidden="true">
-          <div class="screen-title"> [[i18nDynamic(locale, screen.title)]]</div>
-          <div class="screen-subtitle">[[getSubtitle_(locale, screen.subtitle,
-                                              screen.screenID )]]</div>
+          <div class="screen-title"> [[i18nDynamic(locale, item.title)]]</div>
+          <div class="screen-subtitle">[[getSubtitle(locale, item.subtitle,
+                                                      item.screenId )]]</div>
         </div>
         <div class="info-icon" aria-hidden="true">
           <iron-icon id="sync-icon"
-              hidden="[[isSyncedIconHidden(screen.is_synced ,
-                                            screen.is_completed ,
-                                            screen.selected)]]"
+              hidden="[[isSyncedIconHidden(item.isSynced ,
+                                            item.isCompleted ,
+                                            item.selected)]]"
               class="sync" icon="oobe-20:sync"></iron-icon>
           <paper-tooltip id="tooltip-element" position="left"
               aria-hidden="true"
@@ -238,7 +238,7 @@
               animation-delay="0">
             [[i18nDynamic(locale, 'choobeSyncedTile')]]
           </paper-tooltip>
-          <iron-icon hidden="[[!screen.selected]]"
+          <iron-icon hidden="[[!item.selected]]"
               class="selected" icon="oobe-20:selected"></iron-icon>
         </div>
       </div>
