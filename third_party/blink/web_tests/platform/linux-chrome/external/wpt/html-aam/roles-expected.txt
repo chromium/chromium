@@ -8,8 +8,6 @@ Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: <dt data-testname="el-dt" data-expectedrole="term" class="ex">x</dt> expected "term" but got "DescriptionListTerm"
 [FAIL] el-form
   assert_equals: <form data-testname="el-form" data-expectedrole="form" class="ex"><input></form> expected "form" but got "Section"
-[FAIL] el-hgroup
-  assert_equals: <hgroup data-testname="el-hgroup" data-expectedrole="group" class="ex"><h1>x</h1></hgroup> expected "group" but got "none"
 [FAIL] el-option
   assert_equals: <option data-testname="el-option" data-expectedrole="option" class="ex">x</option> expected "option" but got "menuitem"
 Harness: the test ran to completion.

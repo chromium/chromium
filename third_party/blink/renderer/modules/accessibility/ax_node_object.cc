@@ -754,6 +754,11 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
+  // An <hgroup> element has the "group" aria role.
+  if (GetNode()->HasTagName(html_names::kHgroupTag)) {
+    return kIncludeObject;
+  }
+
   // Using the title or accessibility description (so we
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
