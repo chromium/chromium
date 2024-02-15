@@ -126,13 +126,14 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
 
-  // If the card is enrolled into virtual card number, create a copy of the
+  // If a virtual card should be shown, create a copy of the
   // card with `CreditCard::RecordType::kVirtualCard` as the record type, and
   // insert it before the actual card.
   std::vector<autofill::CreditCard> real_and_virtual_cards;
   for (const CreditCard& card : cards_to_suggest) {
-    if (card.virtual_card_enrollment_state() ==
-            CreditCard::VirtualCardEnrollmentState::kEnrolled &&
+    if (AutofillSuggestionGenerator(
+            manager_->client(), *manager_->client().GetPersonalDataManager())
+            .ShouldShowVirtualCardOption(&card) &&
         base::FeatureList::IsEnabled(
             features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
       real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));

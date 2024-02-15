@@ -550,6 +550,10 @@ TEST_F(
       autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_.GetAutofillOptimizationGuide()),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(false));
 
   // Since the card is enrolled into virtual card number, and showing virtual
   // cards is enabled, a virtual card suggestion should be created and added
@@ -560,6 +564,27 @@ TEST_F(
           _, ElementsAreArray(
                  {CreditCard::CreateVirtualCard(credit_card), credit_card})));
 
+  TryToShowTouchToFill(/*expected_success=*/true);
+}
+
+// Since merchant has opted out of virtual cards, no virtual card suggestion is
+// shown for virtual card number enrolled card.
+TEST_F(
+    TouchToFillDelegateAndroidImplUnitTest,
+    TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForOptedOutMerchants) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillVirtualCardsOnTouchToFillAndroid);
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_.GetAutofillOptimizationGuide()),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(autofill_client_,
+              ShowTouchToFillCreditCard(_, ElementsAre(credit_card)));
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
