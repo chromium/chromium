@@ -372,6 +372,13 @@ class WebStateList {
   // to call this with an index such that `ContainsIndex(index)` returns false.
   WebStateWrapper* GetWebStateWrapperAt(int index) const;
 
+  // Moves the wrapper of the WebState at `from_index` to `to_index`. This only
+  // performs the move, and doesn't notify observers. The indices must be valid,
+  // i.e. there is no fallback.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveWebStateWrapperAt(int from_index, int to_index);
+
   // Updates the active index, updates the WebState opener for the old active
   // WebState if exists and brings the new active WebState to the "realized"
   // state.
