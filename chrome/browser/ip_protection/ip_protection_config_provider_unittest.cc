@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -139,7 +140,7 @@ class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
                       IpProtectionConfigHttp::GetProxyConfigCallback callback,
                       bool for_testing = false) override {
     if (!proxy_config_response_.has_value()) {
-      std::move(callback).Run(absl::InternalError("uhoh"));
+      std::move(callback).Run(base::unexpected<std::string>("uhoh"));
       return;
     }
     std::move(callback).Run(*proxy_config_response_);

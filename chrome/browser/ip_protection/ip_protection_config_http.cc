@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
@@ -200,7 +201,7 @@ void IpProtectionConfigHttp::GetProxyConfig(
     bool for_testing) {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!for_testing) {
-    std::move(callback).Run(absl::InternalError(
+    std::move(callback).Run(base::unexpected<std::string>(
         "GetProxyConfig is only supported in Chrome builds"));
     return;
   }
@@ -209,8 +210,8 @@ void IpProtectionConfigHttp::GetProxyConfig(
   replacements.SetPathStr(ip_protection_server_get_proxy_config_path_);
   GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);
   if (!request_url.is_valid()) {
-    std::move(callback).Run(
-        absl::InternalError("Invalid IP Protection GetProxyConfig URL"));
+    std::move(callback).Run(base::unexpected<std::string>(
+        "Invalid IP Protection GetProxyConfig URL"));
     return;
   }
 
@@ -257,14 +258,14 @@ void IpProtectionConfigHttp::OnGetProxyConfigCompleted(
     std::unique_ptr<std::string> response) {
   if (!response) {
     std::move(callback).Run(
-        absl::InternalError("Failed GetProxyConfig request"));
+        base::unexpected<std::string>("Failed GetProxyConfig request"));
     return;
   }
 
   ip_protection::GetProxyConfigResponse response_proto;
   if (!response_proto.ParseFromString(*response)) {
-    std::move(callback).Run(
-        absl::InternalError("Failed to parse GetProxyConfig response"));
+    std::move(callback).Run(base::unexpected<std::string>(
+        "Failed to parse GetProxyConfig response"));
     return;
   }
 

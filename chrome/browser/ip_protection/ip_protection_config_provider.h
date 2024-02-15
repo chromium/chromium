@@ -189,7 +189,8 @@ class IpProtectionConfigProvider
                           std::optional<std::string> oauth_token);
   void OnGetProxyConfigCompleted(
       GetProxyListCallback callback,
-      absl::StatusOr<ip_protection::GetProxyConfigResponse> response);
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>
+          response);
 
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.

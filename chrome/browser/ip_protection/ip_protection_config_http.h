@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_http_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -38,7 +39,7 @@ class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
                  quiche::BlindSignHttpCallback callback) override;
 
   using GetProxyConfigCallback = base::OnceCallback<void(
-      absl::StatusOr<ip_protection::GetProxyConfigResponse>)>;
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>)>;
   virtual void GetProxyConfig(std::optional<std::string> oauth_token,
                               GetProxyConfigCallback callback,
                               bool for_testing = false);

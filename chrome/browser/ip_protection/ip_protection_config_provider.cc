@@ -273,9 +273,10 @@ void IpProtectionConfigProvider::CallGetProxyConfig(
 
 void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
     GetProxyListCallback callback,
-    absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
-  if (!response.ok()) {
-    VLOG(2) << "IPATP::GetProxyList failed: " << response.status();
+    base::expected<ip_protection::GetProxyConfigResponse, std::string>
+        response) {
+  if (!response.has_value()) {
+    VLOG(2) << "IPATP::GetProxyList failed: " << response.error();
     std::move(callback).Run(std::nullopt);
     return;
   }

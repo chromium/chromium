@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
@@ -207,15 +208,16 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
             network::URLLoaderCompletionStatus(net::OK));
       }));
 
-  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+  base::test::TestFuture<
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
       result_future;
   http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
-  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ("proxyA", result->proxy_chain().at(0).proxy_a());
   EXPECT_EQ("proxyB", result->proxy_chain().at(0).proxy_b());
 }
@@ -245,15 +247,16 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccessWithOAuthToken) {
             network::URLLoaderCompletionStatus(net::OK));
       }));
 
-  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+  base::test::TestFuture<
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
       result_future;
   http_fetcher_->GetProxyConfig(oauth_token, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
-  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ("proxyA", result->proxy_chain().at(0).proxy_a());
   EXPECT_EQ("proxyB", result->proxy_chain().at(0).proxy_b());
 }
@@ -267,15 +270,16 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
       token_server_get_proxy_config_url_, std::move(head), response_str,
       network::URLLoaderCompletionStatus(net::OK));
 
-  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+  base::test::TestFuture<
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
       result_future;
   http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
-  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(0, result->proxy_chain_size());
 }
 
@@ -286,14 +290,14 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigFails) {
       token_server_get_proxy_config_url_, std::move(head), "uhoh",
       network::URLLoaderCompletionStatus(net::HTTP_BAD_REQUEST));
 
-  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+  base::test::TestFuture<
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>>
       result_future;
   http_fetcher_->GetProxyConfig(std::nullopt, result_future.GetCallback(),
                                 /*for_testing=*/true);
 
-  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+  base::expected<ip_protection::GetProxyConfigResponse, std::string> result =
       result_future.Get();
 
-  ASSERT_FALSE(result.ok());
-  ASSERT_TRUE(absl::IsInternal(result.status()));
+  ASSERT_FALSE(result.has_value());
 }
