@@ -44,12 +44,17 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
 
   virtual ~VariationsSeedProcessor();
 
+  // Whether the experiment has a `google_web_experiment_id` or a
+  // `google_web_trigger_experiment_id`.
+  static bool HasGoogleWebExperimentId(const Study::Experiment& experiment);
+
   // Creates field trials from the specified variations |seed|, filtered
   // according to the client's |client_state|.
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             const ClientFilterableState& client_state,
                             const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
+                            const VariationsLayers& layers,
                             base::FeatureList* feature_list);
 
  private:

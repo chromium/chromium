@@ -5,10 +5,12 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 
 #include <stddef.h>
+
 #include <cstring>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/base_switches.h"
@@ -22,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
@@ -76,6 +79,7 @@ using ::testing::Return;
 
 // Constants used to create the test seeds.
 const char kTestSeedStudyName[] = "test";
+const char kTestLimitedLayerStudyName[] = "test_study_in_limited_layer";
 const char kTestSeedExperimentName[] = "abc";
 const char kTestSafeSeedExperimentName[] = "abc.safe";
 const int kTestSeedExperimentProbability = 100;
@@ -116,7 +120,7 @@ VariationsSeed CreateTestSeed() {
 // Returns a test seed that contains a single study,
 // "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
 // probability weight 100. The study references the 100% slot of a LIMITED
-// entropy layer.
+// entropy layer. The LIMITED layer created will use 0 bit of entropy.
 VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   VariationsSeed seed;
   seed.set_serial_number(kTestSeedSerialNumber);
@@ -132,15 +136,51 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   slot->set_start(0);
   slot->set_end(99);
 
-  Study* study = seed.add_study();
-  study->set_name(kTestSeedStudyName);
+  auto* study = seed.add_study();
+  study->set_name(kTestLimitedLayerStudyName);
+
+  auto* experiment = study->add_experiment();
+  experiment->set_name(kTestSeedExperimentName);
+  experiment->set_probability_weight(kTestSeedExperimentProbability);
+
   auto* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(1);
   layer_member_reference->set_layer_member_id(1);
 
-  Study_Experiment* experiment = study->add_experiment();
-  experiment->set_name(kTestSeedExperimentName);
-  experiment->set_probability_weight(kTestSeedExperimentProbability);
+  return seed;
+}
+
+VariationsSeed CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy() {
+  VariationsSeed seed;
+  seed.set_serial_number(kTestSeedSerialNumber);
+
+  auto* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot = layer_member->add_slots();
+  slot->set_start(0);
+  slot->set_end(99);
+
+  Study* study = seed.add_study();
+  study->set_name(kTestLimitedLayerStudyName);
+
+  auto* experiment_1 = study->add_experiment();
+  experiment_1->set_name("experiment_very_small");
+  experiment_1->set_probability_weight(1);
+  experiment_1->set_google_web_experiment_id(100001);
+
+  auto* experiment_2 = study->add_experiment();
+  experiment_2->set_name("experiment");
+  experiment_2->set_probability_weight(999999);
+  experiment_1->set_google_web_experiment_id(100002);
+
+  auto* layer_member_reference = study->mutable_layer();
+  layer_member_reference->set_layer_id(1);
+  layer_member_reference->set_layer_member_id(1);
 
   return seed;
 }
@@ -1503,50 +1543,184 @@ TEST_P(IsLimitedEntropyRandomizationSourceEnabledTest, ) {
   EXPECT_EQ(test_case.expected, actual);
 }
 
+enum class LimitedModeGate {
+  ENABLED,
+  DISABLED,
+};
+
 struct LimitedEntropyProcessingTestCase {
-  bool is_limited_layer_in_seed;
-  bool is_limited_entropy_synthetic_trial_applicable;
   std::string test_name;
+
+  LimitedModeGate limited_mode_gate;
+  VariationsSeed seed;
+  raw_ptr<LimitedEntropySyntheticTrial> trial;
+
   bool is_group_registration_expected;
+  bool is_seed_rejection_expected;
+  bool is_limited_study_active;
 };
 
-const LimitedEntropyProcessingTestCase kTestCases[] = {
-    {true, true, "ApplicableClientWithLimitedLayer", true},
-    {true, false, "NonApplicableClientWithLimitedLayer", false},
-    {false, true, "ApplicableClientWithoutLimitedLayer", false},
-    {false, false, "NonApplicableClientWithoutLimitedLayer", false},
-};
-
-class LimitedEntropySyntheticTrialGroupRegistrationTest
-    : public FieldTrialCreatorTest,
-      public ::testing::WithParamInterface<LimitedEntropyProcessingTestCase> {
- public:
-  LimitedEntropySyntheticTrialGroupRegistrationTest() {
-    EnableLimitedEntropyModeForTesting();
+std::vector<LimitedEntropyProcessingTestCase> CreateTestCasesForTrials(
+    std::string_view test_name,
+    LimitedModeGate limited_mode_gate,
+    const VariationsSeed& seed,
+    const std::vector<raw_ptr<LimitedEntropySyntheticTrial>>& trials,
+    bool is_group_registration_expected,
+    bool is_seed_rejection_expected,
+    bool is_limited_study_active) {
+  std::vector<LimitedEntropyProcessingTestCase> test_cases;
+  for (raw_ptr<LimitedEntropySyntheticTrial> trial : trials) {
+    std::string test_name_with_trial;
+    if (trial) {
+      test_name_with_trial =
+          base::StrCat({test_name, "_", trial->GetGroupName()});
+    } else {
+      test_name_with_trial = base::StrCat({test_name, "_IneligibleToTrial"});
+    }
+    test_cases.push_back({test_name_with_trial, limited_mode_gate, seed, trial,
+                          is_group_registration_expected,
+                          is_seed_rejection_expected, is_limited_study_active});
   }
-};
+  return test_cases;
+}
+
+std::vector<LimitedEntropyProcessingTestCase> FlattenTests(
+    const std::vector<std::vector<LimitedEntropyProcessingTestCase>>&
+        test_cases) {
+  CHECK(test_cases.size() > 0 && test_cases[0].size() > 0);
+  std::vector<LimitedEntropyProcessingTestCase> flattened;
+  for (const std::vector<LimitedEntropyProcessingTestCase>& scenarios :
+       test_cases) {
+    for (const LimitedEntropyProcessingTestCase& scenario : scenarios) {
+      flattened.push_back(scenario);
+    }
+  }
+  return flattened;
+}
+
+const std::vector<LimitedEntropyProcessingTestCase> kTestCases = FlattenTests({
+    {{"EnabledTrialClient_ShouldProcessLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayer(), &kEnabledTrial,
+      /*is_group_registration_expected=*/true,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/true}},
+
+    {{"EnabledTrialClient_ShouldRejectSeedWithExcessiveEntropyUse",
+      LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+      &kEnabledTrial,
+      /*is_group_registration_expected=*/true,
+      /*is_seed_rejection_expected=*/true,
+      /*is_limited_study_active=*/false}},
+
+    {{"EnabledTrialClient_ShouldNotProcessSeedWithoutLimitedLayer",
+      LimitedModeGate::ENABLED, CreateTestSeed(), &kEnabledTrial,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    CreateTestCasesForTrials("ControlOrDefaultTrialClient_"
+                             "ShouldRegisterGroupButNotProcessLimitedLayer",
+                             LimitedModeGate::ENABLED,
+                             CreateTestSeedWithLimitedEntropyLayer(),
+                             {&kControlTrial, &kDefaultTrial},
+                             /*is_group_registration_expected=*/true,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials(
+        "ControlOrDefaultTrialClient_"
+        "ShouldRegisterGroupButNotProcessLimitedLayerRegardlessOfEntropyUsage",
+        LimitedModeGate::ENABLED,
+        CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+        {&kControlTrial, &kDefaultTrial},
+        /*is_group_registration_expected=*/true,
+        /*is_seed_rejection_expected=*/false,
+        /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials("ControlOrDefaultTrialClient_"
+                             "ShouldNotRegisterGroupWithoutLimitedLayer",
+                             LimitedModeGate::ENABLED,
+                             CreateTestSeed(),
+                             {&kControlTrial, &kDefaultTrial},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    {{"IneligibleClient_ReceivingLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayer(), kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    {{"IneligibleClient_ReceivingLayerUsingExcessiveEntropy",
+      LimitedModeGate::ENABLED,
+      CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+      kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    {{"IneligibleClient_NotReceivingLimitedLayer", LimitedModeGate::ENABLED,
+      CreateTestSeed(), kNoLimitedLayerSupport,
+      /*is_group_registration_expected=*/false,
+      /*is_seed_rejection_expected=*/false,
+      /*is_limited_study_active=*/false}},
+
+    CreateTestCasesForTrials("ChannelGatedClient_ReceivingLimitedLayer",
+                             LimitedModeGate::DISABLED,
+                             CreateTestSeedWithLimitedEntropyLayer(),
+                             {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+                              kNoLimitedLayerSupport},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials(
+        "ChannelGatedClient_ReceivingLimitedLayerWithExcessiveEntropy",
+        LimitedModeGate::DISABLED,
+        CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy(),
+        {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+         kNoLimitedLayerSupport},
+        /*is_group_registration_expected=*/false,
+        /*is_seed_rejection_expected=*/false,
+        /*is_limited_study_active=*/false),
+
+    CreateTestCasesForTrials("ChannelGatedClient_NotReceivingLimitedLayer",
+                             LimitedModeGate::DISABLED,
+                             CreateTestSeed(),
+                             {&kEnabledTrial, &kControlTrial, &kDefaultTrial,
+                              kNoLimitedLayerSupport},
+                             /*is_group_registration_expected=*/false,
+                             /*is_seed_rejection_expected=*/false,
+                             /*is_limited_study_active=*/false),
+});
+
+class LimitedEntropyProcessingTest
+    : public FieldTrialCreatorTest,
+      public ::testing::WithParamInterface<LimitedEntropyProcessingTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
-    LimitedEntropySyntheticTrialGroupRegistrationTest,
+    FieldTrialCreatorTest,
+    LimitedEntropyProcessingTest,
     ::testing::ValuesIn(kTestCases),
     [](const ::testing::TestParamInfo<LimitedEntropyProcessingTestCase>& info) {
       return info.param.test_name;
     });
 
-TEST_P(LimitedEntropySyntheticTrialGroupRegistrationTest,
-       RegisterGroupMembership) {
+TEST_P(LimitedEntropyProcessingTest,
+       RandomizeLimitedEntropyStudyOrRejectTheSeed) {
   const LimitedEntropyProcessingTestCase test_case = GetParam();
 
-  VariationsSeed seed;
-  if (test_case.is_limited_layer_in_seed) {
-    // Sets up a test seed with a LIMITED entropy layer.
-    seed = CreateTestSeedWithLimitedEntropyLayer();
+  // Simulate the limited entropy channel gate setting.
+  if (test_case.limited_mode_gate == LimitedModeGate::ENABLED) {
+    EnableLimitedEntropyModeForTesting();
   } else {
-    // Sets up a test seed without a LIMITED entropy layer.
-    seed = CreateTestSeed();
+    ASSERT_EQ(LimitedModeGate::DISABLED, test_case.limited_mode_gate);
+    DisableLimitedEntropyModeForTesting();
   }
-  auto encoded_and_compressed = GZipAndB64EncodeToHexString(seed);
+
+  auto encoded_and_compressed = GZipAndB64EncodeToHexString(test_case.seed);
   local_state()->SetString(prefs::kVariationsCompressedSeed,
                            encoded_and_compressed);
 
@@ -1557,13 +1731,10 @@ TEST_P(LimitedEntropySyntheticTrialGroupRegistrationTest,
 
   // Sets up dependencies and mocks.
   TestVariationsServiceClient variations_service_client;
-  LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(local_state());
   auto seed_store = CreateSeedStore(local_state());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
-      test_case.is_limited_entropy_synthetic_trial_applicable
-          ? &limited_entropy_synthetic_trial
-          : nullptr);
+      test_case.trial);
   metrics::TestEnabledStateProvider enabled_state_provider(
       /*consent=*/true,
       /*enabled=*/true);
@@ -1579,13 +1750,18 @@ TEST_P(LimitedEntropySyntheticTrialGroupRegistrationTest,
       std::string(),
       variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
 
-  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
-      /*variation_ids=*/{},
-      /*command_line_variation_ids=*/std::string(),
-      std::vector<base::FeatureList::FeatureOverrideInfo>(),
-      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+  EXPECT_NE(
+      test_case.is_seed_rejection_expected,
+      field_trial_creator.SetUpFieldTrials(
+          /*variation_ids=*/{},
+          /*command_line_variation_ids=*/std::string(),
+          std::vector<base::FeatureList::FeatureOverrideInfo>(),
+          std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+          &platform_field_trials, &safe_seed_manager,
+          /*add_entropy_source_to_variations_ids=*/true));
+
+  EXPECT_EQ(test_case.is_limited_study_active,
+            base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName));
 
   if (test_case.is_group_registration_expected) {
     EXPECT_NE(

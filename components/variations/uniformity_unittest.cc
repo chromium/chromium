@@ -15,6 +15,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -120,11 +121,12 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
   scoped_feature_list.Init();
   base::FeatureList feature_list;
   auto client_state = CreateDummyClientFilterableState();
+  VariationsLayers layers(seed, entropy_providers);
   // This should mimic the call through SetUpFieldTrials from
   // android_webview/browser/aw_feature_list_creator.cc
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, &feature_list);
+      entropy_providers, layers, &feature_list);
   testing::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
 }

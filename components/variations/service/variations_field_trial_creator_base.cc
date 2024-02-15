@@ -16,6 +16,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -34,16 +35,20 @@
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/service/buildflags.h"
+#include "components/variations/service/limited_entropy_randomization.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -600,6 +605,21 @@ VariationsFieldTrialCreatorBase::GetGoogleGroupsFromPrefs() {
   return groups;
 }
 
+bool VariationsFieldTrialCreatorBase::
+    ShouldActivateLimitedEntropySyntheticTrial(const VariationsSeed& seed) {
+  return limited_entropy_synthetic_trial_ &&
+         IsLimitedEntropyModeEnabled(client_->GetChannelForVariations()) &&
+         ContainsLimitedEntropyLayer(seed);
+}
+
+void VariationsFieldTrialCreatorBase::
+    RegisterLimitedEntropySyntheticTrialIfNeeded(const VariationsSeed& seed) {
+  if (ShouldActivateLimitedEntropySyntheticTrial(seed)) {
+    client_->RegisterLimitedEntropySyntheticTrial(
+        limited_entropy_synthetic_trial_->GetGroupName());
+  }
+}
+
 bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
@@ -665,14 +685,27 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
 
-  // Register group membership for the limited entropy synthetic trial if the
-  // required parameters are non null, and a LIMITED entropy layer is in the
-  // seed.
+  RegisterLimitedEntropySyntheticTrialIfNeeded(seed);
+  VariationsLayers layers(seed, entropy_providers);
+
+  // The server is not expected to send a seed with misconfigured entropy. Just
+  // in case there is an unexpected server-side bug and the entropy is
+  // misconfigured, return early to skip assigning any trials from the seed.
+  // Also, generate a crash report, so that the misconfigured seed can be
+  // identified and rolled back.
+  //
+  // Checking `IsLimitedEntropyModeEnabled()` is a safety measure, but is
+  // redundant given that `VariationsLayers` ensures that no layer with
+  // `EntropyMode.LIMITED` is marked as active for clients without a limited
+  // entropy provider (i.e. have limited entropy mode disabled, see
+  // `IsLimitedEntropyRandomizationSourceEnabled()`). For such clients,
+  // `SeedHasMisconfiguredEntropy()` will always be false.
   if (IsLimitedEntropyModeEnabled(client_->GetChannelForVariations()) &&
-      limited_entropy_synthetic_trial_ && ContainsLimitedEntropyLayer(seed)) {
-    client_->RegisterLimitedEntropySyntheticTrial(
-        limited_entropy_synthetic_trial_->GetGroupName());
+      SeedHasMisconfiguredEntropy(layers, seed)) {
+    base::debug::DumpWithoutCrashing();
+    return false;
   }
+
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider
   // directly to VariationsSeedProcessor (which is in components/variations and
@@ -682,7 +715,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
       seed, *client_filterable_state,
       base::BindRepeating(&VariationsFieldTrialCreatorBase::OverrideUIString,
                           base::Unretained(this)),
-      entropy_providers, feature_list);
+      entropy_providers, layers, feature_list);
 
   VLOG(1) << "CreateTrialsFromSeed complete with "
           << "seed.version='" << seed.version() << "'";

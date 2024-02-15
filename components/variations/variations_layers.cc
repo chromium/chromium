@@ -8,10 +8,12 @@
 #include <stdint.h>
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "components/variations/entropy_provider.h"
 
 namespace variations {
@@ -125,32 +127,6 @@ NormalizedMurmurHashEntropyProvider ComputeRemainderEntropy(
   return NormalizedMurmurHashEntropyProvider(remainder);
 }
 
-bool ValidSlotBounds(const Layer& layer_proto) {
-  // Since num_slots divides LES range, we know it is small enough that
-  // num_slots + 1 does not overflow.
-  DCHECK_LE(layer_proto.num_slots(), layer_proto.num_slots() + 1);
-  for (const auto& member : layer_proto.members()) {
-    uint32_t next_slot_after_processed_ranges = 0;
-    for (const auto& range : member.slots()) {
-      // Ranges should be non-overlapping. We also require them to be in
-      // increasing order so that we can easily validate that they are not
-      // overlapping.
-      if (range.start() < next_slot_after_processed_ranges) {
-        return false;
-      }
-      // start and end are both unsigned (uint32_t) so no need to check that
-      // they are non-negative.
-      if (range.end() >= layer_proto.num_slots())
-        return false;
-      if (range.start() > range.end()) {
-        return false;
-      }
-      next_slot_after_processed_ranges = range.end() + 1;
-    }
-  }
-  return true;
-}
-
 // Selects the entropy provider based on the entropy mode of the layer. Note
 // that the caller bears the responsibility of checking with a limited entropy
 // provider exists before calling this function.
@@ -252,7 +228,7 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
     return;
   }
 
-  if (!ValidSlotBounds(layer_proto)) {
+  if (!AreSlotBoundsValid(layer_proto)) {
     LogInvalidLayerReason(InvalidLayerReason::kInvalidSlotBounds);
     return;
   }
@@ -289,6 +265,45 @@ const VariationsLayers::LayerInfo* VariationsLayers::FindActiveLayer(
     return nullptr;
   }
   return &(layer_iter->second);
+}
+
+// static
+bool VariationsLayers::AreSlotBoundsValid(const Layer& layer_proto) {
+  for (const auto& member : layer_proto.members()) {
+    uint32_t next_slot_after_processed_ranges = 0;
+    for (const auto& range : member.slots()) {
+      // Ranges should be non-overlapping. We also require them to be in
+      // increasing order so that we can easily validate that they are not
+      // overlapping.
+      if (range.start() < next_slot_after_processed_ranges) {
+        return false;
+      }
+
+      static_assert(std::is_same<decltype(range.start()), uint32_t>::value,
+                    "range start of a layer member must be an unsigned number");
+      static_assert(std::is_same<decltype(range.end()), uint32_t>::value,
+                    "range end of a layer member must be an unsigned number");
+      // Since `range.start()` and `range.end()` are both unsigned (uint32_t),
+      // there is no need to check that they are non-negative.
+      if (range.end() >= layer_proto.num_slots()) {
+        return false;
+      }
+      if (range.start() > range.end()) {
+        return false;
+      }
+
+      // Note this won't overflow because the above if-clauses ensures
+      // `range.end() < layer_proto.num_slots()`. Therefore `range.end()` is not
+      // the max representable uint32_t. Will CHECK if it expectedly overflows.
+      next_slot_after_processed_ranges =
+          base::CheckAdd(range.end(), 1).ValueOrDie();
+    }
+  }
+  return true;
+}
+
+bool VariationsLayers::IsLayerActive(uint32_t layer_id) const {
+  return FindActiveLayer(layer_id) != nullptr;
 }
 
 bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,

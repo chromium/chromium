@@ -49,17 +49,17 @@ void RegisterExperimentParams(const Study& study,
 // trigger experiment ID.
 std::optional<IDCollectionKey> GetKeyForWebExperiment(
     const Study::Experiment& experiment) {
+  if (!VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
+    return std::nullopt;
+  }
   bool has_web_experiment_id = experiment.has_google_web_experiment_id();
   bool has_web_trigger_experiment_id =
       experiment.has_google_web_trigger_experiment_id();
 
-  if (!has_web_experiment_id && !has_web_trigger_experiment_id)
-    return std::nullopt;
-
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. This is enforced by the variations
   // server before generating a variations seed.
-  DCHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
+  CHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
 
   Study::GoogleWebVisibility visibility = experiment.google_web_visibility();
   if (visibility == Study::FIRST_PARTY) {
@@ -87,6 +87,7 @@ void RegisterVariationIds(const Study::Experiment& experiment,
   if (!key.has_value())
     return;
 
+  CHECK(VariationsSeedProcessor::HasGoogleWebExperimentId(experiment));
   // An experiment cannot have both |google_web_experiment_id| and
   // |google_trigger_web_experiment_id|. See GetKeyForWebExperiment() for more
   // details.
@@ -240,6 +241,13 @@ void CreateTrialWithFeatureConflictGroup(const Study& study) {
 
 }  // namespace
 
+// static
+bool VariationsSeedProcessor::HasGoogleWebExperimentId(
+    const Study::Experiment& experiment) {
+  return experiment.has_google_web_experiment_id() ||
+         experiment.has_google_web_trigger_experiment_id();
+}
+
 VariationsSeedProcessor::VariationsSeedProcessor() = default;
 
 VariationsSeedProcessor::~VariationsSeedProcessor() = default;
@@ -249,10 +257,10 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const ClientFilterableState& client_state,
     const UIStringOverrideCallback& override_callback,
     const EntropyProviders& entropy_providers,
+    const VariationsLayers& layers,
     base::FeatureList* feature_list) {
   base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
                                seed.study().size());
-  VariationsLayers layers(seed, entropy_providers);
   std::vector<ProcessedStudy> filtered_studies =
       FilterAndValidateStudies(seed, client_state, layers);
   SetSeedVersion(seed.version());

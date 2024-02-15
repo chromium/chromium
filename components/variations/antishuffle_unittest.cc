@@ -13,6 +13,7 @@
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -80,9 +81,10 @@ void ProcessSeed(EntropyProviders&& entropy_providers) {
   auto seed = ConstructSeed();
   auto client_state = CreateDummyClientFilterableState();
   base::FeatureList feature_list;
+  VariationsLayers layers(*seed, entropy_providers);
   VariationsSeedProcessor().CreateTrialsFromSeed(
       *seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, &feature_list);
+      entropy_providers, layers, &feature_list);
 }
 
 }  // namespace

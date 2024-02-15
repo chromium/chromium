@@ -160,6 +160,14 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Forcing flag has an invalid name"/>
 </enum>
 
+<enum name="VariationsLimitedEntropySeedRejectionReason">
+  <int value="0" label="Exceeds entropy limit"/>
+  <int value="1" label="More than one limited layer"/>
+  <int value="2" label="Limited layer is active but has invalid slot bounds"/>
+  <int value="3" label="Limited layer is active but does not contain slots"/>
+  <int value="4" label="Limited layer is not active"/>
+</enum>
+
 <enum name="VariationsLogInvalidValue">
   <summary>
     All values in this enum are invalid, this enum exists only so we have a nice

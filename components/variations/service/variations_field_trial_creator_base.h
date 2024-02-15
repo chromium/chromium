@@ -282,6 +282,15 @@ class VariationsFieldTrialCreatorBase {
   // safe mode. Used for variations seed testing.
   void LoadSeedFromJsonFile(const base::FilePath& json_seed_path);
 
+  // Returns whether the conditions to activate the limited entropy synthetic
+  // trial are met.
+  bool ShouldActivateLimitedEntropySyntheticTrial(const VariationsSeed& seed);
+
+  // Registers the group assignment of the limited entropy synthetic trial if
+  // the activation condition are met (as given by
+  // ShouldActivateLimitedEntropySyntheticTrial()).
+  void RegisterLimitedEntropySyntheticTrialIfNeeded(const VariationsSeed& seed);
+
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
 

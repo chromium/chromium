@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/variations_seed_processor.h"
-
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -11,6 +9,8 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_layers.h"
+#include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
@@ -81,9 +81,10 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   EntropyProviders entropy_providers(
       "client_id", {7999, 8000},
       /*limited_entropy_randomization_source=*/std::string_view());
+  VariationsLayers layers(seed, entropy_providers);
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, override_callback.callback(), entropy_providers,
-      &feature_list);
+      layers, &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

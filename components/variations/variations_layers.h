@@ -15,6 +15,8 @@
 
 namespace variations {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class InvalidLayerReason {
   kInvalidId = 0,
   kNoSlots = 1,
@@ -36,6 +38,8 @@ enum class InvalidLayerReason {
 // with studies that require a different member to be active.
 class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
+  // Instantiates a `VariationsLayers` object with the given `seed`, and
+  // `entropy_providers`.
   VariationsLayers(const VariationsSeed& seed,
                    const EntropyProviders& entropy_providers);
 
@@ -44,6 +48,19 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
 
   VariationsLayers(const VariationsLayers&) = delete;
   VariationsLayers& operator=(const VariationsLayers&) = delete;
+
+  // True iff the layer members each have valid start and end values, and are
+  // non-overlapping. Valid start and end values means that 1) end must be >=
+  // start, and 2) they each refer to a slot that's within the range defined in
+  // the layer.
+  static bool AreSlotBoundsValid(const Layer& layer_proto);
+
+  // Returns whether the layer that's associated with the `layer_id` is active.
+  // If not, for the same `layer_id`, IsLayerMemberActive() and
+  // ActiveLayerMemberDependsOnHighEntropy() will always be false, and
+  // GetRemainderEntropy() will return an entropy provider that always
+  // randomizes to a fixed value (revealing no entropy).
+  bool IsLayerActive(uint32_t layer_id) const;
 
   // Returns whether the given layer has the given member active.
   bool IsLayerMemberActive(uint32_t layer_id, uint32_t member_id) const;

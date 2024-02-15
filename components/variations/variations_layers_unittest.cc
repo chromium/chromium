@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/variations/variations_layers.h"
+#include <sys/types.h>
 
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -17,8 +19,8 @@ namespace variations {
 
 namespace {
 
-const int kTestLimitedLayerId = 101;
-const int kTestLimitedLayerMemberId = 201;
+const uint32_t kTestLimitedLayerId = 101;
+const uint32_t kTestLimitedLayerMemberId = 201;
 
 // If CreateSeedWithLimitedLayer() is used to constructed the layer and the
 // seed, the following values are picked so that a particular slot can be
@@ -30,20 +32,21 @@ const char kTestLimitedEntropyRandomizationSource[] =
     "limited_entropy_randomization_source_964";  // Will select slot 0.
 
 struct LayerMemberSpec {
-  int id;
-  int start;
-  int end;
+  uint32_t id;
+  uint32_t start;
+  uint32_t end;
 };
 
 struct LayerSpec {
-  int id;
+  uint32_t id;
+  uint32_t num_slots;
   Layer::EntropyMode entropy_mode;
   std::vector<LayerMemberSpec> layer_members;
 };
 
 struct StudySpec {
-  int layer_id;
-  int layer_member_id;
+  uint32_t layer_id;
+  uint32_t layer_member_id;
 };
 
 struct SeedSpec {
@@ -52,13 +55,13 @@ struct SeedSpec {
 };
 
 const LayerMemberSpec kSingleSlotLayerMember = {.id = kTestLimitedLayerMemberId,
-                                                .start = 0,
-                                                .end = 0};
+                                                .start = 0u,
+                                                .end = 0u};
 
 Layer CreateLayer(const LayerSpec spec) {
   Layer layer;
   layer.set_id(spec.id);
-  layer.set_num_slots(100);
+  layer.set_num_slots(spec.num_slots);
   layer.set_entropy_mode(spec.entropy_mode);
 
   for (const auto& layer_member_spec : spec.layer_members) {
@@ -103,6 +106,7 @@ VariationsSeed CreateSeed(const SeedSpec& spec) {
 VariationsSeed CreateSeedWithLimitedLayer() {
   return CreateSeed(
       {.layers = {CreateLayer({.id = kTestLimitedLayerId,
+                               .num_slots = 100u,
                                .entropy_mode = Layer::LIMITED,
                                .layer_members = {kSingleSlotLayerMember}})},
        .studies = {
@@ -126,6 +130,7 @@ class VariationsLayersTest : public ::testing::Test {
 
 TEST_F(VariationsLayersTest, LayersHaveDuplicatedID) {
   auto layer = CreateLayer({.id = kTestLimitedLayerId,
+                            .num_slots = 100u,
                             .entropy_mode = Layer::DEFAULT,
                             .layer_members = {kSingleSlotLayerMember}});
   auto study = CreateStudy({.layer_id = kTestLimitedLayerId,
@@ -146,19 +151,21 @@ TEST_F(VariationsLayersTest, LayersHaveDuplicatedID) {
 }
 
 TEST_F(VariationsLayersTest, LayersAllHaveUniqueIDs) {
-  const int layer_id_1 = kTestLimitedLayerId;
-  const int layer_id_2 = kTestLimitedLayerId + 1;
+  const uint32_t layer_id_1 = kTestLimitedLayerId;
+  const uint32_t layer_id_2 = kTestLimitedLayerId + 1;
 
   const auto layer_1 = CreateLayer(
       {.id = layer_id_1,
+       .num_slots = 100u,
        .entropy_mode = Layer::DEFAULT,
        .layer_members = {
-           {.id = kTestLimitedLayerMemberId, .start = 0, .end = 99}}});
+           {.id = kTestLimitedLayerMemberId, .start = 0u, .end = 99u}}});
   const auto layer_2 = CreateLayer(
       {.id = layer_id_2,
+       .num_slots = 100u,
        .entropy_mode = Layer::DEFAULT,
        .layer_members = {
-           {.id = kTestLimitedLayerMemberId, .start = 0, .end = 99}}});
+           {.id = kTestLimitedLayerMemberId, .start = 0u, .end = 99u}}});
 
   const auto study_1 = CreateStudy(
       {.layer_id = layer_id_1, .layer_member_id = kTestLimitedLayerMemberId});
@@ -180,6 +187,7 @@ TEST_F(VariationsLayersTest, LayersAllHaveUniqueIDs) {
 TEST_F(VariationsLayersTest, ValidLimitedLayer) {
   VariationsLayers layers(CreateSeedWithLimitedLayer(), entropy_providers_);
 
+  EXPECT_TRUE(layers.IsLayerActive(kTestLimitedLayerId));
   EXPECT_TRUE(layers.IsLayerMemberActive(kTestLimitedLayerId,
                                          kTestLimitedLayerMemberId));
   histogram_tester_.ExpectTotalCount("Variations.InvalidLayerReason", 0);
@@ -195,6 +203,7 @@ TEST_F(VariationsLayersTest, InvalidLayer_LimitedLayerDropped) {
 
   VariationsLayers layers(CreateSeedWithLimitedLayer(), entropy_providers);
 
+  EXPECT_FALSE(layers.IsLayerActive(kTestLimitedLayerId));
   EXPECT_FALSE(layers.IsLayerMemberActive(kTestLimitedLayerId,
                                           kTestLimitedLayerMemberId));
   // InvalidLayerReason::kLimitedLayerDropped. Assert on the
@@ -202,6 +211,33 @@ TEST_F(VariationsLayersTest, InvalidLayer_LimitedLayerDropped) {
   const int expected_bucket = 8;
   histogram_tester_.ExpectUniqueSample("Variations.InvalidLayerReason",
                                        expected_bucket, 1);
+}
+
+TEST_F(VariationsLayersTest, ValidSlotBounds) {
+  auto representable_max = std::numeric_limits<uint32_t>::max();
+  auto study = CreateStudy({.layer_id = 1u, .layer_member_id = 1u});
+  auto layer =
+      CreateLayer({.id = 1u,
+                   .num_slots = representable_max,
+                   .entropy_mode = Layer::DEFAULT,
+                   .layer_members = {
+                       {.id = 1u, .start = 0u, .end = representable_max - 1}}});
+  EXPECT_TRUE(VariationsLayers::AreSlotBoundsValid(layer));
+}
+
+TEST_F(VariationsLayersTest, InvalidSlotBounds_ReferringToOutOfBoundsSlot) {
+  auto representable_max = std::numeric_limits<uint32_t>::max();
+  auto study = CreateStudy({.layer_id = 1u, .layer_member_id = 1u});
+  auto layer = CreateLayer(
+      {.id = 1u,
+       .num_slots = representable_max,
+       .entropy_mode = Layer::DEFAULT,
+       .layer_members = {
+           {.id = 1u, .start = 0u, .end = representable_max - 1},
+           // The last slot has index `representable_max - 1` so
+           // `representable_max` is out of bound.
+           {.id = 2u, .start = representable_max, .end = representable_max}}});
+  EXPECT_FALSE(VariationsLayers::AreSlotBoundsValid(layer));
 }
 
 }  // namespace variations
