@@ -402,7 +402,7 @@ def _swarming(
 
 def _skylab(
         *,
-        cros_board,
+        cros_board = "",
         cros_img = "",
         use_lkgm = False,
         cros_model = None,
@@ -411,7 +411,8 @@ def _skylab(
         dut_pool = None,
         public_builder = None,
         public_builder_bucket = None,
-        shards = None):
+        shards = None,
+        args = []):
     """Define a Skylab test target.
 
     Args:
@@ -435,6 +436,7 @@ def _skylab(
         public_builder_bucket: Optional luci bucket. See public_builder
             above.
         shards: The number of shards used to run the test.
+        args: The list of test arguments to be added to test CLI.
     """
     return struct(
         cros_board = cros_board,
@@ -447,6 +449,7 @@ def _skylab(
         public_builder = public_builder,
         public_builder_bucket = public_builder_bucket,
         shards = shards,
+        args = args,
     )
 
 def _mixin_values(
@@ -1168,7 +1171,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         skylab = mixin["skylab"]
         if generate_skylab_container:
             formatter.open_scope("'skylab': {")
-        formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
+        if skylab.cros_board:
+            formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
         if skylab.cros_model:
             formatter.add_line("'cros_model': '{}',".format(skylab.cros_model))
         if skylab.cros_img:
@@ -1187,6 +1191,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
+        if skylab.args:
+            formatter.add_line("'args': {},".format(skylab.args))
         if generate_skylab_container:
             formatter.close_scope("},")
 

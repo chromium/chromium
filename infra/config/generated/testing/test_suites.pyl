@@ -7053,6 +7053,7 @@
     'chromeos_jacuzzi_rel_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
+          'chromeos-tast-fieldtrial-enabled',
           'chromeos-jacuzzi-skylab-chrome-all-tast-tests',
         ],
         'variants': [
@@ -7060,11 +7061,17 @@
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
+        'mixins': [
+          'chromeos-tast-fieldtrial-enabled',
+        ],
         'variants': [
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
+        'mixins': [
+          'chromeos-tast-fieldtrial-enabled',
+        ],
         'variants': [
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
         ],
@@ -7109,6 +7116,9 @@
 
     'chromeos_octopus_rel_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'chromeos-tast-fieldtrial-enabled',
+        ],
         'variants': [
           'CROS_OCTOPUS_PUBLIC_LKGM',
         ],

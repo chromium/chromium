@@ -3585,6 +3585,9 @@
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "-var=setup.FieldTrialConfig=enable"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
@@ -3601,6 +3604,9 @@
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "-var=setup.FieldTrialConfig=enable"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
@@ -3619,6 +3625,9 @@
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "-var=setup.FieldTrialConfig=enable"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
@@ -3654,6 +3663,9 @@
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
       {
+        "args": [
+          "-var=setup.FieldTrialConfig=enable"
+        ],
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",

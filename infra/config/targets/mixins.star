@@ -421,6 +421,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chromeos-tast-fieldtrial-enabled",
+    skylab = targets.skylab(
+        args = ["-var=setup.FieldTrialConfig=enable"],
+    ),
+)
+
+targets.mixin(
     name = "chromeos-jacuzzi-skylab-chrome-all-tast-tests",
     # jacuzzi is slow. So that we use more number of shards.
     shards = 20,

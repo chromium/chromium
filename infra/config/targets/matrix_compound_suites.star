@@ -199,6 +199,9 @@ targets.legacy_matrix_compound_suite(
         ),
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
+                # FieldTrial is disabled on ChromeOS builders but not in this builder.
+                # Notify Tast to notify and handle the different UI by that.
+                "chromeos-tast-fieldtrial-enabled",
                 "chromeos-jacuzzi-skylab-chrome-all-tast-tests",
             ],
             variants = [
@@ -206,11 +209,17 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "chromeos-tast-fieldtrial-enabled",
+            ],
             variants = [
                 "CROS_JACUZZI_CQ_PUBLIC_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "chromeos-tast-fieldtrial-enabled",
+            ],
             variants = [
                 "CROS_JACUZZI_CQ_PUBLIC_LKGM",
             ],
@@ -263,6 +272,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "chromeos-tast-fieldtrial-enabled",
+            ],
             variants = [
                 "CROS_OCTOPUS_PUBLIC_LKGM",
             ],
