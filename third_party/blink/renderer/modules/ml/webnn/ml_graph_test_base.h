@@ -29,13 +29,12 @@ class MLGraphBuilder;
 class V8TestingScope;
 
 // The utility methods for graph test.
-enum class ExecutionMode { kAsync, kSync };
 // The backends share the unit tests in the MLGraphTest.
 enum class BackendType { kFake, kXnnpack, kModelLoader, kWebNNService };
 
+// TODO: crbug.com/40283536 - Consider removing this.
 struct TestVariety {
   BackendType backend_type;
-  ExecutionMode execution_mode;
 };
 
 std::string TestVarietyToString(
@@ -53,17 +52,16 @@ class MLGraphTestBase : public ::testing::Test,
     Persistent<DOMException> exception;
   };
 
-  // Helper method for testing both BuildAsyncImpl() and BuildSyncImpl() with
-  // the same named operands and expected results.
+  // Helper method for testing BuildImpl() with the same named operands and
+  // expected results.
   BuildResult BuildGraph(V8TestingScope& scope,
                          MLGraphBuilder* builder,
                          const MLNamedOperands& named_operands);
 
-  // Helper method for testing both ComputeAsync() and ComputeSync() with the
-  // same input/output buffers and expected results. If the graph computes
-  // successfully, it returns nullptr and the results are produced into the
-  // output buffers. Otherwise, it returns the pointer to the DOMException
-  // thrown by the graph computing.
+  // Helper method for testing Compute() with the same input/output buffers and
+  // expected results. If the graph computes successfully, it returns nullptr
+  // and the results are produced into the output buffers. Otherwise, it returns
+  // the pointer to the DOMException thrown by the graph computing.
   DOMException* ComputeGraph(V8TestingScope& scope,
                              MLGraph* graph,
                              MLNamedArrayBufferViews& inputs,
@@ -83,8 +81,6 @@ class MLGraphTestBase : public ::testing::Test,
   BackendType GetBackendType();
 
  private:
-  // The execution mode for testing build and compute graph (e.g. async, sync.).
-  ExecutionMode GetExecutionMode();
   test::TaskEnvironment task_environment_;
 };
 

@@ -1,160 +1,144 @@
 This is a testharness.js-based test.
-Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Pow only supports scalar operand b.
-[FAIL] pow float32 1D base tensor and 1D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 2D base tensor and 2D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 3D base tensor and 3D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 4D base tensor and 4D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 5D base tensor and 5D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': Operand b should be defined as a constant for pow.
-[FAIL] add float32 1D constant tensors / async
+Found 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] add float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 1D tensors / async
+[FAIL] add float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 2D tensors / async
+[FAIL] add float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 3D tensors / async
+[FAIL] add float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 4D tensors / async
+[FAIL] add float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 5D tensors / async
+[FAIL] add float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 broadcast 1D to 4D / async
+[FAIL] add float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 broadcast 2D to 4D / async
+[FAIL] add float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 broadcast 3D to 4D / async
+[FAIL] add float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] add float32 broadcast 4D to 4D / async
+[FAIL] add float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 1D constant tensors / async
+[FAIL] sub float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 1D tensors / async
+[FAIL] sub float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 2D tensors / async
+[FAIL] sub float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 3D tensors / async
+[FAIL] sub float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 4D tensors / async
+[FAIL] sub float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 5D tensors / async
+[FAIL] sub float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 broadcast 1D to 4D / async
+[FAIL] sub float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 broadcast 2D to 4D / async
+[FAIL] sub float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 broadcast 3D to 4D / async
+[FAIL] sub float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] sub float32 broadcast 4D to 4D / async
+[FAIL] sub float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 1D constant tensors / async
+[FAIL] mul float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 1D tensors / async
+[FAIL] mul float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 2D tensors / async
+[FAIL] mul float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 3D tensors / async
+[FAIL] mul float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 4D tensors / async
+[FAIL] mul float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 5D tensors / async
+[FAIL] mul float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 broadcast 1D to 4D / async
+[FAIL] mul float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 broadcast 2D to 4D / async
+[FAIL] mul float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 broadcast 3D to 4D / async
+[FAIL] mul float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] mul float32 broadcast 4D to 4D / async
+[FAIL] mul float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 1D constant tensors / async
+[FAIL] div float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 1D tensors / async
+[FAIL] div float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 2D tensors / async
+[FAIL] div float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 3D tensors / async
+[FAIL] div float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 4D tensors / async
+[FAIL] div float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 5D tensors / async
+[FAIL] div float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 broadcast 1D to 4D / async
+[FAIL] div float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 broadcast 2D to 4D / async
+[FAIL] div float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 broadcast 3D to 4D / async
+[FAIL] div float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] div float32 broadcast 4D to 4D / async
+[FAIL] div float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 1D constant tensors / async
+[FAIL] max float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 1D tensors / async
+[FAIL] max float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 2D tensors / async
+[FAIL] max float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 3D tensors / async
+[FAIL] max float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 4D tensors / async
+[FAIL] max float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 5D tensors / async
+[FAIL] max float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 broadcast 1D to 4D / async
+[FAIL] max float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 broadcast 2D to 4D / async
+[FAIL] max float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 broadcast 3D to 4D / async
+[FAIL] max float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] max float32 broadcast 4D to 4D / async
+[FAIL] max float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 1D constant tensors / async
+[FAIL] min float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 1D tensors / async
+[FAIL] min float32 1D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 2D tensors / async
+[FAIL] min float32 2D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 3D tensors / async
+[FAIL] min float32 3D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 4D tensors / async
+[FAIL] min float32 4D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 5D tensors / async
+[FAIL] min float32 5D tensors
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 broadcast 1D to 4D / async
+[FAIL] min float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 broadcast 2D to 4D / async
+[FAIL] min float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 broadcast 3D to 4D / async
+[FAIL] min float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] min float32 broadcast 4D to 4D / async
+[FAIL] min float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor / async
+[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 1D base tensor and 1D integer exponent tensor / async
+[FAIL] pow float32 1D base tensor and 1D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 2D base tensor and 2D integer exponent tensor / async
+[FAIL] pow float32 2D base tensor and 2D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 3D base tensor and 3D integer exponent tensor / async
+[FAIL] pow float32 3D base tensor and 3D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 4D base tensor and 4D integer exponent tensor / async
+[FAIL] pow float32 4D base tensor and 4D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 5D base tensor and 5D integer exponent tensor / async
+[FAIL] pow float32 5D base tensor and 5D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar / async
+[FAIL] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar / async
+[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor / async
+[FAIL] pow float32 4D base tensor and broadcastable 2D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor / async
+[FAIL] pow float32 4D base tensor and broadcastable 3D integer exponent tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

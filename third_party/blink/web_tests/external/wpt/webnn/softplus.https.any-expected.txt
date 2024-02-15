@@ -1,19 +1,19 @@
 This is a testharness.js-based test.
-[FAIL] softplus float32 1D constant tensor default options / async
+[FAIL] softplus float32 1D constant tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus float32 1D tensor default options / async
+[FAIL] softplus float32 1D tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus float32 2D tensor default options / async
+[FAIL] softplus float32 2D tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus float32 3D tensor default options / async
+[FAIL] softplus float32 3D tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus float32 4D tensor default options / async
+[FAIL] softplus float32 4D tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus float32 5D tensor default options / async
+[FAIL] softplus float32 5D tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus both positive float32 4D tensor and options.steepness / async
+[FAIL] softplus both positive float32 4D tensor and options.steepness
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
-[FAIL] softplus both negative float32 4D tensor and options.steepness / async
+[FAIL] softplus both negative float32 4D tensor and options.steepness
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (softplus) is not supported."
 Harness: the test ran to completion.
 

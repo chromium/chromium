@@ -1,148 +1,81 @@
 This is a testharness.js-based test.
-Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] averagePool2d float32 4D constant tensor all positive default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor all positive default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor all negative default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.windowDimensions / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.strides / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.dilations / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=explicit / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.layout=nchw / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.roundingType=floor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D constant tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.windowDimensions / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.strides / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.dilations / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.autoPad=explicit / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.layout=nchw / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.roundingType=floor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-[FAIL] averagePool2d float32 4D constant tensor all positive default options / async
+[FAIL] averagePool2d float32 4D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor all positive default options / async
+[FAIL] averagePool2d float32 4D tensor all positive default options
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor all negative default options / async
+[FAIL] averagePool2d float32 4D tensor all negative default options
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.windowDimensions / async
+[FAIL] averagePool2d float32 4D tensor options.windowDimensions
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.padding / async
+[FAIL] averagePool2d float32 4D tensor options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.strides / async
+[FAIL] averagePool2d float32 4D tensor options.strides
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.dilations / async
+[FAIL] averagePool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.autoPad=explicit / async
+[FAIL] averagePool2d float32 4D tensor options.autoPad=explicit
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper / async
+[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower / async
+[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / async
+[FAIL] averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / async
+[FAIL] averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.layout=nchw / async
+[FAIL] averagePool2d float32 4D tensor options.layout=nchw
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.layout=nhwc / async
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.roundingType=floor / async
+[FAIL] averagePool2d float32 4D tensor options.roundingType=floor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil / async
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor / async
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil / async
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / async
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] averagePool2d float32 4D tensor options.dilations with options.strides / async
+[FAIL] averagePool2d float32 4D tensor options.dilations with options.strides
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D constant tensor default options / async
+[FAIL] maxPool2d float32 4D constant tensor default options
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor default options / async
+[FAIL] maxPool2d float32 4D tensor default options
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.windowDimensions / async
+[FAIL] maxPool2d float32 4D tensor options.windowDimensions
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.padding / async
+[FAIL] maxPool2d float32 4D tensor options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.strides / async
+[FAIL] maxPool2d float32 4D tensor options.strides
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.dilations / async
+[FAIL] maxPool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.autoPad=explicit / async
+[FAIL] maxPool2d float32 4D tensor options.autoPad=explicit
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper / async
+[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower / async
+[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / async
+[FAIL] maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / async
+[FAIL] maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.layout=nchw / async
+[FAIL] maxPool2d float32 4D tensor options.layout=nchw
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.layout=nhwc / async
+[FAIL] maxPool2d float32 4D tensor options.layout=nhwc
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.roundingType=floor / async
+[FAIL] maxPool2d float32 4D tensor options.roundingType=floor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil / async
+[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / async
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] maxPool2d float32 4D tensor options.dilations with options.strides / async
+[FAIL] maxPool2d float32 4D tensor options.dilations with options.strides
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

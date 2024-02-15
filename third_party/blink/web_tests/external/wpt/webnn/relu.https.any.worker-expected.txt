@@ -1,15 +1,15 @@
 This is a testharness.js-based test.
-[FAIL] relu float32 1D constant tensor / async
+[FAIL] relu float32 1D constant tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] relu float32 1D tensor / async
+[FAIL] relu float32 1D tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] relu float32 2D tensor / async
+[FAIL] relu float32 2D tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] relu float32 3D tensor / async
+[FAIL] relu float32 3D tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] relu float32 4D tensor / async
+[FAIL] relu float32 4D tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] relu float32 5D tensor / async
+[FAIL] relu float32 5D tensor
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

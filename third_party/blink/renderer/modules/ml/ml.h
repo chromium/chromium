@@ -48,21 +48,12 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
       webnn::mojom::blink::WebNNContextProvider::CreateWebNNContextCallback
           callback);
 
-  // Create `WebNNContext` message pipe with `WebNNContextProvider` mojo
-  // interface in a synchronous manner.
-  bool CreateWebNNContextSync(
-      webnn::mojom::blink::CreateContextOptionsPtr options,
-      webnn::mojom::blink::CreateContextResultPtr* out_result);
-
   void Trace(blink::Visitor*) const override;
 
   // IDL interface:
   ScriptPromise createContext(ScriptState* state,
                               MLContextOptions* option,
                               ExceptionState& exception_state);
-  MLContext* createContextSync(ScriptState* script_state,
-                               MLContextOptions* options,
-                               ExceptionState& exception_state);
 
  private:
   // Binds the ModelLoader Mojo connection to browser process if needed.

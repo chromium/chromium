@@ -14,11 +14,18 @@
 namespace blink {
 
 // static
-MLContext* MLContext::ValidateAndCreateSync(MLContextOptions* options, ML* ml) {
-  return MakeGarbageCollected<MLContext>(
+void MLContext::ValidateAndCreate(ScriptPromiseResolver* resolver,
+                                  MLContextOptions* options,
+                                  ML* ml) {
+  // Notice that currently, we just create the context in the renderer. In the
+  // future we may add backend query ability to check whether a context is
+  // supportable or not. At that time, this function will be truly asynced.
+  //
+  // TODO(crbug.com/1273291): Support async context creation for all contexts.
+  resolver->Resolve(MakeGarbageCollected<MLContext>(
       options->devicePreference(), options->deviceType(),
       options->powerPreference(), options->modelFormat(), options->numThreads(),
-      ml);
+      ml));
 }
 
 MLContext::MLContext(const V8MLDevicePreference device_preference,
@@ -107,54 +114,25 @@ ScriptPromise MLContext::compute(ScriptState* script_state,
         DOMExceptionCode::kDataError,
         "The graph isn't built within this context."));
   } else {
-    graph->ComputeAsync(std::move(scoped_trace), inputs, outputs, resolver,
-                        exception_state);
+    graph->Compute(std::move(scoped_trace), inputs, outputs, resolver,
+                   exception_state);
   }
 
   return promise;
 }
 
-void MLContext::computeSync(MLGraph* graph,
-                            const MLNamedArrayBufferViews& inputs,
-                            const MLNamedArrayBufferViews& outputs,
-                            ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::computeSync");
-  if (graph->Context() != this) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The graph isn't built within this context.");
-    return;
-  }
-  graph->ComputeSync(inputs, outputs, exception_state);
+void MLContext::Create(ScopedMLTrace scoped_trace,
+                       ScriptPromiseResolver* resolver,
+                       MLContextOptions* options) {
+  CreateImpl(std::move(scoped_trace), resolver, options);
 }
 
-void MLContext::CreateAsync(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolver* resolver,
-                            MLContextOptions* options) {
-  CreateAsyncImpl(std::move(scoped_trace), resolver, options);
-}
-
-MLContext* MLContext::CreateSync(ScriptState* script_state,
-                                 MLContextOptions* options,
-                                 ExceptionState& exception_state) {
-  return CreateSyncImpl(script_state, options, exception_state);
-}
-
-void MLContext::CreateAsyncImpl(ScopedMLTrace scoped_trace,
-                                ScriptPromiseResolver* resolver,
-                                MLContextOptions* options) {
-  // TODO(crbug.com/1273291): Remove when async creation gets implemented for
-  // all context types.
+void MLContext::CreateImpl(ScopedMLTrace scoped_trace,
+                           ScriptPromiseResolver* resolver,
+                           MLContextOptions* options) {
+  // TODO(crbug.com/1273291): Remove when creation gets implemented for all
+  // context types.
   NOTIMPLEMENTED();
-}
-
-MLContext* MLContext::CreateSyncImpl(ScriptState* script_state,
-                                     MLContextOptions* options,
-                                     ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Remove when sync creation gets implemented for
-  // all context types.
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 }  // namespace blink

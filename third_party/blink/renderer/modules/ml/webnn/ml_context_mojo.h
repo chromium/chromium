@@ -25,14 +25,10 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
   // this concrete object if the context is created successfully out of renderer
   // process. Launch WebNN service and bind `WebNNContext` mojo interface
   // to create `WebNNContext` message pipe if needed.
-  static void ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
-                                     MLContextOptions* options,
-                                     ML* ml);
-
-  static MLContext* ValidateAndCreateSync(ScriptState* script_state,
-                                          ExceptionState& exception_state,
-                                          MLContextOptions* options,
-                                          ML* ml);
+  // The caller must call `Promise()` on `resolver` before calling this method.
+  static void ValidateAndCreate(ScriptPromiseResolver* resolver,
+                                MLContextOptions* options,
+                                ML* ml);
 
   MLContextMojo(const V8MLDevicePreference device_preference,
                 const V8MLDeviceType device_type,
@@ -52,26 +48,15 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
       webnn::mojom::blink::GraphInfoPtr graph_info,
       webnn::mojom::blink::WebNNContext::CreateGraphCallback callback);
 
-  // Creates and compiles platform specific graph synchronously in the caller's
-  // thread. Returns if the compilation was successful.
-  bool CreateWebNNGraphSync(
-      webnn::mojom::blink::GraphInfoPtr graph_info,
-      webnn::mojom::blink::CreateGraphResultPtr* out_result);
-
  protected:
+  // MLContext:
+  //
   // Create `WebNNContext` message pipe with `ML` mojo interface, then
   // create the context with the hardware accelerated OS machine
   // learning API in the WebNN Service.
-  void CreateAsyncImpl(ScopedMLTrace scoped_trace,
-                       ScriptPromiseResolver* resolver,
-                       MLContextOptions* options) override;
-
-  // Create `WebNNContext` message pipe with `ML` mojo interface, then
-  // create the context with the hardware accelerated OS machine
-  // learning API in the WebNN Service.
-  MLContext* CreateSyncImpl(ScriptState* script_state,
-                            MLContextOptions* options,
-                            ExceptionState& exception_state) override;
+  void CreateImpl(ScopedMLTrace scoped_trace,
+                  ScriptPromiseResolver* resolver,
+                  MLContextOptions* options) override;
 
  private:
   // The callback of creating `WebNNContext` mojo interface from WebNN Service.

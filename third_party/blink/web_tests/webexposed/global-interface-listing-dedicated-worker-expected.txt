@@ -1167,13 +1167,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method createContext
-[Worker]     method createContextSync
 [Worker] interface MLActivation
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
-[Worker]     method computeSync
 [Worker]     method constructor
 [Worker] interface MLGraph
 [Worker]     attribute @@toStringTag
@@ -1186,7 +1184,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method argMin
 [Worker]     method averagePool2d
 [Worker]     method batchNormalization
-[Worker]     method buildSync
 [Worker]     method cast
 [Worker]     method ceil
 [Worker]     method clamp

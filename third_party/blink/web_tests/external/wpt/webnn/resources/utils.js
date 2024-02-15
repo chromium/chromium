@@ -1,7 +1,5 @@
 'use strict';
 
-const ExecutionArray = ['sync', 'async'];
-
 // https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
 const TypedArrayDict = {
   // workaround use Uint16 for Float16
@@ -793,25 +791,7 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
 };
 
 /**
- * Build a graph, synchronously compile graph and execute, then check computed results.
- * @param {String} operationName - An operation name
- * @param {MLContext} context - A ML context
- * @param {MLGraphBuilder} builder - A ML graph builder
- * @param {Object} resources - Resources used for building a graph
- * @param {Function} buildFunc - A build function for an operation
- */
-const runSync = (operationName, context, builder, resources, buildFunc) => {
-  // build a graph
-  const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
-  // synchronously compile the graph up to the output operand
-  const graph = builder.buildSync(namedOutputOperands);
-  // synchronously execute the compiled graph.
-  context.computeSync(graph, inputs, outputs);
-  checkResults(operationName, namedOutputOperands, outputs, resources);
-};
-
-/**
- * Build a graph, asynchronously compile graph and execute, then check computed results.
+ * Build a graph, compile graph and execute, then check computed results.
  * @param {String} operationName - An operation name
  * @param {MLContext} context - A ML context
  * @param {MLGraphBuilder} builder - A ML graph builder
@@ -821,9 +801,9 @@ const runSync = (operationName, context, builder, resources, buildFunc) => {
 const run = async (operationName, context, builder, resources, buildFunc) => {
   // build a graph
   const [namedOutputOperands, inputs, outputs] = buildGraph(operationName, builder, resources, buildFunc);
-  // asynchronously compile the graph up to the output operand
+  // compile the graph up to the output operand
   const graph = await builder.build(namedOutputOperands);
-  // asynchronously execute the compiled graph
+  // execute the compiled graph
   const result = await context.compute(graph, inputs, outputs);
   checkResults(operationName, namedOutputOperands, result.outputs, resources);
 };
@@ -842,41 +822,18 @@ const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
     operationNameArray = operationName;
   }
 
-  ExecutionArray.forEach(executionType => {
-    const isSync = executionType === 'sync';
-    if (self.GLOBAL.isWindow() && isSync) {
-      return;
-    }
-    let context;
-    let builder;
-    if (isSync) {
-      // test sync
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        setup(() => {
-          context = navigator.ml.createContextSync({deviceType});
-          builder = new MLGraphBuilder(context);
-        });
-        for (const subTest of tests) {
-          test(() => {
-            runSync(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
-    } else {
-      // test async
-      operationNameArray.forEach((subOperationName) => {
-        const tests = loadTests(subOperationName);
-        promise_setup(async () => {
-          context = await navigator.ml.createContext({deviceType});
-          builder = new MLGraphBuilder(context);
-        });
-        for (const subTest of tests) {
-          promise_test(async () => {
-            await run(subOperationName, context, builder, subTest, buildFunc);
-          }, `${subTest.name} / ${executionType}`);
-        }
-      });
+  let context;
+  let builder;
+  operationNameArray.forEach((subOperationName) => {
+    const tests = loadTests(subOperationName);
+    promise_setup(async () => {
+      context = await navigator.ml.createContext({deviceType});
+      builder = new MLGraphBuilder(context);
+    });
+    for (const subTest of tests) {
+      promise_test(async () => {
+        await run(subOperationName, context, builder, subTest, buildFunc);
+      }, `${subTest.name}`);
     }
   });
 };

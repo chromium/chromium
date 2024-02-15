@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -21,7 +22,6 @@ MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
 std::string TestVarietyToString(
     const ::testing::TestParamInfo<TestVariety>& info) {
   BackendType backend_type = info.param.backend_type;
-  ExecutionMode execution_mode = info.param.execution_mode;
   std::string name;
 
   switch (backend_type) {
@@ -41,14 +41,8 @@ std::string TestVarietyToString(
       break;
   }
 
-  switch (execution_mode) {
-    case ExecutionMode::kAsync:
-      name += "Async";
-      break;
-    case ExecutionMode::kSync:
-      name += "Sync";
-      break;
-  }
+  // TODO: crbug.com/40283536 - Remove this.
+  name += "Async";
   return name;
 }
 
@@ -56,46 +50,22 @@ BackendType MLGraphTestBase::GetBackendType() {
   return GetParam().backend_type;
 }
 
-ExecutionMode MLGraphTestBase::GetExecutionMode() {
-  return GetParam().execution_mode;
-}
-
 MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
     const MLNamedOperands& named_operands) {
-  switch (GetExecutionMode()) {
-    case ExecutionMode::kAsync: {
-      ScriptPromiseTester tester(
-          scope.GetScriptState(),
-          builder->build(scope.GetScriptState(), named_operands,
-                         scope.GetExceptionState()));
-      tester.WaitUntilSettled();
-      if (tester.IsFulfilled()) {
-        return BuildResult{.graph = ToMLGraph(&scope, tester.Value()),
-                           .exception = nullptr};
-      } else {
-        return BuildResult{.graph = nullptr,
-                           .exception = V8DOMException::ToWrappable(
-                               scope.GetIsolate(), tester.Value().V8Value())};
-      }
-    }
-    case ExecutionMode::kSync: {
-      auto* graph = builder->buildSync(scope.GetScriptState(), named_operands,
-                                       scope.GetExceptionState());
-      if (graph) {
-        return BuildResult{.graph = static_cast<MLGraph*>(graph),
-                           .exception = nullptr};
-      } else {
-        return BuildResult{
-            .graph = nullptr,
-            .exception = MakeGarbageCollected<DOMException>(
-                scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-                scope.GetExceptionState().Message())};
-      }
-    }
-    default:
-      NOTREACHED();
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      builder->build(scope.GetScriptState(), named_operands,
+                     scope.GetExceptionState()));
+  tester.WaitUntilSettled();
+  if (tester.IsFulfilled()) {
+    return BuildResult{.graph = ToMLGraph(&scope, tester.Value()),
+                       .exception = nullptr};
+  } else {
+    return BuildResult{.graph = nullptr,
+                       .exception = V8DOMException::ToWrappable(
+                           scope.GetIsolate(), tester.Value().V8Value())};
   }
 }
 
@@ -108,41 +78,23 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
                                             MLGraph* graph,
                                             MLNamedArrayBufferViews& inputs,
                                             MLNamedArrayBufferViews& outputs) {
-  switch (GetExecutionMode()) {
-    case ExecutionMode::kAsync: {
-      auto* resolver =
-          MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
-      ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-      graph->ComputeAsync(ScopedMLTrace("ComputeAsync"), inputs, outputs,
-                          resolver, scope.GetExceptionState());
-      tester.WaitUntilSettled();
-      if (tester.IsFulfilled()) {
-        // For `MLGraph::ComputeAsync()`, the input and output ArrayBufferViews
-        // are transferred. The new ArrayBufferViews are returned via the
-        // MLComputeResult. Set the inputs and outputs to the returned ones, so
-        // the user code could check the outputs in the same way as for
-        // `MLGraph::ComputeSync()`.
-        auto* results = ToMLComputeResult(&scope, tester.Value());
-        inputs = results->inputs();
-        outputs = results->outputs();
-        return nullptr;
-      } else {
-        return V8DOMException::ToWrappable(scope.GetIsolate(),
-                                           tester.Value().V8Value());
-      }
-    }
-    case ExecutionMode::kSync: {
-      graph->ComputeSync(inputs, outputs, scope.GetExceptionState());
-      if (scope.GetExceptionState().HadException()) {
-        return MakeGarbageCollected<DOMException>(
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            scope.GetExceptionState().Message());
-      } else {
-        return nullptr;
-      }
-    }
-    default:
-      NOTREACHED();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
+  graph->Compute(ScopedMLTrace("Compute"), inputs, outputs, resolver,
+                 scope.GetExceptionState());
+  tester.WaitUntilSettled();
+  if (tester.IsFulfilled()) {
+    // For `MLGraph::Compute()`, the input and output ArrayBufferViews
+    // are transferred. The new ArrayBufferViews are returned via the
+    // MLComputeResult. Set the inputs and outputs to the returned ones.
+    auto* results = ToMLComputeResult(&scope, tester.Value());
+    inputs = results->inputs();
+    outputs = results->outputs();
+    return nullptr;
+  } else {
+    return V8DOMException::ToWrappable(scope.GetIsolate(),
+                                       tester.Value().V8Value());
   }
 }
 

@@ -22,19 +22,13 @@ class ScriptPromiseResolver;
 // outside of Blink.
 class MODULES_EXPORT MLGraphMojo final : public MLGraph {
  public:
-  // Create and build an MLGraphMojo object. Resolve the promise with
-  // this concrete object if the graph builds successfully out of renderer
-  // process.
-  static void ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
-                                    MLContextMojo* context,
-                                    const MLNamedOperands& named_outputs,
-                                    ScriptPromiseResolver* resolver);
-
-  // Create and build an MLGraphMojo object.
-  static MLGraph* ValidateAndBuildSync(ScriptState* script_state,
-                                       MLContextMojo* context,
-                                       const MLNamedOperands& named_outputs,
-                                       ExceptionState& exception_state);
+  // Create and build an MLGraphMojo object. Resolve the promise with this
+  // concrete object if the graph builds successfully out of renderer process.
+  // The caller must call `Promise()` on `resolver` before calling this method.
+  static void ValidateAndBuild(ScopedMLTrace scoped_trace,
+                               MLContextMojo* context,
+                               const MLNamedOperands& named_outputs,
+                               ScriptPromiseResolver* resolver);
 
   MLGraphMojo(ScriptState* script_state, MLContextMojo* context);
   ~MLGraphMojo() override;
@@ -45,19 +39,15 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // Create `WebNNGraph` message pipe with `WebNNContext` mojo interface, then
   // build the computational graph with the hardware accelerated OS machine
   // learning API in the WebNN Service.
-  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
-                      const MLNamedOperands& outputs,
-                      ScriptPromiseResolver* resolver) override;
+  void BuildImpl(ScopedMLTrace scoped_trace,
+                 const MLNamedOperands& outputs,
+                 ScriptPromiseResolver* resolver) override;
 
-  MLGraph* BuildSyncImpl(ScriptState* script_state,
-                         const MLNamedOperands& named_outputs,
-                         ExceptionState& exception_state) override;
-
-  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
-                        const MLNamedArrayBufferViews& inputs,
-                        const MLNamedArrayBufferViews& outputs,
-                        ScriptPromiseResolver* resolver,
-                        ExceptionState& exception_state) override;
+  void ComputeImpl(ScopedMLTrace scoped_trace,
+                   const MLNamedArrayBufferViews& inputs,
+                   const MLNamedArrayBufferViews& outputs,
+                   ScriptPromiseResolver* resolver,
+                   ExceptionState& exception_state) override;
   // The callback of computing `WebNNGraph` by calling hardware accelerated OS
   // machine learning APIs.
   void OnDidCompute(
@@ -68,10 +58,6 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
       std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
           outputs_info,
       webnn::mojom::blink::ComputeResultPtr mojo_result);
-
-  void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
-                       const MLNamedArrayBufferViews& outputs,
-                       ExceptionState& exception_state) override;
 
   // The callback of creating `WebNNGraph` mojo interface from WebNN Service.
   // The returned `CreateGraphResultPtr` contains a `pending_remote<WebNNGraph>`
