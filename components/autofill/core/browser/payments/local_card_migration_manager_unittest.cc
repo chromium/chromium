@@ -317,8 +317,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   }
 
   payments::TestPaymentsAutofillClient& payments_autofill_client() {
-    return static_cast<payments::TestPaymentsAutofillClient&>(
-        *autofill_client_.GetPaymentsAutofillClient());
+    return *autofill_client_.GetPaymentsAutofillClient();
   }
 
   base::test::TaskEnvironment task_environment_;

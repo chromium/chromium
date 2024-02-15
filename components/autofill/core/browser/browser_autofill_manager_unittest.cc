@@ -421,7 +421,7 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
-  MOCK_METHOD(AutofillOptimizationGuide*,
+  MOCK_METHOD(MockAutofillOptimizationGuide*,
               GetAutofillOptimizationGuide,
               (),
               (const override));

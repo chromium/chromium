@@ -58,8 +58,7 @@ class IbanManagerTest : public testing::Test {
     ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
         .WillByDefault(testing::Return(gfx::test::CreateImage(100, 50)));
 
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client_.GetAutofillOptimizationGuide()),
+    ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
   }
@@ -493,8 +492,7 @@ TEST_F(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
   // the website is blocked.
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_.GetAutofillOptimizationGuide()),
+  ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
           ShouldBlockSingleFieldSuggestions)
       .WillByDefault(testing::Return(true));
 
@@ -580,8 +578,7 @@ TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
   // the website is blocked.
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_.GetAutofillOptimizationGuide()),
+  ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
           ShouldBlockSingleFieldSuggestions)
       .WillByDefault(testing::Return(true));
   // Simulate request for suggestions.

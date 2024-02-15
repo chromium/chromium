@@ -410,12 +410,10 @@ class CreditCardSaveManagerTest : public testing::Test {
         *autofill_client_.GetPersonalDataManager());
   }
   payments::TestPaymentsNetworkInterface& payments_network_interface() {
-    return static_cast<payments::TestPaymentsNetworkInterface&>(
-        *autofill_client_.GetPaymentsNetworkInterface());
+    return *autofill_client_.GetPaymentsNetworkInterface();
   }
   TestStrikeDatabase& strike_database() {
-    return static_cast<TestStrikeDatabase&>(
-        *autofill_client_.GetStrikeDatabase());
+    return *autofill_client_.GetStrikeDatabase();
   }
 
   base::test::TaskEnvironment task_environment_;
