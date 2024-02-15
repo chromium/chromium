@@ -267,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(result);
   EXPECT_EQ(result->token, token);
-  EXPECT_EQ(result->expiration, expiration);
+  // Expiration is "fuzzed" backward in time, so expect less-than.
+  EXPECT_LT(result->expiration, expiration);
 
   // Now create a new incognito mode profile (with a different associated
   // network context) and see whether we can request tokens from that.
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(incognito_result);
   EXPECT_EQ(incognito_result->token, token);
-  EXPECT_EQ(incognito_result->expiration, expiration);
+  EXPECT_LT(incognito_result->expiration, expiration);
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(second_attempt_result);
   EXPECT_EQ(second_attempt_result->token, token);
-  EXPECT_EQ(second_attempt_result->expiration, expiration);
+  EXPECT_LT(second_attempt_result->expiration, expiration);
 }
 
 IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
@@ -425,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   ASSERT_TRUE(main_profile_third_attempt_result);
   EXPECT_EQ(main_profile_third_attempt_result->token,
             main_profile_auth_token_getter_interceptor_->token());
-  EXPECT_EQ(main_profile_third_attempt_result->expiration,
+  EXPECT_LT(main_profile_third_attempt_result->expiration,
             main_profile_auth_token_getter_interceptor_->expiration());
 
   future.Clear();
@@ -437,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   ASSERT_TRUE(incognito_profile_third_attempt_result);
   EXPECT_EQ(incognito_profile_third_attempt_result->token,
             incognito_profile_auth_token_getter_interceptor_->token());
-  EXPECT_EQ(incognito_profile_third_attempt_result->expiration,
+  EXPECT_LT(incognito_profile_third_attempt_result->expiration,
             incognito_profile_auth_token_getter_interceptor_->expiration());
 
   DestroyIncognitoNetworkContextAndInterceptors();
@@ -549,12 +550,12 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderUserSettingBrowserTest,
 
   EXPECT_EQ(main_profile_second_attempt_result->token,
             main_profile_auth_token_getter_interceptor_->token());
-  EXPECT_EQ(main_profile_second_attempt_result->expiration,
+  EXPECT_LT(main_profile_second_attempt_result->expiration,
             main_profile_auth_token_getter_interceptor_->expiration());
 
   EXPECT_EQ(incognito_profile_second_attempt_result->token,
             incognito_profile_auth_token_getter_interceptor_->token());
-  EXPECT_EQ(incognito_profile_second_attempt_result->expiration,
+  EXPECT_LT(incognito_profile_second_attempt_result->expiration,
             incognito_profile_auth_token_getter_interceptor_->expiration());
 
   DestroyIncognitoNetworkContextAndInterceptors();

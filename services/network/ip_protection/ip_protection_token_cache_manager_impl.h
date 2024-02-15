@@ -59,6 +59,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   void DisableCacheManagementForTesting(
       base::OnceClosure on_cache_management_disabled);
 
+  void EnableTokenExpirationFuzzingForTesting(bool enable);
+
   // Requests tokens from the browser process and executes the provided callback
   // after the response is received.
   void CallTryGetAuthTokensForTesting();
@@ -78,6 +80,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   void MeasureTokenRates();
   void MaybeRefillCache();
   void ScheduleMaybeRefillCache();
+  base::Time FuzzTokenExpiration(base::Time expiration);
 
   // Batch size and cache low-water mark as determined from feature params at
   // construction time.
@@ -117,6 +120,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
   // If true, do not try to automatically refill the cache.
   bool disable_cache_management_for_testing_ = false;
+
+  // If false, token expiration is not fuzzed.
+  bool enable_token_expiration_fuzzing_for_testing_ = true;
 
   base::RepeatingTimer measurement_timer_;
 

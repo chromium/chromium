@@ -442,6 +442,12 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyAddHeaderToProxiedRequests;
 
+// Token expirations will have a random time between 5 seconds and this delta
+// subtracted from their expiration, in order to even out the load on the token
+// servers.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyExpirationFuzz;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

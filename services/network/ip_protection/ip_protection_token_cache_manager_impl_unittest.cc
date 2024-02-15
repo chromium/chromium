@@ -125,6 +125,12 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
             &remote_, network::mojom::IpProtectionProxyLayer::kProxyB,
             /* disable_cache_management_for_testing=*/true);
+
+    // Default to disabling token expiration fuzzing.
+    ipp_proxy_a_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
+        false);
+    ipp_proxy_b_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
+        false);
   }
 
   void ExpectHistogramState(HistogramState state) {
@@ -299,6 +305,22 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
   EXPECT_EQ(got_token.value()->token, "good-token");
   EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
   ExpectHistogramState(HistogramState{.success = 1, .failure = 0});
+}
+
+TEST_F(IpProtectionTokenCacheManagerImplTest, TokenExpirationFuzzed) {
+  ipp_proxy_a_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
+      true);
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens =
+      TokenBatch(1, kFutureExpiration);
+  mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
+  CallTryGetAuthTokensAndWait(network::mojom::IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  auto got_token = ipp_proxy_a_token_cache_manager_->GetAuthToken();
+  EXPECT_EQ(got_token.value()->token, "token-0");
+  EXPECT_LT(got_token.value()->expiration, kFutureExpiration);
+  base::TimeDelta fuzz_limit = net::features::kIpPrivacyExpirationFuzz.Get();
+  EXPECT_GE(got_token.value()->expiration, kFutureExpiration - fuzz_limit);
 }
 
 // If the `IpProtectionConfigGetter` is nullptr, no tokens are gotten,
