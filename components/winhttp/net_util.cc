@@ -6,6 +6,9 @@
 
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+
 namespace winhttp {
 
 HRESULT HRESULTFromLastError() {
@@ -30,7 +33,7 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }
-  DCHECK_EQ(0u, num_bytes % sizeof(wchar_t));
+  DUMP_WILL_BE_CHECK(num_bytes % sizeof(wchar_t) == 0);
   buffer.resize(num_bytes / sizeof(wchar_t));
   value->assign(buffer.begin(), buffer.end());
   return S_OK;

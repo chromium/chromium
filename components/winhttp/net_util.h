@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/check_op.h"
 
 namespace winhttp {
@@ -39,7 +40,7 @@ template <typename T>
 HRESULT QueryOption(HINTERNET handle, uint32_t option, T* value) {
   auto num_bytes = sizeof(*value);
   if (!::WinHttpQueryOption(handle, option, value, &num_bytes)) {
-    DCHECK_EQ(sizeof(*value), num_bytes);
+    DUMP_WILL_BE_CHECK(sizeof(*value) == num_bytes);
     return HRESULTFromLastError();
   }
   return S_OK;
