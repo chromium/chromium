@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SQUIGGLY_PROGRESS_VIEW_H_
-#define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SQUIGGLY_PROGRESS_VIEW_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_PROGRESS_VIEW_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_PROGRESS_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -17,15 +17,15 @@ namespace media_session {
 struct MediaPosition;
 }  // namespace media_session
 
-namespace media_message_center {
+namespace global_media_controls {
 
-class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
     : public views::BoxLayoutView,
       public gfx::AnimationDelegate {
-  METADATA_HEADER(MediaSquigglyProgressView, views::BoxLayoutView)
+  METADATA_HEADER(MediaProgressView, views::BoxLayoutView)
 
  public:
-  explicit MediaSquigglyProgressView(
+  explicit MediaProgressView(
       ui::ColorId playing_foreground_color_id,
       ui::ColorId playing_background_color_id,
       ui::ColorId paused_foreground_color_id,
@@ -33,10 +33,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
       ui::ColorId focus_ring_color_id,
       base::RepeatingCallback<void(bool)> dragging_callback,
       base::RepeatingCallback<void(double)> seek_callback);
-  MediaSquigglyProgressView(const MediaSquigglyProgressView&) = delete;
-  MediaSquigglyProgressView& operator=(const MediaSquigglyProgressView&) =
-      delete;
-  ~MediaSquigglyProgressView() override;
+  MediaProgressView(const MediaProgressView&) = delete;
+  MediaProgressView& operator=(const MediaProgressView&) = delete;
+  ~MediaProgressView() override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -127,6 +126,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   bool paused_for_dragging_ = false;
 };
 
-}  // namespace media_message_center
+}  // namespace global_media_controls
 
-#endif  // COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_SQUIGGLY_PROGRESS_VIEW_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_PROGRESS_VIEW_H_

@@ -5,10 +5,10 @@
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
-#include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -314,9 +314,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
       media_message_center::kMediaPreviousTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
-  // Create the squiggly progress view.
-  squiggly_progress_view_ = controls_row->AddChildView(
-      std::make_unique<media_message_center::MediaSquigglyProgressView>(
+  // Create the progress view.
+  progress_view_ =
+      controls_row->AddChildView(std::make_unique<MediaProgressView>(
           theme_.playing_progress_foreground_color_id,
           theme_.playing_progress_background_color_id,
           theme_.paused_progress_foreground_color_id,
@@ -326,7 +326,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
                               base::Unretained(this)),
           base::BindRepeating(&MediaItemUIDetailedView::SeekTo,
                               base::Unretained(this))));
-  controls_row->SetFlexForView(squiggly_progress_view_, 1);
+  controls_row->SetFlexForView(progress_view_, 1);
 
   // Create the next track button.
   CreateMediaButton(
@@ -340,9 +340,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
         controls_row, kNotMediaActionButtonId,
         media_message_center::kMediaCastStartIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
-    start_casting_button_->SetCallback(base::BindRepeating(
-        &MediaItemUIDetailedView::StartCastingButtonPressed,
-        base::Unretained(this)));
+    start_casting_button_->SetCallback(
+        base::BindRepeating(&MediaItemUIDetailedView::StartCastingButtonPressed,
+                            base::Unretained(this)));
     start_casting_button_->SetVisible(false);
   }
 
@@ -459,7 +459,7 @@ void MediaItemUIDetailedView::UpdateWithMediaActions(
 void MediaItemUIDetailedView::UpdateWithMediaPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
-  squiggly_progress_view_->UpdateProgress(position);
+  progress_view_->UpdateProgress(position);
 }
 
 void MediaItemUIDetailedView::UpdateWithMediaArtwork(
@@ -515,7 +515,7 @@ void MediaItemUIDetailedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 bool MediaItemUIDetailedView::OnKeyPressed(const ui::KeyEvent& event) {
   // As soon as the media view gets the focus, it should be able to handle key
   // events that can change the progress.
-  return squiggly_progress_view_->OnKeyPressed(event);
+  return progress_view_->OnKeyPressed(event);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -713,9 +713,8 @@ views::Button* MediaItemUIDetailedView::GetActionButtonForTesting(
   return (i == action_buttons_.end()) ? nullptr : *i;
 }
 
-media_message_center::MediaSquigglyProgressView*
-MediaItemUIDetailedView::GetProgressViewForTesting() {
-  return squiggly_progress_view_;
+MediaProgressView* MediaItemUIDetailedView::GetProgressViewForTesting() {
+  return progress_view_;
 }
 
 media_session::MediaPosition MediaItemUIDetailedView::GetPositionForTesting() {

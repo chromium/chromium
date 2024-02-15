@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_squiggly_progress_view.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
 
 #include "base/i18n/rtl.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -13,7 +13,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace media_message_center {
+namespace global_media_controls {
 
 namespace {
 
@@ -21,13 +21,12 @@ constexpr int kWidthInset = 8;
 
 }  // namespace
 
-class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
+class MediaProgressViewTest : public views::ViewsTestBase {
  public:
-  MediaSquigglyProgressViewTest() = default;
-  MediaSquigglyProgressViewTest(const MediaSquigglyProgressViewTest&) = delete;
-  MediaSquigglyProgressViewTest& operator=(
-      const MediaSquigglyProgressViewTest&) = delete;
-  ~MediaSquigglyProgressViewTest() override = default;
+  MediaProgressViewTest() = default;
+  MediaProgressViewTest(const MediaProgressViewTest&) = delete;
+  MediaProgressViewTest& operator=(const MediaProgressViewTest&) = delete;
+  ~MediaProgressViewTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -35,13 +34,11 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
     // This test just needs to construct a progress view, without caring about
     // what specific color IDs are used, so just use an arbitrary value.
     ui::ColorId id = ui::kUiColorsStart;
-    view_ =
-        widget_->SetContentsView(std::make_unique<MediaSquigglyProgressView>(
+    view_ = widget_->SetContentsView(std::make_unique<MediaProgressView>(
             id, id, id, id, id,
-            base::BindRepeating(
-                &MediaSquigglyProgressViewTest::OnProgressDragging,
+            base::BindRepeating(&MediaProgressViewTest::OnProgressDragging,
                 base::Unretained(this)),
-            base::BindRepeating(&MediaSquigglyProgressViewTest::SeekTo,
+            base::BindRepeating(&MediaProgressViewTest::SeekTo,
                                 base::Unretained(this))));
 
     widget_->SetBounds(gfx::Rect(500, 500));
@@ -56,18 +53,18 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  MediaSquigglyProgressView* view() const { return view_; }
+  MediaProgressView* view() const { return view_; }
 
   MOCK_METHOD1(OnProgressDragging, void(bool));
   MOCK_METHOD1(SeekTo, void(double));
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MediaSquigglyProgressView> view_ = nullptr;
+  raw_ptr<MediaProgressView> view_ = nullptr;
   std::string default_locale_;
 };
 
-TEST_F(MediaSquigglyProgressViewTest, MediaPlaying) {
+TEST_F(MediaProgressViewTest, MediaPlaying) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(300), /*end_of_media=*/false);
@@ -79,7 +76,7 @@ TEST_F(MediaSquigglyProgressViewTest, MediaPlaying) {
   EXPECT_FALSE(view()->is_live_for_testing());
 }
 
-TEST_F(MediaSquigglyProgressViewTest, MediaPaused) {
+TEST_F(MediaProgressViewTest, MediaPaused) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/0, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(150), /*end_of_media=*/false);
@@ -91,7 +88,7 @@ TEST_F(MediaSquigglyProgressViewTest, MediaPaused) {
   EXPECT_FALSE(view()->is_live_for_testing());
 }
 
-TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekTo) {
+TEST_F(MediaProgressViewTest, MouseEventSeekTo) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
@@ -126,7 +123,7 @@ TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekTo) {
   EXPECT_TRUE(view()->is_live_for_testing());
 }
 
-TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekToForRTL) {
+TEST_F(MediaProgressViewTest, MouseEventSeekToForRTL) {
   base::i18n::SetICUDefaultLocale("he");
 
   media_session::MediaPosition media_position(
@@ -151,7 +148,7 @@ TEST_F(MediaSquigglyProgressViewTest, MouseEventSeekToForRTL) {
   view()->OnMouseReleased(released_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, GestureEventSeekTo) {
+TEST_F(MediaProgressViewTest, GestureEventSeekTo) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
@@ -174,7 +171,7 @@ TEST_F(MediaSquigglyProgressViewTest, GestureEventSeekTo) {
   view()->OnGestureEvent(&released_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekBackward) {
+TEST_F(MediaProgressViewTest, KeyEventSeekBackward) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(60),
       /*position=*/base::Seconds(35), /*end_of_media=*/false);
@@ -187,7 +184,7 @@ TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekBackward) {
   view()->OnKeyPressed(key_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekBackwardToBeginning) {
+TEST_F(MediaProgressViewTest, KeyEventSeekBackwardToBeginning) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(60),
       /*position=*/base::Seconds(3), /*end_of_media=*/false);
@@ -200,7 +197,7 @@ TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekBackwardToBeginning) {
   view()->OnKeyPressed(key_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekForward) {
+TEST_F(MediaProgressViewTest, KeyEventSeekForward) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(60),
       /*position=*/base::Seconds(25), /*end_of_media=*/false);
@@ -213,7 +210,7 @@ TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekForward) {
   view()->OnKeyPressed(key_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekForwardToEnd) {
+TEST_F(MediaProgressViewTest, KeyEventSeekForwardToEnd) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(60),
       /*position=*/base::Seconds(57), /*end_of_media=*/false);
@@ -226,7 +223,7 @@ TEST_F(MediaSquigglyProgressViewTest, KeyEventSeekForwardToEnd) {
   view()->OnKeyPressed(key_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, DragProgressForPlayingMedia) {
+TEST_F(MediaProgressViewTest, DragProgressForPlayingMedia) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
@@ -254,7 +251,7 @@ TEST_F(MediaSquigglyProgressViewTest, DragProgressForPlayingMedia) {
   view()->OnMouseReleased(released_event);
 }
 
-TEST_F(MediaSquigglyProgressViewTest, DragProgressForPausedMedia) {
+TEST_F(MediaProgressViewTest, DragProgressForPausedMedia) {
   media_session::MediaPosition media_position(
       /*playback_rate=*/0, /*duration=*/base::Seconds(600),
       /*position=*/base::Seconds(100), /*end_of_media=*/false);
@@ -283,4 +280,4 @@ TEST_F(MediaSquigglyProgressViewTest, DragProgressForPausedMedia) {
   view()->OnMouseReleased(released_event);
 }
 
-}  // namespace media_message_center
+}  // namespace global_media_controls

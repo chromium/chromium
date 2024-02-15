@@ -26,7 +26,6 @@ class Label;
 namespace media_message_center {
 class MediaNotificationContainer;
 class MediaNotificationItem;
-class MediaSquigglyProgressView;
 }  // namespace media_message_center
 
 namespace ui {
@@ -35,10 +34,12 @@ struct AXNodeData;
 
 namespace global_media_controls {
 
+class MediaProgressView;
+
 namespace {
 class MediaButton;
 class MediaLabelButton;
-}
+}  // namespace
 
 // Indicates this media notification view will be displayed on which page. These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -77,8 +78,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
       media_message_center::MediaColorTheme theme,
       MediaDisplayPage media_display_page);
   MediaItemUIDetailedView(const MediaItemUIDetailedView&) = delete;
-  MediaItemUIDetailedView& operator=(const MediaItemUIDetailedView&) =
-      delete;
+  MediaItemUIDetailedView& operator=(const MediaItemUIDetailedView&) = delete;
   ~MediaItemUIDetailedView() override;
 
   // MediaNotificationView:
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   views::ImageView* GetChevronIconForTesting();
   views::Button* GetActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
-  media_message_center::MediaSquigglyProgressView* GetProgressViewForTesting();
+  MediaProgressView* GetProgressViewForTesting();
   media_session::MediaPosition GetPositionForTesting();
   views::Button* GetStartCastingButtonForTesting();
   MediaItemUIFooter* GetFooterForTesting();
@@ -138,12 +138,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Callback for a media action button being pressed.
   void MediaButtonPressed(views::Button* button);
 
-  // Callback for the user dragging the squiggly progress view. A playing media
-  // should be temporarily paused when the user is dragging the progress line.
+  // Callback for the user dragging the progress view. A playing media should be
+  // temporarily paused when the user is dragging the progress line.
   void OnProgressDragging(bool pause);
 
-  // Callback for when the media squiggly progress view wants to update the
-  // progress position.
+  // Callback for when the media progress view wants to update the progress
+  // position.
   void SeekTo(double seek_progress);
 
   // Callback for when the start casting button is toggled by user.
@@ -183,8 +183,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<MediaLabelButton> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
-  raw_ptr<media_message_center::MediaSquigglyProgressView>
-      squiggly_progress_view_ = nullptr;
+  raw_ptr<MediaProgressView> progress_view_ = nullptr;
   raw_ptr<MediaButton> play_pause_button_ = nullptr;
   raw_ptr<MediaButton> start_casting_button_ = nullptr;
   raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;

@@ -20,6 +20,7 @@ component("global_media_controls") {
     "public/views/media_item_ui_footer.h",
     "public/views/media_item_ui_list_view.h",
     "public/views/media_item_ui_view.h",
+    "public/views/media_progress_view.h",
   ]
 
   defines = [ "IS_GLOBAL_MEDIA_CONTROLS_IMPL" ]
@@ -60,6 +61,7 @@ component("global_media_controls") {
     "public/views/media_item_ui_footer.cc",
     "public/views/media_item_ui_list_view.cc",
     "public/views/media_item_ui_view.cc",
+    "public/views/media_progress_view.cc",
   ]
 
   friend = [ ":*" ]
@@ -75,6 +77,7 @@ source_set("unit_tests") {
     "public/views/media_item_ui_detailed_view_unittest.cc",
     "public/views/media_item_ui_list_view_unittest.cc",
     "public/views/media_item_ui_view_unittest.cc",
+    "public/views/media_progress_view_unittest.cc",
   ]
 
   deps = [
