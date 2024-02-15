@@ -238,6 +238,7 @@ class FormStructure {
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
+  // See FormFieldData::fields.
   const std::vector<std::unique_ptr<AutofillField>>& fields() const {
     return fields_;
   }
@@ -484,6 +485,7 @@ class FormStructure {
   size_t autofill_count_ = 0;
 
   // A vector of all the input fields in the form.
+  // See FormFieldData::fields.
   std::vector<std::unique_ptr<AutofillField>> fields_;
 
   // The number of fields that are part of the form signature and that are
