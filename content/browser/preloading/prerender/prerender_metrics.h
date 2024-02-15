@@ -171,22 +171,6 @@ void RecordPrerenderRedirectionProtocolChange(
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
-// Takes the headers of incoming navigation which can potentially activate a
-// prerendering navigation as the input, and compares them with the prerendering
-// navigation's. The comparison is order-insensitive and case-insensitive,
-// unlike converting the headers to strings and comparing the strings naively.
-// For each mismatch case, this function reports a record to UMA, so that we can
-// track the use of each header and tell if prerender sets all headers as
-// expected.
-// Assuming the given headers mismatch, this function will report a record if it
-// finds that everything matches. This record will be used to ensure the current
-// activation logic which compares the headers in strings is correct.
-void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
-    net::HttpRequestHeaders potential_activation_headers,
-    net::HttpRequestHeaders prerender_headers,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
-
 // Records ui::PageTransition of prerender activation navigation when transition
 // mismatch happens on prerender activation.
 void RecordPrerenderActivationTransition(

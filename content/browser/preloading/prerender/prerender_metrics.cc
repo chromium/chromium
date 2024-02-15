@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
@@ -93,6 +92,28 @@ void ReportHeaderMismatch(const std::string& key,
       GenerateHistogramName("Prerender.Experimental.ActivationHeadersMismatch",
                             trigger_type, embedder_histogram_suffix),
       HeaderMismatchHasher(base::ToLowerASCII(key), mismatch_type));
+}
+
+void ReportAllPrerenderMismatchedHeaders(
+    const std::vector<PrerenderMismatchedHeaders>& mismatched_headers,
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  for (const auto& mismatched_header : mismatched_headers) {
+    if (mismatched_header.initial_value.has_value() &&
+        mismatched_header.activation_value.has_value()) {
+      ReportHeaderMismatch(mismatched_header.header_name,
+                           HeaderMismatchType::kValueMismatch, trigger_type,
+                           embedder_histogram_suffix);
+    } else if (mismatched_header.initial_value.has_value()) {
+      ReportHeaderMismatch(mismatched_header.header_name,
+                           HeaderMismatchType::kMissingInActivation,
+                           trigger_type, embedder_histogram_suffix);
+    } else {
+      ReportHeaderMismatch(mismatched_header.header_name,
+                           HeaderMismatchType::kMissingInPrerendering,
+                           trigger_type, embedder_histogram_suffix);
+    }
+  }
 }
 
 // Called by MojoBinderPolicyApplier. This function records the Mojo interface
@@ -226,8 +247,12 @@ void PrerenderCancellationReason::ReportMetrics(
       CHECK(absl::holds_alternative<std::vector<PrerenderMismatchedHeaders>>(
                 explanation_) ||
             absl::holds_alternative<absl::monostate>(explanation_));
-      // TODO(https://crbug.com/1456673): Report
-      // ActivationNavigationParameterMismatch.
+      if (auto* mismatched_headers =
+              absl::get_if<std::vector<PrerenderMismatchedHeaders>>(
+                  &explanation_)) {
+        ReportAllPrerenderMismatchedHeaders(*mismatched_headers, trigger_type,
+                                            embedder_histogram_suffix);
+      }
       break;
     default:
       CHECK(absl::holds_alternative<absl::monostate>(explanation_));
@@ -345,66 +370,6 @@ void RecordPrerenderRedirectionProtocolChange(
           "Prerender.Experimental.CrossOriginRedirectionProtocolChange",
           trigger_type, embedder_histogram_suffix),
       change_type);
-}
-
-void AnalyzePrerenderActivationHeader(
-    net::HttpRequestHeaders potential_activation_headers,
-    net::HttpRequestHeaders prerender_headers,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  using HeaderPair = net::HttpRequestHeaders::HeaderKeyValuePair;
-  auto potential_header_dict = base::MakeFlatMap<std::string, std::string>(
-      potential_activation_headers.GetHeaderVector(), /*comp=default*/ {},
-      [](HeaderPair x) {
-        return std::make_pair(base::ToLowerASCII(x.key), x.value);
-      });
-
-  // Masking code for whether the corresponding enum has been removed or not.
-  // Instead of removing an element from flat_map, we set the mask bit as the
-  // cost of removal is O(N).
-  std::vector<bool> removal_set(potential_header_dict.size(), false);
-  bool detected = false;
-  for (auto& prerender_header : prerender_headers.GetHeaderVector()) {
-    std::string key = base::ToLowerASCII(prerender_header.key);
-    auto potential_it = potential_header_dict.find(key);
-    if (potential_it == potential_header_dict.end()) {
-      // The potential activation headers does not contain it.
-      ReportHeaderMismatch(key, HeaderMismatchType::kMissingInActivation,
-                           trigger_type, embedder_histogram_suffix);
-      detected = true;
-      continue;
-    }
-    if (!base::EqualsCaseInsensitiveASCII(prerender_header.value,
-                                          potential_it->second)) {
-      ReportHeaderMismatch(key, HeaderMismatchType::kValueMismatch,
-                           trigger_type, embedder_histogram_suffix);
-      detected = true;
-    }
-
-    // Remove it, since we will report the remaining ones, i.e., the headers
-    // that are not found in prerendering.
-    removal_set.at(potential_it - potential_header_dict.begin()) = true;
-  }
-
-  // Iterate over the remaining potential prerendering headers and report it to
-  // UMA.
-  for (auto potential_it = potential_header_dict.begin();
-       potential_it != potential_header_dict.end(); potential_it++) {
-    if (removal_set.at(potential_it - potential_header_dict.begin())) {
-      continue;
-    }
-    detected = true;
-    ReportHeaderMismatch(potential_it->first,
-                         HeaderMismatchType::kMissingInPrerendering,
-                         trigger_type, embedder_histogram_suffix);
-  }
-
-  // Use the empty string for the matching case; we use this value for detecting
-  // bug, that is, comparing strings is wrong.
-  if (!detected) {
-    ReportHeaderMismatch("", HeaderMismatchType::kMatch, trigger_type,
-                         embedder_histogram_suffix);
-  }
 }
 
 void RecordPrerenderActivationTransition(

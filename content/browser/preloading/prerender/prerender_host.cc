@@ -116,19 +116,8 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   prerender_headers.RemoveHeader("sec-ch-viewport-height");
   potential_activation_headers.RemoveHeader("sec-ch-viewport-height");
 
-  if (PrerenderHost::IsActivationHeaderMatch(potential_activation_headers,
-                                             prerender_headers, reason)) {
-    return true;
-  }
-
-  // The headers mismatch. Analyze the headers asynchronously.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&AnalyzePrerenderActivationHeader,
-                     std::move(potential_activation_headers),
-                     std::move(prerender_headers), trigger_type,
-                     embedder_histogram_suffix));
-  return false;
+  return PrerenderHost::IsActivationHeaderMatch(potential_activation_headers,
+                                                prerender_headers, reason);
 }
 
 // static
@@ -236,15 +225,6 @@ bool PrerenderHost::IsActivationHeaderMatch(
   std::sort(potential_header_list.begin(), potential_header_list.end(), cmp);
   std::sort(prerender_header_list.begin(), prerender_header_list.end(), cmp);
 
-  // The two vectors should be exactly the same if the headers are the same.
-  if (std::equal(potential_header_list.begin(), potential_header_list.end(),
-                 prerender_header_list.begin(), prerender_header_list.end(),
-                 same_predicate)) {
-    return true;
-  }
-
-  // If the two vectors are not exactly the same, it means that header mismatch
-  // occurred.
   std::unique_ptr<std::vector<PrerenderMismatchedHeaders>> mismatched_headers =
       std::make_unique<std::vector<PrerenderMismatchedHeaders>>();
 
@@ -288,7 +268,9 @@ bool PrerenderHost::IsActivationHeaderMatch(
                                      potential_header_list_it->value);
     potential_header_list_it++;
   }
-
+  if (mismatched_headers->empty()) {
+    return true;
+  }
   reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
   return false;
 }
