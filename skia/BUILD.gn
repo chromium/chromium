@@ -106,6 +106,9 @@ config("skia_config") {
   }
   if (is_ios) {
     defines += [ "SK_BUILD_FOR_IOS" ]
+    if (ios_is_app_extension) {
+      defines += [ "SK_BUILD_FOR_IOS_APP_EXTENSION" ]
+    }
   }
 
   if (is_win) {
