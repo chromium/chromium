@@ -40,7 +40,7 @@ class PlusAddressRequestError {
     http_response_code_.emplace(code);
   }
 
-  int http_response_code() const { return http_response_code_.value(); }
+  std::optional<int> http_response_code() const { return http_response_code_; }
 
  private:
   PlusAddressRequestErrorType error_type_;

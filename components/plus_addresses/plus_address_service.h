@@ -109,11 +109,12 @@ class PlusAddressService : public KeyedService,
   // This is only intended to be called by the `repeating_timer_`.
   //
   // TODO (crbug.com/1467623): Make this private when testing improves.
-  void SyncPlusAddressMapping();
+  // Virtual to allow overriding the behavior in tests.
+  virtual void SyncPlusAddressMapping();
 
   bool is_enabled() const;
 
- private:
+ protected:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
   //

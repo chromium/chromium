@@ -271,7 +271,8 @@ void PlusAddressService::HandlePollingError(PlusAddressRequestError error) {
     return;
   }
   if (!account_is_forbidden_.has_value() &&
-      error.http_response_code() == net::HTTP_FORBIDDEN) {
+      error.http_response_code().has_value() &&
+      error.http_response_code().value() == net::HTTP_FORBIDDEN) {
     // Only retry failed 403s up to the limit.
     if (initial_poll_retry_attempt_ < MAX_INITIAL_POLL_RETRY_ATTEMPTS) {
       initial_poll_retry_attempt_++;

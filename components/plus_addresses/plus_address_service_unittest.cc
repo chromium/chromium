@@ -16,6 +16,7 @@
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -25,10 +26,113 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace plus_addresses {
+
+class MockPlusAddressService : public PlusAddressService {
+ public:
+  MOCK_METHOD(void, SyncPlusAddressMapping, ());
+  void HandlePollingErrorForTesting(PlusAddressRequestError error) {
+    return this->HandlePollingError(error);
+  }
+  int initial_poll_retry_attempt() { return initial_poll_retry_attempt_; }
+  std::optional<bool> account_is_forbidden() { return account_is_forbidden_; }
+};
+
+TEST(PlusAddressService, HandlePollingError_NoopWhenFlagDisabled) {
+  testing::StrictMock<MockPlusAddressService> service;
+  // Make an error that we would attempt to retry.
+  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+  error.set_http_response_code(403);
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+}
+
+TEST(PlusAddressService, HandlePollingError_NoopForNonNetworkError) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {kDisableForForbiddenUsers.name, "true"},
+                                });
+  testing::StrictMock<MockPlusAddressService> service;
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
+  service.HandlePollingErrorForTesting(
+      PlusAddressRequestError(PlusAddressRequestErrorType::kOAuthError));
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+  service.HandlePollingErrorForTesting(
+      PlusAddressRequestError(PlusAddressRequestErrorType::kParsingError));
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+}
+
+TEST(PlusAddressService,
+     HandlePollingError_NoopWhenNetworkErrorMissingResponseCode) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {kDisableForForbiddenUsers.name, "true"},
+                                });
+  testing::StrictMock<MockPlusAddressService> service;
+  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+}
+
+TEST(PlusAddressService, HandlePollingError_NoopForNetworkErrorThatArent403) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {kDisableForForbiddenUsers.name, "true"},
+                                });
+  testing::StrictMock<MockPlusAddressService> service;
+  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+  error.set_http_response_code(404);
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+}
+
+TEST(PlusAddressService, HandlePollingError_IncrementsRetryCounter) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {kDisableForForbiddenUsers.name, "true"},
+                                });
+  testing::StrictMock<MockPlusAddressService> service;
+  // Make an error that we would attempt to retry.
+  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+  error.set_http_response_code(403);
+  EXPECT_EQ(service.initial_poll_retry_attempt(), 0);
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(1);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+  EXPECT_EQ(service.initial_poll_retry_attempt(), 1);
+}
+
+TEST(PlusAddressService, HandlePollingError_SetsAccountIsForbidden) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature, {
+                                    {kDisableForForbiddenUsers.name, "true"},
+                                });
+  testing::StrictMock<MockPlusAddressService> service;
+  // Make an error that we would attempt to retry.
+  PlusAddressRequestError error(PlusAddressRequestErrorType::kNetworkError);
+  error.set_http_response_code(403);
+  // Initial error handling attempts to retry the request.
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(1);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_FALSE(service.account_is_forbidden().has_value());
+  // If still failing with 403 after 1 retry, mark account as forbidden.
+  EXPECT_CALL(service, SyncPlusAddressMapping()).Times(0);
+  service.HandlePollingErrorForTesting(error);
+  EXPECT_TRUE(service.account_is_forbidden().has_value());
+  EXPECT_TRUE(service.account_is_forbidden().value());
+}
 
 class PlusAddressServiceTest : public ::testing::Test {
  protected:
