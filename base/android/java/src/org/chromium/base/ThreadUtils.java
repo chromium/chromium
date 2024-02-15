@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -32,9 +33,8 @@ public class ThreadUtils {
      * A helper object to ensure that interactions with a particular object only happens on a
      * particular thread.
      *
-     * Example:
-     * <pre>
-     * {@code
+     * <pre>Example:
+     *
      * class Foo {
      *     // Valid thread is set during construction here.
      *     private final ThreadChecker mThreadChecker = new ThreadChecker();
@@ -43,11 +43,19 @@ public class ThreadUtils {
      *         mThreadChecker.assertOnValidThread();
      *     }
      * }
-     * }
      * </pre>
      */
+    // TODO(b/274802355): Add @CheckDiscard once R8 can remove this.
     public static class ThreadChecker {
-        private final long mThreadId = Process.myTid();
+        private long mThreadId;
+
+        public ThreadChecker() {
+            resetThreadId();
+        }
+
+        public void resetThreadId() {
+            mThreadId = BuildConfig.ENABLE_ASSERTS ? Process.myTid() : 0;
+        }
 
         /**
          * Asserts that the current thread is the same as the one the ThreadChecker was constructed
