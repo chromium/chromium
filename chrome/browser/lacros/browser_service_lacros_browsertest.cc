@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
@@ -490,14 +491,8 @@ class BrowserServiceLacrosWindowlessBrowserTest
   }
 };
 
-// TODO(crbug.com/1447850) This test constantly fail for internal builder.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_HandlesUncleanExit DISABLED_HandlesUncleanExit
-#else
-#define MAYBE_HandlesUncleanExit HandlesUncleanExit
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
-                       MAYBE_HandlesUncleanExit) {
+                       HandlesUncleanExit) {
   // Browser launch should be suppressed with the kNoStartupWindow switch.
   ASSERT_FALSE(browser());
 
@@ -519,9 +514,10 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
                 /*profile_id=*/std::nullopt, CreationResult::kUnknown);
 
   EXPECT_FALSE(ProfilePicker::IsOpen());
-  views::BubbleDialogDelegate* crash_bubble_delegate =
-      SessionCrashedBubbleView::GetInstanceForTest();
-  EXPECT_TRUE(crash_bubble_delegate);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return SessionCrashedBubbleView::GetInstanceForTest() != nullptr;
+  }));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
