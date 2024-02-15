@@ -19,6 +19,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -72,7 +73,7 @@ public class ReadAloudController
                 ApplicationStatus.ApplicationStateListener,
                 InsetObserver.WindowInsetObserver {
     private static final String TAG = "ReadAloudController";
-
+    private static final Class<RestoreState> USER_DATA_KEY = RestoreState.class;
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplierImpl<String> mReadabilitySupplier =
@@ -121,7 +122,7 @@ public class ReadAloudController
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
     // settings respectively.
-    private class RestoreState {
+    private class RestoreState implements UserData {
         // Tab to play.
         private final Tab mTab;
         // Paragraph index to resume from.
@@ -132,6 +133,7 @@ public class ReadAloudController
         private final boolean mPlaying;
         // Value of dateModified tag or 0
         private final long mDateModified;
+        private final PlaybackData mData;
 
         /**
          * Constructor.
@@ -161,6 +163,7 @@ public class ReadAloudController
                 @Nullable Boolean shouldPlayOverride,
                 long dateModified) {
             mTab = tab;
+            mData = data;
             mDateModified = dateModified;
             if (data == null) {
                 mParagraphIndex = 0;
@@ -177,8 +180,22 @@ public class ReadAloudController
             }
         }
 
+        Tab getTab() {
+            return mTab;
+        }
+
+        long getDateModified() {
+            return mDateModified;
+        }
+
+        @Nullable
+        PlaybackData getPlaybackData() {
+            return mData;
+        }
+
         /** Apply the saved playback state. */
         void restore() {
+            maybeInitializePlaybackHooks();
             createTabPlayback(mTab, mDateModified)
                     .then(
                             playback -> {
@@ -346,6 +363,16 @@ public class ReadAloudController
                                 Tab tab, @Nullable WindowAndroid window) {
                             super.onActivityAttachmentChanged(tab, window);
                             Log.d(TAG, "onActivityAttachmentChanged");
+                            if (mCurrentlyPlayingTab != null
+                                    && mCurrentlyPlayingTab.getId() == tab.getId()) {
+                                Log.d(TAG, "Saving state");
+                                RestoreState state =
+                                        new RestoreState(
+                                                mCurrentlyPlayingTab,
+                                                mCurrentPlaybackData,
+                                                mDateModified);
+                                tab.getUserDataHost().setUserData(USER_DATA_KEY, state);
+                            }
                             maybeStopPlayback(tab);
                         }
 
@@ -364,6 +391,24 @@ public class ReadAloudController
                                     if (mPlayback != null) {
                                         mPlayerCoordinator.restorePlayers();
                                     }
+                                }
+                                RestoreState restored =
+                                        tab.getUserDataHost().getUserData(USER_DATA_KEY) != null
+                                                ? tab.getUserDataHost().getUserData(USER_DATA_KEY)
+                                                : null;
+                                if (restored != null
+                                        && restored.getTab().getUrl().equals(tab.getUrl())) {
+                                    Log.d(
+                                            TAG,
+                                            "Restore state: swapping tab from the old activity with"
+                                                    + " this one");
+                                    RestoreState updatedRestored =
+                                            new RestoreState(
+                                                    tab,
+                                                    restored.getPlaybackData(),
+                                                    restored.getDateModified());
+                                    updatedRestored.restore();
+                                    tab.getUserDataHost().removeUserData(USER_DATA_KEY);
                                 }
                             }
                         }
@@ -519,6 +564,14 @@ public class ReadAloudController
 
     private Promise<Long> extractDateModified(Tab tab) {
         assert tab.getUrl().isValid();
+        maybeInitializePlaybackHooks();
+        if (mExtractor == null) {
+            mExtractor = mPlaybackHooks.createExtractor();
+        }
+        return mExtractor.getDateModified(tab);
+    }
+
+    private void maybeInitializePlaybackHooks() {
         if (mPlaybackHooks == null) {
             mPlaybackHooks =
                     sPlaybackHooksForTesting != null
@@ -527,10 +580,6 @@ public class ReadAloudController
             mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
             mPlayerCoordinator.addObserver(this);
         }
-        if (mExtractor == null) {
-            mExtractor = mPlaybackHooks.createExtractor();
-        }
-        return mExtractor.getDateModified(tab);
     }
 
     private Promise<Playback> createTabPlayback(Tab tab, long dateModified) {
@@ -547,6 +596,7 @@ public class ReadAloudController
         mTranslationObserverHandle =
                 TranslateBridge.addTranslationObserver(
                         mCurrentlyPlayingTab.getWebContents(), mTranslationObserver);
+
         if (!mPlaybackHooks.voicesInitialized()) {
             mPlaybackHooks.initVoices();
         }

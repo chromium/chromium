@@ -358,6 +358,52 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testOnActivityAttachmentChanged_saveAndRestoreState() {
+        // start playing a tab
+        mController.playTab(mTab);
+        resolvePromises();
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // now detach the playing tab
+        mController
+                .getTabModelTabObserverforTests()
+                .onActivityAttachmentChanged(mTab, /* window= */ null);
+
+        verify(mPlayerCoordinator).dismissPlayers();
+        verify(mPlayback).release();
+
+        // Load a different tab. Playback shouldn't be restored
+        // Load the previously playing tab. Saved playback state should be restored.
+        Tab tab = mTabModelSelector.addMockTab();
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                tab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+
+        verify(mPlaybackHooks, times(1)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+
+        // Load the previously playing tab. Saved playback state should be restored.
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                mTab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+
+        // Loading the same tab should not re-trigger playback
+        TabModelUtils.selectTabById(
+                mTabModelSelector,
+                mTab.getId(),
+                TabSelectionType.FROM_NEW,
+                /* skipLoadingTab= */ true);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+    }
+
+    @Test
     public void testReloadPage_errorUiDismissed() {
         // start a playback with an error
         mController.playTab(mTab);
