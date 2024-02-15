@@ -77,7 +77,7 @@ void CullRect::ApplyTransform(const TransformPaintPropertyNode& transform) {
                                           rect_);
 }
 
-bool CullRect::ApplyScrollTranslation(
+std::pair<bool, bool> CullRect::ApplyScrollTranslation(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& scroll_translation,
     bool disable_expansion) {
@@ -87,35 +87,38 @@ bool CullRect::ApplyScrollTranslation(
   gfx::Rect container_rect = scroll->ContainerRect();
   rect_.Intersect(container_rect);
   if (rect_.IsEmpty()) {
-    return false;
+    return {false, false};
   }
 
   ApplyTransform(scroll_translation);
 
   if (disable_expansion) {
-    return false;
+    return {false, false};
   }
   // kNotPreferred is used for selects/inputs which don't benefit from
   // composited scrolling.
   if (scroll->GetCompositedScrollingPreference() ==
       CompositedScrollingPreference::kNotPreferred) {
-    return false;
+    return {false, false};
   }
 
   gfx::Rect contents_rect = scroll->ContentsRect();
   int scroll_range_x = contents_rect.width() - container_rect.width();
   int scroll_range_y = contents_rect.height() - container_rect.height();
   if (scroll_range_x <= 0 && scroll_range_y <= 0) {
-    return false;
+    return {false, false};
   }
 
   // Expand the cull rect for scrolling contents for composited scrolling.
+  std::pair<bool, bool> expanded{true, true};
   int outset = LocalPixelDistanceToExpand(root_transform, scroll_translation);
   if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
     if (scroll_range_x <= 0) {
       rect_.Outset(gfx::Outsets::VH(outset, 0));
+      expanded.first = false;
     } else if (scroll_range_y <= 0) {
       rect_.Outset(gfx::Outsets::VH(0, outset));
+      expanded.second = false;
     } else {
       // If scroller is scrollable in both axes, expand by half to prevent the
       // area of the cull rect from being too big (thus probably too slow to
@@ -136,7 +139,7 @@ bool CullRect::ApplyScrollTranslation(
     rect_.Outset(outset);
   }
   rect_.Intersect(contents_rect);
-  return true;
+  return expanded;
 }
 
 bool CullRect::ApplyPaintPropertiesWithoutExpansion(
@@ -219,7 +222,7 @@ bool CullRect::ApplyPaintProperties(
   // translation's transform/clip.
   const auto* last_transform = &source.Transform();
   const auto* last_clip = &source.Clip();
-  bool expanded = false;
+  std::pair<bool, bool> expanded(false, false);
 
   // For now effects (especially pixel-moving filters) are not considered in
   // this class. The client has to use infinite cull rect in the case.
@@ -286,7 +289,7 @@ bool CullRect::ApplyPaintProperties(
     rect_.set_height(kReasonablePixelLimit - rect_.y());
 
   std::optional<gfx::Rect> expansion_bounds;
-  if (expanded) {
+  if (expanded.first || expanded.second) {
     DCHECK(last_transform->ScrollNode());
     expansion_bounds = last_transform->ScrollNode()->ContentsRect();
     if (last_transform != &destination.Transform() ||
@@ -317,40 +320,56 @@ bool CullRect::ApplyPaintProperties(
       rect_.Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
-      expanded = true;
+      expanded.first = true;
     }
     if (rect_.height() < pixel_distance_to_expand) {
       rect_.Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
-      expanded = true;
+      expanded.second = true;
     }
   }
 
-  if (expanded && old_cull_rect &&
-      !ChangedEnough(*old_cull_rect, expansion_bounds))
+  if (old_cull_rect &&
+      !ChangedEnough(expanded, *old_cull_rect, expansion_bounds)) {
     rect_ = old_cull_rect->Rect();
+  }
 
-  return expanded;
+  return expanded.first || expanded.second;
 }
 
 bool CullRect::ChangedEnough(
+    const std::pair<bool, bool>& expanded,
     const CullRect& old_cull_rect,
     const std::optional<gfx::Rect>& expansion_bounds) const {
   const auto& new_rect = Rect();
   const auto& old_rect = old_cull_rect.Rect();
-  if (old_rect.Contains(new_rect))
+  if (old_rect.IsEmpty() && new_rect.IsEmpty()) {
     return false;
-  if (old_rect.IsEmpty() && new_rect.IsEmpty())
+  }
+
+  // Any change in the non-expanded direction should be respected.
+  if (!expanded.first &&
+      (rect_.x() != old_rect.x() || rect_.width() != old_rect.width())) {
+    return true;
+  }
+  if (!expanded.second &&
+      (rect_.y() != old_rect.y() || rect_.height() != old_rect.height())) {
+    return true;
+  }
+
+  if (old_rect.Contains(new_rect)) {
     return false;
-
-  if (old_rect.IsEmpty())
+  }
+  if (old_rect.IsEmpty()) {
     return true;
+  }
 
-  auto expanded_old_rect = old_rect;
-  expanded_old_rect.Outset(kChangedEnoughMinimumDistance);
-  if (!expanded_old_rect.Contains(new_rect))
+  auto old_rect_with_threshold = old_rect;
+  old_rect_with_threshold.Outset(kChangedEnoughMinimumDistance);
+  if (!old_rect_with_threshold.Contains(new_rect)) {
     return true;
+  }
 
   // The following edge checking logic applies only when the bounds (which were
   // used to clip the cull rect) are known.
@@ -372,17 +391,21 @@ bool CullRect::ChangedEnough(
   // pixels away from the current rect. Without additional logic for this case,
   // we will continue using the old cull rect.
   if (rect_.x() == expansion_bounds->x() &&
-      old_cull_rect.Rect().x() != expansion_bounds->x())
+      old_rect.x() != expansion_bounds->x()) {
     return true;
+  }
   if (rect_.y() == expansion_bounds->y() &&
-      old_cull_rect.Rect().y() != expansion_bounds->y())
+      old_rect.y() != expansion_bounds->y()) {
     return true;
+  }
   if (rect_.right() == expansion_bounds->right() &&
-      old_cull_rect.Rect().right() != expansion_bounds->right())
+      old_rect.right() != expansion_bounds->right()) {
     return true;
+  }
   if (rect_.bottom() == expansion_bounds->bottom() &&
-      old_cull_rect.Rect().bottom() != expansion_bounds->bottom())
+      old_rect.bottom() != expansion_bounds->bottom()) {
     return true;
+  }
 
   return false;
 }

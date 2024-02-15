@@ -67,8 +67,8 @@ class PLATFORM_EXPORT CullRect {
  private:
   friend class CullRectTest;
 
-  // Returns whether the cull rect is expanded.
-  bool ApplyScrollTranslation(
+  // Returns whether the cull rect is expanded along x and y axes.
+  std::pair<bool, bool> ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation,
       bool disable_expansion);
@@ -80,7 +80,8 @@ class PLATFORM_EXPORT CullRect {
       const PropertyTreeState& source,
       const PropertyTreeState& destination);
 
-  bool ChangedEnough(const CullRect& old_cull_rect,
+  bool ChangedEnough(const std::pair<bool, bool>& expanded,
+                     const CullRect& old_cull_rect,
                      const std::optional<gfx::Rect>& expansion_bounds) const;
 
   gfx::Rect rect_;
