@@ -419,6 +419,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 preference -> {
                     PasswordManagerLauncher.showPasswordSettings(
                             getActivity(),
+                            getProfile(),
                             ManagePasswordsReferrer.CHROME_SETTINGS,
                             mModalDialogManagerSupplier,
                             /* managePasskeys= */ false);

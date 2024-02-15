@@ -9,6 +9,7 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -23,12 +24,14 @@ public class PasswordManagerLauncher {
      * Launches the password settings.
      *
      * @param context current activity context
+     * @param profile the {@link Profile} associated with the passwords.
      * @param referer specifies on whose behalf the PasswordManager will be opened
      * @param modalDialogManagerSupplier ModalDialogManager supplier to be used by loading dialog.
      * @param managePasskeys the content to be managed
      */
     public static void showPasswordSettings(
             Context context,
+            Profile profile,
             @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys) {
@@ -36,7 +39,7 @@ public class PasswordManagerLauncher {
                 context,
                 referrer,
                 new SettingsLauncherImpl(),
-                SyncServiceFactory.get(),
+                SyncServiceFactory.getForProfile(profile),
                 modalDialogManagerSupplier,
                 managePasskeys);
     }
@@ -50,6 +53,7 @@ public class PasswordManagerLauncher {
         if (window == null) return;
         showPasswordSettings(
                 window.getActivity().get(),
+                Profile.fromWebContents(webContents),
                 referrer,
                 () -> window.getModalDialogManager(),
                 managePasskeys);

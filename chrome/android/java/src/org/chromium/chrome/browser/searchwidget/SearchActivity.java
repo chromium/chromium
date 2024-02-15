@@ -310,6 +310,9 @@ public class SearchActivity extends AsyncInitializationActivity
                                 () ->
                                         PasswordManagerLauncher.showPasswordSettings(
                                                 this,
+                                                getProfileProviderSupplier()
+                                                        .get()
+                                                        .getOriginalProfile(),
                                                 ManagePasswordsReferrer.CHROME_SETTINGS,
                                                 () -> getModalDialogManager(),
                                                 /* managePasskeys= */ false),

@@ -1372,6 +1372,7 @@ public class RootUiCoordinator
                             () -> {
                                 PasswordManagerLauncher.showPasswordSettings(
                                         mActivity,
+                                        mProfileSupplier.get(),
                                         ManagePasswordsReferrer.CHROME_SETTINGS,
                                         mModalDialogManagerSupplier,
                                         /* managePasskeys= */ false);
