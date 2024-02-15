@@ -55,11 +55,6 @@ struct ChromeMLModelData {
   // Called when the model_proto data is no longer needed.
   const ChromeMLDisposeFn* model_proto_dispose;
 
-  // DEPRECATED: Use weights_file instead.
-  void* weights_data;
-  size_t weights_size;
-  const ChromeMLDisposeFn* weights_dispose;
-
   // File holding the weights data. The file will be owned by the inference
   // library and closed once weight loading is complete.
   PlatformFile weights_file;

@@ -54,7 +54,6 @@ class OnDeviceModelExecutor
 
   void DisposeSentencepiece();
   void DisposeModelProto();
-  void DisposeWeights();
 
   static void Schedule(uintptr_t context, std::function<void()>* fn);
 
@@ -62,7 +61,6 @@ class OnDeviceModelExecutor
 
   std::unique_ptr<base::MemoryMappedFile> sentencepiece_model_proto_;
   std::unique_ptr<base::MemoryMappedFile> model_proto_;
-  std::unique_ptr<base::MemoryMappedFile> weights_;
   base::MemoryMappedFile ts_data_;
   base::MemoryMappedFile ts_sp_model_;
   scoped_refptr<LanguageDetector> language_detector_;
