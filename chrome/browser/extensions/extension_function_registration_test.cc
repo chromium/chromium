@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
   EXPECT_GT(factories.size(), 500u);
 
   std::set<std::string> seen_names;
-  std::set<functions::HistogramValue> seen_histograms;
+  std::map<functions::HistogramValue, std::string> seen_histograms;
 
   // The following are methods that are undocumented and may or may not ship
   // with a final API. We allow them to use the UNKNOWN histogram entry in the
@@ -65,7 +65,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
       ADD_FAILURE() << "Un-allowlisted API found using UNKNOWN histogram entry."
                     << entry.function_name_;
     } else {
-      EXPECT_TRUE(seen_histograms.insert(entry.histogram_value_).second);
+      bool is_success =
+          seen_histograms.emplace(entry.histogram_value_, entry.function_name_)
+              .second;
+      if (!is_success) {
+        ADD_FAILURE() << "Histogram " << entry.function_name_ << " with value "
+                      << entry.histogram_value_
+                      << " already exists with another name - "
+                      << seen_histograms.find(entry.histogram_value_)->second;
+      }
     }
   }
 }
