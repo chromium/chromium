@@ -34,7 +34,11 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   if (RuntimeEnabledFeatures::BlockRubyWrappingInlineRubyEnabled()) {
     LayoutObject* inline_ruby = FirstChild();
     if (!inline_ruby) {
-      inline_ruby = MakeGarbageCollected<LayoutRuby>(nullptr);
+      if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+        inline_ruby = MakeGarbageCollected<LayoutInline>(nullptr);
+      } else {
+        inline_ruby = MakeGarbageCollected<LayoutRuby>(nullptr);
+      }
       inline_ruby->SetDocumentForAnonymous(&GetDocument());
       ComputedStyleBuilder new_style_builder =
           GetDocument()

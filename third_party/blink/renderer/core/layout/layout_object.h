@@ -1004,6 +1004,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
+  // For line-breakable ruby. This returns true only if RubyLineBreakable
+  // flag is enabled.
+  bool IsInlineRuby() const;
+  // For line-breakable ruby. This returns true only if RubyLineBreakable
+  // flag is enabled.
+  bool IsInlineRubyText() const;
   virtual bool IsTable() const {
     NOT_DESTROYED();
     return false;

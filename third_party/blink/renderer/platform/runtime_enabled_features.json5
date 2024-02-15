@@ -3321,6 +3321,10 @@
       depends_on: ["CssDisplayRuby"],
     },
     {
+      // crbug.com/324111880
+      name: "RubyLineBreakable",
+    },
+    {
       name: "RubySimplePairing",
       status: "stable",
     },

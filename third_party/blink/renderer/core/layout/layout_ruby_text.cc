@@ -8,7 +8,9 @@
 
 namespace blink {
 
-LayoutRubyText::LayoutRubyText(Element* element) : LayoutNGBlockFlow(element) {}
+LayoutRubyText::LayoutRubyText(Element* element) : LayoutNGBlockFlow(element) {
+  DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+}
 
 LayoutRubyText::~LayoutRubyText() = default;
 

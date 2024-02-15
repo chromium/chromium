@@ -60,6 +60,7 @@ LayoutRuby::LayoutRuby(Element* element)
       ruby_container_(RuntimeEnabledFeatures::RubySimplePairingEnabled()
                           ? MakeGarbageCollected<RubyContainer>(*this)
                           : nullptr) {
+  DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   if (element) {
     UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
   }

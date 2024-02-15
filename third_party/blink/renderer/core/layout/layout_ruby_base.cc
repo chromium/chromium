@@ -7,6 +7,7 @@
 namespace blink {
 
 LayoutRubyBase::LayoutRubyBase() : LayoutNGBlockFlow(nullptr) {
+  DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   SetInline(false);
 }
 

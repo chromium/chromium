@@ -420,12 +420,18 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutMathMLBlock>(element);
     case EDisplay::kRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
+      if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+        return MakeGarbageCollected<LayoutInline>(element);
+      }
       return MakeGarbageCollected<LayoutRuby>(element);
     case EDisplay::kBlockRuby:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
       return MakeGarbageCollected<LayoutRubyAsBlock>(element);
     case EDisplay::kRubyText:
       DCHECK(RuntimeEnabledFeatures::CssDisplayRubyEnabled());
+      if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+        return MakeGarbageCollected<LayoutInline>(element);
+      }
       return MakeGarbageCollected<LayoutRubyText>(element);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
@@ -498,6 +504,18 @@ bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
       return true;
   }
   return false;
+}
+
+bool LayoutObject::IsInlineRuby() const {
+  NOT_DESTROYED();
+  return RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
+         IsLayoutInline() && StyleRef().Display() == EDisplay::kRuby;
+}
+
+bool LayoutObject::IsInlineRubyText() const {
+  NOT_DESTROYED();
+  return RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
+         IsLayoutInline() && StyleRef().Display() == EDisplay::kRubyText;
 }
 
 bool LayoutObject::IsHR() const {
