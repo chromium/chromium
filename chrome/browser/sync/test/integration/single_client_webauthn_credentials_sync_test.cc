@@ -15,7 +15,6 @@
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -104,9 +103,7 @@ CreateEntityWithCustomClientTagHash(
 
 class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
  public:
-  SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
+  SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   ~SingleClientWebAuthnCredentialsSyncTest() override = default;
 
@@ -144,9 +141,6 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Adding a local passkey should sync to the server.

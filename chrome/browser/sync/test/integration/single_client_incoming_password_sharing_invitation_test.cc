@@ -24,7 +24,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -145,7 +144,7 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
         /*enabled_features=*/
         {password_manager::features::kPasswordManagerEnableReceiverService,
          syncer::kSharingOfferKeyPairBootstrap},
-        /*disabled_features=*/{switches::kUnoDesktop});
+        /*disabled_features=*/{});
   }
 
   sync_pb::CrossUserSharingPublicKey GetPublicKeyFromServer() const {
