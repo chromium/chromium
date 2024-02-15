@@ -498,7 +498,7 @@ VRP Panel members are also members of that chat.
 
 ### There is PII or other data in a report we do not want to publicly disclose.
 
-For these cases, please add the `SecurityEmbargo` hotlist (hotlistID: 1053360)
+For these cases, please add the `SecurityEmbargo` hotlist (hotlistID: 5432549)
 to the report. For cases of PII that can’t be permanently deleted for the
 report, this label should remain indefinitely.
 
