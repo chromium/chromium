@@ -57,11 +57,19 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
         mNativeDialog = 0;
     }
 
+    @Override
+    public boolean isUsingAccountStorage(String username) {
+        assert mNativeDialog != 0;
+        return PasswordEditDialogBridgeJni.get().isUsingAccountStorage(mNativeDialog, username);
+    }
+
     @NativeMethods
     interface Natives {
         void onDialogAccepted(
                 long nativePasswordEditDialogBridge, String username, String password);
 
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
+
+        boolean isUsingAccountStorage(long nativePasswordEditDialogBridge, String username);
     }
 }

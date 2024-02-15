@@ -26,8 +26,8 @@ class PasswordEditDialogProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> PASSWORD =
             new PropertyModel.WritableObjectPropertyKey<>("password");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> FOOTER =
-            new PropertyModel.ReadableObjectPropertyKey<>("footer");
+    static final PropertyModel.WritableObjectPropertyKey<String> FOOTER =
+            new PropertyModel.WritableObjectPropertyKey<>("footer");
 
     static final PropertyModel.ReadableObjectPropertyKey<Callback<String>>
             PASSWORD_CHANGED_CALLBACK =

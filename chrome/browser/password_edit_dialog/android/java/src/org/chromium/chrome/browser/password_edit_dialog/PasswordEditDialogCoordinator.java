@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.password_edit_dialog.PasswordEditDialo
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.ui.base.WindowAndroid;
@@ -52,11 +50,19 @@ class PasswordEditDialogCoordinator {
          * @param dialogAccepted Indicates whether the dialog was accepted or cancelled by the user.
          */
         void onDialogDismissed(boolean dialogAccepted);
+
+        /**
+         * Checks if the credential with the given username would be saved in the account storage.
+         *
+         * @param username The username, whose password is to be updated or saved (if it's new)
+         */
+        boolean isUsingAccountStorage(String username);
     }
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final PasswordEditDialogView mDialogView;
+    private final Delegate mDelegate;
 
     private PropertyModel mDialogModel;
     private PropertyModel mDialogViewModel;
@@ -103,22 +109,22 @@ class PasswordEditDialogCoordinator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDialogView = dialogView;
+        mDelegate = delegate;
         mMediator =
                 new PasswordEditDialogMediator(
                         mModalDialogManager, mContext.getResources(), delegate);
     }
 
     /**
-     * Shows the dialog asking if user wants to save the password and providing
-     * username & password editing capabilities.
-     * Possible user choices: Save, Never for this site, Cancel
+     * Shows the dialog asking if user wants to save the password and providing username & password
+     * editing capabilities. Possible user choices: Save, Never for this site, Cancel
      *
-     * @param savedUsernames The list of usernames that are already saved in password manager
-     *        for the current site.
+     * @param savedUsernames The list of usernames that are already saved in password manager for
+     *     the current site.
      * @param username Initially typed username that user will be able to edit
      * @param password Initially typed password that user will be able to edit
      * @param account The account name where the password will be saved. When the user is not signed
-     *         in the account is null.
+     *     in the account is null.
      */
     void showPasswordEditDialog(
             @NonNull String[] savedUsernames,
@@ -139,7 +145,8 @@ class PasswordEditDialogCoordinator {
                                 : R.string.password_manager_save_button);
         mDialogViewModel = createDialogViewModel(displayUsernamesList, username, password, account);
 
-        mMediator.initialize(mDialogViewModel, mDialogModel, Arrays.asList(savedUsernames));
+        mMediator.initialize(
+                mDialogViewModel, mDialogModel, Arrays.asList(savedUsernames), account);
         // The mediator needs to be initialized before the model change processor,
         // so that the callbacks handling changes from the view are not null
         // when the view is populated.
@@ -158,7 +165,10 @@ class PasswordEditDialogCoordinator {
                 .with(PasswordEditDialogProperties.PASSWORD, password)
                 .with(
                         PasswordEditDialogProperties.FOOTER,
-                        mContext.getString(getEditPasswordDialogFooterId(account), account))
+                        PasswordEditDialogMediator.createEditPasswordDialogFooter(
+                                account,
+                                mDelegate.isUsingAccountStorage(username),
+                                mContext.getResources()))
                 .with(PasswordEditDialogProperties.USERNAME, username)
                 .with(
                         PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
@@ -196,16 +206,6 @@ class PasswordEditDialogCoordinator {
     /** Dismisses the displayed dialog. */
     void dismiss() {
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
-    }
-
-    private @StringRes int getEditPasswordDialogFooterId(String account) {
-        if (TextUtils.isEmpty(account)) {
-            return BuildConfig.IS_CHROME_BRANDED
-                    ? R.string.password_edit_dialog_unsynced_footer_google
-                    : R.string.password_edit_dialog_unsynced_footer;
-        } else {
-            return R.string.password_edit_dialog_synced_footer_google;
-        }
     }
 
     private static List<String> removeEmptyStrings(List<String> strings) {

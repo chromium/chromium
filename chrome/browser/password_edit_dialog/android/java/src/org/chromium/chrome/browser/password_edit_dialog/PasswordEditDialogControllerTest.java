@@ -8,8 +8,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
 
@@ -111,7 +116,7 @@ public class PasswordEditDialogControllerTest {
                         .get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 r.getString(R.string.password_manager_update_button));
         if (mIsSignedIn) {
-            Assert.assertTrue(
+            assertTrue(
                     "Footer should contain user account name",
                     mCustomViewModel
                             .get(PasswordEditDialogProperties.FOOTER)
@@ -154,7 +159,7 @@ public class PasswordEditDialogControllerTest {
                         .get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 r.getString(R.string.password_manager_update_button));
         if (mIsSignedIn) {
-            Assert.assertTrue(
+            assertTrue(
                     "Footer should contain user account name",
                     mCustomViewModel
                             .get(PasswordEditDialogProperties.FOOTER)
@@ -198,7 +203,7 @@ public class PasswordEditDialogControllerTest {
                         .get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 r.getString(R.string.password_manager_save_button));
         if (mIsSignedIn) {
-            Assert.assertTrue(
+            assertTrue(
                     "Footer should contain user account name",
                     mCustomViewModel
                             .get(PasswordEditDialogProperties.FOOTER)
@@ -218,6 +223,23 @@ public class PasswordEditDialogControllerTest {
                 "Selected username doesn't match",
                 CHANGED_USERNAME,
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAME));
+    }
+
+    /** Tests that the description is changed when the username is changed appropriately. */
+    @Test
+    public void testDescriptionWhenUsernameChanged() {
+        createAndShowDialog(USERNAMES);
+        when(mDelegateMock.isUsingAccountStorage(CHANGED_USERNAME)).thenReturn(false);
+
+        Callback<String> usernameChangedCallback =
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
+        assertEquals(
+                mCustomViewModel.get(PasswordEditDialogProperties.FOOTER).contains(ACCOUNT_NAME),
+                mIsSignedIn);
+
+        usernameChangedCallback.onResult(CHANGED_USERNAME);
+        assertFalse(
+                mCustomViewModel.get(PasswordEditDialogProperties.FOOTER).contains(ACCOUNT_NAME));
     }
 
     /** Tests that correct username and password are propagated to the dialog accepted delegate */
@@ -247,10 +269,10 @@ public class PasswordEditDialogControllerTest {
         Callback<String> passwordChangedCallback =
                 mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK);
         passwordChangedCallback.onResult("");
-        Assert.assertTrue(
+        assertTrue(
                 "Accept button should be disabled when user enters empty password",
                 mModalDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
-        Assert.assertTrue(
+        assertTrue(
                 "Error should be displayed when user enters empty password",
                 mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD_ERROR) != null
                         && !mCustomViewModel
@@ -373,6 +395,7 @@ public class PasswordEditDialogControllerTest {
      * models for modal dialog and custom dialog view.
      */
     private void createAndShowDialog(String[] savedUserNames) {
+        when(mDelegateMock.isUsingAccountStorage(any())).thenReturn(mIsSignedIn);
         mDialogCoordinator =
                 new PasswordEditDialogCoordinator(
                         RuntimeEnvironment.getApplication(),
