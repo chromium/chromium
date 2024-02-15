@@ -433,7 +433,7 @@ def builder(
         branch_selector = branches.selector.MAIN,
         bucket = args.DEFAULT,
         executable = args.DEFAULT,
-        notifies = None,
+        notifies = args.DEFAULT,
         triggered_by = args.DEFAULT,
         os = args.DEFAULT,
         builderless = args.DEFAULT,
@@ -981,7 +981,8 @@ def builder(
         properties.setdefault("xcode_build_version", xcode.version)
     kwargs["caches"] = caches
 
-    kwargs["notifies"] = defaults.get_value("notifies", notifies, merge = args.MERGE_LIST)
+    if notifies != None:
+        kwargs["notifies"] = defaults.get_value("notifies", notifies, merge = args.MERGE_LIST)
 
     triggered_by = defaults.get_value("triggered_by", triggered_by)
     if triggered_by != args.COMPUTE:

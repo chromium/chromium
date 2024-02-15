@@ -102,6 +102,8 @@ def ci_builder(
         tree_closing_notifiers = args.listify("chromium-tree-closer", "chromium-tree-closer-email", tree_closing_notifiers)
 
         notifies = args.listify(notifies, tree_closing_notifiers)
+    if notifies:
+        kwargs["notifies"] = notifies
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
@@ -150,7 +152,6 @@ def ci_builder(
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         sheriff_rotations = sheriff_rotations,
-        notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
         **kwargs
