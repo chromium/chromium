@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_utils.h"
@@ -43,7 +44,7 @@
 // General pattern for implementing KcerToken methods:
 // * The received callbacks for the results must already be bound to correct
 // task runners (see base::BindPostTask), so it's not needed to manually post
-// them on any particular tast runner.
+// them on any particular task runner.
 // * Each method must advance task queue on completion. This is important
 // because before initialization and during other tasks all new tasks are stored
 // in the queue. It can only progress when a previous tasks advances the queue
@@ -926,17 +927,24 @@ scoped_refptr<const Cert> BuildKcerCert(
 
 }  // namespace
 
-KcerTokenImplNss::KcerTokenImplNss(Token token) : token_(token) {}
+KcerTokenImplNss::KcerTokenImplNss(Token token,
+                                   HighLevelChapsClient* chaps_client)
+    : token_(token),
+      kcer_utils_(std::make_unique<KcerTokenUtils>(token, chaps_client)) {}
 
 KcerTokenImplNss::~KcerTokenImplNss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   net::CertDatabase::GetInstance()->RemoveObserver(this);
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                 std::move(kcer_utils_));
 }
 
 void KcerTokenImplNss::InitializeForNss(crypto::ScopedPK11Slot nss_slot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (nss_slot) {
+    kcer_utils_->Initialize(
+        SessionChapsClient::SlotId(PK11_GetSlotID(nss_slot.get())));
     slot_ = std::move(nss_slot);
     net::CertDatabase::GetInstance()->AddObserver(this);
   } else {

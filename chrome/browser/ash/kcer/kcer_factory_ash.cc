@@ -44,11 +44,19 @@ const user_manager::User* GetUserByContext(content::BrowserContext* context) {
 void KcerFactoryAsh::EnsureFactoryBuilt() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetGlobalPointer()) {
-    GetGlobalPointer() = new KcerFactoryAsh();
+    KcerFactoryAsh* new_factory = new KcerFactoryAsh();
+    GetGlobalPointer() = new_factory;
+    // This assumes that CrosapiManager is created before the main message loop
+    // is running (i.e. before PostMainMessageLoopRun Chrome initialization
+    // stage) and postpones the initialization until after that. `new_factory`
+    // is never destroyed.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&KcerFactoryAsh::Initialize,
+                                  base::Unretained(new_factory)));
   }
 }
 
-KcerFactoryAsh::KcerFactoryAsh() {
+void KcerFactoryAsh::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (UseKcerWithoutNss()) {
     StartInitializingDeviceKcerWithoutNss();
@@ -263,12 +271,14 @@ void KcerFactoryAsh::InitializeDeviceKcerWithoutNss(
 // This method can in theory fail, but this shouldn't happen. In Ash the mojo
 // interface is implemented by Ash itself, so it should always be present.
 bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (IsHighLevelChapsClientInitialized()) {
     return true;
   }
 
   crosapi::mojom::ChapsService* chaps_service = nullptr;
-  if (crosapi::CrosapiManager::Get() &&
+  if (crosapi::CrosapiManager::IsInitialized() &&
+      crosapi::CrosapiManager::Get() &&
       crosapi::CrosapiManager::Get()->crosapi_ash()) {
     chaps_service =
         crosapi::CrosapiManager::Get()->crosapi_ash()->chaps_service_ash();

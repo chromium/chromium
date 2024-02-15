@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
+#include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
@@ -230,13 +231,13 @@ class KcerNssTest : public testing::Test {
     for (Token token_type : tokens) {
       if (token_type == Token::kUser) {
         CHECK(!user_token_ptr.MaybeValid());
-        user_token_ =
-            std::make_unique<TokenHolder>(token_type, /*initialize=*/true);
+        user_token_ = std::make_unique<TokenHolder>(token_type, &chaps_client_,
+                                                    /*initialize=*/true);
         user_token_ptr = user_token_->GetWeakPtr();
       } else if (token_type == Token::kDevice) {
         CHECK(!device_token_ptr.MaybeValid());
-        device_token_ =
-            std::make_unique<TokenHolder>(token_type, /*initialize=*/true);
+        device_token_ = std::make_unique<TokenHolder>(
+            token_type, &chaps_client_, /*initialize=*/true);
         device_token_ptr = device_token_->GetWeakPtr();
       }
     }
@@ -251,6 +252,7 @@ class KcerNssTest : public testing::Test {
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
   NotificationsObserver observer_;
   base::CallbackListSubscription observers_subscription_;
+  MockHighLevelChapsClient chaps_client_;
   std::unique_ptr<TokenHolder> user_token_;
   std::unique_ptr<TokenHolder> device_token_;
   std::unique_ptr<Kcer> kcer_;
@@ -276,7 +278,7 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
 // initialization completes (in this case - completes with a failure).
 TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   // Do not initialize yet to simulate slow initialization.
-  TokenHolder user_token(Token::kUser, /*initialize=*/false);
+  TokenHolder user_token(Token::kUser, &chaps_client_, /*initialize=*/false);
 
   std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
   std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
@@ -437,7 +439,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
 // Test that Kcer forwards notifications from external sources. (Notifications
 // created by Kcer are tested together with the methods that create them.)
 TEST_F(KcerNssTest, ObserveExternalNotification) {
-  TokenHolder user_token(Token::kUser, /*initialize=*/true);
+  TokenHolder user_token(Token::kUser, &chaps_client_, /*initialize=*/true);
 
   std::unique_ptr<Kcer> kcer =
       CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),

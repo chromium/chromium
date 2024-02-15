@@ -18,8 +18,10 @@ std::unique_ptr<KcerToken> KcerToken::CreateWithoutNss(
 }
 
 // static
-std::unique_ptr<KcerToken> KcerToken::CreateForNss(Token token) {
-  return std::make_unique<KcerTokenImplNss>(token);
+std::unique_ptr<KcerToken> KcerToken::CreateForNss(
+    Token token,
+    HighLevelChapsClient* chaps_client) {
+  return std::make_unique<KcerTokenImplNss>(token, chaps_client);
 }
 
 }  // namespace kcer::internal

@@ -28,7 +28,9 @@ class TokenHolder {
   // Creates a KcerToken of the type `token` and moves it to the IO thread. If
   // `initialize` then the KcerToken will be ready to process requests
   // immediately.
-  explicit TokenHolder(Token token, bool initialize);
+  explicit TokenHolder(Token token,
+                       HighLevelChapsClient* chaps_client,
+                       bool initialize);
   ~TokenHolder();
 
   // If KcerToken was not initialized on construction, this method makes it

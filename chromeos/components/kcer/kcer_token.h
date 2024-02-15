@@ -35,7 +35,9 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   static std::unique_ptr<KcerToken> CreateWithoutNss(
       Token token,
       HighLevelChapsClient* chaps_client);
-  static std::unique_ptr<KcerToken> CreateForNss(Token token);
+  static std::unique_ptr<KcerToken> CreateForNss(
+      Token token,
+      HighLevelChapsClient* chaps_client);
 
   KcerToken() = default;
   KcerToken(const KcerToken&) = delete;

@@ -15,10 +15,12 @@ class KcerFactoryAsh final : public KcerFactory {
  public:
   static void EnsureFactoryBuilt();
 
-  KcerFactoryAsh();
+  KcerFactoryAsh() = default;
   ~KcerFactoryAsh() override = default;
 
  private:
+  void Initialize();
+
   // Implements KcerFactory.
   base::WeakPtr<Kcer> GetKcerImpl(Profile* profile) override;
   bool IsPrimaryContext(content::BrowserContext* context) const override;

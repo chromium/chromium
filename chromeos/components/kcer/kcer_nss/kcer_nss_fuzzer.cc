@@ -17,6 +17,7 @@
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
@@ -592,6 +593,7 @@ class KcerFuzzer {
       base::test::TaskEnvironment::MainThreadType::UI,
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
 
+  MockHighLevelChapsClient chaps_client_;
   base::flat_map<Token, std::unique_ptr<TokenHolder>> available_tokens_;
   std::unique_ptr<Kcer> kcer_;
   // Keeps track of what Kcer is expected to contain.
@@ -632,8 +634,8 @@ void KcerFuzzer::InitializeKcer() {
 }
 
 base::WeakPtr<internal::KcerToken> KcerFuzzer::CreateToken(Token token) {
-  available_tokens_[token] =
-      std::make_unique<TokenHolder>(token, /*initialized=*/true);
+  available_tokens_[token] = std::make_unique<TokenHolder>(
+      token, &chaps_client_, /*initialized=*/true);
   return available_tokens_[token]->GetWeakPtr();
 }
 

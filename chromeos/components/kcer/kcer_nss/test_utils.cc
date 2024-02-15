@@ -30,8 +30,10 @@ std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
 }
 }  // namespace
 
-TokenHolder::TokenHolder(Token token, bool initialize) {
-  io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
+TokenHolder::TokenHolder(Token token,
+                         HighLevelChapsClient* chaps_client,
+                         bool initialize) {
+  io_token_ = std::make_unique<internal::KcerTokenImplNss>(token, chaps_client);
   io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
   weak_ptr_ = io_token_->GetWeakPtr();
   // After this point `io_token_` should only be used on the IO thread.

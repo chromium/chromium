@@ -14,8 +14,10 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
+#include "chromeos/components/kcer/kcer_token_utils.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/scoped_nss_types.h"
@@ -48,7 +50,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
     kInitializationFailed,
   };
 
-  explicit KcerTokenImplNss(Token token);
+  explicit KcerTokenImplNss(Token token, HighLevelChapsClient* chaps_client);
   ~KcerTokenImplNss() override;
 
   KcerTokenImplNss(const KcerTokenImplNss&) = delete;
@@ -151,7 +153,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
                        base::expected<void, Error> result);
 
   // These methods return PKCS#11 attribute IDs that should be passed to NSS,
-  // respecting SetAttribtueTranslationForTesting.
+  // respecting SetAttributeTranslationForTesting.
   KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
   CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
 
@@ -171,6 +173,11 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   std::deque<base::OnceClosure> task_queue_;
   // Cache for certificates.
   CertCacheNss cert_cache_;
+
+  // Created and initialized on the same thread with KcerTokenImplNss, then only
+  // accessed on the UI thread. It's safe to post tasks for it, the destruction
+  // task is posted from the destructor of this class.
+  std::unique_ptr<KcerTokenUtils> kcer_utils_;
 
   base::WeakPtrFactory<KcerTokenImplNss> weak_factory_{this};
 };
