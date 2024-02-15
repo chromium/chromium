@@ -175,6 +175,9 @@ public class ConfirmImportSyncDataDialogCoordinator {
             boolean isCurrentAccountManaged) {
         TextView prompt = mConfirmImportSyncDataView.findViewById(R.id.sync_import_data_prompt);
 
+        // TODO(crbug.com/323859372): Use sync_import_data_prompt_without_passwords below if local
+        // UPM is on. For the moment do a getString() here to prevent "resource unused" errors.
+        context.getString(R.string.sync_import_data_prompt_without_passwords);
         if (!mCheckIfDisplayableEmailAddress.test(currentAccountName)) {
             final String defaultAccountName =
                     context.getString(R.string.default_google_account_username);

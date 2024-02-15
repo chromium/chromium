@@ -2228,6 +2228,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SYNC_IMPORT_DATA_PROMPT" desc="Prompt for the user to choose how they want to handle their existing sync data">
          You have bookmarks, history, passwords, and other settings from <ph name ="FROM_ACCOUNT">%1$s<ex>johndoe@old.com</ex></ph>.
       </message>
+      <message name="IDS_SYNC_IMPORT_DATA_PROMPT_WITHOUT_PASSWORDS" desc="Prompt for the user to choose how they want to handle their existing sync data. Similar to IDS_SYNC_IMPORT_DATA_PROMPT but without mentioning passwords.">
+         You have bookmarks, history, and other settings from <ph name ="FROM_ACCOUNT">%1$s<ex>johndoe@old.com</ex></ph>.
+      </message>
       <message name="IDS_SYNC_IMPORT_EXISTING_DATA" desc="Option to import existing data to the newly selected sync account">
         Combine my data
       </message>
