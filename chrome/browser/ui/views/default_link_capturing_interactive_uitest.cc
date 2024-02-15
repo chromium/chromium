@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/web_contents.h"
@@ -251,19 +250,7 @@ class WebAppLinkCapturingIPHPromoTest
         ->bubble_view();
   }
 
-  void AwaitFeatureEngagementControllerReady() {
-    // Waiting for the feature engagement controller to be ready needs to happen
-    // earlier so that there's enough time for the availability_model to be ready.
-    // Doing it after launching the app is too late from a test perspective, and
-    // can lead to flakiness on slower systems. This is also the reason why the
-    // feature controller being used is tied to browser()->window() instead of
-    // app_browser->window().
-    auto* const controller = GetFeaturePromoController(browser());
-    EXPECT_TRUE(user_education::test::WaitForFeatureEngagementReady(controller));
-  }
-
   void SetUpSiteForLinkCapturingIphBubble(const webapps::AppId& app_id) {
-    AwaitFeatureEngagementControllerReady();
     EXPECT_EQ(
         apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
         base::ok());
@@ -303,7 +290,6 @@ class WebAppLinkCapturingIPHPromoTest
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingIPHPromoTest,
                        AppLaunchFromIntentChipShowsIPH) {
   const webapps::AppId app_id = InstallApp();
-  AwaitFeatureEngagementControllerReady();
 
   if (LinkCapturingEnabled()) {
     EXPECT_EQ(

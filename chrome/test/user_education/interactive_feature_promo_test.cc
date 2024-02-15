@@ -5,6 +5,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 
 #include <sstream>
+#include <utility>
 #include <variant>
 
 #include "base/feature_list.h"
@@ -31,7 +32,7 @@ InteractiveFeaturePromoTestApi::InteractiveFeaturePromoTestApi(
     : InteractiveBrowserTestApi(
           std::make_unique<internal::InteractiveFeaturePromoTestPrivate>(
               std::make_unique<InteractionTestUtilBrowser>(),
-              tracker_mode,
+              std::move(tracker_mode),
               clock_mode,
               initial_session_state)) {}
 
@@ -64,7 +65,8 @@ InteractiveFeaturePromoTestApi::WaitForFeatureEngagementReady() {
                }),
       ObserveState(kFeatureEngagementInitializedState,
                    [browser]() { return browser->data; }),
-      WaitForState(kFeatureEngagementInitializedState, true), FlushEvents());
+      WaitForState(kFeatureEngagementInitializedState, true), FlushEvents(),
+      StopObservingState(kFeatureEngagementInitializedState));
   AddDescription(steps, "WaitForFeatureEngagementReady() - %s");
   return steps;
 }

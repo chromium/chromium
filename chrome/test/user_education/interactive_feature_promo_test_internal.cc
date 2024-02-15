@@ -10,6 +10,8 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +29,7 @@
 #include "components/user_education/test/feature_promo_session_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace internal {
 
@@ -54,7 +57,7 @@ InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
     ClockMode clock_mode,
     InitialSessionState initial_session_state)
     : InteractiveBrowserTestPrivate(std::move(test_util)),
-      tracker_mode_(tracker_mode),
+      tracker_mode_(std::move(tracker_mode)),
       initial_session_state_(initial_session_state) {
   test_time_ = clock_mode == ClockMode::kUseTestClock
                    ? std::make_optional(base::Time::Now())
@@ -67,8 +70,8 @@ InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
   activation_lock_ = user_education::FeaturePromoControllerCommon::
       BlockActiveWindowCheckForTesting();
   if (const auto* const allow_promos =
-          std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode)) {
-    feature_list_.InitAndEnableFeatures(*allow_promos);
+          std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_)) {
+    feature_list_.InitAndEnableFeatures(allow_promos->features);
   }
 }
 
@@ -107,6 +110,26 @@ void InteractiveFeaturePromoTestPrivate::UpdateIdleState(NewTime time,
     if (data.test_util) {
       data.test_util->UpdateIdleState(last_active_time, screen_locked);
     }
+  }
+}
+
+void InteractiveFeaturePromoTestPrivate::MaybeWaitForTrackerInitialization(
+    Browser* browser) {
+  const auto* const mode =
+      std::get_if<UseDefaultTrackerAllowingPromos>(&tracker_mode_);
+  if (mode && mode->initialization_mode ==
+                  TrackerInitializationMode::kWaitForMainBrowser) {
+    auto* const tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser->profile());
+    ASSERT_NE(nullptr, tracker);
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    tracker->AddOnInitializedCallback(
+        base::BindLambdaForTesting([&run_loop](bool initialized) {
+          run_loop.Quit();
+          ASSERT_TRUE(initialized);
+        }));
+    run_loop.Run();
   }
 }
 

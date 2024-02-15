@@ -22,7 +22,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -50,20 +49,11 @@ class BatterySaverHelpPromoTest
     return static_cast<BrowserFeaturePromoController*>(
         browser()->window()->GetFeaturePromoController());
   }
-
-  bool WaitForFeatureTrackerInitialization() {
-    feature_engagement::Tracker* const tracker =
-        GetFeaturePromoController()->feature_engagement_tracker();
-    return user_education::test::WaitForFeatureEngagementReady(tracker);
-  }
 };
 
 // Check if the battery saver in-product help promo is shown when the mode is
 // first activated and confirm it is dismissed when the button is clicked.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
-  bool initialized = WaitForFeatureTrackerInitialization();
-  ASSERT_TRUE(initialized);
-
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       user_education::HelpBubbleView::kViewClassName);
@@ -86,9 +76,6 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
 // Check if the battery saver in-product help promo is closed if the promo is
 // active when the mode is deactivated.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, HidePromoOnModeDeactivation) {
-  bool initialized = WaitForFeatureTrackerInitialization();
-  ASSERT_TRUE(initialized);
-
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       user_education::HelpBubbleView::kViewClassName);
@@ -108,10 +95,6 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, HidePromoOnModeDeactivation) {
 // custom action button for battery saver promo bubble is clicked.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
   auto* const promo_controller = GetFeaturePromoController();
-
-  bool initialized = WaitForFeatureTrackerInitialization();
-  ASSERT_TRUE(initialized);
-
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       user_education::HelpBubbleView::kViewClassName);

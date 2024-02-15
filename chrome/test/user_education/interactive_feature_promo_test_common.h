@@ -23,9 +23,41 @@ class InteractiveFeaturePromoTestCommon {
   // Indicates that a mock `FeatureEngagementTracker` should be used.
   struct UseMockTracker {};
 
+  // Whether to wait for the Feature Engagement Tracker to be initialized for
+  // the primary browser before proceeding with the test.
+  enum class TrackerInitializationMode {
+    // The default. Waits for the primary browser's Feature Engagement Tracker
+    // to be initialized. Recommended for most tests. You may still need to do a
+    // `WaitForFeatureEngagementReady()` in additional browsers.
+    kWaitForMainBrowser,
+    // Does not wait for the browser's Feature Engagement Tracker to be
+    // initialized. Useful for:
+    //  - Testing startup promos.
+    //  - Testing a promo in a different browser window.
+    //  - Testing the internals of the User Education system itself.
+    kDoNotWait
+  };
+
   // Specified when the normal `FeatureEngagementTracker` should be used and a
   // specific set of feature promos should be enabled.
-  using UseDefaultTrackerAllowingPromos = std::vector<base::test::FeatureRef>;
+  struct UseDefaultTrackerAllowingPromos {
+    explicit UseDefaultTrackerAllowingPromos(
+        std::vector<base::test::FeatureRef> features,
+        TrackerInitializationMode initialization_mode =
+            TrackerInitializationMode::kWaitForMainBrowser);
+    UseDefaultTrackerAllowingPromos(UseDefaultTrackerAllowingPromos&&) noexcept;
+    UseDefaultTrackerAllowingPromos& operator=(
+        UseDefaultTrackerAllowingPromos&&) noexcept;
+    ~UseDefaultTrackerAllowingPromos();
+
+    // The list of IPH features to enable for this test.
+    std::vector<base::test::FeatureRef> features;
+
+    // Whether to wait for the primary browser's Feature Engagement Tracker to
+    // be initialized before proceeding with the test.
+    TrackerInitializationMode initialization_mode =
+        TrackerInitializationMode::kWaitForMainBrowser;
+  };
 
   // Allows either a mock tracker or a default tracker with specific promos
   // to be used.

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,13 +14,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/search/ntp_features.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -42,9 +41,13 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 }
 }  // namespace
 
-class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
+class PriceInsightsIconViewInteractiveTest
+    : public InteractiveFeaturePromoTest {
  public:
-  PriceInsightsIconViewInteractiveTest() {
+  explicit PriceInsightsIconViewInteractiveTest(
+      std::vector<base::test::FeatureRef> iph_features = {})
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
     test_features_.InitWithFeatures(
         /*enabled_features=*/{commerce::kCommerceAllowChipExpansion,
                               commerce::kPriceInsights},
@@ -54,7 +57,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -63,7 +66,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
         base::BindRepeating(&BasicResponse));
     embedded_test_server()->StartAcceptingConnections();
 
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
 
     SetUpTabHelperAndShoppingService();
   }
@@ -190,25 +193,13 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
 class PriceInsightsIconViewEngagementTest
     : public PriceInsightsIconViewInteractiveTest {
  public:
-  PriceInsightsIconViewEngagementTest() {
-    test_features_.InitAndEnableFeatures(
-        {commerce::kPriceInsights,
-         feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
-        {});
-    test_clock_.SetNow(base::Time::Now());
+  PriceInsightsIconViewEngagementTest()
+      : PriceInsightsIconViewInteractiveTest(
+            {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature}) {
   }
-
-  void SetUp() override { PriceInsightsIconViewInteractiveTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     PriceInsightsIconViewInteractiveTest::SetUpOnMainThread();
-
-    BrowserFeaturePromoController* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
-    EXPECT_TRUE(
-        user_education::test::WaitForFeatureEngagementReady(promo_controller));
-    EXPECT_TRUE(user_education::test::SetClock(promo_controller, test_clock_));
     RunTestSequence(InstrumentTab(kShoppingTab));
   }
 
@@ -266,12 +257,6 @@ class PriceInsightsIconViewEngagementTest
             "Commerce.PriceInsights.OmniboxIconShown"),
         BucketsAre(base::Bucket(0, 0), base::Bucket(1, 2), base::Bucket(2, 0)));
   }
-
- protected:
-  base::SimpleTestClock test_clock_;
-
- private:
-  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {

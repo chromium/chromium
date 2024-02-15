@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -20,7 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -29,7 +31,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -97,18 +98,15 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   }
 };
 
-class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
-                                        public InteractiveBrowserTestApi {
+class DownloadBubbleInteractiveUiTest
+    : public InteractiveFeaturePromoTestT<DownloadTestBase> {
  public:
-  DownloadBubbleInteractiveUiTest() {
-    test_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDownloadEsbPromoFeature
+  DownloadBubbleInteractiveUiTest()
+      : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHDownloadEsbPromoFeature})) {
 #if BUILDFLAG(IS_MAC)
-         ,
-         features::kImmersiveFullscreen
+    test_features_.InitWithFeatures({features::kImmersiveFullscreen}, {});
 #endif  // BUILDFLAG(IS_MAC)
-        },
-        {});
   }
 
   DownloadToolbarButtonView* download_toolbar_button() {
@@ -118,7 +116,7 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    DownloadTestBase::SetUpInProcessBrowserTestFixture();
+    InteractiveFeaturePromoTestT::SetUpInProcessBrowserTestFixture();
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -127,26 +125,13 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
   }
 
   void SetUpOnMainThread() override {
-    DownloadTestBase::SetUpOnMainThread();
+    InteractiveFeaturePromoTestT::SetUpOnMainThread();
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
-    private_test_impl().DoTestSetUp();
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
 
     // Disable the auto-close timer and animation to prevent flakiness.
     download_toolbar_button()->DisableAutoCloseTimerForTesting();
     download_toolbar_button()->DisableDownloadStartedAnimationForTesting();
-
-    ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController()));
-  }
-
-  void TearDownOnMainThread() override {
-    SetContextWidget(nullptr);
-    private_test_impl().DoTestTearDown();
-    DownloadTestBase::TearDownOnMainThread();
   }
 
   auto DownloadBubbleIsShowingDetails(bool showing) {
@@ -291,7 +276,7 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
   }
 
  private:
-  feature_engagement::test::ScopedIphFeatureList test_features_;
+  base::test::ScopedFeatureList test_features_;
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;

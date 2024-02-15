@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
   BlockThirdPartyCookies();
   SetHighConfidenceForSite();
   RunTestSequence(
-      WaitForFeatureEngagementReady(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that label doesn't animate.
       CheckViewProperty(kCookieControlsIconElementId,
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
   BlockThirdPartyCookies();
   SetHighConfidenceForSite();
   RunTestSequence(
-      WaitForFeatureEngagementReady(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that IPH shows, then open cookie controls bubble via IPH button.
       InAnyContext(WaitForShow(
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
   BlockThirdPartyCookies();
   SetHighConfidenceForSite();
   RunTestSequence(
-      WaitForFeatureEngagementReady(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that IPH shows, then open cookie controls bubble via icon.
       InAnyContext(WaitForShow(
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
                        ShowAndHide3pcdUbIph) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   RunTestSequence(
-      WaitForFeatureEngagementReady(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWith3pcdUserBypassIphTest,
                        Show3pcdUbIphAndOpenCookieControlsViaIcon) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   RunTestSequence(
-      WaitForFeatureEngagementReady(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
       // Check that IPH shows, then open cookie controls bubble via icon.
       InAnyContext(WaitForShow(

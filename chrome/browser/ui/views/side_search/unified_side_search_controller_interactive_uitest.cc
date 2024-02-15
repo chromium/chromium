@@ -1016,7 +1016,7 @@ class SideSearchIPHAndTutorialBrowserTest
     const auto srp_url = GetMatchingSearchUrl();
     const auto non_srp_url_1 = GetNonMatchingUrl();
     return Steps(
-        WaitForFeatureEngagementReady(), InstrumentTab(primary_tab_id),
+        InstrumentTab(primary_tab_id),
         // Navigate to a SRP URL and then once to a non-SRP URL.
         NavigateWebContents(primary_tab_id, srp_url),
         NavigateWebContents(primary_tab_id, non_srp_url_1),

@@ -38,7 +38,6 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBrowserTest, IPH) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
 
   RunTestSequence(
-      WaitForFeatureEngagementReady(),
       WithView(kToolbarAvatarButtonElementId,
                [this](AvatarToolbarButton* button) {
                  ProfileCustomizationBubbleView::CreateBubble(browser(),

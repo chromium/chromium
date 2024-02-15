@@ -85,6 +85,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -100,7 +101,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -568,10 +568,10 @@ class ProfilePickerCreationFlowBrowserTest
 
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown(Browser* browser) {
-    return user_education::test::WaitForStartupPromo(
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser->profile()),
-        feature_engagement::kIPHProfileSwitchFeature);
+    return feature_engagement::TrackerFactory::GetForBrowserContext(
+               browser->profile())
+        ->HasEverTriggered(feature_engagement::kIPHProfileSwitchFeature,
+                           /*from_window=*/false);
   }
 
   // Simulates a click on a profile card. The profile picker must be already

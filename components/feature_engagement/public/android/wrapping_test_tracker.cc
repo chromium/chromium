@@ -125,7 +125,7 @@ const Configuration* WrappingTestTracker::GetConfigurationForTesting() const {
 }
 
 void WrappingTestTracker::SetClockForTesting(const base::Clock& clock,
-                                             base::Time& initial_time) {
+                                             base::Time initial_time) {
   NOTIMPLEMENTED();
 }
 

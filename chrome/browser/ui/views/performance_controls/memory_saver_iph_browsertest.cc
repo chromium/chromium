@@ -17,7 +17,6 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -38,7 +37,7 @@ class MemorySaverHelpPromoTest : public InteractiveFeaturePromoTest {
 
   auto TriggerMemorySaverPromo() {
     auto steps = Steps(
-        WaitForFeatureEngagementReady(), Do([this]() {
+        Do([this]() {
           constexpr int kTabCountThreshold = 10;
           for (int i = 0; i < kTabCountThreshold; i++) {
             chrome::AddTabAt(browser(), GURL(), i, true);

@@ -77,7 +77,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -332,20 +331,16 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for https://crbug.com/1205901
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser());
-  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
-      browser_view->GetFeaturePromoController()));
-  EXPECT_TRUE(browser_view->MaybeShowFeaturePromo(
+  EXPECT_TRUE(browser()->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_TRUE(browser_view->IsFeaturePromoActive(
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(browser_view->IsFeaturePromoActive(
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 }
 

@@ -10323,6 +10323,7 @@ if (!is_android) {
       "permissions/permission_request_manager_test_api.h",
       "user_education/interactive_feature_promo_test.cc",
       "user_education/interactive_feature_promo_test.h",
+      "user_education/interactive_feature_promo_test_common.cc",
       "user_education/interactive_feature_promo_test_common.h",
       "user_education/interactive_feature_promo_test_internal.cc",
       "user_education/interactive_feature_promo_test_internal.h",

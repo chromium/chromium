@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ExtensionHasNoAnimationLoop) {
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, DoNotShowIphWhenOverflowed) {
   RunTestSequence(
-      WaitForFeatureEngagementReady(), ResizeRelativeToOverflow(-1),
+      ResizeRelativeToOverflow(-1),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
                      user_education::FeaturePromoResult::kBlockedByUi),
       ResizeRelativeToOverflow(1),

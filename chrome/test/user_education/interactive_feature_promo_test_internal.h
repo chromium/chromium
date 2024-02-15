@@ -48,6 +48,10 @@ class InteractiveFeaturePromoTestPrivate
   void AdvanceTime(NewTime new_time);
   void UpdateIdleState(NewTime time, bool screen_locked);
 
+  // Waits for the tracker to be initialized if the appropriate tracker mode is
+  // set.
+  void MaybeWaitForTrackerInitialization(Browser* browser);
+
  private:
   struct ProfileData {
     ProfileData();

@@ -42,7 +42,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -115,7 +114,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
 
   SigninInterceptFirstRunExperienceDialogBrowserTest()
       : TestBase(UseDefaultTrackerAllowingPromos(
-                     {feature_engagement::kIPHProfileSwitchFeature}),
+                     {feature_engagement::kIPHProfileSwitchFeature},
+                     TrackerInitializationMode::kDoNotWait),
                  ClockMode::kUseTestClock,
                  InitialSessionState::kOutsideGracePeriod,
                  /*use_main_profile=*/true) {}
@@ -149,15 +149,12 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
     // Needed for profile switch IPH testing.
     AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
         base::Seconds(0));
-    test_lock_ = user_education::FeaturePromoControllerCommon::
-        BlockActiveWindowCheckForTesting();
   }
 
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown() {
-    return user_education::test::WaitForStartupPromo(
-        feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile()),
-        feature_engagement::kIPHProfileSwitchFeature);
+    return RunTestSequence(
+        WaitForPromo(feature_engagement::kIPHProfileSwitchFeature));
   }
 
   void UpdateChromePolicy(const policy::PolicyMap& policy) {
@@ -267,7 +264,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   base::UserActionTester user_action_tester_;
 
   CoreAccountId account_id_;
-  user_education::FeaturePromoControllerCommon::TestLock test_lock_;
 };
 
 // The feature override controls the `switches::kUnoDesktop` feature.

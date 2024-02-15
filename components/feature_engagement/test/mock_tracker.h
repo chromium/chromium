@@ -59,7 +59,7 @@ class MockTracker : public Tracker {
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
   MOCK_CONST_METHOD0(GetConfigurationForTesting, const Configuration*());
   MOCK_METHOD2(SetClockForTesting,
-               void(const base::Clock& clock, base::Time& initial_now));
+               void(const base::Clock& clock, base::Time initial_now));
 };
 
 }  // namespace test

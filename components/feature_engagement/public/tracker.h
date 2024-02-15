@@ -304,7 +304,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // Set a testing clock for the tracker. It's recommended to use a
   // SimpleTestClock, so we can advacne the clock in test.
   virtual void SetClockForTesting(const base::Clock& clock,
-                                  base::Time& initial_now) = 0;
+                                  base::Time initial_now) = 0;
 
   // Returns the default set of configuration providers.
   static ConfigurationProviderList GetDefaultConfigurationProviders();

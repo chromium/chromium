@@ -455,7 +455,7 @@ const Configuration* TrackerImpl::GetConfigurationForTesting() const {
 }
 
 void TrackerImpl::SetClockForTesting(const base::Clock& clock,
-                                     base::Time& initial_now) {
+                                     base::Time initial_now) {
   CHECK_IS_TEST();
   time_provider_ =
       std::make_unique<TestingClockTimeProvider>(clock, initial_now);
