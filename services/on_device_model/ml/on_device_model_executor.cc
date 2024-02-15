@@ -44,6 +44,25 @@ const base::FeatureParam<int> kTopK{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_topk", 3};
 
+const base::FeatureParam<bool> kPreferTextureWeights{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_prefer_texture_weights", true};
+
+const base::FeatureParam<bool> kEnableHostMappedPointer{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_enable_host_mapped_pointer",
+#if BUILDFLAG(IS_WIN)
+    // TODO(cduvall): Figure out why host mapped pointer is slower on Win.
+    false
+#else
+    true
+#endif
+};
+
+const base::FeatureParam<bool> kUseLowPower{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_use_low_power", false};
+
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
 std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
@@ -439,6 +458,9 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .ts_dimension = params->ts_dimension.value_or(0),
       .adaptation_ranks = params->adaptation_ranks.data(),
       .adaptation_ranks_size = params->adaptation_ranks.size(),
+      .prefer_texture_weights = kPreferTextureWeights.Get(),
+      .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
+      .use_low_power = kUseLowPower.Get(),
   };
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());

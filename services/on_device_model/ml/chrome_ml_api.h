@@ -90,6 +90,10 @@ struct ChromeMLModelDescriptor {
 
   const uint32_t* adaptation_ranks;
   size_t adaptation_ranks_size;
+
+  bool prefer_texture_weights;
+  bool enable_host_mapped_pointer;
+  bool use_low_power;
 };
 
 // Describes an adaptation for a model.
