@@ -605,9 +605,21 @@ async function joinInterestGroupInTopLevelWindow(
   let interestGroup = JSON.stringify(
       createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
 
-  let topLeveWindow = await createTopLevelWindow(test, origin);
-  await runInFrame(test, topLeveWindow,
+  let topLevelWindow = await createTopLevelWindow(test, origin);
+  await runInFrame(test, topLevelWindow,
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
+}
+
+// Opens a top-level window and calls joinCrossOriginInterestGroup() in it.
+async function joinCrossOriginInterestGroupInTopLevelWindow(
+    test, uuid, windowOrigin, interestGroupOrigin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, interestGroupOrigin, interestGroupOverrides));
+
+  let topLevelWindow = await createTopLevelWindow(test, windowOrigin);
+  await runInFrame(test, topLevelWindow,
+                  `await joinCrossOriginInterestGroup(
+                        test_instance, "${uuid}", "${interestGroupOrigin}", ${interestGroup})`);
 }
 
 // Fetch directFromSellerSignals from seller and check header
