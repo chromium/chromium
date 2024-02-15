@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/i18n/case_conversion.h"
@@ -62,6 +63,12 @@ void AddDataFromFileToMap(
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           file_id_in_resources);
+  // Can be empty in certain test environments.
+  if (json_string.empty()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   // TODO(b/309343774): switch to JSON reading service
   absl::optional<base::Value> json = base::JSONReader::Read(json_string);
   CHECK(json) << "parse failed for " << file_id_in_resources << ":"
