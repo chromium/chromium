@@ -75,6 +75,18 @@ constexpr char kNumOriginsHistogram[] =
     "Storage.SharedStorage.Database.FileBacked.NumOrigins";
 constexpr char kIsFileBackedHistogram[] =
     "Storage.SharedStorage.Database.IsFileBacked";
+constexpr char kBytesUsedMaxHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Max";
+constexpr char kBytesUsedMinHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Min";
+constexpr char kBytesUsedMedianHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Median";
+constexpr char kBytesUsedQ1Histogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q1";
+constexpr char kBytesUsedQ3Histogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q3";
+constexpr char kBytesUsedTotalHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB";
 
 }  // namespace
 
@@ -288,6 +300,14 @@ TEST_F(SharedStorageDatabaseTest, CurrentVersion_LoadFromFile) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 2, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 3, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 4, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram,
+      (16 + 16 + 28 + 30 + 32 + 40 + 46 + 46 + 4110) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 16, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 28, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 32, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 46, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 4110, 1);
 
   EXPECT_TRUE(db_->Destroy());
 }
@@ -411,6 +431,14 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 2, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 3, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 4, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram,
+      (16 + 16 + 28 + 30 + 32 + 40 + 46 + 46 + 4110) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 16, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 28, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 32, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 46, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 4110, 1);
 
   EXPECT_TRUE(db_->Destroy());
 }
@@ -1988,6 +2016,14 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 113.5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 201, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 201, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedTotalHistogram,
+                                       (364 + 5196) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 364, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 364, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram,
+                                       (364 + 5196) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 5196, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 5196, 1);
 }
 
 TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
@@ -2037,6 +2073,14 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 113.5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 201, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 201, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedTotalHistogram,
+                                       (364 + 5196) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 364, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 364, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram,
+                                       (364 + 5196) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 5196, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 5196, 1);
 }
 
 // Tests correct calculation of five-number summary when there is only one
@@ -2063,6 +2107,12 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedTotalHistogram, 200 / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 200, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 200, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 200, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 200, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 200, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins is
@@ -2094,6 +2144,15 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 20, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 145, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 250, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram, (2500 + 4000 + 2000 + 10000 + 150) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 150, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, (150 + 2000) / 2,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 2500, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram,
+                                       (10000 + 4000) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 10000, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2126,6 +2185,15 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 30, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 250, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram,
+      (2500 + 4000 + 2000 + 10000 + 150 + 1599000) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 150, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 2000, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram,
+                                       (2500 + 4000) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 10000, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2161,6 +2229,14 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 40, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 1001, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram,
+      (2500 + 4000 + 2000 + 10000 + 150 + 1599000 + 100100) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 150, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, 2000, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 4000, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 100100, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2197,6 +2273,17 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 70, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 625.5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBytesUsedTotalHistogram,
+      (2500 + 4000 + 2000 + 10000 + 150 + 1599000 + 100100 + 1000) / 1024, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMinHistogram, 150, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ1Histogram, (1000 + 2000) / 2,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram,
+                                       (2500 + 4000) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram,
+                                       (10000 + 100100) / 2, 1);
+  histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
 }
 
 }  // namespace storage

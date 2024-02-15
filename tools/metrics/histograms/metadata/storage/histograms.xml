@@ -677,6 +677,108 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Max"
+    units="B" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Maximum number of bytes stored as key-value pairs in `values_mapping` for
+    any single origin, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Median"
+    units="B" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Median number of bytes stored as key-value pairs in `values_mapping` for any
+    single origin, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Min"
+    units="B" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Minimum number of bytes stored as key-value pairs in `values_mapping` for
+    any single origin, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q1"
+    units="B" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Lower quartile of the per-origin bytes used values, as listed in the
+    `per_origin_mapping` of `SharedStorageDatabase` (calculated through Method 1
+    from https://en.wikipedia.org/wiki/Quartile). Measured only for file-backed
+    databases whose `per_origin_mapping` table contains at least one origin row.
+    Recorded in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()`
+    when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q3"
+    units="B" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Upper quartile of the per-origin bytes used values, as listed in the
+    `per_origin_mapping` of `SharedStorageDatabase` (calculated through Method 1
+    from https://en.wikipedia.org/wiki/Quartile). Measured only for file-backed
+    databases whose `per_origin_mapping` table contains at least one origin row.
+    Recorded in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()`
+    when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB"
+    units="KB" expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Sum across all origins of the per-origin bytes used values, as listed in the
+    `per_origin_mapping` of `SharedStorageDatabase`. Measured only for
+    file-backed databases whose `per_origin_mapping` table contains at least one
+    origin row. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful. Contrast with
+    &quot;Storage.SharedStorage.Database.FileBacked.FileSize.*&quot;;
+    &quot;Storage.SharedStorage.Database.FileBacked.FileSize.*&quot; records the
+    total storage space used for the entire file, as formatted correctly for
+    Chrome's embedding of SQLite, whereas
+    &quot;Storage.SharedStorage.Database.FileBacked.BytesUsed.Total&quot; only
+    records the total bytes in the raw `key` and `value` columns of
+    `values_mapping` (under the assumption that `per_origin_mapping` has
+    remained in sync).
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.GB"
     units="GB" expires_after="2024-07-31">
   <owner>cammie@chromium.org</owner>
@@ -711,8 +813,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Maximum origin length, according to the `per_origin_mapping` of
-    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
-    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
     initialization is successful.
   </summary>
 </histogram>
@@ -725,8 +828,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Median origin length, according to the `per_origin_mapping` of
-    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
-    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
     initialization is successful.
   </summary>
 </histogram>
@@ -739,8 +843,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Minimum origin length, according to the `per_origin_mapping` of
-    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
-    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    `SharedStorageDatabase`. Measured only for file-backed databases whose
+    `per_origin_mapping` table contains at least one origin row. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
     initialization is successful.
   </summary>
 </histogram>
@@ -754,9 +859,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Lower quartile of the origin lengths, as listed in the `per_origin_mapping`
     of `SharedStorageDatabase` (calculated through Method 1 from
-    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
-    only. Recorded in `SharedStorageDatabase::InitImpl()` via
-    `LogInitHistograms()` when initialization is successful.
+    https://en.wikipedia.org/wiki/Quartile). Measured only for file-backed
+    databases whose `per_origin_mapping` table contains at least one origin row.
+    Recorded in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()`
+    when initialization is successful.
   </summary>
 </histogram>
 
@@ -769,9 +875,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Upper quartile of the origin lengths, as listed in the `per_origin_mapping`
     of `SharedStorageDatabase` (calculated through Method 1 from
-    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
-    only. Recorded in `SharedStorageDatabase::InitImpl()` via
-    `LogInitHistograms()` when initialization is successful.
+    https://en.wikipedia.org/wiki/Quartile). Measured only for file-backed
+    databases whose `per_origin_mapping` table contains at least one origin row.
+    Recorded in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()`
+    when initialization is successful.
   </summary>
 </histogram>
 
@@ -795,7 +902,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Number of origins in the `per_origin_mapping` of `SharedStorageDatabase`.
-    Measured for file-backed databases only. Recorded in
+    Measured only for file-backed databases whose `per_origin_mapping` table
+    contains at least one origin row. Recorded in
     `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
     initialization is successful.
   </summary>
