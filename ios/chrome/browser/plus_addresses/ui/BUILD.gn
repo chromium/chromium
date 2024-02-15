@@ -16,6 +16,7 @@ source_set("ui") {
     "//components/resources",
     "//components/strings",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",

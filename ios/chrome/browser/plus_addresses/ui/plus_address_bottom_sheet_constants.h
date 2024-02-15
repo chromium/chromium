@@ -23,8 +23,22 @@ extern const CGFloat kPrimaryAddressBottomMargin;
 // sheet content being too close to the top of the sheet.
 extern const CGFloat kBeforeImageTopMargin;
 
-// The desired size of the image at the top of the bottom sheet content.
+// The margin to be shown below the image, to prevent the extra space which may
+// cause content overflow.
+extern const CGFloat kAfterImageMargin;
+
+// The desired size of the image at the top of the bottom sheet content in
+// `PointSize`.
 extern const CGFloat kImageSize;
+
+// The desired size of the branded image width at the top of the bottom sheet
+// content. `kImageSize` can not be used as branded image size uses different
+// dimensions and unit.
+extern const CGFloat kBrandedImageWidth;
+
+// The margin to be added below the content. This is hidden under action buttons
+// stack and is used to prevent content being hidden under buttons border.
+extern const CGFloat kScrollViewBottomInsets;
 
 // Enum specifying the URL the bottom sheet should open.
 enum class PlusAddressURLType {

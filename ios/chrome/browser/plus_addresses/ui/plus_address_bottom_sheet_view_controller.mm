@@ -80,7 +80,15 @@ NSAttributedString* ErrorMessage() {
 UIImage* PlusAddressesLogo() {
   // IDR_PLUS_ADDRESS_LOGO only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return NativeImage(IDR_PLUS_ADDRESS_LOGO);
+  UIImage* icon = NativeImage(IDR_PLUS_ADDRESS_LOGO);
+  // Scale down image size to prevent content overflow.
+  if (icon && (icon.size.width > kBrandedImageWidth)) {
+    CGFloat ratio = icon.size.width / kBrandedImageWidth;
+    return [UIImage imageWithCGImage:[icon CGImage]
+                               scale:icon.scale * ratio
+                         orientation:icon.imageOrientation];
+  }
+  return icon;
 #else
   return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kImageSize);
 #endif
@@ -135,7 +143,8 @@ UIImage* PlusAddressesLogo() {
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   [self setupAboveTitleView];
   self.image = PlusAddressesLogo();
-  self.imageHasFixedSize = true;
+  self.imageHasFixedSize = YES;
+  self.customScrollViewBottomInsets = kScrollViewBottomInsets;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
@@ -146,7 +155,9 @@ UIImage* PlusAddressesLogo() {
   // the bottom sheet content and the top of the sheet. This is especially
   // relevant with larger accessibility text sizes.
   self.showDismissBarButton = NO;
+  self.topAlignedLayout = YES;
   self.customSpacingBeforeImageIfNoNavigationBar = kBeforeImageTopMargin;
+  self.customSpacingAfterImage = kAfterImageMargin;
   // Set up the label that will indicate the reserved plus address to the user.
   _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
   NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
@@ -168,7 +179,7 @@ UIImage* PlusAddressesLogo() {
                         afterView:primaryAddressLabel];
   self.underTitleView = verticalStack;
   [super viewDidLoad];
-
+  [self setUpBottomSheetDetents];
   self.actionHandler = self;
   self.presentationController.delegate = self;
   // Disable the primary button until such time as the reservation is complete.
@@ -226,6 +237,8 @@ UIImage* PlusAddressesLogo() {
   _reservedPlusAddressLabel.hidden = YES;
   _errorMessage.hidden = NO;
   [_activityIndicator stopAnimating];
+  // Resize to accommodate error message.
+  [self expandBottomSheet];
 }
 
 #pragma mark - UITextViewDelegate
