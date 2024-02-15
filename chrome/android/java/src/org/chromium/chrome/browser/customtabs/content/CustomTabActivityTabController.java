@@ -21,6 +21,7 @@ import dagger.Lazy;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -45,7 +46,7 @@ import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -89,6 +90,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         int NUM_ENTRIES = 4;
     }
 
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
     private final AppCompatActivity mActivity;
     private final CustomTabsConnection mConnection;
@@ -116,6 +118,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     @Inject
     public CustomTabActivityTabController(
             AppCompatActivity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             CustomTabsConnection connection,
             BrowserServicesIntentDataProvider intentDataProvider,
@@ -136,6 +139,7 @@ public class CustomTabActivityTabController implements InflationObserver {
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             ActivityWindowAndroid windowAndroid,
             TabModelInitializer tabModelInitializer) {
+        mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
         mConnection = connection;
@@ -416,17 +420,14 @@ public class CustomTabActivityTabController implements InflationObserver {
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
-        if (mIntentDataProvider.isIncognito()) {
-            return mWebContentsFactory.createWebContentsWithWarmRenderer(
-                    mCustomTabIncognitoManager.get().getProfile(), false);
-        } else {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            return mWebContentsFactory.createWebContentsWithWarmRenderer(profile, false);
-        }
+        return mWebContentsFactory.createWebContentsWithWarmRenderer(
+                ProfileProvider.getOrCreateProfile(
+                        mProfileProviderSupplier.get(), mIntentDataProvider.isIncognito()),
+                false);
     }
 
     private @Nullable WebContents takeAsyncWebContents() {
-        // Async WebContents are not supported for Incognit CCT.
+        // Async WebContents are not supported for Incognito CCT.
         if (mIntentDataProvider.isIncognito()) return null;
         int assignedTabId = IntentHandler.getTabId(mIntent);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.get().remove(assignedTabId);

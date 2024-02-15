@@ -55,12 +55,16 @@ public class CustomTabActivityTabControllerUnitTest {
     private CustomTabActivityTabController mTabController;
 
     @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         mTabController = env.createTabController();
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
     }

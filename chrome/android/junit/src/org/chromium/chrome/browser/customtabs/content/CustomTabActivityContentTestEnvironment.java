@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDe
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -102,6 +104,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public TabModelInitializer tabModelInitializer;
     @Mock public WebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
+    @Mock public ProfileProvider profileProvider;
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
 
@@ -154,8 +157,12 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public CustomTabActivityTabController createTabController() {
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+
         return new CustomTabActivityTabController(
                 activity,
+                profileProviderSupplier,
                 () -> customTabDelegateFactory,
                 connection,
                 intentDataProvider,
