@@ -1721,7 +1721,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   EXPECT_CALL(
       *mock_checkup_launcher_,
       LaunchCheckupOnDevice(
-          _, web_contents()->GetTopLevelNativeWindow(),
+          _, profile(), web_contents()->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           TestingProfile::kDefaultProfileUserName));
 
@@ -1742,7 +1742,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   EXPECT_CALL(
       *mock_checkup_launcher_,
       LaunchCheckupOnDevice(
-          _, web_contents()->GetTopLevelNativeWindow(),
+          _, profile(), web_contents()->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           /*account=*/""));
 
@@ -1763,7 +1763,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   EXPECT_CALL(
       *mock_checkup_launcher_,
       LaunchCheckupOnDevice(
-          _, web_contents()->GetTopLevelNativeWindow(),
+          _, profile(), web_contents()->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           /*account=*/""));
 
@@ -1815,7 +1815,7 @@ TEST_F(
   EXPECT_CALL(
       *mock_checkup_launcher_,
       LaunchCheckupOnDevice(
-          _, web_contents()->GetTopLevelNativeWindow(),
+          _, profile(), web_contents()->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           /*account=*/""));
 
@@ -1836,7 +1836,7 @@ TEST_F(PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest,
   EXPECT_CALL(
       *mock_checkup_launcher_,
       LaunchCheckupOnDevice(
-          _, web_contents()->GetTopLevelNativeWindow(),
+          _, profile(), web_contents()->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           TestingProfile::kDefaultProfileUserName));
 

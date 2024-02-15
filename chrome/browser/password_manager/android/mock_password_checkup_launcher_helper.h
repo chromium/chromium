@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_MOCK_PASSWORD_CHECKUP_LAUNCHER_HELPER_H_
 
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
+#include "chrome/browser/profiles/profile.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/android/window_android.h"
@@ -23,6 +24,7 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
   MOCK_METHOD(void,
               LaunchCheckupOnDevice,
               (JNIEnv*,
+               Profile*,
                ui::WindowAndroid*,
                password_manager::PasswordCheckReferrerAndroid,
                std::string account_email),

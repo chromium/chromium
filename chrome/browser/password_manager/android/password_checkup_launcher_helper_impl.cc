@@ -5,6 +5,8 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 
 #include "chrome/android/chrome_jni_headers/PasswordCheckupLauncher_jni.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 
 PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
     default;
@@ -19,6 +21,7 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
 
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     JNIEnv* env,
+    Profile* profile,
     ui::WindowAndroid* windowAndroid,
     password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
     std::string account_email) {
@@ -26,8 +29,8 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     return;
   }
   Java_PasswordCheckupLauncher_launchCheckupOnDevice(
-      env, windowAndroid->GetJavaObject(),
-      static_cast<int>(passwordCheckReferrer),
+      env, ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      windowAndroid->GetJavaObject(), static_cast<int>(passwordCheckReferrer),
       account_email.empty()
           ? nullptr
           : base::android::ConvertUTF8ToJavaString(env, account_email));

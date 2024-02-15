@@ -13,6 +13,8 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace ui {
 class WindowAndroid;
 }
@@ -27,6 +29,7 @@ class CredentialLeakControllerAndroid {
       password_manager::CredentialLeakType leak_type,
       const GURL& origin,
       const std::u16string& username,
+      Profile* profile,
       ui::WindowAndroid* window_android,
       std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher,
       std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>
@@ -78,6 +81,8 @@ class CredentialLeakControllerAndroid {
   const GURL origin_;
 
   const std::u16string username_;
+
+  const raw_ptr<Profile> profile_;
 
   const raw_ptr<ui::WindowAndroid> window_android_;
 

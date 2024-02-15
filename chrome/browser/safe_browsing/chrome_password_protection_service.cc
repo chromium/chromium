@@ -1130,7 +1130,7 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
         should_show_checkup_for_local = false;
       }
       checkup_launcher_->LaunchCheckupOnDevice(
-          env, web_contents->GetTopLevelNativeWindow(),
+          env, profile_, web_contents->GetTopLevelNativeWindow(),
           password_manager::PasswordCheckReferrerAndroid::kPhishedWarningDialog,
           should_show_checkup_for_local ? "" : account);
     }

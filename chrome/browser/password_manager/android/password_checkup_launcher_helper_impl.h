@@ -35,6 +35,7 @@ class PasswordCheckupLauncherHelperImpl : public PasswordCheckupLauncherHelper {
   // isn't syncing passwords.
   void LaunchCheckupOnDevice(
       JNIEnv* env,
+      Profile* profile,
       ui::WindowAndroid* window_android,
       password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
       std::string account_email) override;

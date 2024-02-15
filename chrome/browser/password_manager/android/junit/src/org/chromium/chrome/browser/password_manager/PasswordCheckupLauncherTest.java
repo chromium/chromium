@@ -153,7 +153,7 @@ public class PasswordCheckupLauncherTest {
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
-                mMockWindowAndroid, LEAK_DIALOG, TEST_EMAIL_ADDRESS);
+                mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_EMAIL_ADDRESS);
 
         verify(mMockPendingIntentForAccountCheckup).send();
     }
@@ -165,7 +165,7 @@ public class PasswordCheckupLauncherTest {
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
-                mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
+                mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
 
         verify(mMockPendingIntentForLocalCheckup).send();
     }
@@ -181,7 +181,7 @@ public class PasswordCheckupLauncherTest {
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
-                mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
+                mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_NO_EMAIL_ADDRESS);
 
         verify(mMockPendingIntentForLocalCheckup).send();
     }

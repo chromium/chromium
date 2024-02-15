@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -32,6 +33,7 @@ public class PasswordCheckupLauncher {
 
     @CalledByNative
     static void launchCheckupOnDevice(
+            Profile profile,
             WindowAndroid windowAndroid,
             @PasswordCheckReferrer int passwordCheckReferrer,
             @Nullable String accountEmail) {
@@ -42,7 +44,7 @@ public class PasswordCheckupLauncher {
             PasswordManagerHelper.showPasswordCheckup(
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
-                    SyncServiceFactory.get(),
+                    SyncServiceFactory.getForProfile(profile),
                     getModalDialogManagerSupplier(windowAndroid),
                     accountEmail);
             return;
