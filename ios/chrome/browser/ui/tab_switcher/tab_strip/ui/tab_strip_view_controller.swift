@@ -528,8 +528,12 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     guard let dropOperation: UIDropOperation = dragDropHandler?.dropOperation(for: session) else {
       return UICollectionViewDropProposal(operation: .cancel)
     }
+    /// Use `insertIntoDestinationIndexPath` if the dragged item is not from the same
+    /// collection view. This prevents having unwanted empty space in the collection view.
     return UICollectionViewDropProposal(
-      operation: dropOperation, intent: .insertAtDestinationIndexPath)
+      operation: dropOperation,
+      intent: dropOperation == .move
+        ? .insertAtDestinationIndexPath : .insertIntoDestinationIndexPath)
   }
 
   func collectionView(
