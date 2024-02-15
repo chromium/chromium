@@ -47,10 +47,6 @@ constexpr gfx::Insets kArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
 constexpr gfx::Insets kButtonBorderInsets = gfx::Insets::TLBR(0, 12, 0, 8);
 constexpr gfx::Insets kGamepadIconMargins = gfx::Insets::TLBR(0, 0, 0, 8);
 
-// 30% opacity for disabled state.
-constexpr SkAlpha kAlphaForDisabled =
-    base::saturated_cast<SkAlpha>(std::numeric_limits<SkAlpha>::max() * 0.3);
-
 ui::ColorId GetBackgroundEnabledColorId(bool is_recording) {
   return is_recording ? cros_tokens::kCrosSysSystemNegativeContainer
                       : cros_tokens::kCrosSysHighlightShape;
@@ -59,15 +55,6 @@ ui::ColorId GetBackgroundEnabledColorId(bool is_recording) {
 ui::ColorId GetIconAndLabelEnabledColorId(bool is_recording) {
   return is_recording ? cros_tokens::kCrosSysSystemOnNegativeContainer
                       : cros_tokens::kCrosSysOnPrimaryContainer;
-}
-
-SkColor GetColor(ui::ColorProvider* color_provider,
-                 ui::ColorId color_id,
-                 bool is_enabled) {
-  DCHECK(color_provider);
-
-  SkColor color = color_provider->GetColor(color_id);
-  return is_enabled ? color : SkColorSetA(color, kAlphaForDisabled);
 }
 
 }  // namespace
@@ -153,9 +140,9 @@ void GameDashboardButton::UpdateArrowIcon() {
   DCHECK(arrow_icon_view_);
   const gfx::VectorIcon& arrow_icon =
       toggled_ ? kGdButtonUpArrowIcon : kGdButtonDownArrowIcon;
-  const SkColor icon_color =
-      GetColor(GetColorProvider(), GetIconAndLabelEnabledColorId(is_recording_),
-               GetEnabled());
+  const SkColor icon_color = GetColorProvider()->GetColor(
+      GetEnabled() ? GetIconAndLabelEnabledColorId(is_recording_)
+                   : cros_tokens::kCrosSysDisabled);
   arrow_icon_view_->SetImage(
       ui::ImageModel::FromVectorIcon(arrow_icon, icon_color, kIconHeight));
 }
@@ -174,11 +161,13 @@ void GameDashboardButton::UpdateViews() {
   DCHECK(color_provider);
 
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateSolidBackground(GetColor(
-      color_provider, GetBackgroundEnabledColorId(is_recording_), enabled)));
+  SetBackground(views::CreateSolidBackground(color_provider->GetColor(
+      enabled ? GetBackgroundEnabledColorId(is_recording_)
+              : cros_tokens::kCrosSysDisabledContainer)));
 
-  const SkColor icon_and_label_color = GetColor(
-      color_provider, GetIconAndLabelEnabledColorId(is_recording_), enabled);
+  const SkColor icon_and_label_color = color_provider->GetColor(
+      enabled ? GetIconAndLabelEnabledColorId(is_recording_)
+              : cros_tokens::kCrosSysDisabled);
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
   title_view_->SetEnabledColor(icon_and_label_color);
