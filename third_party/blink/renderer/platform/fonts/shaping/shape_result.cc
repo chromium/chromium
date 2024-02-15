@@ -724,8 +724,7 @@ float ShapeResult::CaretPositionForOffset(
   return PositionForOffset(offset, adjust_mid_cluster);
 }
 
-bool ShapeResult::HasFallbackFonts() const {
-  const SimpleFontData* primary_font = PrimaryFont();
+bool ShapeResult::HasFallbackFonts(const SimpleFontData* primary_font) const {
   for (const Member<RunInfo>& run : runs_) {
     if (run->font_data_ != primary_font) {
       return true;
