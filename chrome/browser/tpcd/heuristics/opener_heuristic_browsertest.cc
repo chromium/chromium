@@ -41,6 +41,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -137,7 +138,9 @@ class OpenerHeuristicBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(
         {{content_settings::features::kTpcdHeuristicsGrants,
-          tpcd_heuristics_grants_params_}},
+          tpcd_heuristics_grants_params_},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
         // Disable tracking protection by default to test third-party cookie
         // behavior for PostPopupCookieAccess events.
         {content_settings::features::kTrackingProtection3pcd});
@@ -155,9 +158,10 @@ class OpenerHeuristicBrowserTest
     SubresourceFilterBrowserTest::SetUpOnMainThread();
 
     // These rules apply an ad-tagging param to scripts in ad_script.js,
-    // including `windowOpenFromAdScript`.
+    // and to cookies marked with the `isad=1` param value.
     SetRulesetWithRules(
-        {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+        {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
+         subresource_filter::testing::CreateSuffixRule("isad=1")});
 
     DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
@@ -749,23 +753,26 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   // Add a cookie access by popup_url on opener_url.
   ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
                                   "sub.b.test",
-                                  /*is_secure_cookie_set=*/true));
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/true));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
-      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+      https_server.GetURL("sub.b.test", "/favicon/icon.png?isad=1"));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
   auto access_entries = ukm_recorder.GetEntries(
       "OpenerHeuristic.PostPopupCookieAccess",
-      {"AccessId", "AccessSucceeded", "HoursSincePopupOpened"});
+      {"AccessId", "AccessSucceeded", "IsAdTagged", "HoursSincePopupOpened"});
   ASSERT_EQ(access_entries.size(), 1u);
   EXPECT_EQ(
       ukm_recorder.GetSourceForSourceId(access_entries[0].source_id)->url(),
       opener_url);
   EXPECT_EQ(access_entries[0].metrics["AccessId"], access_id);
   EXPECT_EQ(access_entries[0].metrics["AccessSucceeded"], true);
+  EXPECT_EQ(access_entries[0].metrics["IsAdTagged"],
+            static_cast<int32_t>(OptionalBool::kTrue));
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
 }
 
@@ -1011,7 +1018,8 @@ IN_PROC_BROWSER_TEST_F(
   // Add a cookie access by popup_url on opener_url.
   ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
                                   "sub.b.test",
-                                  /*is_secure_cookie_set=*/true));
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
@@ -1021,13 +1029,15 @@ IN_PROC_BROWSER_TEST_F(
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
   auto access_entries = ukm_recorder.GetEntries(
       "OpenerHeuristic.PostPopupCookieAccess",
-      {"AccessId", "AccessSucceeded", "HoursSincePopupOpened"});
+      {"AccessId", "AccessSucceeded", "IsAdTagged", "HoursSincePopupOpened"});
   ASSERT_EQ(access_entries.size(), 1u);
   EXPECT_EQ(
       ukm_recorder.GetSourceForSourceId(access_entries[0].source_id)->url(),
       opener_url);
   EXPECT_EQ(access_entries[0].metrics["AccessId"], access_id);
   EXPECT_EQ(access_entries[0].metrics["AccessSucceeded"], true);
+  EXPECT_EQ(access_entries[0].metrics["IsAdTagged"],
+            static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
 }
 

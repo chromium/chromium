@@ -21,16 +21,6 @@ class Clock;
 // TODO(rtarpine): remove dependence on DIPSService.
 class DIPSState;
 
-enum class OptionalBool {
-  kUnknown = 0,
-  kFalse = 1,
-  kTrue = 2,
-};
-
-inline OptionalBool ToOptionalBool(bool b) {
-  return b ? OptionalBool::kTrue : OptionalBool::kFalse;
-}
-
 // Observers a WebContents to detect pop-ups with user interaction, in order to
 // grant storage access.
 class OpenerHeuristicTabHelper

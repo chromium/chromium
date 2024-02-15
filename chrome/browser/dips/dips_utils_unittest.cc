@@ -4,7 +4,10 @@
 
 #include "chrome/browser/dips/dips_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/public/browser/cookie_access_details.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,4 +148,44 @@ TEST(UpdateTimestampTest, ReplaceAfterIntervalPasses) {
   ASSERT_THAT(time, testing::Optional(old_value));
   EXPECT_TRUE(UpdateTimestamp(time, new_value));
   EXPECT_THAT(time, testing::Optional(new_value));
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyInExperiment) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      network::features::kSkipTpcdMitigationsForAds,
+      {{"SkipTpcdMitigationsForAdsHeuristics", "true"}});
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kFalse);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kTrue);
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(network::features::kSkipTpcdMitigationsForAds);
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      network::features::kSkipTpcdMitigationsForAds,
+      {{"SkipTpcdMitigationsForAdsHeuristics", "false"}});
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
 }

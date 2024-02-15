@@ -54,10 +54,14 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
 bool NavigateToSetCookie(content::WebContents* web_contents,
                          const net::EmbeddedTestServer* server,
                          base::StringPiece host,
-                         bool is_secure_cookie_set) {
+                         bool is_secure_cookie_set,
+                         bool is_ad_tagged) {
   std::string relative_url = "/set-cookie?name=value";
   if (is_secure_cookie_set) {
     relative_url += ";Secure;SameSite=None";
+  }
+  if (is_ad_tagged) {
+    relative_url += "&isad=1";
   }
   const auto url = server->GetURL(host, relative_url);
 
