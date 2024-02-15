@@ -8,16 +8,19 @@
 
 #import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -47,6 +50,10 @@ class TipsNotificationClientTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(
         browser_state_manager_->GetLastUsedBrowserState(), mock_scene_state_);
     list->AddBrowser(browser_.get());
+    client_ = std::make_unique<TipsNotificationClient>();
+    ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Set(kTipsNotificationKey, true);
   }
 
   // Sets up a mock notification center, so notification requests can be
@@ -130,8 +137,7 @@ class TipsNotificationClientTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TipsNotificationClient> client_ =
-      std::make_unique<TipsNotificationClient>();
+  std::unique_ptr<TipsNotificationClient> client_;
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
 };

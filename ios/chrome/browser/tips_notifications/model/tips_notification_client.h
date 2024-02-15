@@ -9,6 +9,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <optional>
 
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
 enum class TipsNotificationType;
@@ -48,6 +49,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // if there isn't one.
   void GetPendingRequest(GetPendingRequestCallback callback);
 
+  // Clears any existing request(s) and requests a new notification if the
+  // conditions are right.
+  void ClearAndMaybeRequestNotification(base::OnceClosure callback);
+
   // Clears any previously requested notification(s), and calls `completion`.
   void ClearNotification(base::OnceClosure callback);
   void OnNotificationCleared(UNNotificationRequest* request);
@@ -81,10 +86,23 @@ class TipsNotificationClient : public PushNotificationClient {
   void MarkNotificationTypeSent(TipsNotificationType type);
   void MarkNotificationTypeNotSent(TipsNotificationType type);
 
+  // Returns true if Tips notifications are permitted.
+  bool IsPermitted();
+
+  // Called when the pref that stores whether Tips notifications are permitted
+  // changes.
+  void OnPermittedPrefChanged(const std::string& name);
+
+  // Stores whether Tips notifications are permitted.
+  bool permitted_ = false;
+
   // When the user interacts with a Tips notification but there are no
   // foreground scenes, this will store the notification type so it can
   // be handled when there is a foreground scene.
   std::optional<TipsNotificationType> interacted_type_;
+
+  // Observes changes to permitted pref.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Used to assert that asynchronous callback are invoked on the correct
   // sequence.

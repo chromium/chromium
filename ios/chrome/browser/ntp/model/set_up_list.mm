@@ -29,6 +29,7 @@ namespace {
 
 bool GetIsItemComplete(SetUpListItemType type,
                        PrefService* prefs,
+                       PrefService* local_state,
                        AuthenticationService* auth_service) {
   switch (type) {
     case SetUpListItemType::kSignInSync:
@@ -38,11 +39,14 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kAutofill:
       return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
     case SetUpListItemType::kNotifications:
+      // TODO(crbug.com/325279788): use
+      // GetMobileNotificationPermissionStatusForClient to determine opt-in
+      // state.
       if (IsIOSTipsNotificationsEnabled()) {
         return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
                    .FindBool(kContentNotificationKey)
                    .value_or(false) ||
-               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+               local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
                    .FindBool(kTipsNotificationKey)
                    .value_or(false) ||
                prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
@@ -69,7 +73,7 @@ SetUpListItem* BuildItem(SetUpListItemType type,
   switch (state) {
     case SetUpListItemState::kUnknown:
     case SetUpListItemState::kNotComplete:
-      complete = GetIsItemComplete(type, prefs, auth_service);
+      complete = GetIsItemComplete(type, prefs, local_state, auth_service);
       // If complete, mark it as "not in list" for next time, but add to list
       // this time.
       new_state = complete ? SetUpListItemState::kCompleteNotInList

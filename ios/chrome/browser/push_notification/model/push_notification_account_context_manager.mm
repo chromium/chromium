@@ -11,10 +11,24 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+
+namespace {
+
+// Contains the pref service and key to access the permissions dict, and the
+// client key to access the bool field within the dict that holds the
+// permission state for a client.
+struct PermissionsPref {
+  raw_ptr<PrefService> service;
+  const std::string key;
+  const std::string client_key;
+};
+
+}  // namespace
 
 @implementation PushNotificationAccountContextManager {
   // Used to retrieve BrowserStates located at a given path.
@@ -67,40 +81,38 @@
 
 - (void)enablePushNotification:(PushNotificationClientId)clientID
                     forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
-  ScopedDictPrefUpdate update(browserState->GetPrefs(),
-                              prefs::kFeaturePushNotificationPermissions);
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  update->Set(key, true);
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  if (!pref.service) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref.service, pref.key);
+  update->Set(pref.client_key, true);
 }
 
 - (void)disablePushNotification:(PushNotificationClientId)clientID
                      forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
-  ScopedDictPrefUpdate update(browserState->GetPrefs(),
-                              prefs::kFeaturePushNotificationPermissions);
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  update->Set(key, false);
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  if (!pref.service) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref.service, pref.key);
+  update->Set(pref.client_key, false);
 }
 
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
                                 forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
   // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
-  if (!browserState) {
-    return false;
+  if (!pref.service) {
+    return NO;
   }
-
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  return browserState->GetPrefs()
-      ->GetDict(prefs::kFeaturePushNotificationPermissions)
-      .FindBool(key)
+  return pref.service->GetDict(pref.key)
+      .FindBool(pref.client_key)
       .value_or(false);
 }
 
@@ -159,6 +171,30 @@
   }
 
   return nil;
+}
+
+// Returns the appropriate `PermissionsPref` for the given `clientID` and
+// `gaiaID`. This can be either BrowserState prefs or LocalState prefs.
+- (PermissionsPref)prefsForClient:(PushNotificationClientId)clientID
+                          account:(const std::string&)gaiaID {
+  std::string clientKey =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  switch (clientID) {
+    case PushNotificationClientId::kCommerce:
+    case PushNotificationClientId::kContent: {
+      ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+      if (!browserState) {
+        // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
+        // via ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+        return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey};
+      }
+      return {browserState->GetPrefs(),
+              prefs::kFeaturePushNotificationPermissions, clientKey};
+    }
+    case PushNotificationClientId::kTips:
+      return {GetApplicationContext()->GetLocalState(),
+              prefs::kAppLevelPushNotificationPermissions, clientKey};
+  }
 }
 
 @end

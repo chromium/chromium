@@ -13,12 +13,14 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -62,7 +64,14 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 }  // namespace
 
 TipsNotificationClient::TipsNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kTips) {}
+    : PushNotificationClient(PushNotificationClientId::kTips) {
+  pref_change_registrar_.Init(GetApplicationContext()->GetLocalState());
+  PrefChangeRegistrar::NamedChangeCallback pref_callback = base::BindRepeating(
+      &TipsNotificationClient::OnPermittedPrefChanged, base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kAppLevelPushNotificationPermissions,
+                             pref_callback);
+  permitted_ = IsPermitted();
+}
 
 TipsNotificationClient::~TipsNotificationClient() = default;
 
@@ -122,6 +131,13 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ClearAndMaybeRequestNotification(std::move(closure));
+}
+
+void TipsNotificationClient::ClearAndMaybeRequestNotification(
+    base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  permitted_ = IsPermitted();
   if (interacted_type_.has_value()) {
     HandleNotificationInteraction(interacted_type_.value());
     interacted_type_ = std::nullopt;
@@ -177,7 +193,7 @@ void TipsNotificationClient::OnNotificationCleared(
 
 void TipsNotificationClient::MaybeRequestNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsFirstRunRecent(base::Days(14))) {
+  if (!IsFirstRunRecent(base::Days(14)) || !permitted_) {
     return;
   }
 
@@ -331,4 +347,23 @@ void TipsNotificationClient::MarkNotificationTypeNotSent(
   int sent_bitfield = local_state->GetInteger(kTipsNotificationsSentPref);
   sent_bitfield &= ~(1 << int(type));
   local_state->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
+}
+
+bool TipsNotificationClient::IsPermitted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/325279788): use
+  // GetMobileNotificationPermissionStatusForClient to determine opt-in
+  // state.
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  return local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kTipsNotificationKey)
+      .value_or(false);
+}
+
+void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool newpermitted_ = IsPermitted();
+  if (permitted_ != newpermitted_) {
+    ClearAndMaybeRequestNotification(base::DoNothing());
+  }
 }

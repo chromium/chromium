@@ -63,6 +63,7 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
     // components owned by TestingApplicationContext that depends on the local
     // state are also freed.
     network_time_tracker_.reset();
+    push_notification_service_.reset();
   }
   local_state_ = local_state;
 }

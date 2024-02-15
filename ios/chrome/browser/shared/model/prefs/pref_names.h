@@ -15,6 +15,11 @@ inline constexpr char kAddressBarSettingsNewBadgeShownCount[] =
 // The application locale.
 inline constexpr char kApplicationLocale[] = "intl.app_locale";
 
+// A dictionary mapping push notification enabled features to their permission
+// to send notifications to the user. This is stored in LocalState prefs.
+inline constexpr char kAppLevelPushNotificationPermissions[] =
+    "push_notifications.app_level_permissions";
+
 // Boolean that is true when the AppStoreRatingEnabled policy is enabled.
 inline constexpr char kAppStoreRatingPolicyEnabled[] =
     "ios.app_store_rating_enabled";
@@ -90,7 +95,7 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
     "follow.first_follow_update_ui_modal_count";
 
 // A dictionary mapping push notification enabled features to their permission
-// to send notifications to the user.
+// to send notifications to the user. This is stored in BrowserState prefs.
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 

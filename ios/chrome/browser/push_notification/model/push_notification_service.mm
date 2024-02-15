@@ -50,7 +50,6 @@ void PushNotificationService::SetPreference(NSString* account_id,
         disablePushNotification:client_id
                      forAccount:base::SysNSStringToUTF8(account_id)];
   }
-
   SetPreferences(
       account_id,
       [context_manager_
@@ -86,6 +85,7 @@ void PushNotificationService::RegisterLocalStatePrefs(
       prefs::kPushNotificationAuthorizationStatus,
       base::to_underlying(
           push_notification::SettingsAuthorizationStatus::NOTDETERMINED));
+  registry->RegisterDictionaryPref(prefs::kAppLevelPushNotificationPermissions);
 }
 
 void PushNotificationService::SetPreferences(
