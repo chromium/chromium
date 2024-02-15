@@ -25,6 +25,28 @@ constexpr int kBusinessIconSize = 24;
 
 DataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 
+// Helper that keeps track of dialogs currently showing for given
+// WebContents-type pair.  These are used to determine if a call to
+// `DataControlsDialog::Show` is redundant or not. Keyed with `void*` instead of
+// `content::WebContents*` to avoid accidental bugs from dereferencing that
+// pointer.
+std::map<std::pair<void*, DataControlsDialog::Type>, DataControlsDialog*>&
+CurrentDialogsStorage() {
+  static std::map<std::pair<void*, DataControlsDialog::Type>,
+                  DataControlsDialog*>
+      dialogs;
+  return dialogs;
+}
+
+// Returns null if no dialog is currently shown on `web_contents` for `type`.
+DataControlsDialog* GetCurrentDialog(content::WebContents* web_contents,
+                                     DataControlsDialog::Type type) {
+  if (CurrentDialogsStorage().count({web_contents, type})) {
+    return CurrentDialogsStorage().at({web_contents, type});
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 DataControlsDialog::TestObserver::TestObserver() {
@@ -53,11 +75,25 @@ void DataControlsDialog::Show(
     Type type,
     base::OnceCallback<void(bool bypassed)> callback) {
   DCHECK(web_contents);
+
+  // Don't show a new dialog if there is already an existing dialog of the same
+  // type showing in `web_contents` already. If `callback` is non-null, we add
+  // it to the currently showing dialog.
+  if (auto* dialog = GetCurrentDialog(web_contents, type)) {
+    if (callback) {
+      dialog->callbacks_.push_back(std::move(callback));
+    }
+    return;
+  }
+
   constrained_window::ShowWebModalDialogViews(
-      new DataControlsDialog(type, std::move(callback)), web_contents);
+      new DataControlsDialog(type, web_contents, std::move(callback)),
+      web_contents);
 }
 
 DataControlsDialog::~DataControlsDialog() {
+  CurrentDialogsStorage().erase({web_contents_, type_});
+
   if (observer_for_testing_) {
     observer_for_testing_->OnDestructed(this);
   }
@@ -119,9 +155,13 @@ void DataControlsDialog::OnWidgetInitialized() {
 
 DataControlsDialog::DataControlsDialog(
     Type type,
+    content::WebContents* web_contents,
     base::OnceCallback<void(bool bypassed)> callback)
-    : type_(type), callback_(std::move(callback)) {
+    : type_(type), web_contents_(web_contents) {
   SetOwnedByWidget(true);
+
+  CurrentDialogsStorage()[{web_contents_, type_}] = this;
+  callbacks_.push_back(std::move(callback));
 
   switch (type_) {
     case Type::kClipboardPasteBlock:

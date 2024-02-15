@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_DATA_CONTROLS_DIALOG_H_
 
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/data_controls/rule.h"
@@ -93,6 +95,7 @@ class DataControlsDialog : public views::DialogDelegate {
 
  private:
   DataControlsDialog(Type type,
+                     content::WebContents* web_contents,
                      base::OnceCallback<void(bool bypassed)> callback);
 
   // Helpers to create sub-views of the dialog.
@@ -100,11 +103,12 @@ class DataControlsDialog : public views::DialogDelegate {
   std::unique_ptr<views::Label> CreateMessage() const;
 
   Type type_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
 
   // Called when the dialog closes, with `true` in the case of a bypassed
   // warning.
-  base::OnceCallback<void(bool bypassed)> callback_;
+  std::vector<base::OnceCallback<void(bool bypassed)>> callbacks_;
 };
 
 }  // namespace data_controls
