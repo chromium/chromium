@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -144,7 +146,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
 
 void SoftNavigationHeuristics::InteractionCallbackCalled(
     const scheduler::TaskAttributionInfo& task,
-    EventScopeType type,
+    EventScope::Type type,
     bool is_new_interaction) {
   // Set task ID to the current one.
   initial_interaction_encountered_ = true;
@@ -408,7 +410,7 @@ void SoftNavigationHeuristics::RecordPaint(
 }
 
 void SoftNavigationHeuristics::SetEventParametersAndQueueNestedOnes(
-    EventScopeType type,
+    EventScope::Type type,
     bool is_new_interaction,
     bool is_nested) {
   seen_first_observer = false;
@@ -581,8 +583,7 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   CHECK(current_event_parameters_);
   InteractionCallbackCalled(task, current_event_parameters_->type,
                             current_event_parameters_->is_new_interaction);
-  if (current_event_parameters_->type ==
-      SoftNavigationHeuristics::EventScopeType::kNavigate) {
+  if (current_event_parameters_->type == EventScope::Type::kNavigate) {
     SameDocumentNavigationStarted();
   }
 }
@@ -611,13 +612,20 @@ LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
   return window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
 }
 
-// SoftNavigationEventScope implementation
+SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
+    EventScope::Type type,
+    bool is_new_interaction) {
+  return EventScope(this, type, is_new_interaction);
+}
+
+// SoftNavigationHeuristics::EventScope implementation
 // ///////////////////////////////////////////
-SoftNavigationEventScope::SoftNavigationEventScope(
+SoftNavigationHeuristics::EventScope::EventScope(
     SoftNavigationHeuristics* heuristics,
-    SoftNavigationHeuristics::EventScopeType type,
+    Type type,
     bool is_new_interaction)
     : heuristics_(heuristics) {
+  CHECK(heuristics_);
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
   auto* tracker = scheduler->GetTaskAttributionTracker();
@@ -637,7 +645,19 @@ SoftNavigationEventScope::SoftNavigationEventScope(
   }
 }
 
-SoftNavigationEventScope::~SoftNavigationEventScope() {
+SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)
+    : heuristics_(std::exchange(other.heuristics_, nullptr)) {}
+
+SoftNavigationHeuristics::EventScope&
+SoftNavigationHeuristics::EventScope::operator=(EventScope&& other) {
+  heuristics_ = std::exchange(other.heuristics_, nullptr);
+  return *this;
+}
+
+SoftNavigationHeuristics::EventScope::~EventScope() {
+  if (!heuristics_) {
+    return;
+  }
   bool nested = heuristics_->PopNestedEventParametersIfNeeded();
   // Set the start time to the end of event processing. In case of nested event
   // scopes, we want this to be the end of the nested `navigate()` event

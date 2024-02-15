@@ -60,7 +60,7 @@ TEST_F(SoftNavigationHeuristicsTest,
           scheduler::TaskAttributionId().NextId(), nullptr);
 
   test_heuristics->InteractionCallbackCalled(
-      *task, SoftNavigationHeuristics::EventScopeType::kClick, true);
+      *task, SoftNavigationHeuristics::EventScope::Type::kClick, true);
   ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
@@ -136,9 +136,10 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   Persistent<scheduler::TaskAttributionInfo> root_task = nullptr;
   // Simulate a click.
   {
-    SoftNavigationEventScope event_scope(
-        heuristics, SoftNavigationHeuristics::EventScopeType::kClick,
-        /*is_new_interaction=*/true);
+    SoftNavigationHeuristics::EventScope event_scope(
+        heuristics->CreateEventScope(
+            SoftNavigationHeuristics::EventScope::Type::kClick,
+            /*is_new_interaction=*/true));
     std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
         script_state, /*parent_task=*/nullptr, TaskScopeType::kCallback);
     root_task = tracker->RunningTask(script_state->GetIsolate());

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -838,9 +839,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       params->source_element->GetExecutionContext() == window_) {
     init->setSourceElement(params->source_element);
   }
-  // This unique_ptr needs to be in the function's scope, to maintain the
-  // SoftNavigationEventScope until the event handler runs.
-  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
+
+  std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
   if (base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
       if (init->userInitiated() && !init->downloadRequest() &&
@@ -848,8 +848,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         // If these conditions are met, create a SoftNavigationEventScope to
         // consider this a "user initiated click", and the dispatched event
         // handlers as potential soft navigation tasks.
-        soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-            heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
+        soft_navigation_scope = heuristics->CreateEventScope(
+            SoftNavigationHeuristics::EventScope::Type::kNavigate,
             /*is_new_interaction=*/true);
       }
     }

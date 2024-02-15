@@ -997,7 +997,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (!frame_)
     return;
 
-  std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
+  std::optional<SoftNavigationHeuristics::EventScope>
+      soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics = nullptr;
   if (frame_->IsMainFrame() &&
       base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
@@ -1007,8 +1008,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       // For browser-initiated navigations, we never started the soft
       // navigation (as this is the first we hear of it in the renderer). We
       // need to do that now.
-      soft_navigation_event_scope = std::make_unique<SoftNavigationEventScope>(
-          heuristics, SoftNavigationHeuristics::EventScopeType::kNavigate,
+      soft_navigation_event_scope = heuristics->CreateEventScope(
+          SoftNavigationHeuristics::EventScope::Type::kNavigate,
           /*is_new_interaction=*/true);
       heuristics->SameDocumentNavigationStarted();
     }
