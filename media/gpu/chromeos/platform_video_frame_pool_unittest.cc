@@ -280,11 +280,13 @@ TEST_P(PlatformVideoFramePoolTest, UnwrapVideoFrame) {
   scoped_refptr<VideoFrame> frame_2 = VideoFrame::WrapVideoFrame(
       frame_1, frame_1->format(), frame_1->visible_rect(),
       frame_1->natural_size());
-  EXPECT_EQ(pool_->UnwrapFrame(*frame_1), pool_->UnwrapFrame(*frame_2));
+  EXPECT_EQ(pool_->GetOriginalFrame(GetSharedMemoryId(*frame_1)),
+            pool_->GetOriginalFrame(GetSharedMemoryId(*frame_2)));
   EXPECT_EQ(frame_1->GetGpuMemoryBuffer(), frame_2->GetGpuMemoryBuffer());
 
   scoped_refptr<VideoFrame> frame_3 = GetFrame(20);
-  EXPECT_NE(pool_->UnwrapFrame(*frame_1), pool_->UnwrapFrame(*frame_3));
+  EXPECT_NE(pool_->GetOriginalFrame(GetSharedMemoryId(*frame_1)),
+            pool_->GetOriginalFrame(GetSharedMemoryId(*frame_3)));
   EXPECT_NE(frame_1->GetGpuMemoryBuffer(), frame_3->GetGpuMemoryBuffer());
 }
 

@@ -265,12 +265,12 @@ bool PlatformVideoFramePool::IsExhausted_Locked() {
   return free_frames_.empty() && GetTotalNumFrames_Locked() >= max_num_frames_;
 }
 
-VideoFrame* PlatformVideoFramePool::UnwrapFrame(
-    const VideoFrame& wrapped_frame) {
+VideoFrame* PlatformVideoFramePool::GetOriginalFrame(
+    gfx::GenericSharedMemoryId frame_id) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  auto it = frames_in_use_.find(GetSharedMemoryId(wrapped_frame));
+  auto it = frames_in_use_.find(frame_id);
   return (it == frames_in_use_.end()) ? nullptr : it->second;
 }
 

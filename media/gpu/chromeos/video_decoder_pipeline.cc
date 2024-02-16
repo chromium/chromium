@@ -547,7 +547,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     // Note: because we std::move(create_decoder_function_cb_), we only reach
     // this code once. Therefore, we don't need to worry about this assignment
     // potentially destroying an existing |decoder_| which means we don't have
-    // to call |frame_converter_|->SetUnwrapFrameCB() here.
+    // to call |frame_converter_|->set_get_original_frame_cb() here.
     decoder_ =
         std::move(create_decoder_function_cb_)
             .Run(media_log_->Clone(), decoder_task_runner_, decoder_weak_this_);
@@ -563,15 +563,15 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   }
 
   if (frame_converter_) {
-    MailboxVideoFrameConverter::UnwrapFrameCB unwrap_frame_cb;
+    MailboxVideoFrameConverter::GetOriginalFrameCB get_original_frame_cb;
 
     if (uses_oop_video_decoder_) {
       // Note: base::Unretained() is safe because either a) |decoder_| outlives
       // the |frame_converter_| or b) we call
-      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
-      // before destroying |decoder_|.
-      unwrap_frame_cb = base::BindRepeating(
-          &OOPVideoDecoder::UnwrapFrame,
+      // |frame_converter_|->set_get_original_frame_cb() with a null
+      // GetOriginalFrameCB before destroying |decoder_|.
+      get_original_frame_cb = base::BindRepeating(
+          &OOPVideoDecoder::GetOriginalFrame,
           base::Unretained(static_cast<OOPVideoDecoder*>(decoder_.get())));
     } else {
       CHECK(main_frame_pool_);
@@ -583,14 +583,15 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
 
       // Note: base::Unretained() is safe because either a) the
       // |main_frame_pool_| outlives |frame_converter_| or b) we call
-      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
-      // before destroying |main_frame_pool_|.
-      unwrap_frame_cb =
-          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+      // |frame_converter_|->set_get_original_frame_cb() with a null
+      // GetOriginalFrameCB before destroying |main_frame_pool_|.
+      get_original_frame_cb =
+          base::BindRepeating(&PlatformVideoFramePool::GetOriginalFrame,
                               base::Unretained(platform_video_frame_pool));
     }
 
-    frame_converter_->set_unwrap_frame_cb(std::move(unwrap_frame_cb));
+    frame_converter_->set_get_original_frame_cb(
+        std::move(get_original_frame_cb));
   }
 
   estimated_num_buffers_for_renderer_ =
@@ -625,7 +626,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
         << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
         << static_cast<int>(status.code());
     if (frame_converter_) {
-      frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+      frame_converter_->set_get_original_frame_cb(base::NullCallback());
     }
 #if BUILDFLAG(IS_CHROMEOS)
     // We always need to destroy |buffer_transcryptor_| if it exists before
@@ -643,7 +644,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
       if (frame_converter_) {
-        frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+        frame_converter_->set_get_original_frame_cb(base::NullCallback());
       }
       // We always need to destroy |buffer_transcryptor_| if it exists before
       // |decoder_|.
@@ -1041,7 +1042,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // Currently this is because the frame converter doesn't work, and since
     // the tests don't need to render the frame, it can be bypassed.
     if (frame_converter_) {
-      frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+      frame_converter_->set_get_original_frame_cb(base::NullCallback());
     }
     main_frame_pool_.reset();
     return *viable_candidate;

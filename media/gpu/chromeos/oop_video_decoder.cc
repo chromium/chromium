@@ -1000,8 +1000,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       return;
     }
     received_id_to_decoded_frame_map_[received_gmb_id] = gmb_frame;
-    generated_id_to_decoded_frame_map_[gmb_frame->GetGpuMemoryBuffer()
-                                           ->GetId()] = gmb_frame.get();
+    generated_id_to_decoded_frame_map_[GetSharedMemoryId(*gmb_frame)] =
+        gmb_frame.get();
     frame_to_wrap = std::move(gmb_frame);
   }
 
@@ -1063,12 +1063,12 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
 }
 
-VideoFrame* OOPVideoDecoder::UnwrapFrame(const VideoFrame& wrapped_frame) {
+VideoFrame* OOPVideoDecoder::GetOriginalFrame(
+    gfx::GenericSharedMemoryId frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(wrapped_frame.HasGpuMemoryBuffer());
-  auto it = generated_id_to_decoded_frame_map_.find(
-      wrapped_frame.GetGpuMemoryBuffer()->GetId());
+  CHECK(frame_id.is_valid());
+  auto it = generated_id_to_decoded_frame_map_.find(frame_id);
   return (it == generated_id_to_decoded_frame_map_.end()) ? nullptr
                                                           : it->second;
 }

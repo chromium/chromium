@@ -44,8 +44,8 @@ namespace media {
 class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
  public:
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
-  using UnwrapFrameCB =
-      base::RepeatingCallback<VideoFrame*(const VideoFrame& wrapped_frame)>;
+  using GetOriginalFrameCB =
+      base::RepeatingCallback<VideoFrame*(gfx::GenericSharedMemoryId frame_id)>;
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
 
@@ -101,8 +101,8 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
                   OutputCB output_cb);
 
   // Enqueues |frame| to be converted to a gpu::Mailbox-backed VideoFrame. If
-  // set_unwrap_frame_cb() was called with a non-null callback, |frame| must
-  // wrap a GpuMemoryBuffer-backed VideoFrame that is retrieved via that
+  // set_get_original_frame_cb() was called with a non-null callback, |frame|
+  // must wrap a GpuMemoryBuffer-backed VideoFrame that is retrieved via that
   // callback. Otherwise, |frame| will be used directly and must be a
   // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept alive
   // until the GpuMemoryBuffer-backed VideoFrame is destroyed. These methods
@@ -112,15 +112,15 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   bool HasPendingFrames() const;
 
   // Sets the callback to unwrap VideoFrames provided to ConvertFrame(). If
-  // |unwrap_frame_cb| is null or this method is never called at all,
+  // |get_original_frame_cb| is null or this method is never called at all,
   // ConvertFrame() assumes it's called with unwrapped VideoFrames.
   //
   // This method must be called on |parent_task_runner_|.
   //
-  // Note: if |unwrap_frame_cb| is called at all, it will be called only during
-  // a call to ConvertFrame(), so it's guaranteed to be called on
+  // Note: if |get_original_frame_cb| is called at all, it will be called only
+  // during a call to ConvertFrame(), so it's guaranteed to be called on
   // |parent_task_runner_|.
-  void set_unwrap_frame_cb(UnwrapFrameCB unwrap_frame_cb);
+  void set_get_original_frame_cb(GetOriginalFrameCB get_original_frame_cb);
 
  private:
   friend struct std::default_delete<MailboxVideoFrameConverter>;
@@ -213,14 +213,14 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // Unfortunately this means that a new frame is returned each time (i.e., we
   // receive a new VideoFrame::unique_id() each time) and we need a way to
   // uniquely identify the underlying frame to avoid converting the same frame
-  // multiple times. |unwrap_frame_cb_| is used to get the underlying frame.
+  // multiple times. |get_original_frame_cb_| is used to get the original frame.
   //
-  // When |unwrap_frame_cb_| is null, we assume it's not necessary to unwrap
-  // incoming VideoFrames, and we just use them directly.
+  // When |get_original_frame_cb_| is null, we assume it's not necessary to get
+  // the original frames, and we just use them directly.
   //
-  // TODO(b/195769334): remove the null |unwrap_frame_cb_| path because it
+  // TODO(b/195769334): remove the null |get_original_frame_cb_| path because it
   // shouldn't be used after https://crrev.com/c/4457504.
-  UnwrapFrameCB unwrap_frame_cb_;
+  GetOriginalFrameCB get_original_frame_cb_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   const std::unique_ptr<GpuDelegate> gpu_delegate_;

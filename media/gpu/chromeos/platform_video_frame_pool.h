@@ -58,10 +58,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   void ReleaseAllFrames() override;
   std::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
-  // Returns the original frame of a wrapped frame. We need this method to
-  // determine whether the frame returned by GetFrame() is the same one after
-  // recycling, and bind destruction callback at original frames.
-  VideoFrame* UnwrapFrame(const VideoFrame& wrapped_frame);
+  // Returns the original frame from a frame's shared memory ID. We need this
+  // method to determine whether the frame returned by GetFrame() is the same
+  // one after recycling, and bind destruction callback at original frames.
+  VideoFrame* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
 
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();

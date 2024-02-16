@@ -342,7 +342,9 @@ void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
     return OnError(FROM_HERE, "Invalid frame.");
 
   VideoFrame* origin_frame =
-      !unwrap_frame_cb_.is_null() ? unwrap_frame_cb_.Run(*frame) : frame.get();
+      !get_original_frame_cb_.is_null()
+          ? get_original_frame_cb_.Run(GetSharedMemoryId(*frame))
+          : frame.get();
   if (!origin_frame)
     return OnError(FROM_HERE, "Failed to get origin frame.");
 
@@ -676,10 +678,10 @@ bool MailboxVideoFrameConverter::HasPendingFrames() const {
   return !input_frame_queue_.empty();
 }
 
-void MailboxVideoFrameConverter::set_unwrap_frame_cb(
-    UnwrapFrameCB unwrap_frame_cb) {
+void MailboxVideoFrameConverter::set_get_original_frame_cb(
+    GetOriginalFrameCB get_original_frame_cb) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
-  unwrap_frame_cb_ = std::move(unwrap_frame_cb);
+  get_original_frame_cb_ = std::move(get_original_frame_cb);
 }
 
 void MailboxVideoFrameConverter::OnError(const base::Location& location,
