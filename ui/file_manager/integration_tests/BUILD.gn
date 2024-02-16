@@ -7,13 +7,10 @@ import("//tools/typescript/ts_library.gni")
 preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
-js_files = [ "test_util.ts" ]
-
 ts_files = [
   "remote_call.ts",
+  "test_util.ts",
   "testcase.ts",
-
-  # "test_util.ts",
 
   # File Manager.
   "file_manager/android_photos.ts",
@@ -77,7 +74,7 @@ ts_files = [
 
 # TS/JS files.
 copy("copy_src") {
-  sources = js_files + ts_files
+  sources = ts_files
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 
@@ -118,7 +115,7 @@ ts_library("build_ts") {
     ":from_files_app",
   ]
 
-  in_files = js_files + ts_files + [
+  in_files = ts_files + [
                # Copied from the Files app production to avoid duplication.
                "prod/file_manager/shared_types.ts",
              ]

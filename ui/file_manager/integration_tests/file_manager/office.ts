@@ -10,7 +10,8 @@ import {FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} from './test_data.js';
 /**
  * Returns 'Open in Google Docs' task descriptor.
  */
-function openDocWithDriveDescriptor(): FileTaskDescriptor {
+function openDocWithDriveDescriptor():
+    chrome.fileManagerPrivate.FileTaskDescriptor {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
   const filesTaskType = 'web';
   const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-word`;
@@ -21,7 +22,8 @@ function openDocWithDriveDescriptor(): FileTaskDescriptor {
 /**
  * Returns 'Open with Excel' task descriptor.
  */
-function openExcelWithDriveDescriptor(): FileTaskDescriptor {
+function openExcelWithDriveDescriptor():
+    chrome.fileManagerPrivate.FileTaskDescriptor {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
   const filesTaskType = 'web';
   const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-excel`;
@@ -32,7 +34,8 @@ function openExcelWithDriveDescriptor(): FileTaskDescriptor {
 /**
  * Returns 'Open in PowerPoint' task descriptor.
  */
-function openPowerPointWithDriveDescriptor(): FileTaskDescriptor {
+function openPowerPointWithDriveDescriptor():
+    chrome.fileManagerPrivate.FileTaskDescriptor {
   const filesAppId = FILE_MANAGER_SWA_APP_ID;
   const filesTaskType = 'web';
   const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-powerpoint`;
@@ -47,8 +50,8 @@ function openPowerPointWithDriveDescriptor(): FileTaskDescriptor {
  *
  * @param appId Window ID.
  */
-async function getExecutedTask(
-    appId: string, expectedCount: number = 1): Promise<FileTaskDescriptor> {
+async function getExecutedTask(appId: string, expectedCount: number = 1):
+    Promise<chrome.fileManagerPrivate.FileTaskDescriptor> {
   const caller = getCaller();
 
   // Wait until a task has been executed.
@@ -63,10 +66,10 @@ async function getExecutedTask(
   });
 
   // Arguments provided for the last call to executeTask().
-  const executeTaskArgs =
-      (await remoteCall.callRemoteTestUtil<FileTaskDescriptor[][]>(
-          'staticFakeCalledArgs', appId,
-          ['chrome.fileManagerPrivate.executeTask']))[expectedCount - 1]!;
+  const executeTaskArgs = (await remoteCall.callRemoteTestUtil<
+                           chrome.fileManagerPrivate.FileTaskDescriptor[][]>(
+      'staticFakeCalledArgs', appId,
+      ['chrome.fileManagerPrivate.executeTask']))[expectedCount - 1]!;
 
   // The task descriptor is the first argument.
   return executeTaskArgs[0]!;

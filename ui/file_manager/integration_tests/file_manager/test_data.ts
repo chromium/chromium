@@ -248,7 +248,8 @@ export class FakeTask {
    * @param isDlpBlocked Whether the task is blocked by DLP.
    */
   constructor(
-      public isDefault: boolean, public descriptor: FileTaskDescriptor,
+      public isDefault: boolean,
+      public descriptor: chrome.fileManagerPrivate.FileTaskDescriptor,
       public title?: string, public isGenericFileHandler: boolean = false,
       public isDlpBlocked: boolean = false) {
     Object.freeze(this);

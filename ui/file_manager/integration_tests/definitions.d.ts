@@ -10,17 +10,6 @@ interface Window {
   currentStep: Promise<void>|null;
 }
 
-
-// Copied from the fileManagerPrivate.
-// TODO(TS): Remove this interface when file_manager_private.d.ts is
-// auto-generated and submitted.
-interface FileTaskDescriptor {
-  appId: string;
-  taskType: string;
-  actionId: string;
-}
-
-
 // TODO(b/319189127): Remove these when the integration tests extension is
 // migrated to manifest v3 and can use the Promise version of these APIs.
 declare namespace chrome {

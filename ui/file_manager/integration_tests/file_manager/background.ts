@@ -2,24 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './context_menu.js';
-import './create_new_folder.js';
-import './crostini.js';
-import './directory_tree_context_menu.js';
-import './dlp.js';
-import './dlp_enterprise_connectors.js';
-import './drive_specific.js';
-import './file_dialog.js';
-import './file_transfer_connector.js';
-import './folder_shortcuts.js';
-import './gear_menu.js';
-import './holding_space.js';
-import './install_linux_package_dialog.js';
-import './recents.js';
-import './search.js';
-import './tab_index.js';
-import './transfer.js';
-
 import {FilesAppState} from '../prod/file_manager/shared_types.js';
 import {RemoteCallFilesApp} from '../remote_call.js';
 import {addEntries, getCaller, GetRootPathsResult, pending, repeatUntil, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';

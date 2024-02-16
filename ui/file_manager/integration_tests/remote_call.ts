@@ -661,15 +661,16 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     list.
    */
   waitUntilTaskExecutes(
-      appId: string, descriptor: FileTaskDescriptor, fileNames: string[],
-      replyArgs?: Object[]): Promise<void> {
+      appId: string, descriptor: chrome.fileManagerPrivate.FileTaskDescriptor,
+      fileNames: string[], replyArgs?: Object[]): Promise<void> {
     const caller = getCaller();
     return repeatUntil(async () => {
       if (!await this.callRemoteTestUtil(
               'taskWasExecuted', appId, [descriptor, fileNames])) {
-        const tasks = await this.callRemoteTestUtil<
-            Array<{descriptor: FileTaskDescriptor, fileNames: string[]}>>(
-            'getExecutedTasks', appId, []);
+        const tasks = await this.callRemoteTestUtil<Array<{
+          descriptor: chrome.fileManagerPrivate.FileTaskDescriptor,
+          fileNames: string[],
+        }>>('getExecutedTasks', appId, []);
         const executedTasks = tasks.map((task) => {
           const {appId, taskType, actionId} = task.descriptor;
           const executedFileNames = task.fileNames;

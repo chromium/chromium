@@ -62,7 +62,7 @@ async function setupTaskTest(rootPath: string, fakeTasks: FakeTask[]) {
  * @param descriptor Task descriptor.
  */
 async function executeDefaultTask(
-    appId: string, descriptor: FileTaskDescriptor) {
+    appId: string, descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
   // Select file.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
@@ -84,7 +84,8 @@ async function executeDefaultTask(
  * @return Promise to be fulfilled/rejected depends on the test result.
  */
 async function defaultTaskDialog(
-    appId: string, descriptor: FileTaskDescriptor): Promise<void> {
+    appId: string,
+    descriptor: chrome.fileManagerPrivate.FileTaskDescriptor): Promise<void> {
   // Prepare expected labels.
   const expectedLabels = [
     'DummyTask1 (default)',
