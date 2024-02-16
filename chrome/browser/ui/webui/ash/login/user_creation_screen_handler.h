@@ -27,6 +27,7 @@ class UserCreationView {
   virtual void SetIsBackButtonVisible(bool value) = 0;
   virtual void SetTriageStep() = 0;
   virtual void SetChildSetupStep() = 0;
+  virtual void SetDefaultStep() = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<UserCreationView> AsWeakPtr() = 0;
@@ -50,6 +51,7 @@ class UserCreationScreenHandler final : public UserCreationView,
   void SetIsBackButtonVisible(bool value) override;
   void SetTriageStep() override;
   void SetChildSetupStep() override;
+  void SetDefaultStep() override;
   base::WeakPtr<UserCreationView> AsWeakPtr() override;
 
   // BaseScreenHandler:

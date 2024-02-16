@@ -294,6 +294,35 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, NotEnrollDevice) {
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_TRIAGE);
 }
 
+// Verify that  gaia signin back button return to enroll triage step after
+// going through the enorll triage -> don't-enroll-the-device in user
+// creation screen.
+IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, BackFromGaia) {
+  // TODO(b/325017147) Check why ConsumerUpdateScreen
+  // is shown and updating in linux-chromemos
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+      false;
+
+  SelectUserTypeOnUserCreationScreen(kEnrollButton);
+  test::OobeJS().ExpectVisiblePath(kUserCreationEnrollTriageDialog);
+  test::OobeJS().TapOnPath(kTriageNotEnrollButton);
+  test::OobeJS().TapOnPath(kEnrollTriageNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_TRIAGE);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(
+          true, {"gaia-signin", "signin-frame-dialog", "signin-back-button"})
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kUserCreationEnrollTriageDialog);
+}
+
 // Verify that enroll-device in the enorll triage step in user creation
 // screen display device enrolllment when software update enabled.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, EnrollDevice) {
@@ -304,6 +333,14 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, EnrollDevice) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(),
             UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
 }
 
 // Verify that back button display create step in the child setup step

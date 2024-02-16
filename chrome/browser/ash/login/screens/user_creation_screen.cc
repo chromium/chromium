@@ -171,6 +171,13 @@ bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
 
+void UserCreationScreen::SetDefaultStep() {
+  if (!view_) {
+    return;
+  }
+  view_->SetDefaultStep();
+}
+
 void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
   NetworkStateInformer::State state = network_state_informer_->state();
   if (state != NetworkStateInformer::ONLINE ||
