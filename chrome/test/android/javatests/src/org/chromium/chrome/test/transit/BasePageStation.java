@@ -47,7 +47,7 @@ public abstract class BasePageStation extends TransitStation {
 
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         TabSwitcherActionMenuFacility menu =
                 new TabSwitcherActionMenuFacility(this, mChromeTabbedActivityTestRule);
@@ -55,7 +55,7 @@ public abstract class BasePageStation extends TransitStation {
     }
 
     public PageAppMenuFacility openAppMenu() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         PageAppMenuFacility menu = new PageAppMenuFacility(this, mChromeTabbedActivityTestRule);
 
@@ -66,7 +66,7 @@ public abstract class BasePageStation extends TransitStation {
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
     public <T extends TabSwitcherStation> T openTabSwitcher(Class<T> expectedDestination) {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         T destination;
         if (mIncognito) {
@@ -83,7 +83,7 @@ public abstract class BasePageStation extends TransitStation {
 
     /** Opens the hub by pressing the toolbar tab switcher button. */
     public <T extends HubBaseStation> T openHub(Class<T> expectedDestination) {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         T destination =
                 expectedDestination.cast(

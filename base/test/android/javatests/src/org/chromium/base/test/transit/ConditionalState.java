@@ -8,8 +8,6 @@ import static org.junit.Assert.fail;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.test.transit.Elements.ViewElementInState;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -136,16 +134,18 @@ public abstract class ConditionalState {
         }
     }
 
-    /** Check the enter Conditions are still fulfilled. */
-    public final void recheckEnterConditions() {
+    /** Check the declared Elements still exist. */
+    public final void recheckActiveConditions() {
         assertInPhase(Phase.ACTIVE);
 
         List<Condition> enterConditions = new ArrayList<>();
         Elements elements = getElements();
-        for (ViewElementInState element : elements.getViewElements()) {
-            enterConditions.add(element.getEnterCondition());
+        for (ElementInState element : elements.getElementsInState()) {
+            Condition enterCondition = element.getEnterCondition();
+            if (enterCondition != null) {
+                enterConditions.add(enterCondition);
+            }
         }
-        enterConditions.addAll(elements.getOtherEnterConditions());
 
         ConditionChecker.check(enterConditions);
     }

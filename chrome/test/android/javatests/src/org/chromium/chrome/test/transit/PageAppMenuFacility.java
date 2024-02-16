@@ -34,7 +34,7 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
 
     /** Selects "New tab" from the app menu. */
     public NewTabPageStation openNewTab() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         NewTabPageStation destination =
                 new NewTabPageStation(
@@ -56,7 +56,7 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
 
     /** Selects "New Incognito tab" from the app menu. */
     public NewTabPageStation openNewIncognitoTab() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         NewTabPageStation destination =
                 new NewTabPageStation(

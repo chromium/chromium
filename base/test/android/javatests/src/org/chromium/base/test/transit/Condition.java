@@ -28,7 +28,7 @@ public abstract class Condition {
      *
      * @return whether the condition has been fulfilled.
      */
-    public abstract boolean check();
+    public abstract boolean check() throws Exception;
 
     /**
      * @return a short description to be printed as part of a list of conditions. Use {@link

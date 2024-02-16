@@ -35,7 +35,7 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
 
     /** Selects "New tab" from the app menu. */
     public NewTabPageStation openNewTab() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         NewTabPageStation destination =
                 new NewTabPageStation(
@@ -63,7 +63,7 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
 
     /** Selects "New Incognito tab" from the app menu. */
     public NewTabPageStation openNewIncognitoTab() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         NewTabPageStation destination =
                 new NewTabPageStation(

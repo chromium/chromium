@@ -8,8 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
-import org.chromium.base.test.transit.Elements.ViewElementInState;
-import org.chromium.base.test.transit.ViewElement.Scope;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -115,42 +113,12 @@ public class Trip extends Transition {
                 origin != null ? origin.getElementsIncludingFacilities() : Elements.EMPTY;
         Elements destinationElements = destination.getElementsIncludingFacilities();
 
-        Set<String> destinationViewElementDescriptions = new HashSet<>();
-        for (ViewElementInState element : destinationElements.getViewElements()) {
-            destinationViewElementDescriptions.add(
-                    element.getViewElement().getViewMatcherDescription());
-        }
-
-        // Create exit Conditions for Views that should disappear
-        for (ViewElementInState element : originElements.getViewElements()) {
-            // Ownership.UNOWNED ViewElements never generate exit Conditions.
-            if (element.getViewElement().getScope() == Scope.UNSCOPED) {
-                continue;
-            }
-
-            // Only Ownership.UNOWNED ViewElements had a null exit Condition, so this is non-null.
-            Condition exitCondition = element.getExitCondition();
-
-            // Ownership.SHARED ViewElements should generate exit Conditions when the destination
-            // does not have the same ViewElement.
-            if (element.getViewElement().getScope() == Scope.SHARED) {
-                boolean isInBothOriginAndDestination =
-                        destinationViewElementDescriptions.contains(
-                                element.getViewElement().getViewMatcherDescription());
-                if (isInBothOriginAndDestination) {
-                    continue;
-                }
-            }
-
-            // Ownership.SHARED ViewElements sometimes generate exit Conditions.
-            // Ownership.UNIQUE ViewElements always generate exit Conditions.
-            waitStatuses.add(
-                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-        }
-
-        // Create enter Conditions for Views that should appear
-        for (ViewElementInState element : destinationElements.getViewElements()) {
-            Condition enterCondition = element.getEnterCondition();
+        // Create ENTER Conditions for Views that should appear and LogicalElements that should
+        // be true.
+        Set<String> destinationElementIds = new HashSet<>();
+        for (ElementInState element : destinationElements.getElementsInState()) {
+            destinationElementIds.add(element.getId());
+            @Nullable Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 waitStatuses.add(
                         new ConditionWaitStatus(
@@ -158,17 +126,30 @@ public class Trip extends Transition {
             }
         }
 
-        // TOOD(crbug.com/1521928): Match non-visual Elements
-        for (Condition exitCondition : originElements.getOtherExitConditions()) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-        }
+        // Add extra ENTER Conditions.
         for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
             waitStatuses.add(
                     new ConditionWaitStatus(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
         }
 
-        // Add transition conditions
+        // Create EXIT Conditions for Views that should disappear and LogicalElements that should
+        // be false.
+        for (ElementInState element : originElements.getElementsInState()) {
+            Condition exitCondition = element.getExitCondition(destinationElementIds);
+            if (exitCondition != null) {
+                waitStatuses.add(
+                        new ConditionWaitStatus(
+                                exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+            }
+        }
+
+        // Add extra EXIT Conditions.
+        for (Condition exitCondition : originElements.getOtherExitConditions()) {
+            waitStatuses.add(
+                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+        }
+
+        // Add transition (TRSTN) conditions
         for (Condition condition : transitionConditions) {
             waitStatuses.add(
                     new ConditionWaitStatus(condition, ConditionWaiter.ConditionOrigin.TRANSITION));

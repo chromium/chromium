@@ -76,7 +76,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
      * @return the {@link HubTabSwitcherAppMenuFacility} for the Hub.
      */
     public HubTabSwitcherAppMenuFacility openAppMenu() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         HubTabSwitcherAppMenuFacility menu =
                 new HubTabSwitcherAppMenuFacility(this, mChromeTabbedActivityTestRule);
@@ -92,7 +92,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
      * @return the {@link BasePageStation} for the tab that was selected.
      */
     public BasePageStation selectTabAtIndex(int index) {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         PageStation destination =
                 new PageStation(
@@ -103,7 +103,6 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 this,
                 destination,
                 (t) -> {
-                    t.addCondition(new HubLayoutNotShowing());
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                             TAB_LIST_RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click());
                 });

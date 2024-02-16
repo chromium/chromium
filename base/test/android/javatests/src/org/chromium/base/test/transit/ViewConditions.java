@@ -66,7 +66,7 @@ public class ViewConditions {
         }
 
         @Override
-        public boolean check() {
+        public boolean check() throws Exception {
             if (!mGate.check()) {
                 return true;
             }

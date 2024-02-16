@@ -7,7 +7,6 @@ package org.chromium.base.test.transit;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.transit.Elements.ViewElementInState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ class FacilityCheckIn extends Transition {
     private List<ConditionWaiter.ConditionWaitStatus> createWaitStatuses() {
         ArrayList<ConditionWaiter.ConditionWaitStatus> waitStatuses = new ArrayList<>();
 
-        for (ViewElementInState element : mFacility.getElements().getViewElements()) {
+        for (ElementInState element : mFacility.getElements().getElementsInState()) {
             Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 waitStatuses.add(

@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.LogicalElement.sharedUiThreadLogicalElement;
+import static org.chromium.base.test.transit.LogicalElement.unscopedUiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import android.view.View;
@@ -109,12 +111,16 @@ public abstract class TabSwitcherStation extends TransitStation {
         elements.declareView(TOOLBAR);
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
 
-        elements.declareEnterCondition(new HubIsDisabled());
-        elements.declareEnterCondition(new TabSwitcherLayoutShowing());
+        elements.declareLogicalElement(
+                unscopedUiThreadLogicalElement(
+                        "HubFieldTrial Hub is disabled", this::isHubDisabled));
+        elements.declareLogicalElement(
+                sharedUiThreadLogicalElement(
+                        "LayoutManager is showing TAB_SWITCHER", this::isTabSwitcherLayoutShowing));
     }
 
     public PageStation openNewTab() {
-        recheckEnterConditions();
+        recheckActiveConditions();
 
         PageStation page = new PageStation(mChromeTabbedActivityTestRule, false, true);
         return Trip.travelSync(
@@ -173,31 +179,15 @@ public abstract class TabSwitcherStation extends TransitStation {
                                 RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click()));
     }
 
-    private class HubIsDisabled extends UiThreadCondition {
-        @Override
-        public boolean check() {
-            return !HubFieldTrial.isHubEnabled();
-        }
-
-        @Override
-        public String buildDescription() {
-            return "HubFieldTrial Hub is disabled";
-        }
+    private boolean isHubDisabled() {
+        return !HubFieldTrial.isHubEnabled();
     }
 
-    protected class TabSwitcherLayoutShowing extends UiThreadCondition {
-        @Override
-        public boolean check() {
-            LayoutManager layoutManager =
-                    mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
-            // TODO: Use #isLayoutFinishedShowing(LayoutType.TAB_SWITCHER) once available.
-            return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
-        }
-
-        @Override
-        public String buildDescription() {
-            return "LayoutManager is showing TAB_SWITCHER";
-        }
+    private boolean isTabSwitcherLayoutShowing() {
+        LayoutManager layoutManager =
+                mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
+        // TODO: Use #isLayoutFinishedShowing(LayoutType.TAB_SWITCHER) once available.
+        return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
     }
 
     protected class TabSwitcherLayoutNotShowing extends UiThreadCondition {
