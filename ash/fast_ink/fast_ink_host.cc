@@ -54,13 +54,10 @@ FastInkHost::ScopedPaint::~ScopedPaint() {
 
 FastInkHost::FastInkHost() = default;
 FastInkHost::~FastInkHost() {
-  if (base::FeatureList::IsEnabled(
-          features::kUseOneSharedImageForFastInkHostResources)) {
-    if (client_shared_image_) {
-      CHECK(context_provider_);
-      context_provider_->SharedImageInterface()->DestroySharedImage(
-          sync_token_, std::move(client_shared_image_));
-    }
+  if (client_shared_image_) {
+    CHECK(context_provider_);
+    context_provider_->SharedImageInterface()->DestroySharedImage(
+        sync_token_, std::move(client_shared_image_));
   }
 }
 
@@ -143,33 +140,30 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
     LOG_IF(ERROR, !gpu_memory_buffer_) << "Failed to create GPU memory buffer";
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseOneSharedImageForFastInkHostResources)) {
-    context_provider_ = fast_ink_internal::GetContextProvider();
-    gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
+  context_provider_ = fast_ink_internal::GetContextProvider();
+  gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
-    // This SharedImage will be used by the display compositor, will be updated
-    // in parallel with being read, and will potentially be used in overlays.
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                     gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-                     gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  // This SharedImage will be used by the display compositor, will be updated
+  // in parallel with being read, and will potentially be used in overlays.
+  constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+                             gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-    if (features::ShouldUseMappableSharedImage()) {
-      CHECK(!gpu_memory_buffer_);
-      CHECK(!client_shared_image_);
-      client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
-          buffer_size_, usage, buffer_usage);
-      LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
-    } else {
-      client_shared_image_ = sii->CreateSharedImage(
-          fast_ink_internal::kFastInkSharedImageFormat,
-          gpu_memory_buffer_->GetSize(), gfx::ColorSpace(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-          "FastInkHostUIResource", gpu_memory_buffer_->CloneHandle());
-      CHECK(client_shared_image_);
-    }
-    sync_token_ = sii->GenVerifiedSyncToken();
+  if (features::ShouldUseMappableSharedImage()) {
+    CHECK(!gpu_memory_buffer_);
+    CHECK(!client_shared_image_);
+    client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
+        buffer_size_, usage, buffer_usage);
+    LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
+  } else {
+    client_shared_image_ = sii->CreateSharedImage(
+        fast_ink_internal::kFastInkSharedImageFormat,
+        gpu_memory_buffer_->GetSize(), gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        "FastInkHostUIResource", gpu_memory_buffer_->CloneHandle());
+    CHECK(client_shared_image_);
   }
+  sync_token_ = sii->GenVerifiedSyncToken();
 
   if (switches::ShouldClearFastInkBuffer()) {
     if (features::ShouldUseMappableSharedImage()) {

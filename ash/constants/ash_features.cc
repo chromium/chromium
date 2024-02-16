@@ -3025,11 +3025,6 @@ BASE_FEATURE(kArcFileTasksUseAppService,
              "ArcFileTasksUseAppService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether FastInkHost uses a single SharedImage for all of its UiResources.
-BASE_FEATURE(kUseOneSharedImageForFastInkHostResources,
-             "UseOneSharedImageForFastInkHostResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable fast ink for software cursor. Fast ink provides a low-latency
 // cursor with possible tearing artifacts.
 BASE_FEATURE(kEnableFastInkForSoftwareCursor,
@@ -4497,11 +4492,8 @@ bool IsFeatureAwareDeviceDemoModeEnabled() {
       kFeatureManagementFeatureAwareDeviceDemoMode);
 }
 
-// MappableSI can be used only if using a single SI for FastInkHost UiResources.
 bool ShouldUseMappableSharedImage() {
-  return base::FeatureList::IsEnabled(
-             kUseOneSharedImageForFastInkHostResources) &&
-         base::FeatureList::IsEnabled(kEnableMappableSIForFastInkHost);
+  return base::FeatureList::IsEnabled(kEnableMappableSIForFastInkHost);
 }
 
 bool ShouldUseV1DeviceSync() {
