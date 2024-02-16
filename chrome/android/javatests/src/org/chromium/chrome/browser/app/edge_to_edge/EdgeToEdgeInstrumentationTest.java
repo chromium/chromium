@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeOSWrapperImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -123,6 +124,7 @@ public class EdgeToEdgeInstrumentationTest {
         mTestOsWrapper = new TestOsWrapper();
         mEdgeToEdgeController.setOsWrapperForTesting(mTestOsWrapper);
         mTestOsWrapper.resetPaddingMonitor();
+        EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
     }
 
     @After
@@ -292,5 +294,27 @@ public class EdgeToEdgeInstrumentationTest {
                 "Padding has been removed when viewport-fit=auto.",
                 padding,
                 heightOnCover - heightOnAuto);
+    }
+
+    @Test
+    @MediumTest
+    public void testUnfold() {
+        activateFeatureToEdge();
+        assertEquals(
+                "This test should start in portrait orientation!",
+                Orientation.PORTRAIT,
+                mActivity.getResources().getConfiguration().orientation);
+
+        // Set 3-button mode to simulate switching to a tablet.
+        // Using a mocked static EdgeToEdgeControllerFactory#isSupportedConfiguration would be
+        // better but they are not supported on Android by Mockito.
+        EdgeToEdgeControllerFactory.setHas3ButtonNavBar(true);
+
+        // Use an orientation change to trigger new insets.
+        int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;
+        rotate(targetOrientation);
+        assertFalse(
+                "Should exit ToEdge when device no longer supported",
+                mEdgeToEdgeController.isToEdge());
     }
 }

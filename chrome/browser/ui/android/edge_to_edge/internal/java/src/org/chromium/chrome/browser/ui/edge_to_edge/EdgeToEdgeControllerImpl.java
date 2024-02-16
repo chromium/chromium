@@ -244,7 +244,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                                                 + WindowInsetsCompat.Type.statusBars());
                         if (!newInsets.equals(mSystemInsets)) {
                             mSystemInsets = newInsets;
-                            Log.w(TAG, "System Bar insets changed to: %s", mSystemInsets);
+                            // When a foldable goes to/from tablet mode we must reassess.
+                            // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
+                            mIsActivityToEdge =
+                                    mIsActivityToEdge
+                                            && EdgeToEdgeControllerFactory.isSupportedConfiguration(
+                                                    mActivity);
                             // Note that we cannot adjustEdges earlier since we need the system
                             // insets.
                             adjustEdges(mIsActivityToEdge, viewId, webContents);

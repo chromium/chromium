@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.os.Build.VERSION_CODES;
 import android.os.Looper;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowInsets;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +50,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -67,23 +70,13 @@ import org.chromium.content_public.browser.WebContentsObserver;
  */
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = VERSION_CODES.R, manifest = Config.NONE)
+@Config(
+        sdk = VERSION_CODES.R,
+        manifest = Config.NONE,
+        shadows = EdgeToEdgeControllerTest.ShadowEdgeToEdgeControllerFactory.class)
 public class EdgeToEdgeControllerTest {
     @SuppressLint("NewApi")
     private static final Insets SYSTEM_INSETS = Insets.of(0, 113, 0, 59); // Typical.
-
-    // Non-zero left & right is what we use to determine gesture-enabled.
-    private static final Insets GESTURE_INSETS = Insets.of(73, 113, 73, 59); // Typical.
-
-    // Zero left & right is what we use to determine NOT gesture-enabled.
-    private static final Insets THREE_BUTTON_INSETS = Insets.of(0, 113, 0, 59); // Typical.
-
-    private static final WindowInsetsCompat GESTURE_ENABLED_PHONE_INSETS =
-            new WindowInsetsCompat.Builder()
-                    .setInsets(WindowInsets.Type.systemGestures(), GESTURE_INSETS)
-                    .setInsets(WindowInsets.Type.navigationBars(), SYSTEM_INSETS)
-                    .setInsets(WindowInsets.Type.statusBars(), SYSTEM_INSETS)
-                    .build();
 
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
@@ -105,6 +98,14 @@ public class EdgeToEdgeControllerTest {
     @Mock private View mViewMock;
 
     @Mock private WindowInsetsCompat mWindowInsetsMock;
+
+    @Implements(EdgeToEdgeControllerFactory.class)
+    static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
+        @Implementation
+        protected static boolean isGestureNavigationMode(Window window) {
+            return true;
+        }
+    }
 
     @Before
     public void setUp() {
@@ -381,6 +382,14 @@ public class EdgeToEdgeControllerTest {
         verify(mOsWrapper)
                 .setOnApplyWindowInsetsListener(any(), mWindowInsetsListenerCaptor.capture());
         assertToEdgeExpectations();
+    }
+
+    @Test
+    public void isSupportedConfiguration_default() {
+        assertTrue(
+                "The default setup should be a supported configuration but it not!",
+                EdgeToEdgeControllerFactory.isSupportedConfiguration(
+                        Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
     }
 
     @Test
