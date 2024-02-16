@@ -754,9 +754,11 @@ const TabGroup* WebStateList::CreateGroupImpl(
     }
   }
 
-  // Store the active web state. It won't change with the moves, and needs to be
-  // passed to the observers.
+  // Prepare the status for the observers. The moves don't change the active
+  // web state.
   web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
 
   // Iterate over the WebStates on the left of the pivot.
   // Reverse `before_pivot` to start from the rightmost, to keep indices valid.
@@ -798,10 +800,6 @@ const TabGroup* WebStateList::CreateGroupImpl(
       const WebStateListChangeStatusOnly status_only_change(
           GetWebStateAt(index), index, pinned_state_changed, old_group,
           new_group);
-      const WebStateListStatus status = {
-          // The active WebState doesn't change.
-          .old_active_web_state = active_web_state,
-          .new_active_web_state = active_web_state};
       for (auto& observer : observers_) {
         observer.WebStateListDidChange(this, status_only_change, status);
       }
@@ -845,10 +843,6 @@ const TabGroup* WebStateList::CreateGroupImpl(
     web::WebState* web_state = GetWebStateAt(to_index);
     const WebStateListChangeMove move_change(
         web_state, index, to_index, pinned_state_changed, old_group, new_group);
-    const WebStateListStatus status = {
-        // The move doesn't change the active WebState.
-        .old_active_web_state = active_web_state,
-        .new_active_web_state = active_web_state};
     for (auto& observer : observers_) {
       observer.WebStateListDidChange(this, move_change, status);
     }
@@ -886,10 +880,6 @@ const TabGroup* WebStateList::CreateGroupImpl(
       const WebStateListChangeStatusOnly status_only_change(
           GetWebStateAt(index), index, /*pinned_state_changed=*/false,
           old_group, new_group);
-      const WebStateListStatus status = {
-          // The active WebState doesn't change.
-          .old_active_web_state = active_web_state,
-          .new_active_web_state = active_web_state};
       for (auto& observer : observers_) {
         observer.WebStateListDidChange(this, status_only_change, status);
       }
@@ -927,10 +917,6 @@ const TabGroup* WebStateList::CreateGroupImpl(
     const WebStateListChangeMove move_change(web_state, index, to_index,
                                              /*pinned_state_changed=*/false,
                                              old_group, new_group);
-    const WebStateListStatus status = {
-        // The move doesn't change the active WebState.
-        .old_active_web_state = active_web_state,
-        .new_active_web_state = active_web_state};
     for (auto& observer : observers_) {
       observer.WebStateListDidChange(this, move_change, status);
     }
