@@ -156,6 +156,23 @@ public class HubPaneHostViewUnitTest {
         assertEquals(0, paneFrame.getChildCount());
     }
 
+    @Test
+    @MediumTest
+    public void testSetRootView_alphaRestored() {
+        View root1 = new View(mActivity);
+        View root2 = new View(mActivity);
+
+        mPropertyModel.set(PANE_ROOT_VIEW, root1);
+        mPropertyModel.set(PANE_ROOT_VIEW, root2);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(1, root2.getAlpha(), /* delta= */ 0);
+
+        // Inspired by b/325372945 where the alpha needed to be reset, even when no animations ran.
+        mPropertyModel.set(PANE_ROOT_VIEW, null);
+        mPropertyModel.set(PANE_ROOT_VIEW, root1);
+        assertEquals(1, root1.getAlpha(), /* delta= */ 0);
+    }
+
     /** Order of children does not matter. */
     private void verifyChildren(ViewGroup parent, View... children) {
         assertEquals(children.length, parent.getChildCount());

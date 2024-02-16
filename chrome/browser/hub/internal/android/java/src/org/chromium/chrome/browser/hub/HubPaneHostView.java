@@ -71,6 +71,7 @@ public class HubPaneHostView extends FrameLayout {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             mPaneFrame.removeView(oldRootView);
+                            oldRootView.setAlpha(1);
                             mCurrentAnimator = null;
                         }
                     });
