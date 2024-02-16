@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -134,6 +135,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->AddTable(
       std::make_unique<payments::WebAppManifestSectionTable>());
 #endif
+  profile_database_->AddTable(
+      std::make_unique<plus_addresses::PlusAddressTable>());
   profile_database_->LoadDatabase();
 
   profile_autofill_web_data_ =
