@@ -64,10 +64,24 @@ public class SideSlideLayout extends ViewGroup {
     // Minimum number of pull updates necessary to trigger a side nav.
     private static final int MIN_PULLS_TO_ACTIVATE = 3;
 
+    // Time threshold to detect navigation reversal - i.e. user navigating
+    // forward after navigating back (or back after forward) within a short
+    // period of time.
+    private static final int NAVIGATION_REVERSAL_MS = 3 * 1000;
+
     private final DecelerateInterpolator mDecelerateInterpolator;
     private final float mTotalDragDistance;
     private final int mMediumAnimationDuration;
     private final int mCircleWidth;
+
+    // Metrics
+    private static long sLastCompletedTime;
+    private static boolean sLastCompletedForward;
+
+    // Maximum amount of overscroll for a single side gesture action. An action is regarded
+    // as an attempt to navigate via a gesture ('activated') and used for UMA if the maximum
+    // overscroll is bigger than a certain threshold.
+    private float mMaxOverscroll;
 
     private OnNavigateListener mListener;
     private OnResetListener mResetListener;
@@ -256,6 +270,7 @@ public class SideSlideLayout extends ViewGroup {
     public boolean start() {
         if (!isEnabled() || mNavigating || mListener == null) return false;
         mTotalMotion = 0;
+        mMaxOverscroll = 0.f;
         mIsBeingDragged = true;
         mWillNavigate = false;
         initializeOffset();
@@ -278,6 +293,7 @@ public class SideSlideLayout extends ViewGroup {
 
         float overscroll = getOverscroll();
         float extraOs = overscroll - mTotalDragDistance;
+        if (overscroll > mMaxOverscroll) mMaxOverscroll = overscroll;
         float slingshotDist = mTotalDragDistance;
         float tensionSlingshotPercent =
                 Math.max(0, Math.min(extraOs, slingshotDist * 2) / slingshotDist);
@@ -344,9 +360,23 @@ public class SideSlideLayout extends ViewGroup {
         // See ACTION_UP handling in {@link #onTouchEvent(...)}.
         mIsBeingDragged = false;
 
+        boolean activated = mMaxOverscroll >= mArrowViewWidth / 3;
+        if (activated) {
+            GestureNavMetrics.recordHistogram("GestureNavigation.Activated2", mIsForward);
+        }
+
         if (isEnabled() && willNavigate()) {
             if (allowNav) {
                 setNavigating(true);
+                GestureNavMetrics.recordHistogram("GestureNavigation.Completed2", mIsForward);
+                long time = System.currentTimeMillis();
+                if (sLastCompletedTime > 0
+                        && time - sLastCompletedTime < NAVIGATION_REVERSAL_MS
+                        && mIsForward != sLastCompletedForward) {
+                    GestureNavMetrics.recordHistogram("GestureNavigation.Reversed2", mIsForward);
+                }
+                sLastCompletedTime = time;
+                sLastCompletedForward = mIsForward;
             } else {
                 // Show navigation instead of triggering navigation. Just hide the arrow
                 // by fading it away.
@@ -363,6 +393,9 @@ public class SideSlideLayout extends ViewGroup {
         mAnimateToStartPosition.setInterpolator(mDecelerateInterpolator);
         mArrowView.clearAnimation();
         mArrowView.startAnimation(mAnimateToStartPosition);
+        if (activated) {
+            GestureNavMetrics.recordHistogram("GestureNavigation.Cancelled2", mIsForward);
+        }
     }
 
     /** Reset the effect, clearing any active animations. */
