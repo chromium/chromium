@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview: This file describes the interfaces shared between the Files
+ * app UI and the JS code run from unstrusted_resources (as part of the
+ * QuickView).
+ * @see `//ash/webui/file_manager/untrusted_resources/` for its usage.
+ */
+
+/**
  * File preview content. Sent from <files-quick-view> to a sandboxed page, as
  * part of UntrustedPreviewData. |data| field holds a Blob/File, or a content
  * URL. |dataType| specifies 'blob' or 'url' accordingly (other values are

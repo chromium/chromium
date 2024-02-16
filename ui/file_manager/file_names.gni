@@ -1,5 +1,4 @@
 # Static files are used as-is from the repository.
-image_loader_static_js_files = []
 
 image_loader_ts = [
   "image_loader/background.ts",
@@ -498,7 +497,7 @@ ts_generated_templates += [
 ]
 
 # d.ts. files that are automatically generated from the JS file.
-generate_definitions_js_files = [ "file_manager/externs/quick_view.js" ]
+generate_definitions_js_files = [ "file_manager/definitions/quick_view.js" ]
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
@@ -509,8 +508,6 @@ checked_in_dts_files = [
 ]
 
 other_dts_files = [
-  # Enable this when we convert remote_call.js to TS.
-  # "//tools/typescript/definitions/command_line_private.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_test.d.ts",
   "//tools/typescript/definitions/metrics_private.d.ts",

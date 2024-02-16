@@ -10,7 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash)
 
 js_library("files_media_content") {
-  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/definitions/quick_view.js" ]
 }
 
 js_library("files_browsable_content") {

@@ -68,7 +68,7 @@ ts_library("build_ts") {
     "//ash/webui/common/resources:generate_definitions",
   ]
 
-  in_files = image_loader_static_js_files + image_loader_ts + [
+  in_files = image_loader_ts + [
                "file_manager/common/js/file_types_data.js",
                "file_manager/common/js/file_types_base.ts",
                "file_manager/common/js/lru_cache.ts",
