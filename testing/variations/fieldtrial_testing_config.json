@@ -11650,24 +11650,6 @@
             ]
         }
     ],
-    "MinorModeRestrictionsForHistorySyncOptInIosStudy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "LowDeadline",
-                    "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "400"
-                    },
-                    "enable_features": [
-                        "MinorModeRestrictionsForHistorySyncOptIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "MiracleParameterForAndroid": [
         {
             "platforms": [
