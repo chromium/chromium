@@ -606,14 +606,17 @@ std::unique_ptr<ui::AXNodeData> CreateStatusNodeStaticText(
 
 std::unique_ptr<ui::AXNodeData> CreateStatusNode(
     content::RenderAccessibility* render_accessibility,
-    ui::AXNodeData* parent_node) {
+    ui::AXNodeData* parent_node,
+    bool currently_in_foreground) {
   // Create a status node that conveys a notification message and place the
   // message inside an appropriate ARIA landmark for easy navigation.
   std::unique_ptr<ui::AXNodeData> node =
       CreateNode(ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
                  render_accessibility);
   node->relative_bounds = parent_node->relative_bounds;
-  UpdateStatusNodeLiveRegionAttributes(node.get(), AttributeUpdateType::kAdd);
+  if (currently_in_foreground) {
+    UpdateStatusNodeLiveRegionAttributes(node.get(), AttributeUpdateType::kAdd);
+  }
 
   // The status node will be added as the first node to its parent node as the
   // parent node will contain only this status node.
@@ -1809,7 +1812,8 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // accessibility tree so that the user will reach out to this node first when
   // navigating the PDF accessibility tree.
   banner_node_ = CreateBannerNode(render_accessibility, doc_node_.get());
-  status_node_ = CreateStatusNode(render_accessibility, banner_node_.get());
+  status_node_ = CreateStatusNode(render_accessibility, banner_node_.get(),
+                                  currently_in_foreground_);
   status_node_text_ =
       CreateStatusNodeStaticText(render_accessibility, status_node_.get());
 
@@ -2169,7 +2173,9 @@ void PdfAccessibilityTree::ResetStatusNodeAttributes() {
   CHECK(status_node_);
   CHECK(status_node_text_);
   // Clear out its live region and name attributes as it is no longer necessary
-  // to keep the status node in this case.
+  // to keep the status node in this case. The node may not have live region
+  // attributes. However, it is okay to try removing them from the node as
+  // removing will be performed only when the node has those attributes.
   UpdateStatusNodeLiveRegionAttributes(status_node_.get(),
                                        AttributeUpdateType::kRemove);
   status_node_->RemoveStringAttribute(ax::mojom::StringAttribute::kName);
@@ -2421,6 +2427,14 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
 
 void PdfAccessibilityTree::OnDestruct() {
   render_frame_ = nullptr;
+}
+
+void PdfAccessibilityTree::WasHidden() {
+  currently_in_foreground_ = false;
+}
+
+void PdfAccessibilityTree::WasShown() {
+  currently_in_foreground_ = true;
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

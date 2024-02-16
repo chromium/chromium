@@ -240,6 +240,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
+  void WasHidden() override;
+  void WasShown() override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void CreateOcrService();
@@ -408,6 +410,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   bool did_get_a_text_run_ = false;
   bool did_have_an_image_ = false;
   bool sent_metrics_once_ = false;
+  // Initialize `currently_in_foreground_` to be true as an associated render
+  // frame would be most likely in foreground when being created. If it goes to
+  // background, this value will be flipped to false in `WasHidden()`.
+  bool currently_in_foreground_ = true;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // The postamble page is added to the accessibility tree to inform the user
