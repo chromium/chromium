@@ -399,7 +399,6 @@ void GifTenorApiFetcher::FetchGifSearch(
 
   GURL url = GetUrl(kSearchApi, pos);
   url = net::AppendQueryParameter(url, "q", query);
-  url = net::AppendQueryParameter(url, kClientKeyName, kClientKeyValue);
   if (limit.has_value()) {
     url = net::AppendQueryParameter(url, "limit", base::NumberToString(*limit));
   }
