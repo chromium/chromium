@@ -333,9 +333,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*id=*/std::nullopt,
       /*name=*/std::nullopt, /*src=*/std::nullopt,
       /*reasons=*/
-      {MatchesDetailedReason("Related active contents",
+      {MatchesDetailedReason("related-active-contents",
                              /*source=*/std::nullopt),
-       MatchesDetailedReason("internal-error", /*source=*/std::nullopt)},
+       MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
           /*url=*/rfh_a_url,
           /*children=*/{}));
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*id=*/std::nullopt, /*name=*/std::nullopt,
       /*src=*/std::nullopt,
       /*reasons=*/
-      {MatchesDetailedReason("JavaScript execution", /*source=*/std::nullopt)},
+      {MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       MatchesSameOriginDetails(
           /*url=*/url_a_redirect.spec(),
           /*children=*/{}));

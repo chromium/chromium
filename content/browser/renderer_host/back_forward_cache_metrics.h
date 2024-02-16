@@ -86,7 +86,7 @@ class BackForwardCacheMetrics
     kEnteredBackForwardCacheBeforeServiceWorkerHostAdded = 26,
     // 27: kRenderFrameHostReused_SameSite was removed.
     // 28: kRenderFrameHostReused_CrossSite was removed.
-    kNotMostRecentNavigationEntry = 29,
+    // 29: kNotMostRecentNavigationEntry was removed.
     kServiceWorkerClaim = 30,
     kIgnoreEventAndEvict = 31,
     kHaveInnerContents = 32,
@@ -121,7 +121,7 @@ class BackForwardCacheMetrics
     kNoResponseHead = 56,
     // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
     kErrorDocument = 58,
-    kFencedFramesEmbedder = 59,
+    // 59: kFencedFramesEmbedder was removed.
     kCookieDisabled = 60,
     kHTTPAuthRequired = 61,
     kCookieFlushed = 62,
