@@ -111,7 +111,7 @@ void QuickAnswersUiController::CreateRichAnswersView() {
   }
 
   rich_answers_widget_ = std::move(widget);
-  rich_answers_widget_->ShowInactive();
+  rich_answers_widget_->Show();
   controller_->SetVisibility(QuickAnswersVisibility::kRichAnswersVisible);
   return;
 }

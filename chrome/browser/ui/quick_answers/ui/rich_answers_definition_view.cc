@@ -84,6 +84,8 @@ void RichAnswersDefinitionView::AddHeaderViews() {
   // - settings_button_view (flex=0): no resize
   views::BoxLayoutView* box_layout_view =
       content_view_->AddChildView(CreateHorizontalBoxLayoutView());
+  box_layout_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   views::FlexLayoutView* header_view =
       box_layout_view->AddChildView(CreateHorizontalFlexLayoutView());
 

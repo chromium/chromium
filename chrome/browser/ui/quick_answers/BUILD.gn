@@ -22,8 +22,6 @@ source_set("quick_answers") {
     "ui/quick_answers_view.h",
     "ui/rich_answers_definition_view.cc",
     "ui/rich_answers_definition_view.h",
-    "ui/rich_answers_pre_target_handler.cc",
-    "ui/rich_answers_pre_target_handler.h",
     "ui/rich_answers_translation_view.cc",
     "ui/rich_answers_translation_view.h",
     "ui/rich_answers_unit_conversion_view.cc",
