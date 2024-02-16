@@ -26,9 +26,9 @@ namespace autofill {
 
 class AutofillFieldPromoViewImpl : public AutofillFieldPromoView,
                                    public views::View {
- public:
-  METADATA_HEADER(AutofillFieldPromoViewImpl);
+  METADATA_HEADER(AutofillFieldPromoViewImpl, views::View)
 
+ public:
   AutofillFieldPromoViewImpl(const AutofillFieldPromoViewImpl&) = delete;
   AutofillFieldPromoViewImpl& operator=(const AutofillFieldPromoViewImpl&) =
       delete;

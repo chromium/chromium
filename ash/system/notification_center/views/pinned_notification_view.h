@@ -21,9 +21,9 @@ namespace ash {
 // and optionally supports a subtitle, a shortcut hint, and a pill button or up
 // to two icon buttons.
 class ASH_EXPORT PinnedNotificationView : public message_center::MessageView {
- public:
-  METADATA_HEADER(PinnedNotificationView);
+  METADATA_HEADER(PinnedNotificationView, message_center::MessageView)
 
+ public:
   PinnedNotificationView(const message_center::Notification& notification);
   PinnedNotificationView(const PinnedNotificationView&) = delete;
   PinnedNotificationView& operator=(const PinnedNotificationView&) = delete;

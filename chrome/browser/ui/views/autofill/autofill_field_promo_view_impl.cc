@@ -149,7 +149,7 @@ void AutofillFieldPromoViewImpl::SetViewBounds(
   SetPaintToLayer();
 }
 
-BEGIN_METADATA(AutofillFieldPromoViewImpl, views::View)
+BEGIN_METADATA(AutofillFieldPromoViewImpl)
 END_METADATA
 
 }  // namespace autofill

@@ -300,7 +300,7 @@ void PinnedNotificationView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::FocusRing::Get(this)->InvalidateLayout();
 }
 
-BEGIN_METADATA(PinnedNotificationView, views::View)
+BEGIN_METADATA(PinnedNotificationView)
 END_METADATA
 
 }  // namespace ash
