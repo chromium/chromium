@@ -91,13 +91,6 @@ enum SharedImageUsage : uint32_t {
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
-// Constant left in place while we transition the codebase to use WEBGPU_READ
-// and WEBGPU_WRITE.
-// TODO(crbug.com/1519074): Transition all usage of this constant and eliminate
-// the constant.
-inline constexpr uint32_t SHARED_IMAGE_USAGE_WEBGPU =
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-
 // This is used as the debug_label prefix for all shared images created by
 // importing buffers in Exo. This prefix is checked in the GPU process when
 // reporting if memory for shared images is attributed to exo imports or not.
