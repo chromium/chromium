@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/synthetic_trials.h"
 
 namespace variations {
 namespace {
@@ -116,6 +117,14 @@ bool LimitedEntropySyntheticTrial::IsEnabled() {
 
 std::string_view LimitedEntropySyntheticTrial::GetGroupName() {
   return group_name_;
+}
+
+void LimitedEntropySyntheticTrial::Register(
+    SyntheticTrialRegistry& synthetic_trial_registry) {
+  SyntheticTrialGroup trial_group(kLimitedEntropySyntheticTrialName,
+                                  GetGroupName(),
+                                  SyntheticTrialAnnotationMode::kCurrentLog);
+  synthetic_trial_registry.RegisterSyntheticFieldTrial(trial_group);
 }
 
 }  // namespace variations

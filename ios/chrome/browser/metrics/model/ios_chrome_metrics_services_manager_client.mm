@@ -56,7 +56,8 @@ IOSChromeMetricsServicesManagerClient::
     ~IOSChromeMetricsServicesManagerClient() = default;
 
 std::unique_ptr<variations::VariationsService>
-IOSChromeMetricsServicesManagerClient::CreateVariationsService() {
+IOSChromeMetricsServicesManagerClient::CreateVariationsService(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // NOTE: On iOS, disabling background networking is not supported, so pass in
@@ -67,13 +68,16 @@ IOSChromeMetricsServicesManagerClient::CreateVariationsService() {
       GetMetricsStateManager(), "dummy-disable-background-switch",
       ::CreateUIStringOverrider(),
       base::BindOnce(&ApplicationContext::GetNetworkConnectionTracker,
-                     base::Unretained(GetApplicationContext())));
+                     base::Unretained(GetApplicationContext())),
+      synthetic_trial_registry);
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>
-IOSChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
+IOSChromeMetricsServicesManagerClient::CreateMetricsServiceClient(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return IOSChromeMetricsServiceClient::Create(GetMetricsStateManager());
+  return IOSChromeMetricsServiceClient::Create(GetMetricsStateManager(),
+                                               synthetic_trial_registry);
 }
 
 metrics::MetricsStateManager*

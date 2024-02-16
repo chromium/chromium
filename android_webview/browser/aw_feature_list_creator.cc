@@ -52,6 +52,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
@@ -282,7 +283,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           variations::switches::kForceVariationIds),
       GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
-      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      metrics_client->GetSyntheticTrialRegistry(), aw_field_trials_.get(),
+      &ignored_safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false);
 }
 

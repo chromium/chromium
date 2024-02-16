@@ -20,6 +20,7 @@ class SharedURLLoaderFactory;
 
 namespace variations {
 class VariationsService;
+class SyntheticTrialRegistry;
 }
 
 namespace metrics_services_manager {
@@ -32,9 +33,11 @@ class MetricsServicesManagerClient {
 
   // Methods that create the various services in the context of the embedder.
   virtual std::unique_ptr<variations::VariationsService>
-  CreateVariationsService() = 0;
+  CreateVariationsService(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;
   virtual std::unique_ptr<metrics::MetricsServiceClient>
-  CreateMetricsServiceClient() = 0;
+  CreateMetricsServiceClient(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) = 0;
 
   // Gets the MetricsStateManager, creating it if it has not already been
   // created.

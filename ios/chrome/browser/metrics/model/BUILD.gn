@@ -201,6 +201,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/ukm",
     "//components/ukm:test_support",
+    "//components/variations",
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app/application_delegate:app_state_header",

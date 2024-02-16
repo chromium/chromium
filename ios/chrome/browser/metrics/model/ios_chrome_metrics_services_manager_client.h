@@ -18,6 +18,10 @@ class EnabledStateProvider;
 class MetricsStateManager;
 }
 
+namespace variations {
+class SyntheticTrialRegistry;
+}
+
 // Provides an //ios/chrome-specific implementation of
 // MetricsServicesManagerClient.
 class IOSChromeMetricsServicesManagerClient
@@ -39,10 +43,10 @@ class IOSChromeMetricsServicesManagerClient
   class IOSChromeEnabledStateProvider;
 
   // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<variations::VariationsService> CreateVariationsService()
-      override;
-  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient()
-      override;
+  std::unique_ptr<variations::VariationsService> CreateVariationsService(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
+  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
   metrics::MetricsStateManager* GetMetricsStateManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsMetricsReportingEnabled() override;

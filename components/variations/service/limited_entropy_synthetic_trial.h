@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/prefs/pref_registry_simple.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 class PrefService;
 
@@ -53,6 +54,10 @@ class LimitedEntropySyntheticTrial {
 
   // Returns the name of the group that the client belongs to for this trial.
   std::string_view GetGroupName();
+
+  // Registers the group membership of this trial to the given
+  // `synthetic_trial_registry`.
+  void Register(SyntheticTrialRegistry& synthetic_trial_registry);
 
  protected:
   // Testing only. Provides a convenient way to instantiate a trial with the

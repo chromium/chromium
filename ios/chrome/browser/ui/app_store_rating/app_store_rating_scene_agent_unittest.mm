@@ -10,6 +10,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
+#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -76,12 +77,15 @@ class ScopedVariationsService {
   ScopedVariationsService() {
     EXPECT_EQ(nullptr,
               TestingApplicationContext::GetGlobal()->GetVariationsService());
+    synthetic_trial_registry_ =
+        std::make_unique<variations::SyntheticTrialRegistry>();
     variations_service_ = variations::VariationsService::Create(
         std::make_unique<TestVariationsServiceClient>(),
         TestingApplicationContext::GetGlobal()->GetLocalState(),
         /*state_manager=*/nullptr, "dummy-disable-background-switch",
         variations::UIStringOverrider(),
-        network::TestNetworkConnectionTracker::CreateGetter());
+        network::TestNetworkConnectionTracker::CreateGetter(),
+        synthetic_trial_registry_.get());
     TestingApplicationContext::GetGlobal()->SetVariationsService(
         variations_service_.get());
   }
@@ -106,6 +110,7 @@ class ScopedVariationsService {
   }
 
   std::unique_ptr<variations::VariationsService> variations_service_;
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };
 
 }  // namespace

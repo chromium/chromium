@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -54,6 +53,8 @@
 #include "components/variations/service/variations_field_trial_creator_base.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
@@ -63,7 +64,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/variations/seed_response.h"
@@ -199,14 +199,6 @@ VariationsSeed CreateTestSafeSeed() {
   return seed;
 }
 
-// Returns a hex string of the GZipped, base64 encoded, and serialized seed.
-std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed) {
-  auto serialized = seed.SerializeAsString();
-  std::string compressed;
-  compression::GzipCompress(serialized, &compressed);
-  return base::Base64Encode(compressed);
-}
-
 // A base::Time instance representing a time in the distant past. Here, it would
 // return the start for epoch in Unix-like system (Jan 1, 1970).
 base::Time DistantPast() {
@@ -266,6 +258,36 @@ class MockSafeSeedManager : public SafeSeedManager {
   }
 };
 
+class FakeSyntheticTrialObserver : public SyntheticTrialObserver {
+ public:
+  FakeSyntheticTrialObserver() = default;
+  ~FakeSyntheticTrialObserver() override = default;
+
+  void OnSyntheticTrialsChanged(
+      const std::vector<SyntheticTrialGroup>& trials_updated,
+      const std::vector<SyntheticTrialGroup>& trials_removed,
+      const std::vector<SyntheticTrialGroup>& groups) override {
+    trials_updated_ = trials_updated;
+    trials_removed_ = trials_removed;
+    groups_ = groups;
+  }
+
+  const std::vector<SyntheticTrialGroup>& trials_updated() {
+    return trials_updated_;
+  }
+
+  const std::vector<SyntheticTrialGroup>& trials_removed() {
+    return trials_removed_;
+  }
+
+  const std::vector<SyntheticTrialGroup>& groups() { return groups_; }
+
+ private:
+  std::vector<SyntheticTrialGroup> trials_updated_;
+  std::vector<SyntheticTrialGroup> trials_removed_;
+  std::vector<SyntheticTrialGroup> groups_;
+};
+
 // TODO(crbug/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -295,11 +317,6 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   bool IsEnterprise() override { return false; }
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override {}
-  // TODO(crbug.com/1508150): Remove once the trial has wrapped up.
-  void RegisterLimitedEntropySyntheticTrial(
-      std::string_view group_name) override {
-    limited_entropy_synthetic_trial_group_ = std::string(group_name);
-  }
   std::string_view GetLimitedEntropySyntheticTrialGroupName() {
     return limited_entropy_synthetic_trial_group_;
   }
@@ -412,13 +429,14 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   // for uninteresting params.
   bool SetUpFieldTrials() {
     PlatformFieldTrials platform_field_trials;
+    SyntheticTrialRegistry synthetic_trial_registry;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
-        &platform_field_trials, safe_seed_manager_,
+        &synthetic_trial_registry, &platform_field_trials, safe_seed_manager_,
         /*add_entropy_source_to_variations_ids=*/true);
   }
 
@@ -920,6 +938,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
 
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
 
@@ -928,7 +947,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
@@ -968,6 +987,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   auto metrics_state_manager = metrics::MetricsStateManager::Create(
       local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
   metrics_state_manager->InstantiateFieldTrialList();
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   // Check that field trials are created from the seed. The test seed contains a
   // single study with an experiment targeting 100% of users in India. Since
@@ -979,7 +999,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
           switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
 
   EXPECT_EQ(kTestSeedExperimentName,
@@ -1744,11 +1764,9 @@ TEST_P(LimitedEntropyProcessingTest,
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
 
-  // The client should not be registered to a group of the limited entropy
-  // synthetic trial before the test.
-  EXPECT_EQ(
-      std::string(),
-      variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+  SyntheticTrialRegistry synthetic_trial_registry;
+  FakeSyntheticTrialObserver observer;
+  synthetic_trial_registry.AddObserver(&observer);
 
   EXPECT_NE(
       test_case.is_seed_rejection_expected,
@@ -1757,21 +1775,35 @@ TEST_P(LimitedEntropyProcessingTest,
           /*command_line_variation_ids=*/std::string(),
           std::vector<base::FeatureList::FeatureOverrideInfo>(),
           std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-          &platform_field_trials, &safe_seed_manager,
+          &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
           /*add_entropy_source_to_variations_ids=*/true));
 
+  // Verifies that the limited entropy test study is randomized.
   EXPECT_EQ(test_case.is_limited_study_active,
             base::FieldTrialList::TrialExists(kTestLimitedLayerStudyName));
 
+  // Verifies that the limited entropy synthetic trial is randomized.
   if (test_case.is_group_registration_expected) {
-    EXPECT_NE(
-        std::string(),
-        variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+    EXPECT_EQ(1u, observer.trials_updated().size());
+    EXPECT_EQ(kLimitedEntropySyntheticTrialName,
+              observer.trials_updated()[0].trial_name());
+    EXPECT_EQ(test_case.trial->GetGroupName(),
+              observer.trials_updated()[0].group_name());
+
+    EXPECT_EQ(0u, observer.trials_removed().size());
+
+    EXPECT_EQ(1u, observer.groups().size());
+    EXPECT_EQ(kLimitedEntropySyntheticTrialName,
+              observer.groups()[0].trial_name());
+    EXPECT_EQ(test_case.trial->GetGroupName(),
+              observer.groups()[0].group_name());
   } else {
-    EXPECT_EQ(
-        std::string(),
-        variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+    EXPECT_EQ(0u, observer.trials_updated().size());
+    EXPECT_EQ(0u, observer.trials_removed().size());
+    EXPECT_EQ(0u, observer.groups().size());
   }
+
+  synthetic_trial_registry.RemoveObserver(&observer);
 }
 
 // Test feature names prefixed with __ to avoid collision with real features.
@@ -1841,6 +1873,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
 
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  SyntheticTrialRegistry synthetic_trial_registry;
 
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
@@ -1851,7 +1884,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
 
   // Each form factor specific feature should be enabled iff the current form

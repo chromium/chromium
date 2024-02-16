@@ -35,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -266,19 +267,23 @@ ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
 }
 
 std::unique_ptr<variations::VariationsService>
-ChromeMetricsServicesManagerClient::CreateVariationsService() {
+ChromeMetricsServicesManagerClient::CreateVariationsService(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
       chrome_variations::CreateUIStringOverrider(),
-      base::BindOnce(&content::GetNetworkConnectionTracker));
+      base::BindOnce(&content::GetNetworkConnectionTracker),
+      synthetic_trial_registry);
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>
-ChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
+ChromeMetricsServicesManagerClient::CreateMetricsServiceClient(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return ChromeMetricsServiceClient::Create(GetMetricsStateManager());
+  return ChromeMetricsServiceClient::Create(GetMetricsStateManager(),
+                                            synthetic_trial_registry);
 }
 
 metrics::MetricsStateManager*

@@ -163,10 +163,3 @@ void ChromeVariationsServiceClient::
     variations_prefs_dict.Remove(profile);
   }
 }
-
-void ChromeVariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
-    std::string_view group_name) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      variations::kLimitedEntropySyntheticTrialName, group_name,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-}

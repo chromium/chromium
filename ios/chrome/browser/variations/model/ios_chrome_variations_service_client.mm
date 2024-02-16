@@ -59,10 +59,3 @@ std::unique_ptr<variations::SeedResponse>
 IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return [IOSChromeVariationsSeedStore popSeed];
 }
-
-void IOSChromeVariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
-    std::string_view group_name) {
-  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      variations::kLimitedEntropySyntheticTrialName, group_name,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-}

@@ -47,6 +47,7 @@
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
@@ -236,6 +237,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
+    SyntheticTrialRegistry* synthetic_trial_registry,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManagerBase* safe_seed_manager,
     bool add_entropy_source_to_variations_ids) {
@@ -323,8 +325,9 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
 
   bool used_seed = false;
   if (!used_testing_config) {
-    used_seed = CreateTrialsFromSeed(*entropy_providers, feature_list.get(),
-                                     safe_seed_manager);
+    used_seed =
+        CreateTrialsFromSeed(*entropy_providers, feature_list.get(),
+                             safe_seed_manager, synthetic_trial_registry);
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(
@@ -613,17 +616,19 @@ bool VariationsFieldTrialCreatorBase::
 }
 
 void VariationsFieldTrialCreatorBase::
-    RegisterLimitedEntropySyntheticTrialIfNeeded(const VariationsSeed& seed) {
+    RegisterLimitedEntropySyntheticTrialIfNeeded(
+        const VariationsSeed& seed,
+        SyntheticTrialRegistry* synthetic_trial_registry) {
   if (ShouldActivateLimitedEntropySyntheticTrial(seed)) {
-    client_->RegisterLimitedEntropySyntheticTrial(
-        limited_entropy_synthetic_trial_->GetGroupName());
+    limited_entropy_synthetic_trial_->Register(*synthetic_trial_registry);
   }
 }
 
 bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
-    SafeSeedManagerBase* safe_seed_manager) {
+    SafeSeedManagerBase* safe_seed_manager,
+    SyntheticTrialRegistry* synthetic_trial_registry) {
   // This histogram name uses "VariationsFieldTrialCreator" rather than
   // "VariationsFieldTrialCreatorBase" for consistency with historical data
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
@@ -685,7 +690,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
 
-  RegisterLimitedEntropySyntheticTrialIfNeeded(seed);
+  RegisterLimitedEntropySyntheticTrialIfNeeded(seed, synthetic_trial_registry);
   VariationsLayers layers(seed, entropy_providers);
 
   // The server is not expected to send a seed with misconfigured entropy. Just

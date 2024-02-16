@@ -116,6 +116,7 @@
 #include "components/sync_device_info/device_count_metrics_provider.h"
 #include "components/ukm/field_trials_provider_helper.h"
 #include "components/ukm/ukm_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -536,8 +537,10 @@ void UpdateMetricsServicesForPerUser(bool enabled) {
 }  // namespace
 
 ChromeMetricsServiceClient::ChromeMetricsServiceClient(
-    metrics::MetricsStateManager* state_manager)
-    : metrics_state_manager_(state_manager) {
+    metrics::MetricsStateManager* state_manager,
+    variations::SyntheticTrialRegistry* synthetic_trial_registry)
+    : metrics_state_manager_(state_manager),
+      synthetic_trial_registry_(synthetic_trial_registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   incognito_observer_ = IncognitoObserver::Create(
       base::BindRepeating(&ChromeMetricsServiceClient::UpdateRunningServices,
@@ -550,11 +553,12 @@ ChromeMetricsServiceClient::~ChromeMetricsServiceClient() {
 
 // static
 std::unique_ptr<ChromeMetricsServiceClient> ChromeMetricsServiceClient::Create(
-    metrics::MetricsStateManager* state_manager) {
+    metrics::MetricsStateManager* state_manager,
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   // Perform two-phase initialization so that `client->metrics_service_` only
   // receives pointers to fully constructed objects.
   std::unique_ptr<ChromeMetricsServiceClient> client(
-      new ChromeMetricsServiceClient(state_manager));
+      new ChromeMetricsServiceClient(state_manager, synthetic_trial_registry));
   client->Initialize();
 
   return client;
@@ -728,9 +732,6 @@ ChromeMetricsServiceClient::GetMetricsReportingDefaultState() {
 
 void ChromeMetricsServiceClient::Initialize() {
   PrefService* local_state = g_browser_process->local_state();
-
-  synthetic_trial_registry_ =
-      std::make_unique<variations::SyntheticTrialRegistry>();
 
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_, this, local_state);

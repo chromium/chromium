@@ -7,13 +7,17 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
+#include "components/variations/hashing.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -338,6 +342,24 @@ const base::FieldTrial::EntropyProvider& MockEntropyProviders::default_entropy()
     return high_provider_;
   }
   return low_provider_;
+}
+
+std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed) {
+  auto serialized = seed.SerializeAsString();
+  std::string compressed;
+  compression::GzipCompress(serialized, &compressed);
+  return base::Base64Encode(compressed);
+}
+
+bool ContainsTrialName(const std::vector<ActiveGroupId>& active_group_ids,
+                       std::string_view trial_name) {
+  auto hashed_name = HashName(trial_name);
+  for (const auto& trial : active_group_ids) {
+    if (trial.name == hashed_name) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace variations

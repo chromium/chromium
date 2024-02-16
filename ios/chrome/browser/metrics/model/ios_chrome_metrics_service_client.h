@@ -36,6 +36,10 @@ class MetricsService;
 class MetricsStateManager;
 }  // namespace metrics
 
+namespace variations {
+class SyntheticTrialRegistry;
+}
+
 namespace ukm {
 class UkmService;
 }
@@ -56,7 +60,8 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
   // Factory function.
   static std::unique_ptr<IOSChromeMetricsServiceClient> Create(
-      metrics::MetricsStateManager* state_manager);
+      metrics::MetricsStateManager* state_manager,
+      variations::SyntheticTrialRegistry* synthetic_trial_registry);
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -108,7 +113,8 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
  private:
   explicit IOSChromeMetricsServiceClient(
-      metrics::MetricsStateManager* state_manager);
+      metrics::MetricsStateManager* state_manager,
+      variations::SyntheticTrialRegistry* synthetic_trial_registry);
 
   // Completes the two-phase initialization of IOSChromeMetricsServiceClient.
   void Initialize();
@@ -148,7 +154,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   raw_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
-  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+  raw_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 
   // Metrics service observer for synthetic trials.
   metrics::PersistentSyntheticTrialObserver synthetic_trial_observer_;

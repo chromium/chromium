@@ -31,7 +31,9 @@ namespace variations {
 struct ActiveGroupId;
 class FieldTrialsProvider;
 class FieldTrialsProviderTest;
+class LimitedEntropySyntheticTrial;
 class SyntheticTrialRegistryTest;
+class LimitedEntropyRandomizationBrowserTest;
 
 namespace internal {
 COMPONENT_EXPORT(VARIATIONS) BASE_DECLARE_FEATURE(kExternalExperimentAllowlist);
@@ -79,11 +81,13 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
 
  private:
   friend metrics::MetricsServiceAccessor;
+  friend LimitedEntropySyntheticTrial;
   friend FieldTrialsProvider;
   friend FieldTrialsProviderTest;
   friend SyntheticTrialRegistryTest;
   friend ::tpcd::experiment::ExperimentManagerImplBrowserTest;
   friend content::SyntheticTrialSyncer;
+  friend LimitedEntropyRandomizationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialsOlderThanSuffix);
@@ -91,6 +95,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
+  FRIEND_TEST_ALL_PREFIXES(LimitedEntropyRandomizationBrowserTest,
+                           MANUAL_SyntheticTrialAndStudyRegistrationSubTest);
 
   // Registers a field trial name and group to be used to annotate UMA and UKM
   // reports with a particular Chrome configuration state.
@@ -139,10 +145,6 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   void NotifySyntheticTrialObservers(
       const std::vector<SyntheticTrialGroup>& trials_updated,
       const std::vector<SyntheticTrialGroup>& trials_removed);
-
-  // Whether the allowlist is enabled. This is set to the feature state of
-  // |kExternalExperimentAllowlist| at instantiation.
-  bool enable_external_experiment_allowlist_ = true;
 
   // Field trial groups that map to Chrome configuration states.
   std::vector<SyntheticTrialGroup> synthetic_trial_groups_;

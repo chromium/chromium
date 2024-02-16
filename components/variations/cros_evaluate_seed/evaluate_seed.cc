@@ -32,6 +32,7 @@
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_store.h"
@@ -81,6 +82,7 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
       variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 
   variations::PlatformFieldTrials platform_field_trials;
+  variations::SyntheticTrialRegistry synthetic_trial_registry;
 
   // Despite documentation, SetUpFieldTrials returns false if it didn't use the
   // seed (e.g. if it used fieldtrial_testing_config), *not* just on failures.
@@ -92,7 +94,7 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
       /*extra_overrides=*/
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false);
 
   if (used_seed) {
