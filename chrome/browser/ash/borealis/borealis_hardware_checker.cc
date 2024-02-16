@@ -132,7 +132,7 @@ bool InTargetSegment() {
 }
 
 bool Check() {
-  if (IsBoard("hatch")) {
+  if (BoardIn({"hatch", "drallion", "puff"})) {
     return HasSufficientHardware(kIntelCpuRegex);
   }
   if (IsBoard("volteer")) {
