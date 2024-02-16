@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/no_destructor.h"
+#import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/affiliations/core/browser/affiliation_service_impl.h"
@@ -30,7 +31,7 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForBrowserState(
     web::BrowserState* browser_state) {
-  CHECK(browser_state);
+  CHECK(browser_state, base::NotFatalUntil::M123);
 
   // Always use the original BrowserState, not incognito. AffiliationService is
   // safe to use in incognito.
