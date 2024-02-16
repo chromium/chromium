@@ -196,6 +196,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #endif
   (*s_allowlist)[autofill::prefs::kAutofillPaymentCvcStorage] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[autofill::prefs::kAutofillPaymentCardBenefits] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[payments::kCanMakePaymentEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[bookmarks::prefs::kShowBookmarkBar] =

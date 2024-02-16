@@ -44,6 +44,12 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
+/**
+ * TODO(crbug.com/322869650): Replace the help URL when the correct article
+ * is ready.
+ */
+export const GOOGLE_PAY_HELP_URL = 'https://support.google.com/googlepay/';
+
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
@@ -206,6 +212,27 @@ export class SettingsPaymentsSectionElement extends
           return loadTimeData.getBoolean('cvcStorageAvailable');
         },
       },
+
+      /**
+       * Checks if card benefits feature flag is enabled.
+       */
+      cardBenefitsFlagEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillCardBenefitsAvailable');
+        },
+      },
+
+      /**
+       * Sublabel for the card benefits toggle. The sublabel text also includes
+       * a link to learn about the card benefits.
+       */
+      cardBenefitsSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('cardBenefitsToggleSublabel');
+        },
+      },
     };
   }
 
@@ -233,6 +260,8 @@ export class SettingsPaymentsSectionElement extends
       PaymentsManagerImpl.getInstance();
   private mandatoryReauthFeatureEnabled_: boolean;
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
+  private cardBenefitsFlagEnabled_: boolean;
+  private cardBenefitsSublabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -705,6 +734,14 @@ export class SettingsPaymentsSectionElement extends
     return this.i18nAdvanced(
         card === undefined ? 'enableCvcStorageSublabel' :
                              'enableCvcStorageDeleteDataSublabel');
+  }
+
+  /**
+   * Opens an article to learn about card benefits when the card benefits toggle
+   * sublabel link is clicked.
+   */
+  private onCardBenefitsSublabelLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
   }
 }
 

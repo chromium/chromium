@@ -135,7 +135,7 @@ export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofil
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
-export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
+export {GOOGLE_PAY_HELP_URL, SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 export {SettingsClearBrowsingDataDialogElement, TimePeriod, TimePeriodExperiment} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';

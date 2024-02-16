@@ -52,6 +52,16 @@
         pref="{{prefs.autofill.payment_cvc_storage}}">
     </settings-toggle-button>
 </template>
+<template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
+  <!--  TODO(crbug.com/324094766): Handle event when toggle status changes.-->
+  <settings-toggle-button id="cardBenefitsToggle"
+      no-extension-indicator label="$i18n{cardBenefitsToggleLabel}"
+      sub-label-with-link="[[cardBenefitsSublabel_]]"
+      on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.payment_card_benefits}}">
+  </settings-toggle-button>
+</template>
 <settings-toggle-button id="canMakePaymentToggle"
     aria-label="$i18n{canMakePaymentToggleLabel}"
     label="$i18n{canMakePaymentToggleLabel}"

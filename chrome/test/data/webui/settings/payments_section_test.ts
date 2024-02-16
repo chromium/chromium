@@ -5,9 +5,9 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import {GOOGLE_PAY_HELP_URL, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import {CvcDeletionUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
@@ -15,6 +15,7 @@ import {createCreditCardEntry} from './autofill_fake_data.js';
 import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 
@@ -43,8 +44,11 @@ suite('PaymentSectionUiTest', function() {
 });
 
 suite('PaymentsSection', function() {
+  let openWindowProxy: TestOpenWindowProxy;
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     loadTimeData.overrideValues({
       migrationEnabled: true,
       showIbansSettings: true,
@@ -676,5 +680,83 @@ suite('PaymentsSection', function() {
           }
           paymentsManagerProxy.assertExpectations(expectations);
         });
+  });
+
+  test('verifyCardBenefitsToggleIsShown', async function() {
+    loadTimeData.overrideValues({
+      autofillCardBenefitsAvailable: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cardBenefitsToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cardBenefitsToggle');
+
+    assertTrue(!!cardBenefitsToggle);
+    assertEquals(
+        loadTimeData.getString('cardBenefitsToggleLabel'),
+        cardBenefitsToggle.label.toString());
+    assertEquals(
+        loadTimeData.getString('cardBenefitsToggleSublabel'),
+        cardBenefitsToggle.subLabelWithLink.toString());
+  });
+
+  test(
+      'verifyCardBenefitsToggleIsNotShownWhenCardBenefitsFlagIsOff',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillCardBenefitsAvailable: false,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: true},
+            });
+
+        assertFalse(!!section.shadowRoot!.querySelector('#cardBenefitsToggle'));
+      });
+
+  test(
+      'verifyCardBenefitsToggleIsDisabledWhenCreditCardEnabledIsOff',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillCardBenefitsAvailable: true,
+        });
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], /*ibans=*/[], {
+              credit_card_enabled: {value: false},
+            });
+        const cardBenefitsToggle =
+            section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#cardBenefitsToggle');
+
+        assertTrue(!!cardBenefitsToggle);
+        assertTrue(cardBenefitsToggle.disabled);
+      });
+
+  test('verifyCardBenefitsToggleSublabelLinkClickOpensUrl', async function() {
+    loadTimeData.overrideValues({
+      autofillCardBenefitsAvailable: true,
+    });
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[], {
+          credit_card_enabled: {value: true},
+        });
+    const cardBenefitsToggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cardBenefitsToggle');
+    assertTrue(!!cardBenefitsToggle);
+
+    const link = cardBenefitsToggle.shadowRoot!.querySelector('a');
+    assertTrue(!!link);
+    link.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(GOOGLE_PAY_HELP_URL, url);
   });
 });
