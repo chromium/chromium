@@ -81,9 +81,9 @@ namespace {
 // Maintain the UI controls and web view for content shell
 class ShellView : public views::BoxLayoutView,
                   public views::TextfieldController {
- public:
-  METADATA_HEADER(ShellView);
+  METADATA_HEADER(ShellView, views::BoxLayoutView)
 
+ public:
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
   explicit ShellView(Shell* shell) : shell_(shell) { InitShellWindow(); }
@@ -309,7 +309,7 @@ class ShellView : public views::BoxLayoutView,
   raw_ptr<views::WebView> web_view_ = nullptr;
 };
 
-BEGIN_METADATA(ShellView, views::View)
+BEGIN_METADATA(ShellView)
 END_METADATA
 
 ShellView* ShellViewForWidget(views::Widget* widget) {

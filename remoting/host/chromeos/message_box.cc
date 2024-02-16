@@ -26,8 +26,9 @@ namespace remoting {
 // Core and the MessageBox hold a raw references to each other, which is
 // invalidated when either side are destroyed.
 class MessageBox::Core : public views::DialogDelegateView {
+  METADATA_HEADER(Core, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(Core);
   Core(const std::u16string& title_label,
        const std::u16string& message_label,
        const std::u16string& ok_label,
