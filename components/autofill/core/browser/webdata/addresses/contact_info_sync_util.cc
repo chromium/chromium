@@ -258,6 +258,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
     s.Set(specifics.mutable_address_overflow_and_landmark(),
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
+  if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    s.Set(specifics.mutable_address_street_location_and_locality(),
+          ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
     s.Set(specifics.mutable_address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
@@ -386,6 +390,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     s.Set(specifics.address_overflow_and_landmark(),
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK);
   }
+  if (base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    s.Set(specifics.address_street_location_and_locality(),
+          ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY);
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForAdminLevel2)) {
     s.Set(specifics.address_admin_level_2(), ADDRESS_HOME_ADMIN_LEVEL2);
@@ -512,6 +520,10 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_address_overflow_and_landmark())) {
     trimmed_specifics.clear_address_overflow_and_landmark();
+  }
+  if (d.Delete(
+          trimmed_specifics.mutable_address_street_location_and_locality())) {
+    trimmed_specifics.clear_address_street_location_and_locality();
   }
   // Delete email, phone and company values and statuses.
   if (d.Delete(trimmed_specifics.mutable_email_address())) {

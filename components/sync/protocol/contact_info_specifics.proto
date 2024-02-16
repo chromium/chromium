@@ -193,6 +193,10 @@ message ContactInfoSpecifics {
   // address forms require the combination of both in a single field as opposed
   // to each one separately.
   optional StringToken address_overflow_and_landmark = 49;
+  // Combination of types address_street_location and
+  // address_dependent_locality. Note that some address forms require the
+  // combination of both in a single field as opposed to each one separately.
+  optional StringToken address_street_location_and_locality = 52;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;
