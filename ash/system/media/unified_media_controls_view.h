@@ -81,7 +81,8 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
 
   SkPath GetArtworkClipPath();
 
-  const raw_ptr<UnifiedMediaControlsController> controller_ = nullptr;
+  const raw_ptr<UnifiedMediaControlsController, DanglingUntriaged> controller_ =
+      nullptr;
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::ImageView> drop_down_icon_ = nullptr;

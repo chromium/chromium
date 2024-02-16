@@ -68,7 +68,7 @@ class APP_MENU_EXPORT NotificationMenuController
   const raw_ptr<views::MenuItemView, DanglingUntriaged> root_menu_;
 
   // Manages showing the menu. Owned by the view requesting a menu.
-  const raw_ptr<AppMenuModelAdapter> app_menu_model_adapter_;
+  const raw_ptr<AppMenuModelAdapter, DanglingUntriaged> app_menu_model_adapter_;
 
   // The view which shows all active notifications for |app_id_|. Owned by the
   // views hierarchy.
