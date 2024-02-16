@@ -181,6 +181,30 @@ TEST_F(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
       notification_view));
 }
 
+// Tests the inline reply UI for AshNotificationView.
+TEST_F(AshNotificationViewPixelTest, InlineReply) {
+  message_center::RichNotificationData rich_data;
+  message_center::ButtonInfo button_info(u"Reply");
+  button_info.placeholder = std::make_optional(u"Send Message");
+  rich_data.buttons.push_back(button_info);
+
+  const std::string id = test_api()->AddCustomNotification(
+      /*title=*/u"title", /*message=*/u"message", /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(), /*url=*/GURL(),
+      /*notifier_id=*/message_center::NotifierId(),
+      /*optional_fields=*/rich_data);
+
+  test_api()->ToggleBubble();
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+
+  LeftClickOn(notification_view->GetActionButtonsForTest().front());
+
+  // Verify with a pixel test that the inline reply field is correctly drawn.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "inline_reply_focused", /*revision_number=*/0, notification_view));
+}
+
 // Tests that a notification's icon is sized and positioned correctly at
 // different sizes.
 class AshNotificationViewIconPixelTest
