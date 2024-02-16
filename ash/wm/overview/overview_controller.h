@@ -126,6 +126,12 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     delayed_animation_task_delay_ = delta;
   }
 
+  bool windows_have_snapshot() const { return windows_have_snapshot_; }
+
+  void set_windows_have_snapshot_for_test(bool windows_have_snapshot) {
+    windows_have_snapshot_ = windows_have_snapshot;
+  }
+
  private:
   friend class SavedDeskTest;
 
@@ -192,6 +198,12 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // `disable_app_id_check_for_saved_desks_` is true, then this check is
   // omitted so we can test Saved Desks.
   bool disable_app_id_check_for_saved_desks_ = false;
+
+  // True if windows shown in overview mode will have a snapshot available.
+  // If a snapshot is available then we can pause occlusion tracking until
+  // overview mode as finished its enter animation. Otherwise, we must mark
+  // all windows as visible immediately.
+  bool windows_have_snapshot_ = false;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };

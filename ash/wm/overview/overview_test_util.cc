@@ -167,4 +167,11 @@ void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key) {
   } while (!GetOverviewFocusedWindow());
 }
 
+void WaitForOcclusionStateChange(aura::Window* window,
+                                 aura::Window::OcclusionState target_state) {
+  while (window->GetOcclusionState() != target_state) {
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
 }  // namespace ash

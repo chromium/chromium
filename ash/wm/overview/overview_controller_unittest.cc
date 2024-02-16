@@ -184,12 +184,6 @@ class TestOverviewObserver : public OverviewObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-void WaitForOcclusionStateChange(aura::Window* window) {
-  auto current_state = window->GetOcclusionState();
-  while (window->GetOcclusionState() == current_state)
-    base::RunLoop().RunUntilIdle();
-}
-
 void WaitForShowAnimation(aura::Window* window) {
   while (window->layer()->opacity() != 1.f)
     base::RunLoop().RunUntilIdle();
@@ -215,20 +209,19 @@ TEST_F(OverviewControllerTest,
   resizer->CompleteDrag();
 }
 
-TEST_F(OverviewControllerTest, OcclusionTest) {
+TEST_F(OverviewControllerTest, OcclusionTestWithSnapshot) {
   using OcclusionState = aura::Window::OcclusionState;
 
   Shell::Get()
       ->overview_controller()
       ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(500));
+  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(true);
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  gfx::Rect bounds(0, 0, 100, 100);
-  std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(bounds));
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(bounds));
+  constexpr gfx::Rect kBounds(0, 0, 100, 100);
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(kBounds));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(kBounds));
   // Wait for show/hide animation because occlusion tracker because
   // the test depends on opacity.
   WaitForShowAnimation(window1.get());
@@ -248,8 +241,7 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
   // Occlusion tracking is paused.
   EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
   EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
-  WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  WaitForOcclusionStateChange(window1.get(), OcclusionState::VISIBLE);
 
   // Exit with windows.
   ExitOverview();
@@ -258,8 +250,7 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
   observer.WaitForEndingAnimationComplete();
   EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
   EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
-  WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  WaitForOcclusionStateChange(window1.get(), OcclusionState::OCCLUDED);
 
   observer.Reset();
 
@@ -276,8 +267,7 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
   EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
   EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
-  WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  WaitForOcclusionStateChange(window1.get(), OcclusionState::VISIBLE);
 
   wm::ActivateWindow(window1.get());
   observer.WaitForEndingAnimationComplete();
@@ -286,9 +276,76 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
-  WaitForOcclusionStateChange(window2.get());
+  WaitForOcclusionStateChange(window2.get(), OcclusionState::OCCLUDED);
   EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window2->GetOcclusionState());
+}
+
+TEST_F(OverviewControllerTest, OcclusionTestWithoutSnapshot) {
+  using OcclusionState = aura::Window::OcclusionState;
+
+  Shell::Get()
+      ->overview_controller()
+      ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(500));
+  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
+      false);
+  TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  constexpr gfx::Rect kBounds(0, 0, 100, 100);
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(kBounds));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(kBounds));
+  // Wait for show/hide animation because occlusion tracker because
+  // the test depends on opacity.
+  WaitForShowAnimation(window1.get());
+  WaitForShowAnimation(window2.get());
+
+  window1->TrackOcclusionState();
+  window2->TrackOcclusionState();
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+
+  // Enter with windows.
+  EnterOverview();
+  // Tracker is not paused for enter, and items are forced visible.
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+
+  observer.WaitForStartingAnimationComplete();
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+
+  // Exit with windows.
+  ExitOverview();
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  observer.WaitForEndingAnimationComplete();
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  WaitForOcclusionStateChange(window1.get(), OcclusionState::OCCLUDED);
+
+  observer.Reset();
+
+  // Enter again.
+  EnterOverview();
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  auto* active = window_util::GetActiveWindow();
+  EXPECT_EQ(window2.get(), active);
+
+  observer.WaitForStartingAnimationComplete();
+
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+
+  wm::ActivateWindow(window1.get());
+  observer.WaitForEndingAnimationComplete();
+
+  // Windows are visible because tracker is paused (tracker is paused for exit).
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  WaitForOcclusionStateChange(window2.get(), OcclusionState::OCCLUDED);
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 }
 
 // Tests that PIP windows are not shown in overview.

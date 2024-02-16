@@ -612,6 +612,10 @@ float OverviewItem::GetOpacity() const {
 }
 
 void OverviewItem::PrepareForOverview() {
+  // Forced overview items to be visible if they won't have a snapshot.
+  if (!Shell::Get()->overview_controller()->windows_have_snapshot()) {
+    scoped_force_visible_.emplace(GetWindow());
+  }
   transform_window_.PrepareForOverview();
   prepared_for_overview_ = true;
 }

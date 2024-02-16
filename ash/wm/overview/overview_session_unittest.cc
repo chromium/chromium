@@ -3588,6 +3588,117 @@ TEST_P(OverviewSessionTest, TabbingDuringExitAnimation) {
   SendKey(ui::VKEY_TAB);
 }
 
+TEST_P(OverviewSessionTest,
+       OcclusionUpdatedOnOverviewToggleForVirtualDeskPreviewsSingleWindow) {
+  using OcclusionState = aura::Window::OcclusionState;
+
+  // We don't need to worry about virtual desk previews not showing up if we
+  // have snapshots, so this test tests the case where we don't have snapshots.
+  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
+      false);
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // First ensure there are two desks.
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, controller->desks().size());
+
+  Desk* desk1 = controller->desks()[0].get();
+  Desk* desk2 = controller->desks()[1].get();
+
+  // Create one window on an inactive desk.
+  std::unique_ptr<aura::Window> window(CreateAppWindow(gfx::Rect(100, 100)));
+  controller->SendToDeskAtIndex(window.get(), 1);
+  EXPECT_TRUE(base::Contains(desk2->windows(), window.get()));
+  EXPECT_TRUE(desk1->is_active());
+  window->TrackOcclusionState();
+
+  // Window should be hidden on an inactive desk.
+  EXPECT_EQ(OcclusionState::HIDDEN, window->GetOcclusionState());
+
+  // Enter overview mode.
+  ToggleOverview();
+
+  // Window should immediately be marked as visible.
+  EXPECT_EQ(OcclusionState::VISIBLE, window->GetOcclusionState());
+  WaitForOverviewEnterAnimation();
+
+  // Window should stay visible.
+  EXPECT_EQ(OcclusionState::VISIBLE, window->GetOcclusionState());
+
+  // Exit overview mode.
+  ToggleOverview();
+
+  // Window should still be visible until the animation finishes.
+  EXPECT_EQ(OcclusionState::VISIBLE, window->GetOcclusionState());
+  WaitForOverviewExitAnimation();
+
+  // Overview mode pauses occlusion on exit for a while, so wait for this state.
+  WaitForOcclusionStateChange(window.get(), OcclusionState::HIDDEN);
+}
+
+TEST_P(OverviewSessionTest,
+       OcclusionUpdatedOnOverviewToggleForVirtualDeskPreviewsTwoWindows) {
+  using OcclusionState = aura::Window::OcclusionState;
+
+  // We don't need to worry about virtual desk previews not showing up if we
+  // have snapshots, so this test tests the case where we don't have snapshots.
+  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
+      false);
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // First ensure there are two desks.
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, controller->desks().size());
+
+  Desk* desk1 = controller->desks()[0].get();
+  Desk* desk2 = controller->desks()[1].get();
+
+  // Create one window on the active desk.
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(100, 100)));
+  controller->SendToDeskAtIndex(window1.get(), 0);
+  EXPECT_TRUE(base::Contains(desk1->windows(), window1.get()));
+  window1->TrackOcclusionState();
+
+  // Create one window on an inactive desk.
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(100, 100)));
+  controller->SendToDeskAtIndex(window2.get(), 1);
+  EXPECT_TRUE(base::Contains(desk2->windows(), window2.get()));
+  EXPECT_TRUE(desk1->is_active());
+  window2->TrackOcclusionState();
+
+  // `window2` should be hidden on an inactive desk.
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::HIDDEN, window2->GetOcclusionState());
+
+  // Enter overview mode.
+  ToggleOverview();
+
+  // `window2` will not immediately be marked as visible, because the desks
+  // widget is only shown after the animation finishes.
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  WaitForOverviewEnterAnimation();
+
+  // `window2` should stay visible.
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+
+  // Exit overview mode.
+  ToggleOverview();
+
+  // `window2` should still be visible until the animation finishes.
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  WaitForOverviewExitAnimation();
+
+  // Overview mode pauses occlusion on exit for a while, so wait for this state.
+  WaitForOcclusionStateChange(window2.get(), OcclusionState::HIDDEN);
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+}
+
 // If you update the parameterisation of OverviewSessionTest also update the
 // parameterisation of OverviewRasterScaleTest below.
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,

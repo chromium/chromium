@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_occlusion_tracker.h"
 
 namespace aura {
 class Window;
@@ -244,6 +245,13 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // Disable animations on the contained window while it is being managed by the
   // overview item.
   ScopedAnimationDisabler animation_disabler_;
+
+  // Force `OverviewItem` to be visible while overview is in progress. This is
+  // to ensure that overview items are properly marked as visible during all
+  // parts of their animation (e.g. overview enter). This is only required
+  // if those item's windows won't have snapshots.
+  std::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
+      scoped_force_visible_;
 
   // Cancellable callback to ensure that we are not going to hide the window
   // after reverting the hide.

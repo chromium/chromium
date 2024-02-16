@@ -64,6 +64,10 @@ void DragItemToPoint(OverviewItemBase* item,
 // desk items.
 void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key);
 
+// Waits until the occlusion state for window is equal to `target_state`.
+void WaitForOcclusionStateChange(aura::Window* window,
+                                 aura::Window::OcclusionState target_state);
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_TEST_UTIL_H_
