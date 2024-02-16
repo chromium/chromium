@@ -818,7 +818,11 @@ public class TabGridDialogView extends FrameLayout {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
             // Add the data sharing bottom toolbar view.
             LayoutInflater inflater = LayoutInflater.from(mDialogContainerView.getContext());
-            inflater.inflate(R.layout.data_sharing_group_bar, mDialogContainerView, true);
+            View shareBar =
+                    inflater.inflate(R.layout.data_sharing_group_bar, mDialogContainerView, true);
+
+            // TODO(b/325082444): Set visibility depending on shared state.
+            shareBar.findViewById(R.id.dialog_share_invite_button).setVisibility(View.VISIBLE);
         }
         mDialogContainerView.addView(mSnackBarContainer);
 
