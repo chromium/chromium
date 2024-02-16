@@ -17,7 +17,10 @@
 async_test(t => {
   // Step 1
   window.addEventListener("message", t.step_func(e => {
-    assert_equals(e.data, "HasAccess for SharedWorker", "Storage Access API should be accessible and return first-party data");
+    if (e.data.type != "result") {
+      return;
+    }
+    assert_equals(e.data.message, "HasAccess for SharedWorker", "Storage Access API should be accessible and return first-party data");
   }));
 
   // Step 2
@@ -29,7 +32,9 @@ async_test(t => {
     const cookie_worker = new SharedWorker("/storage-access-api/resources/shared-worker-cookies.py", {name: id, sameSiteCookies: 'none'});
     cookie_worker.port.onmessage = t.step_func(e => {
       assert_equals(e.data, "ReadOnLoad:None,ReadOnFetch:None,ConnectionsMade:2", "Worker should already have been opened and only see SameSite=None cookies");
-      t.done();
+      test_driver.delete_all_cookies().then(t.step_func(() => {
+        t.done();
+      }));
     });
   });
 
