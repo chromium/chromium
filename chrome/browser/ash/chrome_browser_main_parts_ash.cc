@@ -1276,6 +1276,16 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kEnableRFC8925Property));
 
+    ash::ShillManagerClient::Get()->SetProperty(
+        shill::kDisconnectWiFiOnEthernetProperty,
+        base::Value(base::FeatureList::IsEnabled(
+                        features::kDisconnectWiFiOnEthernetConnected)
+                        ? shill::kDisconnectWiFiOnEthernetConnected
+                        : shill::kDisconnectWiFiOnEthernetOff),
+        base::DoNothing(),
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kDisconnectWiFiOnEthernetProperty));
+
     // Notify patchpanel and shill about QoS feature enabled flag.
     const bool wifi_qos_enabled =
         base::FeatureList::IsEnabled(features::kEnableWifiQos);
