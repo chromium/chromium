@@ -652,9 +652,11 @@ public class TopToolbarCoordinator implements Toolbar {
 
     @Override
     public int getTabStripHeight() {
-        return mTabStripTransitionCoordinator != null
-                ? mTabStripTransitionCoordinator.getTabStripHeight()
-                : mToolbarLayout.getTabStripHeightFromResource();
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()
+                && mTabStripTransitionCoordinator != null) {
+            return mTabStripTransitionCoordinator.getTabStripHeight();
+        }
+        return mToolbarLayout.getTabStripHeightFromResource();
     }
 
     /** Triggered when the content view for the specified tab has changed. */

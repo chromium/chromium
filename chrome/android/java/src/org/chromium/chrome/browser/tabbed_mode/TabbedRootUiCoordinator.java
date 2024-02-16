@@ -1013,25 +1013,37 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         final boolean animate = !sDisableTopControlsAnimationForTesting;
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
-        // This method can be called when the toolbar didn't go through a layout pass (e.g. when
-        // theme switches in settings, activity recreates), so getToolbar().getHeight() returns 0.
-        // TODO(crbug.com/1503029): Remove the reference to toolbar_height_no_shadow.
-        final int toolbarHeight =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-        final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
-        final int topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
 
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        if (tabStripHeight > 0 && !isTablet) {
-            String msg =
-                    "Non-zero tab strip height found on non-tablet form factor. tabStripHeight= "
-                            + tabStripHeight
-                            + " toolbarHeight= "
-                            + toolbarHeight
-                            + " statusIndicatorHeight= "
+        int topControlsNewHeight;
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            // This method can be called when the toolbar didn't go through a layout pass (e.g. when
+            // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
+            // 0.
+            // TODO(crbug.com/1503029): Remove the reference to toolbar_height_no_shadow.
+            final int toolbarHeight =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+            final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
+            topControlsNewHeight = toolbarHeight + tabStripHeight + mStatusIndicatorHeight;
+
+            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+            if (tabStripHeight > 0 && !isTablet) {
+                String msg =
+                        "Non-zero tab strip height found on non-tablet form factor. tabStripHeight="
+                                + " "
+                                + tabStripHeight
+                                + " toolbarHeight= "
+                                + toolbarHeight
+                                + " statusIndicatorHeight= "
+                                + mStatusIndicatorHeight;
+                ChromePureJavaExceptionReporter.reportJavaException(
+                        new Throwable(msg), /* withLogWarning= */ true);
+            }
+        } else {
+            topControlsNewHeight =
+                    mActivity.getResources().getDimensionPixelSize(mControlContainerHeightResource)
                             + mStatusIndicatorHeight;
-            ChromePureJavaExceptionReporter.reportJavaException(
-                    new Throwable(msg), /* withLogWarning= */ true);
         }
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);

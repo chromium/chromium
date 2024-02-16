@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.TabStripHeightSupplier;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
@@ -311,8 +312,7 @@ public class ToolbarManager
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Integer> mTabStripHeightSupplier =
-            new ObservableSupplierImpl<>();
+    private TabStripHeightSupplier mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
 
     private TabGroupUi mTabGroupUi;
@@ -760,7 +760,7 @@ public class ToolbarManager
                         initializeWithIncognitoColors,
                         startSurfaceLogoClickedCallback,
                         mConstraintsProxy);
-        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
+        mTabStripHeightSupplier = new TabStripHeightSupplier(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -1710,7 +1710,10 @@ public class ToolbarManager
                 mActivityTabProvider,
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
-        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            // Only update the tab strip value when DTC is enabled.
+            mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
+        }
 
         mAttachStateChangeListener =
                 new OnAttachStateChangeListener() {
@@ -1734,20 +1737,25 @@ public class ToolbarManager
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
-            mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
-            stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
+
+            if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+                mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
+                stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
+            }
         }
 
-        mTabStripHeightObserver =
-                new TabStripHeightObserver() {
-                    @Override
-                    public void onTransitionRequested(int newHeight) {
-                        // TODO(crbug.com/1509013): Supplier can have an inconsistent value
-                        //  with mToolbar.getTabStripHeight().
-                        mTabStripHeightSupplier.set(newHeight);
-                    }
-                };
-        mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
+        if (ChromeFeatureList.sDynamicTopChrome.isEnabled()) {
+            mTabStripHeightObserver =
+                    new TabStripHeightObserver() {
+                        @Override
+                        public void onTransitionRequested(int newHeight) {
+                            // TODO(crbug.com/1509013): Supplier can have an inconsistent value
+                            //  with mToolbar.getTabStripHeight().
+                            mTabStripHeightSupplier.set(newHeight);
+                        }
+                    };
+            mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
+        }
 
         Profile profile = mTabModelSelector.getModel(false).getProfile();
         assert profile != null;
