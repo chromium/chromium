@@ -5,7 +5,7 @@ desc: "<ph name=\"UNLOAD_EVENT_NAME\">unload</ph> event handlers are being \
 deprecated. Whether they fire depends on the <ph name=\"UNLOAD_EVENT_NAME\"> \
 unload</ph> <ph name=\"PERMISSIONS_POLICY_NAME\">Permissions-Policy</ph>. \
 Currently, they are allowed by policy by default. In the future they will \
-gradually move to being disallowed by default and sites must explictly enable \
+gradually move to being disallowed by default and sites must explicitly enable \
 them using <ph name=\"PERMISSIONS_POLICY_NAME\">Permissions-Policy</ph> \
 headers. This enterprise policy can be used to opt out of this gradual \
 deprecation by forcing the default to remain as enabled.\n\ \
