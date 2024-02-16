@@ -216,7 +216,7 @@ std::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement, int col) {
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-constexpr int kSourceColumnCount = 19;
+constexpr int kSourceColumnCount = 20;
 
 int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
   int64_t file_size = -1;
@@ -264,6 +264,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
 
   StoredSource::Id source_id(statement.ColumnInt64(col++));
   uint64_t source_event_id = DeserializeUint64(statement.ColumnInt64(col++));
+  uint64_t source_epoch = DeserializeUint64(statement.ColumnInt64(col++));
   std::optional<SuitableOrigin> source_origin =
       SuitableOrigin::Deserialize(statement.ColumnString(col++));
   std::optional<SuitableOrigin> reporting_origin =
@@ -421,7 +422,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(std::move(*source_origin), std::move(*reporting_origin),
                        *source_type),
-      source_event_id, std::move(*destination_set), source_time, expiry_time,
+      source_event_id, source_epoch, std::move(*destination_set), source_time, expiry_time,
       std::move(trigger_specs), aggregatable_report_window_time,
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
@@ -631,40 +632,40 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   static constexpr char kInsertImpressionSql[] =
       "INSERT INTO sources"
-      "(source_event_id,source_origin,"
+      "(source_event_id,source_epoch,source_origin,"
       "reporting_origin,source_time,"
       "expiry_time,aggregatable_report_window_time,"
       "source_type,attribution_logic,priority,source_site,"
       "num_attributions,event_level_active,aggregatable_active,debug_key,"
       "aggregatable_budget_consumed,num_aggregatable_reports,"
       "aggregatable_source,filter_data,read_only_source_data)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0,?,?,?)";
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,0,?,?,?)";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
-  statement.BindString(1, serialized_source_origin);
-  statement.BindString(2, common_info.reporting_origin().Serialize());
-  statement.BindTime(3, source_time);
-  statement.BindTime(4, expiry_time);
-  statement.BindTime(5, aggregatable_report_window_time);
-  statement.BindInt(6, SerializeSourceType(common_info.source_type()));
-  statement.BindInt(7, SerializeAttributionLogic(attribution_logic));
-  statement.BindInt64(8, reg.priority);
-  statement.BindString(9, common_info.source_site().Serialize());
-  statement.BindInt(10, num_conversions);
-  statement.BindBool(11, event_level_active);
-  statement.BindBool(12, aggregatable_active);
+  statement.BindInt64(1, SerializeUint64(reg.source_epoch));
+  statement.BindString(2, serialized_source_origin);
+  statement.BindString(3, common_info.reporting_origin().Serialize());
+  statement.BindTime(4, source_time);
+  statement.BindTime(5, expiry_time);
+  statement.BindTime(6, aggregatable_report_window_time);
+  statement.BindInt(7, SerializeSourceType(common_info.source_type()));
+  statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
+  statement.BindInt64(9, reg.priority);
+  statement.BindString(10, common_info.source_site().Serialize());
+  statement.BindInt(11, num_conversions);
+  statement.BindBool(12, event_level_active);
+  statement.BindBool(13, aggregatable_active);
 
-  BindUint64OrNull(statement, 13, reg.debug_key);
+  BindUint64OrNull(statement, 14, reg.debug_key);
 
   std::optional<StoredSource::ActiveState> active_state =
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
-  statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
-  statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(
-      16, SerializeReadOnlySourceData(
+  statement.BindBlob(15, SerializeAggregationKeys(reg.aggregation_keys));
+  statement.BindBlob(16, SerializeFilterData(reg.filter_data));
+  statement.BindBlob(17, SerializeReadOnlySourceData(
               reg.event_report_windows, reg.max_event_level_reports,
               randomized_response_data.rate(), reg.trigger_data_matching,
               debug_cookie_set));
@@ -690,7 +691,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   }
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
-      source.common_info(), reg.source_event_id, reg.destination_set,
+      source.common_info(), reg.source_event_id, reg.source_epoch, reg.destination_set,
       source_time, expiry_time, std::move(trigger_specs),
       aggregatable_report_window_time, reg.max_event_level_reports,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
@@ -2446,6 +2447,7 @@ bool AttributionStorageSql::CreateSchema() {
       "CREATE TABLE sources("
       "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "source_event_id INTEGER NOT NULL,"
+      "source_epoch INTEGER NOT NULL,"
       "source_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
       "source_time INTEGER NOT NULL,"
@@ -2589,6 +2591,40 @@ bool AttributionStorageSql::CreateSchema() {
   if (!db_.Execute(kReportsReportTypeReportingOriginIndexSql)) {
     return false;
   }
+
+  // // All columns in this table are const except |budget_consumed| and
+  // // which are updated when a non null report is about to be send.
+  // // |epoch| is a primary key and represents the period of time covered by the filter
+  // // [querying_origin] is the origin requesting the report from which we will deduct budget
+  // // |initial_budget| is the initial budget capacity of the filter <epoch,querying_origin>
+  // // |consumed_budget| is the budget that has been consumed so far from the filter <epoch,querying_origin>.
+  // static constexpr char kPerQueryingOriginFiltersTableSql[] =
+  //     "CREATE TABLE per_querying_origin_filters("
+  //     "epoch INTEGER NOT NULL,"
+  //     "querying_origin TEXT NOT NULL,"
+  //     "initial_budget FLOAT NOT NULL,"
+  //     "consumed_budget FLOAT NOT NULL,"
+  //     "PRIMARY KEY (epoch, querying_origin))";
+  // if (!db_.Execute(kPerQueryingOriginFiltersTableSql)) {
+  //   return false;
+  // }
+
+  // // All columns in this table are const except |budget_consumed| and
+  // // which are updated when a non null report is about to be send.
+  // // |epoch| is a primary key and represents the period of time covered by the filter
+  // // [querying_origin_type] is the type of origin requesting the report (can be either publisher or advertiser)
+  // // |initial_budget| is the initial budget capacity of the filter <epoch,querying_origin_type>
+  // // |consumed_budget| is the budget that has been consumed so far from the filter <epoch,querying_origin_type>.
+  // static constexpr char kGlobalFiltersTableSql[] =
+  //     "CREATE TABLE global_filters("
+  //     "epoch INTEGER NOT NULL,"
+  //     "querying_origin_type TEXT NOT NULL,"
+  //     "initial_budget FLOAT NOT NULL,"
+  //     "consumed_budget FLOAT NOT NULL,"
+  //     "PRIMARY KEY (epoch, querying_origin_type))";
+  // if (!db_.Execute(kGlobalFiltersTableSql)) {
+  //   return false;
+  // }
 
   if (!rate_limit_table_.CreateTable(&db_)) {
     return false;

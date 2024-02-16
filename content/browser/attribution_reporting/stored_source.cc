@@ -35,13 +35,14 @@ bool IsExpiryOrReportWindowTimeValid(base::Time expiry_or_report_window_time,
 }
 
 bool AreFieldsValid(int64_t aggregatable_budget_consumed,
+                    uint64_t source_epoch,
                     double randomized_response_rate,
                     base::Time source_time,
                     base::Time expiry_time,
                     base::Time aggregatable_report_window_time,
                     std::optional<uint64_t> debug_key,
                     bool debug_cookie_set) {
-  return aggregatable_budget_consumed >= 0 && randomized_response_rate >= 0 &&
+  return aggregatable_budget_consumed >= 0 && source_epoch >=0 && randomized_response_rate >= 0 &&
          randomized_response_rate <= 1 &&
          IsExpiryOrReportWindowTimeValid(expiry_time, source_time) &&
          IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time,
@@ -55,6 +56,7 @@ bool AreFieldsValid(int64_t aggregatable_budget_consumed,
 std::optional<StoredSource> StoredSource::Create(
     CommonSourceInfo common_info,
     uint64_t source_event_id,
+    uint64_t source_epoch,
     attribution_reporting::DestinationSet destination_sites,
     base::Time source_time,
     base::Time expiry_time,
@@ -73,13 +75,13 @@ std::optional<StoredSource> StoredSource::Create(
     attribution_reporting::mojom::TriggerDataMatching trigger_data_matching,
     attribution_reporting::EventLevelEpsilon event_level_epsilon,
     bool debug_cookie_set) {
-  if (!AreFieldsValid(aggregatable_budget_consumed, randomized_response_rate,
+  if (!AreFieldsValid(aggregatable_budget_consumed, source_epoch, randomized_response_rate,
                       source_time, expiry_time, aggregatable_report_window_time,
                       debug_key, debug_cookie_set)) {
     return std::nullopt;
   }
 
-  return StoredSource(std::move(common_info), source_event_id,
+  return StoredSource(std::move(common_info), source_event_id, source_epoch,
                       std::move(destination_sites), source_time, expiry_time,
                       std::move(trigger_specs), aggregatable_report_window_time,
                       max_event_level_reports, priority, std::move(filter_data),
@@ -92,6 +94,7 @@ std::optional<StoredSource> StoredSource::Create(
 StoredSource::StoredSource(
     CommonSourceInfo common_info,
     uint64_t source_event_id,
+    uint64_t source_epoch,
     attribution_reporting::DestinationSet destination_sites,
     base::Time source_time,
     base::Time expiry_time,
@@ -112,6 +115,7 @@ StoredSource::StoredSource(
     bool debug_cookie_set)
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
+      source_epoch_(source_epoch),
       destination_sites_(std::move(destination_sites)),
       source_time_(source_time),
       expiry_time_(expiry_time),
@@ -130,7 +134,7 @@ StoredSource::StoredSource(
       trigger_data_matching_(std::move(trigger_data_matching)),
       event_level_epsilon_(event_level_epsilon),
       debug_cookie_set_(debug_cookie_set) {
-  DCHECK(AreFieldsValid(aggregatable_budget_consumed_,
+  DCHECK(AreFieldsValid(aggregatable_budget_consumed_, source_epoch,
                         randomized_response_rate_, source_time_, expiry_time_,
                         aggregatable_report_window_time_, debug_key_,
                         debug_cookie_set_));

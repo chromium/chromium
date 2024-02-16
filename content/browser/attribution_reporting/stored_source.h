@@ -50,6 +50,7 @@ class CONTENT_EXPORT StoredSource {
   static std::optional<StoredSource> Create(
       CommonSourceInfo common_info,
       uint64_t source_event_id,
+      uint64_t source_epoch,
       attribution_reporting::DestinationSet,
       base::Time source_time,
       base::Time expiry_time,
@@ -80,6 +81,8 @@ class CONTENT_EXPORT StoredSource {
   const CommonSourceInfo& common_info() const { return common_info_; }
 
   uint64_t source_event_id() const { return source_event_id_; }
+
+  uint64_t source_epoch() const { return source_epoch_; }
 
   const attribution_reporting::DestinationSet& destination_sites() const {
     return destination_sites_;
@@ -151,6 +154,7 @@ class CONTENT_EXPORT StoredSource {
  private:
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
+               uint64_t source_epoch,
                attribution_reporting::DestinationSet,
                base::Time source_time,
                base::Time expiry_time,
@@ -173,6 +177,7 @@ class CONTENT_EXPORT StoredSource {
   CommonSourceInfo common_info_;
 
   uint64_t source_event_id_;
+  uint64_t source_epoch_;
   attribution_reporting::DestinationSet destination_sites_;
   base::Time source_time_;
   base::Time expiry_time_;
