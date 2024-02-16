@@ -15,8 +15,30 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+namespace {
+
+// Evaluates any query to `result`.
+class TestAnchorEvaluator : public Length::AnchorEvaluator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TestAnchorEvaluator(std::optional<LayoutUnit> result)
+      : result_(result) {}
+
+  std::optional<LayoutUnit> Evaluate(
+      const CalculationExpressionNode&) const override {
+    return result_;
+  }
+
+ private:
+  std::optional<LayoutUnit> result_;
+};
+
+}  // namespace
 
 class CSSToLengthConversionDataTest : public PageTestBase {
  public:
@@ -25,20 +47,26 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     LoadAhem();
   }
 
+  struct DataOptions {
+    // The zoom to apply to :root.
+    std::optional<float> css_zoom;
+    // The zoom to pass to the CSSToLengthConversionData constructor.
+    std::optional<float> data_zoom;
+    // Used to evaluate anchor() and anchor-size() queries.
+    Length::AnchorEvaluator* anchor_evaluator = nullptr;
+    // Any flags set by conversion is stored here.
+    // See CSSToLengthConversionData::Flag.
+    CSSToLengthConversionData::Flags* flags = nullptr;
+  };
+
   // Set up a page with "Ahem 10px" as :root, and "Ahem 20px" at some <div>,
   // then return a CSSToLengthConversionData constructed from that.
-  //
-  // css_zoom - The zoom to apply to :root.
-  // data_zoom - The zoom to pass to the CSSToLengthConversionData constructor.
-  CSSToLengthConversionData ConversionData(
-      std::optional<float> css_zoom,
-      std::optional<float> data_zoom,
-      CSSToLengthConversionData::Flags& flags) {
+  CSSToLengthConversionData ConversionData(DataOptions options) {
     Element* root = GetDocument().documentElement();
     DCHECK(root);
-    if (css_zoom.has_value()) {
+    if (options.css_zoom.has_value()) {
       root->SetInlineStyleProperty(CSSPropertyID::kZoom,
-                                   String::Format("%f", *css_zoom));
+                                   String::Format("%f", *options.css_zoom));
     }
     root->SetInlineStyleProperty(CSSPropertyID::kFontSize, "10px");
     root->SetInlineStyleProperty(CSSPropertyID::kFontFamily, "Ahem");
@@ -56,30 +84,39 @@ class CSSToLengthConversionDataTest : public PageTestBase {
         GetDocument().documentElement()->GetComputedStyle(),
         CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(),
-        data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()), flags);
+        CSSToLengthConversionData::AnchorData(options.anchor_evaluator),
+        options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
+        options.flags ? *options.flags : ignored_flags_);
   }
 
-  CSSToLengthConversionData ConversionData(
-      std::optional<float> css_zoom = std::nullopt,
-      std::optional<float> data_zoom = std::nullopt) {
-    return ConversionData(css_zoom, data_zoom, ignored_flags_);
+  CSSToLengthConversionData ConversionData() {
+    return ConversionData(DataOptions{});
   }
 
-  CSSToLengthConversionData ConversionData(
-      CSSToLengthConversionData::Flags& flags) {
-    return ConversionData(std::nullopt, std::nullopt, flags);
-  }
+  // Parses the given string a <length>, and converts the result to pixels.
+  //
+  // A property may be specified to invoke the parsing behavior of that
+  // specific property.
+  float Convert(const CSSToLengthConversionData& data,
+                String value,
+                CSSPropertyID property_id = CSSPropertyID::kLeft) {
+    const CSSValue* result = css_test_helpers::ParseLonghand(
+        GetDocument(), CSSProperty::Get(property_id), value);
+    CHECK(result);
+    // Any tree-scoped references within `result` need to be populated with
+    // their TreeScope. This is normally done by StyleCascade before length
+    // conversion, and we're simulating that here.
+    result = &result->EnsureScopedValue(&GetDocument());
 
-  float Convert(const CSSToLengthConversionData& data, String value) {
-    auto* primitive_value = DynamicTo<CSSPrimitiveValue>(
-        css_test_helpers::ParseValue(GetDocument(), "<length>", value));
+    auto* primitive_value = DynamicTo<CSSPrimitiveValue>(result);
     DCHECK(primitive_value);
+
     return primitive_value->ConvertToLength(data).Pixels();
   }
 
   CSSToLengthConversionData::Flags ConversionFlags(String value) {
     CSSToLengthConversionData::Flags flags = 0;
-    CSSToLengthConversionData data = ConversionData(flags);
+    CSSToLengthConversionData data = ConversionData({.flags = &flags});
     Convert(data, value);
     return flags;
   }
@@ -113,7 +150,7 @@ TEST_F(CSSToLengthConversionDataTest, Normal) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, Zoomed) {
-  CSSToLengthConversionData data = ConversionData(2.0f);
+  CSSToLengthConversionData data = ConversionData({.css_zoom = 2.0f});
   EXPECT_FLOAT_EQ(2.0f, Convert(data, "1px"));
   EXPECT_FLOAT_EQ(40.0f, Convert(data, "1em"));
   EXPECT_FLOAT_EQ(32.0f, Convert(data, "1ex"));
@@ -151,7 +188,8 @@ TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
 TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
   // The zoom used to calculate fonts is different from the requested
   // zoom in the CSSToLengthConversionData constructor.
-  CSSToLengthConversionData data = ConversionData(1.0f, 2.0f);
+  CSSToLengthConversionData data =
+      ConversionData({.css_zoom = 1.0f, .data_zoom = 2.0f});
   EXPECT_FLOAT_EQ(2.0f, Convert(data, "1px"));
   EXPECT_FLOAT_EQ(40.0f, Convert(data, "1em"));
   EXPECT_FLOAT_EQ(32.0f, Convert(data, "1ex"));
@@ -169,7 +207,8 @@ TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
-  CSSToLengthConversionData data = ConversionData(2.0f).Unzoomed();
+  CSSToLengthConversionData data =
+      ConversionData({.css_zoom = 2.0f}).Unzoomed();
   EXPECT_FLOAT_EQ(1.0f, Convert(data, "1px"));
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1em"));
   EXPECT_FLOAT_EQ(16.0f, Convert(data, "1ex"));
@@ -306,6 +345,65 @@ TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
   Convert(data, "1ric");
   Convert(data, "1lh");
   Convert(data, "1rlh");
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunction) {
+  ScopedCSSAnchorPositioningForTest anchor_feature(true);
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(60.0f, Convert(data, "anchor(left)", right));
+  EXPECT_FLOAT_EQ(60.0f, Convert(data, "anchor(--a left)", right));
+  EXPECT_FLOAT_EQ(2.0f, Convert(data, "calc(anchor(--a left) / 30)", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallback) {
+  ScopedCSSAnchorPositioningForTest anchor_feature(true);
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(0.0f, Convert(data, "anchor(left)", right));
+  EXPECT_FLOAT_EQ(42.0f, Convert(data, "anchor(--a left, 42px)", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunction) {
+  ScopedCSSAnchorPositioningForTest anchor_feature(true);
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID width = CSSPropertyID::kWidth;
+
+  EXPECT_FLOAT_EQ(60.0f, Convert(data, "anchor-size(width)", width));
+  EXPECT_FLOAT_EQ(60.0f, Convert(data, "anchor-size(--a width)", width));
+  EXPECT_FLOAT_EQ(2.0f,
+                  Convert(data, "calc(anchor-size(--a width) / 30)", width));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunctionFallback) {
+  ScopedCSSAnchorPositioningForTest anchor_feature(true);
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID width = CSSPropertyID::kWidth;
+
+  EXPECT_FLOAT_EQ(0.0f, Convert(data, "anchor-size(width)", width));
+  EXPECT_FLOAT_EQ(42.0f, Convert(data, "anchor-size(--a width, 42px)", width));
 }
 
 }  // namespace blink

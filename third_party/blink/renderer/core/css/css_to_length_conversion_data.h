@@ -236,6 +236,22 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     mutable std::optional<double> cached_height_;
   };
 
+  // Used to evaluate anchor() and anchor-size() functions.
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-pos
+  // https://drafts.csswg.org/css-anchor-position-1/#anchor-size-fn
+  class CORE_EXPORT AnchorData {
+    STACK_ALLOCATED();
+
+   public:
+    AnchorData() = default;
+    explicit AnchorData(Length::AnchorEvaluator*);
+    Length::AnchorEvaluator* GetEvaluator() const { return evaluator_; }
+
+   private:
+    Length::AnchorEvaluator* evaluator_ = nullptr;
+  };
+
   using Flags = uint16_t;
 
   // Flags represent the units seen in a conversion. They are used for targeted
@@ -270,6 +286,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const LineHeightSize&,
                             const ViewportSize&,
                             const ContainerSizes&,
+                            const AnchorData&,
                             float zoom,
                             Flags&);
   template <typename ComputedStyleOrBuilder>
@@ -278,6 +295,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                             const ComputedStyle* root_style,
                             const ViewportSize& viewport_size,
                             const ContainerSizes& container_sizes,
+                            const AnchorData& anchor_data,
                             float zoom,
                             Flags& flags)
       : CSSToLengthConversionData(
@@ -288,6 +306,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
                            root_style),
             viewport_size,
             container_sizes,
+            anchor_data,
             zoom,
             flags) {}
 
@@ -321,6 +340,10 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     line_height_size_ = line_height_size;
   }
 
+  Length::AnchorEvaluator* AnchorEvaluator() const override {
+    return anchor_data_.GetEvaluator();
+  }
+
   // See ContainerSizes::PreCachedCopy.
   //
   // Calling this function will mark the associated ComputedStyle as
@@ -329,9 +352,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
     DCHECK(flags_);
-    return CSSToLengthConversionData(writing_mode_, font_sizes_,
-                                     line_height_size_, viewport_size_,
-                                     container_sizes_, new_zoom, *flags_);
+    return CSSToLengthConversionData(
+        writing_mode_, font_sizes_, line_height_size_, viewport_size_,
+        container_sizes_, anchor_data_, new_zoom, *flags_);
   }
   CSSToLengthConversionData Unzoomed() const {
     return CopyWithAdjustedZoom(1.0f);
@@ -349,6 +372,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   LineHeightSize line_height_size_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;
+  AnchorData anchor_data_;
   mutable Flags* flags_ = nullptr;
 };
 

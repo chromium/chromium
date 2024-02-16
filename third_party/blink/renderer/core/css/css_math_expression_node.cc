@@ -2331,7 +2331,9 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     const CSSValue& value,
     const CSSPrimitiveValue* fallback)
     : CSSMathExpressionNode(
-          kCalcPercentLength,
+          RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()
+              ? kCalcLength
+              : kCalcPercentLength,
           false /* has_comparisons */,
           (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
               (fallback && !fallback->IsScopedValue())),
@@ -2339,6 +2341,38 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
       anchor_specifier_(anchor_specifier),
       value_(value),
       fallback_(fallback) {}
+
+double CSSMathExpressionAnchorQuery::DoubleValue() const {
+  NOTREACHED();
+  return 0;
+}
+
+double CSSMathExpressionAnchorQuery::ComputeLengthPx(
+    const CSSLengthResolver& length_resolver) const {
+  return ComputeDouble(length_resolver);
+}
+
+double CSSMathExpressionAnchorQuery::ComputeDouble(
+    const CSSLengthResolver& length_resolver) const {
+  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled());
+
+  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
+  scoped_refptr<const CalculationExpressionNode> node =
+      ToCalculationExpression(length_resolver);
+
+  std::optional<LayoutUnit> px;
+
+  if (Length::AnchorEvaluator* anchor_evaluator =
+          length_resolver.AnchorEvaluator()) {
+    px = anchor_evaluator->Evaluate(*node);
+  }
+
+  if (px.has_value()) {
+    return px.value();
+  }
+
+  return fallback_ ? fallback_->ComputeLength<double>(length_resolver) : 0;
+}
 
 String CSSMathExpressionAnchorQuery::CustomCSSText() const {
   StringBuilder result;

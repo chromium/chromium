@@ -100,7 +100,8 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       *style, style, style, CSSToLengthConversionData::ViewportSize(nullptr),
-      CSSToLengthConversionData::ContainerSizes(), style->EffectiveZoom(),
+      CSSToLengthConversionData::ContainerSizes(),
+      CSSToLengthConversionData::AnchorData(), style->EffectiveZoom(),
       ignored_flags);
 
   TestAccumulatePixelsAndPercent(

@@ -157,7 +157,8 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
   CSSToLengthConversionData conversion_data(
       style, &style, root_style,
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
-      container_sizes, style.EffectiveZoom(), ignored_flags);
+      container_sizes, CSSToLengthConversionData::AnchorData(),
+      style.EffectiveZoom(), ignored_flags);
 
   scoped_refptr<Gradient> gradient;
   switch (GetClassType()) {

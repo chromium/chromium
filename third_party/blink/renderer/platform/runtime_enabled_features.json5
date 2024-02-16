@@ -768,6 +768,10 @@
       implied_by: ["CSSAnchorPositioning"],
     },
     {
+      // Resolve anchor*() functions computed-value time.
+      name: "CSSAnchorPositioningComputeAnchor",
+    },
+    {
       name: "CSSAnimationComposition",
       status: "stable",
       base_feature: "none",

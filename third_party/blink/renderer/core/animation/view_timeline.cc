@@ -179,6 +179,7 @@ Length InsetValueToLength(const CSSValue* inset_value,
         element_resolve_context.RootElementStyle(),
         CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(subject),
+        CSSToLengthConversionData::AnchorData(),
         subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 
     return DynamicTo<CSSPrimitiveValue>(inset_value)

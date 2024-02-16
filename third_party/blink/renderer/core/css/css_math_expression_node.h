@@ -639,16 +639,8 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
     return false;
   }
   bool IsComputationallyIndependent() const final { return false; }
-  double DoubleValue() const final {
-    // We can't resolve an anchor query until layout time.
-    NOTREACHED();
-    return 0;
-  }
-  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    // We can't resolve an anchor query until layout time.
-    NOTREACHED();
-    return 0;
-  }
+  double DoubleValue() const final;
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   void AccumulateLengthUnitTypes(
       CSSPrimitiveValue::LengthTypeFlags& types) const final {
     // AccumulateLengthUnitTypes() is only used when interpolating the
@@ -670,11 +662,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 #endif
 
  protected:
-  double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
-    // We can't resolve an anchor query until layout time.
-    NOTREACHED();
-    return 0;
-  }
+  double ComputeDouble(const CSSLengthResolver&) const final;
 
  private:
   CSSAnchorQueryType type_;

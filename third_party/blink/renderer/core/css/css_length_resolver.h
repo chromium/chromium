@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -52,6 +53,10 @@ class CORE_EXPORT CSSLengthResolver {
   // Invoked to notify the resolver that there is an anchor reference in a
   // calc() expression. Used to track the use of tree-scoped references.
   virtual void ReferenceAnchor() const = 0;
+
+  // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries,
+  // when the runtime flag CSSAnchorPositioningComputeAnchor is enabled.
+  virtual Length::AnchorEvaluator* AnchorEvaluator() const { return nullptr; }
 
   float Zoom() const { return zoom_; }
   void SetZoom(float zoom) {

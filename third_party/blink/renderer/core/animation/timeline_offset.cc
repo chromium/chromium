@@ -225,6 +225,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
       element_resolve_context.RootElementStyle(),
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(),
       element->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 
   return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(

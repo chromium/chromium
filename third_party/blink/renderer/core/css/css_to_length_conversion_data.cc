@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -266,12 +267,20 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
   cache = FindSizeForContainerAxis(requested_axis, context_element_);
 }
 
+CSSToLengthConversionData::AnchorData::AnchorData(
+    Length::AnchorEvaluator* evaluator)
+    : evaluator_(evaluator) {
+  // TODO(crbug.com/41483417): Note that this will become something more
+  // than a simple wrapper over Length::AnchorEvaluator* in the future.
+}
+
 CSSToLengthConversionData::CSSToLengthConversionData(
     WritingMode writing_mode,
     const FontSizes& font_sizes,
     const LineHeightSize& line_height_size,
     const ViewportSize& viewport_size,
     const ContainerSizes& container_sizes,
+    const AnchorData& anchor_data,
     float zoom,
     Flags& flags)
     : CSSLengthResolver(
@@ -281,6 +290,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       line_height_size_(line_height_size),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
+      anchor_data_(anchor_data),
       flags_(&flags) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {

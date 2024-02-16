@@ -2879,11 +2879,12 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
   CSSToLengthConversionData::ViewportSize viewport_size(
       document.GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes;
+  CSSToLengthConversionData::AnchorData anchor_data;
   CSSToLengthConversionData::Flags ignored_flags = 0;
-  CSSToLengthConversionData conversion_data(WritingMode::kHorizontalTb,
-                                            font_sizes, line_height_size,
-                                            viewport_size, container_sizes,
-                                            /* zoom */ 1.0f, ignored_flags);
+  CSSToLengthConversionData conversion_data(
+      WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
+      container_sizes, anchor_data,
+      /* zoom */ 1.0f, ignored_flags);
 
   const CSSParserContext* parser_context =
       document.ElementSheet().Contents()->ParserContext();
