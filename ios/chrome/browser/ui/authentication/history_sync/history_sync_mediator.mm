@@ -6,20 +6,42 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using signin::Tribool;
+
+namespace {
+
+// Fallback value for the capability
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions if it is not available
+// after `kMinorModeRestrictionsFetchDeadlineMs`.
+const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
+
+}  // namespace
+
+// Mediator that handles the sync operations.
 @interface HistorySyncMediator () <ChromeAccountManagerServiceObserver,
                                    IdentityManagerObserverBridgeDelegate>
 @end
@@ -30,6 +52,7 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
@@ -40,6 +63,9 @@
   // Records the latency of capabilities fetch for this view.
   std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
       _accountCapabilitiesLatencyTracker;
+  // Whether the history sync view buttons are updated.
+  BOOL _actionButtonsUpdated;
+  base::OneShotTimer _capabilitiesFetchTimer;
 }
 
 - (instancetype)
@@ -56,6 +82,7 @@
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -64,16 +91,32 @@
     _accountCapabilitiesLatencyTracker =
         std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
             identityManager);
+    _actionButtonsUpdated = NO;
+
+    // Fetch system capabilities for updating the history sync view.
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    CHECK(identity);
+    __weak __typeof(self) weakSelf = self;
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+            identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
+              [weakSelf processCanShowUnrestrictedOptInsCapability:
+                            signin::TriboolFromCapabilityResult(result)];
+            }));
   }
   return self;
 }
 
 - (void)disconnect {
+  _capabilitiesFetchTimer.Stop();
   _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _accountManagerService = nullptr;
+  _identityManager = nullptr;
   _syncService = nullptr;
 }
 
@@ -86,6 +129,32 @@
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);
+}
+
+#pragma mark - HistorySyncViewControllerAudience
+
+- (void)viewAppearedWithHiddenButtons {
+  // Set timeout with fallback capability value corresponding to fallback button
+  // style.
+  __weak __typeof(self) weakSelf = self;
+  _capabilitiesFetchTimer.Start(
+      FROM_HERE,
+      base::Milliseconds(switches::kMinorModeRestrictionsFetchDeadlineMs.Get()),
+      base::BindOnce(^{
+        [weakSelf processCanShowUnrestrictedOptInsCapability:
+                      kCanShowUnrestrictedOptInsFallbackValue];
+      }));
+
+  // Manually fetch AccountInfo::capabilities. The capability might have already
+  // been available and onExtendedAccountInfoUpdated would not be triggered.
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo accountInfo =
+      _identityManager->FindExtendedAccountInfo(primaryAccount);
+  [self
+      processCanShowUnrestrictedOptInsCapability:
+          accountInfo.capabilities
+              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
 }
 
 #pragma mark - Properties
@@ -138,6 +207,10 @@
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
+  [self
+      processCanShowUnrestrictedOptInsCapability:
+          info.capabilities
+              .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
 }
 
 #pragma mark - Private
@@ -156,6 +229,21 @@
         stringWithFormat:@"%@ %@", identity.userFullName, identity.userEmail];
   }
   [self.consumer setPrimaryIdentityAvatarAccessibilityLabel:accessibilityLabel];
+}
+
+// Process the capability given by either the SystemIdentityManager,
+// the IdentityManagerObserverBridge, or a fallback value.
+- (void)processCanShowUnrestrictedOptInsCapability:(Tribool)capability {
+  // With known capability value, update buttons visibility if not already
+  // updated.
+  if (capability != Tribool::kUnknown && !_actionButtonsUpdated) {
+    // Stop timer.
+    _capabilitiesFetchTimer.Stop();
+    _actionButtonsUpdated = YES;
+    // Equally weighted buttons are used for the restricted opt-in screen.
+    BOOL isRestricted = (capability == Tribool::kFalse);
+    [self.consumer displayButtonsWithRestrictionStatus:isRestricted];
+  }
 }
 
 @end

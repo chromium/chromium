@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 
+#import "base/feature_list.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller_audience.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -31,6 +34,18 @@
   [super viewDidLoad];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    // Hide the buttons only if button visibility has not been updated.
+    if (self.actionButtonsVisibility == ActionButtonsVisibility::kDefault) {
+      self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
+      [self.audience viewAppearedWithHiddenButtons];
+    }
+  }
+}
+
 #pragma mark - HistorySyncConsumer
 
 - (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {
@@ -44,6 +59,15 @@
 
 - (void)setFooterText:(NSString*)text {
   self.disclaimerText = text;
+}
+
+- (void)displayButtonsWithRestrictionStatus:(BOOL)isRestricted {
+  if (base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    self.actionButtonsVisibility =
+        isRestricted ? ActionButtonsVisibility::kEquallyWeightedButtonShown
+                     : ActionButtonsVisibility::kRegularButtonsShown;
+  }
 }
 
 @end

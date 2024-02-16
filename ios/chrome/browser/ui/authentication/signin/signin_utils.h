@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_UTILS_H_
 
 #import <UIKit/UIKit.h>
+
+#import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
@@ -42,6 +45,9 @@ void RecordUpgradePromoSigninStarted(
 // Returns the current sign-in state of primary identity.
 IdentitySigninState GetPrimaryIdentitySigninState(
     ChromeBrowserState* browser_state);
+
+// Converts a SystemIdentityCapabilityResult to a Tribool.
+Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
 
 }  // namespace signin
 
