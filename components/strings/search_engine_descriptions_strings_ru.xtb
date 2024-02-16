@@ -1,9 +1,10 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="ru">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Быстрый, конфиденциальный и точный поиск от Майкрософт</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Мы не отслеживаем вас. Проще говоря, приватность.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Находите нужную информацию с помощью самой популярной поисковой системы в мире.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Быстрый и простой поиск</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Независимая европейская поисковая система без отслеживания</translation>

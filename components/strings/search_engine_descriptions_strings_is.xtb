@@ -1,9 +1,11 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="is">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Hraðvirk, nákvæm og ópersónugreinanleg leitarvél frá Microsoft</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Við fylgjumst ekki með þér. Persónuvernd, einfölduð.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing er AI leitarvél knúin af GPT-4</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finndu það sem þú þarft með mest notuðu leitarvél heims.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Fljótleg og auðveld leit</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Independent, European, enginn mælingar leitarvél</translation>

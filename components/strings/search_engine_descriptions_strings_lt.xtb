@@ -1,9 +1,11 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="lt">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Sparti, tiksli ir privati „Microsoft“ ieška</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Nesekame jūsų. Privatumas paprasčiau.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">„Microsoft Bing“ yra AI paieškos sistema, kurią veikia GPT-4</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Raskite viską naudodami pasaulyje populiariausią paieškos variklį.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Greita ir lengva paieška</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Nepriklausoma, Europos, ne sekimas paieškos sistema</translation>

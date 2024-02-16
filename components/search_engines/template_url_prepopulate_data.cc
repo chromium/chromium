@@ -117,6 +117,7 @@ constexpr EngineAndTier engines_AT[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Australia
@@ -151,6 +152,8 @@ constexpr EngineAndTier engines_BE[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Bulgaria
@@ -167,6 +170,8 @@ constexpr EngineAndTier engines_BG[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Bahrain
@@ -299,6 +304,9 @@ constexpr EngineAndTier engines_CY[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Czech Republic
@@ -316,6 +324,8 @@ constexpr EngineAndTier engines_CZ[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Germany
@@ -338,6 +348,8 @@ constexpr EngineAndTier engines_DE[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &lilo},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Denmark
@@ -355,6 +367,8 @@ constexpr EngineAndTier engines_DK[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Dominican Republic
@@ -397,6 +411,9 @@ constexpr EngineAndTier engines_EE[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Egypt
@@ -425,6 +442,8 @@ constexpr EngineAndTier engines_ES[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &lilo},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Finland
@@ -442,6 +461,8 @@ constexpr EngineAndTier engines_FI[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Faroe Islands
@@ -471,6 +492,7 @@ constexpr EngineAndTier engines_FR[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // United Kingdom
@@ -496,6 +518,8 @@ constexpr EngineAndTier engines_GR[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Guatemala
@@ -538,6 +562,9 @@ constexpr EngineAndTier engines_HR[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Hungary
@@ -554,6 +581,8 @@ constexpr EngineAndTier engines_HU[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Indonesia
@@ -582,6 +611,7 @@ constexpr EngineAndTier engines_IE[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Israel
@@ -633,13 +663,16 @@ constexpr EngineAndTier engines_IS[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Italy
 constexpr EngineAndTier engines_IT[] = {
   {SearchEngineTier::kTopEngines, &google},
   {SearchEngineTier::kTopEngines, &bing},
-  {SearchEngineTier::kTopEngines, &yahoo},
+  {SearchEngineTier::kTopEngines, &yahoo_it},
   {SearchEngineTier::kTopEngines, &duckduckgo},
   {SearchEngineTier::kTopEngines, &yandex_com},
   {SearchEngineTier::kRemainingEngines, &qwant},
@@ -651,6 +684,8 @@ constexpr EngineAndTier engines_IT[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &lilo},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Jamaica
@@ -739,6 +774,8 @@ constexpr EngineAndTier engines_LI[] = {
   {SearchEngineTier::kRemainingEngines, &panda},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Lithuania
@@ -754,6 +791,9 @@ constexpr EngineAndTier engines_LT[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Luxembourg
@@ -770,6 +810,9 @@ constexpr EngineAndTier engines_LU[] = {
   {SearchEngineTier::kRemainingEngines, &panda},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &lilo},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Latvia
@@ -785,6 +828,9 @@ constexpr EngineAndTier engines_LV[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 
@@ -857,6 +903,8 @@ constexpr EngineAndTier engines_MT[] = {
   {SearchEngineTier::kRemainingEngines, &panda},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Mexico
@@ -901,6 +949,8 @@ constexpr EngineAndTier engines_NL[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Norway
@@ -918,6 +968,8 @@ constexpr EngineAndTier engines_NO[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // New Zealand
@@ -988,6 +1040,8 @@ constexpr EngineAndTier engines_PL[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Puerto Rico
@@ -1014,6 +1068,8 @@ constexpr EngineAndTier engines_PT[] = {
   {SearchEngineTier::kRemainingEngines, &oceanhero},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &lilo},
+  {SearchEngineTier::kRemainingEngines, &you},
 };
 
 // Paraguay
@@ -1047,6 +1103,9 @@ constexpr EngineAndTier engines_RO[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Serbia
@@ -1099,6 +1158,9 @@ constexpr EngineAndTier engines_SE[] = {
   {SearchEngineTier::kRemainingEngines, &info_com},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Singapore
@@ -1123,6 +1185,9 @@ constexpr EngineAndTier engines_SI[] = {
   {SearchEngineTier::kRemainingEngines, &yep},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // Slovakia
@@ -1139,6 +1204,9 @@ constexpr EngineAndTier engines_SK[] = {
   {SearchEngineTier::kRemainingEngines, &seznam_sk},
   {SearchEngineTier::kRemainingEngines, &karma},
   {SearchEngineTier::kRemainingEngines, &privacywall},
+  {SearchEngineTier::kRemainingEngines, &panda},
+  {SearchEngineTier::kRemainingEngines, &you},
+  {SearchEngineTier::kRemainingEngines, &oceanhero},
 };
 
 // El Salvador

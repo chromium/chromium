@@ -1,9 +1,12 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
+Do not modify it manually. -->
 <translationbundle lang="ro">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Căutare rapidă, precisă și confidențială de la Microsoft</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Noi nu iți urmărim activitatea. Confidențialitatea, simplificată.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing este un motor de căutare AI alimentat de GPT-4</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plantați copaci în timp ce navigați. Peste 200 de milioane de copaci plantați.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Găsiți ce vă trebuie folosind cel mai popular motor de căutare din lume.</translation>
   <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Navigare rapidă și ușoară</translation>
   <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Motor de căutare independent, european, fără urmărire</translation>

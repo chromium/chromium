@@ -127,11 +127,9 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_cs.xtb" lang="cs" />
     <file path="strings/search_engine_descriptions_strings_da.xtb" lang="da" />
     <file path="strings/search_engine_descriptions_strings_de.xtb" lang="de" />
-    <file path="strings/search_engine_descriptions_strings_de-AT.xtb" lang="de-AT" />
     <file path="strings/search_engine_descriptions_strings_el.xtb" lang="el" />
     <file path="strings/search_engine_descriptions_strings_en-GB.xtb" lang="en-GB" />
     <file path="strings/search_engine_descriptions_strings_es.xtb" lang="es" />
-    <file path="strings/search_engine_descriptions_strings_es-US.xtb" lang="es-US" />
     <file path="strings/search_engine_descriptions_strings_et.xtb" lang="et" />
     <file path="strings/search_engine_descriptions_strings_eu.xtb" lang="eu" />
     <file path="strings/search_engine_descriptions_strings_fa.xtb" lang="fa" />
@@ -139,8 +137,8 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_fil.xtb" lang="fil" />
     <file path="strings/search_engine_descriptions_strings_fr.xtb" lang="fr" />
     <file path="strings/search_engine_descriptions_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="strings/search_engine_descriptions_strings_ga.xtb" lang="ga" />
     <file path="strings/search_engine_descriptions_strings_gl.xtb" lang="gl" />
-    <file path="strings/search_engine_descriptions_strings_gsw.xtb" lang="gsw" />
     <file path="strings/search_engine_descriptions_strings_gu.xtb" lang="gu" />
     <file path="strings/search_engine_descriptions_strings_he.xtb" lang="he" />
     <file path="strings/search_engine_descriptions_strings_hi.xtb" lang="hi" />
@@ -148,17 +146,15 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_hu.xtb" lang="hu" />
     <file path="strings/search_engine_descriptions_strings_hy.xtb" lang="hy" />
     <file path="strings/search_engine_descriptions_strings_id.xtb" lang="id" />
-    <file path="strings/search_engine_descriptions_strings_in.xtb" lang="in" />
     <file path="strings/search_engine_descriptions_strings_is.xtb" lang="is" />
     <file path="strings/search_engine_descriptions_strings_it.xtb" lang="it" />
-    <file path="strings/search_engine_descriptions_strings_iw.xtb" lang="iw" />
     <file path="strings/search_engine_descriptions_strings_ja.xtb" lang="ja" />
     <file path="strings/search_engine_descriptions_strings_ka.xtb" lang="ka" />
     <file path="strings/search_engine_descriptions_strings_kk.xtb" lang="kk" />
-    <file path="strings/search_engine_descriptions_strings_km.xtb" lang="km" />
     <file path="strings/search_engine_descriptions_strings_kn.xtb" lang="kn" />
     <file path="strings/search_engine_descriptions_strings_ko.xtb" lang="ko" />
     <file path="strings/search_engine_descriptions_strings_ky.xtb" lang="ky" />
+    <file path="strings/search_engine_descriptions_strings_lb.xtb" lang="lb" />
     <file path="strings/search_engine_descriptions_strings_lo.xtb" lang="lo" />
     <file path="strings/search_engine_descriptions_strings_lt.xtb" lang="lt" />
     <file path="strings/search_engine_descriptions_strings_lv.xtb" lang="lv" />
@@ -167,6 +163,7 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_mn.xtb" lang="mn" />
     <file path="strings/search_engine_descriptions_strings_mr.xtb" lang="mr" />
     <file path="strings/search_engine_descriptions_strings_ms.xtb" lang="ms" />
+    <file path="strings/search_engine_descriptions_strings_mt.xtb" lang="mt" />
     <file path="strings/search_engine_descriptions_strings_my.xtb" lang="my" />
     <file path="strings/search_engine_descriptions_strings_nb.xtb" lang="nb" />
     <file path="strings/search_engine_descriptions_strings_ne.xtb" lang="ne" />
@@ -194,7 +191,6 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_ur.xtb" lang="ur" />
     <file path="strings/search_engine_descriptions_strings_uz.xtb" lang="uz" />
     <file path="strings/search_engine_descriptions_strings_vi.xtb" lang="vi" />
-    <file path="strings/search_engine_descriptions_strings_zh.xtb" lang="zh" />
     <file path="strings/search_engine_descriptions_strings_zh-CN.xtb" lang="zh-CN" />
     <file path="strings/search_engine_descriptions_strings_zh-HK.xtb" lang="zh-HK" />
     <file path="strings/search_engine_descriptions_strings_zh-TW.xtb" lang="zh-TW" />
@@ -204,16 +200,16 @@ process but are generated using a script that pulls them from outside the repo.-
     <messages fallback_to_english="true">
       <!-- The below strings are generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify them manually. -->
       <message name="IDS_BING_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Fast, accurate, and private search from Microsoft
+        Microsoft Bing is an AI search engine powered by GPT-4
       </message>
       <message name="IDS_BRAVE_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Doesn’t track you, your searches, or clicks. Independent of Big Tech.
+        Block ads while you browse, trackers while you search. Better privacy online.
       </message>
       <message name="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        We don't track you. Privacy, simplified.
+        Private. Fast. Fewer Ads. DuckDuckGo never tracks you.
       </message>
       <message name="IDS_ECOSIA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Plant trees and protect your privacy as you search.
+        Plant trees as you browse. Over 200 million trees planted.
       </message>
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
         Find what you need with the world's most used search engine.
@@ -222,10 +218,10 @@ process but are generated using a script that pulls them from outside the repo.-
         Fast and easy search
       </message>
       <message name="IDS_KARMA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search and support biodiversity and animal welfare
+        Protect animals and biodiversity - make every search count!
       </message>
       <message name="IDS_LILO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Search the web and do some good at the same time.
+        Your internet searches fund for free social and environmental projects
       </message>
       <message name="IDS_METAGER_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search safely while having your privacy respected.
@@ -237,7 +233,7 @@ process but are generated using a script that pulls them from outside the repo.-
         A search engine from Germany for Europe.
       </message>
       <message name="IDS_OCEANHERO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Help to stop ocean plastic pollution together with OceanHero.
+        Your searches power the cleaning of our oceans and beaches of plastic waste
       </message>
       <message name="IDS_PANDA_SEARCH_DESCRIPTION" use_name_for_id="true">
         Search with Panda and support WWF projects and campaigns.
@@ -249,19 +245,22 @@ process but are generated using a script that pulls them from outside the repo.-
         A search engine for pragmatic minds
       </message>
       <message name="IDS_QWANT_SEARCH_DESCRIPTION" use_name_for_id="true">
-        A European search engine that protects your privacy
+        Search engine and web browser which protect your privacy
       </message>
       <message name="IDS_SEZNAM_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Czech search engine.
+        Useful, entertaining, inspirational. Seznam - I find there what I don't know.
       </message>
       <message name="IDS_YAHOO_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Discover more. Get answers fast. And explore more with Yahoo.
+        Search the web and answer life’s daily questions with Yahoo.
       </message>
       <message name="IDS_YANDEX_SEARCH_DESCRIPTION" use_name_for_id="true">
         Fast and secure search for sites, images and videos
       </message>
       <message name="IDS_YEP_SEARCH_DESCRIPTION" use_name_for_id="true">
         Web search engine that aims to share ad revenue with creators.
+      </message>
+      <message name="IDS_YOU_SEARCH_DESCRIPTION" use_name_for_id="true">
+        Personalized AI Assistant for search and chat
       </message>
     </messages>
   </release>
