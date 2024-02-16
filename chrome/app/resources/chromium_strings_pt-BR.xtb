@@ -60,7 +60,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="2088953378266246249">Informações sobre como o Chromium gerencia os certificados raiz</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
-<translation id="2126108037660393668">Falha na verificação do arquivo transferido por download.</translation>
+<translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
 <translation id="2130870084309816036">Não foi possível se conectar à Internet. Se você usa um firewall, coloque <ph name="PRODUCT_EXE_NAME" /> na lista de permissões.</translation>
 <translation id="215352261310130060">O Chromium bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
 <translation id="2174178932569897599">Personalizar o Chromium</translation>
