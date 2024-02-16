@@ -356,7 +356,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLGreenTriangle_AA
 
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/324003994 [ android-u android-pixel-6 ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/324003994 [ android-pixel-6 android-u angle-disabled no-passthrough ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
@@ -378,7 +378,6 @@ crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationCle
 
 crbug.com/1517110 [ clang-coverage nvidia-0x2184 nvidia_lt_31.0.15.4601 release-x64 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
 crbug.com/1517110 [ debug-x64 no-clang-coverage nvidia-0x2184 nvidia_lt_31.0.15.4601 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
-crbug.com/1517110 [ no-clang-coverage nvidia-0x2184 nvidia_ge_31.0.15.4601 release-x64 renderer-skia-gl target-cpu-64 win10 ] Pixel_Video_* [ RetryOnFailure ]
 
 
 # Lacros consistent failures on CrOS devices, skip to save some time
@@ -424,7 +423,6 @@ crbug.com/1495573 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourC
 crbug.com/1495573 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 
 # ChromeOS Volteer failures
-crbug.com/1516974 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ Failure ]
 crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
 
 # Broadly flaky unsymbolized crashes on Jacuzzi
