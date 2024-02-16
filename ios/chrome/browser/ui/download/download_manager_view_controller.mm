@@ -715,14 +715,21 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     self.detailLabel.text = nil;
   }
 
-  // Update title of download button.
+  // Update title and accessibility identifier of download button.
   UIButtonConfiguration* downloadButtonConfiguration =
       self.downloadButton.configuration;
-  downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
-      _multipleDestinationsAvailable
-          ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS)
-          : [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
-                localizedUppercaseString]);
+  if (_multipleDestinationsAvailable) {
+    downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
+        l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS));
+    self.downloadButton.accessibilityIdentifier =
+        kDownloadManagerSaveEllipsisAccessibilityIdentifier;
+  } else {
+    downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
+        [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
+            localizedUppercaseString]);
+    self.downloadButton.accessibilityIdentifier =
+        kDownloadManagerDownloadAccessibilityIdentifier;
+  }
   self.downloadButton.configuration = downloadButtonConfiguration;
 }
 

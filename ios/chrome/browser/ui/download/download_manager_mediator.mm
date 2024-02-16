@@ -45,6 +45,10 @@ void DownloadManagerMediator::SetDriveService(
   drive_service_ = drive_service;
 }
 
+void DownloadManagerMediator::SetPrefService(PrefService* pref_service) {
+  pref_service_ = pref_service;
+}
+
 void DownloadManagerMediator::SetConsumer(
     id<DownloadManagerConsumer> consumer) {
   consumer_ = consumer;
@@ -126,7 +130,7 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
 
 bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
   return drive::IsSaveToDriveAvailable(is_incognito_, identity_manager_,
-                                       drive_service_);
+                                       drive_service_, pref_service_);
 }
 
 #pragma mark - Private

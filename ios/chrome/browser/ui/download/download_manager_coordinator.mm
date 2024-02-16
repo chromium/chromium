@@ -129,6 +129,7 @@
         IdentityManagerFactory::GetForBrowserState(browserState));
     _mediator.SetDriveService(
         drive::DriveServiceFactory::GetForBrowserState(browserState));
+    _mediator.SetPrefService(browserState->GetPrefs());
   }
 
   _mediator.SetDownloadTask(_downloadTask);
@@ -147,6 +148,7 @@
 
 - (void)stop {
   _mediator.SetDriveService(nullptr);
+  _mediator.SetPrefService(nullptr);
   _mediator.SetIdentityManager(nullptr);
 
   if (_viewController) {

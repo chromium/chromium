@@ -17,6 +17,7 @@ namespace drive {
 class DriveService;
 }
 
+class PrefService;
 class UploadTask;
 
 namespace signin {
@@ -47,6 +48,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
 
   // Sets the Drive service.
   void SetDriveService(drive::DriveService* drive_service);
+
+  // Sets the pref service.
+  void SetPrefService(PrefService* pref_service);
 
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
@@ -110,6 +114,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   bool is_incognito_;
   base::FilePath download_path_;
   raw_ptr<web::DownloadTask> download_task_ = nullptr;

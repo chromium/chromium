@@ -25,6 +25,13 @@ namespace {
 // Matcher for "SAVE..." button on Download Manager UI, which is presented
 // instead of the "DOWNLOAD" button when multiple destinations are available for
 // downloads.
+id<GREYMatcher> SaveEllipsisButton() {
+  return grey_accessibilityID(
+      kDownloadManagerSaveEllipsisAccessibilityIdentifier);
+}
+
+// Matcher for "DOWNLOAD" button when one destination is available for
+// downloads.
 id<GREYMatcher> DownloadButton() {
   return grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier);
 }
@@ -130,8 +137,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
   // Check that the "Drive" button is presented and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
-  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
       performAction:grey_tap()];
   // Wait for the account picker to appear, select "Files" and tap "Save".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
@@ -163,8 +170,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
   // Check that the "Drive" button is presented and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
-  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
       performAction:grey_tap()];
   // Wait for the account picker to appear, select "Drive" and tap "Save".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
@@ -200,8 +207,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
   // Check that the "Drive" button is presented and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
-  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
       performAction:grey_tap()];
   // Wait for the account picker to appear, select "Drive" and tap "Save".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
@@ -227,6 +234,31 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
+}
+
+// Tests that "DOWNLOAD" button is presented instead of "SAVE..." if signed-out.
+- (void)testSignedOutDisablesSaveToDrive {
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
+}
+
+// Tests that "DOWNLOAD" button is presented instead of "SAVE..." in Incognito.
+- (void)testIncognitoDisablesSaveToDrive {
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Switch to Incognito.
+  [ChromeEarlGrey openNewIncognitoTab];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
 }
 
 @end

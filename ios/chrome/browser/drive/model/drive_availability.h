@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_AVAILABILITY_H_
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_AVAILABILITY_H_
 
+class PrefService;
 namespace signin {
 class IdentityManager;
 }
@@ -16,7 +17,8 @@ class DriveService;
 // Returns whether the Save to Drive entry point can be presented.
 bool IsSaveToDriveAvailable(bool is_incognito,
                             signin::IdentityManager* identity_manager,
-                            drive::DriveService* drive_service);
+                            drive::DriveService* drive_service,
+                            PrefService* pref_service);
 
 }  // namespace drive
 

@@ -6,6 +6,8 @@
 
 NSString* const kDownloadManagerDownloadAccessibilityIdentifier =
     @"kDownloadManagerDownloadAccessibilityIdentifier";
+NSString* const kDownloadManagerSaveEllipsisAccessibilityIdentifier =
+    @"kDownloadManagerSaveEllipsisAccessibilityIdentifier";
 NSString* const kDownloadManagerOpenInAccessibilityIdentifier =
     @"kDownloadManagerOpenInAccessibilityIdentifier";
 NSString* const kDownloadManagerOpenInDriveAccessibilityIdentifier =
