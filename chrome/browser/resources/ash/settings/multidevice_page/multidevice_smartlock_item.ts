@@ -16,6 +16,7 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';
@@ -108,7 +109,7 @@ export class SettingsMultideviceSmartlockItemElement extends
 
     this.browserProxy_.setFeatureEnabledState(
         feature, enabled, this.authToken!.token);
-    recordSettingChange();
+    recordSettingChange(Setting.kSmartLockOnOff);
   }
 }
 

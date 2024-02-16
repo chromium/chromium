@@ -24,14 +24,14 @@ import './multidevice_subpage.js';
 import './multidevice_forget_device_dialog.js';
 
 import {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertExists} from '../assert_extras.js';
+import {assertExhaustive, assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
@@ -46,6 +46,32 @@ import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_page.html.js';
 
 import TokenInfo = chrome.quickUnlockPrivate.TokenInfo;
+
+function getSettingForMultiDeviceFeature(feature: MultiDeviceFeature): Setting|
+    null {
+  switch (feature) {
+    case MultiDeviceFeature.BETTER_TOGETHER_SUITE:
+      return Setting.kMultiDeviceOnOff;
+    case MultiDeviceFeature.PHONE_HUB:
+      return Setting.kPhoneHubOnOff;
+    case MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
+      return Setting.kPhoneHubNotificationsOnOff;
+    case MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
+      return Setting.kPhoneHubTaskContinuationOnOff;
+    case MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+      return Setting.kPhoneHubCameraRollOnOff;
+    case MultiDeviceFeature.SMART_LOCK:
+      return Setting.kSmartLockOnOff;
+    case MultiDeviceFeature.WIFI_SYNC:
+      return Setting.kWifiSyncOnOff;
+    case MultiDeviceFeature.ECHE:
+      return Setting.kPhoneHubAppsOnOff;
+    case MultiDeviceFeature.INSTANT_TETHERING:
+      return Setting.kInstantTetheringOnOff;
+    default:
+      assertExhaustive(feature);
+  }
+}
 
 const SettingsMultidevicePageElementBase =
     NearbyShareSettingsMixin(MultiDeviceFeatureMixin(RouteOriginMixin(
@@ -413,7 +439,7 @@ export class SettingsMultidevicePageElement extends
       this.browserProxy_.setFeatureEnabledState(
           this.featureToBeEnabledOnceAuthenticated_, true /* enabled */,
           this.authToken_.token);
-      recordSettingChange();
+      recordSettingChange(Setting.kMultiDeviceOnOff);
 
       // Reset |this.authToken_| now that it has been used. This ensures that
       // users cannot keep an old auth token and reuse it on an subsequent
@@ -468,7 +494,11 @@ export class SettingsMultidevicePageElement extends
     // Disabling any feature does not require authentication, and enable some
     // features does not require authentication.
     this.browserProxy_.setFeatureEnabledState(feature, enabled);
-    recordSettingChange();
+
+    const changedSettingId = getSettingForMultiDeviceFeature(feature);
+    if (changedSettingId !== null) {
+      recordSettingChange(changedSettingId, {boolValue: enabled});
+    }
   }
 
   private isAuthenticationRequiredToEnable_(feature: MultiDeviceFeature):
@@ -499,7 +529,7 @@ export class SettingsMultidevicePageElement extends
 
   private onForgetDeviceRequested_(): void {
     this.browserProxy_.removeHostDevice();
-    recordSettingChange();
+    recordSettingChange(Setting.kForgetPhone);
     Router.getInstance().navigateTo(routes.MULTIDEVICE);
   }
 
