@@ -29,23 +29,11 @@ void LensStaticPageController::OpenStaticPage() {
   content::WebContents* active_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   gfx::Rect fullscreen_size = gfx::Rect(active_web_contents->GetSize());
-  // TODO(crbug/1383279): Refactor screenshot code shared here with code in
-  // image_editor::ScreenshotFlow.
   ui::GrabSnapshotImageCallback load_url_callback =
       base::BindOnce(&LensStaticPageController::LoadChromeLens,
                      weak_ptr_factory_.GetWeakPtr());
-#if BUILDFLAG(IS_MAC)
-  // TODO: Why is the view captured on the Mac but the window captured on all
-  // other platforms?
-  const gfx::NativeView& native_view =
-      active_web_contents->GetContentNativeView();
-  ui::GrabViewSnapshotAsync(native_view, fullscreen_size,
-                            std::move(load_url_callback));
-#else
-  const gfx::NativeWindow& native_window = active_web_contents->GetNativeView();
-  ui::GrabWindowSnapshotAsync(native_window, fullscreen_size,
-                              std::move(load_url_callback));
-#endif
+  ui::GrabViewSnapshotAsync(active_web_contents->GetNativeView(),
+                            fullscreen_size, std::move(load_url_callback));
 }
 
 void LensStaticPageController::LoadChromeLens(gfx::Image image) {

@@ -174,17 +174,8 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   ui::GrabSnapshotImageCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
                      result_code, bounds);
-#if BUILDFLAG(IS_MAC)
-  // TODO: Why is the view captured on the Mac but the window captured on all
-  // other platforms?
-  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
-  ui::GrabViewSnapshotAsync(native_view, region,
+  ui::GrabViewSnapshotAsync(web_contents_->GetNativeView(), region,
                             std::move(screenshot_callback));
-#else
-  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
-  ui::GrabWindowSnapshotAsync(native_window, region,
-                              std::move(screenshot_callback));
-#endif
 }
 
 void ScreenshotFlow::CancelCapture() {
