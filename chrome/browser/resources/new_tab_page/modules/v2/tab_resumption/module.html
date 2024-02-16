@@ -4,6 +4,10 @@
     border-radius: var(--ntp-module-border-radius);
   }
 
+  :host(:not([modules-redesigned_])) {
+    width: 100%;
+  }
+
   @media (forced-colors: active) {
     /* Set outline since background isn't visible in hcm */
     ntp-module-header-v2,
