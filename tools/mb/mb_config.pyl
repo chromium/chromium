@@ -912,7 +912,7 @@
     ],
 
     'optimization_guide_android_arm64_rel': [
-      'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'android', 'arm64',
+      'minimal_symbols', 'reclient', 'release', 'android', 'arm64',
     ],
 
     'optimization_guide_cros_rel': [
