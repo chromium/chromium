@@ -111,10 +111,16 @@ void PickerSearchController::RunCallback() {
   expression_results.insert(expression_results.end(), gif_results_.begin(),
                             gif_results_.end());
 
-  current_callback_.Run(PickerSearchResults({{
-      PickerSearchResults::Section(u"Matching expressions", expression_results),
-      PickerSearchResults::Section(u"Matching links", omnibox_results_),
-  }}));
+  std::vector<PickerSearchResults::Section> sections;
+  if (!expression_results.empty()) {
+    sections.push_back(PickerSearchResults::Section(u"Matching expressions",
+                                                    expression_results));
+  }
+  if (!omnibox_results_.empty()) {
+    sections.push_back(
+        PickerSearchResults::Section(u"Matching links", omnibox_results_));
+  }
+  current_callback_.Run(PickerSearchResults(std::move(sections)));
 }
 
 void PickerSearchController::HandleSearchResults(

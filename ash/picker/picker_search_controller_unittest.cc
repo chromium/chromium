@@ -410,5 +410,32 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           gfx::Size(480, 480), u"cat blink")});
 }
 
+TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client);
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(Property("sections", &PickerSearchResults::sections,
+                    Not(Contains(Property(
+                        "heading", &PickerSearchResults::Section::heading,
+                        u"Matching links"))))))
+      .Times(AtLeast(1));
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  client.cros_search_callback()->Run(ash::AppListSearchResultType::kOmnibox,
+                                     {});
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
+}
+
 }  // namespace
 }  // namespace ash
