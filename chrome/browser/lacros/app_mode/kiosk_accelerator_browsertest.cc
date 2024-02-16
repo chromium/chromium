@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -73,7 +74,7 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     SetKioskSessionType();
     CreateKioskWindow();
-    CloseNonKioskWindow();
+    WaitForNonKioskWindowToClose();
     SelectFirstBrowser();
   }
 
@@ -108,17 +109,24 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
     return browser_service_.get();
   }
 
-  void CloseNonKioskWindow() {
+  void WaitForNonKioskWindowToClose() {
+    // The test framework automatically spawns a separate, non-kiosk browser
+    // window.
+    // This browser will automatically be closed by the code, but that happens
+    // asynchronous so wait here until that's done.
     ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+
     for (Browser* browser : *BrowserList::GetInstance()) {
-      const GURL& url =
-          browser->tab_strip_model()->GetActiveWebContents()->GetURL();
-      if (url != kNavigationUrl) {
-        browser->window()->Close();
+      // The non kiosk window will be automatically closed, but we have to wait
+      // for the closing to finish.
+      if (browser->IsAttemptingToCloseBrowser() ||
+          browser->IsBrowserClosing()) {
         ASSERT_TRUE(WaitUntilBrowserClosed(browser));
+        // do not continue looping since the browser list is now invalidated.
         break;
       }
     }
+
     ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   }
 

@@ -63,6 +63,8 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   void HandleNewBrowserWindow(Browser* browser);
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
+  void CloseAllUnexpectedBrowserWindows();
+
   // BrowserListObserver
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
@@ -58,11 +59,14 @@ void CloseBrowser(Browser* browser) {
   browser->tab_strip_model()->CloseAllTabs();
 }
 
-void CloseAllBrowserWindows() {
+void CloseBrowserWindowsIf(base::FunctionRef<bool(const Browser&)> filter) {
   for (Browser* browser : CHECK_DEREF(BrowserList::GetInstance())) {
-    LOG(WARNING) << "kiosk: Closing unexpected browser window with url: "
-                 << GetUrlOfActiveTab(browser);
-    CloseBrowser(browser);
+    if (filter(*browser)) {
+      LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
+                   << GetUrlOfActiveTab(browser) << " of app "
+                   << browser->app_name();
+      CloseBrowser(browser);
+    }
   }
 }
 
@@ -97,11 +101,8 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
                          weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (!web_app_name.has_value()) {
-    // If this is ChromeApp kiosk, close all preexisting browser windows to
-    // avoid potential kiosk escapes.
-    CloseAllBrowserWindows();
-  }
+  CloseAllUnexpectedBrowserWindows();
+
   BrowserList::AddObserver(this);
 }
 
@@ -219,6 +220,16 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   // TODO(crbug.com/1015383): Figure out how to do it more cleanly.
   browser->window()->Restore();
   browser->window()->Maximize();
+}
+
+void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
+  CloseBrowserWindowsIf([&web_app_name =
+                             web_app_name_](const Browser& browser) {
+    // Do not close the main web app window (if any).
+    bool is_web_app = web_app_name.has_value();
+    bool is_web_app_window = is_web_app && (browser.app_name() == web_app_name);
+    return !is_web_app_window;
+  });
 }
 
 void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
