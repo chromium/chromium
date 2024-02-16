@@ -609,6 +609,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // only be shown if faster splitview setup is in session.
   void UpdateFasterSplitViewWidget();
 
+  // Updates the visibility of `feedback_widget_`. The widget is located in the
+  // bottom left corner of the grid, and contains a `PillButton` that opens up a
+  // feedback page when clicked. The widget will not show in partial overview.
+  void UpdateFeedbackButton();
+
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop
   // target is hidden when a snap preview area is shown. You can drop a window
@@ -687,6 +692,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // The widget that contains the `PineContentsView`.
   std::unique_ptr<views::Widget> pine_widget_;
+
+  // The widget that contains a `PillButton` to open a feedback page.
+  std::unique_ptr<views::Widget> feedback_widget_;
 
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.

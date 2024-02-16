@@ -25,6 +25,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
@@ -142,6 +143,14 @@ constexpr int kSpaciousPaddingForEffectiveBounds = 32;
 // The padding applied to the side of the effective bounds with neighboring
 // widget.
 constexpr int kCompactPaddingForEffectiveBounds = 16;
+
+// The horizontal and vertical distance from the bottom left corner of the grid
+// area to the origin of the `feedback_widget_`.
+constexpr int kFeedbackCornerSpacing = 30;
+
+// The minimum height of the grid area in order for the feedback button to be
+// visible.
+constexpr int kFeedbackGridMinHeight = 100;
 
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
@@ -699,7 +708,15 @@ void OverviewGrid::PositionWindows(
     bool animate,
     const base::flat_set<OverviewItemBase*>& ignored_items,
     OverviewTransition transition) {
-  if (!overview_session_ || suspend_reposition_ || item_list_.empty()) {
+  if (!overview_session_ || suspend_reposition_) {
+    return;
+  }
+
+  // Create a feedback button that shows even when no items are present (e.g.,
+  // for Pine).
+  UpdateFeedbackButton();
+
+  if (item_list_.empty()) {
     return;
   }
 
@@ -2986,6 +3003,49 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
   faster_splitview_widget_->SetBounds(centered_bounds);
 
   overview_session_->UpdateAccessibilityFocus();
+}
+
+void OverviewGrid::UpdateFeedbackButton() {
+  if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
+    feedback_widget_.reset();
+    return;
+  }
+
+  // We don't want the feedback button to overlap the desk bar.
+  gfx::Rect grid_bounds = GetGridEffectiveBounds();
+  if (grid_bounds.height() < kFeedbackGridMinHeight) {
+    return;
+  }
+
+  if (!feedback_widget_) {
+    auto contents_view = std::make_unique<PillButton>(
+        // TODO(hewer): Add callback to open a feedback page.
+        views::Button::PressedCallback(), u"Send Feedback",
+        PillButton::Type::kDefaultWithIconLeading, &kFeedbackIcon);
+
+    views::Widget::InitParams params;
+    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+    params.init_properties_container.SetProperty(kOverviewUiKey, true);
+    params.name = "PineFeedbackButton";
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
+    params.type = views::Widget::InitParams::TYPE_POPUP;
+
+    feedback_widget_ = std::make_unique<views::Widget>(std::move(params));
+    feedback_widget_->SetContentsView(std::move(contents_view));
+    feedback_widget_->ShowInactive();
+  }
+
+  const gfx::Size contents_size =
+      feedback_widget_->GetContentsView()->GetPreferredSize();
+
+  // TODO(hewer): Change the fixed distance of the button from the corner once
+  // the crop area is implemented.
+  feedback_widget_->SetBounds(
+      gfx::Rect(grid_bounds.bottom_left().x() + kFeedbackCornerSpacing,
+                grid_bounds.bottom_left().y() - kFeedbackCornerSpacing -
+                    contents_size.height(),
+                contents_size.width(), contents_size.height()));
 }
 
 }  // namespace ash
