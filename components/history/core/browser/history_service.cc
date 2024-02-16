@@ -1555,7 +1555,7 @@ void HistoryService::DeleteURLs(const std::vector<GURL>& urls) {
 
 void HistoryService::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
-    absl::optional<std::string> restrict_app_id,
+    std::optional<std::string> restrict_app_id,
     Time begin_time,
     Time end_time,
     bool user_initiated,
@@ -1600,7 +1600,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     WebHistoryService* web_history,
     Time begin_time,
     Time end_time,
-    absl::optional<std::string> app_id,
+    std::optional<std::string> app_id,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
   // TODO(crbug.com/929111): This should be factored out into a separate class

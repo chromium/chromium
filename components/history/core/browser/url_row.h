@@ -311,8 +311,8 @@ class URLResult : public URLRow {
     blocked_visit_ = blocked_visit;
   }
 
-  absl::optional<std::string> app_id() const { return app_id_; }
-  void set_app_id(absl::optional<std::string> app_id) { app_id_ = app_id; }
+  std::optional<std::string> app_id() const { return app_id_; }
+  void set_app_id(std::optional<std::string> app_id) { app_id_ = app_id; }
 
   // If this is a title match, title_match_positions contains an entry for
   // every word in the title that matched one of the query parameters. Each
@@ -343,7 +343,7 @@ class URLResult : public URLRow {
 
   // ID of the app this entry was generated for. Set to a non-null value
   // on Android only.
-  absl::optional<std::string> app_id_;
+  std::optional<std::string> app_id_;
 
   // We support the implicit copy constructor and operator=.
 };

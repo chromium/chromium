@@ -3376,7 +3376,7 @@ void HistoryBackend::DeleteURLsUntil(
 
 void HistoryBackend::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
-    absl::optional<std::string> restrict_app_id,
+    std::optional<std::string> restrict_app_id,
     Time begin_time,
     Time end_time,
     bool user_initiated) {

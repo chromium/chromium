@@ -70,7 +70,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
                  const GURL& remote_icon_url_for_uma,
                  int visit_count,
                  int typed_count,
-                 absl::optional<std::string> app_id);
+                 std::optional<std::string> app_id);
     HistoryEntry();
     HistoryEntry(const HistoryEntry& other);
     virtual ~HistoryEntry();
@@ -117,7 +117,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
     // ID of the app this entry was generated for. Set to a non-null value
     // on Android only.
-    absl::optional<std::string> app_id;
+    std::optional<std::string> app_id;
   };
 
   // Contains information about a completed history query.

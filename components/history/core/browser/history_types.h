@@ -70,7 +70,7 @@ constexpr VisitedLinkID kInvalidVisitedLinkID = 0;
 typedef std::map<VisitID, VisitSource> VisitSourceMap;
 
 // Constant used to represent that no app_id is used for matching.
-inline constexpr absl::optional<std::string> kNoAppIdFilter = absl::nullopt;
+inline constexpr std::optional<std::string> kNoAppIdFilter = absl::nullopt;
 
 // VisitRow -------------------------------------------------------------------
 
@@ -667,7 +667,7 @@ struct ExpireHistoryArgs {
   std::set<GURL> urls;
   base::Time begin_time;
   base::Time end_time;
-  absl::optional<std::string> restrict_app_id;
+  std::optional<std::string> restrict_app_id;
 };
 
 // Represents the time range of a history deletion. If `IsValid()` is false,

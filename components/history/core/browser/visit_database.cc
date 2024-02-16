@@ -593,7 +593,7 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
 
 bool VisitDatabase::GetAllVisitsInRange(base::Time begin_time,
                                         base::Time end_time,
-                                        absl::optional<std::string> app_id,
+                                        std::optional<std::string> app_id,
                                         int max_results,
                                         VisitVector* visits) {
   visits->clear();

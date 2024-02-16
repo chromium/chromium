@@ -238,7 +238,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
 
 void ExpireHistoryBackend::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
-    absl::optional<std::string> restrict_app_id,
+    std::optional<std::string> restrict_app_id,
     base::Time begin_time,
     base::Time end_time,
     bool user_initiated) {

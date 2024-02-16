@@ -488,7 +488,7 @@ class HistoryService : public KeyedService,
   // removed. Also, if `restrict_app_id` is present, only visits matching the
   // passed app_id are removed.
   void ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
-                            absl::optional<std::string> restrict_app_id,
+                            std::optional<std::string> restrict_app_id,
                             base::Time begin_time,
                             base::Time end_time,
                             bool user_initiated,
@@ -523,7 +523,7 @@ class HistoryService : public KeyedService,
   void DeleteLocalAndRemoteHistoryBetween(WebHistoryService* web_history,
                                           base::Time begin_time,
                                           base::Time end_time,
-                                          absl::optional<std::string> app_id,
+                                          std::optional<std::string> app_id,
                                           base::OnceClosure callback,
                                           base::CancelableTaskTracker* tracker);
 
