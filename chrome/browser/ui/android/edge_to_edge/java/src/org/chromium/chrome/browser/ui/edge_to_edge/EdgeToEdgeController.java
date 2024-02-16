@@ -18,4 +18,11 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
      *     page ToNormal.
      */
     int getBottomInset();
+
+    /**
+     * By "active", it means the activity has set the decor to fit system windows.
+     *
+     * @return True if edge to edge is active now.
+     */
+    boolean isEdgeToEdgeActive();
 }

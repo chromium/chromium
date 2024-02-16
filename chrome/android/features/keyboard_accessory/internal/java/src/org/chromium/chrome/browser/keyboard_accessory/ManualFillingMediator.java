@@ -27,6 +27,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -69,6 +71,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -106,6 +109,8 @@ class ManualFillingMediator
     private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ConfirmationDialogHelper mConfirmationHelper;
     private BackPressManager mBackPressManager;
+    private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = () -> null;
+    private final Callback<ViewportInsets> mViewportInsetsObserver = this::onViewportInsetChanged;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
 
@@ -173,6 +178,7 @@ class ManualFillingMediator
             WindowAndroid windowAndroid,
             BottomSheetController sheetController,
             BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ManualFillingComponent.SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
@@ -188,12 +194,15 @@ class ManualFillingMediator
         mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
         mApplicationViewportInsetSupplier = mWindowAndroid.getApplicationBottomInsetSupplier();
+        mApplicationViewportInsetSupplier.addObserver(mViewportInsetsObserver);
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
         mBackPressManager = backPressManager;
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
         if (BackPressManager.isEnabled()) {
             mBackPressManager.addHandler(this, Type.MANUAL_FILLING);
         }
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+
         mTabModelObserver =
                 new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()) {
                     @Override
@@ -335,6 +344,7 @@ class ManualFillingMediator
         for (Tab tab : mObservedTabs) tab.removeObserver(mTabObserver);
         mObservedTabs.clear();
         mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
+        mApplicationViewportInsetSupplier.removeObserver(mViewportInsetsObserver);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBackPressChangedSupplier.set(false);
         mBackPressManager.removeHandler(this);
@@ -677,7 +687,7 @@ class ManualFillingMediator
                 newControlsHeight = 0;
             } else {
                 newControlsHeight = getBarHeightWithoutShadow();
-                newControlsOffset = 0; // The bar is just above the keyboard.
+                newControlsOffset = getOffsetIfEdgeToEdgeIsActive();
             }
         }
         if (requiresVisibleSheet(extensionState)) {
@@ -686,6 +696,29 @@ class ManualFillingMediator
         }
         mKeyboardAccessory.setBottomOffset(newControlsOffset);
         mBottomInsetSupplier.set(newControlsHeight);
+    }
+
+    private void onViewportInsetChanged(ViewportInsets newViewportInsets) {
+        if (isInitialized() && !mKeyboardAccessory.empty()) {
+            updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
+        }
+    }
+
+    private int getOffsetIfEdgeToEdgeIsActive() {
+        // When e2e is on, the rootView (CoordinatorLayout) does not resize with
+        // the appearance of the keyboard; i.e. the bottom part of root view overlaps
+        // with keyboard. So an extra offset is required in that case.
+        if (mEdgeToEdgeControllerSupplier.get() != null
+                && (mEdgeToEdgeControllerSupplier.get().isEdgeToEdgeActive()
+                        || mEdgeToEdgeControllerSupplier.get().getBottomInset() != 0)) {
+            if (mEdgeToEdgeControllerSupplier.get().getBottomInset() != 0) {
+                return getKeyboardAndNavigationHeight();
+            } else {
+                // Intentionally ignore the navigation bar height.
+                return mSoftKeyboardDelegate.calculateSoftKeyboardHeight(getContentView());
+            }
+        }
+        return 0; // The bar is just above the keyboard.
     }
 
     /**

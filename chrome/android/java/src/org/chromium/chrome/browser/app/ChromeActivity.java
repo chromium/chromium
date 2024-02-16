@@ -1834,6 +1834,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         mRootUiCoordinator.getBottomSheetController(),
                         (ChromeKeyboardVisibilityDelegate) getWindowAndroid().getKeyboardDelegate(),
                         mBackPressManager,
+                        mEdgeToEdgeControllerSupplier,
                         findViewById(R.id.keyboard_accessory_sheet_stub),
                         findViewById(R.id.keyboard_accessory_stub));
 

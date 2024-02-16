@@ -166,6 +166,11 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 : (int) Math.ceil(mSystemInsets.bottom * mPxToDp);
     }
 
+    @Override
+    public boolean isEdgeToEdgeActive() {
+        return mDidSetDecorAndListener;
+    }
+
     /**
      * Updates our private WebContentsObserver member to point to the given Tab's WebContents.
      * Destroys any previous member.

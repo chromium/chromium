@@ -11,12 +11,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -45,6 +47,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BottomSheetController sheetController,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
         Context context = windowAndroid.getContext().get();
@@ -62,6 +65,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 new AccessorySheetCoordinator(sheetStub, mMediator),
                 sheetController,
                 backPressManager,
+                edgeToEdgeControllerSupplier,
                 keyboardDelegate,
                 new ConfirmationDialogHelper(context));
     }
@@ -73,6 +77,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             AccessorySheetCoordinator accessorySheet,
             BottomSheetController sheetController,
             BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             SoftKeyboardDelegate keyboardDelegate,
             ConfirmationDialogHelper confirmationHelper) {
         mMediator.initialize(
@@ -81,6 +86,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 windowAndroid,
                 sheetController,
                 backPressManager,
+                edgeToEdgeControllerSupplier,
                 keyboardDelegate,
                 confirmationHelper);
     }

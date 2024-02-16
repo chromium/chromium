@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -85,13 +87,14 @@ public interface ManualFillingComponent extends BackPressHandler {
     }
 
     /**
-     * Initializes the manual filling component. Calls to this class are NoOps until this method
-     * is called.
-     * @param windowAndroid The window needed to listen to the keyboard and to connect to
-     *         activity.
+     * Initializes the manual filling component. Calls to this class are NoOps until this method is
+     * called.
+     *
+     * @param windowAndroid The window needed to listen to the keyboard and to connect to activity.
      * @param sheetController A {@link BottomSheetController} to show the UI in.
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
+     * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
      * @param barStub The {@link AsyncViewStub} used to inflate the keyboard accessory bar.
      */
     void initialize(
@@ -99,6 +102,7 @@ public interface ManualFillingComponent extends BackPressHandler {
             BottomSheetController sheetController,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub);
 

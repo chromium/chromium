@@ -145,6 +145,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_java",
