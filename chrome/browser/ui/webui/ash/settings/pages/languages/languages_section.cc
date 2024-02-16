@@ -249,6 +249,12 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kAddLanguage,
       mojom::Setting::kChangeDeviceLanguage,
       mojom::Setting::kOfferTranslation,
+      mojom::Setting::kRemoveLanguage,
+      mojom::Setting::kMoveLanguageToFront,
+      mojom::Setting::kMoveLanguageUp,
+      mojom::Setting::kMoveLanguageDown,
+      mojom::Setting::kEnableTranslateLanguage,
+      mojom::Setting::kDisableTranslateLanguage,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,
                             generator);

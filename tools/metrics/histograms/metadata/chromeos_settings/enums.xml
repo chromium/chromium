@@ -290,6 +290,12 @@ chromium-metrics-reviews@google.com.
   <int value="1216" label="Remove Spell Check Language"/>
   <int value="1217" label="Add Spell Check Word"/>
   <int value="1218" label="Remove Spell Check Word"/>
+  <int value="1219" label="Remove Language"/>
+  <int value="1220" label="Move Language To Front"/>
+  <int value="1221" label="Move Language Up"/>
+  <int value="1222" label="Move Language Down"/>
+  <int value="1223" label="Enable Translate Language"/>
+  <int value="1224" label="Disable Translate Language"/>
   <int value="1300" label="Google Drive Connection"/>
   <int value="1301" label="Remove Google Drive access"/>
   <int value="1302" label="Google Drive File Sync"/>

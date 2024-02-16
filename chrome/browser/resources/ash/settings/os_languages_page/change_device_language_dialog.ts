@@ -26,6 +26,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './change_device_language_dialog.html.js';
 import {LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
@@ -180,7 +181,7 @@ export class OsSettingsChangeDeviceLanguageDialogElement extends
     // that websites are displaying in a different language:
     // https://crbug.com/1330209
     this.languageHelper.moveLanguageToFront(languageCode);
-    recordSettingChange();
+    recordSettingChange(Setting.kChangeDeviceLanguage);
     LanguagesMetricsProxyImpl.getInstance().recordInteraction(
         LanguagesPageInteraction.RESTART);
     LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();

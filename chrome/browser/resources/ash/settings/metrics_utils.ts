@@ -46,6 +46,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kSpellCheckOnOff,
     type: PrefType.BOOLEAN,
   },
+  'translate.enabled': {
+    setting: Setting.kOfferTranslation,
+    type: PrefType.BOOLEAN,
+  },
 
   // Multitasking settings
   'ash.snap_window_suggestions.enabled': {

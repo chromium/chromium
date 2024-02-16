@@ -254,6 +254,12 @@ enum Setting {
   kRemoveSpellCheckLanguage = 1216,
   kAddSpellCheckWord = 1217,
   kRemoveSpellCheckWord = 1218,
+  kRemoveLanguage = 1219,
+  kMoveLanguageToFront = 1220,
+  kMoveLanguageUp = 1221,
+  kMoveLanguageDown = 1222,
+  kEnableTranslateLanguage = 1223,
+  kDisableTranslateLanguage = 1224,
 
   // Files section.
   kGoogleDriveConnection = 1300,
