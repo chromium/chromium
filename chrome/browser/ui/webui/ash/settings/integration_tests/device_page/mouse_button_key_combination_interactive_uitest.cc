@@ -23,7 +23,8 @@ const ui::InputDevice kFiveKeyMouse(/*id=*/15,
                                     /*product=*/0x0090,
                                     /*version=*/0x0001);
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, MouseKeyCombination) {
+// Disabled for crbug.com/325543031.
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, DISABLED_MouseKeyCombination) {
   const DeepQuery kCustomizeMouseButtonsRowQuery{
       "os-settings-ui",
       "os-settings-main",

@@ -21,7 +21,8 @@ const ui::InputDevice kFiveKeyMouse(1,
                                     /*product=*/0x804a,
                                     /*version=*/0x0002);
 
-IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, MouseButtonRenaming) {
+// Disabled for crbug.com/325543031.
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, DISABLED_MouseButtonRenaming) {
   const DeepQuery kCustomizeMouseButtonsRowQuery{
       "os-settings-ui",
       "os-settings-main",
