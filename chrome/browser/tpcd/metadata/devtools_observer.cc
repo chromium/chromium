@@ -29,20 +29,22 @@ TpcdMetadataDevtoolsObserver::~TpcdMetadataDevtoolsObserver() = default;
 void TpcdMetadataDevtoolsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  OnCookiesAccessedImpl(details.url, details.first_party_url);
+  OnCookiesAccessedImpl(details);
 }
 
 void TpcdMetadataDevtoolsObserver::OnCookiesAccessed(
     content::NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  OnCookiesAccessedImpl(details.url, details.first_party_url);
+  OnCookiesAccessedImpl(details);
 }
 
 void TpcdMetadataDevtoolsObserver::OnCookiesAccessedImpl(
-    const GURL& url,
-    const GURL& first_party_url) {
-  if (cookie_settings_->IsAllowedByTpcdMetadataGrant(url, first_party_url)) {
-    EmitMetadataGrantDevtoolsIssue(url);
+    const content::CookieAccessDetails& details) {
+  if (content_settings::CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
+          cookie_settings_->GetThirdPartyCookieAllowMechanism(
+              details.url, details.first_party_url,
+              details.cookie_setting_overrides))) {
+    EmitMetadataGrantDevtoolsIssue(details.url);
   }
 }
 

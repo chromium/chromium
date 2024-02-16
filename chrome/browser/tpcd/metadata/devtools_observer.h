@@ -30,7 +30,7 @@ class TpcdMetadataDevtoolsObserver
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
 
-  void OnCookiesAccessedImpl(const GURL& url, const GURL& first_party_url);
+  void OnCookiesAccessedImpl(const content::CookieAccessDetails& details);
 
   // Emit a devtools issue when `url` is allowed cookie access as a third-party
   // site on the current page.
