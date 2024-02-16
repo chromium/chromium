@@ -5,8 +5,10 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 
 #include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -67,9 +69,26 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     if (wm::GetTransientParent(window)) {
       continue;
     }
-    // If `window_manager` is not nullptr, then we have a multi profile session.
-    // We need to make sure that the windows we are capturing belongs to the
-    // owner of the current active session.
+
+    if (template_type == DeskTemplateType::kFloatingWorkspace ||
+        template_type == DeskTemplateType::kTemplate) {
+      // Filter the windows by profile ID associated with each window. Only save
+      // the windows that are attached to the primary profile ID. For lacros,
+      // the window profile id is non-zero. We can skip this check if it's on
+      // ash.
+      auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
+      CHECK(desk_profile_delegate);
+      const uint64_t primary_profile_id =
+          desk_profile_delegate->GetPrimaryProfileId();
+      if (window->GetProperty(ash::kLacrosProfileId) != 0 &&
+          window->GetProperty(ash::kLacrosProfileId) != primary_profile_id) {
+        continue;
+      }
+    }
+
+    // If `window_manager` is not nullptr, then we have a multi profile
+    // session. We need to make sure that the windows we are capturing belongs
+    // to the owner of the current active session.
     if (window_manager) {
       // Skip windows that belong to another profile user.
       const AccountId& window_owner = window_manager->GetWindowOwner(window);
@@ -157,7 +176,6 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
     call.data->AddAppLaunchInfo(std::move(app_launch_info));
     call.data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
-
   // Null callback here means that the loop in
   // `CaptureActiveDeskAsSavedDesk()` has not yet finished polling the
   // windows.  Non-zero pending request count means that some of preceding

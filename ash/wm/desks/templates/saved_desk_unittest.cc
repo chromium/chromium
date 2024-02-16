@@ -14,7 +14,9 @@
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -4721,4 +4723,36 @@ TEST_F(SavedDeskTest, TabbingDuringExitAnimation) {
   SendKey(ui::VKEY_TAB);
 }
 
+TEST_F(SavedDeskTest, SaveDeskFilterByProfileID) {
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  uint64_t lacros_profile_id = 1001;
+
+  // Adds a dummy lacros profiles to the test delegate.
+  LacrosProfileSummary summary;
+  summary.profile_id = lacros_profile_id;
+  summary.name = u"lacros_user";
+  summary.email = u"lacros_user@gmail.com";
+  TestDeskProfilesDelegate* desk_profile_delegate =
+      static_cast<TestDeskProfilesDelegate*>(
+          Shell::Get()->GetDeskProfilesDelegate());
+  desk_profile_delegate->UpdateTestProfile(std::move(summary));
+  desk_profile_delegate->SetPrimaryProfileByProfileId(lacros_profile_id);
+  auto test_window_1 = CreateAppWindow();
+  auto test_window_2 = CreateAppWindow();
+  const int win_2_id = test_window_2->GetId();
+  // Change the profile id of `test_window_2` to be another profile id and set
+  // the profile id of `test_window_1` to be the lacros primary id.
+
+  test_window_1->SetProperty(ash::kLacrosProfileId,
+                             desk_profile_delegate->GetPrimaryProfileId());
+  test_window_2->SetProperty(ash::kLacrosProfileId,
+                             desk_profile_delegate->GetPrimaryProfileId() + 1);
+  //  Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+  const auto* app_restore_data =
+      QueryRestoreData(*GetAllEntries()[0], {}, win_2_id);
+  EXPECT_FALSE(app_restore_data);
+}
 }  // namespace ash
