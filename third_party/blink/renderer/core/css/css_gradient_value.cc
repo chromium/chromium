@@ -361,8 +361,10 @@ static void ReplaceColorHintsWithColorStops(
 static Color ResolveStopColor(const CSSValue& stop_color,
                               const Document& document,
                               const ComputedStyle& style) {
-  const StyleColor style_stop_color = ResolveColorValue(
-      stop_color, document.GetTextLinkColors(), style.UsedColorScheme());
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const StyleColor style_stop_color =
+      ResolveColorValue(stop_color, document.GetTextLinkColors(), color_scheme,
+                        document.GetColorProviderForPainting(color_scheme));
   return style_stop_color.Resolve(
       style.VisitedDependentColor(GetCSSPropertyColor()),
       style.UsedColorScheme());
@@ -450,8 +452,11 @@ static const CSSValue* GetComputedStopColor(const CSSValue* color,
 
     default:
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+      // TODO(crbug.com/1231644): Need to pass an appropriate color provider
+      // here.
       return CSSColor::Create(StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight));
+          value_id, mojom::blink::ColorScheme::kLight,
+          /*color_provider=*/nullptr));
   }
 }
 

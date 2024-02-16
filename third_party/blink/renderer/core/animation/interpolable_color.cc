@@ -114,8 +114,11 @@ InterpolableColor* InterpolableColor::Create(CSSValueID keyword) {
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+      // TODO(crbug.com/1231644): Need to pass an appropriate color provider
+      // here.
       return Create(StyleColor::ColorFromKeyword(
-          keyword, mojom::blink::ColorScheme::kLight));
+          keyword, mojom::blink::ColorScheme::kLight,
+          /*color_provider=*/nullptr));
   }
 }
 

@@ -497,6 +497,7 @@ CORE_EXPORT StyleColor
 ResolveColorValue(const CSSValue& value,
                   const TextLinkColors& text_link_colors,
                   mojom::blink::ColorScheme used_color_scheme,
+                  const ui::ColorProvider* color_provider,
                   bool for_visited_link = false);
 
 }  // namespace blink

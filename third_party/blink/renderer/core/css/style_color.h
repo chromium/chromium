@@ -42,7 +42,7 @@
 
 namespace ui {
 class ColorProvider;
-}
+}  // namespace ui
 
 namespace blink {
 
@@ -197,12 +197,9 @@ class CORE_EXPORT StyleColor {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
   }
 
-  // TODO(samomekarajr): Take out the default value for color_provider once all
-  // call sites are touched in subsequent change.
-  static Color ColorFromKeyword(
-      CSSValueID,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider = nullptr);
+  static Color ColorFromKeyword(CSSValueID,
+                                mojom::blink::ColorScheme color_scheme,
+                                const ui::ColorProvider* color_provider);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);

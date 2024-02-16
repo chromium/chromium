@@ -27,7 +27,8 @@ std::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
   }
 
   Color color = StyleColor::ColorFromKeyword(css_value_id,
-                                             mojom::blink::ColorScheme::kLight);
+                                             mojom::blink::ColorScheme::kLight,
+                                             /*color_provider=*/nullptr);
   return (StyleColor(color));
 }
 

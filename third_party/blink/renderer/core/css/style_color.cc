@@ -241,7 +241,11 @@ Color StyleColor::Resolve(const Color& current_color,
     return current_color;
   }
   if (EffectiveColorKeyword() != CSSValueID::kInvalid) {
-    return ColorFromKeyword(color_keyword_, color_scheme);
+    // It is okay to pass nullptr for color_provider here because system colors
+    // are now resolved before used value time.
+    CHECK(!IsSystemColorIncludingDeprecated());
+    return ColorFromKeyword(color_keyword_, color_scheme,
+                            /*color_provider=*/nullptr);
   }
   return GetColor();
 }
@@ -273,8 +277,6 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
     }
   }
 
-  // TODO(samomekarajr): Pass in the actual color provider from the Page via the
-  // Document.
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
                                              color_provider);
 }

@@ -98,8 +98,13 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
         return false;
       }
       // TODO(crbug.com/1447327): Handle color scheme.
-      result = StyleColor::ColorFromKeyword(value_id,
-                                            mojom::blink::ColorScheme::kLight);
+      const ui::ColorProvider* color_provider =
+          context.GetDocument()
+              ? context.GetDocument()->GetColorProviderForPainting(
+                    mojom::blink::ColorScheme::kLight)
+              : nullptr;
+      result = StyleColor::ColorFromKeyword(
+          value_id, mojom::blink::ColorScheme::kLight, color_provider);
       return true;
     }
   }
