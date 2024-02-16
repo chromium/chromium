@@ -809,6 +809,7 @@ void MidiManagerAlsa::SendMidiData(MidiManagerClient* client,
   ScopedSndMidiEventPtr encoder = CreateScopedSndMidiEventPtr(kSendBufferSize);
   for (const auto datum : data) {
     snd_seq_event_t event;
+    snd_seq_ev_clear(&event);
     int result = snd_midi_event_encode_byte(encoder.get(), datum, &event);
     if (result == 1) {
       // Full event, send it.
