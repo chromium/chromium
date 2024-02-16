@@ -14,6 +14,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash::printing::print_preview {
 
@@ -66,5 +67,13 @@ PrintPreviewCrosUI::PrintPreviewCrosUI(content::WebUI* web_ui)
 }
 
 PrintPreviewCrosUI::~PrintPreviewCrosUI() = default;
+
+void PrintPreviewCrosUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(PrintPreviewCrosUI)
 
 }  // namespace ash::printing::print_preview

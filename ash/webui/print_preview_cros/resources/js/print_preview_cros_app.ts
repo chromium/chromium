@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './print_preview_cros_app.html.js';
@@ -19,6 +20,11 @@ export class PrintPreviewCrosAppElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  override ready(): void {
+    super.ready();
+    ColorChangeUpdater.forDocument().start();
   }
 }
 

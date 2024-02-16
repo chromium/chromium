@@ -284,6 +284,7 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
+#include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
@@ -1170,6 +1171,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::multidevice_setup::MultiDeviceSetupDialogUI, ash::ParentAccessUI,
       ash::EmojiUI, ash::RemoteMaintenanceCurtainUI,
       ash::app_install::AppInstallDialogUI,
+      ash::printing::print_preview::PrintPreviewCrosUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
