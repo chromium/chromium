@@ -496,12 +496,22 @@ void GpuHostImpl::OnChannelEstablished(
   auto callback = std::move(it->second);
   channel_requests_.erase(it);
 
+  // If the GPU process sent an empty handle back, it could be a transient error
+  // in which case the client should try again so return kGpuHostInvalid.
+  if (!channel_handle.is_valid()) {
+    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+                            gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities(),
+                            EstablishChannelStatus::kGpuHostInvalid);
+    return;
+  }
+
   // Currently if any of the GPU features are blocklisted, we don't establish a
   // GPU channel.
   bool gpu_channel_allowed = shared_bitmap_to_shared_image_flag_
                                  ? true
                                  : delegate_->GpuAccessAllowed();
-  if (channel_handle.is_valid() && !gpu_channel_allowed) {
+  if (!gpu_channel_allowed) {
     gpu_service_remote_->CloseChannel(client_id);
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
