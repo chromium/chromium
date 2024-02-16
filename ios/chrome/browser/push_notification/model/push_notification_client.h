@@ -23,6 +23,9 @@ class Browser;
 // framework for implementing push notification support. Feature teams that
 // intend to support push notifications should create a class that inherits from
 // the PushNotificationClient class.
+// TODO(crbug.com/325254943): Update this class and subclasses to accept an
+// injected ChromeBrowserState* and not internally fetch a browser state via
+// GetlastUsedBrowserState. Update tests as well.
 class PushNotificationClient {
  public:
   PushNotificationClient(PushNotificationClientId client_id);

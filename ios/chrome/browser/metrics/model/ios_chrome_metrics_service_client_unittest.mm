@@ -38,6 +38,8 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
             std::make_unique<TestChromeBrowserStateManager>(
                 TestChromeBrowserState::Builder().Build())),
         enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
+    // TODO(crbug.com/325254946): Migrate to use TestChromeBrowserStateManager
+    // or a TestChromeBrowserState.
     browser_state_ = GetApplicationContext()
                          ->GetChromeBrowserStateManager()
                          ->GetLastUsedBrowserState();

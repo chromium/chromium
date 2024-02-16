@@ -10,6 +10,9 @@
 namespace metrics {
 
 // Client used by DemographicMetricsProvider to retrieve Profile information.
+// TODO(crbug.com/325255648): Rename this class something like
+// DemographicsClient, rewrite it to accept injected browser states and not use
+// GetLastUsedBrowserState.
 class ChromeBrowserStateClient
     : public metrics::DemographicMetricsProvider::ProfileClient {
  public:

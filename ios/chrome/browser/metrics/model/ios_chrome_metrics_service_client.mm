@@ -349,12 +349,15 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<translate::TranslateRankerMetricsProvider>());
 
+  // TODO(crbug.com/325255648):The demographics metrics provider should be
+  // registered for each browser state.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::DemographicMetricsProvider>(
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
 
-  // TODO(crbug.com/1491396): Avoid using GetLastUsedBrowserState().
+  // TODO(crbug.com/40285060): Avoid using GetLastUsedBrowserState(). This code
+  // should initialize providers for all browser states.
   ChromeBrowserState* browser_state = GetApplicationContext()
                                           ->GetChromeBrowserStateManager()
                                           ->GetLastUsedBrowserState();

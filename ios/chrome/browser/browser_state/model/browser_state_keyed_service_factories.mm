@@ -122,7 +122,8 @@
 // TODO(erg): This needs to be something else. I don't think putting every
 // FooServiceFactory here will scale or is desirable long term.
 void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
-  AboutThisSiteServiceFactory::GetInstance();
+  // Keep this list alphabetized -- namespaced factories first, followed by
+  // non-namespaced factories.
   autofill::PersonalDataManagerFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
@@ -149,11 +150,15 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::WebDataServiceFactory::GetInstance();
   ios::WebHistoryServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
+  AboutThisSiteServiceFactory::GetInstance();
+  AcceptLanguagesServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();
+  BringAndroidTabsToIOSServiceFactory::GetInstance();
   BrowserDownloadServiceFactory::GetInstance();
   BrowserListFactory::GetInstance();
   BrowsingDataRemoverFactory::GetInstance();
+  ChildAccountServiceFactory::GetInstance();
   ChromeAccountManagerServiceFactory::GetInstance();
   ChromePasswordProtectionServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
@@ -179,18 +184,18 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
+  ListFamilyMembersServiceFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
   ModelTypeStoreServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
-  policy::UserPolicySigninServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
-    drive::DriveServiceFactory::GetInstance();
-  }
-  TabsSearchServiceFactory::GetInstance();
+  PlusAddressServiceFactory::GetInstance();
+  policy::UserPolicySigninServiceFactory::GetInstance();
+  PolicyBlocklistServiceFactory::GetInstance();
+  PromosManagerEventExporterFactory::GetInstance();
+  PromosManagerFactory::GetInstance();
   PushNotificationBrowserStateServiceFactory::GetInstance();
-  SyncServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
   RealTimeUrlLookupServiceFactory::GetInstance();
   SafeBrowsingClientFactory::GetInstance();
@@ -200,24 +205,24 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
-  SupervisedUserSettingsServiceFactory::GetInstance();
   SupervisedUserServiceFactory::GetInstance();
-  ChildAccountServiceFactory::GetInstance();
-  ListFamilyMembersServiceFactory::GetInstance();
+  SupervisedUserSettingsServiceFactory::GetInstance();
+  SyncServiceFactory::GetInstance();
   SyncSetupServiceFactory::GetInstance();
+  TabsSearchServiceFactory::GetInstance();
+  TextClassifierModelServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
-  AcceptLanguagesServiceFactory::GetInstance();
+  TrustedVaultClientBackendFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
+  UnitConversionServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   VerdictCacheManagerFactory::GetInstance();
-  PolicyBlocklistServiceFactory::GetInstance();
-  TrustedVaultClientBackendFactory::GetInstance();
-  TextClassifierModelServiceFactory::GetInstance();
-  PromosManagerFactory::GetInstance();
-  BringAndroidTabsToIOSServiceFactory::GetInstance();
-  PromosManagerEventExporterFactory::GetInstance();
-  PlusAddressServiceFactory::GetInstance();
-  UnitConversionServiceFactory::GetInstance();
+  // Keep the above list alphabetized! Don't just add new entries at the end.
+
+  // All factories that are only conditionally added go below here.
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    drive::DriveServiceFactory::GetInstance();
+  }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

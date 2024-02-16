@@ -25,8 +25,11 @@ class ChromeBrowserStateManager {
 
   virtual ~ChromeBrowserStateManager() {}
 
-  // Returns the ChromeBrowserState that was last used, creating one if
-  // necessary.
+  // Returns the ChromeBrowserState that was last used. Only use this method for
+  // the very specific purpose of finding which of the several available browser
+  // states was used last. Do *not* use it as a singleton getter to fetch "the"
+  // browser state. Always assume there could be multiple browser states and
+  // use GetLoadedBrowserStates() instead.
   virtual ChromeBrowserState* GetLastUsedBrowserState() = 0;
 
   // Returns the ChromeBrowserState associated with `path`, creating one if

@@ -54,6 +54,9 @@ class ReportGeneratorIOSTest : public PlatformTest {
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
             std::make_unique<TestChromeBrowserStateManager>(
                 std::move(browser_state)));
+    // TODO(crbug.com/325256948): Migrate to use TestChromeBrowserStateManager
+    // or a TestChromeBrowserState, probably the test browser state already used
+    // above.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         GetApplicationContext()
             ->GetChromeBrowserStateManager()

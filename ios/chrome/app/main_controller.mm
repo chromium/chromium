@@ -469,6 +469,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Start recording field trial info.
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
+  // TODO(crbug.com/325254941):  Remove this use of GetLastUsedBrowserState(),
+  // and instead initialize every loaded browser state.
   ChromeBrowserState* chromeBrowserState = GetApplicationContext()
                                                ->GetChromeBrowserStateManager()
                                                ->GetLastUsedBrowserState();
@@ -476,6 +478,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Initialize and set the main browser state.
   [self initializeBrowserState:chromeBrowserState];
+  // TODO(crbug.com/324417250): Remove mainBrowserState from appState.
   self.appState.mainBrowserState = chromeBrowserState;
 
   // Give tests a chance to prepare for testing.
@@ -490,6 +493,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // background to perform background refresh. There is no downside to doing
   // this during background initialization when the app is launched into the
   // foreground.
+  // TODO(crbug.com/325254941): Move this into -initializeBrowserState:, which
+  // will initialze all browser states.
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chromeBrowserState,
       std::make_unique<MainControllerAuthenticationServiceDelegate>(
@@ -591,6 +596,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   RegisterComponentsForUpdate();
 
+  // TODO(crbug.com/325255635): Don't get a singular browser state; perform
+  // pre-window init on all browser states.
   ChromeBrowserState* chromeBrowserState = self.appState.mainBrowserState;
   DCHECK(chromeBrowserState);
 

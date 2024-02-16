@@ -125,6 +125,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
     return report;
   }
 
+  // TODO(crbug.com/325256943): Migrate to use TestChromeBrowserStateManager or
+  // a TestChromeBrowserState.
   ChromeBrowserState* GetBrowserState() {
     return GetApplicationContext()
         ->GetChromeBrowserStateManager()
