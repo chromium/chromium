@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/sharing_hub/preview_view.h"
 
 #include "chrome/browser/share/share_attempt.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"

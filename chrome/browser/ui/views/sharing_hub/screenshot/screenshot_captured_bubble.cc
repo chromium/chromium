@@ -20,7 +20,6 @@
 #include "chrome/browser/image_editor/image_editor_component_info.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"

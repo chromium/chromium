@@ -18,7 +18,6 @@
 #include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -343,7 +342,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::
         kSegmentationPlatformAndroidHomeModuleRanker,
     &send_tab_to_self::kSendTabToSelfV2,
-    &share::kScreenshotsForAndroidV2,
     &supervised_user::kKidFriendlyContentFeed,
     &supervised_user::kMigrateAccountManagementSettingsToCapabilities,
     &switches::kForceStartupSigninPromo,

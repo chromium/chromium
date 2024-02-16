@@ -2604,9 +2604,6 @@ extern const char
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName[];
 extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
 
-extern const char kScreenshotsForAndroidV2Name[];
-extern const char kScreenshotsForAndroidV2Description[];
-
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 

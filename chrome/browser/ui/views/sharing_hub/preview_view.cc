@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/sharing_hub/preview_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

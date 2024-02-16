@@ -4430,11 +4430,6 @@ const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[] =
     "Use the new GMS API when performing Safe Browsing local database checks "
     "for browse URLs.";
 
-const char kScreenshotsForAndroidV2Name[] = "Screenshots for Android V2";
-const char kScreenshotsForAndroidV2Description[] =
-    "Adds functionality to the share screenshot panel within Chrome Browser"
-    " on Android";
-
 const char kShowNtpAtStartupAndroidName[] = "Show a NewTabPage at startup";
 const char kShowNtpAtStartupAndroidDescription[] =
     "Enable showing a NewTabPage at startup after leaving Chrome for a while.";

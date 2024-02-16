@@ -1533,8 +1533,6 @@ static_library("browser") {
     "sessions/session_tab_helper_factory.h",
     "sessions/tab_restore_service_factory.cc",
     "sessions/tab_restore_service_factory.h",
-    "share/share_features.cc",
-    "share/share_features.h",
     "sharing/ack_message_handler.cc",
     "sharing/ack_message_handler.h",
     "sharing/features.cc",
