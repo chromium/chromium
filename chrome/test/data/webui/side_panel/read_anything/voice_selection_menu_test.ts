@@ -50,7 +50,6 @@ suite('VoiceSelectionMenuElement', () => {
           voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
               '#voice-selection');
       button!.click();
-      flush();
 
       assertTrue(
           isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)!));
@@ -73,7 +72,6 @@ suite('VoiceSelectionMenuElement', () => {
             voiceSelectionMenu.shadowRoot!.querySelector<CrIconButtonElement>(
                 '#voice-selection')!;
         button!.click();
-        flush();
 
         const dropdownItems: NodeListOf<HTMLElement> =
             voiceSelectionMenu.$.voiceSelectionMenu
