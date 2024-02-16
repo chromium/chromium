@@ -283,11 +283,12 @@ public class WebappRegistry {
             }
 
             WebappInfo webApkInfo = WebApkDataProvider.getPartialWebappInfo(scope);
-            WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+            WebApkSpecifics webApkSpecifics =
+                    WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
             if (webApkSpecifics == null) {
                 continue;
             }
-            webApkSpecificsList.add(WebApkSyncService.getWebApkSpecifics(webApkInfo));
+            webApkSpecificsList.add(webApkSpecifics);
         }
         return webApkSpecificsList;
     }

@@ -18,8 +18,12 @@ import org.chromium.components.sync.protocol.WebApkSpecifics;
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
 public class WebApkSyncService {
-    static void onWebApkUsed(BrowserServicesIntentDataProvider intendDataProvider) {
-        WebApkSpecifics specifics = getWebApkSpecifics(WebappInfo.create(intendDataProvider));
+    private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
+
+    static void onWebApkUsed(
+            BrowserServicesIntentDataProvider intendDataProvider, WebappDataStorage storage) {
+        WebApkSpecifics specifics =
+                getWebApkSpecifics(WebappInfo.create(intendDataProvider), storage);
         if (specifics != null) {
             WebApkSyncServiceJni.get().onWebApkUsed(specifics.toByteArray());
         }
@@ -29,7 +33,7 @@ public class WebApkSyncService {
         WebApkSyncServiceJni.get().onWebApkUninstalled(manifestId);
     }
 
-    static WebApkSpecifics getWebApkSpecifics(WebappInfo webApkInfo) {
+    static WebApkSpecifics getWebApkSpecifics(WebappInfo webApkInfo, WebappDataStorage storage) {
         if (webApkInfo == null || !webApkInfo.isForWebApk()) {
             return null;
         }
@@ -81,7 +85,14 @@ public class WebApkSyncService {
             }
         }
 
+        webApkSpecificsBuilder.setLastUsedTimeWindowsEpochMicros(
+                toMicrosecondsSinceWindowsEpoch(storage.getLastUsedTimeMs()));
+
         return webApkSpecificsBuilder.build();
+    }
+
+    private static long toMicrosecondsSinceWindowsEpoch(long timeInMills) {
+        return timeInMills * 1000 + UNIX_OFFSET_MICROS;
     }
 
     @NativeMethods

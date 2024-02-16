@@ -94,7 +94,6 @@ public class WebApkInstaller {
                                     /* canUseSplashFromContentProvider= */ false,
                                     /* shareData= */ null,
                                     /* shareDataActivityClassName= */ null);
-                    WebApkSyncService.onWebApkUsed(intentDataProvider);
 
                     // Stores the source info of WebAPK in WebappDataStorage.
                     WebappRegistry.FetchWebappDataStorageCallback fetchCallback =
@@ -102,6 +101,7 @@ public class WebApkInstaller {
                                 storage.updateFromWebappIntentDataProvider(intentDataProvider);
                                 storage.updateSource(source);
                                 storage.updateTimeOfLastCheckForUpdatedWebManifest();
+                                WebApkSyncService.onWebApkUsed(intentDataProvider, storage);
                             };
                     WebappRegistry.getInstance()
                             .register(
