@@ -43,7 +43,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_H_
-#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_H_
+#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_H_
+#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_H_
 
 #include <memory>
 #include <set>
@@ -16,9 +16,9 @@
 #include "base/version.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_hash.h"
-#include "extensions/browser/content_verifier_delegate.h"
-#include "extensions/browser/content_verifier_io_data.h"
-#include "extensions/browser/content_verify_job.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_io_data.h"
+#include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -236,4 +236,4 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_H_
+#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_H_

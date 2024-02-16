@@ -33,7 +33,7 @@
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/component_extension_resource_manager.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFY_JOB_H_
-#define EXTENSIONS_BROWSER_CONTENT_VERIFY_JOB_H_
+#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFY_JOB_H_
+#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFY_JOB_H_
 
 #include <stdint.h>
 
@@ -183,4 +183,4 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFY_JOB_H_
+#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFY_JOB_H_

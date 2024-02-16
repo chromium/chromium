@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 
 #include <algorithm>
 #include <utility>
@@ -24,7 +24,7 @@
 #include "extensions/browser/content_hash_fetcher.h"
 #include "extensions/browser/content_hash_reader.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
-#include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"

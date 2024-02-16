@@ -34,7 +34,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"

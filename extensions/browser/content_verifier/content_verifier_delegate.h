@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_DELEGATE_H_
-#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_DELEGATE_H_
+#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_DELEGATE_H_
+#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_DELEGATE_H_
 
 #include <set>
 
 #include "extensions/browser/content_verifier/content_verifier_key.h"
-#include "extensions/browser/content_verify_job.h"
+#include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
@@ -70,4 +70,4 @@ class ContentVerifierDelegate {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_DELEGATE_H_
+#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_DELEGATE_H_

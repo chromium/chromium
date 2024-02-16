@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/content_verify_job.h"
+#include "extensions/browser/content_verifier/content_verify_job.h"
 
 #include <algorithm>
 
@@ -16,7 +16,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_hash_reader.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 
 namespace extensions {

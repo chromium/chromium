@@ -16,7 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/constants.h"

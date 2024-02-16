@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {

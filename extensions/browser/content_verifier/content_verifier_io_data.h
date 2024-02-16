@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_IO_DATA_H_
-#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_IO_DATA_H_
+#ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_IO_DATA_H_
+#define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_IO_DATA_H_
 
 #include <map>
 #include <memory>
@@ -12,7 +12,7 @@
 
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
-#include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -72,4 +72,4 @@ class ContentVerifierIOData {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_IO_DATA_H_
+#endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_IO_DATA_H_

@@ -29,7 +29,7 @@
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/mock_external_provider.h"
