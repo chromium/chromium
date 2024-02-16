@@ -144,38 +144,6 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   softnav_painted_area_ = 0;
 }
 
-void SoftNavigationHeuristics::InteractionCallbackCalled(
-    const scheduler::TaskAttributionInfo& task,
-    EventScope::Type type,
-    bool is_new_interaction) {
-  // Set task ID to the current one.
-  initial_interaction_encountered_ = true;
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
-  if (!tracker) {
-    return;
-  }
-
-  if (!last_interaction_task_id_.value()) {
-    // Here we have an interaction event that was supposed to be preceded by a
-    // "new interaction" event, only that such an event didn't have a callback.
-    // In that case, we still want to assign the timestamp from that previous
-    // event. We also define the current task as the last interaction task.
-    PerInteractionData* data = MakeGarbageCollected<PerInteractionData>();
-    data->user_interaction_timestamp = pending_interaction_timestamp_;
-    interaction_task_id_to_interaction_data_.insert(task.Id().value(), data);
-    last_interaction_task_id_ = task.Id();
-  } else {
-    task_id_to_interaction_task_id_.insert(task.Id().value(),
-                                           last_interaction_task_id_.value());
-  }
-
-  SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
-  TRACE_EVENT_INSTANT("scheduler",
-                      "SoftNavigationHeuristics::UserInitiatedInteraction");
-}
-
 void SoftNavigationHeuristics::UserInitiatedInteraction() {
   // Ensure that paints would be reset, so that paint recording would continue
   // despite the user interaction.
@@ -409,8 +377,20 @@ void SoftNavigationHeuristics::RecordPaint(
 }
 
 void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
-  if (!last_interaction_task_id_.value() ||
-      !CurrentEventParameters().is_new_interaction) {
+  // The interaction timestamp for non-"new interactions" will be be set to the
+  // processing-end time of the associated "new interaction" event, either via
+  // `pending_interaction_timestamp_` (if the "new interaction" event didn't
+  // have an event listener) or by resuing the `PerInteractionData` from that
+  // interaction.
+  //
+  // Note: kNavigate `EventScope`s considered new interactions even though they
+  // may be nested within an existing new interaction. This causes the
+  // interaction timestamp to be set to the end of the navigate event
+  // processing, which is intended.
+  if (!CurrentEventParameters().is_new_interaction) {
+    return;
+  }
+  if (!last_interaction_task_id_.value()) {
     pending_interaction_timestamp_ = base::TimeTicks::Now();
     return;
   }
@@ -418,8 +398,10 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime() {
       GetCurrentInteractionData(last_interaction_task_id_);
   CHECK(data);
   if (data->user_interaction_timestamp.is_null()) {
-    // Don't set the timestamp if it was already set (e.g. in the case of a
-    // nested event scope).
+    // Only set the timestamp if it wasn't previously set, otherwise in the case
+    // of nested `EventScope`s (e.g. navigate event within a click event) the
+    // the timestamp set at the end of the navigate event processing would be
+    // overwritten.
     data->user_interaction_timestamp = base::TimeTicks::Now();
   }
   LocalFrame* frame = GetLocalFrameIfNotDetached();
@@ -525,32 +507,44 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
     scheduler::TaskAttributionInfo& task) {
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  CHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
-  if (!tracker) {
-    return;
-  }
-  // We're inside a click event handler, so need to add this task to the set of
-  // potential soft navigation root tasks.
   TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
                "task_id", task.Id().value());
+  // This is invoked when executing a callback with an active `EventScope`,
+  // which happens for click and keyboard input events, as well as
+  // user-initiated navigation and popstate events. Any such events should be
+  // considered a potential soft navigation root tasks.
   potential_soft_navigation_tasks_.insert(&task);
   has_potential_soft_navigation_task_ = true;
+
   const EventParameters& current_event_parameters = CurrentEventParameters();
-  // If this event is a new interaction event and we haven't seen previous
-  // events in the current scope. The latter can happen when events bubble.
-  if (current_event_parameters.is_new_interaction && !seen_first_observer_) {
+  // If `last_interaction_task_id_` isn't set, then no event listeners for any
+  // associated events have run yet -- either in the intital "new interaction"
+  // `EventScope`, a nested `EventScope`, or a subsequent non-"new interaction"
+  // (e.g. keyup) `EventScope`. In that case, no `PerInteractionData` data has
+  // been created for the current interaction, so create one now that the
+  // interaction is a potential soft navigation.
+  //
+  // Note: multiple event listeners might within an `EventScope`, but the
+  // `last_interaction_task_id_` will only be set for the first one, and only if
+  // `last_interaction_task_id_` wasn't already set.
+  if (!last_interaction_task_id_.value()) {
     PerInteractionData* data = MakeGarbageCollected<PerInteractionData>();
+    if (!current_event_parameters.is_new_interaction) {
+      // The `PerInteractionData` wasn't created for the "new interaction", but
+      // we still want to use the processing-end timestamp from that event.
+      data->user_interaction_timestamp = pending_interaction_timestamp_;
+    }
     interaction_task_id_to_interaction_data_.insert(task.Id().value(), data);
     last_interaction_task_id_ = task.Id();
+  } else {
+    task_id_to_interaction_task_id_.insert(task.Id().value(),
+                                           last_interaction_task_id_.value());
   }
-  seen_first_observer_ = true;
+
+  initial_interaction_encountered_ = true;
+  SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   soft_navigation_descendant_cache_.clear();
 
-  // Create a user initiated interaction
-  InteractionCallbackCalled(task, current_event_parameters.type,
-                            current_event_parameters.is_new_interaction);
   if (current_event_parameters.type == EventScope::Type::kNavigate) {
     SameDocumentNavigationStarted();
   }
@@ -583,13 +577,22 @@ LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     EventScope::Type type,
     bool is_new_interaction) {
-  seen_first_observer_ = false;
   // Even for nested event scopes, we need to set these parameters, to ensure
   // that created tasks know they were initiated by the correct event type.
   all_event_parameters_.push_back(EventParameters(is_new_interaction, type));
+
   if (all_event_parameters_.size() == 1) {
     UserInitiatedInteraction();
+    // Clear the state needed to link multiple events together (e.g. keydown and
+    // keyup)  so we don't inadvertently link a new interaction with an old one.
+    // Only doing this for the outermost `EventScope` will cause nested scopes
+    // to be considered part of the same interaction.
+    if (is_new_interaction) {
+      last_interaction_task_id_ = scheduler::TaskAttributionId();
+      pending_interaction_timestamp_ = base::TimeTicks();
+    }
   }
+
   return SoftNavigationHeuristics::EventScope(this);
 }
 

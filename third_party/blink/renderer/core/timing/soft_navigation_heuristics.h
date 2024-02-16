@@ -157,9 +157,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntryIfAllConditionsMet(LocalFrame*);
   LocalFrame* GetLocalFrameIfNotDetached() const;
-  void InteractionCallbackCalled(const scheduler::TaskAttributionInfo& task,
-                                 EventScope::Type,
-                                 bool is_new_interaction);
   void UserInitiatedInteraction();
   void SetCurrentTimeAsStartTime();
   void OnSoftNavigationEventScopeDestroyed();
@@ -202,7 +199,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // Used to synchronize resetting the heuristic when
   // `potential_soft_navigation_tasks_` becomes empty during GC.
   bool has_potential_soft_navigation_task_ = false;
-  bool seen_first_observer_ = false;
 };
 
 }  // namespace blink

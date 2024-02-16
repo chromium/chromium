@@ -53,14 +53,17 @@ class SoftNavigationHeuristicsTest : public testing::Test {
 TEST_F(SoftNavigationHeuristicsTest,
        EarlyReturnOnInvalidPendingInteractionTimestamp) {
   auto* test_heuristics = CreateSoftNavigationHeuristicsForTest();
+  // A non-new interaction will try to use the pending timestamp, which will
+  // never have been set in this case.
+  SoftNavigationHeuristics::EventScope event_scope(
+      test_heuristics->CreateEventScope(
+          SoftNavigationHeuristics::EventScope::Type::kKeyboard,
+          /*is_new_interaction=*/false));
   // NextId() required so that the first task ID is non-zero (because we hash on
   // key).
-  Persistent<scheduler::TaskAttributionInfo> task =
-      MakeGarbageCollected<scheduler::TaskAttributionInfo>(
-          scheduler::TaskAttributionId().NextId(), nullptr);
-
-  test_heuristics->InteractionCallbackCalled(
-      *task, SoftNavigationHeuristics::EventScope::Type::kClick, true);
+  auto* task = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+      scheduler::TaskAttributionId().NextId(), nullptr);
+  test_heuristics->OnCreateTaskScope(*task);
   ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
@@ -167,6 +170,38 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   descendant_task = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+}
+
+TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
+  auto current_task_id = scheduler::TaskAttributionId().NextId();
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+
+  SoftNavigationHeuristics::EventScope outer_event_scope(
+      heuristics->CreateEventScope(
+          SoftNavigationHeuristics::EventScope::Type::kClick,
+          /*is_new_interaction=*/true));
+  auto* task1 = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+      current_task_id, nullptr);
+  heuristics->OnCreateTaskScope(*task1);
+
+  scheduler::TaskAttributionIdType interaction_id1 =
+      heuristics->GetLastInteractionTaskIdForTest();
+  EXPECT_GT(interaction_id1, 0u);
+
+  current_task_id = current_task_id.NextId();
+  EXPECT_NE(current_task_id.value(), interaction_id1);
+
+  SoftNavigationHeuristics::EventScope inner_event_scope(
+      heuristics->CreateEventScope(
+          SoftNavigationHeuristics::EventScope::Type::kNavigate,
+          /*is_new_interaction=*/true));
+  auto* task2 = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+      current_task_id, nullptr);
+  heuristics->OnCreateTaskScope(*task2);
+
+  scheduler::TaskAttributionIdType interaction_id2 =
+      heuristics->GetLastInteractionTaskIdForTest();
+  EXPECT_EQ(interaction_id1, interaction_id2);
 }
 
 }  // namespace blink
