@@ -304,6 +304,11 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
+      isProviderLocked_: {
+        type: Boolean,
+        computed: 'showProviderLocked_(subpageType_, deviceStates)',
+      },
+
       /**
        * eSIM network used in internet detail menu.
        */
@@ -389,6 +394,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private showHotspotConfigDialog_: boolean;
   private showInternetConfig_: boolean;
   private showSimLockDialog_: boolean;
+  private isProviderLocked_: boolean;
   private showSpinner_: boolean;
   private subpageType_: NetworkType;
   private vpnIsProhibited_: boolean;
@@ -761,7 +767,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         'OncType' + OncMojo.getNetworkTypeString(this.subpageType_));
   }
 
-  private isProviderLocked_(): boolean {
+  private showProviderLocked_(): boolean {
     if (!this.isCellularCarrierLockEnabled_) {
       return false;
     }

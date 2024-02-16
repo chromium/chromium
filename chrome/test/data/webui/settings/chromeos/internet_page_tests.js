@@ -793,6 +793,93 @@ suite('InternetPage', function() {
     assertTrue(simLockDialogs.isDialogOpen);
   });
 
+  test('Show carrier lock sub header when locked', async () => {
+    loadTimeData.overrideValues({isCellularCarrierLockEnabled: true});
+    await init();
+
+    const params = new URLSearchParams();
+    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+
+    // Pretend that we initially started on the INTERNET_NETWORKS route with the
+    // params.
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
+
+    // Update the device state here to trigger an onDeviceStatesChanged_() call.
+    mojoApi_.setDeviceStateForTest({
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kNotInhibited,
+      isCarrierLocked: true,
+    });
+    await flushAsync();
+
+    const cellularSubtitle =
+        internetPage.shadowRoot.querySelector('#cellularSubtitle');
+    assertTrue(!!cellularSubtitle);
+  });
+
+  test(
+      'Verify carrier lock sub header not displayed when unlocked',
+      async () => {
+        loadTimeData.overrideValues({isCellularCarrierLockEnabled: true});
+        await init();
+
+        const params = new URLSearchParams();
+        params.append(
+            'type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+
+        // Pretend that we initially started on the INTERNET_NETWORKS route with
+        // the params.
+        Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+        internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
+
+        // Update the device state here to trigger an onDeviceStatesChanged_()
+        // call.
+        mojoApi_.setDeviceStateForTest({
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+          inhibitReason: InhibitReason.kNotInhibited,
+          isCarrierLocked: false,
+        });
+        await flushAsync();
+
+        const cellularSubtitle =
+            internetPage.shadowRoot.querySelector('#cellularSubtitle');
+        assertFalse(!!cellularSubtitle);
+      });
+
+  test(
+      'Verify carrier lock sub header not displayed when feature disabled',
+      async () => {
+        loadTimeData.overrideValues({isCellularCarrierLockEnabled: false});
+        await init();
+
+        const params = new URLSearchParams();
+        params.append(
+            'type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+
+        // Pretend that we initially started on the INTERNET_NETWORKS route with
+        // the params.
+        Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+        internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
+
+        // Update the device state here to trigger an onDeviceStatesChanged_()
+        // call.
+        mojoApi_.setDeviceStateForTest({
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+          inhibitReason: InhibitReason.kNotInhibited,
+          isCarrierLocked: true,
+        });
+        await flushAsync();
+
+        const cellularSubtitle =
+            internetPage.shadowRoot.querySelector('#cellularSubtitle');
+        assertFalse(!!cellularSubtitle);
+      });
+
+
   test(
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
