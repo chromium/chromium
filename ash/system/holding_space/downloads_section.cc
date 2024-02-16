@@ -115,7 +115,7 @@ class Header : public views::Button {
   raw_ptr<views::ImageView> chevron_ = nullptr;
 };
 
-BEGIN_METADATA(Header, views::Button)
+BEGIN_METADATA(Header)
 END_METADATA
 
 }  // namespace
@@ -149,7 +149,7 @@ std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(
   return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
 }
 
-BEGIN_METADATA(DownloadsSection, HoldingSpaceItemViewsSection)
+BEGIN_METADATA(DownloadsSection)
 END_METADATA
 
 }  // namespace ash

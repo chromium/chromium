@@ -81,7 +81,7 @@ gfx::Size MessageViewContainer::CalculatePreferredSize() const {
   return gfx::Size(kNotificationInMessageCenterWidth, CalculateHeight());
 }
 
-BEGIN_METADATA(MessageViewContainer, views::View);
+BEGIN_METADATA(MessageViewContainer);
 END_METADATA
 
 }  // namespace ash

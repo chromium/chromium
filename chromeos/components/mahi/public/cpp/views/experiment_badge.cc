@@ -48,7 +48,7 @@ ExperimentBadge::ExperimentBadge() {
 
 ExperimentBadge::~ExperimentBadge() = default;
 
-BEGIN_METADATA(ExperimentBadge, views::View)
+BEGIN_METADATA(ExperimentBadge)
 END_METADATA
 
 }  // namespace chromeos::mahi

@@ -64,7 +64,7 @@ RecentFilesBubble::CreateSections() {
   return sections;
 }
 
-BEGIN_METADATA(RecentFilesBubble, HoldingSpaceTrayChildBubble)
+BEGIN_METADATA(RecentFilesBubble)
 END_METADATA
 
 }  // namespace ash

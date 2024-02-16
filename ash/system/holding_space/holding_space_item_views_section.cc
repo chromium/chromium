@@ -125,7 +125,7 @@ class HoldingSpaceScrollView : public views::ScrollView,
       this};
 };
 
-BEGIN_METADATA(HoldingSpaceScrollView, views::ScrollView)
+BEGIN_METADATA(HoldingSpaceScrollView)
 END_METADATA
 
 }  // namespace
@@ -548,7 +548,7 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     MaybeAnimateIn();
 }
 
-BEGIN_METADATA(HoldingSpaceItemViewsSection, views::View)
+BEGIN_METADATA(HoldingSpaceItemViewsSection)
 END_METADATA
 
 }  // namespace ash

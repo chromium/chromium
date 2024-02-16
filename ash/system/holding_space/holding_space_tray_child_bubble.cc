@@ -509,7 +509,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTrayChildBubble, views::View)
+BEGIN_METADATA(HoldingSpaceTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

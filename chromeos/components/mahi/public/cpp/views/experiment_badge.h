@@ -20,9 +20,9 @@ namespace chromeos::mahi {
 // The view for the experiment badge that will be used in `MahiMenuView` and
 // `MahiPanelView`.
 class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ExperimentBadge : public views::View {
- public:
-  METADATA_HEADER(ExperimentBadge);
+  METADATA_HEADER(ExperimentBadge, views::View)
 
+ public:
   ExperimentBadge();
   ExperimentBadge(const ExperimentBadge&) = delete;
   ExperimentBadge& operator=(const ExperimentBadge&) = delete;

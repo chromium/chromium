@@ -21,9 +21,9 @@ class RoundedScrollBar;
 // subsections of apps, one per each category of the Apps Collections. Does not
 // include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsCollectionsPage : public views::View {
- public:
-  METADATA_HEADER(AppListBubbleAppsCollectionsPage);
+  METADATA_HEADER(AppListBubbleAppsCollectionsPage, views::View)
 
+ public:
   AppListBubbleAppsCollectionsPage();
   AppListBubbleAppsCollectionsPage(const AppListBubbleAppsCollectionsPage&) =
       delete;

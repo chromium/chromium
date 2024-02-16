@@ -193,7 +193,7 @@ void AppListBubbleAppsCollectionsPage::SetVisibilityAfterAnimation(
   layer->SetTransform(gfx::Transform());
 }
 
-BEGIN_METADATA(AppListBubbleAppsCollectionsPage, views::View)
+BEGIN_METADATA(AppListBubbleAppsCollectionsPage)
 END_METADATA
 
 }  // namespace ash

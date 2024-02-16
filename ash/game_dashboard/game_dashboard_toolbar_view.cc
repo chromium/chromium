@@ -422,7 +422,7 @@ void GameDashboardToolbarView::UpdateRecordGameButton(
   record_game_button_->SetToggled(is_recording_game_window);
 }
 
-BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)
+BEGIN_METADATA(GameDashboardToolbarView)
 END_METADATA
 
 }  // namespace ash

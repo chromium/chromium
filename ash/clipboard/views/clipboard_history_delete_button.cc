@@ -153,7 +153,7 @@ bool ClipboardHistoryDeleteButton::DoesIntersectRect(
   return hit_rect.Intersects(rect);
 }
 
-BEGIN_METADATA(ClipboardHistoryDeleteButton, views::ImageButton)
+BEGIN_METADATA(ClipboardHistoryDeleteButton)
 END_METADATA
 
 }  // namespace ash

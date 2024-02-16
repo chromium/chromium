@@ -17,13 +17,13 @@ namespace ash {
 namespace {
 
 class OverlayNativeViewHost final : public views::NativeViewHost {
+  METADATA_HEADER(OverlayNativeViewHost, views::NativeViewHost)
+
  public:
   OverlayNativeViewHost() { set_suppress_default_focus_handling(); }
   OverlayNativeViewHost(const OverlayNativeViewHost&) = delete;
   OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
   ~OverlayNativeViewHost() override = default;
-  METADATA_HEADER(OverlayNativeViewHost);
-
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kApplication;
@@ -40,7 +40,7 @@ class OverlayNativeViewHost final : public views::NativeViewHost {
   }
 };
 
-BEGIN_METADATA(OverlayNativeViewHost, views::NativeViewHost)
+BEGIN_METADATA(OverlayNativeViewHost)
 END_METADATA
 
 }  // namespace

@@ -281,5 +281,5 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   action_view_->SetAccessibleName(stateful_accessible_name);
 }
 
-BEGIN_METADATA(PinnedActionToolbarButton, ToolbarButton)
+BEGIN_METADATA(PinnedActionToolbarButton)
 END_METADATA

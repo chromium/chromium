@@ -99,7 +99,7 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawRect(GetLocalBounds(), flags);
 }
 
-BEGIN_METADATA(ClipboardHistoryMainButton, views::Button)
+BEGIN_METADATA(ClipboardHistoryMainButton)
 END_METADATA
 
 }  // namespace ash

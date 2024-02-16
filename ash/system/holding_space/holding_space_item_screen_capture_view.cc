@@ -185,7 +185,7 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)
+BEGIN_METADATA(HoldingSpaceItemScreenCaptureView)
 END_METADATA
 
 }  // namespace ash

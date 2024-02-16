@@ -177,7 +177,7 @@ class FilesAppChip : public views::Button {
   }
 };
 
-BEGIN_METADATA(FilesAppChip, views::Button)
+BEGIN_METADATA(FilesAppChip)
 END_METADATA
 
 }  // namespace
@@ -299,7 +299,7 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
   }
 }
 
-BEGIN_METADATA(PinnedFilesSection, HoldingSpaceItemViewsSection)
+BEGIN_METADATA(PinnedFilesSection)
 END_METADATA
 
 }  // namespace ash

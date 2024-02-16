@@ -17,9 +17,9 @@ namespace ash {
 // A toast in faster splitscreen setup. Contains a dialog and skip button.
 class FasterSplitViewToast : public SystemToastStyle,
                              public OverviewFocusableView {
- public:
-  METADATA_HEADER(FasterSplitViewToast);
+  METADATA_HEADER(FasterSplitViewToast, SystemToastStyle)
 
+ public:
   explicit FasterSplitViewToast(base::RepeatingClosure skip_callback);
   FasterSplitViewToast(const FasterSplitViewToast&) = delete;
   FasterSplitViewToast& operator=(const FasterSplitViewToast&) = delete;
@@ -37,9 +37,9 @@ class FasterSplitViewToast : public SystemToastStyle,
 // A settings button in faster splitscreen setup.
 class FasterSplitViewSettingsButton : public IconButton,
                                       public OverviewFocusableView {
- public:
-  METADATA_HEADER(FasterSplitViewSettingsButton);
+  METADATA_HEADER(FasterSplitViewSettingsButton, IconButton)
 
+ public:
   explicit FasterSplitViewSettingsButton(
       views::Button::PressedCallback settings_callback);
   FasterSplitViewSettingsButton(const FasterSplitViewSettingsButton&) = delete;

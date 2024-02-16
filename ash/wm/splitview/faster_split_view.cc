@@ -63,7 +63,7 @@ void FasterSplitViewToast::OnFocusableViewBlurred() {
   ToggleA11yFocus();
 }
 
-BEGIN_METADATA(FasterSplitViewToast, SystemToastStyle)
+BEGIN_METADATA(FasterSplitViewToast)
 END_METADATA
 
 FasterSplitViewSettingsButton::FasterSplitViewSettingsButton(
@@ -107,7 +107,7 @@ void FasterSplitViewSettingsButton::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(FasterSplitViewSettingsButton, views::View)
+BEGIN_METADATA(FasterSplitViewSettingsButton)
 END_METADATA
 
 FasterSplitView::FasterSplitView(
@@ -130,7 +130,7 @@ FasterSplitView::FasterSplitView(
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 }
 
-BEGIN_METADATA(FasterSplitView, views::BoxLayoutView)
+BEGIN_METADATA(FasterSplitView)
 END_METADATA
 
 }  // namespace ash

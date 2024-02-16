@@ -93,7 +93,7 @@ WelcomeTourDialog::~WelcomeTourDialog() {
   g_instance = nullptr;
 }
 
-BEGIN_METADATA(WelcomeTourDialog, SystemDialogDelegateView)
+BEGIN_METADATA(WelcomeTourDialog)
 END_METADATA
 
 }  // namespace ash

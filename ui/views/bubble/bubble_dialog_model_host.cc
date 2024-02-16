@@ -279,7 +279,7 @@ class LayoutConsensusView : public View {
   const raw_ptr<LayoutConsensusGroup> group_;
 };
 
-BEGIN_METADATA(LayoutConsensusView, View)
+BEGIN_METADATA(LayoutConsensusView)
 END_METADATA
 
 }  // namespace
@@ -707,7 +707,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
   LayoutConsensusGroup textfield_second_column_group_;
 };
 
-BEGIN_METADATA(BubbleDialogModelHostContentsView, DialogModelSectionHost)
+BEGIN_METADATA(BubbleDialogModelHostContentsView)
 END_METADATA
 
 std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
@@ -717,7 +717,7 @@ std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
       section, initially_focused_field_id);
 }
 
-BEGIN_METADATA(DialogModelSectionHost, BoxLayoutView)
+BEGIN_METADATA(DialogModelSectionHost)
 END_METADATA
 
 BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(

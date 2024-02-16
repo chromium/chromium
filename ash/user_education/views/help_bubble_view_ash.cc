@@ -171,7 +171,7 @@ class ClosePromoButton : public views::ImageButton {
   }
 };
 
-BEGIN_METADATA(ClosePromoButton, views::ImageButton)
+BEGIN_METADATA(ClosePromoButton)
 END_METADATA
 
 class DotView : public views::View {
@@ -228,7 +228,7 @@ class DotView : public views::View {
 
 constexpr int DotView::kStrokeWidth;
 
-BEGIN_METADATA(DotView, views::View)
+BEGIN_METADATA(DotView)
 END_METADATA
 
 // An `aura::WindowTargeter` that restricts located events to those within the
@@ -887,7 +887,7 @@ void HelpBubbleViewAsh::UpdateRoundedCorners() {
       gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 
-BEGIN_METADATA(HelpBubbleViewAsh, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HelpBubbleViewAsh)
 END_METADATA
 
 }  // namespace ash

@@ -374,7 +374,7 @@ views::View* VirtualTrackpadView::GetTrackpadViewForTesting() {
   return trackpad_view_;
 }
 
-BEGIN_METADATA(VirtualTrackpadView, views::View)
+BEGIN_METADATA(VirtualTrackpadView)
 END_METADATA
 
 }  // namespace ash

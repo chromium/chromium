@@ -118,7 +118,7 @@ class MinimumSizableView : public views::View {
   const gfx::Size min_size_;
 };
 
-BEGIN_METADATA(MinimumSizableView, views::View)
+BEGIN_METADATA(MinimumSizableView)
 END_METADATA
 
 }  // namespace
@@ -533,7 +533,7 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   OnPrimaryActionVisibilityChanged(primary_action_container_->GetVisible());
 }
 
-BEGIN_METADATA(HoldingSpaceItemView, views::View)
+BEGIN_METADATA(HoldingSpaceItemView)
 END_METADATA
 
 }  // namespace ash

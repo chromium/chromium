@@ -109,7 +109,7 @@ class ObservableRoundedImageView : public RoundedImageView {
   BoundsChangedCallback bounds_changed_callback_;
 };
 
-BEGIN_METADATA(ObservableRoundedImageView, RoundedImageView)
+BEGIN_METADATA(ObservableRoundedImageView)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(/*no export*/, ObservableRoundedImageView, RoundedImageView)
@@ -155,7 +155,7 @@ class PaintCallbackLabel : public views::Label {
   Callback callback_;
 };
 
-BEGIN_METADATA(PaintCallbackLabel, views::Label)
+BEGIN_METADATA(PaintCallbackLabel)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(/*no export*/, PaintCallbackLabel, views::Label)
@@ -219,7 +219,7 @@ class ProgressIndicatorView : public views::View {
   std::unique_ptr<ProgressIndicator> progress_indicator_;
 };
 
-BEGIN_METADATA(ProgressIndicatorView, views::View)
+BEGIN_METADATA(ProgressIndicatorView)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
@@ -704,7 +704,7 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   UpdateImageAndProgressIndicatorVisibility();
 }
 
-BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)
+BEGIN_METADATA(HoldingSpaceItemChipView)
 END_METADATA
 
 }  // namespace ash

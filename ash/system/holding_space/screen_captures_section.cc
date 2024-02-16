@@ -54,7 +54,7 @@ std::unique_ptr<HoldingSpaceItemView> ScreenCapturesSection::CreateView(
   return std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate(), item);
 }
 
-BEGIN_METADATA(ScreenCapturesSection, HoldingSpaceItemViewsSection)
+BEGIN_METADATA(ScreenCapturesSection)
 END_METADATA
 
 }  // namespace ash

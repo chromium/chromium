@@ -949,7 +949,7 @@ void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)
+BEGIN_METADATA(HoldingSpaceTray)
 END_METADATA
 
 }  // namespace ash

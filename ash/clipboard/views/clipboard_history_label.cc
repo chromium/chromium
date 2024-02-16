@@ -56,7 +56,7 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
   }
 }
 
-BEGIN_METADATA(ClipboardHistoryLabel, views::Label)
+BEGIN_METADATA(ClipboardHistoryLabel)
 END_METADATA
 
 }  // namespace ash

@@ -194,7 +194,7 @@ void BirchBarView::Relayout() {
   InvalidateLayout();
 }
 
-BEGIN_METADATA(BirchBarView, views::BoxLayoutView)
+BEGIN_METADATA(BirchBarView)
 END_METADATA
 
 }  // namespace ash

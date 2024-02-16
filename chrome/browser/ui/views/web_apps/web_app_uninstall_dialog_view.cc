@@ -201,7 +201,7 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
   }
 }
 
-BEGIN_METADATA(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
+BEGIN_METADATA(WebAppUninstallDialogDelegateView)
 END_METADATA
 
 namespace web_app {

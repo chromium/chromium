@@ -195,7 +195,7 @@ bool SuggestionsSection::IsExpanded() {
   return holding_space_prefs::IsSuggestionsExpanded(prefs);
 }
 
-BEGIN_METADATA(SuggestionsSection, HoldingSpaceItemViewsSection)
+BEGIN_METADATA(SuggestionsSection)
 END_METADATA
 
 }  // namespace ash

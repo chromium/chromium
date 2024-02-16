@@ -523,7 +523,7 @@ void HoldingSpaceTrayIcon::EnsurePreviewLayerStackingOrder() {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTrayIcon, views::View)
+BEGIN_METADATA(HoldingSpaceTrayIcon)
 END_METADATA
 
 }  // namespace ash
