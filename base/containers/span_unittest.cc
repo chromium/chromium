@@ -587,6 +587,46 @@ TEST(SpanTest, FromRefOfConstStackVariable) {
   EXPECT_EQ(sizeof(int), b.size());
 }
 
+TEST(SpanTest, FromCString) {
+  // No terminating null, size known at compile time.
+  {
+    auto s = base::span_from_cstring("hello");
+    static_assert(std::same_as<decltype(s), span<const char, 5u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+  }
+  // No terminating null, size not known at compile time. string_view loses
+  // the size.
+  {
+    auto s = base::span(std::string_view("hello"));
+    static_assert(std::same_as<decltype(s), span<const char>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s.size(), 5u);
+  }
+  // Includes the terminating null, size known at compile time.
+  {
+    auto s = base::span("hello");
+    static_assert(std::same_as<decltype(s), span<const char, 6u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+    EXPECT_EQ(s[5u], '\0');
+  }
+
+  // No terminating null, size known at compile time. Converted to a span of
+  // uint8_t bytes.
+  {
+    auto s = base::byte_span_from_cstring("hello");
+    static_assert(std::same_as<decltype(s), span<const uint8_t, 5u>>);
+    EXPECT_EQ(s[0u], 'h');
+    EXPECT_EQ(s[1u], 'e');
+    EXPECT_EQ(s[4u], 'o');
+  }
+}
+
 TEST(SpanTest, ConvertNonConstIntegralToConst) {
   std::vector<int> vector = {1, 1, 2, 3, 5, 8};
 

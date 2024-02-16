@@ -224,6 +224,8 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - copy_from() method.
 // - span_from_ref() function.
 // - byte_span_from_ref() function.
+// - span_from_cstring() function.
+// - byte_span_from_cstring() function.
 // - split_at() method.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
@@ -1184,6 +1186,42 @@ template <typename T>
 constexpr span<uint8_t, sizeof(T)> byte_span_from_ref(
     T& single_object ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
   return as_writable_bytes(span_from_ref(single_object));
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `char` while
+// omitting the terminating NUL character. These two are equivalent:
+// ```
+// base::span<char, 5u> s1 = base::span_from_cstring("hello");
+// base::span<char, 5u> s2 = base::span(std::string_view("hello"));
+// ```
+//
+// If you want to include the NUL terminator, then use the span constructor
+// directly, such as:
+// ```
+// base::span<char, 6u> s = base::span("hello");
+// ```
+template <size_t N>
+constexpr span<const char, N - 1> span_from_cstring(
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+  return span(lit).template first<N - 1>();
+}
+
+// Converts a string literal (such as `"hello"`) to a span of `uint8_t` while
+// omitting the terminating NUL character. These two are equivalent:
+// ```
+// base::span<uint8_t, 5u> s1 = base::byte_span_from_cstring("hello");
+// base::span<uint8_t, 5u> s2 = base::as_byte_span(std::string_view("hello"));
+// ```
+//
+// If you want to include the NUL terminator, then use the span constructor
+// directly, such as:
+// ```
+// base::span<uint8_t, 6u> s = base::as_bytes(base::span("hello"));
+// ```
+template <size_t N>
+constexpr span<const uint8_t, N - 1> byte_span_from_cstring(
+    const char (&lit ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+  return as_bytes(span(lit).template first<N - 1>());
 }
 
 // Convenience function for converting an object which is itself convertible
