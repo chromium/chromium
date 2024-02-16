@@ -20,7 +20,7 @@ Node* CaretPosition::offsetNode() const {
   }
 
   if (ShadowRoot* root = node_->ContainingShadowRoot()) {
-    if (!root->IsOpen()) {
+    if (root->IsUserAgent()) {
       return node_->OwnerShadowHost();
     }
   }

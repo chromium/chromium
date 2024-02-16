@@ -47,6 +47,22 @@ TEST_F(CaretPositionTest, offsetNodeAndOffsetInShadowDom) {
   EXPECT_EQ(6u, caret_position->offset());
 }
 
+TEST_F(CaretPositionTest, offsetNodeAndOffsetInClosedShadowTree) {
+  SetBodyContent("<div id='host'></div>");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootType::kClosed);
+
+  shadow_root.setInnerHTML("<div>div inside closed Shadow DOM.</div>");
+  Node* text_in_shadow = shadow_root.childNodes()->item(0)->firstChild();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  auto* caret_position = MakeGarbageCollected<CaretPosition>(text_in_shadow, 6);
+  EXPECT_EQ(text_in_shadow, caret_position->offsetNode());
+  EXPECT_EQ(6u, caret_position->offset());
+}
+
 TEST_F(CaretPositionTest, offsetNodeAndOffsetInInput) {
   SetBodyContent("<input value='text inside input'>");
   const auto& input =
