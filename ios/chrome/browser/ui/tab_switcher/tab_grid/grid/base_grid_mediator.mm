@@ -295,7 +295,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
   // remove one.
-  if (![self isPinnedWebState:status.index]) {
+  if (![self isPinnedWebState:detachChange.detached_from_index()]) {
     _scopedWebStateObservation->RemoveObservation(detachedWebState);
   }
 }
@@ -314,7 +314,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
           change.As<WebStateListChangeStatusOnly>();
       if (status.pinned_state_change) {
         [self changePinnedStateForWebState:selectionOnlyChange.web_state()
-                                   atIndex:status.index];
+                                   atIndex:selectionOnlyChange.index()];
         break;
       }
       // The activation is handled after this switch statement.
@@ -326,11 +326,11 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (![self isPinnedWebState:status.index]) {
+      if (![self isPinnedWebState:moveChange.moved_to_index()]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
         NSUInteger itemIndex =
-            [self itemIndexFromWebStateListIndex:status.index];
+            [self itemIndexFromWebStateListIndex:moveChange.moved_to_index()];
         [self.consumer
             moveItemWithID:moveChange.moved_web_state()->GetUniqueIdentifier()
                    toIndex:itemIndex];
@@ -339,17 +339,16 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       // The pinned state can be updated when a tab is moved.
       if (status.pinned_state_change) {
         [self changePinnedStateForWebState:moveChange.moved_web_state()
-                                   atIndex:status.index];
+                                   atIndex:moveChange.moved_to_index()];
       }
       break;
     }
     case WebStateListChange::Type::kReplace: {
-      if ([self isPinnedWebState:status.index]) {
-        break;
-      }
-
       const WebStateListChangeReplace& replaceChange =
           change.As<WebStateListChangeReplace>();
+      if ([self isPinnedWebState:replaceChange.index()]) {
+        break;
+      }
       web::WebState* replacedWebState = replaceChange.replaced_web_state();
       web::WebState* insertedWebState = replaceChange.inserted_web_state();
       TabSwitcherItem* newItem =
@@ -362,17 +361,17 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       break;
     }
     case WebStateListChange::Type::kInsert: {
-      if ([self isPinnedWebState:status.index]) {
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      if ([self isPinnedWebState:insertChange.index()]) {
         [self.consumer selectItemWithID:GetActiveNonPinnedTabID(webStateList)];
         break;
       }
-
-      const WebStateListChangeInsert& insertChange =
-          change.As<WebStateListChangeInsert>();
       web::WebState* insertedWebState = insertChange.inserted_web_state();
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:status.index];
+      NSUInteger itemIndex =
+          [self itemIndexFromWebStateListIndex:insertChange.index()];
       [self.consumer insertItem:item
                         atIndex:itemIndex
                  selectedItemID:GetActiveNonPinnedTabID(webStateList)];

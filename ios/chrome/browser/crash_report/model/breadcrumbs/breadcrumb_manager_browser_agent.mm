@@ -92,14 +92,14 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
       LogTabClosedAt(GetTabId(detach_change.detached_web_state()),
-                     status.index);
+                     detach_change.detached_from_index());
       break;
     }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& move_change =
           change.As<WebStateListChangeMove>();
       LogTabMoved(GetTabId(move_change.moved_web_state()),
-                  move_change.moved_from_index(), status.index);
+                  move_change.moved_from_index(), move_change.moved_to_index());
       break;
     }
     case WebStateListChange::Type::kReplace: {
@@ -107,7 +107,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeReplace>();
       LogTabReplaced(GetTabId(replace_change.replaced_web_state()),
                      GetTabId(replace_change.inserted_web_state()),
-                     status.index);
+                     replace_change.index());
       break;
     }
     case WebStateListChange::Type::kInsert: {
@@ -118,7 +118,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
-                       status.index, status.active_web_state_change());
+                       insert_change.index(), status.active_web_state_change());
       break;
     }
   }

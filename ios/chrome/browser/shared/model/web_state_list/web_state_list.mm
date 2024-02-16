@@ -448,10 +448,9 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   }
 
   // TODO(b/325422014): Support Tab Groups when inserting.
-  const WebStateListChangeInsert insert_change(web_state_ptr,
+  const WebStateListChangeInsert insert_change(web_state_ptr, index,
                                                /*group=*/nullptr);
   const WebStateListStatus status = {
-      .index = index,
       .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
@@ -476,10 +475,10 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
       // the layout in WebStateList isn't updated.
       // TODO(b/325423267): Support Tab Groups when updating the pinned state.
       const WebStateListChangeStatusOnly status_only_change(
-          web_state_wrappers_[to_index]->web_state(), /*old_group=*/nullptr,
+          web_state_wrappers_[to_index]->web_state(), to_index,
+          /*old_group=*/nullptr,
           /*new_group=*/nullptr);
       const WebStateListStatus status = {
-          .index = to_index,
           .pinned_state_change = true,
           // An active WebState doesn't change when a pinned state is updated.
           .old_active_web_state = GetActiveWebState(),
@@ -495,10 +494,10 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
 
   web::WebState* web_state = GetWebStateAt(to_index);
   // TODO(b/325422914): Support Tab Groups when moving.
-  const WebStateListChangeMove move_change(
-      web_state, from_index, /*old_group=*/nullptr, /*new_group=*/nullptr);
+  const WebStateListChangeMove move_change(web_state, from_index, to_index,
+                                           /*old_group=*/nullptr,
+                                           /*new_group=*/nullptr);
   const WebStateListStatus status = {
-      .index = to_index,
       .pinned_state_change = pinned_state_change,
       // The move operation doesn't insert/delete a WebState and doesn't change
       // an active WebState.
@@ -529,9 +528,8 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   }
 
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
-                                                 web_state_ptr);
+                                                 web_state_ptr, index);
   const WebStateListStatus status = {
-      .index = index,
       .pinned_state_change = false,
       .old_active_web_state = (index == active_index_)
                                   ? replaced_web_state.get()
@@ -555,8 +553,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   const bool is_active_web_state_detached = (index == active_index_);
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
   const TabGroup* group = web_state_wrappers_[index]->group();
-  const WebStateListChangeDetach detach_change(web_state, params.is_closing,
-                                               params.is_user_action, group);
+  const WebStateListChangeDetach detach_change(
+      web_state, index, params.is_closing, params.is_user_action, group);
 
   // `new_active_index` may be invalid e.g. when closing all the WebStates,
   // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
@@ -567,7 +565,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   {
     const WebStateListStatus status = {
-        .index = index,
         .pinned_state_change = false,
         .old_active_web_state = old_active_web_state,
         .new_active_web_state = new_active_web_state};
@@ -609,7 +606,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   }
 
   const WebStateListStatus status = {
-      .index = index,
       .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = new_active_web_state};
@@ -680,9 +676,8 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   const TabGroup* group =
       index != kInvalidIndex ? GetGroupOfWebStateAt(index) : nullptr;
   const WebStateListChangeStatusOnly status_only_change(old_active_web_state,
-                                                        group, group);
+                                                        index, group, group);
   const WebStateListStatus status = {
-      .index = index,
       .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
@@ -806,9 +801,8 @@ const TabGroup* WebStateList::CreateGroupImpl(
 
       // Notify the changes to the observers.
       const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), old_group, new_group);
+          GetWebStateAt(index), index, old_group, new_group);
       const WebStateListStatus status = {
-          .index = index,
           .pinned_state_change = pinned_state_change,
           // The active WebState doesn't change.
           .old_active_web_state = active_web_state,
@@ -854,10 +848,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
     }
 
     web::WebState* web_state = GetWebStateAt(to_index);
-    const WebStateListChangeMove move_change(web_state, index, old_group,
-                                             new_group);
+    const WebStateListChangeMove move_change(web_state, index, to_index,
+                                             old_group, new_group);
     const WebStateListStatus status = {
-        .index = to_index,
         .pinned_state_change = pinned_state_change,
         // The move doesn't change the active WebState.
         .old_active_web_state = active_web_state,
@@ -897,9 +890,8 @@ const TabGroup* WebStateList::CreateGroupImpl(
 
       // Notify the changes to the observers.
       const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), old_group, new_group);
+          GetWebStateAt(index), index, old_group, new_group);
       const WebStateListStatus status = {
-          .index = index,
           .pinned_state_change = false,
           // The active WebState doesn't change.
           .old_active_web_state = active_web_state,
@@ -938,10 +930,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
 
     // Notify the changes to the observers.
     web::WebState* web_state = GetWebStateAt(to_index);
-    const WebStateListChangeMove move_change(web_state, index, old_group,
-                                             new_group);
+    const WebStateListChangeMove move_change(web_state, index, to_index,
+                                             old_group, new_group);
     const WebStateListStatus status = {
-        .index = to_index,
         .pinned_state_change = false,
         // The move doesn't change the active WebState.
         .old_active_web_state = active_web_state,

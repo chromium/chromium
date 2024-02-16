@@ -388,7 +388,7 @@ void SessionRestorationBrowserAgent::WebStateListWillChange(
     const WebStateListChangeDetach& detach_change,
     const WebStateListStatus& status) {
   DCHECK_EQ(browser_->GetWebStateList(), web_state_list);
-  if (web_state_list->active_index() == status.index) {
+  if (web_state_list->active_index() == detach_change.detached_from_index()) {
     return;
   }
 
