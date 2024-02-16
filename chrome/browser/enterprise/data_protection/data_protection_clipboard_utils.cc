@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/rules_service.h"
@@ -51,8 +52,8 @@ void HandleExpandedPaths(
                   DCHECK(result.paths_results[i]);
                 }
               }
-              clipboard_paste_data = content::ClipboardPasteData(
-                  std::string(), std::string(), std::move(allowed_paths));
+              clipboard_paste_data = content::ClipboardPasteData();
+              clipboard_paste_data->file_paths = std::move(allowed_paths);
             }
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
@@ -62,34 +63,43 @@ void HandleExpandedPaths(
 
 void HandleStringData(
     content::WebContents* web_contents,
+    content::ClipboardPasteData clipboard_paste_data,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
     enterprise_connectors::AnalysisConnector connector,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(dialog_data),
       base::BindOnce(
-          [](content::ContentBrowserClient::IsClipboardPasteAllowedCallback
+          [](content::ClipboardPasteData clipboard_paste_data,
+             content::ContentBrowserClient::IsClipboardPasteAllowedCallback
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
             // TODO(b/318664590): Since the `data` argument is forwarded to
             // `callback`, changing the type from `const Data&` to just `Data`
             // would avoid a copy.
-            if (!result.text_results[0] && !result.image_result) {
+
+            bool text_blocked =
+                result.text_results.empty() || !result.text_results[0];
+            if (text_blocked && !result.image_result) {
               std::move(callback).Run(std::nullopt);
               return;
             }
 
-            content::ClipboardPasteData clipboard_paste_data;
-            if (result.text_results[0]) {
-              clipboard_paste_data.text = data.text[0];
+            if (text_blocked) {
+              clipboard_paste_data.text.clear();
+              clipboard_paste_data.html.clear();
+              clipboard_paste_data.svg.clear();
+              clipboard_paste_data.rtf.clear();
+              clipboard_paste_data.custom_data.clear();
             }
-            if (result.image_result) {
-              clipboard_paste_data.image = data.image;
+            if (!result.image_result) {
+              clipboard_paste_data.png.clear();
             }
+
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
-          std::move(callback)),
+          std::move(clipboard_paste_data), std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);
 }
 
@@ -154,13 +164,9 @@ void PasteIfAllowedByContentAnalysis(
                                         std::move(dialog_data), connector,
                                         std::move(paths), std::move(callback)));
   } else {
-    dialog_data.text.push_back(std::move(clipboard_paste_data.text));
-    // Send image only to local agent for analysis.
-    if (dialog_data.settings.cloud_or_local_settings.is_local_analysis()) {
-      dialog_data.image = std::move(clipboard_paste_data.image);
-    }
-    HandleStringData(web_contents, std::move(dialog_data), connector,
-                     std::move(callback));
+    dialog_data.AddClipboardData(clipboard_paste_data);
+    HandleStringData(web_contents, std::move(clipboard_paste_data),
+                     std::move(dialog_data), connector, std::move(callback));
   }
 }
 

@@ -11,20 +11,26 @@
 
 namespace content {
 
-ClipboardPasteData::ClipboardPasteData(std::string text,
-                                       std::string image,
-                                       std::vector<base::FilePath> file_paths)
-    : text(std::move(text)),
-      image(std::move(image)),
-      file_paths(std::move(file_paths)) {}
 ClipboardPasteData::ClipboardPasteData() = default;
 ClipboardPasteData::ClipboardPasteData(const ClipboardPasteData&) = default;
 ClipboardPasteData::ClipboardPasteData(ClipboardPasteData&&) = default;
 ClipboardPasteData& ClipboardPasteData::operator=(ClipboardPasteData&&) =
     default;
+
 bool ClipboardPasteData::empty() {
-  return text.empty() && image.empty() && file_paths.empty();
+  return text.empty() && html.empty() && svg.empty() && rtf.empty() &&
+         png.empty() && file_paths.empty() && custom_data.empty();
 }
+
+size_t ClipboardPasteData::size() {
+  size_t size =
+      text.size() + html.size() + svg.size() + rtf.size() + png.size();
+  for (const auto& entry : custom_data) {
+    size += entry.second.size();
+  }
+  return size;
+}
+
 ClipboardPasteData::~ClipboardPasteData() = default;
 
 ClipboardEndpoint::ClipboardEndpoint(

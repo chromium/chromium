@@ -23,6 +23,19 @@
 
 namespace enterprise_data_protection {
 
+namespace {
+
+content::ClipboardPasteData MakeClipboardPasteData(
+    std::string text,
+    std::string image,
+    std::vector<base::FilePath> file_paths) {
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = base::UTF8ToUTF16(text);
+  clipboard_paste_data.png = std::vector<uint8_t>(image.begin(), image.end());
+  clipboard_paste_data.file_paths = std::move(file_paths);
+  return clipboard_paste_data;
+}
+
 class DataControlsClipboardUtilsBrowserTest
     : public InProcessBrowserTest,
       public data_controls::DataControlsDialog::TestObserver {
@@ -85,6 +98,8 @@ class DataControlsClipboardUtilsBrowserTest
   raw_ptr<data_controls::DataControlsDialog> constructed_dialog_ = nullptr;
 };
 
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_NoSource) {
   base::test::TestFuture<absl::optional<content::ClipboardPasteData>> future;
@@ -96,13 +111,14 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
+      future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
-  EXPECT_EQ(paste_data->text, "text");
-  EXPECT_EQ(paste_data->image, "image");
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
 
   EXPECT_FALSE(constructed_dialog_);
 }
@@ -122,13 +138,14 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
+      future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
-  EXPECT_EQ(paste_data->text, "text");
-  EXPECT_EQ(paste_data->image, "image");
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
 
   EXPECT_FALSE(constructed_dialog_);
 }
@@ -155,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
+      future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
@@ -207,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                 return destination_profile.get();
               }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
+      future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);

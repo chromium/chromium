@@ -51,6 +51,21 @@ content::ClipboardEndpoint SourceEndpoint() {
       ui::DataTransferEndpoint(GURL("https://source.com")));
 }
 
+content::ClipboardMetadata CopyMetadata() {
+  return {.size = 123};
+}
+
+content::ClipboardPasteData MakeClipboardPasteData(
+    std::string text,
+    std::string image,
+    std::vector<base::FilePath> file_paths) {
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = base::UTF8ToUTF16(text);
+  clipboard_paste_data.png = std::vector<uint8_t>(image.begin(), image.end());
+  clipboard_paste_data.file_paths = std::move(file_paths);
+  return clipboard_paste_data;
+}
+
 class DataProtectionClipboardTest : public testing::Test {
  public:
   DataProtectionClipboardTest()
@@ -89,8 +104,6 @@ class DataProtectionClipboardTest : public testing::Test {
                                       *contents()->GetPrimaryMainFrame());
   }
 
-  content::ClipboardMetadata CopyMetadata() { return {.size = 123}; }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_features_;
@@ -111,11 +124,12 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
-  EXPECT_EQ(paste_data->text, "text");
-  EXPECT_EQ(paste_data->image, "image");
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
 }
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
@@ -134,13 +148,14 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
 
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   auto paste_data = future.Get();
   EXPECT_TRUE(paste_data);
-  EXPECT_EQ(paste_data->text, "text");
-  EXPECT_EQ(paste_data->image, "image");
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
 }
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
@@ -159,7 +174,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
       SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
-      content::ClipboardPasteData("text", "image", {}), future.GetCallback());
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
 
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   EXPECT_FALSE(future.Get());
@@ -174,7 +189,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
       SourceEndpoint(),
       content::ClipboardEndpoint(
           ui::DataTransferEndpoint(GURL("https://destination.com"))),
-      {.size = 1234}, content::ClipboardPasteData("text", "image", {}),
+      {.size = 1234}, MakeClipboardPasteData("text", "image", {}),
       future.GetCallback());
 
   EXPECT_FALSE(future.Get());

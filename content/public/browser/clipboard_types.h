@@ -22,27 +22,44 @@ class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 
-// Structure of data pasted from clipboard.
+// Structure of data pasted from clipboard, to be used by scanning code to
+// determine if it should be allowed to be pasted.
 struct CONTENT_EXPORT ClipboardPasteData {
-  ClipboardPasteData(std::string text,
-                     std::string image,
-                     std::vector<base::FilePath> file_paths);
   ClipboardPasteData();
   ClipboardPasteData(const ClipboardPasteData&);
   ClipboardPasteData(ClipboardPasteData&&);
   ClipboardPasteData& operator=(ClipboardPasteData&&);
-  bool empty();
   ~ClipboardPasteData();
 
-  // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
-  std::string text;
+  // Returns true if all the filds in the struct are null/empty.
+  bool empty();
 
-  // Binary image data to scan, such as png (here we assume the data
-  // struct holds one image only).
-  std::string image;
+  // Returns the sum of the size of all fields except `file_paths`.
+  // Since the meaning of that size could be ambiguous given the differences
+  // between what fields actually represent, this should only be used when only
+  // one field has been populated.
+  size_t size();
+
+  // UTF-16 encoded plain text data to scan.
+  std::u16string text;
+
+  // UTF-16 encoded HTML data to scan.
+  std::u16string html;
+
+  // UTF-16 encoded SVG data to scan.
+  std::u16string svg;
+
+  // UTF-8 encoded RTF data to scan.
+  std::string rtf;
+
+  // PNG bytes to scan.
+  std::vector<uint8_t> png;
 
   // A list of full file paths to scan.
   std::vector<base::FilePath> file_paths;
+
+  // Custom data to scan, keyed by type.
+  std::map<std::u16string, std::u16string> custom_data;
 };
 
 // Class representing an endpoint tied to a clipboard interaction. This can

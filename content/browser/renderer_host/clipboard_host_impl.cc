@@ -326,8 +326,11 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
   }
 
   std::u16string text = ExtractText(clipboard_buffer, CreateDataEndpoint());
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(base::UTF16ToUTF8(text), std::string(), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = text;
+
+  // TODO(b/294844565): Remove `result` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PlainTextType(),
       std::move(clipboard_paste_data),
@@ -357,8 +360,11 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
   clipboard->ReadHTML(clipboard_buffer, data_dst.get(), &markup, &src_url_str,
                       &fragment_start, &fragment_end);
 
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(base::UTF16ToUTF8(markup), std::string(), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.html = markup;
+
+  // TODO(b/294844565): Remove `markup` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::HtmlType(),
       std::move(clipboard_paste_data),
@@ -387,8 +393,11 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
   ui::Clipboard::GetForCurrentThread()->ReadSvg(clipboard_buffer,
                                                 /*data_dst=*/nullptr, &markup);
 
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(base::UTF16ToUTF8(markup), std::string(), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.svg = markup;
+
+  // TODO(b/294844565): Remove `markup` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::SvgType(),
       std::move(clipboard_paste_data),
@@ -414,8 +423,11 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
   ui::Clipboard::GetForCurrentThread()->ReadRTF(clipboard_buffer,
                                                 data_dst.get(), &result);
 
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(result, std::string(), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.rtf = result;
+
+  // TODO(b/294844565): Remove `result` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::RtfType(),
       std::move(clipboard_paste_data),
@@ -448,9 +460,13 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                                   ReadPngCallback callback,
                                   const std::vector<uint8_t>& data) {
   // Pass both image and associated text for content analysis.
-  ClipboardPasteData clipboard_paste_data = ClipboardPasteData(
-      base::UTF16ToUTF8(ExtractText(clipboard_buffer, CreateDataEndpoint())),
-      std::string(data.begin(), data.end()), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text =
+      ExtractText(clipboard_buffer, CreateDataEndpoint());
+  clipboard_paste_data.png = data;
+
+  // TODO(b/294844565): Remove `data` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PngType(),
       std::move(clipboard_paste_data),
@@ -488,8 +504,8 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   paths.reserve(filenames.size());
   base::ranges::transform(filenames, std::back_inserter(paths),
                           [](const ui::FileInfo& info) { return info.path; });
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(std::string(), std::string(), std::move(paths));
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.file_paths = std::move(paths);
 
   // This code matches the drag-and-drop DataTransfer code in
   // RenderWidgetHostImpl::DragTargetDrop().
@@ -554,8 +570,11 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
   ui::Clipboard::GetForCurrentThread()->ReadCustomData(clipboard_buffer, type,
                                                        data_dst.get(), &result);
 
-  ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(base::UTF16ToUTF8(result), std::string(), {});
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.custom_data[type] = result;
+
+  // TODO(b/294844565): Remove `result` from the lambda and use the
+  // corresponding field in `clipboard_paste_data` instead.
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::WebCustomDataType(),
       std::move(clipboard_paste_data),
@@ -738,8 +757,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
     ClipboardPasteData clipboard_paste_data) {
   std::optional<size_t> data_size;
   if (clipboard_paste_data.file_paths.empty()) {
-    data_size =
-        clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
+    data_size = clipboard_paste_data.size();
   }
 
   static_cast<RenderFrameHostImpl&>(render_frame_host())

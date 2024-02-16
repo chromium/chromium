@@ -118,6 +118,34 @@ ContentAnalysisDelegate::Data& ContentAnalysisDelegate::Data::operator=(
     ContentAnalysisDelegate::Data&& other) = default;
 ContentAnalysisDelegate::Data::~Data() = default;
 
+void ContentAnalysisDelegate::Data::AddClipboardData(
+    const content::ClipboardPasteData& clipboard_paste_data) {
+  if (!clipboard_paste_data.text.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.text));
+  }
+  if (!clipboard_paste_data.html.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.html));
+  }
+  if (!clipboard_paste_data.svg.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.svg));
+  }
+  if (!clipboard_paste_data.rtf.empty()) {
+    text.push_back(clipboard_paste_data.rtf);
+  }
+  if (!clipboard_paste_data.png.empty()) {
+    // Send image only to local agent for analysis.
+    if (settings.cloud_or_local_settings.is_local_analysis()) {
+      image = std::string(clipboard_paste_data.png.begin(),
+                          clipboard_paste_data.png.end());
+    }
+  }
+  if (!clipboard_paste_data.custom_data.empty()) {
+    for (const auto& entry : clipboard_paste_data.custom_data) {
+      text.push_back(base::UTF16ToUTF8(entry.second));
+    }
+  }
+}
+
 ContentAnalysisDelegate::Result::Result() = default;
 ContentAnalysisDelegate::Result::Result(Result&& other) = default;
 ContentAnalysisDelegate::Result::~Result() = default;

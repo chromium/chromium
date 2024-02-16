@@ -21,6 +21,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "content/public/browser/clipboard_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -94,6 +95,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     Data(Data&& other);
     Data& operator=(Data&&);
     ~Data();
+
+    // Helper function to populate `text` and `image` with the data in a
+    // `content::ClipboardPasteData` object.
+    void AddClipboardData(
+        const content::ClipboardPasteData& clipboard_paste_data);
 
     // URL of the page that is to receive sensitive data.
     GURL url;
