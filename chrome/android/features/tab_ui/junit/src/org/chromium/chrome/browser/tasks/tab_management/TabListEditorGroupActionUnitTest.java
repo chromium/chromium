@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -136,6 +137,7 @@ public class TabListEditorGroupActionUnitTest {
         Tab tab = mTabModel.addTab(tabId);
         tabIds.add(tabId);
         tab.setTabGroupId(new Token(1L, 2L));
+        when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
 
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
@@ -154,6 +156,7 @@ public class TabListEditorGroupActionUnitTest {
         Tab tab = mTabModel.addTab(tabId);
         tabIds.add(tabId);
         tab.setTabGroupId(null);
+        when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(false);
         Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
 
@@ -167,8 +170,10 @@ public class TabListEditorGroupActionUnitTest {
         verify(mGroupFilter).createSingleTabGroup(tab, true);
 
         tab.setTabGroupId(new Token(1L, 2L));
+        when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
         Assert.assertTrue(mAction.perform());
         verify(mGroupFilter, atLeastOnce()).getTabModel();
+        verify(mGroupFilter, atLeastOnce()).isTabInTabGroup(any());
         verifyNoMoreInteractions(mGroupFilter);
     }
 
