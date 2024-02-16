@@ -673,13 +673,12 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructSettingsPacket(packet_number++));
   mock_quic_data_.AddWrite(
-      SYNCHRONOUS, ConstructConnectRequestPacketWithExtraHeaders(
-                       packet_number++,
-                       // Order matters! Keep these alphabetical.
-                       {{kTestQuicHeaderName,
-                         ProxyServerToProxyUri(
-                             proxy_chain.GetProxyServer(/*chain_index=*/0))},
-                        {"user-agent", kUserAgent}}));
+      SYNCHRONOUS,
+      ConstructConnectRequestPacketWithExtraHeaders(
+          packet_number++,
+          // Order matters! Keep these alphabetical.
+          {{kTestQuicHeaderName, ProxyServerToProxyUri(proxy_chain.First())},
+           {"user-agent", kUserAgent}}));
   mock_quic_data_.AddRead(
       ASYNC, ConstructServerConnectReplyPacketWithExtraHeaders(
                  1, !kFin, {{kResponseHeaderName, kResponseHeaderValue}}));

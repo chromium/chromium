@@ -223,8 +223,7 @@ TEST(ProxySpecificationUtilTest, PacResultElementToProxyServer) {
     ProxyChain chain = PacResultElementToProxyChain(test.input_pac);
     EXPECT_TRUE(chain.IsValid());
     if (!chain.is_direct()) {
-      EXPECT_EQ(test.expected_uri,
-                ProxyServerToProxyUri(chain.GetProxyServer(/*chain_index=*/0)));
+      EXPECT_EQ(test.expected_uri, ProxyServerToProxyUri(chain.First()));
     }
   }
 }

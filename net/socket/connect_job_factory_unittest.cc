@@ -364,9 +364,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJob) {
 
   ASSERT_TRUE(params.transport_params());
   const TransportSocketParams& transport_params = *params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobWithoutScheme) {
@@ -389,9 +389,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobWithoutScheme) {
 
   ASSERT_TRUE(params.transport_params());
   const TransportSocketParams& transport_params = *params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
@@ -431,9 +431,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   ASSERT_TRUE(proxy_params.transport_params());
   const TransportSocketParams& transport_params =
       *proxy_params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
@@ -471,9 +471,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
   ASSERT_TRUE(proxy_params.transport_params());
   const TransportSocketParams& transport_params =
       *proxy_params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
@@ -498,8 +498,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
 
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
-  EXPECT_EQ(ssl_params.host_and_port(),
-            kProxy.GetProxyServer(/*server_index=*/0).host_port_pair());
+  EXPECT_EQ(ssl_params.host_and_port(), kProxy.First().host_port_pair());
   EXPECT_TRUE(
       ssl_params.ssl_config().disable_cert_verification_network_fetches);
   EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
@@ -517,9 +516,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
       *ssl_params.GetDirectConnectionParams();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
@@ -543,8 +542,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
 
   ASSERT_TRUE(params.ssl_params());
   const SSLSocketParams& ssl_params = *params.ssl_params();
-  EXPECT_EQ(ssl_params.host_and_port(),
-            kProxy.GetProxyServer(/*server_index=*/0).host_port_pair());
+  EXPECT_EQ(ssl_params.host_and_port(), kProxy.First().host_port_pair());
   EXPECT_TRUE(
       ssl_params.ssl_config().disable_cert_verification_network_fetches);
   EXPECT_EQ(CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
@@ -563,9 +561,9 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   ASSERT_EQ(ssl_params.GetConnectionType(), SSLSocketParams::DIRECT);
   const TransportSocketParams& transport_params =
       *ssl_params.GetDirectConnectionParams();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
@@ -927,9 +925,9 @@ TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJob) {
   EXPECT_TRUE(params.is_socks_v5());
 
   const TransportSocketParams& transport_params = *params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJobWithoutScheme) {
@@ -951,9 +949,9 @@ TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJobWithoutScheme) {
   EXPECT_TRUE(params.is_socks_v5());
 
   const TransportSocketParams& transport_params = *params.transport_params();
-  EXPECT_THAT(transport_params.destination(),
-              testing::VariantWith<HostPortPair>(
-                  kProxy.GetProxyServer(/*server_index=*/0).host_port_pair()));
+  EXPECT_THAT(
+      transport_params.destination(),
+      testing::VariantWith<HostPortPair>(kProxy.First().host_port_pair()));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateWebsocketConnectJob) {

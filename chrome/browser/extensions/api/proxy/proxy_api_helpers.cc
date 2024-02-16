@@ -470,7 +470,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
   base::Value::Dict out;
   const char* scheme = nullptr;
   CHECK(proxy_chain.is_single_proxy());
-  const net::ProxyServer& proxy = proxy_chain.GetProxyServer(/*chain_index=*/0);
+  const net::ProxyServer& proxy = proxy_chain.First();
   switch (proxy.scheme()) {
     case net::ProxyServer::SCHEME_HTTP:
       scheme = "http";

@@ -61,6 +61,12 @@ std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
   return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
 }
 
+const ProxyServer& ProxyChain::First() const {
+  DCHECK(IsValid());
+  DCHECK_NE(length(), 0u);
+  return proxy_server_list_->front();
+}
+
 const ProxyServer& ProxyChain::Last() const {
   DCHECK(IsValid());
   DCHECK_NE(length(), 0u);

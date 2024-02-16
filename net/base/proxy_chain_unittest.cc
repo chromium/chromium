@@ -144,7 +144,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
                  base::NumberToString(tests[i].input_port.value_or(-1)));
     auto chain = ProxyChain::FromSchemeHostAndPort(
         tests[i].input_scheme, tests[i].input_host, tests[i].input_port);
-    auto proxy = chain.GetProxyServer(/*chain_index=*/0);
+    auto proxy = chain.First();
 
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_EQ(proxy.scheme(), tests[i].input_scheme);
@@ -153,8 +153,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
 
     auto chain_from_string_port = ProxyChain::FromSchemeHostAndPort(
         tests[i].input_scheme, tests[i].input_host, tests[i].input_port_str);
-    auto proxy_from_string_port =
-        chain_from_string_port.GetProxyServer(/*chain_index=*/0);
+    auto proxy_from_string_port = chain_from_string_port.First();
     EXPECT_TRUE(proxy_from_string_port.is_valid());
     EXPECT_EQ(proxy, proxy_from_string_port);
   }
@@ -257,6 +256,19 @@ TEST(ProxyChainTest, SplitLast) {
   auto chain1 = ProxyChain({proxy_server1});
   EXPECT_EQ(chain1.SplitLast(),
             std::make_pair(ProxyChain::Direct(), proxy_server1));
+}
+
+TEST(ProxyChainTest, First) {
+  auto proxy_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+
+  auto chain = ProxyChain({proxy_server1, proxy_server2});
+  EXPECT_EQ(chain.First(), proxy_server1);
+
+  chain = ProxyChain({proxy_server1});
+  EXPECT_EQ(chain.First(), proxy_server1);
 }
 
 TEST(ProxyChainTest, Last) {

@@ -99,7 +99,7 @@ void SetManualProxy(base::Value::Dict* manual,
 
   const net::ProxyChain& chain = proxy_list.First();
   CHECK(chain.is_single_proxy());
-  const net::ProxyServer& proxy = chain.GetProxyServer(/*chain_index=*/0);
+  const net::ProxyServer& proxy = chain.First();
   manual->SetByDottedPath(
       base::JoinString({key, ::onc::proxy::kHost}, "."),
       CreateEffectiveValue(source, base::Value(proxy.host_port_pair().host())));

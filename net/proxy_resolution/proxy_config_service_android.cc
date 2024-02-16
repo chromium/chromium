@@ -222,8 +222,7 @@ std::string ParseOverrideRules(
       return "Invalid Proxy URL: " + rule.proxy_url;
     } else if (proxy_chain.is_multi_proxy()) {
       return "Unsupported multi proxy chain: " + rule.proxy_url;
-    } else if (proxy_chain.is_single_proxy() &&
-               proxy_chain.GetProxyServer(/*chain_index=*/0).is_quic()) {
+    } else if (proxy_chain.is_single_proxy() && proxy_chain.First().is_quic()) {
       return "Unsupported proxy scheme: " + rule.proxy_url;
     }
 

@@ -91,9 +91,7 @@ void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
     }
     proxy_scheme = proxy_info.proxy_chain().is_direct()
                        ? static_cast<ProxyServer::Scheme>(1)
-                       : proxy_info.proxy_chain()
-                             .GetProxyServer(/*chain_index=*/0)
-                             .scheme();
+                       : proxy_info.proxy_chain().First().scheme();
   }
   if (success) {
     UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,

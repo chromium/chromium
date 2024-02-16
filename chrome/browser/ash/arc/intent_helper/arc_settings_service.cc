@@ -188,7 +188,7 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
 
   const net::ProxyChain& chain = proxy_list->First();
   CHECK(chain.is_single_proxy());
-  const net::ProxyServer& server = chain.GetProxyServer(/*chain_index=*/0);
+  const net::ProxyServer& server = chain.First();
   *host = server.host_port_pair().host();
   *port = server.host_port_pair().port();
   return !host->empty() && *port;

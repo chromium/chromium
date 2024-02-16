@@ -1573,9 +1573,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxy) {
   CreateSession();
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
   SendRequestAndExpectHttpResponseFromProxy(
-      kHttpRespData,
-      kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kHttpRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -1686,9 +1684,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   CreateSession();
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
   SendRequestAndExpectHttpResponseFromProxy(
-      kHttpRespData,
-      kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kHttpRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 }
 
 TEST_P(QuicNetworkTransactionTest, AlternativeServicesDifferentHost) {
@@ -5412,9 +5408,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
   SendRequestAndExpectHttpResponseFromProxy(
-      kHttpRespData,
-      kHttpsProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kHttpsProxyChain);
+      kHttpRespData, kHttpsProxyChain.First().GetPort(), kHttpsProxyChain);
   EXPECT_THAT(session_->proxy_resolution_service()->proxy_retry_info(),
               ElementsAre(Key(kQuicProxyChain)));
 }
@@ -6406,8 +6400,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   request_.url = GURL("https://mail.example.org/");
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
   SendRequestAndExpectHttpResponseFromProxy(
-      kRespData, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6500,8 +6493,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
 
   request_.url = GURL("https://mail.example.org/");
   SendRequestAndExpectSpdyResponseFromProxy(
-      kRespData, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6622,13 +6614,11 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
 
   request_.url = GURL("https://mail.example.org/");
   SendRequestAndExpectHttpResponseFromProxy(
-      kRespData1, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData1, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   request_.url = GURL("https://mail.example.org/2");
   SendRequestAndExpectHttpResponseFromProxy(
-      kRespData2, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData2, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6780,13 +6770,11 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
 
   request_.url = GURL("https://mail.example.org/");
   SendRequestAndExpectHttpResponseFromProxy(
-      kRespData1, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData1, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   request_.url = GURL("https://different.example.org/");
   SendRequestAndExpectSpdyResponseFromProxy(
-      kRespData2, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort(),
-      kQuicProxyChain);
+      kRespData2, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -7173,8 +7161,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   EXPECT_EQ(OK, callback.WaitForResult());
 
   CheckWasHttpResponse(&trans);
-  CheckResponsePort(
-      &trans, kQuicProxyChain.GetProxyServer(/*chain_index=*/0).GetPort());
+  CheckResponsePort(&trans, kQuicProxyChain.First().GetPort());
   CheckResponseData(&trans, kRespData);
   EXPECT_EQ(trans.GetResponseInfo()->proxy_chain, kQuicProxyChain);
 

@@ -173,13 +173,11 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             ? CreateDirectTransportSocketParams(secure_dns_policy)
             : nullptr,
         proxy_chain.is_single_proxy() &&
-                proxy_chain.GetProxyServer(/*chain_index=*/0).scheme() ==
-                    ProxyServer::SCHEME_SOCKS5
+                proxy_chain.First().scheme() == ProxyServer::SCHEME_SOCKS5
             ? CreateSOCKSSocketParams(secure_dns_policy)
             : nullptr,
         proxy_chain.is_single_proxy() &&
-                proxy_chain.GetProxyServer(/*chain_index=*/0).scheme() ==
-                    ProxyServer::SCHEME_HTTP
+                proxy_chain.First().scheme() == ProxyServer::SCHEME_HTTP
             ? CreateHttpProxySocketParams(secure_dns_policy)
             : nullptr,
         HostPortPair::FromSchemeHostPort(kHostHttps), SSLConfig(),

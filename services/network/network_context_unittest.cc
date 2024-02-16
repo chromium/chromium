@@ -6233,9 +6233,8 @@ TEST_F(NetworkContextMockHostTest, MAYBE_CustomProxyUsesSpecifiedProxyList) {
 
   // |invalid_server| has no handlers set up so would return an empty response.
   EXPECT_EQ(response, "Echo");
-  EXPECT_EQ(
-      client->response_head()->proxy_chain.GetProxyServer(/*chain_index=*/0),
-      ConvertToProxyServer(proxy_test_server));
+  EXPECT_EQ(client->response_head()->proxy_chain.First(),
+            ConvertToProxyServer(proxy_test_server));
 }
 
 TEST_F(NetworkContextTest, MaximumCount) {

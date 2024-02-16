@@ -163,8 +163,7 @@ std::string ProxyList::ToPacString() const {
     CHECK(!proxy_chain.is_multi_proxy());
     proxy_list += proxy_chain.is_direct()
                       ? "DIRECT"
-                      : ProxyServerToPacResultElement(
-                            proxy_chain.GetProxyServer(/*chain_index=*/0));
+                      : ProxyServerToPacResultElement(proxy_chain.First());
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
@@ -181,8 +180,7 @@ std::string ProxyList::ToDebugString() const {
     } else {
       proxy_list += proxy_chain.is_direct()
                         ? "DIRECT"
-                        : ProxyServerToPacResultElement(
-                              proxy_chain.GetProxyServer(/*chain_index=*/0));
+                        : ProxyServerToPacResultElement(proxy_chain.First());
     }
   }
   return proxy_list;

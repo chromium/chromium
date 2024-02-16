@@ -392,8 +392,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         delegate, /*net_log=*/nullptr);
   }
 
-  const ProxyServer& first_proxy_server =
-      proxy_chain.GetProxyServer(/*chain_index=*/0);
+  const ProxyServer& first_proxy_server = proxy_chain.First();
   if (first_proxy_server.is_http_like()) {
     return http_proxy_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,

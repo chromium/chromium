@@ -1665,9 +1665,7 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
     host_port_pair = HostPortPair::FromURL(request_->url);
   } else {
     CHECK(proxy_info_.proxy_chain().is_single_proxy());
-    host_port_pair = proxy_info_.proxy_chain()
-                         .GetProxyServer(/*chain_index=*/0)
-                         .host_port_pair();
+    host_port_pair = proxy_info_.proxy_chain().First().host_port_pair();
   }
 
   // Check that something in the proxy chain or endpoint are using HTTPS.
@@ -2013,8 +2011,7 @@ GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
       }
       // TODO(https://crbug.com/1103768): Mapping proxy addresses to
       // URLs is a lossy conversion, shouldn't do this.
-      auto& proxy_server =
-          proxy_info_.proxy_chain().GetProxyServer(/*chain_index=*/0);
+      auto& proxy_server = proxy_info_.proxy_chain().First();
       const char* scheme =
           proxy_server.is_secure_http_like() ? "https://" : "http://";
       return GURL(scheme + proxy_server.host_port_pair().ToString());

@@ -41,8 +41,7 @@ bool CheckProxyList(const net::ProxyList& proxy_list,
                     const net::ProxyServer& target_proxy) {
   for (const auto& proxy_chain : proxy_list.AllChains()) {
     if (proxy_chain.is_single_proxy() &&
-        proxy_chain.GetProxyServer(/*chain_index=*/0).host_port_pair() ==
-            target_proxy.host_port_pair()) {
+        proxy_chain.First().host_port_pair() == target_proxy.host_port_pair()) {
       return true;
     }
   }
@@ -199,8 +198,7 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
 
   // TODO(https://crbug.com/1491092): Support nested proxies.
   if (proxy_chain.is_single_proxy() &&
-      RulesContainsProxy(proxy_config_->rules,
-                         proxy_chain.GetProxyServer(/*chain_index=*/0))) {
+      RulesContainsProxy(proxy_config_->rules, proxy_chain.First())) {
     return true;
   }
 

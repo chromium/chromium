@@ -87,6 +87,10 @@ class NET_EXPORT ProxyChain {
   // only has one proxy server, then the resulting chain will be direct.
   std::pair<ProxyChain, const ProxyServer&> SplitLast() const;
 
+  // Get the first ProxyServer in this chain, which must have at least one
+  // server.
+  const ProxyServer& First() const;
+
   // Get the last ProxyServer in this chain, which must have at least one
   // server.
   const ProxyServer& Last() const;
@@ -128,8 +132,7 @@ class NET_EXPORT ProxyChain {
   // for QUIC proxy chains and is not currently supported for multi-proxy
   // chains.
   bool is_get_to_proxy_allowed() const {
-    return is_single_proxy() && (GetProxyServer(/*chain_index=*/0).is_http() ||
-                                 GetProxyServer(/*chain_index=*/0).is_https());
+    return is_single_proxy() && (First().is_http() || First().is_https());
   }
 
   // Returns true if a proxy server list is available.
