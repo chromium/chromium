@@ -1086,7 +1086,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1806335016774576568">Mudar para outro app aberto</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1809201888580326312">Você escolheu não salvar senhas para estes sites e apps</translation>
-<translation id="1809483812148634490">Os apps transferidos por download do Google Play serão excluídos deste Chromebook.
+<translation id="1809483812148634490">Os apps baixados do Google Play serão excluídos deste Chromebook.
     <ph name="LINE_BREAKS1" />
     O conteúdo comprado, como filmes, programas de TV, músicas, livros ou outras compras em aplicativos, também poderá ser excluído.
     <ph name="LINE_BREAKS2" />
@@ -1374,7 +1374,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2016473077102413275">Os recursos que precisam de imagens não funcionarão</translation>
 <translation id="2016574333161572915">Seu hardware do Google Meet está pronto para ser configurado</translation>
 <translation id="2017334798163366053">Desativar coleta de dados de desempenho</translation>
-<translation id="2017770349934140286">O Google Play e os apps transferidos por download por ele serão excluídos deste Chromebook.
+<translation id="2017770349934140286">O Google Play e os apps baixados por ele serão excluídos deste Chromebook.
     <ph name="LINE_BREAKS1" />
     Os conteúdos que você comprou no Google Play, como filmes, programas de TV, músicas, livros e compras de outros apps, também poderão ser excluídos.
     <ph name="LINE_BREAKS2" />
@@ -2257,7 +2257,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2667144577800272420">Outros apps estão configurados para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links compatíveis.</translation>
 <translation id="2667463864537187133">Gerenciar a verificação ortográfica</translation>
 <translation id="2669241540496514785">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
-<translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download</translation>
+<translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2670102641511624474">O app <ph name="APP_NAME" /> está compartilhando uma guia do Chrome.</translation>
 <translation id="2670403088701171361">Não permitir que os sites acessem os textos e imagens da área de transferência</translation>
 <translation id="2671451824761031126">Seus favoritos e configurações estão prontos</translation>
@@ -2454,7 +2454,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2805770823691782631">Mais detalhes</translation>
 <translation id="2806372837663997957">O dispositivo não aceitou o compartilhamento</translation>
 <translation id="2806891468525657116">O atalho já existe</translation>
-<translation id="2807517655263062534">Os arquivos transferidos por download aparecem aqui</translation>
+<translation id="2807517655263062534">Os arquivos baixados aparecem aqui</translation>
 <translation id="2808714658215073920">Conectando ao Wi-Fi…</translation>
 <translation id="2809586584051668049">e mais <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Contas</translation>
@@ -3546,7 +3546,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3694590407685276748">Destacar o cursor de texto</translation>
 <translation id="369489984217678710">Senhas e outros dados de login</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{As verificações de segurança foram concluídas. O upload dos seus dados será realizado}=1{As verificações de segurança foram concluídas. O upload do seu arquivo será realizado}one{As verificações de segurança foram concluídas. O upload do seu arquivo será realizado}other{As verificações de segurança foram concluídas. O upload dos seus arquivos será realizado}}</translation>
-<translation id="3696817060563289264">Arquivos de reconhecimento de texto transferidos por download</translation>
+<translation id="3696817060563289264">Arquivos de reconhecimento de texto baixados</translation>
 <translation id="369736917241079046">acesso rápido + seta para a esquerda</translation>
 <translation id="3697716475445175867">aberto pela última vez</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Você pode impedir que esse site envie outras notificações.}one{Você pode impedir que esse site envie outras notificações.}other{Você pode impedir que esses sites enviem outras notificações.}}</translation>
@@ -3989,7 +3989,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="399788104667917863">Fixar na barra de ferramentas</translation>
 <translation id="3998976413398910035">Gerenciar impressoras</translation>
 <translation id="4001540981461989979">Destacar cursor do mouse em movimento</translation>
-<translation id="4002347779798688515">Talvez não seja possível usar o perfil transferido por download se a operadora de rede móvel estiver bloqueada. Entre em contato com ela para receber ajuda.</translation>
+<translation id="4002347779798688515">Talvez não seja possível usar o perfil baixado se a operadora de rede móvel estiver bloqueada. Entre em contato com ela para receber ajuda.</translation>
 <translation id="4002440992267487163">Configuração do PIN</translation>
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
@@ -4048,7 +4048,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir para página inicial</translation>
 <translation id="4048384495227695211">Mostrar <ph name="FILE_NAME" /> na pasta</translation>
-<translation id="404894744863342743">Depois que você terminar de usar o arquivo transferido por download, ele poderá ser excluído para que outras pessoas que usam este dispositivo não saibam suas senhas.</translation>
+<translation id="404894744863342743">Depois que você terminar de usar o arquivo baixado, ele poderá ser excluído para que outras pessoas que usam este dispositivo não saibam suas senhas.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o "Compartilhar por proximidade" com esses contatos, adicione os endereços de e-mail associados à Conta do Google deles.}}</translation>
 <translation id="4050225813016893843">Método de autenticação</translation>
 <translation id="4050534976465737778">Confirme se os dois dispositivos estão desbloqueados, perto um do outro e com o Bluetooth ativado. Se você estiver compartilhando com um Chromebook que não está nos seus contatos, ative a visibilidade do Compartilhar por proximidade na área de status. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -4174,7 +4174,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4150201353443180367">Exibição</translation>
 <translation id="4150417452770391330">Conectar uma câmera</translation>
-<translation id="4150569944729499860">Contexto da tela</translation>
+<translation id="4150569944729499860">Contexto na tela</translation>
 <translation id="4151449637210235443">Conte sobre a jogabilidade na sua sessão mais recente</translation>
 <translation id="4151503145138736576">Não há armazenamento off-line para limpar</translation>
 <translation id="4152011295694446843">Você verá seus favoritos aqui</translation>
@@ -6862,7 +6862,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6283438600881103103">Sua conta será desconectada automaticamente agora.
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
 <translation id="628352644014831790">4 segundos</translation>
-<translation id="6285120108426285413">O arquivo <ph name="FILE_NAME" /> não costuma ser transferido por download e pode ser perigoso.</translation>
+<translation id="6285120108426285413">O arquivo <ph name="FILE_NAME" /> não costuma ser baixado e pode ser perigoso.</translation>
 <translation id="6285770818046456882">O dispositivo que estava fazendo o compartilhamento cancelou a transferência</translation>
 <translation id="628726841779494414">Gerencie suas impressoras nas configurações de impressora</translation>
 <translation id="6287828400772161253">Smartphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
@@ -8706,7 +8706,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="773511996612364297">Acentos</translation>
 <translation id="7737115349420013392">Pareando com "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737203573077018777">Instrução <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recebida</translation>
-<translation id="7737846262459425222">Você pode mudar essa opção a qualquer momento em Configurações &gt; Google Assistente &gt; Contexto da tela.</translation>
+<translation id="7737846262459425222">Você pode mudar essa opção a qualquer momento em Configurações &gt; Google Assistente &gt; Contexto na tela.</translation>
 <translation id="7737948071472253612">Bloquear o uso da câmera</translation>
 <translation id="77381465218432215">Mostrar acentos e caracteres especiais</translation>
 <translation id="7740996059027112821">Padrão</translation>
