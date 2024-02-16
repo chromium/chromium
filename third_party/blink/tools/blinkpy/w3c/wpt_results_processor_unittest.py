@@ -395,6 +395,30 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
 
+    def test_report_unexpected_fail_for_unknown_subtests(self):
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests(
+                'external/wpt/test-expected.txt'),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] does-not-exist
+                Harness: the test ran to completion.
+                """))
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='implicit-pass',
+                    status='PASS')
+        self._event(action='test_end', test='/test.html', status='OK')
+
+        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'result']
+        self.assertEqual(result.name, 'external/wpt/test.html')
+        self.assertEqual(result.actual, 'FAIL')
+        self.assertEqual(result.expected, {'PASS'})
+        self.assertTrue(result.unexpected)
+        self.assertEqual(self.processor.num_regressions, 1)
+
     def test_report_unexpected_fail_for_different_types(self):
         self._event(action='test_start', test='/reftest.html')
         self._event(action='test_end',

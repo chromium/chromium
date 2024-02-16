@@ -144,8 +144,11 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
-        self.failure_threshold = 0
-        self.crash_timeout_threshold = 0
+        self._processor = WPTResultsProcessor(
+            self.fs,
+            self.port,
+            artifacts_dir=self.port.artifacts_directory(),
+            reset_results=self.options.reset_results)
         self._expectations = TestExpectations(self.port)
 
     @classmethod
@@ -473,9 +476,9 @@ class WPTAdapter:
             runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
-            self.failure_threshold = self.port.max_allowed_failures(
+            self._processor.failure_threshold = self.port.max_allowed_failures(
                 len(include_tests))
-            self.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
+            self._processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
                 len(include_tests))
 
             # sharding is done inside wrapper
@@ -571,7 +574,7 @@ class WPTAdapter:
             # lifecycles.
             from wptrunner.metadata import logger
             logger._state.has_shutdown = False
-            return 1 if exit_code else 0
+            return 1 if exit_code or self._processor.num_regressions > 0 else 0
 
     def _create_extra_run_info(self, run_info_path, tests_root):
         run_info = {
@@ -598,15 +601,7 @@ class WPTAdapter:
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
-        artifacts_dir = self.port.artifacts_directory()
-        processor = WPTResultsProcessor(
-            self.fs,
-            self.port,
-            artifacts_dir=artifacts_dir,
-            failure_threshold=self.failure_threshold,
-            crash_timeout_threshold=self.crash_timeout_threshold,
-            reset_results=self.options.reset_results)
-        with processor.stream_results() as events:
+        with self._processor.stream_results() as events:
             runner_options.log.add_handler(events.put)
             try:
                 yield
@@ -614,15 +609,16 @@ class WPTAdapter:
                 # Always copy `results.html` into `layout-test-results/` so that
                 # the partial results can be viewed, and the directory is
                 # archived next run. See crbug.com/1475556.
-                processor.copy_results_viewer()
-                processor.process_results_json(
+                self._processor.copy_results_viewer()
+                self._processor.process_results_json(
                     self.port.get_option('json_test_results'))
         if runner_options.log_wptreport:
-            processor.process_wpt_report(runner_options.log_wptreport[0].name)
+            self._processor.process_wpt_report(
+                runner_options.log_wptreport[0].name)
         if (self.port.get_option('show_results')
-                and processor.num_initial_failures > 0):
+                and self._processor.num_initial_failures > 0):
             self.port.show_results_html_file(
-                self.fs.join(artifacts_dir, 'results.html'))
+                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         if self.options.reset_results:
             self._optimize(runner_options)
 

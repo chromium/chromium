@@ -242,6 +242,16 @@ class WPTResult(Result):
                     and actual_subtest.message
                     != expected_subtest.message.strip()):
                 return False
+        unknown_subtests = set(expected_subtests) - set(actual_subtests)
+        if unknown_subtests:
+            # Because tests that have unused expectations look like they ran
+            # expectedly and aren't retried, we need this log to indicate why
+            # the shard may have exited with a nonzero exit code.
+            _log.warning(
+                f'Marking {self.name!r} as a failure because its '
+                f'*-expected.txt contains {len(unknown_subtests)} subtests '
+                "that didn't run.")
+            return False
         return expected_harness_error == actual_harness_error
 
     def _group_results(
@@ -401,6 +411,11 @@ class WPTResultsProcessor:
         return sum(self._num_failures_by_status[status]
                    for status in failure_statuses)
 
+    @property
+    def num_regressions(self) -> int:
+        return sum(final_result.is_regression
+                   for *_, final_result in self._results_by_name.values())
+
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
         for file in files_to_copy:
@@ -477,7 +492,7 @@ class WPTResultsProcessor:
         finally:
             # Send a shutdown event, if one has not been sent already, to tell
             # the worker to exit.
-            _log.error('Send shutdown event to stop the workers...')
+            _log.info('Sending shutdown event to stop the worker...')
             events.put({'action': 'shutdown'}, timeout=timeout)
             worker.join(timeout=timeout)
 
@@ -664,7 +679,7 @@ class WPTResultsProcessor:
     def create_final_results(self):
         # compute the tests dict
         tests = {}
-        num_passes = num_regressions = 0
+        num_passes = 0
         for test_name, results in self._results_by_name.items():
             # TODO: the expected result calculated this way could change each time
             expected = ' '.join(results[0].expected)
@@ -693,8 +708,6 @@ class WPTResultsProcessor:
                 test_dict['is_unexpected'] = True
             if results[-1].is_regression:
                 test_dict['is_regression'] = True
-                num_regressions += 1
-
             if results[0].image_diff_stats:
                 test_dict['image_diff_stats'] = results[0].image_diff_stats
 
@@ -724,7 +737,7 @@ class WPTResultsProcessor:
             'num_failures_by_type': self._num_failures_by_status,
             'num_passes': num_passes,
             'skipped': self._num_failures_by_status[ResultType.Skip],
-            'num_regressions': num_regressions,
+            'num_regressions': self.num_regressions,
             'tests': tests,
         }
         return final_results

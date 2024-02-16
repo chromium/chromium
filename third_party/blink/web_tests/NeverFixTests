@@ -2077,6 +2077,8 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 # wpt_internal tests are all skipped for Chrome, but feature teams can choose to opt-in their directories.
 [ Chrome ] * [ Skip ]
 [ Chrome ] external/wpt/* [ Pass ]
+[ Chrome ] wpt_internal/infrastructure/fail-before-timeout.html [ Pass ]
+[ Chrome ] wpt_internal/infrastructure/fail-with-nonexistent-subtest.html [ Pass ]
 
 # At the moment, no plans to run wdspec tests for anything other than Chrome on
 # Linux due to resource constraints.

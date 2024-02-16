@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+[FAIL] Nonexistent subtest should cause a baseline mismatch (test failure)
+Harness: the test ran to completion.
