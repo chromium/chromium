@@ -298,8 +298,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     }
     const QuicSessionKey& session_key() const { return session_key_; }
 
-    // Returns the estimate of dynamically allocated memory in bytes.
-
    private:
     url::SchemeHostPort destination_;
     QuicSessionKey session_key_;

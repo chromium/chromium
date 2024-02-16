@@ -133,7 +133,7 @@ const url::SchemeHostPort kDefaultDestination{
     url::kHttpsScheme, kDefaultServerHostName, kDefaultServerPort};
 
 // Run QuicSessionPoolTest instances with all value combinations of version
-// and enable_connection_racting.
+// and the `PriorityHeader` feature.
 struct TestParams {
   quic::ParsedQuicVersion version;
   bool priority_header_enabled;
@@ -12492,7 +12492,7 @@ enum DestinationType {
 };
 
 // Run QuicSessionPoolWithDestinationTest instances with all value
-// combinations of version, enable_connection_racting, and destination_type.
+// combinations of version and destination_type.
 struct PoolingTestParams {
   quic::ParsedQuicVersion version;
   DestinationType destination_type;
