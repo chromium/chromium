@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PREFERENCES_PREFERENCE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PREFERENCES_PREFERENCE_MANAGER_H_
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -17,7 +18,7 @@ class PreferenceManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PreferenceManager();
+  explicit PreferenceManager(ExecutionContext*);
   ~PreferenceManager() override;
 
   PreferenceObject* colorScheme();

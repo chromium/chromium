@@ -10,6 +10,7 @@
 ]
 interface PreferenceObject {
   [CallWith=ScriptState] readonly attribute DOMString? override;
+  [CallWith=ScriptState] readonly attribute DOMString value;
   readonly attribute FrozenArray<DOMString> validValues;
 
   [CallWith=ScriptState] undefined clearOverride();

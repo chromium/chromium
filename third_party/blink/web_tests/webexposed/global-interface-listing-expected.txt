@@ -7398,6 +7398,7 @@ interface PreferenceObject
     attribute @@toStringTag
     getter override
     getter validValues
+    getter value
     method clearOverride
     method constructor
     method requestOverride

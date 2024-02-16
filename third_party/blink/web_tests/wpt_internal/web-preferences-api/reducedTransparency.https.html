@@ -57,10 +57,13 @@
       promise_test(async (t) => {
         await navigator.preferences.reducedTransparency.requestOverride('no-preference');
         assert_true(window.matchMedia('(prefers-reduced-transparency: no-preference)').matches, '(prefers-reduced-transparency: no-preference) matches');
+        assert_equals(navigator.preferences.reducedTransparency.value, 'no-preference');
         await navigator.preferences.reducedTransparency.requestOverride('reduce');
         assert_true(window.matchMedia('(prefers-reduced-transparency: reduce)').matches, '(prefers-reduced-transparency: reduce) matches');
+        assert_equals(navigator.preferences.reducedTransparency.value, 'reduce');
         navigator.preferences.reducedTransparency.clearOverride();
         assert_true(window.matchMedia('(prefers-reduced-transparency: no-preference)').matches);
+        assert_equals(navigator.preferences.reducedTransparency.value, 'no-preference');
         t.done();
       }, "navigator.preferences.reducedTransparency.requestOverride() updates (prefers-reduced-transparency)");
     </script>

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -14,17 +15,20 @@ namespace blink {
 
 template <typename IDLType>
 class FrozenArray;
+class MediaValues;
 
 // Spec: https://wicg.github.io/web-preferences-api/#preferenceobject-interface
 class PreferenceObject final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit PreferenceObject(AtomicString name);
+  PreferenceObject(ExecutionContext*, AtomicString name);
 
   ~PreferenceObject() override;
 
   std::optional<AtomicString> override(ScriptState*);
+
+  AtomicString value(ScriptState*);
 
   void clearOverride(ScriptState*);
 
@@ -37,6 +41,7 @@ class PreferenceObject final : public ScriptWrappable {
  private:
   AtomicString name_;
   Member<FrozenArray<IDLString>> valid_values_;
+  Member<const MediaValues> media_values_;
 };
 
 }  // namespace blink

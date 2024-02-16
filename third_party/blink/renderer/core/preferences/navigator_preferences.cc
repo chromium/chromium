@@ -35,7 +35,8 @@ void NavigatorPreferences::Trace(Visitor* visitor) const {
 
 NavigatorPreferences::NavigatorPreferences(Navigator& navigator)
     : Supplement(navigator) {
-  preference_manager_ = MakeGarbageCollected<PreferenceManager>();
+  preference_manager_ =
+      MakeGarbageCollected<PreferenceManager>(navigator.GetExecutionContext());
 }
 
 }  // namespace blink

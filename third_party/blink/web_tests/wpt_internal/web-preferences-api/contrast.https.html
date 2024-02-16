@@ -70,12 +70,16 @@
       promise_test(async (t) => {
         await navigator.preferences.contrast.requestOverride('more');
         assert_true(window.matchMedia('(prefers-contrast: more)').matches, '(prefers-contrast: more) matches');
+        assert_equals(navigator.preferences.contrast.value, 'more');
         await navigator.preferences.contrast.requestOverride('no-preference');
         assert_true(window.matchMedia('(prefers-contrast: no-preference)').matches, '(prefers-contrast: no-preference) matches');
+        assert_equals(navigator.preferences.contrast.value, 'no-preference');
         await navigator.preferences.contrast.requestOverride('less');
         assert_true(window.matchMedia('(prefers-contrast: less)').matches, '(prefers-contrast: less) matches');
+        assert_equals(navigator.preferences.contrast.value, 'less');
         navigator.preferences.contrast.clearOverride();
         assert_true(window.matchMedia('(prefers-contrast: no-preference)').matches);
+        assert_equals(navigator.preferences.contrast.value, 'no-preference');
         t.done();
       }, "navigator.preferences.contrast.requestOverride() updates (prefers-contrast)");
     </script>

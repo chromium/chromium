@@ -57,10 +57,13 @@
       promise_test(async (t) => {
         await navigator.preferences.colorScheme.requestOverride('light');
         assert_true(window.matchMedia('(prefers-color-scheme: light)').matches, '(prefers-color-scheme: light) matches');
+        assert_equals(navigator.preferences.colorScheme.value, 'light');
         await navigator.preferences.colorScheme.requestOverride('dark');
         assert_true(window.matchMedia('(prefers-color-scheme: dark)').matches, '(prefers-color-scheme: dark) matches');
+        assert_equals(navigator.preferences.colorScheme.value, 'dark');
         navigator.preferences.colorScheme.clearOverride();
         assert_true(window.matchMedia('(prefers-color-scheme: light)').matches);
+        assert_equals(navigator.preferences.colorScheme.value, 'light');
         t.done();
       }, "navigator.preferences.colorScheme.requestOverride() updates (prefers-color-scheme)");
     </script>

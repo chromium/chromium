@@ -57,10 +57,13 @@
       promise_test(async (t) => {
         await navigator.preferences.reducedData.requestOverride('no-preference');
         assert_true(window.matchMedia('(prefers-reduced-data: no-preference)').matches, '(prefers-reduced-data: no-preference) matches');
+        assert_equals(navigator.preferences.reducedData.value, 'no-preference');
         await navigator.preferences.reducedData.requestOverride('reduce');
         assert_true(window.matchMedia('(prefers-reduced-data: reduce)').matches, '(prefers-reduced-data: reduce) matches');
+        assert_equals(navigator.preferences.reducedData.value, 'reduce');
         navigator.preferences.reducedData.clearOverride();
         assert_true(window.matchMedia('(prefers-reduced-data: no-preference)').matches);
+        assert_equals(navigator.preferences.reducedData.value, 'no-preference');
         t.done();
       }, "navigator.preferences.reducedData.requestOverride() updates (prefers-reduced-data)");
     </script>

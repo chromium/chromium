@@ -8,16 +8,17 @@
 
 namespace blink {
 
-PreferenceManager::PreferenceManager() {
-  color_scheme_ =
-      MakeGarbageCollected<PreferenceObject>(AtomicString("colorScheme"));
-  contrast_ = MakeGarbageCollected<PreferenceObject>(AtomicString("contrast"));
-  reduced_motion_ =
-      MakeGarbageCollected<PreferenceObject>(AtomicString("reducedMotion"));
+PreferenceManager::PreferenceManager(ExecutionContext* executionContext) {
+  color_scheme_ = MakeGarbageCollected<PreferenceObject>(
+      executionContext, AtomicString("colorScheme"));
+  contrast_ = MakeGarbageCollected<PreferenceObject>(executionContext,
+                                                     AtomicString("contrast"));
+  reduced_motion_ = MakeGarbageCollected<PreferenceObject>(
+      executionContext, AtomicString("reducedMotion"));
   reduced_transparency_ = MakeGarbageCollected<PreferenceObject>(
-      AtomicString("reducedTransparency"));
-  reduced_data_ =
-      MakeGarbageCollected<PreferenceObject>(AtomicString("reducedData"));
+      executionContext, AtomicString("reducedTransparency"));
+  reduced_data_ = MakeGarbageCollected<PreferenceObject>(
+      executionContext, AtomicString("reducedData"));
 }
 
 PreferenceManager::~PreferenceManager() = default;
