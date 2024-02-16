@@ -37,8 +37,8 @@ class ProvisioningConfigFetcher;
 class FcmTopicSubscriber;
 class PsmClaimVerifier;
 
-constexpr base::TimeDelta kRetryDelay = base::Seconds(5);
-const int kMaxRetries = 2;
+inline constexpr base::TimeDelta kRetryDelay = base::Seconds(15);
+inline constexpr int kMaxRetries = 2;
 
 enum class ModemLockStatus {
   kUnknown,

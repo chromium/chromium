@@ -55,10 +55,10 @@ const int kLastConfigKeepDate = 0;
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors before using exponential delay.
-    30 * 1000,       // Initial delay of 30 seconds in ms.
-    2.0,             // Factor by which the waiting time will be multiplied.
+    60 * 1000,       // Initial delay of 60 seconds in ms.
+    1.2,             // Factor by which the waiting time will be multiplied.
     0,               // Fuzzing percentage.
-    10 * 60 * 1000,  // Maximum delay of 10 minutes in ms.
+    30 * 60 * 1000,  // Maximum delay of 30 minutes in ms.
     -1,              // Never discard the entry.
     false,           // Always use initial delay.
 };
@@ -398,35 +398,32 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
     VLOG(2) << "Change of default network skipped because of backoff timer.";
     return;
   }
-
   if (configuration_state_ >= ConfigurationState::kDeviceLocked) {
     // Modem configuration is complete.
-    retry_backoff_.InformOfRequest(/*succeeded=*/true);
     return;
   }
 
   if (!network) {
     network = network_state_handler_->DefaultNetwork();
   }
+  if (!network || !network->IsConnectedState()) {
+    VLOG(2) << "No network connectivity.";
+    return;
+  }
 
-  if (network && network->IsConnectedState() &&
-      configuration_state_ == ConfigurationState::kNone) {
+  if (configuration_state_ == ConfigurationState::kNone) {
     // Ready to start configuration process.
     configuration_state_ = ConfigurationState::kInitialize;
-    retry_backoff_.InformOfRequest(/*succeeded=*/true);
     RunStep(configuration_state_);
     return;
   }
 
   retry_backoff_.InformOfRequest(/*succeeded=*/false);
-  VLOG_IF(2, configuration_state_ != ConfigurationState::kNone)
-      << "Network connection was interrupted.";
-  VLOG_IF(2, !network || !network->IsConnectedState())
-      << "No network connectivity.";
-  VLOG(2) << "Retry in [sec]: "
-          << retry_backoff_.GetTimeUntilRelease().InSeconds();
+  VLOG(2) << "Network connection was interrupted. Restart setup in "
+          << retry_backoff_.GetTimeUntilRelease().InSeconds() << " seconds.";
 
-  // Call this function after delay to restart configuration if it failed.
+  // Call this function after delay to check if configuration process
+  // failed and restart it from initial step.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CarrierLockManager::DefaultNetworkChanged,
@@ -447,7 +444,7 @@ void CarrierLockManager::DevicePropertiesUpdated(const DeviceState* device) {
   bool is_manager_enabled = (ash::features::IsCellularCarrierLockEnabled() &&
                              !local_state_->GetBoolean(kDisableManagerPref));
   bool is_modem_configured =
-      local_state_->GetTime(kLastConfigTimePref) != base::Time();
+      !local_state_->GetTime(kLastConfigTimePref).is_null();
 
   if (is_manager_enabled) {
     if (!is_modem_configured) {
@@ -572,8 +569,8 @@ void CarrierLockManager::LogError(Result result) {
 
   local_state_->SetInteger(kErrorCounterPref, ++error_counter_);
   if (error_counter_ && !(error_counter_ % 10)) {
-    base::UmaHistogramCounts1000(kNumConsecutiveConfigurationFailures,
-                                 error_counter_);
+    base::UmaHistogramCounts1M(kNumConsecutiveConfigurationFailures,
+                               error_counter_);
   }
 }
 
@@ -610,6 +607,7 @@ void CarrierLockManager::CheckState() {
     }
   }
 
+  // First configuration, check PSM claim.
   base::Time last_config = local_state_->GetTime(kLastConfigTimePref);
   if (last_config.is_null()) {
     base::UmaHistogramEnumeration(kConfigurationStateAfterInitialization,
@@ -619,6 +617,7 @@ void CarrierLockManager::CheckState() {
     return;
   }
 
+  // Configuration older than 30 days, get FCM token and new configuration.
   if (base::Time::Now() - last_config >= kFcmTimeout) {
     base::UmaHistogramEnumeration(kConfigurationStateAfterInitialization,
                                   InitialState::kObsoleteConfiguration);
@@ -627,6 +626,7 @@ void CarrierLockManager::CheckState() {
     return;
   }
 
+  // Apply stored configuration if possible or request new token and config.
   std::string last_imei = local_state_->GetString(kLastImeiPref);
   std::string signed_config = local_state_->GetString(kSignedConfigPref);
   std::string fcm_topic = local_state_->GetString(kFcmTopicPref);
@@ -717,7 +717,16 @@ void CarrierLockManager::ConfigCallback(Result result) {
   }
   std::string signed_config = base::Base64Encode(config_->GetSignedConfig());
   local_state_->SetString(kSignedConfigPref, signed_config);
+
+  if (!local_state_->GetString(kFcmTopicPref).empty() &&
+      config_->GetFcmTopic().empty()) {
+    NetworkConnect::Get()->ShowCarrierUnlockNotification();
+  }
+
+  // Save current time, modem imei and fcm topic.
   local_state_->SetString(kFcmTopicPref, config_->GetFcmTopic());
+  local_state_->SetTime(kLastConfigTimePref, base::Time::Now());
+  local_state_->SetString(kLastImeiPref, imei_);
 
   RunStep(ConfigurationState::kSetupModem);
 }
@@ -726,6 +735,12 @@ void CarrierLockManager::SetupModem() {
   std::string signed_config;
   base::Base64Decode(local_state_->GetString(kSignedConfigPref),
                      &signed_config);
+
+  // Make sure the manager is enabled before locking the modem.
+  if (!local_state_->GetString(kFcmTopicPref).empty() &&
+      local_state_->GetBoolean(kDisableManagerPref)) {
+    local_state_->SetBoolean(kDisableManagerPref, false);
+  }
 
   modem_handler_->SetCarrierLock(
       signed_config, base::BindOnce(&CarrierLockManager::SetupModemCallback,
@@ -738,10 +753,6 @@ void CarrierLockManager::SetupModemCallback(CarrierLockResult result) {
     RetryStep();
     return;
   }
-
-  // Save time and IMEI of this configuration.
-  local_state_->SetTime(kLastConfigTimePref, base::Time::Now());
-  local_state_->SetString(kLastImeiPref, imei_);
 
   if (local_state_->GetString(kFcmTopicPref).empty()) {
     // Configuration not locked.
@@ -788,15 +799,13 @@ void CarrierLockManager::FcmTokenCallback(Result result) {
 void CarrierLockManager::CheckFcmTopic() {
   if (local_state_->GetString(kFcmTopicPref).empty()) {
     VLOG(2) << "FCM topic not provided with config, modem was unlocked.";
-    base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeUnlock,
-                                error_counter_);
-    NetworkConnect::Get()->ShowCarrierUnlockNotification();
+    base::UmaHistogramCounts1M(kNumConsecutiveFailuresBeforeUnlock,
+                               error_counter_);
     RunStep(ConfigurationState::kDeviceUnlocked);
     return;
   }
 
-  base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeLock,
-                              error_counter_);
+  base::UmaHistogramCounts1M(kNumConsecutiveFailuresBeforeLock, error_counter_);
   RunStep(ConfigurationState::kFcmSubscribe);
 }
 
