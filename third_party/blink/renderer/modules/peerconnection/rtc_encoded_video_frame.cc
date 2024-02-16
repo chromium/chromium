@@ -96,6 +96,34 @@ bool ValidateMetadata(const RTCEncodedVideoFrameMetadata* metadata,
 
 }  // namespace
 
+RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
+    RTCEncodedVideoFrame* original_frame,
+    ExceptionState& exception_state) {
+  return RTCEncodedVideoFrame::Create(original_frame, nullptr, exception_state);
+}
+
+RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
+    RTCEncodedVideoFrame* original_frame,
+    RTCEncodedVideoFrameMetadata* new_metadata,
+    ExceptionState& exception_state) {
+  RTCEncodedVideoFrame* new_frame;
+  if (original_frame) {
+    new_frame = MakeGarbageCollected<RTCEncodedVideoFrame>(
+        original_frame->Delegate()->CloneWebRtcFrame());
+  } else {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "Video frame is empty.");
+    return nullptr;
+  }
+  if (new_metadata) {
+    new_frame->setMetadata(new_metadata, exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+  }
+  return new_frame;
+}
+
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
     : delegate_(base::MakeRefCounted<RTCEncodedVideoFrameDelegate>(
