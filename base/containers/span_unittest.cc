@@ -86,6 +86,9 @@ namespace {
     int kArray[] = {1, 2, 3};
     static_assert(std::is_same_v<decltype(span(kArray)), span<int, 3>>);
   }
+  // We also deduce an rvalue array to make a fixed-span over const values,
+  // which matches the span<const T> constructor from an array.
+  static_assert(std::is_same_v<decltype(span({1, 2, 3})), span<const int, 3>>);
 
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::array<const bool, 3>&>())),
@@ -359,26 +362,38 @@ TEST(SpanTest, ConstructFromConstexprArray) {
 TEST(SpanTest, ConstructFromArray) {
   int array[] = {5, 4, 3, 2, 1};
 
-  span<const int> const_span(array);
+  span<const int> const_span = array;
   EXPECT_EQ(array, const_span.data());
   EXPECT_EQ(std::size(array), const_span.size());
   for (size_t i = 0; i < const_span.size(); ++i) {
     EXPECT_EQ(array[i], const_span[i]);
   }
 
-  span<int> dynamic_span(array);
+  span<int> dynamic_span = array;
   EXPECT_EQ(array, dynamic_span.data());
   EXPECT_EQ(std::size(array), dynamic_span.size());
   for (size_t i = 0; i < dynamic_span.size(); ++i) {
     EXPECT_EQ(array[i], dynamic_span[i]);
   }
 
-  span<int, std::size(array)> static_span(array);
+  span<int, std::size(array)> static_span = array;
   EXPECT_EQ(array, static_span.data());
   EXPECT_EQ(std::size(array), static_span.size());
   for (size_t i = 0; i < static_span.size(); ++i) {
     EXPECT_EQ(array[i], static_span[i]);
   }
+
+  [](span<const int> dynamic_span) {
+    EXPECT_EQ(dynamic_span.size(), 5u);
+    EXPECT_EQ(dynamic_span[0u], 5);
+    EXPECT_EQ(dynamic_span[4u], 1);
+  }({{5, 4, 3, 2, 1}});
+
+  [](span<const int, 5u> static_span) {
+    EXPECT_EQ(static_span.size(), 5u);
+    EXPECT_EQ(static_span[0u], 5);
+    EXPECT_EQ(static_span[4u], 1);
+  }({{5, 4, 3, 2, 1}});
 }
 
 TEST(SpanTest, ConstructFromVolatileArray) {
@@ -1405,6 +1420,16 @@ TEST(SpanTest, AsByteSpan) {
               reinterpret_cast<const uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
+  // Rvalue input.
+  {
+    [](auto byte_span) {
+      static_assert(std::is_same_v<decltype(byte_span),
+                                   span<const uint8_t, 6u * sizeof(int)>>);
+      EXPECT_EQ(byte_span.size(), 6u * sizeof(int));
+      // Little endian puts the low bits in the first byte.
+      EXPECT_EQ(byte_span[0u], 2);
+    }(as_byte_span({2, 3, 5, 7, 11, 13}));
+  }
 }
 
 TEST(SpanTest, AsWritableByteSpan) {
@@ -1422,6 +1447,16 @@ TEST(SpanTest, AsWritableByteSpan) {
     static_assert(std::is_same_v<decltype(byte_span), span<uint8_t>>);
     EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
+  }
+  // Rvalue input.
+  {
+    [](auto byte_span) {
+      static_assert(
+          std::is_same_v<decltype(byte_span), span<uint8_t, 6u * sizeof(int)>>);
+      EXPECT_EQ(byte_span.size(), 6u * sizeof(int));
+      // Little endian puts the low bits in the first byte.
+      EXPECT_EQ(byte_span[0u], 2);
+    }(as_writable_byte_span({2, 3, 5, 7, 11, 13}));
   }
 }
 

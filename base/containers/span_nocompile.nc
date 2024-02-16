@@ -218,4 +218,9 @@ void FromRefLifetimeBoundErrorForTemporaryStringObject() {
       span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
 }
 
+void RvalueArrayLifetime() {
+  [[maybe_unused]] auto wont_work =
+      as_byte_span({1, 2});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+}
+
 }  // namespace base
