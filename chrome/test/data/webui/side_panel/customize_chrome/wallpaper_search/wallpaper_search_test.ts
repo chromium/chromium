@@ -1222,11 +1222,13 @@ suite('WallpaperSearchTest', () => {
 
       [[WallpaperSearchStatus.kError, 'generic error'],
        [WallpaperSearchStatus.kRequestThrottled, 'throttle error'],
+       [WallpaperSearchStatus.kSignedOut, 'signed out error'],
       ].forEach(([status, description]) => {
         test(`shows correct error for status ${status}`, async () => {
           loadTimeData.overrideValues({
             genericErrorDescription: 'generic error',
             requestThrottledDescription: 'throttle error',
+            signedOutDescription: 'signed out error',
           });
           handler.setResultFor(
               'getWallpaperSearchResults',

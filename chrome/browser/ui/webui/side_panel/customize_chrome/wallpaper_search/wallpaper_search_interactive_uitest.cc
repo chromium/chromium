@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
@@ -14,6 +15,8 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -50,6 +53,10 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                        signin::ConsentLevel::kSignin);
     mock_optimization_guide_keyed_service_ =
         static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
             OptimizationGuideKeyedServiceFactory::GetForProfile(

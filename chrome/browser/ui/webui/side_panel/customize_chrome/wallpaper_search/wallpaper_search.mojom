@@ -69,9 +69,9 @@ struct ResultDescriptors {
   DescriptorDValue? color;
 };
 
-// Must match |NtpWallpaperSearchError| in enums.xml, since this is used
-// for the NewTabPage.WallpaperSearchError histogram. The exception is
-// kOk, since the histogram only records errors.
+// Wallpaper Search statuses. This enum must match the numbering for
+// |NtpWallpaperSearchStatus| in new_tab_page/enums.xml. These values
+// are persisted to logs. Entries should not be renumbered, removed or reused.
 enum WallpaperSearchStatus {
   kOk,
   // Generic error, not specified.
@@ -80,6 +80,8 @@ enum WallpaperSearchStatus {
   kRequestThrottled,
   // Browser offline.
   kOffline,
+  // User is signed out.
+  kSignedOut,
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

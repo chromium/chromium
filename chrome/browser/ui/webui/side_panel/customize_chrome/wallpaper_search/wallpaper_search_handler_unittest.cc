@@ -27,6 +27,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -42,6 +43,8 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -147,7 +150,12 @@ class WallpaperSearchHandlerTest : public testing::Test {
             MockWallpaperSearchBackgroundManager(profile_.get())),
         mock_hats_service_(static_cast<MockHatsService*>(
             HatsServiceFactory::GetForProfile(profile_.get(),
-                                              /*create_if_necessary=*/true))) {}
+                                              /*create_if_necessary=*/true))),
+        identity_manager_(
+            IdentityManagerFactory::GetForProfile(profile_.get())) {
+    signin::SetPrimaryAccount(identity_manager_, "test@example.com",
+                              signin::ConsentLevel::kSignin);
+  }
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -218,6 +226,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
     return test_url_loader_factory_;
   }
   MockHatsService& mock_hats_service() { return *mock_hats_service_; }
+  signin::IdentityManager& identity_manager() { return *identity_manager_; }
 
  private:
   // NOTE: The initialization order of these members matters.
@@ -236,6 +245,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
       mock_wallpaper_search_background_manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   raw_ptr<MockHatsService> mock_hats_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 TEST_F(WallpaperSearchHandlerTest, GetHistory) {
@@ -1123,6 +1133,45 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
   EXPECT_TRUE(qualities[0]->final_request_in_session());
   EXPECT_EQ(321, qualities[0]->request_latency_ms());
   EXPECT_EQ(0, qualities[0]->images_quality_size());
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_SignedOut) {
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback;
+  side_panel::customize_chrome::mojom::WallpaperSearchStatus status;
+  std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
+      images;
+  EXPECT_CALL(callback, Run(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
+  // Search should not be initiated.
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .Times(0);
+
+// ChromeOs doesn't support signing out the primary account.
+#if !BUILDFLAG(IS_CHROMEOS)
+  signin::ClearPrimaryAccount(&identity_manager());
+#else
+  profile().SetGuestSession(true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  side_panel::customize_chrome::mojom::ResultDescriptorsPtr result_descriptors =
+      side_panel::customize_chrome::mojom::ResultDescriptors::New();
+  result_descriptors->subject = "foo";
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetWallpaperSearchResults(std::move(result_descriptors),
+                                     callback.Get());
+
+  EXPECT_EQ(
+      status,
+      side_panel::customize_chrome::mojom::WallpaperSearchStatus::kSignedOut);
+  EXPECT_EQ(images.size(), 0u);
+
+  // No quality logs should be created on destruction.
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              UploadModelQualityLogs(_))
+      .Times(0);
+
+  handler.reset();
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {

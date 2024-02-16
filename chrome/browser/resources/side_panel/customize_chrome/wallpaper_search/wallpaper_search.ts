@@ -341,6 +341,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
               this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
         };
+      case WallpaperSearchStatus.kSignedOut:
+        return {
+          title: this.i18n('signedOutTitle'),
+          description: this.i18n('signedOutDescription'),
+          callToAction: this.i18n('ok'),
+        };
     }
   }
 

@@ -474,6 +474,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Generic error"/>
   <int value="2" label="Request throttled"/>
   <int value="3" label="Offline"/>
+  <int value="4" label="Signed out user"/>
 </enum>
 
 <enum name="PhotosModuleRequestResult">

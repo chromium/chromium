@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -296,6 +297,26 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
     side_panel::customize_chrome::mojom::ResultDescriptorsPtr
         result_descriptors,
     GetWallpaperSearchResultsCallback callback) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    std::move(callback).Run(
+        side_panel::customize_chrome::mojom::WallpaperSearchStatus::kSignedOut,
+        std::vector<
+            side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>());
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Check if user is browsing in guest mode.
+  if (profile_->IsGuestSession()) {
+    std::move(callback).Run(
+        side_panel::customize_chrome::mojom::WallpaperSearchStatus::kSignedOut,
+        std::vector<
+            side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>());
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError,

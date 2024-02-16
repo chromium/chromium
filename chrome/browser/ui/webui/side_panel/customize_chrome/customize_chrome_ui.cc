@@ -214,6 +214,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION},
       {"wallpaperSearchDescriptorsChangedA11yMessage",
        IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE},
+      {"signedOutDescription", IDS_NTP_WALLPAPER_SEARCH_SIGNED_OUT_DESCRIPTION},
+      {"signedOutTitle", IDS_NTP_WALLPAPER_SEARCH_SIGNED_OUT_TITLE},
       // Side Panel Extension Card.
       {"customizeWithChromeWebstoreLabel",
        IDS_NTP_CUSTOMIZE_CHROME_WEBSTORE_LABEL},
