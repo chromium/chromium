@@ -782,10 +782,21 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
   SetRecalcListItems();
   if (option_is_selected) {
     SelectOption(&option, IsMultiple() ? 0 : kDeselectOtherOptionsFlag);
-  } else {
-    // No need to reset if we already have a selected option.
-    if (!last_on_change_option_)
+  } else if (!last_on_change_option_) {
+    // The newly added option is not selected and we do not already have a
+    // selected option. We should re-run the selection algorithm if there is a
+    // chance that the newly added option can become the selected option.
+    // However, we should not re-run the algorithm if either of these is true:
+    //
+    // 1. The new option is disabled because disabled options can never be
+    // selected.
+    // 2. The size attribute is greater than 1 because the HTML spec does not
+    // mention a default value for that case.
+    //
+    // https://html.spec.whatwg.org/multipage/form-elements.html#selectedness-setting-algorithm
+    if (size_ <= 1 && !option.IsDisabledFormControl()) {
       ResetToDefaultSelection();
+    }
   }
   SetNeedsValidityCheck();
   select_type_->ClearLastOnChangeSelection();
