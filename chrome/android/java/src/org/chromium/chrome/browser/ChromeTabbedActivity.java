@@ -421,7 +421,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
 
-    // Only true if both Start surface and Start surface refactor are enabled.
     private Boolean mIsHandleTabSwitcherShownEnabled;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
@@ -1218,12 +1217,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
             }
 
-            if (mIsHandleTabSwitcherShownEnabled == null) {
-                mIsHandleTabSwitcherShownEnabled =
-                        !isTablet()
-                                && isStartSurfaceRefactorEnabled()
-                                && ReturnToChromeUtil.isStartSurfaceEnabled(this);
-            }
             if (HubFieldTrial.isHubEnabled()) {
                 TabSwitcher switcher = mTabSwitcherSupplier.get();
                 if (switcher != null) {
@@ -3048,7 +3041,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // Handles the case of showing Tab switcher and will return to the Start surface.
         if (ReturnToChromeUtil.shouldHandleTabSwitcherShown(
-                mIsHandleTabSwitcherShownEnabled, mLayoutStateProviderSupplier.get())) {
+                isHandleTabSwitcherShownEnabled(), mLayoutStateProviderSupplier.get())) {
             // Passes true since Tab switcher is showing and we should handle this case to return to
             // the Start surface.
             returnToOverviewModeOnBackPressed(true);
@@ -3156,17 +3149,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mBackPressManager.setHasSystemBackArm(true);
         if (mReturnToChromeBackPressHandler == null && !isTablet()) {
-            mIsHandleTabSwitcherShownEnabled =
-                    isStartSurfaceRefactorEnabled()
-                            && ReturnToChromeUtil.isStartSurfaceEnabled(this);
-
             mReturnToChromeBackPressHandler =
                     new ReturnToChromeBackPressHandler(
                             getActivityTabProvider(),
                             this::returnToOverviewModeOnBackPressed,
                             this::getActivityTab,
                             mLayoutStateProviderSupplier,
-                            mIsHandleTabSwitcherShownEnabled);
+                            isHandleTabSwitcherShownEnabled());
             mBackPressManager.addHandler(
                     mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
@@ -3950,6 +3939,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(this);
         }
         return mIsStartSurfaceRefactorEnabled;
+    }
+
+    /** Returns whether handling tab switcher shown is enabled. */
+    private boolean isHandleTabSwitcherShownEnabled() {
+        if (mIsHandleTabSwitcherShownEnabled == null) {
+            mIsHandleTabSwitcherShownEnabled =
+                    !isTablet()
+                            && isStartSurfaceRefactorEnabled()
+                            && ReturnToChromeUtil.isStartSurfaceEnabled(this);
+        }
+        return mIsHandleTabSwitcherShownEnabled;
     }
 
     /** Returns whether to show a NTP as the home surface at startup on tablet in regular mode. */
