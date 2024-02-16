@@ -339,8 +339,8 @@ find useful.
 
 ## Wrapping Up
 Once you have written a fuzzer with libprotobuf-mutator, building and running
-it is pretty much the same as if the fuzzer were a standard libFuzzer-based
-fuzzer (with minor exceptions, like your seed corpus must be in protobuf
+it is pretty much the same as if the fuzzer were a [standard libFuzzer-based
+fuzzer] (with minor exceptions, like your seed corpus must be in protobuf
 format).
 
 ## General Tips
@@ -367,3 +367,4 @@ fuzzer).
 [here]: https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
 [lpm_test_fuzzer]: https://cs.chromium.org/#search&q=lpm_test_fuzzer+file:%5Esrc/third_party/libprotobuf-mutator/BUILD.gn
 [mojo_parse_messages_proto_fuzzer]: https://cs.chromium.org/chromium/src/mojo/public/tools/fuzzers/mojo_parse_message_proto_fuzzer.cc?l=25
+[standard libFuzzer-based fuzzer]:getting_started_with_libfuzzer.md

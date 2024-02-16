@@ -202,12 +202,12 @@ the symbol level by setting the `symbol_level` attribute.
 ### Running the fuzz target
 
 After you create your fuzz target, build it with autoninja and run it locally.
-To make this example concrete, we are going to use the existing 
+To make this example concrete, we are going to use the existing
 `create_fnmatch_query_fuzzer` target.
 
 ```bash
 # Build the fuzz target.
-autoninja -C chrome/browser/ash:create_fnmatch_query_fuzzer
+autoninja -C out/libfuzzer chrome/browser/ash:create_fnmatch_query_fuzzer
 # Run the fuzz target.
 ./out/libfuzzer/create_fnmatch_query_fuzzer
 ```
