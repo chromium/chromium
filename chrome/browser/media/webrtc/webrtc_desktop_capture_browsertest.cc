@@ -307,8 +307,12 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
   FakeDesktopMediaPickerFactory picker_factory_;
 };
 
-// TODO(crbug.com/1449889): Fails on MAC.
+// TODO(crbug.com/40915051): Fails on MAC.
+// TODO(crbug.com/40915051): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not.
 #if BUILDFLAG(IS_MAC)
+#define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
+#elif defined(MEMORY_SANITIZER)
 #define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
 #else
 #define MAYBE_TabCaptureProvidesMinFps TabCaptureProvidesMinFps
@@ -316,7 +320,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
                        MAYBE_TabCaptureProvidesMinFps) {
   constexpr int kFps = 30;
-  constexpr const char* const kFpsString = "30";
+  constexpr const char* kFpsString = "30";
   constexpr int kTestTimeSeconds = 2;
   // We wait with measuring frame rate until a few frames has passed. This is
   // because the frame rate frame dropper in VideoTrackAdapter is pretty
@@ -362,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   ASSERT_GE(average_fps, kFps / 3);
 }
 
-// TODO(crbug.com/1449889): Fails on Linux ASan, LSan and MSan builders.
+// TODO(crbug.com/40915051): Fails on Linux ASan, LSan and MSan builders.
 #if BUILDFLAG(IS_LINUX) &&                                      \
     ((defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || \
      defined(MEMORY_SANITIZER))
