@@ -25,11 +25,15 @@ AutofillFieldPromoControllerImpl::~AutofillFieldPromoControllerImpl() {
 
 void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   Hide();
-  AutofillPopupHideHelper::HidingParams hiding_params = {};
+
+  AutofillPopupHideHelper::HidingParams hiding_params = {
+      .hide_on_text_field_change = false};
+
   AutofillPopupHideHelper::HidingCallback hiding_callback =
       base::BindRepeating([](AutofillFieldPromoControllerImpl& controller,
                              PopupHidingReason) { controller.Hide(); },
                           std::ref(*this));
+
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
       pip_detection_callback = base::BindRepeating(
           [](base::WeakPtr<AutofillFieldPromoView> view) {

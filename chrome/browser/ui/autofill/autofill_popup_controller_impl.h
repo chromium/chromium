@@ -16,8 +16,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -69,7 +67,6 @@ class ExpandablePopupParentControllerImpl {
 // other, public functions are available to its instantiator.
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
-      public AutofillManager::Observer,
       public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
@@ -199,11 +196,6 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
-  // AutofillManager::Observer:
-  void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override;
-
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
@@ -266,8 +258,6 @@ class AutofillPopupControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
-
-  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.

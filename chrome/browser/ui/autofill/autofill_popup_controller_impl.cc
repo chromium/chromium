@@ -25,7 +25,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -141,15 +141,6 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
-void AutofillPopupControllerImpl::OnBeforeTextFieldDidChange(
-    AutofillManager& manager,
-    FormGlobalId form,
-    FieldGlobalId field) {
-  // This method is only called for popups with a Compose entry. In this case,
-  // an edit on a field should lead to the popup hiding.
-  Hide(PopupHidingReason::kFieldValueChanged);
-}
-
 void AutofillPopupControllerImpl::Show(
     std::vector<Suggestion> suggestions,
     AutofillSuggestionTriggerSource trigger_source,
@@ -166,9 +157,16 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
-  AutofillPopupHideHelper::HidingParams hiding_params = {};
+  AutofillPopupHideHelper::HidingParams hiding_params = {
+      // It suffices if the root popup observes changes in form elements.
+      // Currently, this is only relevant for Compose.
+      .hide_on_text_field_change =
+          IsRootPopup() && suggestions.size() == 1 &&
+          suggestions[0].popup_item_id == PopupItemId::kCompose};
+
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
       &AutofillPopupControllerImpl::Hide, base::Unretained(this));
+
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
       pip_detection_callback = base::BindRepeating(
           [](base::WeakPtr<AutofillPopupView> view) {
@@ -236,16 +234,6 @@ void AutofillPopupControllerImpl::Show(
     // and only permit a single call to `Show`.
     key_press_observer_.Reset();
     key_press_observer_.Observe(web_contents_->GetFocusedFrame());
-
-    // It suffices if the root popup observes changes in form elements.
-    // Currently, this is only relevant for Compose.
-    if (suggestions_.size() == 1 &&
-        suggestions_[0].popup_item_id == PopupItemId::kCompose) {
-      autofill_managers_observation_.Reset();
-      autofill_managers_observation_.Observe(
-          web_contents_, ScopedAutofillManagersObservation::
-                             InitializationPolicy::kObservePreexistingManagers);
-    }
 
     delegate_->OnPopupShown();
   }
@@ -327,7 +315,6 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
     delegate_->OnPopupHidden();
   }
   key_press_observer_.Reset();
-  autofill_managers_observation_.Reset();
   popup_hide_helper_.reset();
   AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();

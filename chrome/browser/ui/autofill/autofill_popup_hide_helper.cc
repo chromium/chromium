@@ -55,6 +55,12 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
   CHECK(picture_in_picture_window_manager);
   picture_in_picture_window_observation_.Observe(
       picture_in_picture_window_manager);
+
+  if (hiding_params.hide_on_text_field_change) {
+    autofill_managers_observation_.Observe(
+        web_contents, ScopedAutofillManagersObservation::InitializationPolicy::
+                          kObservePreexistingManagers);
+  }
 }
 
 AutofillPopupHideHelper::~AutofillPopupHideHelper() = default;
@@ -122,6 +128,13 @@ void AutofillPopupHideHelper::OnEnterPictureInPicture() {
     hiding_callback_.Run(
         PopupHidingReason::kOverlappingWithPictureInPictureWindow);
   }
+}
+
+void AutofillPopupHideHelper::OnBeforeTextFieldDidChange(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field) {
+  hiding_callback_.Run(PopupHidingReason::kFieldValueChanged);
 }
 
 }  // namespace autofill
