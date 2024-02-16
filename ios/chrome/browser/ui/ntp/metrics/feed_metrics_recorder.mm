@@ -168,13 +168,14 @@ using feed::FeedUserActionType;
 
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
   self.isNTPVisible = visible;
+
   if (visible) {
+    // Sets `feedBecameVisibleTime` before any time based check is ran to
+    // prevent negative values from non-initialized variables.
+    self.feedBecameVisibleTime = base::Time::Now();
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                     kOpenedFeedSurface
                                   asInteraction:NO];
-  }
-
-  if (visible) {
     base::Time lastInteractionTimeForGoodVisitsDate =
         self.prefService->GetTime(kLastInteractionTimeForGoodVisits);
     if (lastInteractionTimeForGoodVisitsDate != base::Time()) {
@@ -233,7 +234,6 @@ using feed::FeedUserActionType;
     // interaction.
     base::Time articleVisitStart =
         self.prefService->GetTime(kArticleVisitTimestampKey);
-    self.feedBecameVisibleTime = base::Time::Now();
 
     if (articleVisitStart != base::Time()) {
       // Report Good Visit if user came back to the NTP after spending
