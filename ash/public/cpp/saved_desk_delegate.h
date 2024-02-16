@@ -80,9 +80,12 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
       const ui::ColorProvider* color_provider) const = 0;
 
   // Fetches the favicon for `page_url` and returns it via the provided
-  // `callback`. `callback` may be called synchronously.
+  // `callback`. When lacros is active, the profile identified by
+  // `lacros_profile_id` is used to get the favicon. `callback` may be called
+  // synchronously.
   virtual void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const = 0;
 

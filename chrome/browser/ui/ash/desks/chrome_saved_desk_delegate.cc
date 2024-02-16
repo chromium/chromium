@@ -401,6 +401,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
 
 void ChromeSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
+    uint64_t lacros_profile_id,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetFaviconForUrl");
@@ -409,7 +410,8 @@ void ChromeSavedDeskDelegate::GetFaviconForUrl(
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()
-        ->GetFaviconImage(GURL(page_url), std::move(callback));
+        ->GetFaviconImage(GURL(page_url), lacros_profile_id,
+                          std::move(callback));
     return;
   }
 

@@ -232,8 +232,9 @@ void SavedDeskRegularIconView::CreateChildViews(
     return;
   }
 
+  // TODO(b/322847219): Pass lacros profile ID.
   delegate->GetFaviconForUrl(
-      icon_identifier_,
+      icon_identifier_, /*lacros_profile_id=*/0,
       base::BindOnce(&SavedDeskRegularIconView::OnIconLoaded,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);

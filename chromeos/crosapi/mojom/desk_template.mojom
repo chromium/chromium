@@ -63,7 +63,7 @@ struct DeskTemplateState {
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.
-// Next version: 4
+// Next version: 5
 // Next method id: 3
 [Stable]
 interface DeskTemplateClient {
@@ -79,9 +79,12 @@ interface DeskTemplateClient {
     uint32 serial, string window_unique_id, DeskTemplateState? state);
 
   // Gets the image of the favicon associated with `url`. Returns an empty
-  // image if the favicon cannot be found.
+  // image if the favicon cannot be found. If `profile_id` is specified, then
+  // that profile is used to load the favicon, otherwise the main profile is
+  // used.
   [MinVersion=3]
-  GetFaviconImage@2(url.mojom.Url url) => (gfx.mojom.ImageSkia? image);
+  GetFaviconImage@2(url.mojom.Url url, [MinVersion=4] uint64? profile_id)
+      => (gfx.mojom.ImageSkia? image);
 };
 
 // Interface for desk template. Implemented by ash-chrome.

@@ -140,8 +140,10 @@ class PineItemView : public views::BoxLayoutView {
 
     auto* delegate = Shell::Get()->saved_desk_delegate();
     for (const std::string& url : favicons) {
+      // TODO(b/325638530): When lacros is active, this needs to supply a valid
+      // profile id.
       delegate->GetFaviconForUrl(
-          url,
+          url, /*lacros_profile_id=*/0,
           base::BindOnce(&PineItemView::OnOneFaviconLoaded, GetWeakPtr(),
                          barrier),
           &cancelable_favicon_task_tracker_);

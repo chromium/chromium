@@ -61,6 +61,7 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
       const ui::ColorProvider* color_provider) const override;
   void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
