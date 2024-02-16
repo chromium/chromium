@@ -4581,6 +4581,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSystemNudgeMigrationName,
      flag_descriptions::kEnableSystemNudgeMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemNudgeMigration)},
+    {"enable-ongoing-processes", flag_descriptions::kEnableOngoingProcessesName,
+     flag_descriptions::kEnableOngoingProcessesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOngoingProcesses)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
     {"adaptive-button-in-top-toolbar-translate",

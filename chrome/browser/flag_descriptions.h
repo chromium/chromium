@@ -3703,6 +3703,9 @@ extern const char kEnableSystemNudgeMigrationDescription[];
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 
+extern const char kEnableOngoingProcessesName[];
+extern const char kEnableOngoingProcessesDescription[];
+
 extern const char kPanelSelfRefresh2Name[];
 extern const char kPanelSelfRefresh2Description[];
 

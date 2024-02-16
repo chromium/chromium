@@ -6458,6 +6458,11 @@ const char kEnableOAuthIppName[] =
 const char kEnableOAuthIppDescription[] =
     "Enable OAuth when printing via the IPP protocol";
 
+const char kEnableOngoingProcessesName[] = "Enable Ongoing Processes";
+const char kEnableOngoingProcessesDescription[] =
+    "Enables use of the new PinnedNotificationView for all ash pinned "
+    "notifications, which are now referred to as Ongoing Processes";
+
 const char kEnforceAshExtensionKeeplistName[] =
     "Enforce Ash extension keeplist";
 const char kEnforceAshExtensionKeeplistDescription[] =
