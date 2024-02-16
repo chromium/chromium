@@ -119,7 +119,7 @@ export class EducationalBanner extends Banner {
     const href = extraButton?.getAttribute('href');
     if (href && extraButton) {
       extraButton.addEventListener('click', (e) => {
-        visitURL(/** @type {!string} */ (href));
+        visitURL(href);
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
           this.dispatchEvent(
               new CustomEvent(BannerEvent.BANNER_DISMISSED_FOREVER, {

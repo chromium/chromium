@@ -284,8 +284,7 @@ export class NudgeContainer {
    */
   private handlePointerDown_(event: MouseEvent) {
     // Ignore pointer events on the nudge to allow copying the nudge's text.
-    if (event.composedPath().includes(
-            /** @type {!EventTarget} */ (this.nudge_))) {
+    if (event.composedPath().includes(this.nudge_)) {
       return;
     }
     this.closeNudge(this.currentNudgeType_);

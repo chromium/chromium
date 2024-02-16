@@ -10,26 +10,18 @@ import {mountCrostini, mountGuestOs, openNewWindow, remoteCall, setupAndWaitUnti
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
-/**
- * The tag used to create a safe environment to display the preview.
- */
+/** The tag used to create a safe environment to display the preview. */
 const previewTag = 'iframe';
 
-/**
- * The JS code used to query the content window for preview.
- */
+/** The JS code used to query the content window for preview. */
 const contentWindowQuery = 'document.querySelector("iframe").contentWindow';
 
-/**
- * The name of the UMA emitted to track how Quick View is opened.
- * @const {string}
- */
+/** The name of the UMA emitted to track how Quick View is opened. */
 const QuickViewUmaWayToOpenHistogramName = 'FileBrowser.QuickView.WayToOpen';
 
 /**
- * The UMA's enumeration values (must be consistent with enums.xml,
- * previously histograms.xml).
- * @enum {number}
+ * The UMA's enumeration values (must be consistent with enums.xml, previously
+ * histograms.xml).
  */
 const QuickViewUmaWayToOpenHistogramValues = {
   CONTEXT_MENU: 0,

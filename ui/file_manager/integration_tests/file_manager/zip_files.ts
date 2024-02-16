@@ -8,16 +8,10 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ZIP_ENTRY_SET, COMPLEX_ZIP_ENTRY_SET} from './test_data.js';
 
-/**
- * The name of the UMA to track the zip creation time.
- * @const {string}
- */
+/** The name of the UMA to track the zip creation time. */
 const ZipCreationTimeHistogramName = 'FileBrowser.ZipTask.Time';
 
-/**
- * The name of the UMA to track extract archive status.
- * @const {string}
- */
+/** The name of the UMA to track extract archive status. */
 const ExtractArchiveStatusHistogramName = 'FileBrowser.ExtractTask.Status';
 
 /**

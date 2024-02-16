@@ -130,7 +130,7 @@ function getMockFileManager(): FileManager {
 
   passwordDialog = {} as unknown as XfPasswordDialog;
   const fileManager = {
-    volumeManager: /** @type {!VolumeManager} */ ({
+    volumeManager: {
       getLocationInfo: function(_entry: Entry) {
         return {
           rootType: RootType.DRIVE,
@@ -144,8 +144,8 @@ function getMockFileManager(): FileManager {
           volumeType: VolumeType.DRIVE,
         };
       },
-    }),
-    ui: /** @type {!FileManagerUI} */ ({
+    },
+    ui: {
       alertDialog: {
         showHtml: function(
             _title: string, _text: string, _onOk: () => void,
@@ -153,7 +153,7 @@ function getMockFileManager(): FileManager {
       },
       passwordDialog,
       speakA11yMessage: (_text: string) => {},
-    }),
+    },
     metadataModel: {
       getCache: function(_entries: Entry[], _names: string[]) {
         return _entries.map(_ => new MetadataItem());
@@ -396,7 +396,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
             0);
       };
 
-  const taskHistory = /** @type {!TaskHistory} */ ({
+  const taskHistory = {
     getLastExecutedTime: function(
         descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
       if (descriptorEqual(descriptor, oldTaskDescriptor)) {
@@ -409,7 +409,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
     },
     recordTaskExecuted: function(
         _descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {},
-  });
+  };
 
   type FileTaskDescriptor = chrome.fileManagerPrivate.FileTaskDescriptor;
   let executedTask: FileTaskDescriptor|null = null;

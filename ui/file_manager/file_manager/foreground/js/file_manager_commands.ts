@@ -4,8 +4,8 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
@@ -259,8 +259,7 @@ export class EraseDeviceCommand extends FilesCommand {
     const root = getEventEntry(event, fileManager);
 
     if (root && root instanceof EntryList) {
-      /** @type {FilesFormatDialog} */ (fileManager.ui.formatDialog)
-          .showEraseModal(root);
+      fileManager.ui.formatDialog.showEraseModal(root);
     }
   }
 

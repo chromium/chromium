@@ -48,7 +48,6 @@ export function getRecentDateBucket(date: Date|undefined, now: Date):
 
 export function getTranslationKeyForDateBucket(
     dateBucket: chrome.fileManagerPrivate.RecentDateBucket): string {
-  /** @type {Map<chrome.fileManagerPrivate.RecentDateBucket, string>} */
   const DATE_BUCKET_TO_TRANSLATION_KEY_MAP = new Map([
     [
       chrome.fileManagerPrivate.RecentDateBucket.TODAY,

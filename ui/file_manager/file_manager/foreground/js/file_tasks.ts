@@ -39,7 +39,6 @@ import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
 /**
  * Office file handlers UMA values (must be consistent with OfficeFileHandler in
  * tools/metrics/histograms/enums.xml).
- * @const @enum {number}
  */
 const OfficeFileHandlersHistogramValues = {
   OTHER: 0,
@@ -701,7 +700,7 @@ export class FileTasks {
     // We need a password.
     const unlock = await this.mutex_.lock();
     try {
-      /** @type {?string} */ let password = null;
+      let password: string|null = null;
       while (true) {
         // Ask for password.
         do {
@@ -844,10 +843,7 @@ export class FileTasks {
   }
 }
 
-/**
- * Dialog types to show a task picker.
- * @enum {string}
- */
+/** Dialog types to show a task picker. */
 export const TaskPickerType = {
   ChangeDefault: 'ChangeDefault',
   OpenWith: 'OpenWith',

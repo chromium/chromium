@@ -238,10 +238,7 @@ async function transferBetweenVolumes(transferInfo: TransferInfo) {
   return appId;
 }
 
-/**
- * A list of transfer locations, for use with transferBetweenVolumes.
- * @enum {TransferLocationInfo}
- */
+/** A list of transfer locations, for use with transferBetweenVolumes. */
 const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
