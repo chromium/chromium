@@ -182,7 +182,7 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2" desc="A description of the new Ad topics setting page. This sits under the toggle to turn on the topics API." formatter_data="android_java">
     Topics are based on your recent browsing history and are used by sites to show you personalized ads while protecting your identity
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel.">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
     Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" desc="A label above a list of the user's topics of interest. Ad topics are published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md" formatter_data="android_java">
@@ -253,17 +253,16 @@
   </message>
 
   <!-- Proactive Topics Blocking -->
-  <!-- TODO(crbug.com/1515108) - Finalize and mark translateable. -->
   <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_TITLE" desc="Title of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue.">
     Block <ph name="TOPIC">$1<ex>Movies</ex></ph> and any related topics?
   </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BODY" desc="Body of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue.">
     Blocking <ph name="TOPIC">$1<ex>Movies</ex></ph> will also block any related topics, even if the topic is active
   </message>
-  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_CLANK_TITLE" desc="Title of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_CLANK_TITLE" desc="Title of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." formatter_data="android_java">
     Block <ph name="TOPIC">%1$s<ex>Movies</ex></ph> and any related topics?
   </message>
-  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_CLANK_BODY" desc="Body of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_CLANK_BODY" desc="Body of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." formatter_data="android_java">
     Blocking <ph name="TOPIC">%1$s<ex>Movies</ex></ph> will also block any related topics, even if the topic is active
   </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION" desc="Explanatory text for the Manage Topics settings page">
@@ -287,9 +286,6 @@
   <message name="IDS_SETTINGS_UNBLOCK_TOPIC_BUTTON_TEXT_V2" desc="A button associated with each of the user's topics. When the user clicks 'Unblock', it makes that topic eligible in the 'pool of topics' that Chrome can use to estimate the user's topics of interest. Clicking 'Unblock' doesn't automatically put the added topic back onto the list of 'Your topics'. For that to happen, a user would have to browse sites associated with the unblocked topic and Chrome would have to estimate the topic as relevant to that user.">
     Unblock
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_EXPLANATION_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
-    Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting.
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW" desc="A label that serves as a button to open the 'Blocked topics' section" formatter_data="android_java">
     Blocked topics
   </message>
@@ -299,10 +295,10 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING" desc="" formatter_data="android_java">
     Manage topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION" desc="" formatter_data="android_java">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION" desc="A subtitle on the button that leads to the page that allows the user to manage ad topics" formatter_data="android_java">
     Choose which broad categories of topics can be used to help personalize ads
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_EXPLANATION" desc="" formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_EXPLANATION" desc="A description that appears on the page that allows the user to enable and disable ad topics." formatter_data="android_java">
     Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING" desc="A label above a list of the user's current topics of interest." formatter_data="android_java">
@@ -311,10 +307,10 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION" desc="A description that appears beneath the 'Active topics' label." formatter_data="android_java">
     Topics older than 4 weeks get auto-deleted
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_NEW" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'." formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_NEW" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'." formatter_data="android_java">
     Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>site-suggested ads<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you’re viewing personalizes ads. Learn more about <ph name="BEGIN_LINK_3">&lt;link3&gt;</ph>managing your ad privacy<ph name="END_LINK_3">&lt;/link3&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER_NEW" desc="" formatter_data="android_java" translateable="false">
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER_NEW" desc="This footer explains how other privacy settings work with the site-suggested ads page" formatter_data="android_java">
     Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>ad topics<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you’re viewing personalizes ads. Learn more about <ph name="BEGIN_LINK_3">&lt;link3&gt;</ph>managing your ad privacy<ph name="END_LINK_3">&lt;/link3&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_EXPLANATION" desc="Secondary text disclaimer under settings toggle button for Fledge (site-suggested ads) Page" formatter_data="android_java">
@@ -322,7 +318,6 @@
   </message>
 
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
-  <!-- TODO(crbug.com/1378703) - Update and mark translateable. -->
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" desc="Label for the text which displays the state of the user's Topics consent">
     Consent status:
   </message>
