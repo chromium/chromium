@@ -1378,4 +1378,25 @@ TEST(CSSParserImplTest, DeeplyNestedBareDeclarations) {
           To<StyleRule>(*(*style_rule.ChildRules())[0])));
 }
 
+TEST(CSSParserImplTest, CSSFunction) {
+  test::TaskEnvironment task_environment;
+
+  String sheet_text = R"CSS(
+    @function --foo(): color {
+      @return red;
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(sheet->ChildRules().size(), 1u);
+
+  const StyleRuleFunction* rule =
+      DynamicTo<StyleRuleFunction>(sheet->ChildRules()[0].Get());
+  EXPECT_TRUE(rule);
+
+  EXPECT_EQ("red", rule->GetFunctionBody().OriginalText());
+}
+
 }  // namespace blink

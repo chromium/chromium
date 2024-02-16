@@ -154,6 +154,9 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "right-bottom")) {
     return CSSAtRuleID::kCSSAtRuleRightBottom;
   }
+  if (EqualIgnoringASCIICase(name, "function")) {
+    return CSSAtRuleID::kCSSAtRuleFunction;
+  }
 
   return CSSAtRuleID::kCSSAtRuleInvalid;
 }
@@ -244,6 +247,8 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@right-middle";
     case CSSAtRuleID::kCSSAtRuleRightBottom:
       return "@right-bottom";
+    case CSSAtRuleID::kCSSAtRuleFunction:
+      return "@function";
     case CSSAtRuleID::kCSSAtRuleInvalid:
       NOTREACHED();
       return "";
@@ -322,6 +327,8 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAnchorPositioning;
     case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
       return WebFeature::kCSSAtRuleWebkitKeyframes;
+    case CSSAtRuleID::kCSSAtRuleFunction:
+      return WebFeature::kCSSFunctions;
     case CSSAtRuleID::kCSSAtRuleInvalid:
       NOTREACHED();
       return std::nullopt;

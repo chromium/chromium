@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
@@ -73,6 +75,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kTry,
     kStartingStyle,
     kViewTransition,
+    kFunction,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -115,6 +118,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     return GetType() == kContainer || GetType() == kMedia ||
            GetType() == kSupports || GetType() == kStartingStyle;
   }
+  bool IsFunctionRule() const { return GetType() == kFunction; }
 
   StyleRuleBase* Copy() const;
 
@@ -695,6 +699,34 @@ class StyleRuleCharset : public StyleRuleBase {
  private:
 };
 
+// An @function rule, representing a CSS function.
+class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
+ public:
+  struct Parameter {
+    String name;
+    CSSSyntaxDefinition type;
+  };
+
+  StyleRuleFunction(AtomicString name,
+                    Vector<Parameter> parameters,
+                    scoped_refptr<CSSVariableData> function_body,
+                    CSSSyntaxDefinition return_type);
+  StyleRuleFunction(const StyleRuleFunction&) = delete;
+
+  const AtomicString& GetName() const { return name_; }
+  const Vector<Parameter>& GetParameters() const { return parameters_; }
+  CSSVariableData& GetFunctionBody() const { return *function_body_; }
+  const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  AtomicString name_;
+  Vector<Parameter> parameters_;
+  scoped_refptr<CSSVariableData> function_body_;
+  CSSSyntaxDefinition return_type_;
+};
+
 template <>
 struct DowncastTraits<StyleRule> {
   static bool AllowFrom(const StyleRuleBase& rule) {
@@ -791,6 +823,13 @@ template <>
 struct DowncastTraits<StyleRuleStartingStyle> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsStartingStyleRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleFunction> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsFunctionRule();
   }
 };
 

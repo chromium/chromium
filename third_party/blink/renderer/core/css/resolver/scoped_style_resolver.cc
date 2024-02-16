@@ -124,6 +124,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     AddFontFaceRules(rule_set);
     AddCounterStyleRules(rule_set);
     AddPositionFallbackRules(rule_set);
+    AddFunctionRules(rule_set);
     AddFontFeatureValuesRules(rule_set);
     AddImplicitScopeTriggers(*sheet, rule_set);
   }
@@ -338,6 +339,15 @@ void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
   }
 }
 
+void ScopedStyleResolver::AddFunctionRules(const RuleSet& rule_set) {
+  const HeapVector<Member<StyleRuleFunction>> function_rules =
+      rule_set.FunctionRules();
+  for (StyleRuleFunction* rule : function_rules) {
+    // TODO(crbug.com/324780202): Handle @layer.
+    function_rule_map_.Set(rule->GetName(), rule);
+  }
+}
+
 void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
   // TODO(https://crbug.com/1382722): Support @font-feature-values in shadow
   // trees and support scoping correctly. See CSSFontSelector::GetFontData: In
@@ -372,6 +382,14 @@ StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
   DCHECK(fallback_name);
   auto iter = position_fallback_rule_map_.find(fallback_name);
   if (iter != position_fallback_rule_map_.end()) {
+    return iter->value.Get();
+  }
+  return nullptr;
+}
+
+StyleRuleFunction* ScopedStyleResolver::FunctionForName(StringView name) {
+  auto iter = function_rule_map_.find(name.ToString());
+  if (iter != function_rule_map_.end()) {
     return iter->value.Get();
   }
   return nullptr;
@@ -475,6 +493,7 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(active_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(position_fallback_rule_map_);
+  visitor->Trace(function_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);
 }

@@ -167,6 +167,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kViewTransition:
       To<StyleRuleViewTransition>(this)->TraceAfterDispatch(visitor);
       return;
+    case kFunction:
+      To<StyleRuleFunction>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -245,6 +248,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kViewTransition:
       To<StyleRuleViewTransition>(this)->~StyleRuleViewTransition();
       return;
+    case kFunction:
+      To<StyleRuleFunction>(this)->~StyleRuleFunction();
+      return;
   }
   NOTREACHED();
 }
@@ -287,6 +293,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleNamespace>(this)->Copy();
     case kCharset:
     case kKeyframe:
+    case kFunction:
       NOTREACHED();
       return nullptr;
     case kContainer:
@@ -397,6 +404,7 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kKeyframe:
     case kCharset:
     case kPageMargin:
+    case kFunction:
       NOTREACHED();
       return nullptr;
   }
@@ -610,6 +618,7 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kKeyframe:
     case kCharset:
     case kViewTransition:
+    case kFunction:
       // Cannot have any child rules.
       break;
   }
@@ -931,5 +940,20 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
 StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kStartingStyle, std::move(rules)) {}
+
+StyleRuleFunction::StyleRuleFunction(
+    AtomicString name,
+    Vector<StyleRuleFunction::Parameter> parameters,
+    scoped_refptr<CSSVariableData> function_body,
+    CSSSyntaxDefinition return_type)
+    : StyleRuleBase(kFunction),
+      name_(std::move(name)),
+      parameters_(std::move(parameters)),
+      function_body_(function_body),
+      return_type_(return_type) {}
+
+void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
+  StyleRuleBase::TraceAfterDispatch(visitor);
+}
 
 }  // namespace blink

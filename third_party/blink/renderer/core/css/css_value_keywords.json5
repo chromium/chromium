@@ -1556,6 +1556,9 @@
     "-internal-variable-value",
     "env",
 
+    // CSS Functions
+    "arg",
+
     // break-before, break-after, break-inside
     "avoid-page",
     "page",

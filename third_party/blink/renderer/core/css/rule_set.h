@@ -470,6 +470,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return position_fallback_rules_;
   }
+  const HeapVector<Member<StyleRuleFunction>>& FunctionRules() const {
+    return function_rules_;
+  }
   base::span<const RuleData> SlottedPseudoElementRules() const {
     return slotted_pseudo_element_rules_;
   }
@@ -589,6 +592,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*);
   void AddPositionFallbackRule(StyleRulePositionFallback*);
+  void AddFunctionRule(StyleRuleFunction*);
   void AddViewTransitionRule(StyleRuleViewTransition*);
 
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
@@ -703,6 +707,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRulePositionFallback>> position_fallback_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
+  HeapVector<Member<StyleRuleFunction>> function_rules_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller

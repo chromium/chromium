@@ -70,6 +70,14 @@ bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
       // A block may have both var and env references. They can also be nested
       // and used as fallbacks.
       switch (token.FunctionId()) {
+        case CSSValueID::kInvalid:
+          // Not a built-in function, but it might be a user-defined
+          // CSS function (e.g. --foo()).
+          if (token.GetType() == kFunctionToken &&
+              CSSVariableParser::IsValidVariableName(token.Value())) {
+            has_references = true;
+          }
+          break;
         case CSSValueID::kVar:
           if (!IsValidVariableReference(range.ConsumeBlock())) {
             return false;  // Invalid reference.

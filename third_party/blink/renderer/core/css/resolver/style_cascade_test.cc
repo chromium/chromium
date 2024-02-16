@@ -4005,4 +4005,93 @@ TEST_F(StyleCascadeTest, SignalAgainstInvisible) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
 }
 
+TEST_F(StyleCascadeTest, CSSFunctionTrivial) {
+  AppendSheet(R"HTML(
+     @function --foo(): color {
+       @return red;
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("background-color", "--foo()");
+  cascade.Apply();
+
+  EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("background-color"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionWithArgument) {
+  AppendSheet(R"HTML(
+     @function --foo(--a: length): length {
+       @return calc(arg(--a) * 2);
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left", "--foo(10.00px)");
+  cascade.Apply();
+
+  EXPECT_EQ("20px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionWithTwoArguments) {
+  AppendSheet(R"HTML(
+     @function --foo(--a: integer, --b: integer): integer {
+       @return calc(arg(--a) * arg(--b));
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("z-index", "--foo(4, 6)");
+  cascade.Apply();
+
+  EXPECT_EQ("24", cascade.ComputedValue("z-index"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionCallingOtherFunction) {
+  AppendSheet(R"HTML(
+     @function --foo(--a: length): length {
+       @return calc(arg(--a) * 2);
+     }
+     @function --bar(--b: length): length {
+       @return calc(--foo(arg(--b)) * 3);
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("left", "--bar(10.00px)");
+  cascade.Apply();
+
+  EXPECT_EQ("60px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, CSSFunctionReturnTypeCoercion) {
+  AppendSheet(R"HTML(
+     @function --returning-any(): any {
+       @return var(--v);
+     }
+     @function --returning-length(): length {
+       @return var(--v);
+     }
+     @function --returning-color(): color {
+       @return var(--v);
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--v", "10.00px");
+  cascade.Add("--any", "--returning-any()");
+  cascade.Add("--length", "--returning-length()");
+  cascade.Add("--color", "--returning-color()");
+  cascade.Apply();
+
+  EXPECT_EQ("10.00px", cascade.ComputedValue("--any"));
+  EXPECT_EQ("10px", cascade.ComputedValue("--length"));
+  EXPECT_EQ(nullptr, cascade.ComputedValue("--color"));
+}
+
 }  // namespace blink

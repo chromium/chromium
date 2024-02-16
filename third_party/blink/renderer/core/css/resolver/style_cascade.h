@@ -364,7 +364,21 @@ class CORE_EXPORT StyleCascade {
                                      CascadeResolver&);
 
   scoped_refptr<CSSVariableData> ResolveVariableData(CSSVariableData*,
+                                                     const CSSParserContext&,
                                                      CascadeResolver&);
+
+  // Certain parts of CSS function evaluation may need some local context
+  // supplied by the caller. Given the current scoping strategy, the only
+  // relevant context is the arguments given to the function in current
+  // scope. (If we are not currently evaluating a function, this will be
+  // empty.) If we get to the point of supporting more dynamic scope,
+  // there may be a call stack or similar here, and possibly also locals.
+  struct FunctionContext {
+    STACK_ALLOCATED();
+
+   public:
+    HeapHashMap<String, Member<const CSSValue>> arguments;
+  };
 
   // The Resolve*Into functions either resolve dependencies, append to the
   // TokenSequence accordingly, and return true; or it returns false when
@@ -380,15 +394,44 @@ class CORE_EXPORT StyleCascade {
   bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          CSSTokenizer*,
+                         const CSSParserContext&,
+                         const FunctionContext&,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
+                      const CSSParserContext&,
                       TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       CSSTokenizer*,
+                      const CSSParserContext&,
                       TokenSequence&);
+  bool ResolveArgInto(CSSParserTokenStream&,
+                      CascadeResolver&,
+                      CSSTokenizer*,
+                      const CSSParserContext&,
+                      const FunctionContext&,
+                      TokenSequence&);
+
+  // NOTE: The FunctionContext object must be the _caller's_ function context,
+  // not the one the function itself sets up. This is because it is used to
+  // resolve arguments given to this function. See comment within the
+  // definition.
+  bool ResolveFunctionInto(StringView function_name,
+                           CSSParserTokenStream& stream,
+                           CascadeResolver& resolver,
+                           CSSTokenizer* parent_tokenizer,
+                           const CSSParserContext& context,
+                           const FunctionContext& function_context,
+                           TokenSequence& out);
+
+  const CSSValue* ResolveFunctionExpression(
+      StringView expr,
+      const CSSSyntaxDefinition& type,
+      CascadeResolver& resolver,
+      const CSSParserContext& context,
+      const FunctionContext& function_context);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
