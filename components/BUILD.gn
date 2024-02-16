@@ -373,13 +373,6 @@ test("components_unittests") {
     deps += [ "//components/services/screen_ai:unit_tests" ]
   }
 
-  if (build_with_internal_optimization_guide && is_android) {
-    loadable_module_deps = [
-      "//components/optimization_guide/internal:optimization_guide_internal",
-    ]
-    loadable_modules = [ "$root_out_dir/liboptimization_guide_internal.so" ]
-  }
-
   data_deps = [ "//testing/buildbot/filters:components_unittests_filters" ]
 
   if (toolkit_views) {
