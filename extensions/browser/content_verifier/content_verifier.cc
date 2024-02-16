@@ -100,20 +100,19 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
         NormalizeRelativePath(relative_path));
   };
 
-  auto image_paths = std::make_unique<std::set<CanonicalRelativePath>>();
+  std::set<CanonicalRelativePath> image_paths;
   for (const auto& path : original_image_paths) {
-    image_paths->insert(canonicalize_path(path));
+    image_paths.insert(canonicalize_path(path));
   }
 
-  auto background_or_content_paths =
-      std::make_unique<std::set<CanonicalRelativePath>>();
+  std::set<CanonicalRelativePath> background_or_content_paths;
   for (const std::string& script :
        BackgroundInfo::GetBackgroundScripts(extension)) {
-    background_or_content_paths->insert(
+    background_or_content_paths.insert(
         canonicalize_path(extension->GetResource(script).relative_path()));
   }
   if (BackgroundInfo::HasBackgroundPage(extension)) {
-    background_or_content_paths->insert(
+    background_or_content_paths.insert(
         canonicalize_path(extensions::file_util::ExtensionURLToRelativeFilePath(
             BackgroundInfo::GetBackgroundURL(extension))));
   }
@@ -121,17 +120,16 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
        ContentScriptsInfo::GetContentScripts(extension)) {
     for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
-      background_or_content_paths->insert(
+      background_or_content_paths.insert(
           canonicalize_path(js_file->relative_path()));
     }
   }
 
-  auto indexed_ruleset_paths =
-      std::make_unique<std::set<CanonicalRelativePath>>();
+  std::set<CanonicalRelativePath> indexed_ruleset_paths;
   using DNRManifestData = declarative_net_request::DNRManifestData;
   for (const DNRManifestData::RulesetInfo& info :
        DNRManifestData::GetRulesets(*extension)) {
-    indexed_ruleset_paths->insert(canonicalize_path(
+    indexed_ruleset_paths.insert(canonicalize_path(
         file_util::GetIndexedRulesetRelativePath(info.id.value())));
   }
 
@@ -139,6 +137,7 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
       std::move(image_paths), std::move(background_or_content_paths),
       std::move(indexed_ruleset_paths), extension->version(), source_type);
 }
+
 }  // namespace
 
 struct ContentVerifier::CacheKey {
@@ -701,13 +700,6 @@ bool ContentVerifier::ShouldVerifyAnyPaths(
   if (!data)
     return false;
 
-  const std::set<CanonicalRelativePath>& browser_images =
-      *(data->canonical_browser_image_paths);
-  const std::set<CanonicalRelativePath>& background_or_content_paths =
-      *(data->canonical_background_or_content_paths);
-  const std::set<CanonicalRelativePath>& indexed_ruleset_paths =
-      *(data->canonical_indexed_ruleset_paths);
-
   std::set<std::string> all_locale_candidates;
 
   const CanonicalRelativePath manifest_file =
@@ -733,15 +725,21 @@ bool ContentVerifier::ShouldVerifyAnyPaths(
 
     // Background pages, scripts and content scripts should always be verified
     // regardless of their file type.
-    if (base::Contains(background_or_content_paths, canonical_path_value))
+    if (base::Contains(data->canonical_background_or_content_paths,
+                       canonical_path_value)) {
       return true;
+    }
 
-    if (base::Contains(browser_images, canonical_path_value))
+    if (base::Contains(data->canonical_browser_image_paths,
+                       canonical_path_value)) {
       continue;
+    }
 
     // Skip indexed rulesets since these are generated.
-    if (base::Contains(indexed_ruleset_paths, canonical_path_value))
+    if (base::Contains(data->canonical_indexed_ruleset_paths,
+                       canonical_path_value)) {
       continue;
+    }
 
     const base::FilePath canonical_path(canonical_path_value.value());
     if (locales_relative_dir.IsParent(canonical_path)) {

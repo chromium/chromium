@@ -25,28 +25,23 @@ class ContentVerifierIOData {
  public:
   struct ExtensionData {
     // Set of canonical file paths used as images within the browser process.
-    std::unique_ptr<std::set<CanonicalRelativePath>>
-        canonical_browser_image_paths;
+    std::set<CanonicalRelativePath> canonical_browser_image_paths;
     // Set of canonical file paths used as background scripts, pages or
     // content scripts.
-    std::unique_ptr<std::set<CanonicalRelativePath>>
-        canonical_background_or_content_paths;
+    std::set<CanonicalRelativePath> canonical_background_or_content_paths;
 
     // Set of indexed ruleset paths used by the Declarative Net Request API.
-    std::unique_ptr<std::set<CanonicalRelativePath>>
-        canonical_indexed_ruleset_paths;
+    std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths;
 
     base::Version version;
     ContentVerifierDelegate::VerifierSourceType source_type;
 
-    ExtensionData(std::unique_ptr<std::set<CanonicalRelativePath>>
-                      canonical_browser_image_paths,
-                  std::unique_ptr<std::set<CanonicalRelativePath>>
-                      canonical_background_or_content_paths,
-                  std::unique_ptr<std::set<CanonicalRelativePath>>
-                      canonical_indexed_ruleset_paths,
-                  const base::Version& version,
-                  ContentVerifierDelegate::VerifierSourceType source_type);
+    ExtensionData(
+        std::set<CanonicalRelativePath> canonical_browser_image_paths,
+        std::set<CanonicalRelativePath> canonical_background_or_content_paths,
+        std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths,
+        const base::Version& version,
+        ContentVerifierDelegate::VerifierSourceType source_type);
     ~ExtensionData();
   };
 
