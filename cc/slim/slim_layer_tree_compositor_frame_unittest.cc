@@ -237,7 +237,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, LayerTransform) {
   check_child_quad(gfx::Rect(10, 30, 20, 10));
 
   // Rotate about the center.
-  child->SetTransformOrigin(gfx::Point3F(5.0f, 10.0f, 0.0f));
+  child->SetTransformOrigin(gfx::PointF(5.0f, 10.0f));
   check_child_quad(gfx::Rect(25, 35, 20, 10));
 }
 
@@ -893,7 +893,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
   child_surface_layer->SetBounds(gfx::Size(10, 10));
   child_surface_layer->SetIsDrawable(true);
   child_surface_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
-  child_surface_layer->SetTransformOrigin(gfx::Point3F(5.0f, 5.0f, 0.0f));
+  child_surface_layer->SetTransformOrigin(gfx::PointF(5.0f, 5.0f));
   gfx::Transform transform;
   transform.Rotate(45.0);
   child_surface_layer->SetTransform(transform);
@@ -1059,7 +1059,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedClip) {
   auto clip_layer = cc::slim::Layer::Create();
   clip_layer->SetMasksToBounds(true);
   clip_layer->SetBounds(gfx::Size(50, 50));
-  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  clip_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   clip_layer->SetTransform(transform);
@@ -1114,7 +1114,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, ChildPassOutputRect) {
   auto clip_layer = cc::slim::Layer::Create();
   clip_layer->SetMasksToBounds(true);
   clip_layer->SetBounds(gfx::Size(50, 50));
-  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  clip_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   clip_layer->SetTransform(transform);
@@ -1730,7 +1730,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, PropertyChangeFromParentDamage) {
   check_frame(gfx::Rect(10, 10, 50, 50));
 
   // Rotate about center, which does not change visible rect.
-  parent->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  parent->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   parent->SetTransform(gfx::Transform::Make90degRotation());
   check_frame(gfx::Rect(10, 10, 50, 50));
 
@@ -2002,7 +2002,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedRoundedCorner) {
   auto rounded_corner_layer =
       CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
   rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
-  rounded_corner_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  rounded_corner_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   rounded_corner_layer->SetTransform(transform);

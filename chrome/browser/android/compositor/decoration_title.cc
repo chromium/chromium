@@ -110,7 +110,7 @@ void DecorationTitle::SetUIResourceIds() {
 
     // Rotate about the center of the layer.
     layer_favicon_->SetTransformOrigin(
-        gfx::Point3F(favicon_size_.width() / 2, favicon_size_.height() / 2, 0));
+        gfx::PointF(favicon_size_.width() / 2, favicon_size_.height() / 2));
   }
 
   size_ = gfx::Size(title_size_.width() + favicon_size_.width(),

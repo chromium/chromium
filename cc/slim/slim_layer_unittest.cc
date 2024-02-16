@@ -23,7 +23,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -100,8 +99,8 @@ TEST(SlimLayerTest, LayerProperties) {
   layer->SetTransform(gfx::Transform::MakeTranslation(1.f, 2.f));
   EXPECT_EQ(layer->transform(), gfx::Transform::MakeTranslation(1.f, 2.f));
 
-  layer->SetTransformOrigin(gfx::Point3F(1.f, 2.f, 3.f));
-  EXPECT_EQ(layer->transform_origin(), gfx::Point3F(1.f, 2.f, 3.f));
+  layer->SetTransformOrigin(gfx::PointF(1.f, 2.f));
+  EXPECT_EQ(layer->transform_origin(), gfx::PointF(1.f, 2.f));
 
   layer->SetIsDrawable(true);
   EXPECT_TRUE(layer->draws_content());

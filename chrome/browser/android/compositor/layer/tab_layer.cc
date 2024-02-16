@@ -85,7 +85,7 @@ static void PositionPadding(
                       padding_rect.y() + content_position.y());
   transform.Translate(descaled_local_content_area.x(),
                       descaled_local_content_area.y());
-  padding_layer->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+  padding_layer->SetTransformOrigin(gfx::PointF(0.f, 0.f));
   padding_layer->SetTransform(transform);
 }
 
@@ -349,7 +349,7 @@ void TabLayer::SetProperties(int id,
     gfx::Transform transform;
     transform.Scale(content_scale, content_scale);
     transform.Translate(toolbar_position.x(), toolbar_position.y());
-    toolbar_layer_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+    toolbar_layer_->layer()->SetTransformOrigin(gfx::PointF(0.f, 0.f));
     toolbar_layer_->layer()->SetTransform(transform);
     toolbar_layer_->SetOpacity(toolbar_alpha);
 
@@ -367,7 +367,7 @@ void TabLayer::SetProperties(int id,
                           descaled_local_content_area.y());
 
       content_->layer()->SetHideLayerAndSubtree(false);
-      content_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+      content_->layer()->SetTransformOrigin(gfx::PointF(0.f, 0.f));
       content_->layer()->SetTransform(transform);
     }
 

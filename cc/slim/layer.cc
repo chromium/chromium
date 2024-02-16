@@ -208,7 +208,7 @@ void Layer::SetTransform(const gfx::Transform& transform) {
   NotifySubtreeChanged();
 }
 
-void Layer::SetTransformOrigin(const gfx::Point3F& origin) {
+void Layer::SetTransformOrigin(const gfx::PointF& origin) {
   if (transform_origin_ == origin) {
     return;
   }
@@ -319,11 +319,9 @@ gfx::Transform Layer::ComputeTransformToParent() const {
   // position x transform_origin x transform x -transform_origin
   gfx::Transform transform =
       gfx::Transform::MakeTranslation(position_.x(), position_.y());
-  transform.Translate3d(transform_origin_.x(), transform_origin_.y(),
-                        transform_origin_.z());
+  transform.Translate(transform_origin_.x(), transform_origin_.y());
   transform.PreConcat(transform_);
-  transform.Translate3d(-transform_origin_.x(), -transform_origin_.y(),
-                        -transform_origin_.z());
+  transform.Translate(-transform_origin_.x(), -transform_origin_.y());
   return transform;
 }
 
@@ -337,11 +335,9 @@ std::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
   // TransformFromParent is:
   // transform_origin x inverse_transform x -transform_origin x -position
   gfx::Transform from_parent;
-  from_parent.Translate3d(transform_origin_.x(), transform_origin_.y(),
-                          transform_origin_.z());
+  from_parent.Translate(transform_origin_.x(), transform_origin_.y());
   from_parent.PreConcat(inverse_transform);
-  from_parent.Translate3d(-transform_origin_.x(), -transform_origin_.y(),
-                          -transform_origin_.z());
+  from_parent.Translate(-transform_origin_.x(), -transform_origin_.y());
   from_parent.Translate(-position_.x(), -position_.y());
   return from_parent;
 }

@@ -327,7 +327,7 @@ void EdgeEffect::ApplyToLayers(Edge edge,
   glow_->SetIsDrawable(true);
   glow_->SetUIResourceId(resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_SYSTEM, kResourceId));
-  glow_->SetTransformOrigin(gfx::Point3F(bounds_.width() * 0.5f, 0, 0));
+  glow_->SetTransformOrigin(gfx::PointF(bounds_.width() * 0.5f, 0));
   glow_->SetBounds(gfx::ToRoundedSize(clipped_rect.size()));
   glow_->SetContentsOpaque(false);
   glow_->SetOpacity(Clamp(glow_alpha_, 0.f, 1.f));

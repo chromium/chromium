@@ -174,8 +174,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   root_layer_->AddChild(rounded_corner_layer_);
 
   zoom_layer_->SetBounds(gfx::Size(width, height));
-  zoom_layer_->SetTransformOrigin(
-      gfx::Point3F(width / 2.0f, height / 2.0f, 0.0f));
+  zoom_layer_->SetTransformOrigin(gfx::PointF(width / 2.0f, height / 2.0f));
   zoom_layer_->SetTransform(gfx::Transform::MakeScale(zoom));
 
   layer_tree_->SetRoot(root_layer_);
