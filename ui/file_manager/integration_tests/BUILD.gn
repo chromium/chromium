@@ -7,12 +7,7 @@ import("//tools/typescript/ts_library.gni")
 preprocess_folder = "$target_gen_dir/preprocessed"
 tsc_folder = "$target_gen_dir/tsc"
 
-js_files = [
-  "test_util.ts",
-
-  # File Manager.
-  "file_manager/transfer.js",
-]
+js_files = [ "test_util.ts" ]
 
 ts_files = [
   "remote_call.ts",
@@ -22,26 +17,18 @@ ts_files = [
 
   # File Manager.
   "file_manager/android_photos.ts",
-
   "file_manager/background.ts",
-
   "file_manager/breadcrumbs.ts",
   "file_manager/choose_entry.ts",
   "file_manager/choose_entry_const.ts",
-
   "file_manager/context_menu.ts",
-
   "file_manager/copy_between_windows.ts",
   "file_manager/create_new_folder.ts",
   "file_manager/crostini.ts",
   "file_manager/directory_tree.ts",
-
   "file_manager/directory_tree_context_menu.ts",
-
   "file_manager/dlp.ts",
-
   "file_manager/dlp_enterprise_connectors.ts",
-
   "file_manager/drive_specific.ts",
   "file_manager/file_dialog.ts",
   "file_manager/file_display.ts",
@@ -70,25 +57,18 @@ ts_files = [
   "file_manager/open_video_media_app.ts",
   "file_manager/providers.ts",
   "file_manager/quick_view.ts",
-
   "file_manager/recents.ts",
-
   "file_manager/restore_prefs.ts",
-
   "file_manager/search.ts",
-
   "file_manager/share.ts",
   "file_manager/sort_columns.ts",
   "file_manager/tab_index.ts",
   "file_manager/tasks.ts",
   "file_manager/test_data.ts",
   "file_manager/toolbar.ts",
-
-  # "file_manager/transfer.ts",
-
+  "file_manager/transfer.ts",
   "file_manager/trash.ts",
   "file_manager/traverse.ts",
-
   "file_manager/zip_files.ts",
 
   # Page Objects.

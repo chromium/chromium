@@ -48,7 +48,7 @@ import * as sortColumnsTests from './file_manager/sort_columns.js';
 import * as tabIndexTests from './file_manager/tab_index.js';
 import * as tasksTests from './file_manager/tasks.js';
 import * as toolbarTests from './file_manager/toolbar.js';
-// import * as transferTests from './file_manager/transfer.js';
+import * as transferTests from './file_manager/transfer.js';
 import * as trashTests from './file_manager/trash.js';
 import * as traverseTests from './file_manager/traverse.js';
 import * as zipFilesTests from './file_manager/zip_files.js';
@@ -106,7 +106,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...tabIndexTests,
   ...tasksTests,
   ...toolbarTests,
-  // ...transferTests,
+  ...transferTests,
   ...trashTests,
   ...traverseTests,
   ...zipFilesTests,

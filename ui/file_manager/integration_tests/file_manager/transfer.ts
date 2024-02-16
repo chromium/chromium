@@ -2,125 +2,107 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {isSinglePartitionFormat, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, OFFLINE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
+interface TransferLocationOptions {
+  volumeName: string;
+  breadcrumbsPath: string;
+  isTeamDrive?: boolean;
+  initialEntries: TestEntryInfo[];
+}
+
 /**
  * Info for the source or destination of a transfer.
  */
 class TransferLocationInfo {
-  /*
-   * Create a new TransferLocationInfo.
-   *
-   * @param{{
-         volumeName: !string,
-         breadcrumbsPath: !string,
-         isTeamDrive: boolean,
-         initialEntries: !Array<TestEntryInfo>
-     }} opts Options for creating TransferLocationInfo.
+  /**
+   * The volume type (e.g. downloads, drive, drive_recent,
+   * drive_shared_with_me, drive_offline) or team drive name.
    */
-  // @ts-ignore: error TS7006: Parameter 'opts' implicitly has an 'any' type.
-  constructor(opts) {
-    /**
-     * The volume type (e.g. downloads, drive, drive_recent,
-     * drive_shared_with_me, drive_offline) or team drive name.
-     * @type {string}
-     */
+  volumeName: string;
+
+  breadcrumbsPath: string;
+
+  isTeamDrive: boolean;
+
+  /** Expected initial contents in the volume. */
+  initialEntries: TestEntryInfo[];
+
+  constructor(opts: TransferLocationOptions) {
     this.volumeName = opts.volumeName;
-
-    /** @type {string} */
     this.breadcrumbsPath = opts.breadcrumbsPath;
-
-    /**
-     * Whether this transfer location is a team drive. Defaults to false.
-     * @type {boolean}
-     */
-    this.isTeamDrive = opts.isTeamDrive || false;
-
-    /**
-     * Expected initial contents in the volume.
-     * @type {Array<TestEntryInfo>}
-     */
+    this.isTeamDrive = opts.isTeamDrive ?? false;
     this.initialEntries = opts.initialEntries;
   }
+}
+
+interface TransferOptions {
+  fileToTransfer: TestEntryInfo;
+  source: TransferLocationInfo;
+  destination: TransferLocationInfo;
+  expectedDialogText?: string;
+  expectedDialogOkButtonText?: string;
+  isMove?: boolean;
+  expectFailure?: boolean;
 }
 
 /**
  * Info for the transfer operation.
  */
 class TransferInfo {
-  /*
-   * Create a new TransferInfo.
-   *
-   * @param{{
-         fileToTransfer: !TestEntryInfo,
-         source: !TransferLocationInfo,
-         destination: !TransferLocationInfo,
-         expectedDialogText: string,
-         isMove: boolean,
-         expectFailure: boolean,
-     }} opts Options for creating TransferInfo.
+  /** The file to copy or move. Must be in the source location. */
+  fileToTransfer: TestEntryInfo;
+
+  /** The source location. */
+  source: TransferLocationInfo;
+
+  /** The destination location. */
+  destination: TransferLocationInfo;
+
+  /**
+   * The expected content of the transfer dialog, or undefined if no dialog is
+   * expected.
    */
-  // @ts-ignore: error TS7006: Parameter 'opts' implicitly has an 'any' type.
-  constructor(opts) {
-    /**
-     * The file to copy or move. Must be in the source location.
-     * @type {!TestEntryInfo}
-     */
+  expectedDialogText?: string;
+
+  /**
+   * The expected label of the “ok” button on the dialog, if the dialog is
+   * expected.
+   */
+  expectedDialogOkButtonText?: string;
+
+  /**
+   * True if this transfer is for a move operation, false for a copy operation.
+   */
+  isMove: boolean;
+
+  /**
+   * Whether the test is expected to fail, i.e. transferring to a folder without
+   * correct permissions.
+   */
+  expectFailure: boolean;
+
+  constructor(opts: TransferOptions) {
     this.fileToTransfer = opts.fileToTransfer;
-
-    /**
-     * The source location.
-     * @type {!TransferLocationInfo}
-     */
     this.source = opts.source;
-
-    /**
-     * The destination location.
-     * @type {!TransferLocationInfo}
-     */
     this.destination = opts.destination;
-
-    /**
-     * The expected content of the transfer dialog, or undefined if no dialog is
-     * expected.
-     * @type {string}
-     */
-    this.expectedDialogText = opts.expectedDialogText || undefined;
-
-    /**
-     * The expected label of the “ok” button on the dialog, if the dialog is
-     * expected.
-     * @type {string}
-     */
-    this.expectedDialogOkButtonText =
-        opts.expectedDialogOkButtonText || undefined;
-
-    /**
-     * True if this transfer is for a move operation, false for a copy
-     * operation.
-     * @type {!boolean}
-     */
-    this.isMove = opts.isMove || false;
-
-    /**
-     * Whether the test is expected to fail, i.e. transferring to a folder
-     * without correct permissions.
-     * @type {!boolean}
-     */
-    this.expectFailure = opts.expectFailure || false;
+    this.expectedDialogText = opts.expectedDialogText;
+    this.expectedDialogOkButtonText = opts.expectedDialogOkButtonText;
+    this.isMove = opts.isMove ?? false;
+    this.expectFailure = opts.expectFailure ?? false;
   }
 }
 
 /**
  * Test function to copy from the specified source to the specified destination.
- * @param {TransferInfo} transferInfo Options for the transfer.
+ * @param transferInfo Options for the transfer.
  */
-async function transferBetweenVolumes(transferInfo) {
+async function transferBetweenVolumes(transferInfo: TransferInfo) {
   let srcContents;
   if (transferInfo.source.isTeamDrive) {
     srcContents =
@@ -151,7 +133,6 @@ async function transferBetweenVolumes(transferInfo) {
   const driveFiles = (transferInfo.source.isTeamDrive ||
                       transferInfo.destination.isTeamDrive) ?
       SHARED_DRIVE_ENTRY_SET :
-      // @ts-ignore: error TS2769: No overload matches this call.
       BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.sharedDirectory,
         ENTRIES.sharedDirectoryFile,
@@ -239,11 +220,9 @@ async function transferBetweenVolumes(transferInfo) {
     // Check if we need to add (1) to the filename, in the case of a
     // duplicate file.
     for (let i = 0; i < dstContentsAfterPaste.length; i++) {
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      if (dstContentsAfterPaste[i][0] === pasteFile[0]) {
+      if (dstContentsAfterPaste[i]![0] === pasteFile[0]) {
         // Replace the last '.' in filename with ' (1).'.
         // e.g. 'my.note.txt' -> 'my.note (1).txt'
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         pasteFile[0] = pasteFile[0].replace(/\.(?=[^\.]+$)/, ' (1).');
         break;
       }
@@ -267,7 +246,6 @@ const TRANSFER_LOCATIONS = {
   drive: new TransferLocationInfo({
     breadcrumbsPath: '/My Drive',
     volumeName: 'drive',
-    // @ts-ignore: error TS2769: No overload matches this call.
     initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
       ENTRIES.docxFile,
@@ -295,7 +273,6 @@ const TRANSFER_LOCATIONS = {
   sharedWithMe: new TransferLocationInfo({
     breadcrumbsPath: '/Shared with me',
     volumeName: 'drive_shared_with_me',
-    // @ts-ignore: error TS2769: No overload matches this call.
     initialEntries: SHARED_WITH_ME_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
       ENTRIES.sharedDirectoryFile,
@@ -358,111 +335,87 @@ Object.freeze(TRANSFER_LOCATIONS);
 /**
  * Tests copying from Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDriveToDownloads' comes from
-// an index signature, so it must be accessed with
-// ['transferFromDriveToDownloads'].
-testcase.transferFromDriveToDownloads = () => {
+export async function transferFromDriveToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.drive,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests copying an office file from Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferOfficeFileFromDriveToDownloads'
-// comes from an index signature, so it must be accessed with
-// ['transferOfficeFileFromDriveToDownloads'].
-testcase.transferOfficeFileFromDriveToDownloads = () => {
+export async function transferOfficeFileFromDriveToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.docxFile,
     source: TRANSFER_LOCATIONS.drive,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests moving files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToMyFilesMove' comes
-// from an index signature, so it must be accessed with
-// ['transferFromDownloadsToMyFilesMove'].
-testcase.transferFromDownloadsToMyFilesMove = async () => {
+export async function transferFromDownloadsToMyFilesMove() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
     destination: TRANSFER_LOCATIONS.my_files,
     isMove: true,
   }));
-};
+}
 
 /**
  * Tests copying files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToMyFiles' comes
-// from an index signature, so it must be accessed with
-// ['transferFromDownloadsToMyFiles'].
-testcase.transferFromDownloadsToMyFiles = async () => {
+export async function transferFromDownloadsToMyFiles() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
     destination: TRANSFER_LOCATIONS.my_files,
     isMove: false,
   }));
-};
+}
 
 /**
  * Tests copying from Downloads to Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToDrive' comes from
-// an index signature, so it must be accessed with
-// ['transferFromDownloadsToDrive'].
-testcase.transferFromDownloadsToDrive = () => {
+export async function transferFromDownloadsToDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
     destination: TRANSFER_LOCATIONS.drive,
   }));
-};
+}
 
 /**
  * Tests copying from Drive "Shared with me" to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferFromSharedWithMeToDownloads'
-// comes from an index signature, so it must be accessed with
-// ['transferFromSharedWithMeToDownloads'].
-testcase.transferFromSharedWithMeToDownloads = () => {
+export async function transferFromSharedWithMeToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedFile,
     source: TRANSFER_LOCATIONS.sharedWithMe,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests copying from Drive "Shared with me" to Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromSharedWithMeToDrive' comes
-// from an index signature, so it must be accessed with
-// ['transferFromSharedWithMeToDrive'].
-testcase.transferFromSharedWithMeToDrive = () => {
+export async function transferFromSharedWithMeToDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedDocument,
     source: TRANSFER_LOCATIONS.sharedWithMe,
     destination: TRANSFER_LOCATIONS.drive,
   }));
-};
+}
 
 
 /**
  * Tests copying from Downloads to a shared folder on Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToSharedFolder'
-// comes from an index signature, so it must be accessed with
-// ['transferFromDownloadsToSharedFolder'].
-testcase.transferFromDownloadsToSharedFolder = () => {
+export async function transferFromDownloadsToSharedFolder() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -472,15 +425,12 @@ testcase.transferFromDownloadsToSharedFolder = () => {
         'shared folder \'Shared\'.',
     expectedDialogOkButtonText: 'Copy',
   }));
-};
+}
 
 /**
  * Tests moving from Downloads to a shared folder on Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToSharedFolderMove'
-// comes from an index signature, so it must be accessed with
-// ['transferFromDownloadsToSharedFolderMove'].
-testcase.transferFromDownloadsToSharedFolderMove = () => {
+export async function transferFromDownloadsToSharedFolderMove() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -491,70 +441,56 @@ testcase.transferFromDownloadsToSharedFolderMove = () => {
     expectedDialogOkButtonText: 'Move',
     isMove: true,
   }));
-};
+}
 
 /**
  * Tests copying from a shared folder on Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferFromSharedFolderToDownloads'
-// comes from an index signature, so it must be accessed with
-// ['transferFromSharedFolderToDownloads'].
-testcase.transferFromSharedFolderToDownloads = () => {
+export async function transferFromSharedFolderToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.sharedDirectoryFile,
     source: TRANSFER_LOCATIONS.driveSharedDirectory,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests copying from Drive offline to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferFromOfflineToDownloads' comes
-// from an index signature, so it must be accessed with
-// ['transferFromOfflineToDownloads'].
-testcase.transferFromOfflineToDownloads = () => {
+export async function transferFromOfflineToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testSharedFile,
     source: TRANSFER_LOCATIONS.driveOffline,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests copying from Drive offline to Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromOfflineToDrive' comes from an
-// index signature, so it must be accessed with ['transferFromOfflineToDrive'].
-testcase.transferFromOfflineToDrive = () => {
+export async function transferFromOfflineToDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.testDocument,
     source: TRANSFER_LOCATIONS.driveOffline,
     destination: TRANSFER_LOCATIONS.drive,
   }));
-};
+}
 
 /**
  * Tests copying from a Team Drive to Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromTeamDriveToDrive' comes from
-// an index signature, so it must be accessed with
-// ['transferFromTeamDriveToDrive'].
-testcase.transferFromTeamDriveToDrive = () => {
+export async function transferFromTeamDriveToDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.teamDriveAFile,
     source: TRANSFER_LOCATIONS.driveTeamDriveA,
     destination: TRANSFER_LOCATIONS.driveWithTeamDriveEntries,
   }));
-};
+}
 
 /**
  * Tests copying from Drive to a Team Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDriveToTeamDrive' comes from
-// an index signature, so it must be accessed with
-// ['transferFromDriveToTeamDrive'].
-testcase.transferFromDriveToTeamDrive = () => {
+export async function transferFromDriveToTeamDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.driveWithTeamDriveEntries,
@@ -564,46 +500,37 @@ testcase.transferFromDriveToTeamDrive = () => {
         'items.',
     expectedDialogOkButtonText: 'Copy',
   }));
-};
+}
 
 /**
  * Tests copying from a Team Drive to Downloads.
  */
-// @ts-ignore: error TS4111: Property 'transferFromTeamDriveToDownloads' comes
-// from an index signature, so it must be accessed with
-// ['transferFromTeamDriveToDownloads'].
-testcase.transferFromTeamDriveToDownloads = () => {
+export async function transferFromTeamDriveToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.teamDriveAFile,
     source: TRANSFER_LOCATIONS.driveTeamDriveA,
     destination: TRANSFER_LOCATIONS.downloads,
   }));
-};
+}
 
 /**
  * Tests that a hosted file cannot be transferred from a Team Drive to a local
  * drive (e.g. Downloads). Hosted documents only make sense in the context of
  * Drive.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferHostedFileFromTeamDriveToDownloads' comes from an index signature,
-// so it must be accessed with ['transferHostedFileFromTeamDriveToDownloads'].
-testcase.transferHostedFileFromTeamDriveToDownloads = () => {
+export async function transferHostedFileFromTeamDriveToDownloads() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.teamDriveAHostedFile,
     source: TRANSFER_LOCATIONS.driveTeamDriveA,
     destination: TRANSFER_LOCATIONS.downloads,
     expectFailure: true,
   }));
-};
+}
 
 /**
  * Tests copying from Downloads to a Team Drive.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToTeamDrive' comes
-// from an index signature, so it must be accessed with
-// ['transferFromDownloadsToTeamDrive'].
-testcase.transferFromDownloadsToTeamDrive = () => {
+export async function transferFromDownloadsToTeamDrive() {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -613,17 +540,13 @@ testcase.transferFromDownloadsToTeamDrive = () => {
         'items.',
     expectedDialogOkButtonText: 'Copy',
   }));
-};
+}
 
 /**
  * Tests copying between Team Drives.
  */
-// @ts-ignore: error TS4111: Property 'transferBetweenTeamDrives' comes from an
-// index signature, so it must be accessed with ['transferBetweenTeamDrives'].
-testcase.transferBetweenTeamDrives = () => {
+export async function transferBetweenTeamDrives() {
   return transferBetweenVolumes(new TransferInfo({
-    // @ts-ignore: error TS4111: Property 'teamDriveBFile' comes from an index
-    // signature, so it must be accessed with ['teamDriveBFile'].
     fileToTransfer: ENTRIES.teamDriveBFile,
     source: TRANSFER_LOCATIONS.driveTeamDriveB,
     destination: TRANSFER_LOCATIONS.driveTeamDriveA,
@@ -632,15 +555,12 @@ testcase.transferBetweenTeamDrives = () => {
         'items.',
     expectedDialogOkButtonText: 'Copy',
   }));
-};
+}
 
 /**
  * Tests that moving a file to its current location is a no-op.
  */
-// @ts-ignore: error TS4111: Property 'transferFromDownloadsToDownloads' comes
-// from an index signature, so it must be accessed with
-// ['transferFromDownloadsToDownloads'].
-testcase.transferFromDownloadsToDownloads = async () => {
+export async function transferFromDownloadsToDownloads() {
   const appId = await transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -649,24 +569,20 @@ testcase.transferFromDownloadsToDownloads = async () => {
   }));
 
   // Check: No feedback panel items.
-  const panelItems = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, [['#progress-panel', '#panel']]);
+  const panelItems =
+      await remoteCall.queryElements(appId, ['#progress-panel', '#panel']);
+
   chrome.test.assertEq(0, panelItems.length);
-};
+}
 
 /**
  * Tests that the root html element .drag-drop-active class appears when drag
  * drop operations are active, and is removed when the operations complete.
  */
-// @ts-ignore: error TS4111: Property 'transferDragDropActiveLeave' comes from
-// an index signature, so it must be accessed with
-// ['transferDragDropActiveLeave'].
-testcase.transferDragDropActiveLeave = async () => {
+export async function transferDragDropActiveLeave() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // The drag has to start in the file list column "name" text, otherwise it
@@ -697,15 +613,13 @@ testcase.transferDragDropActiveLeave = async () => {
 
   // Check: the html element should not have drag-drop-active class.
   await remoteCall.waitForElementLost(appId, htmlDragDropActive);
-};
+}
 
 /**
  * Tests that the root html element .drag-drop-active class appears when drag
  * drop operations are active, and is removed when the operations complete.
  */
-// @ts-ignore: error TS4111: Property 'transferDragDropActiveDrop' comes from an
-// index signature, so it must be accessed with ['transferDragDropActiveDrop'].
-testcase.transferDragDropActiveDrop = async () => {
+export async function transferDragDropActiveDrop() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -742,16 +656,13 @@ testcase.transferDragDropActiveDrop = async () => {
 
   // Check: the html element should not have drag-drop-active class.
   await remoteCall.waitForElementLost(appId, htmlDragDropActive);
-};
+}
 
 /**
  * Tests that dragging a file over a directory tree item that can accept the
  * drop changes the class of that tree item to 'accepts'.
  */
-// @ts-ignore: error TS4111: Property 'transferDragDropTreeItemAccepts' comes
-// from an index signature, so it must be accessed with
-// ['transferDragDropTreeItemAccepts'].
-testcase.transferDragDropTreeItemAccepts = async () => {
+export async function transferDragDropTreeItemAccepts() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -786,16 +697,13 @@ testcase.transferDragDropTreeItemAccepts = async () => {
   // Check: the target should not have accepts class and should not have denies
   // class.
   await directoryTree.waitForItemToFinishDropByLabel('My files');
-};
+}
 
 /**
  * Tests that dragging a file over a directory tree item that cannot accept
  * the drop changes the class of that tree item to 'denies'.
  */
-// @ts-ignore: error TS4111: Property 'transferDragDropTreeItemDenies' comes
-// from an index signature, so it must be accessed with
-// ['transferDragDropTreeItemDenies'].
-testcase.transferDragDropTreeItemDenies = async () => {
+export async function transferDragDropTreeItemDenies() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -830,16 +738,13 @@ testcase.transferDragDropTreeItemDenies = async () => {
   // Check: the target should not have denies class and should not have accepts
   // class.
   await directoryTree.waitForItemToFinishDropByLabel('Recent');
-};
+}
 
 /**
  * Tests that dragging a file over an EntryList directory tree item (here a
  * partitioned USB drive) does not raise an error.
  */
-// @ts-ignore: error TS4111: Property 'transferDragAndHoverTreeItemEntryList'
-// comes from an index signature, so it must be accessed with
-// ['transferDragAndHoverTreeItemEntryList'].
-testcase.transferDragAndHoverTreeItemEntryList = async () => {
+export async function transferDragAndHoverTreeItemEntryList() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Mount a partitioned USB.
@@ -863,16 +768,13 @@ testcase.transferDragAndHoverTreeItemEntryList = async () => {
 
   // Check: drag hovering should navigate the file list.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Drive Label');
-};
+}
 
 /**
  * Tests that dragging a file over a FakeEntry directory tree item (here a
  * USB drive) does not raise an error.
  */
-// @ts-ignore: error TS4111: Property 'transferDragAndHoverTreeItemFakeEntry'
-// comes from an index signature, so it must be accessed with
-// ['transferDragAndHoverTreeItemFakeEntry'].
-testcase.transferDragAndHoverTreeItemFakeEntry = async () => {
+export async function transferDragAndHoverTreeItemFakeEntry() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Mount a USB.
@@ -904,15 +806,12 @@ testcase.transferDragAndHoverTreeItemFakeEntry = async () => {
   }
   // Check: drag hovering should navigate the file list.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, navigationPath);
-};
+}
 
 /**
  * Tests that dragging a file list item selects its file list row.
  */
-// @ts-ignore: error TS4111: Property 'transferDragFileListItemSelects' comes
-// from an index signature, so it must be accessed with
-// ['transferDragFileListItemSelects'].
-testcase.transferDragFileListItemSelects = async () => {
+export async function transferDragFileListItemSelects() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -942,15 +841,13 @@ testcase.transferDragFileListItemSelects = async () => {
 
   // Check: the file list row should be selected.
   await remoteCall.waitForElement(appId, listItem + '[selected]');
-};
+}
 
 /**
  * Tests that dropping a file on a directory tree item (folder) copies the
  * file to that folder.
  */
-// @ts-ignore: error TS4111: Property 'transferDragAndDrop' comes from an index
-// signature, so it must be accessed with ['transferDragAndDrop'].
-testcase.transferDragAndDrop = async () => {
+export async function transferDragAndDrop() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -986,15 +883,13 @@ testcase.transferDragAndDrop = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]),
       {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Tests that dropping a folder on a directory tree item (folder) copies the
  * folder and also updates the directory tree.
  */
-// @ts-ignore: error TS4111: Property 'transferDragAndDropFolder' comes from an
-// index signature, so it must be accessed with ['transferDragAndDropFolder'].
-testcase.transferDragAndDropFolder = async () => {
+export async function transferDragAndDropFolder() {
   // Note that directoryB is a child of directoryA.
   const entries = [ENTRIES.directoryA, ENTRIES.directoryB, ENTRIES.directoryD];
 
@@ -1024,15 +919,13 @@ testcase.transferDragAndDropFolder = async () => {
   // the target folder "D" and be expandable (as folder "A" contains "B").
   // signature, so it must be accessed with ['directoryA'].
   await directoryTree.expandTreeItemByLabel(ENTRIES.directoryA.nameText);
-};
+}
 
 /*
  * Tests that dragging a file over a directory tree item (folder) navigates
  * the file list to that folder.
  */
-// @ts-ignore: error TS4111: Property 'transferDragAndHover' comes from an index
-// signature, so it must be accessed with ['transferDragAndHover'].
-testcase.transferDragAndHover = async () => {
+export async function transferDragAndHover() {
   const entries = [ENTRIES.hello, ENTRIES.photos];
 
   // Open files app.
@@ -1057,14 +950,12 @@ testcase.transferDragAndHover = async () => {
   // Check: drag hovering should navigate the file list.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/My files/Downloads/photos');
-};
+}
 
 /**
  * Tests dropping a file originated from the browser.
  */
-// @ts-ignore: error TS4111: Property 'transferDropBrowserFile' comes from an
-// index signature, so it must be accessed with ['transferDropBrowserFile'].
-testcase.transferDropBrowserFile = async () => {
+export async function transferDropBrowserFile() {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
@@ -1078,23 +969,18 @@ testcase.transferDropBrowserFile = async () => {
   // File should be created.
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="browserfile"]');
-};
+}
 
 /**
  * Tests that copying a deleted file shows an error.
  */
-// @ts-ignore: error TS4111: Property 'transferDeletedFile' comes from an index
-// signature, so it must be accessed with ['transferDeletedFile'].
-testcase.transferDeletedFile = async () => {
+export async function transferDeletedFile() {
   const entry = ENTRIES.hello;
 
   // Open files app.
-  // @ts-ignore: error TS2322: Type 'TestEntryInfo | undefined' is not
-  // assignable to type 'TestEntryInfo'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
-  // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
@@ -1103,12 +989,10 @@ testcase.transferDeletedFile = async () => {
 
   // Delete the file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
       'deleteFile', appId, [entry.nameText]));
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
-      // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
       appId, `#file-list [file-name="${entry.nameText}"]`);
 
   // Paste the file.
@@ -1116,15 +1000,12 @@ testcase.transferDeletedFile = async () => {
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
 
   // Check that the error appears in the feedback panel.
-  let element = {};
+  let element: ElementObject|null = null;
   const caller = getCaller();
   await repeatUntil(async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
-    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     const expectedMsg = `Whoops, ${entry.nameText} no longer exists.`;
-    // @ts-ignore: error TS2339: Property 'attributes' does not exist on type
-    // '{}'.
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
@@ -1137,17 +1018,13 @@ testcase.transferDeletedFile = async () => {
   });
 
   // Check that only one line of text is shown.
-  // @ts-ignore: error TS2339: Property 'attributes' does not exist on type
-  // '{}'.
-  chrome.test.assertFalse(!!element.attributes['secondary-text']);
-};
+  chrome.test.assertFalse(!!element!.attributes['secondary-text']);
+}
 
 /**
  * Tests that transfer source/destination persists if app window is re-opened.
  */
-// @ts-ignore: error TS4111: Property 'transferInfoIsRemembered' comes from an
-// index signature, so it must be accessed with ['transferInfoIsRemembered'].
-testcase.transferInfoIsRemembered = async () => {
+export async function transferInfoIsRemembered() {
   const entry = ENTRIES.hello;
 
   // Open files app.
@@ -1182,15 +1059,12 @@ testcase.transferInfoIsRemembered = async () => {
       appId, ['#progress-panel', 'xf-panel-item']);
   chrome.test.assertEq(primaryText, panel.attributes['primary-text']);
   chrome.test.assertEq(secondaryText, panel.attributes['secondary-text']);
-};
+}
 
 /**
  * Tests that destination text line shows name for USB targets.
  */
-// @ts-ignore: error TS4111: Property 'transferToUsbHasDestinationText' comes
-// from an index signature, so it must be accessed with
-// ['transferToUsbHasDestinationText'].
-testcase.transferToUsbHasDestinationText = async () => {
+export async function transferToUsbHasDestinationText() {
   const entry = ENTRIES.hello;
 
   // Open files app.
@@ -1230,19 +1104,15 @@ testcase.transferToUsbHasDestinationText = async () => {
       appId, ['#progress-panel', 'xf-panel-item']);
 
   chrome.test.assertTrue(
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      panel.attributes['primary-text'].includes('to fake-usb'),
+      panel.attributes['primary-text']!.includes('to fake-usb'),
       'Feedback panel does not contain device name.');
-};
+}
 
 /**
  * Tests that dismissing an error notification on the foreground
  * page is propagated to the background page.
  */
-// @ts-ignore: error TS4111: Property 'transferDismissedErrorIsRemembered' comes
-// from an index signature, so it must be accessed with
-// ['transferDismissedErrorIsRemembered'].
-testcase.transferDismissedErrorIsRemembered = async () => {
+export async function transferDismissedErrorIsRemembered() {
   const entry = ENTRIES.hello;
 
   // Open Files app on Downloads.
@@ -1305,16 +1175,12 @@ testcase.transferDismissedErrorIsRemembered = async () => {
   const progressPanel = await remoteCall.waitForElement(
       appId, ['#progress-panel', 'xf-panel-item']);
   chrome.test.assertEq('progress', progressPanel.attributes['indicator']);
-};
+}
 
 /**
  * Tests no remaining time displayed for not supported operations like format.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferNotSupportedOperationHasNoRemainingTimeText' comes from an index
-// signature, so it must be accessed with
-// ['transferNotSupportedOperationHasNoRemainingTimeText'].
-testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
+export async function transferNotSupportedOperationHasNoRemainingTimeText() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |format| progress panel.
@@ -1346,16 +1212,13 @@ testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
 
   // Check no remaining time shown for 'format' error panel type.
   chrome.test.assertEq('', panel.attributes['secondary-text']);
-};
+}
 
 /**
  * Tests updating same panel keeps same message.
  * Use case: crbug/1137229
  */
-// @ts-ignore: error TS4111: Property 'transferUpdateSamePanelItem' comes from
-// an index signature, so it must be accessed with
-// ['transferUpdateSamePanelItem'].
-testcase.transferUpdateSamePanelItem = async () => {
+export async function transferUpdateSamePanelItem() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |format| error in feedback panel.
@@ -1384,16 +1247,12 @@ testcase.transferUpdateSamePanelItem = async () => {
 
   // Check secondary text is still empty for the error panel.
   chrome.test.assertEq('', panel.attributes['secondary-text']);
-};
+}
 
 /**
  * Tests prepraring message shown when the remaining time is zero.
  */
-// @ts-ignore: error TS4111: Property
-// 'transferShowPreparingMessageForZeroRemainingTime' comes from an index
-// signature, so it must be accessed with
-// ['transferShowPreparingMessageForZeroRemainingTime'].
-testcase.transferShowPreparingMessageForZeroRemainingTime = async () => {
+export async function transferShowPreparingMessageForZeroRemainingTime() {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Show a |copy| progress in feedback panel.
@@ -1411,4 +1270,4 @@ testcase.transferShowPreparingMessageForZeroRemainingTime = async () => {
 
   // Check secondary text is preparing message.
   chrome.test.assertEq('Preparing', panel.attributes['secondary-text']);
-};
+}
