@@ -164,6 +164,23 @@ QuadF operator-(const QuadF& lhs, const Vector2dF& rhs) {
 }
 
 bool QuadF::IntersectsRect(const RectF& rect) const {
+  // Start by checking this quad against the potential separating axes of the
+  // rectangle. Since the rectangle is axis-aligned, we can just check for
+  // intersection between the bounding boxes - if they don't intersect one of
+  // the edges of the rectangle is a separating axis.
+  const auto [min, max] = Extents();
+  if (min.y() > rect.bottom() || rect.y() > max.y()) {
+    return false;
+  }
+  if (min.x() > rect.right() || rect.x() > max.x()) {
+    return false;
+  }
+  // None of the edges of the rectangle are a separating axis - test the edges
+  // of this quad.
+  return IntersectsRectPartial(rect);
+}
+
+bool QuadF::IntersectsRectPartial(const RectF& rect) const {
   // For each side of the quad clockwise we check if the rectangle is to the
   // left of it since only content on the right can overlap with the quad.
   // This only works if the quad is convex.

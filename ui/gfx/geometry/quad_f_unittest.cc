@@ -400,9 +400,8 @@ TEST(QuadFTest, IntersectsRectClockwise) {
 
   // Top.
   EXPECT_FALSE(quad.IntersectsRect(RectF(0, -30, 20, 2)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 2)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 4.9)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 4.9)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(0, -5, 20, 5.1)));
 
   // Top-right.
@@ -415,9 +414,8 @@ TEST(QuadFTest, IntersectsRectClockwise) {
 
   // Right.
   EXPECT_FALSE(quad.IntersectsRect(RectF(50, 0, 2, 20)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(22, 0, 2, 20)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(20.1, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(22, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(20.1, 0, 2, 20)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(19.9, 0, 2, 20)));
 
   // Bottom-right.
@@ -430,9 +428,8 @@ TEST(QuadFTest, IntersectsRectClockwise) {
 
   // Bottom.
   EXPECT_FALSE(quad.IntersectsRect(RectF(0, 50, 20, 2)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, 22, 20, 2)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, 20.1, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, 22, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, 20.1, 20, 2)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(0, 19.9, 20, 2)));
 
   // Bottom-left.
@@ -445,9 +442,8 @@ TEST(QuadFTest, IntersectsRectClockwise) {
 
   // Left.
   EXPECT_FALSE(quad.IntersectsRect(RectF(-30, 0, 2, 20)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 2, 20)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 4.9, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 4.9, 20)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(-5, 0, 5.1, 20)));
 
   // Cover.
@@ -467,9 +463,8 @@ TEST(QuadFTest, IntersectsRectCounterClockwise) {
 
   // Top.
   EXPECT_FALSE(quad.IntersectsRect(RectF(0, -30, 20, 2)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 2)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 4.9)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, -5, 20, 4.9)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(0, -5, 20, 5.1)));
 
   // Top-right.
@@ -482,9 +477,8 @@ TEST(QuadFTest, IntersectsRectCounterClockwise) {
 
   // Right.
   EXPECT_FALSE(quad.IntersectsRect(RectF(50, 0, 2, 20)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(22, 0, 2, 20)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(20.1, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(22, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(20.1, 0, 2, 20)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(19.9, 0, 2, 20)));
 
   // Bottom-right.
@@ -497,9 +491,8 @@ TEST(QuadFTest, IntersectsRectCounterClockwise) {
 
   // Bottom.
   EXPECT_FALSE(quad.IntersectsRect(RectF(0, 50, 20, 2)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, 22, 20, 2)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(0, 20.1, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, 22, 20, 2)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(0, 20.1, 20, 2)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(0, 19.9, 20, 2)));
 
   // Bottom-left.
@@ -512,9 +505,8 @@ TEST(QuadFTest, IntersectsRectCounterClockwise) {
 
   // Left.
   EXPECT_FALSE(quad.IntersectsRect(RectF(-30, 0, 2, 20)));
-  // TODO(crbug.com/1283709): For now the result is true.
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 2, 20)));
-  // EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 4.9, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 2, 20)));
+  EXPECT_FALSE(quad.IntersectsRect(RectF(-5, 0, 4.9, 20)));
   EXPECT_TRUE(quad.IntersectsRect(RectF(-5, 0, 5.1, 20)));
 
   // Cover.
@@ -527,30 +519,44 @@ TEST(QuadFTest, RectIntersectionIsInclusive) {
 
   // A rect fully contained in the quad should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(11, 11, 8, 8)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(11, 11, 8, 8)));
 
   // A point fully contained in the quad should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(11, 11, 0, 0)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(11, 11, 0, 0)));
 
   // A rect that touches the quad only at the point (10, 10) should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(9, 9, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(9, 9, 1, 1)));
 
   // A rect that touches the quad only on the left edge should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(9, 11, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(9, 11, 1, 1)));
 
   // A rect that touches the quad only on the top edge should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(11, 9, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(11, 9, 1, 1)));
 
   // A rect that touches the quad only on the right edge should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(20, 11, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(20, 11, 1, 1)));
 
   // A rect that touches the quad only on the bottom edge should intersect.
   EXPECT_TRUE(quad.IntersectsRect(RectF(11, 20, 1, 1)));
+  EXPECT_TRUE(quad.IntersectsRectPartial(RectF(11, 20, 1, 1)));
 
   // A rect that is fully outside the quad should not intersect.
   EXPECT_FALSE(quad.IntersectsRect(RectF(8, 8, 1, 1)));
+  EXPECT_FALSE(quad.IntersectsRectPartial(RectF(8, 8, 1, 1)));
 
   // A point that is fully outside the quad should not intersect.
   EXPECT_FALSE(quad.IntersectsRect(RectF(9, 9, 0, 0)));
+  EXPECT_FALSE(quad.IntersectsRectPartial(RectF(9, 9, 0, 0)));
+
+  // A rect that is not fully to the left of any of the quad's edges.
+  QuadF quad2(PointF(100, 100), PointF(80, 120), PointF(50, 80),
+              PointF(60, 40));
+  EXPECT_FALSE(quad2.IntersectsRect(RectF(60, 130, 30, 10)));
 }
 
 TEST(QuadFTest, IntersectsEllipseClockWise) {

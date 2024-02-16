@@ -126,7 +126,7 @@ bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
     return true;
 
   // Otherwise we need to do a slower quad based intersection test.
-  return transformed_rect_.IntersectsRect(gfx::RectF(rect));
+  return transformed_rect_.IntersectsRectPartial(gfx::RectF(rect));
 }
 
 bool HitTestLocation::Intersects(const gfx::RectF& rect) const {

@@ -248,9 +248,18 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
 
+  const auto [quad_min, quad_max] = quad.Extents();
+
+  // For each corner, first check the remaining (two) separating axes of the
+  // rectangle that encloses the corner. The other (two) axes coincide with the
+  // axes of `rect_`. If none of those are separating, proceed to call
+  // IntersectsRectPartial to check the potential axes of `quad`.
+
   if (!radii_.TopLeft().IsEmpty()) {
     const gfx::RectF corner_rect(TopLeftCorner());
-    if (quad.IntersectsRect(corner_rect)) {
+    if (quad_min.y() <= corner_rect.bottom() &&
+        quad_min.x() <= corner_rect.right() &&
+        quad.IntersectsRectPartial(corner_rect)) {
       if (!quad.IntersectsEllipse(corner_rect.bottom_right(),
                                   corner_rect.size())) {
         return false;
@@ -260,7 +269,9 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
 
   if (!radii_.TopRight().IsEmpty()) {
     const gfx::RectF corner_rect(TopRightCorner());
-    if (quad.IntersectsRect(corner_rect)) {
+    if (quad_min.y() <= corner_rect.bottom() &&
+        quad_max.x() >= corner_rect.x() &&
+        quad.IntersectsRectPartial(corner_rect)) {
       if (!quad.IntersectsEllipse(corner_rect.bottom_left(),
                                   corner_rect.size())) {
         return false;
@@ -270,7 +281,9 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
 
   if (!radii_.BottomLeft().IsEmpty()) {
     const gfx::RectF corner_rect(BottomLeftCorner());
-    if (quad.IntersectsRect(corner_rect)) {
+    if (quad_max.y() >= corner_rect.y() &&
+        quad_min.x() <= corner_rect.right() &&
+        quad.IntersectsRectPartial(corner_rect)) {
       if (!quad.IntersectsEllipse(corner_rect.top_right(),
                                   corner_rect.size())) {
         return false;
@@ -280,7 +293,8 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
 
   if (!radii_.BottomRight().IsEmpty()) {
     const gfx::RectF corner_rect(BottomRightCorner());
-    if (quad.IntersectsRect(corner_rect)) {
+    if (quad_max.y() >= corner_rect.y() && quad_max.x() >= corner_rect.x() &&
+        quad.IntersectsRectPartial(corner_rect)) {
       if (!quad.IntersectsEllipse(corner_rect.origin(), corner_rect.size())) {
         return false;
       }
