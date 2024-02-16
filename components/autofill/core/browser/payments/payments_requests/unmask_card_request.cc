@@ -298,6 +298,18 @@ std::string UnmaskCardRequest::GetRequestContent() {
       challenge_option.Set("cvc_position", cvc_position);
 
       request_dict.Set("cvc_challenge_option", std::move(challenge_option));
+    } else if (request_details_.selected_challenge_option->type ==
+               CardUnmaskChallengeOptionType::kThreeDomainSecure) {
+      challenge_option.Set(
+          "challenge_id",
+          request_details_.selected_challenge_option->id.value());
+      challenge_option.Set(
+          "redirect_url",
+          request_details_.selected_challenge_option->url_to_open.spec());
+      challenge_option.Set("redirect_completion_proof",
+                           request_details_.redirect_completion_proof.value());
+      request_dict.Set("redirect_challenge_option",
+                       std::move(challenge_option));
     }
   }
 

@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -218,6 +219,10 @@ class TestAutofillClientTemplate : public T {
   payments::TestPaymentsNetworkInterface* GetPaymentsNetworkInterface()
       override {
     return payments_network_interface_.get();
+  }
+
+  payments::PaymentsWindowManager* GetPaymentsWindowManager() override {
+    return payments_window_manager_.get();
   }
 
   TestStrikeDatabase* GetStrikeDatabase() override {
@@ -583,6 +588,12 @@ class TestAutofillClientTemplate : public T {
     payments_network_interface_ = std::move(payments_network_interface);
   }
 
+  void set_payments_window_manager(
+      std::unique_ptr<payments::PaymentsWindowManager>
+          payments_window_manager) {
+    payments_window_manager_ = std::move(payments_window_manager);
+  }
+
   void set_test_form_data_importer(
       std::unique_ptr<FormDataImporter> form_data_importer) {
     form_data_importer_ = std::move(form_data_importer);
@@ -773,6 +784,7 @@ class TestAutofillClientTemplate : public T {
       payments_autofill_client_;
   std::unique_ptr<payments::TestPaymentsNetworkInterface>
       payments_network_interface_;
+  std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
 
   // The below objects must be destroyed before `PaymentsNetworkInterface`

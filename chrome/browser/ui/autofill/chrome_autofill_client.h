@@ -62,7 +62,7 @@ class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
-class ChromePaymentsAutofillClient;
+class PaymentsAutofillClient;
 class MandatoryReauthManager;
 }  // namespace payments
 
@@ -320,8 +320,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<payments::ChromePaymentsAutofillClient>
-      payments_autofill_client_;
+  std::unique_ptr<payments::PaymentsAutofillClient> payments_autofill_client_;
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
   std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;

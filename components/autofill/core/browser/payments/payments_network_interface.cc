@@ -98,6 +98,7 @@ PaymentsNetworkInterface::UnmaskRequestDetails::operator=(
   merchant_domain_for_footprints = other.merchant_domain_for_footprints;
   selected_challenge_option = other.selected_challenge_option;
   client_behavior_signals = other.client_behavior_signals;
+  redirect_completion_proof = other.redirect_completion_proof;
   return *this;
 }
 
