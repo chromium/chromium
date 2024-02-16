@@ -15366,21 +15366,6 @@
             ]
         }
     ],
-    "QuickAnswersForMoreLocales": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QuickAnswersForMoreLocales"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuickAnswersRichCard": [
         {
             "platforms": [
