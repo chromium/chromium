@@ -58,6 +58,10 @@ class SystemWebAppManager : public KeyedService,
     kOnVersionChange,
   };
 
+  // Number of attempts to install a given version & locale of the SWAs before
+  // bailing out.
+  static constexpr int kInstallFailureAttempts = 3;
+
   static constexpr char kSystemWebAppSessionHasBrokenIconsPrefName[] =
       "web_apps.system_web_app_has_broken_icons_in_session";
 
