@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.download.DownloadCollectionBridge;
@@ -305,7 +306,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
 
             DownloadManagerService.getDownloadManagerService()
-                    .checkForExternallyRemovedDownloads(ProfileKey.getLastUsedRegularProfileKey());
+                    .checkForExternallyRemovedDownloads(
+                            ProfileKeyUtil.getLastUsedRegularProfileKey());
 
             mActivityLaunched = true;
         }

@@ -7,12 +7,17 @@ package org.chromium.chrome.browser.profiles;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 
 /** Java interface to the C++ ProfileManager. */
 public class ProfileManager {
-    private static ObserverList<Observer> sObservers = new ObserverList<>();
+    private static Profile sLastUsedProfileForTesting;
+
+    private static ObserverList<Observer> sObservers;
     private static boolean sInitialized;
 
     /** Observer for Profile creation. */
@@ -32,11 +37,19 @@ public class ProfileManager {
 
     /** Add an observer to be notified when profiles get created. */
     public static void addObserver(Observer observer) {
+        // Lazily creating the ObserverList to avoid the internal ThreadChecker being assigned to
+        // the first thread that accesses any ProfileManager method. Because the ObserverList
+        // asserts thread consistency, this does not do additional locking on the ProfileManager
+        // side because the internal ObserverList checks will crash if thread misuse happens.
+        if (sObservers == null) {
+            sObservers = new ObserverList<>();
+        }
         sObservers.addObserver(observer);
     }
 
     /** Remove an observer of profiles changes. */
     public static void removeObserver(Observer observer) {
+        if (sObservers == null) return;
         sObservers.removeObserver(observer);
     }
 
@@ -52,6 +65,8 @@ public class ProfileManager {
     public static void onProfileAdded(Profile profile) {
         // If a profile has been added, we know the ProfileManager has been initialized.
         sInitialized = true;
+
+        if (sObservers == null) return;
         for (Observer observer : sObservers) {
             observer.onProfileAdded(profile);
         }
@@ -59,13 +74,53 @@ public class ProfileManager {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void onProfileDestroyed(Profile profile) {
+        if (sObservers == null) return;
         for (Observer observer : sObservers) {
             observer.onProfileDestroyed(profile);
         }
     }
 
+    /**
+     * Returns the regular (i.e., not off-the-record) profile.
+     *
+     * <p>Note: The function name uses the "last used" terminology for consistency with
+     * profile_manager.cc which supports multiple regular profiles.
+     */
+    public static Profile getLastUsedRegularProfile() {
+        if (sLastUsedProfileForTesting != null) {
+            return sLastUsedProfileForTesting;
+        }
+        ThreadUtils.assertOnUiThread();
+        if (!ProfileManager.isInitialized()) {
+            throw new IllegalStateException("Browser hasn't finished initialization yet!");
+        }
+        return (Profile) ProfileManagerJni.get().getLastUsedRegularProfile();
+    }
+
+    /**
+     * Destroys the Profile. Destruction is delayed until all associated renderers have been killed,
+     * so the profile might not be destroyed upon returning from this call.
+     */
+    public static void destroyWhenAppropriate(Profile profile) {
+        profile.ensureNativeInitialized();
+        ProfileManagerJni.get().destroyWhenAppropriate(profile);
+    }
+
+    /** Sets for testing the profile to be returned by {@link #getLastUsedRegularProfile()}. */
+    public static void setLastUsedProfileForTesting(Profile profile) {
+        sLastUsedProfileForTesting = profile;
+        ResettersForTesting.register(() -> sLastUsedProfileForTesting = null);
+    }
+
     public static void resetForTesting() {
         sInitialized = false;
-        sObservers.clear();
+        if (sObservers != null) sObservers.clear();
+    }
+
+    @NativeMethods
+    public interface Natives {
+        Object getLastUsedRegularProfile();
+
+        void destroyWhenAppropriate(Profile caller);
     }
 }

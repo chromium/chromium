@@ -9,7 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
@@ -32,7 +32,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
             new TouchToFillMediator(
                     ImageFetcherFactory.createImageFetcher(
                             ImageFetcherConfig.DISK_CACHE_ONLY,
-                            ProfileKey.getLastUsedRegularProfileKey()));
+                            ProfileKeyUtil.getLastUsedRegularProfileKey()));
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
 

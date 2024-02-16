@@ -14,16 +14,30 @@ source_set("profiles") {
     "incognito_helpers.h",
     "profile_key.cc",
     "profile_key.h",
-
-    # TODO(b/307628893): Move profile_key_android.cc to
-    # chrome/browser/profiles:profiles once the circular dependency is removed.
-    "profile_key_android.h",
   ]
 
-  # Cannot depend on //chrome/browser:browser.
-  deps = [ ":profile" ]
+  if (is_android) {
+    sources += [
+      "profile_android.cc",
+      "profile_android.h",
+      "profile_key_android.cc",
+      "profile_key_android.h",
+    ]
+  }
 
-  public_deps = [ "//components/leveldb_proto" ]
+  # Cannot depend on //chrome/browser:browser.
+  deps = []
+  if (is_android) {
+    deps += [
+      "//chrome/browser/profiles/android:jni_headers",
+      "//content/public/browser",
+    ]
+  }
+
+  public_deps = [
+    ":profile",
+    "//components/leveldb_proto",
+  ]
 }
 
 # This target should be very minimal, likely no new sources should be added

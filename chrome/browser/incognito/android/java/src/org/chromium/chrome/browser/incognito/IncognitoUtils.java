@@ -10,6 +10,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 public class IncognitoUtils {
@@ -43,7 +44,7 @@ public class IncognitoUtils {
      */
     public static ProfileKey getProfileKeyFromOTRProfileID(OTRProfileID otrProfileID) {
         // If off-the-record is not requested, the request might be before native initialization.
-        if (otrProfileID == null) return ProfileKey.getLastUsedRegularProfileKey();
+        if (otrProfileID == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 
         return Profile.getLastUsedRegularProfile()
                 .getOffTheRecordProfile(otrProfileID, /* createIfNeeded= */ true)
