@@ -91,6 +91,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void SetPaused(bool) override {}
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}
   void SetCrossOriginToNearestMainFrame(bool) override {}
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   bool IsCrossOriginToNearestMainFrame() const override { return false; }
   void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }

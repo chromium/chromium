@@ -994,6 +994,7 @@ void LocalFrame::SetDOMWindow(LocalDOMWindow* dom_window) {
   GetWindowProxyManager()->ClearForNavigation();
   dom_window_ = dom_window;
   dom_window->Initialize();
+  GetFrameScheduler()->SetAgentClusterId(GetAgentClusterId());
 }
 
 Document* LocalFrame::GetDocument() const {

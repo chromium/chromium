@@ -117,6 +117,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}
   void SetCrossOriginToNearestMainFrame(bool) override {}
   bool IsCrossOriginToNearestMainFrame() const override { return false; }
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }
   bool IsInEmbeddedFrameTree() const override { return false; }

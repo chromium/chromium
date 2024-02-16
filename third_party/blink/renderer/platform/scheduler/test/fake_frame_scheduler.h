@@ -122,6 +122,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   bool IsCrossOriginToNearestMainFrame() const override {
     return is_cross_origin_to_nearest_main_frame_;
   }
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   void TraceUrlChange(const String&) override {}
   FrameScheduler::FrameType GetFrameType() const override {
     return frame_type_;

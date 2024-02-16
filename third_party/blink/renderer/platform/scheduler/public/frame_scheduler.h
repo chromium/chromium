@@ -94,6 +94,10 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Returns whether this frame is cross-origin to the nearest main frame.
   virtual bool IsCrossOriginToNearestMainFrame() const = 0;
 
+  // Set the agent cluster id for this frame.
+  virtual void SetAgentClusterId(
+      const base::UnguessableToken& agent_cluster_id) = 0;
+
   virtual void SetIsAdFrame(bool is_ad_frame) = 0;
   virtual bool IsAdFrame() const = 0;
 

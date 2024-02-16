@@ -402,6 +402,11 @@ bool FrameSchedulerImpl::IsCrossOriginToNearestMainFrame() const {
   return frame_origin_type_ == FrameOriginType::kCrossOriginToMainFrame;
 }
 
+void FrameSchedulerImpl::SetAgentClusterId(
+    const base::UnguessableToken& agent_cluster_id) {
+  agent_cluster_id_ = agent_cluster_id;
+}
+
 void FrameSchedulerImpl::TraceUrlChange(const String& url) {
   url_tracer_.TraceString(url);
 }

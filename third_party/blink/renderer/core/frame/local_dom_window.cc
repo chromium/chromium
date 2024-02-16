@@ -266,8 +266,12 @@ void LocalDOMWindow::Initialize() {
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
   GetAgent()->DetachContext(this);
   ResetAgent(agent);
-  if (document_)
+  if (document_) {
     document_->ResetAgent(*agent);
+  }
+
+  CHECK(GetFrame());
+  GetFrame()->GetFrameScheduler()->SetAgentClusterId(GetAgentClusterID());
 
   // This is only called on Android WebView, we need to reassign the microtask
   // queue if there already is one for the associated context. There shouldn't

@@ -17,6 +17,7 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -97,6 +98,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   void SetCrossOriginToNearestMainFrame(bool cross_origin) override;
   bool IsCrossOriginToNearestMainFrame() const override;
+
+  void SetAgentClusterId(
+      const base::UnguessableToken& agent_cluster_id) override;
 
   void SetIsAdFrame(bool is_ad_frame) override;
   bool IsAdFrame() const override;
@@ -313,6 +317,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // Whether this scheduler is created for a frame that is contained
   // inside an embedded frame tree. See /docs/frame_trees.md.
   const bool is_in_embedded_frame_tree_;
+
+  base::UnguessableToken agent_cluster_id_ = base::UnguessableToken::Null();
 
   bool is_ad_frame_ = false;
 
