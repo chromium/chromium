@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -25,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -505,6 +508,77 @@ public class PageInsightsCoordinatorTest {
         hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_scrimNotShown() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        assertFalse(mScrimCoordinator.isShowingScrim());
+        setAutoTriggerTimerFinished();
+
+        hideTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
+        assertFalse(mScrimCoordinator.isShowingScrim());
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissAfterAutoTrigger_scrimNotShown() throws Exception {
+        createPageInsightsCoordinator();
+        mScrimCoordinator.disableAnimationForTesting(true);
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        assertFalse(mScrimCoordinator.isShowingScrim());
+        setAutoTriggerTimerFinished();
+
+        hideTopBar(); // Signal for auto triggering the PIH
+
+        assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
+        assertFalse(mScrimCoordinator.isShowingScrim());
+
+        hideSheet();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mScrimCoordinator.setAlpha(0);
+                    mScrimCoordinator.forceAnimationToFinish();
+                });
+        assertFalse(mScrimCoordinator.isShowingScrim());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedStateAfterPeekState_scrimShown() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setAutoTriggerTimerFinished();
+
+        hideTopBar(); // Signal for auto triggering the PIH in Peek state
+        assertFalse(mScrimCoordinator.isShowingScrim());
+
+        expandSheet();
+        assertTrue(mScrimCoordinator.isShowingScrim());
+    }
+
+    @Test
+    @MediumTest
+    @Ignore("TODO: b/325577847 - Animation is not finished when PIH finishes dismiss")
+    public void testDismissAfterExpandedState_scrimNotShown() throws Exception {
+        createAndLaunchPageInsightsCoordinator();
+        mScrimCoordinator.disableAnimationForTesting(true);
+        // expanded state
+        assertTrue(mScrimCoordinator.isShowingScrim());
+
+        hideSheet();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mScrimCoordinator.setAlpha(0);
+                    mScrimCoordinator.forceAnimationToFinish();
+                });
+
+        assertFalse(mScrimCoordinator.isShowingScrim());
     }
 
     private void mockOptimizationGuideResponse(PageInsightsMetadata metadata) {
