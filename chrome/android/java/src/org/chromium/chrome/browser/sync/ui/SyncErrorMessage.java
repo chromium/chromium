@@ -159,13 +159,11 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             IdentityManager identityManager,
             SyncService syncService) {
         @SyncError int error = SyncSettingsUtils.getSyncError(syncService);
-        String errorMessage =
-                error == SyncError.SYNC_SETUP_INCOMPLETE
-                        ? activity.getString(R.string.sync_settings_not_confirmed_title)
-                        : SyncSettingsUtils.getSyncErrorHint(activity, error);
-        // Use the same title with sync error card of sync settings.
-        String title = SyncSettingsUtils.getSyncErrorCardTitle(activity, error);
-        String primaryButtonText = getPrimaryButtonText(activity, error);
+        // TODO(crbug.com/1503649): Also show error message for identity errors.
+        final boolean isIdentityError = false;
+        String errorMessage = getMessage(activity, error, isIdentityError);
+        String title = getTitle(activity, error, isIdentityError);
+        String primaryButtonText = getPrimaryButtonText(activity, error, isIdentityError);
         Resources resources = activity.getResources();
         mModel =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -288,17 +286,99 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         RecordHistogram.recordEnumeratedHistogram(name, action, Action.NUM_ENTRIES);
     }
 
-    private static String getPrimaryButtonText(Context context, @SyncError int error) {
+    private static String getPrimaryButtonText(
+            Context context, @SyncError int error, boolean isIdentityError) {
+        if (!isIdentityError) {
+            switch (error) {
+                case SyncError.AUTH_ERROR:
+                    return context.getString(R.string.password_error_sign_in_button_title);
+                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                    return context.getString(R.string.trusted_vault_error_card_button);
+                default:
+                    return context.getString(R.string.open_settings_button);
+            }
+        }
+
         switch (error) {
+            case SyncError.PASSPHRASE_REQUIRED:
+                return context.getString(
+                        R.string.identity_error_message_button_passphrase_required);
+            case SyncError.CLIENT_OUT_OF_DATE:
+                // Reuse the same string as that for the identity error card button.
+                return context.getString(R.string.identity_error_card_button_client_out_of_date);
             case SyncError.AUTH_ERROR:
-                return context.getString(R.string.password_error_sign_in_button_title);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                return context.getString(R.string.trusted_vault_error_card_button);
+                return context.getString(R.string.identity_error_message_button_verify);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
             default:
-                return context.getString(R.string.open_settings_button);
+                assert false;
+                return "";
+        }
+    }
+
+    private static String getTitle(Context context, @SyncError int error, boolean isIdentityError) {
+        if (!isIdentityError) {
+            // Use the same title with sync error card of sync settings.
+            return SyncSettingsUtils.getSyncErrorCardTitle(context, error);
+        }
+
+        switch (error) {
+            case SyncError.PASSPHRASE_REQUIRED:
+                return context.getString(R.string.identity_error_message_title_passphrase_required);
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return context.getString(R.string.identity_error_message_title_client_out_of_date);
+            case SyncError.AUTH_ERROR:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                // Reuse the same string as that for the identity error card button.
+                return context.getString(R.string.identity_error_card_button_verify);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
+            default:
+                assert false;
+                return "";
+        }
+    }
+
+    private static String getMessage(
+            Context context, @SyncError int error, boolean isIdentityError) {
+        if (!isIdentityError) {
+            return error == SyncError.SYNC_SETUP_INCOMPLETE
+                    ? context.getString(R.string.sync_settings_not_confirmed_title)
+                    : SyncSettingsUtils.getSyncErrorHint(context, error);
+        }
+
+        switch (error) {
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return context.getString(
+                        R.string.identity_error_message_body_sync_retrieve_keys_for_passwords);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return context.getString(
+                        R.string
+                                .identity_error_message_body_sync_recoverability_degraded_for_everything);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return context.getString(
+                        R.string
+                                .identity_error_message_body_sync_recoverability_degraded_for_passwords);
+            case SyncError.PASSPHRASE_REQUIRED:
+            case SyncError.CLIENT_OUT_OF_DATE:
+            case SyncError.AUTH_ERROR:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return context.getString(R.string.identity_error_message_body);
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.OTHER_ERRORS:
+            default:
+                assert false;
+                return "";
         }
     }
 

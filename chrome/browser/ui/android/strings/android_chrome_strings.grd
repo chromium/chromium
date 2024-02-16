@@ -2352,11 +2352,37 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_PASSPHRASE_REQUIRED" desc="Button label for passphrase required error.">
         Enter passphrase
       </message>
-      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_CLIENT_OUT_OF_DATE" desc="Button label for client out-of-date error.">
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_CLIENT_OUT_OF_DATE" desc="Button label for client out-of-date error. Also used for error message button.">
         Update
       </message>
-      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error)">
+      <message name="IDS_IDENTITY_ERROR_CARD_BUTTON_VERIFY" desc="Button label for all errors requiring re-auth (auth error, degreaded recoverability, encryption error). Also used for error message and notification title.">
         Verify it’s you
+      </message>
+
+      <!-- Identity error message and notification strings -->
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY" desc="Error message/notification to resolve passphrase required error, sync encryption error, auth error, outdated client error.">
+        Keep using the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Error message/notification to resolve sync encryption error, required to resume syncing passwords.">
+        Keep using the passwords in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Error message/notification to resolve sync degraded recoverability, for users that have chosen to encrypt all sync data.">
+        Make sure you can always use the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BODY_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Error message/notification to resolve sync degraded recoverability, for users that have chosen to encrypt only passwords.">
+        Make sure you can always use the passwords in your Google Account
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_TITLE_PASSPHRASE_REQUIRED" desc="Error message/notification title for passphrase required error.">
+        Enter your passphrase
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_TITLE_CLIENT_OUT_OF_DATE" desc="Error message/notification title for client out-of-date error.">
+        Update Chrome
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_PASSPHRASE_REQUIRED" desc="Error message button label for passphrase required error.">
+        Enter
+      </message>
+      <message name="IDS_IDENTITY_ERROR_MESSAGE_BUTTON_VERIFY" desc="Error message button label for all errors requiring re-auth (auth error, degraded recoverability, encryption error)">
+        Verify
       </message>
 
       <!-- Tab switcher -->
