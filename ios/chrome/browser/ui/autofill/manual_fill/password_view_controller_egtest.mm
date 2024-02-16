@@ -382,6 +382,19 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 }
 
+// Tests that the "Select Password..." action works in incognito mode.
+- (void)testSelectPasswordActionInIncognito {
+  // Open a tab in incognito.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadLoginPage];
+
+  [self openOtherPasswords];
+
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that returning from "Manage Settings..." leaves the keyboard and the
 // icons in the right state.
 - (void)testPasswordsStateAfterPresentingManageSettings {

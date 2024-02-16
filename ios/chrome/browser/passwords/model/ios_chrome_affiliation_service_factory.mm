@@ -30,8 +30,16 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForBrowserState(
     web::BrowserState* browser_state) {
+  CHECK(browser_state);
+
+  // Always use the original BrowserState, not incognito. AffiliationService is
+  // safe to use in incognito.
+  auto* original_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state)
+          ->GetOriginalChromeBrowserState();
+
   return static_cast<affiliations::AffiliationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(original_browser_state, true));
 }
 
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
