@@ -28,6 +28,10 @@ class ClientCertStore;
 
 namespace ash::platform_keys {
 
+using GenerateSymKeyCallback =
+    base::OnceCallback<void(std::vector<uint8_t> key_id,
+                            chromeos::platform_keys::Status status)>;
+
 using GenerateKeyCallback =
     base::OnceCallback<void(std::vector<uint8_t> public_key_spki_der,
                             chromeos::platform_keys::Status status)>;
@@ -135,6 +139,12 @@ class PlatformKeysService : public KeyedService {
   virtual void AddObserver(PlatformKeysServiceObserver* observer) = 0;
   // Removes a previously added |observer|.
   virtual void RemoveObserver(PlatformKeysServiceObserver* observer) = 0;
+
+  // Generates a symmetric key with a given id.
+  virtual void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
+                              std::vector<uint8_t> key_id,
+                              int key_size,
+                              GenerateSymKeyCallback callback) = 0;
 
   // Generates a RSA key pair with |modulus_length_bits|. |token_id| specifies
   // the token to store the key pair on. |callback| will be invoked with the
@@ -339,6 +349,10 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   // PlatformKeysService
   void AddObserver(PlatformKeysServiceObserver* observer) override;
   void RemoveObserver(PlatformKeysServiceObserver* observer) override;
+  void GenerateSymKey(chromeos::platform_keys::TokenId token_id,
+                      std::vector<uint8_t> key_id,
+                      int key_size,
+                      GenerateSymKeyCallback callback) override;
   void GenerateRSAKey(chromeos::platform_keys::TokenId token_id,
                       unsigned int modulus_length_bits,
                       bool sw_backed,

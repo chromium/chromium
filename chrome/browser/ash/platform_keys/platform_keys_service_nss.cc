@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+
 #include <cert.h>
 #include <certdb.h>
 #include <cryptohi.h>
@@ -27,7 +29,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
-#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -79,6 +80,9 @@ using ::content::BrowserThread;
 // The current maximal RSA modulus length that ChromeOS's TPM supports for key
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
+
+// Default encryption constants for operations with symmetric keys.
+const unsigned long kDefaultSymKeyGenType = CKM_AES_KEY_GEN;
 
 // Returns a vector containing bytes from `value` or an empty vector if `value`
 // is nullptr.
@@ -167,6 +171,45 @@ void GetCertDatabase(std::optional<TokenId> token_id,
   delegate->GetNSSCertDatabase(base::BindOnce(&DidGetCertDbOnUiThread, token_id,
                                               std::move(callback), state));
 }
+
+class GenerateSymKeyState : public NSSOperationState {
+ public:
+  GenerateSymKeyState(ServiceWeakPtr weak_ptr,
+                      std::vector<uint8_t> key_id,
+                      int key_size,
+                      GenerateSymKeyCallback callback)
+      : NSSOperationState(weak_ptr),
+        key_id_(std::move(key_id)),
+        key_size_(key_size),
+        callback_(std::move(callback)) {}
+
+  ~GenerateSymKeyState() override = default;
+
+  void OnError(const base::Location& from, Status status) override {
+    CallBack(from, key_id_, status);
+  }
+
+  void OnSuccess(const base::Location& from) {
+    CallBack(from, key_id_, Status::kSuccess);
+  }
+
+  const std::vector<uint8_t> key_id_;
+  const int key_size_;
+
+ private:
+  void CallBack(const base::Location& from,
+                std::vector<uint8_t> key_id,
+                Status status) {
+    auto bound_callback =
+        base::BindOnce(std::move(callback_), std::move(key_id), status);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        from, base::BindOnce(&NSSOperationState::RunCallback,
+                             std::move(bound_callback), service_weak_ptr_));
+  }
+
+  // Must be called on origin thread, therefore use CallBack().
+  GenerateSymKeyCallback callback_;
+};
 
 class GenerateRSAKeyState : public NSSOperationState {
  public:
@@ -723,6 +766,48 @@ crypto::ScopedSECKEYPrivateKey GetPrivateKey(
     return crypto::FindNSSKeyFromPublicKeyInfoInSlot(public_key_spki_der, slot);
   }
   return crypto::FindNSSKeyFromPublicKeyInfo(public_key_spki_der);
+}
+
+void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
+  if (!state->slot_) {
+    LOG(ERROR) << "No slot.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  if (state->key_size_ != 32) {
+    LOG(ERROR) << "Only 32-byte keys are supported.";
+    state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
+    return;
+  }
+
+  std::vector<uint8_t> key_id = state->key_id_;
+  SECItem sec_key_id{siUTF8String, key_id.data(),
+                     static_cast<unsigned int>(key_id.size())};
+  CK_FLAGS op_flags = CKF_SIGN | CKF_ENCRYPT | CKF_DECRYPT;
+
+  if (!PK11_TokenKeyGenWithFlags(
+          state->slot_.get(), kDefaultSymKeyGenType, /*param=*/nullptr,
+          state->key_size_, &sec_key_id, op_flags,
+          /*attrFlags=*/PK11_ATTR_TOKEN | PK11_ATTR_PRIVATE,
+          /*wincx=*/nullptr)) {
+    LOG(ERROR) << "Couldn't generate symmetric key.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+  state->OnSuccess(FROM_HERE);
+}
+
+void GenerateSymKeyWithDB(std::unique_ptr<GenerateSymKeyState> state,
+                          net::NSSCertDatabase* cert_db) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
+  // This task interacts with the TPM, hence MayBlock().
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GenerateSymKeyOnWorkerThread, std::move(state)));
 }
 
 // Does the actual RSA key generation on a worker thread. Used by
@@ -1529,6 +1614,27 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
 }
 
 }  // namespace
+
+void PlatformKeysServiceImpl::GenerateSymKey(TokenId token_id,
+                                             std::vector<uint8_t> key_id,
+                                             int key_size,
+                                             GenerateSymKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto state = std::make_unique<GenerateSymKeyState>(
+      weak_factory_.GetWeakPtr(), std::move(key_id), key_size,
+      std::move(callback));
+  if (delegate_->IsShutDown()) {
+    state->OnError(FROM_HERE, Status::kErrorShutDown);
+    return;
+  }
+
+  // Get the pointer to |state| before transferring ownership of |state| to the
+  // callback's bound arguments.
+  NSSOperationState* state_ptr = state.get();
+  GetCertDatabase(token_id,
+                  base::BindOnce(&GenerateSymKeyWithDB, std::move(state)),
+                  delegate_.get(), state_ptr);
+}
 
 void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
                                              unsigned int modulus_length_bits,

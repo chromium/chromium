@@ -36,6 +36,14 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
+              GenerateSymKey,
+              (chromeos::platform_keys::TokenId token_id,
+               std::vector<uint8_t> key_id,
+               int key_size,
+               GenerateSymKeyCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
               GenerateRSAKey,
               (chromeos::platform_keys::TokenId token_id,
                unsigned int modulus_length_bits,
