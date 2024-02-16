@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-
 import './components/common_styles/oobe_flex_layout_styles.css.js';
 import './components/api_keys_notice.js';
-// clang-format on
-
-
 
 import {assert} from '//resources/ash/common/assert.js';
 import {$} from '//resources/ash/common/util.js';
@@ -29,9 +24,19 @@ import * as OobeTestApi from './test_api/test_api.js';
 // Everything has been imported at this point.
 traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
 
+declare global {
+  interface Window {
+    $?: typeof $;
+    MultiTapDetector?: any;
+    Oobe?: any;
+    cr?: {ui?: {Oobe?: any}};
+    OobeAPI?: OobeTestApi.OobeApiProvider;
+  }
+}
+
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
-function prepareGlobalValues() {
+function prepareGlobalValues(): void {
   // '$(id)' is an alias for 'document.getElementById(id)'. It is defined
   // in //resources/ash/common/util.js. If this function is not exposed
   // via the global object, it would not be available to tests that inject
@@ -40,6 +45,7 @@ function prepareGlobalValues() {
 
   // Expose MultiTapDetector class on window for tests to set static methods.
   window.MultiTapDetector = MultiTapDetector;
+  window.Oobe = Oobe;
 
   // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
   if (window.cr === undefined) {
@@ -48,16 +54,12 @@ function prepareGlobalValues() {
   if (window.cr.ui === undefined) {
     window.cr.ui = {};
   }
-  if (window.cr.ui.login === undefined) {
-    window.cr.ui.login = {};
-  }
 
   // Expose some values in the global object that are needed by OOBE.
   window.cr.ui.Oobe = Oobe;
-  window.Oobe = Oobe;
 }
 
-function initializeOobe() {
+function initializeOobe(): void {
   if (document.readyState === 'loading') {
     return;
   }
@@ -126,7 +128,7 @@ function lazyLoadOobe() {
  * that there are no priority screens to be added, so it jumps immediately to
  * step (2) and skips step (1).
  */
-function startOobe() {
+function startOobe(): void {
   // Ensure that there is a global error listener when OOBE starts.
   // This error listener is added in the main HTML document.
   assert(window.OobeErrorStore, 'OobeErrorStore not present on global object!');
