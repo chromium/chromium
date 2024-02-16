@@ -266,6 +266,7 @@ struct AnnotatedRegionValue;
 struct FocusParams;
 struct IconURL;
 struct PhysicalOffset;
+struct TextDiffRange;
 struct WebPrintPageDescription;
 
 using MouseEventWithHitTestResults = EventWithHitTestResults<WebMouseEvent>;
@@ -1919,9 +1920,7 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void NotifyUpdateCharacterData(CharacterData* character_data,
-                                 unsigned offset,
-                                 unsigned old_length,
-                                 unsigned new_length);
+                                 const TextDiffRange&);
   void NotifyChangeChildren(const ContainerNode& container,
                             const ContainerNode::ChildrenChange& change);
   void NotifyAttributeChanged(const Element& element,

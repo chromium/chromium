@@ -44,6 +44,7 @@ class ContentCaptureManager;
 class OffsetMapping;
 struct InlineItemsData;
 struct InlineItemSpan;
+struct TextDiffRange;
 
 // LayoutText is the root class for anything that represents
 // a text node (see core/dom/text.h).
@@ -180,7 +181,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void SetTextIfNeeded(String);
   void ForceSetText(String);
-  void SetTextWithOffset(String, unsigned offset, unsigned len);
+  void SetTextWithOffset(String, const TextDiffRange&);
   void SetTextInternal(String);
 
   // Apply text-transform and -webkit-text-security to OriginalText(), and

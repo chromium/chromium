@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -85,17 +86,20 @@ Node* Text::MergeNextSiblingNodesIfPossible() {
     String next_text_data = next_text->data();
     String old_text_data = data();
     SetDataWithoutUpdate(data() + next_text_data);
-    UpdateTextLayoutObject(old_text_data.length(), 0);
+    UpdateTextLayoutObject(
+        TextDiffRange::Insert(old_text_data.length(), next_text_data.length()));
 
     GetDocument().DidMergeTextNodes(*this, *next_text, offset);
 
     // Empty nextText for layout update.
     next_text->SetDataWithoutUpdate(g_empty_string);
-    next_text->UpdateTextLayoutObject(0, next_text_data.length());
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Delete(0, next_text_data.length()));
 
     // Restore nextText for mutation event.
     next_text->SetDataWithoutUpdate(next_text_data);
-    next_text->UpdateTextLayoutObject(0, 0);
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Insert(0, next_text_data.length()));
 
     GetDocument().IncDOMTreeVersion();
     DidModifyData(old_text_data, CharacterData::kUpdateFromNonParser);
@@ -129,8 +133,10 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (exception_state.HadException())
     return nullptr;
 
-  if (GetLayoutObject()) {
-    GetLayoutObject()->SetTextWithOffset(data(), 0, old_str.length());
+  if (LayoutText* layout_text = GetLayoutObject()) {
+    // TODO(kojii): The `0, old_str.length()` doesn't look right.
+    layout_text->SetTextWithOffset(data(),
+                                   TextDiffRange::Delete(0, old_str.length()));
     if (ContainsOnlyWhitespaceOrEmpty()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
       SetForceReattachLayoutTree();
@@ -476,8 +482,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   return false;
 }
 
-void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
-                                  unsigned length_of_replaced_data) {
+void Text::UpdateTextLayoutObject(const TextDiffRange& diff) {
   if (!InActiveDocument())
     return;
   LayoutText* text_layout_object = GetLayoutObject();
@@ -486,8 +491,7 @@ void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
     return;
   }
 
-  text_layout_object->SetTextWithOffset(data(), offset_of_replaced_data,
-                                        length_of_replaced_data);
+  text_layout_object->SetTextWithOffset(data(), diff);
 }
 
 CharacterData* Text::CloneWithData(Document& factory,

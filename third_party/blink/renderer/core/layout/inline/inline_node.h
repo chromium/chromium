@@ -24,6 +24,7 @@ class LayoutResult;
 class OffsetMapping;
 struct InlineItemsData;
 struct SvgTextContentRange;
+struct TextDiffRange;
 
 // Represents an anonymous block box to be laid out, that contains consecutive
 // inline nodes and their descendants.
@@ -79,8 +80,7 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   // This is optimized version of |PrepareLayout()|.
   static bool SetTextWithOffset(LayoutText* layout_text,
                                 String new_text,
-                                unsigned offset,
-                                unsigned length);
+                                const TextDiffRange&);
 
   // Returns the DOM to text content offset mapping of this block. If it is not
   // computed before, compute and store it in InlineNodeData.

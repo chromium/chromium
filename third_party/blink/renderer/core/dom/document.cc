@@ -169,6 +169,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/dom/tree_walker.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
@@ -5849,13 +5850,11 @@ void Document::NodeWillBeRemoved(Node& n) {
 }
 
 void Document::NotifyUpdateCharacterData(CharacterData* character_data,
-                                         unsigned offset,
-                                         unsigned old_length,
-                                         unsigned new_length) {
+                                         const TextDiffRange& diff) {
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {
-        observer->DidUpdateCharacterData(character_data, offset, old_length,
-                                         new_length);
+        observer->DidUpdateCharacterData(character_data, diff.offset,
+                                         diff.old_size, diff.new_size);
       });
 }
 

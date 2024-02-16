@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -834,13 +835,13 @@ void LayoutText::LogicalStartingPointAndHeight(
   }
 }
 
-void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
+void LayoutText::SetTextWithOffset(String text, const TextDiffRange& diff) {
   NOT_DESTROYED();
   if (text_ == text) {
     return;
   }
 
-  if (InlineNode::SetTextWithOffset(this, text, offset, len)) {
+  if (InlineNode::SetTextWithOffset(this, text, diff)) {
     DCHECK(!NeedsCollectInlines());
     // Prevent |TextDidChange()| to propagate |NeedsCollectInlines|
     SetNeedsCollectInlines(true);
