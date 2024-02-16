@@ -72,7 +72,16 @@ reports aren't very useful by themselves, but with a few commands you can
 symbolize the report locally to get insight into what conditions caused Chrome
 to crash.
 
-To do so, first download both the task's input files (this provides the
+If you are running a locally compiled [Simple Chrome] binary on a device or VM,
+you can can build `minidump_stackwalk` and download the
+`/home/chronos/crash/chrome*.dmp` file.
+```
+autoninja -C out/Release minidump_stackwalk dump_syms
+
+rsync -r -e "ssh -p 9222" root@localhost:/home/chronos/crash /tmp
+```
+
+For a crash on a bot, download both the task's input files (this provides the
 symbols and the symbolizing tools) as well as the task's output results (this
 provides the crash reports). See the commands listed under the *Reproducing the
 task locally* section on the task page. For example, to download them for
@@ -88,17 +97,15 @@ cipd install "infra/tools/luci/swarming/\${platform}" -root bar
 ./bar/swarming collect -S chrome-swarming.appspot.com -output-dir=foo 5cc272e0a839b311
 ```
 
-Once both input and output have been fetched you must then generate the breakpad
-symbols by pointing the `generate_breakpad_symbols.py` script to the input's
-build dir:
+Generate the breakpad symbols by pointing the `generate_breakpad_symbols.py` script to
+your local binary, or the downloaded input build dir:
 ```
 cd foo
-vpython3 components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir out/Release/ --binary out/Release/chrome
+vpython3 components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir out/Release/ --binary out/Release/chrome --platform chromeos
 ```
 
 That will generate the symbols in the `symbols/` dir. Then to symbolize a Chrome
-crash report present in the task's output (such as
-`chrome.20220816.214251.44917.24579.dmp `):
+crash report (either in the tasks's output, or the `/tmp/crash` dir):
 ```
 ./out/Release/minidump_stackwalk 5cc272e0a839b311/crashes/chrome.20220816.214251.44917.24579.dmp symbols/
 ```
