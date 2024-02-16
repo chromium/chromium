@@ -35,7 +35,8 @@ bool ValidateDeviceLists() {
 
 bool ValidateVidPidAliasList() {
   for (auto vid_pid_alias_pair : GetVidPidAliasList()) {
-    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second)) {
+    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second) &&
+        !GetGraphicsTabletMetadataList().contains(vid_pid_alias_pair.second)) {
       return false;
     }
   }

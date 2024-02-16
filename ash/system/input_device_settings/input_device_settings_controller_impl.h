@@ -222,6 +222,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // kDefault by default if there is no mouse metadata.
   mojom::MouseButtonConfig GetMouseButtonConfig(const ui::InputDevice& mouse);
 
+  // Get the graphics tablet button config based on the tablet metadata. Return
+  // kDefault by default if there is no metadata.
+  mojom::GraphicsTabletButtonConfig GetGraphicsTabletButtonConfig(
+      const ui::InputDevice& graphics_tablet);
+
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);
   mojom::Keyboard* FindKeyboard(DeviceId id);

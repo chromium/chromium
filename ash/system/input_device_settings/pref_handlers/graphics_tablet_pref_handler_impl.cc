@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/json/values_util.h"
@@ -45,6 +46,11 @@ void GraphicsTabletPrefHandlerImpl::InitializeGraphicsTabletSettings(
     settings->pen_button_remappings = ConvertListToButtonRemappingArray(
         *pen_button_remappings_list,
         graphics_tablet->customization_restriction);
+  } else {
+    settings->tablet_button_remappings = GetTabletButtonRemappingListForConfig(
+        graphics_tablet->graphics_tablet_button_config);
+    settings->pen_button_remappings = GetPenButtonRemappingListForConfig(
+        graphics_tablet->graphics_tablet_button_config);
   }
   graphics_tablet->settings = std::move(settings);
   DCHECK(graphics_tablet->settings);

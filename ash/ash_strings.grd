@@ -7631,6 +7631,24 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
         Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
       </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_PEN_FRONT_BUTTON_NAME" desc="The front button on the side of a graphics tablet stylus.">
+        Front Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_PEN_REAR_BUTTON_NAME" desc="The rear button on the side of a graphics tablet stylus.">
+        Rear Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_TABLET_EXPRESS_KEY_1_NAME" desc="The buttons on the face of a graphics tablet, brand name of 'ExpressKey' by Wacom. Will likely be 'ExpressKey' in most cases.">
+        ExpressKey 1
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_TABLET_EXPRESS_KEY_2_NAME" desc="The buttons on the face of a graphics tablet, brand name of 'ExpressKey' by Wacom. Will likely be 'ExpressKey' in most cases.">
+        ExpressKey 2
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_TABLET_EXPRESS_KEY_3_NAME" desc="The buttons on the face of a graphics tablet, brand name of 'ExpressKey' by Wacom. Will likely be 'ExpressKey' in most cases.">
+        ExpressKey 3
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_TABLET_EXPRESS_KEY_4_NAME" desc="The buttons on the face of a graphics tablet, brand name of 'ExpressKey' by Wacom. Will likely be 'ExpressKey' in most cases.">
+        ExpressKey 4
+      </message>
 
 
       <!-- Compat Mode Resize States-->

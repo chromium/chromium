@@ -106,6 +106,7 @@ const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
         /*device_key=*/"fake-device-key9",
         /*customization_restriction=*/
         ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+        ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
         ::ash::mojom::GraphicsTabletSettings::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
     ::ash::mojom::GraphicsTablet(
@@ -114,6 +115,7 @@ const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
         /*device_key=*/"fake-device-key10",
         /*customization_restriction=*/
         ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+        ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
         ::ash::mojom::GraphicsTabletSettings::New());
 
 template <bool sorted = false, typename T>

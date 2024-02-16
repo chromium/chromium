@@ -231,11 +231,14 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     const ui::InputDevice& graphics_tablet,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
   mojom_graphics_tablet->customization_restriction = customization_restriction;
+  mojom_graphics_tablet->graphics_tablet_button_config =
+      graphics_tablet_button_config;
   mojom_graphics_tablet->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           graphics_tablet);
@@ -1527,6 +1530,18 @@ InputDeviceSettingsControllerImpl::GetMouseButtonConfig(
   return mojom::MouseButtonConfig::kNoConfig;
 }
 
+mojom::GraphicsTabletButtonConfig
+InputDeviceSettingsControllerImpl::GetGraphicsTabletButtonConfig(
+    const ui::InputDevice& graphics_tablet) {
+  const auto* graphics_tablet_metadata =
+      GetGraphicsTabletMetadata(graphics_tablet);
+  if (graphics_tablet_metadata) {
+    return graphics_tablet_metadata->graphics_tablet_button_config;
+  }
+
+  return mojom::GraphicsTabletButtonConfig::kNoConfig;
+}
+
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::KeyboardDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
@@ -1610,7 +1625,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
         graphics_tablet,
-        GetGraphicsTabletCustomizationRestriction(graphics_tablet));
+        GetGraphicsTabletCustomizationRestriction(graphics_tablet),
+        GetGraphicsTabletButtonConfig(graphics_tablet));
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(

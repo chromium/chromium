@@ -8,6 +8,7 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -40,6 +41,8 @@ const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*device_key=*/"fake-device-key2",
     /*customization_restriction=*/
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+    /*graphics_tablet_button_config=*/
+    mojom::GraphicsTabletButtonConfig::kNoConfig,
     mojom::GraphicsTabletSettings::New());
 
 int GetPrefNotificationCount(const char* pref_name) {

@@ -303,6 +303,9 @@ struct GraphicsTablet {
   string device_key;
   // Used to check customization restriction of the graphics tablet.
   CustomizationRestriction customization_restriction;
+  // Used to configure the buttons that are known on the device through
+  // metadata.
+  GraphicsTabletButtonConfig graphics_tablet_button_config;
   GraphicsTabletSettings settings;
 };
 
@@ -377,6 +380,19 @@ enum MouseButtonConfig {
   // Logitech mouse with six customizable buttons, where the 6th button sends
   // tab.
   kLogitechSixKeyWithTab = 3,
+};
+
+// Contains the valid set of graphics tablet button configs.
+enum GraphicsTabletButtonConfig {
+  // Mouse with no explicit configuration about
+  // what customizable buttons it has.
+  kNoConfig = 0,
+  // Graphics tablets that follow standard button configuration with no tablet
+  // buttons.
+  kWacomStandardPenOnly = 1,
+  // Graphics tablets that follow standard button configurations with four
+  // tablet buttons.
+  kWacomStandardFourButtons = 2,
 };
 
 // Contains the valid set of static shortcut actions.

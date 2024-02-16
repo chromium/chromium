@@ -29,6 +29,7 @@ struct ASH_EXPORT MouseMetadata {
 
 struct ASH_EXPORT GraphicsTabletMetadata {
   mojom::CustomizationRestriction customization_restriction;
+  mojom::GraphicsTabletButtonConfig graphics_tablet_button_config;
   bool operator==(const GraphicsTabletMetadata& other) const;
 };
 
@@ -80,6 +81,18 @@ GetKeyboardMetadataList();
 // This function returns the button remapping list from the peripherals.
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
+
+// This function returns the button remapping list for pen buttons based on the
+// config.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+GetPenButtonRemappingListForConfig(
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config);
+
+// This function returns the button remapping list for tablet buttons based on
+// the config.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+GetTabletButtonRemappingListForConfig(
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config);
 
 // This function returns the vid pid alias list.
 ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&
