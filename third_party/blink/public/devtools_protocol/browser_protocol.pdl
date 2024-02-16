@@ -10212,8 +10212,8 @@ experimental domain Storage
 
   experimental type AttributionReportingEpoch extends object
     properties
-      UnsignedInt64AsBase10 epoch_start
-      UnsignedInt64AsBase10 epoch_end
+      UnsignedInt64AsBase10 epochStart
+      UnsignedInt64AsBase10 epochEnd
 
   experimental type AttributionReportingAggregatableDedupKey extends object
     properties
@@ -10234,6 +10234,8 @@ experimental domain Storage
       optional string triggerContextId
       optional number pamEpsilon
       array of AttributionReportingEpoch epochs
+      array of string sourceIdCandidates
+      optional string attributionLogic
 
   experimental type AttributionReportingEventLevelResult extends string
     enum
