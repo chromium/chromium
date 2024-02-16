@@ -1508,6 +1508,21 @@ be describing additional metrics about the same event.
       are no bidders eligible to participate in this auction.
     </summary>
   </metric>
+  <metric name="NumOwnersWithoutInterestGroups">
+    <summary>
+      The number of owner origins listed in an auction configuration that were
+      excluded from taking part in a FLEDGE auction because they have no
+      eligible interest groups. Equivalent to the UMA histogram named
+      Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups. This does not
+      count owners that were filtered due to user settings. For multi-seller
+      auctions, this is the sum of all such excluded owners across all component
+      auctions. This double-counts owners that participate in multiple component
+      auctions. Recorded after all interest groups participating in an auction
+      have been retrieved from storage at the start of an auction. This is
+      related to the sibling histogram named
+      &quot;NumOwnersWithInterestGroups&quot;.
+    </summary>
+  </metric>
   <metric name="NumScoreAdCodeReadyOnCriticalPath">
     <summary>
       Aggregated across all components for multi-seller auctions, this records

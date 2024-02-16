@@ -141,7 +141,7 @@ TEST_F(AuctionMetricsRecorderTest, NumInterestGroups) {
       /*sample=*/42, /*expected_bucket_count=*/1);
 }
 
-TEST_F(AuctionMetricsRecorderTest, NumOwnersWithInterestGroupsName) {
+TEST_F(AuctionMetricsRecorderTest, NumOwnersWithInterestGroups) {
   recorder().SetNumOwnersWithInterestGroups(62);
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
@@ -152,10 +152,12 @@ TEST_F(AuctionMetricsRecorderTest, NumOwnersWithInterestGroupsName) {
       /*sample=*/62, /*expected_bucket_count=*/1);
 }
 
-TEST_F(AuctionMetricsRecorderTest, NumOwnersExcluded) {
+TEST_F(AuctionMetricsRecorderTest, NumOwnersWithoutInterestGroups) {
   recorder().SetNumOwnersWithoutInterestGroups(62);
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
+  // 62 becomes 58 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumOwnersWithoutInterestGroupsName), 58);
   histogram_tester().ExpectUniqueSample(
       /*name=*/"Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups",
       /*sample=*/62, /*expected_bucket_count=*/1);

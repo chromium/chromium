@@ -2407,6 +2407,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumInterestGroupsName,
                 Entry::kNumNegativeInterestGroupsName,
                 Entry::kNumOwnersWithInterestGroupsName,
+                Entry::kNumOwnersWithoutInterestGroupsName,
                 Entry::kNumDistinctOwnersWithInterestGroupsName,
                 Entry::kNumSellersWithBiddersName,
                 Entry::kNumBidderWorkletsName,
@@ -2770,9 +2771,16 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups",
           *expectations.num_owners_without_interest_groups, 1);
+      EXPECT_THAT(
+          ukm_metrics,
+          HasMetricWithValue(UkmEntry::kNumOwnersWithoutInterestGroupsName,
+                             expectations.num_owners_without_interest_groups));
     } else {
       histogram_tester_->ExpectTotalCount(
           "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups", 0);
+      EXPECT_THAT(
+          ukm_metrics,
+          DoesNotHaveMetric(UkmEntry::kNumOwnersWithoutInterestGroupsName));
     }
 
     EXPECT_THAT(

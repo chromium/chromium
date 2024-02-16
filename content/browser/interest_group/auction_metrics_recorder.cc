@@ -339,10 +339,12 @@ void AuctionMetricsRecorder::SetNumOwnersWithInterestGroups(
 }
 
 void AuctionMetricsRecorder::SetNumOwnersWithoutInterestGroups(
-    int64_t num_excluded) {
-  // TODO(crbug.com/1523674) Investigate adding this to UKM.
+    int64_t num_owners_without_interest_groups) {
+  builder_.SetNumOwnersWithoutInterestGroups(
+      GetExponentialBucketMinForCounts1000(num_owners_without_interest_groups));
   base::UmaHistogramCounts100(
-      "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups", num_excluded);
+      "Ads.InterestGroup.Auction.NumOwnersWithoutInterestGroups",
+      num_owners_without_interest_groups);
 }
 
 void AuctionMetricsRecorder::SetNumSellersWithBidders(
