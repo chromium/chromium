@@ -287,6 +287,9 @@
 # TODO(crbug.com/1501820): Consistently fails on the platform.
 -PrerenderBrowserTest.ActivateOnWindowOpen
 
+# TODO(crbug.com/325442902): Consistently fails on the platform.
+-PrerenderBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
+
 # TODO(crbug.com/1502137): Consistently fails on the platform.
 -All/PrerenderTargetAgnosticBrowserTest.RenderFrameHostLifecycleState/_blank
 
