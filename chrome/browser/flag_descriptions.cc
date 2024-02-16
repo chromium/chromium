@@ -1784,10 +1784,10 @@ const char kFedCmIdpSigninStatusDescription[] =
     "Enables the FedCM IDP sign-in status API that allows IDPs to notify the "
     "browser about the user's sign-in status.";
 
-const char kFedCmAddAccountName[] = "FedCmAddAccount";
-const char kFedCmAddAccountDescription[] =
-    "Enables the \"Add Account\" button on the FedCM account chooser to log in "
-    "to another IDP account, for IDPs who have opted in.";
+const char kFedCmUseOtherAccountName[] = "FedCmUseOtherAccount";
+const char kFedCmUseOtherAccountDescription[] =
+    "Enables the \"Use a different account\" button on the FedCM account "
+    "chooser to log in to another IdP account, for IdPs who have opted in.";
 
 const char kWebIdentityDigitalCredentialsName[] = "DigitalCredentials";
 const char kWebIdentityDigitalCredentialsDescription[] =

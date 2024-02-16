@@ -8776,10 +8776,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif
 
-    {"fedcm-add-account", flag_descriptions::kFedCmAddAccountName,
-     flag_descriptions::kFedCmAddAccountDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAddAccount)},
-
     {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
@@ -8835,6 +8831,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSkipWellKnownForSameSiteName,
      flag_descriptions::kFedCmSkipWellKnownForSameSiteDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSkipWellKnownForSameSite)},
+
+    {"fedcm-use-other-account", flag_descriptions::kFedCmUseOtherAccountName,
+     flag_descriptions::kFedCmUseOtherAccountDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmUseOtherAccount)},
 
     {"fedcm-without-third-party-cookies",
      flag_descriptions::kFedCmWithoutThirdPartyCookiesName,

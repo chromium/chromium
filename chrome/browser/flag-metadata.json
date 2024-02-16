@@ -4177,11 +4177,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "fedcm-add-account",
-    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "fedcm-authz",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
@@ -4250,6 +4245,11 @@
     "name": "fedcm-skip-well-known-for-same-site",
     "owners": ["cbiesinger@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125
+  },
+  {
+    "name": "fedcm-use-other-account",
+    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 128
   },
   {
     "name": "fedcm-without-third-party-cookies",

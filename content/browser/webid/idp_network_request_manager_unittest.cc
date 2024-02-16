@@ -845,7 +845,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountButtonMode) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAddAccount);
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
@@ -869,7 +869,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountWidgetMode) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAddAccount);
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
@@ -893,7 +893,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountDifferentMode) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAddAccount);
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
@@ -916,7 +916,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAddAccount);
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {
@@ -942,7 +942,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAddAccount);
+  list.InitAndDisableFeature(features::kFedCmUseOtherAccount);
 
   const char test_json[] = R"({
   "modes": {

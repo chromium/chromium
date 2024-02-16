@@ -366,10 +366,10 @@ BASE_FEATURE(kExpandedPrefetchRange,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the "Add Account" button in the FedCM account chooser to log in to
-// another IDP account, if the IDP opts in.
-BASE_FEATURE(kFedCmAddAccount,
-             "FedCmAddAccount",
+// Enables the "Use a different account" button in the FedCM account chooser to
+// log in to another IDP account, if the IDP opts in.
+BASE_FEATURE(kFedCmUseOtherAccount,
+             "FedCmUseOtherAccount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Authz API.

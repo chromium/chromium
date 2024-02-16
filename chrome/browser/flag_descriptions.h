@@ -996,8 +996,8 @@ extern const char kFedCmSkipWellKnownForSameSiteDescription[];
 extern const char kFedCmIdpSigninStatusName[];
 extern const char kFedCmIdpSigninStatusDescription[];
 
-extern const char kFedCmAddAccountName[];
-extern const char kFedCmAddAccountDescription[];
+extern const char kFedCmUseOtherAccountName[];
+extern const char kFedCmUseOtherAccountDescription[];
 
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
