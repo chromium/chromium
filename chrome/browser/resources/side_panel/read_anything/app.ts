@@ -885,10 +885,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // If the start or end index is invalid, don't use this node.
         continue;
       }
-      let text = element.textContent;
-      if (text) {
-        text = text.substring(start, end);
-      }
       const newElement: Node = this.highlightCurrentText_(start, end, element);
       this.domNodeToAxNodeIdMap_.set(newElement, nodeId);
     }
