@@ -16,10 +16,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   ~FakeFcmTopicSubscriber() override;
 
   // FcmTopicSubscriber
-  void RequestToken(NotificationCallback notification,
-                    Callback callback) override;
+  bool Initialize(NotificationCallback notification) override;
+  void RequestToken(Callback callback) override;
   void SubscribeTopic(const std::string& topic,
-                      NotificationCallback notification,
                       Callback callback) override;
   std::string const token() override;
 

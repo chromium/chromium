@@ -35,11 +35,9 @@ namespace {
 
 CarrierLockManager* g_instance = nullptr;
 
-// test configuration
+// const values
 const char kFcmAppId[] = "com.google.chromeos.carrier_lock";
 const char kFcmSenderId[] = "727210445342";
-
-// const values
 constexpr base::TimeDelta kFcmTimeout = base::Days(30);
 const char kCarrierLockType[] = "network-pin";
 const char kFirmwareVariantPath[] =
@@ -47,6 +45,8 @@ const char kFirmwareVariantPath[] =
 const char kManufacturerNamePath[] =
     "/run/chromeos-config/v1/branding/oem-name";
 const char kModelNamePath[] = "/run/chromeos-config/v1/name";
+const char kMachineModelName[] = "model_name";
+const char kMachineOemName[] = "oem_name";
 
 // values of feature parameter LastConfigDateDelta
 const int kLastConfigDefault = -2;
@@ -233,6 +233,9 @@ std::unique_ptr<CarrierLockManager> CarrierLockManager::CreateForTesting(
   manager->fcm_ = std::move(fcm_topic_subscriber);
   manager->manufacturer_ = "Google";
   manager->model_ = "Pixel 20";
+  manager->fcm_->Initialize(
+      BindRepeating(&CarrierLockManager::FcmNotification,
+                    manager->weak_ptr_factory_.GetWeakPtr()));
 
   // Start with PSM check.
   manager->RunStep(ConfigurationState::kPsmCheckClaim);
@@ -350,7 +353,9 @@ void CarrierLockManager::Initialize() {
     return;
   }
 
-  if (!fcm_ || !psm_ || !config_) {
+  if (!fcm_ || !psm_ || !config_ ||
+      !fcm_->Initialize(BindRepeating(&CarrierLockManager::FcmNotification,
+                                      weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Failed to create auxiliary classes.";
     LogError(Result::kInvalidAuxHandlers);
     RunStep(ConfigurationState::kFatalError);
@@ -605,6 +610,18 @@ void CarrierLockManager::CheckState() {
       RetryStep();
       return;
     }
+
+    // Overwrite oem and model if defined in VPD.
+    if (const std::optional<base::StringPiece> model =
+            statistics->GetMachineStatistic(kMachineModelName)) {
+      model_ = model.value();
+      VLOG(2) << "Model changed to " << model_ << ".";
+    }
+    if (const std::optional<base::StringPiece> oem =
+            statistics->GetMachineStatistic(kMachineOemName)) {
+      manufacturer_ = oem.value();
+      VLOG(2) << "Manufacturer changed to " << manufacturer_ << ".";
+    }
   }
 
   // First configuration, check PSM claim.
@@ -748,7 +765,9 @@ void CarrierLockManager::SetupModem() {
 }
 
 void CarrierLockManager::SetupModemCallback(CarrierLockResult result) {
-  if (result != CarrierLockResult::kSuccess) {
+  // Ignore InvalidTimestamp, it is returned when the config was applied again.
+  if ((result != CarrierLockResult::kSuccess) &&
+      (result != CarrierLockResult::kInvalidTimeStamp)) {
     LogError(CarrierLockResultToResult(result));
     RetryStep();
     return;
@@ -773,9 +792,7 @@ void CarrierLockManager::SetupModemCallback(CarrierLockResult result) {
 }
 
 void CarrierLockManager::GetFcmToken() {
-  fcm_->RequestToken(BindRepeating(&CarrierLockManager::FcmNotification,
-                                   weak_ptr_factory_.GetWeakPtr()),
-                     BindOnce(&CarrierLockManager::FcmTokenCallback,
+  fcm_->RequestToken(BindOnce(&CarrierLockManager::FcmTokenCallback,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -813,8 +830,6 @@ void CarrierLockManager::SubscribeFcmTopic() {
   std::string fcm_topic = local_state_->GetString(kFcmTopicPref);
 
   fcm_->SubscribeTopic(fcm_topic,
-                       BindRepeating(&CarrierLockManager::FcmNotification,
-                                     weak_ptr_factory_.GetWeakPtr()),
                        BindOnce(&CarrierLockManager::FcmTopicCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
@@ -842,7 +857,27 @@ void CarrierLockManager::FcmNotification(bool is_from_topic) {
       kFcmNotificationType, (is_from_topic ? FcmNotification::kUpdateProfile
                                            : FcmNotification::kUnlockDevice));
 
-  RunStep(ConfigurationState::kRequestConfig);
+  if (configuration_state_ == ConfigurationState::kNone) {
+    // Configuration process will start from beginning.
+    return;
+  }
+  if (configuration_state_ < ConfigurationState::kDeviceLocked) {
+    // Wait until the configuration process is completed.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CarrierLockManager::FcmNotification,
+                       weak_ptr_factory_.GetWeakPtr(), is_from_topic),
+        kConfigDelay);
+    return;
+  }
+
+  // Call to RunStep is delayed to workaround racing issue: b/265987223
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CarrierLockManager::RunStep,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ConfigurationState::kRequestConfig),
+      kConfigDelay);
 }
 
 }  // namespace ash::carrier_lock

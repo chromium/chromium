@@ -51,6 +51,8 @@ class FcmTopicSubscriberTest : public testing::Test {
     fcm_->android_id_ = kTestAndroidId;
     fcm_->android_secret_ = kTestAndroidSecret;
     fcm_->set_is_testing(true);
+    fcm_->Initialize(base::BindRepeating(
+        &FcmTopicSubscriberTest::NotificationCallback, base::Unretained(this)));
   }
 
   void TearDown() override { fcm_.reset(); }
@@ -68,8 +70,6 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockSubscribeTopicSuccess) {
   // Request token and subscribe with valid topic
   fcm_->SubscribeTopic(
       kFcmTopic,
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),
@@ -85,8 +85,8 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockTestNotifications) {
   base::test::RepeatingTestFuture<bool> notifications;
 
   // Request token and subscribe with valid topic
-  fcm_->SubscribeTopic(kFcmTopic, notifications.GetCallback(),
-                       future.GetCallback());
+  fcm_->Initialize(notifications.GetCallback());
+  fcm_->SubscribeTopic(kFcmTopic, future.GetCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),
       network::CreateURLResponseHead(net::HTTP_OK), std::string("{}")));
@@ -118,13 +118,9 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockSubscribeTopicTwice) {
   // Request token and subscribe with valid topic
   fcm_->SubscribeTopic(
       kFcmTopic,
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
   fcm_->SubscribeTopic(
       kFcmTopic,
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
 
   // Wait for callback
@@ -138,8 +134,6 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockSubscribeTopicFail) {
   // Request token and subscribe with empty topic
   fcm_->SubscribeTopic(
       std::string(),
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
 
   // Wait for callback
@@ -152,8 +146,6 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockGetTokenAndSubscribe) {
 
   // Only request token
   fcm_->RequestToken(
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
 
   // Wait for callback
@@ -163,8 +155,6 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockGetTokenAndSubscribe) {
   // Subscribe to valid topic
   fcm_->SubscribeTopic(
       kFcmTopic,
-      base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
-                          base::Unretained(this)),
       future.GetCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),

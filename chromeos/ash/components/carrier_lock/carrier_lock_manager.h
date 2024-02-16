@@ -38,6 +38,7 @@ class FcmTopicSubscriber;
 class PsmClaimVerifier;
 
 inline constexpr base::TimeDelta kRetryDelay = base::Seconds(15);
+inline constexpr base::TimeDelta kConfigDelay = base::Minutes(1);
 inline constexpr int kMaxRetries = 2;
 
 enum class ModemLockStatus {

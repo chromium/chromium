@@ -25,13 +25,6 @@ FcmTopicSubscriberImpl::FcmTopicSubscriberImpl(
       weakptr_factory_(this) {
   DCHECK(!app_id.empty());
   DCHECK(!sender_id.empty());
-  if (gcm_driver) {
-    if (!gcm_driver->GetAppHandler(app_id_)) {
-      gcm_driver->AddAppHandler(app_id_, this);
-    }
-    instance_id_driver_ =
-        std::make_unique<instance_id::InstanceIDDriver>(gcm_driver);
-  }
 }
 
 FcmTopicSubscriberImpl::~FcmTopicSubscriberImpl() {
@@ -40,8 +33,25 @@ FcmTopicSubscriberImpl::~FcmTopicSubscriberImpl() {
   }
 }
 
+bool FcmTopicSubscriberImpl::Initialize(NotificationCallback notification) {
+  if (!gcm_driver_) {
+    return false;
+  }
+  notification_callback_ = std::move(notification);
+  if (!gcm_driver_->GetAppHandler(app_id_)) {
+    gcm_driver_->AddAppHandler(app_id_, this);
+  }
+  if (!instance_id_driver_) {
+    instance_id_driver_ =
+        std::make_unique<instance_id::InstanceIDDriver>(gcm_driver_);
+  }
+  if (instance_id_driver_) {
+    return true;
+  }
+  return false;
+}
+
 void FcmTopicSubscriberImpl::SubscribeTopic(const std::string& topic,
-                                            NotificationCallback notification,
                                             Callback callback) {
   if (request_callback_) {
     LOG(ERROR) << "FcmTopicSubscriberImpl cannot handle multiple requests.";
@@ -53,24 +63,20 @@ void FcmTopicSubscriberImpl::SubscribeTopic(const std::string& topic,
   subscribe_callback_ = std::move(callback);
 
   if (token_.empty()) {
-    RequestToken(std::move(notification),
-                 base::BindOnce(&FcmTopicSubscriberImpl::Subscribe,
+    RequestToken(base::BindOnce(&FcmTopicSubscriberImpl::Subscribe,
                                 weakptr_factory_.GetWeakPtr()));
   } else {
-    notification_callback_ = std::move(notification);
     Subscribe(Result::kSuccess);
   }
 }
 
-void FcmTopicSubscriberImpl::RequestToken(NotificationCallback notification,
-                                          Callback callback) {
+void FcmTopicSubscriberImpl::RequestToken(Callback callback) {
   if (request_callback_) {
     LOG(ERROR) << "FcmTopicSubscriberImpl cannot handle multiple requests.";
     std::move(callback).Run(Result::kHandlerBusy);
     return;
   }
 
-  notification_callback_ = std::move(notification);
   request_callback_ = std::move(callback);
 
   if (!instance_id_driver_) {
@@ -180,7 +186,9 @@ void FcmTopicSubscriberImpl::OnStoreReset() {}
 void FcmTopicSubscriberImpl::OnMessage(const std::string& app_id,
                                        const gcm::IncomingMessage& message) {
   // Sender id is set to topic's name if message comes from subscribed topic
-  notification_callback_.Run(message.sender_id.starts_with("/topics/"));
+  if (!notification_callback_.is_null()) {
+    notification_callback_.Run(message.sender_id.starts_with("/topics/"));
+  }
 }
 
 void FcmTopicSubscriberImpl::OnMessagesDeleted(const std::string& app_id) {}

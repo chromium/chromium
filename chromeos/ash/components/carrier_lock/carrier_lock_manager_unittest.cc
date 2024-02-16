@@ -488,6 +488,7 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerLockedToUnlocked) {
       /*fcm topic*/ std::string(),
       /*result*/ Result::kSuccess);
   fcm->SendNotification();
+  task_environment_.FastForwardBy(kConfigDelay);
   task_environment_.RunUntilIdle();
 
   // Check local pref values
