@@ -150,6 +150,10 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     this.route = routes.OS_ACCESSIBILITY;
 
     this.browserProxy_ = OsA11yPageBrowserProxyImpl.getInstance();
+
+    if (this.isKioskModeActive_) {
+      this.redirectToOldA11ySettings();
+    }
   }
 
   override ready(): void {
@@ -198,11 +202,19 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     }
   }
 
+  private redirectToOldA11ySettings(): void {
+    Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
+  }
+
   private onToggleAccessibilityImageLabels_(): void {
     const a11yImageLabelsOn = this.$.a11yImageLabelsToggle.checked;
     if (a11yImageLabelsOn) {
       this.browserProxy_.confirmA11yImageLabels();
     }
+  }
+
+  private onSwitchAccessSettingsClick_(): void {
+    Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   }
 
   private onTextToSpeechClick_(): void {

@@ -7,7 +7,7 @@ import 'chrome://os-settings/lazy_load.js';
 import {OsSettingsA11yPageElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('OsSettingsA11yPageKioskModeTest', () => {
@@ -72,6 +72,10 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
     initPage();
     flush();
 
+    // Should stay on MANAGE_ACCESSIBILITY in kiosk mode.
+    assertEquals(
+        Router.getInstance().currentRoute, routes.MANAGE_ACCESSIBILITY);
+
     // Show accessibility options in Quick Settings toggle is not visible.
     assertFalse(
         isVisible(page.shadowRoot!.querySelector('#optionsInMenuToggle')));
@@ -79,5 +83,15 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
     // Additional features link is not visible.
     assertFalse(
         isVisible(page.shadowRoot!.querySelector('#additionalFeaturesLink')));
+  });
+
+  test('Always redirect to MANAGE_ACCESSIBILITY route in kiosk mode', () => {
+    loadTimeData.overrideValues({isKioskModeActive: true});
+    Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
+    initPage();
+    flush();
+
+    assertEquals(
+        Router.getInstance().currentRoute, routes.MANAGE_ACCESSIBILITY);
   });
 });
