@@ -976,10 +976,7 @@ bool PasswordSaveManagerImpl::AccountStoreIsDefault() const {
 bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
     const {
   if (account_store_form_saver_ &&
-      client_->GetPasswordFeatureManager()
-              ->ComputePasswordAccountStorageUsageLevel() ==
-          features_util::PasswordAccountStorageUsageLevel::
-              kUsingAccountStorage) {
+      client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return true;
   }
   return false;
