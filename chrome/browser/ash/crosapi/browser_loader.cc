@@ -175,9 +175,9 @@ void BrowserLoader::OnLoadVersions(
   CHECK_EQ(versions.size(), kLacrosSelectionTypes);
 
   // Compare the rootfs vs stateful lacros-chrome binary versions.
-  // If the rootfs lacros-chrome is greater than or equal to the stateful
-  // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
-  // stateful lacros-chrome update in the background.
+  // If the rootfs lacros-chrome is greater than lacros-chrome version,
+  // prioritize using the rootfs lacros-chrome. If the stateful lacros-chrome is
+  // not installed, let stateful lacros-chrome load in the background.
   auto selected = base::ranges::max_element(
       versions,
       [](const LacrosSelectionVersion& lhs, const LacrosSelectionVersion& rhs) {
