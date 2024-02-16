@@ -864,7 +864,7 @@
     },
     {
       name: "CSSDisplayModePictureInPicture",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/880802
