@@ -86,11 +86,18 @@ specify `base_feature: "none"`, and their relationship is defined in
 [content/child/runtime_features.cc]. See the [initialize blink features] doc
 for more details.
 
+**Note:** `base_feature: "none"` is strongly discouraged if the feature
+doesn't have an associated base feature because the feature would lack a
+killswitch controllable via finch.
+
 **Note:** If a feature is implemented at both Chromium side and blink side, as the blink feature doesn't fully work by itself, we normally don't set the blink feature's status so that the Chromium feature can fully control the blink feature ([example][controlled by chromium feature]).
 
 If you need to update or check a blink feature status from outside of blink,
+with dedicated methods (instead of `WebRuntimeFeatures::EnableFeatureFromString()`),
 you can generate methods of `WebRuntimeFeatures` by adding `public: true,` to
-the feature entry in `runtime_enabled_features.json5`.
+the feature entry in `runtime_enabled_features.json5`. This should be
+rare because `WebRuntimeFeatures::EnableFeaturesFromString()` works in
+most cases.
 
 ### Generate a `base::Feature` instance from a Blink Feature
 
@@ -101,7 +108,9 @@ Finch experiment for the feature, including a kill switch.
 Specify `base_feature: "AnotherFlagName"` if you'd like to generate a
 `base::Feature` with a different name.
 
-Specify `base_feature: "none"` to disable `base::Feature` generation.
+Specify `base_feature: "none"` to disable `base::Feature` generation
+(see the note above about in what situation `base_feature: "none"` is strongly
+discouraged).
 
 The name specified by `base_feature` or `name` is used for the feature
 name which is referred in `--enable-features=` flag and Finch configurations.
