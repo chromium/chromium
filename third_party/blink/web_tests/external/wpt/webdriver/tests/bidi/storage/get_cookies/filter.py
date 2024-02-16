@@ -2,7 +2,7 @@ import pytest
 from webdriver.bidi.modules.network import NetworkBase64Value, NetworkStringValue
 from webdriver.bidi.modules.storage import CookieFilter
 
-from .. import format_expiry_string, generate_expiry_date
+from .. import create_cookie, format_expiry_string, generate_expiry_date
 from ... import recursive_compare
 
 pytestmark = pytest.mark.asyncio
@@ -473,6 +473,85 @@ async def test_filter_path(
             "path": path_1,
             "sameSite": "none",
             "secure": False,
+            "size": 6,
+            "value": {"type": "string", "value": cookie2_value},
+        },
+        cookie_2,
+    )
+
+
+@pytest.mark.parametrize(
+    "http_only_1, http_only_2",
+    [(True, False), (False, True)],
+)
+async def test_filter_http_only(
+    bidi_session, new_tab, test_page, domain_value, set_cookie, http_only_1, http_only_2
+):
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=test_page, wait="complete"
+    )
+
+    cookie1_name = "bar"
+    cookie1_value = "foo"
+    await set_cookie(
+        cookie=create_cookie(
+            domain=domain_value(),
+            name=cookie1_name,
+            value=NetworkStringValue(cookie1_value),
+            http_only=http_only_1,
+        )
+    )
+
+    cookie2_name = "foo"
+    cookie2_value = "bar"
+    await set_cookie(
+        cookie=create_cookie(
+            domain=domain_value(),
+            name=cookie2_name,
+            value=NetworkStringValue(cookie2_value),
+            http_only=http_only_1,
+        )
+    )
+
+    cookie3_name = "foo_2"
+    cookie3_value = "bar_2"
+    await set_cookie(
+        cookie=create_cookie(
+            domain=domain_value(),
+            name=cookie3_name,
+            value=NetworkStringValue(cookie3_value),
+            http_only=http_only_2,
+        )
+    )
+
+    cookies = await bidi_session.storage.get_cookies(
+        filter=CookieFilter(http_only=http_only_1),
+    )
+
+    assert cookies["partitionKey"] == {}
+    assert len(cookies["cookies"]) == 2
+    (cookie_1, cookie_2) = sorted(cookies["cookies"], key=lambda c: c["name"])
+    recursive_compare(
+        {
+            "domain": domain_value(),
+            "httpOnly": http_only_1,
+            "name": cookie1_name,
+            "path": "/",
+            "sameSite": "none",
+            "secure": True,
+            "size": 6,
+            "value": {"type": "string", "value": cookie1_value},
+        },
+        cookie_1,
+    )
+    recursive_compare(
+        {
+            "domain": domain_value(),
+            "httpOnly": http_only_1,
+            "name": cookie2_name,
+            "path": "/",
+            "sameSite": "none",
+            "secure": True,
             "size": 6,
             "value": {"type": "string", "value": cookie2_value},
         },

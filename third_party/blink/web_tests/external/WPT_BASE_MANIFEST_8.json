@@ -286412,6 +286412,19 @@
         {}
        ]
       ],
+      "paintorder-text-decorations.svg": [
+       "5b313220bd30a11aceaba1a45bcbaab44207ff9a",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/paintorder-text-decorations-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "percentage-attribute.svg": [
        "d245999db08ec13ea34c6c832483d3c1135ceec0",
        [
@@ -286834,6 +286847,19 @@
         {}
        ]
       ],
+      "gradient-transform-03.svg": [
+       "25e304614dbe43422e5d0daa9b9e03f9944aabe0",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "meshgradient-basic-001.svg": [
        "24290d40d6c37583d86aae4a098293c6cb8a6653",
        [
@@ -286979,6 +287005,19 @@
       ],
       "pattern-transform-02.svg": [
        "93acd1d6273604a82d91eedd197d5cf8bebc031f",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "pattern-transform-03.svg": [
+       "b2e0e7aaa2ef1b107586ea03230dc173d1133de1",
        [
         null,
         [
@@ -356855,12 +356894,24 @@
       []
      ],
      "dangling-markup": {
+      "dangling-markup-mitigation-allowed-apis-expected.txt": [
+       "7b2e94b5ccce9b5158bc150510b5c04967eeebe9",
+       []
+      ],
       "resources": {
+       "empty.html": [
+        "0e76edd65b7baf5316fc9d0c4da59a3502e4c27a",
+        []
+       ],
        "helper.js": [
         "100bcba7b5184a12955c6c99ce21c483301ef446",
         []
        ]
-      }
+      },
+      "service-worker.js": [
+       "837e216a013be499cf8f2f0b7681d851644de4ed",
+       []
+      ]
      },
      "support": {
       "embedded-credential-window.sub.html": [
@@ -392195,11 +392246,11 @@
       []
      ],
      "embedded_responder.js": [
-      "bc13c7e7e8259aa67a99a38dd6fa3c31f3bb269d",
+      "228a262f16ecefc0804efbeeaa5d6f97c4d919a7",
       []
      ],
-     "embedded_worker.js": [
-      "f3a0fb257adf204431a2df4ade796c74c0643950",
+     "embedded_worker.py": [
+      "0aa457657f1f571a5d9ac2d197e77801476b73ef",
       []
      ],
      "get_cookies.py": [
@@ -393501,10 +393552,6 @@
        "c209d88a77c75417fa0f75e0332d0923abf9b4e3",
        []
       ],
-      "paintorder-text-decorations.svg": [
-       "10e4fc299002394ecbfc634c950fd912e8609a7b",
-       []
-      ],
       "percentage-ref.svg": [
        "610a3ddb2d21da119fb4a53f5f351dff0190880c",
        []
@@ -394287,18 +394334,6 @@
     ],
     "OWNERS": [
      "956a3a5fe69d11262639193b6221b26a8fc006cb",
-     []
-    ],
-    "block-string-assignment-to-Document-parseHTMLUnsafe-expected.txt": [
-     "5e5f50e0f7565d00d10edd73b347e13ab64becd5",
-     []
-    ],
-    "block-string-assignment-to-Element-setHTMLUnsafe-expected.txt": [
-     "84c7dbbdadd1749a227b85ab9d47a37304b920a9",
-     []
-    ],
-    "block-string-assignment-to-ShadowRoot-setHTMLUnsafe-expected.txt": [
-     "4b0276a3392c590363bd298a120e0101d0001d07",
      []
     ],
     "default-policy-report-only.html.headers": [
@@ -398047,7 +398082,7 @@
         []
        ],
        "conftest.py": [
-        "5e868b7cc1641e792e5e493601ce74ab8e1fbe93",
+        "0941411fab84f20df84563698821f5cdb7a13ccd",
         []
        ],
        "get_cookies": {
@@ -398526,7 +398561,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "177bdda160e3dba97cfa9ccf165d673dd8cb220e",
+       "9566e6ebd19283b9d6cf9174bf4e2320d1e79fa7",
        []
       ],
       "fixtures_http.py": [
@@ -398534,7 +398569,7 @@
        []
       ],
       "helpers.py": [
-       "9870643b3d95e6e09396f514b901aebd08c5c551",
+       "678733e951f083d121c9946c72cfea75d090d2b4",
        []
       ],
       "html": {
@@ -398982,115 +399017,115 @@
      []
     ],
     "arg_min_max.https.any-expected.txt": [
-     "3196e101c77a8041dc7907d378b68325024e45a7",
+     "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
      []
     ],
     "arg_min_max.https.any.worker-expected.txt": [
-     "d9011d135bf5b3b4aa4596039a92b9179841ee60",
+     "40899950a1eb412df0a13f129d81d1c17dc51e39",
      []
     ],
     "batch_normalization.https.any-expected.txt": [
-     "9205742c7b250a3c104e37b31cba93b3403c079f",
+     "0070a9c43de29a2e0722afc3c0751df54e6b5296",
      []
     ],
     "batch_normalization.https.any.worker-expected.txt": [
-     "65a021e4b59ca8841f87aace6aa0f8129a2b84fa",
+     "57def4fc3f24817cbbcfee93b3457a60f57d4335",
      []
     ],
     "cast.https.any-expected.txt": [
-     "d47e14f40f3451980d2f8e5b048c4b16e128f51e",
+     "9b4696afb657b1e3f51ba2eac4109b9341cae542",
      []
     ],
     "cast.https.any.worker-expected.txt": [
-     "073fd9089ecc875a64672a4ce51b396eb8353e3e",
+     "7318a754d32634b90b4aa30cbdae5d5786efcfac",
      []
     ],
     "clamp.https.any.worker-expected.txt": [
-     "bb81193fdcee180e750d8d48ba1dc0617ee21282",
+     "53aa0c2052c4a3646c29202f72a2886ff9738838",
      []
     ],
     "concat.https.any.worker-expected.txt": [
-     "bbb4ae01a20d8c3bb5bf4d27af5ee9d9e822cbac",
+     "08c400a62f37f2cfc3f0238348b0e21b2090450f",
      []
     ],
     "conv2d.https.any-expected.txt": [
-     "bd77963c7da5bb4bbab43b2c168fbb4581d91b8f",
+     "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
      []
     ],
     "conv2d.https.any.worker-expected.txt": [
-     "5ce78b6dba9fcfb4ff9a0f6285d5518e6a126e2f",
+     "338607fb88f0594025d4fb4d68faea6bdeb54577",
      []
     ],
     "conv_transpose2d.https.any-expected.txt": [
-     "82f2928d5533271d07f5ba4852012ab1c7f021eb",
+     "a25167826cd77476a78d98450e1165a26ace77ad",
      []
     ],
     "conv_transpose2d.https.any.worker-expected.txt": [
-     "5cd436e004a4522d6b0e90135b95c69120becb04",
+     "535c4cae147b16e2da56049e47dba28cec4b22a6",
      []
     ],
     "elementwise_binary.https.any-expected.txt": [
-     "5aa71e18ff79de25ae1f8a80d74d31a9c2c8e743",
+     "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
      []
     ],
     "elementwise_binary.https.any.worker-expected.txt": [
-     "60390153798b0a005062c7d1ea84a3174db60b84",
+     "24fe3efc4a74115d2f3f2f644b431f314b31bfa9",
      []
     ],
     "elementwise_logical.https.any-expected.txt": [
-     "a2a567045923ef3e7486ec5c23c522cd217f6bd6",
+     "257892f56f4b7a5332f3eb6df01ee3872b8f7748",
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
-     "edae99c274dbbdbf14cbaf9fd3513c0aab5536a0",
+     "65caf10349d8ed5289723fd375eaebf8c26c8e73",
      []
     ],
     "elementwise_unary.https.any.worker-expected.txt": [
-     "0d8f819ce640680163051734e7647e146f93a4f6",
+     "37b31b789e9152aa18ead5dbf1828e882110205f",
      []
     ],
     "elu.https.any-expected.txt": [
-     "2918a9b61d87983a38a1581d31c3102b5b110538",
+     "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
      []
     ],
     "elu.https.any.worker-expected.txt": [
-     "f8c9c8ebbe6ed49fb0e82e455cb7edd10565e3a5",
+     "7a2ec57ebdb12e85205ddde94861417898075b62",
      []
     ],
     "expand.https.any-expected.txt": [
-     "284010309eb57939b95dfaad7f19ce972b6e5354",
+     "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
      []
     ],
     "expand.https.any.worker-expected.txt": [
-     "2b9f72139b51015a86c227da9b210c41d5d93389",
+     "b1ea897d60e857c264b66dd7410ad48a882a6cef",
      []
     ],
     "gather.https.any-expected.txt": [
-     "b0903dfd201a9e1b9c89744d4680cc596881b19d",
+     "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
      []
     ],
     "gather.https.any.worker-expected.txt": [
-     "facc8fcbad77949907da086218d39d7b4865d760",
+     "1921e696ac3a2f5d04553bd3683e5d61e9ac8a94",
      []
     ],
     "gemm.https.any-expected.txt": [
-     "22d4d17309acf04b74a2fd7616c3e0cb58d4c350",
+     "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
      []
     ],
     "gemm.https.any.worker-expected.txt": [
-     "9ca8ed5e817ef721ddcefc0c3f851f989a045283",
+     "220bfaf938f5322da2fda2fb5f9991ca3e09b68e",
      []
     ],
     "hard_sigmoid.https.any-expected.txt": [
-     "e3c0045c5b6b1bf54521c2e64a2ea231b6d9962b",
+     "512251a4980693a848fdc96a2a91a1014017dff8",
      []
     ],
     "hard_sigmoid.https.any.worker-expected.txt": [
-     "1a068069a8b9734f2ba6483d3e0b1aeb3d7b9e51",
+     "dff8238fbe738563789d177c020922599cd38718",
      []
     ],
     "hard_swish.https.any.worker-expected.txt": [
-     "d597d21799d150f8744328cddd40f23614ebf2d2",
+     "0c2ac26c8c472007d5e312f5b0d467d67cadca0a",
      []
     ],
     "idlharness.https.any-expected.txt": [
@@ -399098,83 +399133,83 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "0453f884514542dbccf0bc6a70bcab68699224c6",
+     "3a0fe4fecbcfe315639aac40e7d33ca2a95695a0",
      []
     ],
     "instance_normalization.https.any-expected.txt": [
-     "7033d60bd6bf4bbc9a304d70905abf2af6313dfd",
+     "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
      []
     ],
     "instance_normalization.https.any.worker-expected.txt": [
-     "3f7caaf073597c39ab7c034ee6195e9891dd5829",
+     "49811f8a4fc2ca263a4e1aeb5b4d3ca5c5d0a458",
      []
     ],
     "layer_normalization.https.any-expected.txt": [
-     "5211ac852db11cb38f0bcc9f4abca8138bbcd6fd",
+     "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
      []
     ],
     "layer_normalization.https.any.worker-expected.txt": [
-     "5aeed5a4a87031fdbb29c1390f6e92b2fd88085b",
+     "dbbfcf05651c5f6b5a80c24b67a1ae26d91d00c8",
      []
     ],
     "leaky_relu.https.any.worker-expected.txt": [
-     "a2839773d17095a27c3f7628957bbc93de3b4760",
+     "64cc33b08c8b556e134b1b47aa1f9856691293be",
      []
     ],
     "linear.https.any-expected.txt": [
-     "b550703531b86ae95204f746595c833fb4cdf953",
+     "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
      []
     ],
     "linear.https.any.worker-expected.txt": [
-     "3fdafd15cacd1e2d9760653ae789b4db9c22d182",
+     "5b8efd417530f7db33d62a26db16633f1b55d770",
      []
     ],
     "matmul.https.any-expected.txt": [
-     "6bcfc2b93fa0ebf1abff65e5e3193cfb63cdd9e3",
+     "37ab231f355b9966ed525721a6f5f76dee909398",
      []
     ],
     "matmul.https.any.worker-expected.txt": [
-     "2edc8e4ea47d31b3aece16112b177496d23dfd09",
+     "46f97816618dc6ada2f1b486865f6a1f83225b57",
      []
     ],
     "pad.https.any-expected.txt": [
-     "36cc9ebbdfbfbfbdf70ef472b2d8dbbd64911a14",
+     "3a61439d50dd7980dc465d81e04977e665e559ba",
      []
     ],
     "pad.https.any.worker-expected.txt": [
-     "fbbf32ab694e7131b10fa350720ef5e74a0f4741",
+     "cd60df0663e1a636755625716c74f40415a05de2",
      []
     ],
     "pooling.https.any-expected.txt": [
-     "b2074d6673c4bc62c74e2f2a988b3613c4ebcc87",
+     "2a9fb8993385380aef74b3f217b46171aaab45b3",
      []
     ],
     "pooling.https.any.worker-expected.txt": [
-     "8db7404a087e2b2b402dd39f7162c152d64354b9",
+     "050b666419341eb8682f27d274d8c48247bfeeb5",
      []
     ],
     "prelu.https.any-expected.txt": [
-     "430c6bb5a35ce1c4a6ff92ca8d864db29d0d93ae",
+     "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
      []
     ],
     "prelu.https.any.worker-expected.txt": [
-     "be91345abfd0b0cb068ff212b8ebbf90946748f4",
+     "5c940416e157427a601eb6e6611f11d5c0661095",
      []
     ],
     "reduction.https.any-expected.txt": [
-     "2a387737b79f0a65a8fc7c8afaa32beff8e6bc65",
+     "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
      []
     ],
     "reduction.https.any.worker-expected.txt": [
-     "820a48cdcafd83f1eea2d58eca16690030cc503d",
+     "f2b012c5f07d0f60be863162a8fd7f2bea60243b",
      []
     ],
     "relu.https.any.worker-expected.txt": [
-     "7d8cdfd011fb5d10d2dd3bd349be84e58bed69ef",
+     "99dec50d075434c0a77b9e98b52a6312a8ec6afb",
      []
     ],
     "reshape.https.any.worker-expected.txt": [
-     "4dcf9ce108d11945451e02547cb3391edd371193",
+     "2d3c7bea8bfa1ef7eaa85e12fc3017c441dcaffd",
      []
     ],
     "resources": {
@@ -399461,64 +399496,64 @@
       ]
      },
      "utils.js": [
-      "f91d6622d3c8e2124d1b9dae6afa3d9a5fafaf9f",
+      "b653c16469b2545d53a7d5947eec94f5bfd47cf4",
       []
      ]
     },
     "sigmoid.https.any.worker-expected.txt": [
-     "af1baad71d4ff879205df983a4b846e42d39cd5f",
+     "a00a27bc4a4eea7752751b7b0f99998b04d31553",
      []
     ],
     "slice.https.any.worker-expected.txt": [
-     "67411f81a9d3793e89d75cdb311a1af253924850",
+     "31cd646bf62925f3a14a27f84677a3251ecd894b",
      []
     ],
     "softmax.https.any.worker-expected.txt": [
-     "645447f50ef341de412f717412aa5fb8fa387e1c",
+     "408ee919ffac2fda8b046f19baf5721f492967dd",
      []
     ],
     "softplus.https.any-expected.txt": [
-     "55df29598d597ba2d784a0cce347d35601199286",
+     "4334c31880022c9b62c331dd959f3afc22a9c79e",
      []
     ],
     "softplus.https.any.worker-expected.txt": [
-     "3ee46e73319be609c59adbf1e524d4de56e22932",
+     "4f27e66df6b5b63ddb6db457c8aad821fa267195",
      []
     ],
     "softsign.https.any-expected.txt": [
-     "ce2a49a3d924f7951cba3aa1b44b029f55fe121c",
+     "36f99abe023229e7485caf5b69ed7ec314110b91",
      []
     ],
     "softsign.https.any.worker-expected.txt": [
-     "740c6f29c1844ffde694a4bab0e9f9b596a455d0",
+     "0192ef6bc7bde10a279efdfb37309e3936d5ff4a",
      []
     ],
     "split.https.any.worker-expected.txt": [
-     "fe9de70f68f53cdd19741fd6840f3aef7f03d367",
+     "0ae5a67507fa68d261be05b1c8de315ba4394ece",
      []
     ],
     "squeeze.https.any-expected.txt": [
-     "aff3ed0a7384d881e9fe87bfc5662a88af3ebfe1",
+     "e1a2e675c721944ac46c12517a6cceb968824d43",
      []
     ],
     "squeeze.https.any.worker-expected.txt": [
-     "54ad6642c7f2e8e98274026a1c82aecc9fd66f7c",
+     "e1a2e675c721944ac46c12517a6cceb968824d43",
      []
     ],
     "tanh.https.any.worker-expected.txt": [
-     "0f6f7b7545fe168ff3bf704553fa2b08d3a157a7",
+     "d808c0a59680fe5103070fce44c4b45e6f24501e",
      []
     ],
     "transpose.https.any.worker-expected.txt": [
-     "8902fc2d12f88edbf52c395fa2d5771b7f2ab30f",
+     "13c28e14e800ace0034735e94d10972d74295acd",
      []
     ],
     "where.https.any-expected.txt": [
-     "31982c3fccc39f1cc44f422bd1cc5fd16c6b6805",
+     "2d02412c0be6254be345bb9f292eff49adc42b99",
      []
     ],
     "where.https.any.worker-expected.txt": [
-     "64e872279b343b0b60b141d88a921411a5009479",
+     "bbc06db08a6283c94d7e4b3e742113bcf01750a2",
      []
     ]
    },
@@ -473441,6 +473476,13 @@
        {}
       ]
      ],
+     "pseudo-element-animations.html": [
+      "a7c3247479d01f4044b9033726282037c1b4bc9f",
+      [
+       null,
+       {}
+      ]
+     ],
      "pseudo-get-computed-style.html": [
       "2481a713133b7e1bf47cedf0b4966a51dd777d78",
       [
@@ -518908,18 +518950,34 @@
       ]
      ],
      "dangling-markup": {
-      "dangling-markup-mitigation-data-url.tentative.sub.html": [
+      "dangling-markup-mitigation-allowed-apis.html": [
+       "66456a8876b609fce084d40df0b280afeb48bffa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "dangling-markup-mitigation-data-url.sub.html": [
        "f27735daa1dd650726525d72a48b91d58d62535b",
        [
         null,
         {}
        ]
       ],
-      "dangling-markup-mitigation.tentative.html": [
+      "dangling-markup-mitigation.html": [
        "61a931608ba5f3dc7f53f3f7a14ef5111737b07d",
        [
         null,
         {}
+       ]
+      ],
+      "dangling-markup-mitigation.https.html": [
+       "3f038cbb7be452757196838539a7bf95e4f6e945",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
        ]
       ],
       "media.html": [
@@ -636063,7 +636121,7 @@
      ]
     ],
     "requestStorageAccess-dedicated-worker.tentative.sub.https.window.js": [
-     "f2d766575db00ca877570bc31e91810b978af7cd",
+     "6c3d616e26aaa796e9aa7226621f0430cff2d4b2",
      [
       "storage-access-api/requestStorageAccess-dedicated-worker.tentative.sub.https.window.html",
       {
@@ -670386,7 +670444,7 @@
      ]
     ],
     "idlharness.https.any.js": [
-     "65e21d5a1dc5c7ce7cb4558144a5d838b899d3ce",
+     "93e88294ef1ed0347db722a9c1305aac47fc4129",
      [
       "webnn/idlharness.https.any.html",
       {
@@ -672053,7 +672111,7 @@
      ]
     ],
     "RTCPeerConnection-setRemoteDescription-offer.html": [
-     "99134945ef5fd52dcdb4b4f871aac71fe89d4e75",
+     "9da03fe7a1596356ea1f44591e6036938d912d16",
      [
       null,
       {}
@@ -711365,7 +711423,7 @@
       "storage": {
        "get_cookies": {
         "filter.py": [
-         "fb028c9b62a029475f69d9b1f4991eb5f7177511",
+         "b244ef86ac24d22c619fcdbc73f32d3edee828cc",
          [
           null,
           {}
@@ -711379,7 +711437,7 @@
          ]
         ],
         "partition.py": [
-         "4940e2e67edbb0c9c1c3112a6b0b0a3ac4ad3244",
+         "a1c26503525034614a1861b3512b60144df9f2ca",
          [
           null,
           {}
@@ -711444,7 +711502,7 @@
          ]
         ],
         "invalid.py": [
-         "24f6153402d8cebee6f5c371e18020d2c485a6a2",
+         "53d2573575b645b76c2e101c833e28e87e7d86b4",
          [
           null,
           {}
