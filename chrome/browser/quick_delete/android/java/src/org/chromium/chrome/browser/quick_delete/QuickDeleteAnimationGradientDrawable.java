@@ -23,6 +23,7 @@ import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
+import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,8 +56,10 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     @FloatRange(from = 0.0F, to = 1.0F)
     private static final float QUICK_DELETE_ANIMATION_INTERSECTION_MULTIPLIER = 0.5F;
 
+    @IntRange(from = 0L, to = 255L)
+    private static final int QUICK_DELETE_GRADIENT_MAX_ALPHA = 77;
+
     private static final int QUICK_DELETE_GRADIENT_EASING_POINTS_NUM = 20;
-    private static final int QUICK_DELETE_GRADIENT_MAX_ALPHA = 255;
     private static final Interpolator QUICK_DELETE_WIPE_ANIMATION_INTERPOLATOR =
             PathInterpolatorCompat.create(0.25F, 0F, 0.15F, 1F);
     private static final int QUICK_DELETE_WIPE_ANIMATION_TIME_MS = 1200;
@@ -76,7 +79,7 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      */
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteWipeAnimationDrawable(
             @NonNull Context context, int tabGridHeight) {
-        int gradientColor = MaterialColors.getColor(context, R.attr.colorSecondaryContainer, TAG);
+        int gradientColor = MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
 
         int h = QUICK_DELETE_GRADIENT_EASING_POINTS_NUM;
         int k = QUICK_DELETE_GRADIENT_MAX_ALPHA;
