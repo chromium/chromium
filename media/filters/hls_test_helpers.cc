@@ -11,9 +11,6 @@
 namespace media {
 using testing::_;
 
-MockCodecDetector::MockCodecDetector() = default;
-MockCodecDetector::~MockCodecDetector() = default;
-
 MockHlsDataSourceProvider::MockHlsDataSourceProvider() = default;
 MockHlsDataSourceProvider::~MockHlsDataSourceProvider() = default;
 

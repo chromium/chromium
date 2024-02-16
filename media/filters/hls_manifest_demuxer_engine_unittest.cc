@@ -170,7 +170,6 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
   std::unique_ptr<MockHlsDataSourceProvider> mock_dsp_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<HlsManifestDemuxerEngine> engine_;
-  std::unique_ptr<MockCodecDetector> mock_detector_;
 
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
 
@@ -187,7 +186,7 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
         mock_mdeh_(std::make_unique<NiceMock<MockManifestDemuxerEngineHost>>()),
         mock_dsp_(std::make_unique<StrictMock<MockHlsDataSourceProvider>>()) {
-    ON_CALL(*mock_mdeh_, AddRole(_, _, _)).WillByDefault(Return(true));
+    ON_CALL(*mock_mdeh_, AddRole(_, _)).WillByDefault(Return(true));
     ON_CALL(*mock_mdeh_, GetBufferedRanges(_))
         .WillByDefault(Return(Ranges<base::TimeDelta>()));
 
@@ -199,8 +198,6 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
         GURL("http://media.example.com/manifest.m3u8"), media_log_.get());
-
-    mock_detector_ = std::make_unique<StrictMock<MockCodecDetector>>();
   }
 
   void InitializeEngine() {
@@ -208,14 +205,6 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
         mock_mdeh_.get(),
         base::BindOnce(&HlsManifestDemuxerEngineTest::MockInitComplete,
                        base::Unretained(this)));
-  }
-
-  void InitializeEngineWithMockDetector() {
-    engine_->InitializeWithMockCodecDetectorForTesting(
-        mock_mdeh_.get(),
-        base::BindOnce(&HlsManifestDemuxerEngineTest::MockInitComplete,
-                       base::Unretained(this)),
-        std::move(mock_detector_));
   }
 
   ~HlsManifestDemuxerEngineTest() override {
@@ -238,13 +227,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
-                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                   RelaxedParserSupportedType::kMP2T));
   EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
-      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -253,13 +240,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
-                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                   RelaxedParserSupportedType::kMP2T));
   EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleLiveMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
-      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -269,14 +254,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
-                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                   RelaxedParserSupportedType::kMP2T));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://example.com/hi.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
-      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -288,9 +271,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
   EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("audio-override"),
-                                   "video/mp2t", "avc1.420000"));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
-                                   "avc1.420000"));
+                                   RelaxedParserSupportedType::kMP2T));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                   RelaxedParserSupportedType::kMP2T));
 
   // URL queries in order:
   //  - manifest.m3u8: root manifest
@@ -302,19 +285,15 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
       "http://media.example.com/manifest.m3u8", kMultivariantPlaylistWithAlts);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
-      "http://media.example.com/only.ts", "bear-1280x720-aac_he.ts");
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
-  BindUrlToDataSource<FileHlsDataSourceStreamFactory>(
-      "http://media.example.com/first.ts", "bear-1280x720-hls.ts");
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
-  EXPECT_CALL(*mock_mdeh_, AddRole(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_mdeh_, AddRole(_, _)).Times(0);
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(_, _)).Times(0);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/manifest.m3u8", kUnsupportedCodecs);
@@ -440,13 +419,9 @@ TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
 TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   // All the expectations set during the initialization process.
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
-  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
-                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"),
+                                   RelaxedParserSupportedType::kMP2T));
   EXPECT_CALL(*mock_mdeh_, SetDuration(9.009));
-  HlsCodecDetector::ContainerAndCodecs mock_response = {
-      "video/mp2t", "avc1.420000, mp4a.40.05"};
-  EXPECT_CALL(*mock_detector_, DetermineContainerAndCodec(_, _))
-      .WillOnce(RunOnceCallback<1>(mock_response));
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
 
   // We can't use `BindUrlToDataSource` here, since it can't re-create streams
@@ -468,10 +443,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
           _))
       .WillOnce(
           RunOnceCallback<1>(StringHlsDataSourceStreamFactory::CreateStream(
-              "hey, this isn't a bitstream!")))
-      .WillOnce(
-          RunOnceCallback<1>(StringHlsDataSourceStreamFactory::CreateStream(
-              "do I look like a video to you?")));
+              "hey, this isn't a bitstream!")));
 
   // `GetBufferedRanges` gets called many times during this process:
   // - HlsVodRendition::CheckState (1) => empty ranges, nothing loaded.
@@ -487,7 +459,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   // The first call to `OnTimeUpdate` should trigger the append function,
   // and our data was 30 characters long.
   EXPECT_CALL(*mock_mdeh_,
-              AppendAndParseData("primary", base::Seconds(0), _, _, _, 30))
+              AppendAndParseData("primary", base::Seconds(0), _, _, _, 28))
       .WillOnce(Return(true));
 
   // Finally, and EndOfStream call happens:
@@ -498,7 +470,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
 
   // Setup with a mock codec detector - this will set all the roles, duration,
   // modes, and also make a request for the manifest and the first segment.
-  InitializeEngineWithMockDetector();
+  InitializeEngine();
   task_environment_.RunUntilIdle();
 
   // For the first state check, there should be empty ranges, which triggers

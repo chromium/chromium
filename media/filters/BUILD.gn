@@ -242,8 +242,6 @@ source_set("filters") {
 
   if (enable_hls_demuxer) {
     sources += [
-      "hls_codec_detector.cc",
-      "hls_codec_detector.h",
       "hls_data_source_provider.cc",
       "hls_data_source_provider.h",
       "hls_data_source_provider_impl.cc",
@@ -410,7 +408,6 @@ source_set("unit_tests") {
 
   if (enable_hls_demuxer) {
     sources += [
-      "hls_codec_detector_unittest.cc",
       "hls_data_source_provider_impl_unittest.cc",
       "hls_data_source_provider_unittest.cc",
       "hls_manifest_demuxer_engine_unittest.cc",

@@ -24,6 +24,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "media/filters/stream_parser_factory.h"
 
 namespace media {
 
@@ -39,8 +40,7 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
 
   // Adds a new role to the chunk demuxer, and returns true if it succeeded.
   virtual bool AddRole(base::StringPiece role,
-                       std::string container,
-                       std::string codec) = 0;
+                       RelaxedParserSupportedType mime) = 0;
 
   // Removes a role (on the media thread) to ensure that there are no
   // media-thread-bound weak references.
@@ -201,8 +201,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
   // `ManifestDemuxerEngineHost` implementation
   bool AddRole(base::StringPiece role,
-               std::string container,
-               std::string codec) override;
+               RelaxedParserSupportedType mime) override;
   void RemoveRole(base::StringPiece role) override;
   void SetSequenceMode(base::StringPiece role, bool sequence_mode) override;
   void SetDuration(double duration) override;

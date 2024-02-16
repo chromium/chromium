@@ -16,7 +16,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
-#include "media/filters/hls_codec_detector.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_demuxer_status.h"
 #include "media/filters/hls_rendition.h"
@@ -69,10 +68,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // Test helpers.
   void AddRenditionForTesting(std::string role,
                               std::unique_ptr<HlsRendition> test_rendition);
-  void InitializeWithMockCodecDetectorForTesting(
-      ManifestDemuxerEngineHost* host,
-      PipelineStatusCallback cb,
-      std::unique_ptr<HlsCodecDetector> codec_detector);
 
  private:
   struct PlaylistParseInfo {
@@ -164,16 +159,16 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void OnMediaPlaylist(PipelineStatusCallback parse_complete_cb,
                        PlaylistParseInfo parse_info,
                        scoped_refptr<hls::MediaPlaylist> playlist);
-  void DetermineStreamContainerAndCodecs(
+  void DetermineStreamContainer(
       hls::MediaPlaylist* playlist,
-      HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> container_cb);
-  void OnPlaylistContainerDetermined(
+      HlsDemuxerStatusCb<RelaxedParserSupportedType> container_cb);
+  void OnStreamContainerDetermined(
       PipelineStatusCallback parse_complete_cb,
       PlaylistParseInfo parse_info,
       scoped_refptr<hls::MediaPlaylist> playlist,
-      HlsDemuxerStatus::Or<HlsCodecDetector::ContainerAndCodecs> maybe_info);
-  void PeekFirstSegment(
-      HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> cb,
+      HlsDemuxerStatus::Or<RelaxedParserSupportedType> maybe_info);
+  void DetermineBitstreamContainer(
+      HlsDemuxerStatusCb<RelaxedParserSupportedType> cb,
       HlsDataSourceProvider::ReadResult maybe_stream);
 
   void OnChunkDemuxerParseWarning(std::string role,
@@ -182,11 +177,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                                    std::unique_ptr<MediaTracks> tracks);
   void ContinueSeekInternal(base::TimeDelta time,
                             ManifestDemuxer::SeekCallback cb);
-
-  void InitializeWithCodecDetector(
-      ManifestDemuxerEngineHost* host,
-      PipelineStatusCallback status_cb,
-      std::unique_ptr<HlsCodecDetector> codec_detector);
   void UpdateMediaPlaylistForRole(
       std::string role,
       GURL uri,
@@ -208,11 +198,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   std::unique_ptr<MediaLog> media_log_;
   raw_ptr<ManifestDemuxerEngineHost> host_
       GUARDED_BY_CONTEXT(media_sequence_checker_) = nullptr;
-
-  // The codec detector is a reusable way for determining codecs in a media
-  // stream.
-  std::unique_ptr<HlsCodecDetector> codec_detector_
-      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // If the root playlist is multivariant, we need to store it for parsing the
   // dependant media playlists.

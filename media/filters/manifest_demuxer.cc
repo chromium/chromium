@@ -298,11 +298,10 @@ void ManifestDemuxer::SetPlaybackRate(double rate) {
 }
 
 bool ManifestDemuxer::AddRole(base::StringPiece role,
-                              std::string container,
-                              std::string codec) {
+                              RelaxedParserSupportedType mime) {
   CHECK(chunk_demuxer_);
   if (ChunkDemuxer::kOk !=
-      chunk_demuxer_->AddId(std::string(role), container, codec)) {
+      chunk_demuxer_->AddAutoDetectedCodecsId(std::string(role), mime)) {
     return false;
   }
   chunk_demuxer_->SetParseWarningCallback(
