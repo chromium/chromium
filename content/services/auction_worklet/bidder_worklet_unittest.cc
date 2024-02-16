@@ -2576,6 +2576,8 @@ TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
 }
 
 TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
+  multi_bid_limit_ = 2;
+
   // As for now, bidder worklet only understands multi-bid with one bid,
   // with more than one treated as no bid.
   //
@@ -2600,6 +2602,36 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
           render:"https://response.test/"},
          ])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
+
+  // Too many bids.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2,
+          render:"https://response.test/"},
+          {ad: "ad2", bid: 3,
+          render:"https://response.test/"},
+          {ad: "ad3", bid: 4,
+          render:"https://response.test/"},
+         ])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() more bids provided than permitted by "
+       "auction configuration."});
+
+  // The bid limit counts only actual bids. This gets the transitional return
+  // value for now, however.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2,
+          render:"https://response.test/"},
+          {ad: "ad2", bid: -5,
+          render:"https://response.test/"},
+          {ad: "ad3", bid: 4,
+          render:"https://response.test/"},
+         ])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {});
 
   // Catches errors in individual entries.
   RunGenerateBidWithReturnValueExpectingResult(

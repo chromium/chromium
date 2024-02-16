@@ -1180,7 +1180,8 @@ BidderWorklet::V8State::GenerateSingleBid(
   context_recycler->set_bid_bindings()->ReInitialize(
       start, browser_signal_top_level_seller_origin != nullptr,
       &bidder_worklet_non_shared_params, expected_buyer_currency,
-      should_exclude_ad_due_to_kanon, should_exclude_component_ad_due_to_kanon);
+      multi_bid_limit, should_exclude_ad_due_to_kanon,
+      should_exclude_component_ad_due_to_kanon);
 
   v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);

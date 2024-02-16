@@ -181,6 +181,7 @@ void SetBidBindings::ReInitialize(
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const std::optional<blink::AdCurrency>& per_buyer_currency,
+    uint16_t multi_bid_limit,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
     base::RepeatingCallback<bool(const std::string&)>
         is_component_ad_excluded) {
@@ -189,6 +190,7 @@ void SetBidBindings::ReInitialize(
   has_top_level_seller_origin_ = has_top_level_seller_origin;
   bidder_worklet_non_shared_params_ = bidder_worklet_non_shared_params;
   per_buyer_currency_ = per_buyer_currency;
+  multi_bid_limit_ = multi_bid_limit;
   is_ad_excluded_ = std::move(is_ad_excluded);
   is_component_ad_excluded_ = std::move(is_component_ad_excluded);
 }
@@ -210,6 +212,7 @@ void SetBidBindings::Reset() {
   bidder_worklet_non_shared_params_ = nullptr;
   reject_reason_ = mojom::RejectReason::kNotAvailable;
   per_buyer_currency_ = std::nullopt;
+  multi_bid_limit_ = 1;
   is_ad_excluded_.Reset();
   is_component_ad_excluded_.Reset();
 }
@@ -253,9 +256,21 @@ IdlConvert::Status SetBidBindings::SetBidImpl(v8::Local<v8::Value> value,
           },
           this, std::ref(time_limit_scope));
 
-      return IdlConvert::ConvertSequence(
+      auto status = IdlConvert::ConvertSequence(
           v8_helper_.get(), "generateBid() bids sequence ", {}, iterable,
           iterator_factory, item_handler);
+      if (status.is_success()) {
+        // Check there aren't too many bids. This is a semantic check, so
+        // it has to happen after the WebIDL type conversions.
+        if (bids_.size() > multi_bid_limit_) {
+          status = IdlConvert::Status::MakeErrorMessage(base::StrCat(
+              {error_prefix,
+               "more bids provided than permitted by auction configuration."}));
+          bids_.clear();
+        }
+      }
+
+      return status;
     }
   }
 

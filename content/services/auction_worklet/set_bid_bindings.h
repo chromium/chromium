@@ -41,6 +41,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       const mojom::BidderWorkletNonSharedParams*
           bidder_worklet_non_shared_params,
       const std::optional<blink::AdCurrency>& per_buyer_currency,
+      uint16_t multi_bid_limit,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
           is_component_ad_excluded);
@@ -83,6 +84,8 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       bidder_worklet_non_shared_params_ = nullptr;
 
   std::optional<blink::AdCurrency> per_buyer_currency_;
+
+  uint16_t multi_bid_limit_ = 1;
 
   // Callbacks set by ReInitialize and cleared by Reset which tell if an ad URL
   // can be used in a valid bid. Used to check the bid for non-k-anonymous ads.
