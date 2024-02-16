@@ -2030,6 +2030,15 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         feature_engagement::events::kIOSSwipeBackForwardUsed);
   }
 
+  if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {
+    // The IPH of the swipe toolbar to go to adjacent tab feature.
+    return CreateNewUserGestureInProductHelpConfig(
+        *feature, /*action_event=*/
+        feature_engagement::events::kIOSTabGridAdjacentTabTapped,
+        /*trigger_event=*/"swipe_toolbar_to_change_tab_trigger", /*used_event=*/
+        feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (std::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {

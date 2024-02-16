@@ -260,6 +260,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSSwipeBackForward"
       summary="the full screen IPH for edge swipe on page to go backward or
                forward"/>
+  <variant name="IPH_iOSSwipeToolbarToChangeTab"
+      summary="the full screen IPH for swipe on the toolbar to go to the
+               previous or next tab in the tab list"/>
   <variant name="IPH_iOSTabGridSwipeRightForIncognito"
       summary="the full screen IPH for left swipe on regular tab grid to
                browse in incognito"/>

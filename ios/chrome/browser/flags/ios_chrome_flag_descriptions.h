@@ -527,6 +527,11 @@ extern const char kIPHiOSPullToRefreshFeatureDescription[];
 extern const char kIPHiOSSwipeBackForwardFeatureName[];
 extern const char kIPHiOSSwipeBackForwardFeatureDescription[];
 
+// Title and description for the flag to enable the swipe toolbar to switch tab
+// IPH.
+extern const char kIPHiOSSwipeToolbarToChangeTabFeatureName[];
+extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
+
 // Title and description for the flag to enable the swipe-to-incognito IPH on
 // the tab grid.
 extern const char kIPHiOSTabGridSwipeRightForIncognitoName[];

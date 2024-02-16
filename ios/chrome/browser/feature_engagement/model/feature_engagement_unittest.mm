@@ -169,6 +169,22 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
+  std::map<std::string, std::string>
+  IPHiOSSwipeToolbarToChangeTabFeatureParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "==0";
+    params["event_used"] =
+        "name:swipe_toolbar_to_change_tab_used;comparator:==0;"
+        "window:61;storage:61";
+    params["event_trigger"] =
+        "name:swipe_toolbar_to_change_tab_trigger;comparator:==0;"
+        "window:61;storage:61";
+    params["event_1"] =
+        "name:tab_grid_adjacent_tab_tapped;comparator:>=2;window:60;storage:61";
+    return params;
+  }
+
   std::map<std::string, std::string> BottomToolbarTipParams() {
     std::map<std::string, std::string> params;
     params["availability"] = "any";
@@ -679,6 +695,33 @@ TEST_F(FeatureEngagementTest,
   scoped_clock.Advance(base::Days(23));
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSSwipeBackForwardFeature));
+}
+
+// Verifies that the swipe on toolbar IPH is not triggered after the user has
+// swiped on the toolbar to switch tab.
+TEST_F(FeatureEngagementTest,
+       TestSwipeToolbarToChangeTabIPHShouldNotShowAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature,
+        IPHiOSSwipeToolbarToChangeTabFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+  // Ensure that the swipe back/forward gesture has been used to prevent
+  // triggering.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
+  // Make sure other prerequisites are met.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSTabGridAdjacentTabTapped);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSTabGridAdjacentTabTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature));
 }
 
 // Verifies that the History IPH is triggered after the proper conditions

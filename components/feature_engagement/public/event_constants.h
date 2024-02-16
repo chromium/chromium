@@ -228,6 +228,12 @@ extern const char kIOSBackForwardButtonTapped[];
 // The user has swiped from the edge to navigate backward or forward on a tab.
 extern const char kIOSSwipeBackForwardUsed[];
 
+// The user has tapped on an adjacent tab in the tab grid.
+extern const char kIOSTabGridAdjacentTabTapped[];
+
+// The user has swipped the toolbar to go to an adjacent tab.
+extern const char kIOSSwipeToolbarToChangeTabUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

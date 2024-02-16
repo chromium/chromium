@@ -602,6 +602,12 @@ const char kIPHiOSSwipeBackForwardFeatureDescription[] =
     "forward on the currently opened website to navigate to the previous or "
     "next one visited.";
 
+const char kIPHiOSSwipeToolbarToChangeTabFeatureName[] =
+    "IPH for Swipe Toolbar To Change Tab";
+const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
+    "Enables displaying the gesture IPH instructing users to swipe the toolbar "
+    "to navigate to the previous or next tab in the tab list.";
+
 const char kIPHiOSTabGridSwipeRightForIncognitoName[] =
     "IPH for Swipe Right for Incognito on Tab Grid";
 const char kIPHiOSTabGridSwipeRightForIncognitoDescription[] =

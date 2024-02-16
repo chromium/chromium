@@ -4987,6 +4987,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ios-iph-swipe-toolbar-to-change-tab",
+    "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ios-iph-tab-grid-swipe-right-for-incognito",
     "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
     "expiry_milestone": 130

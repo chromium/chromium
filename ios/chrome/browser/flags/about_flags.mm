@@ -1618,6 +1618,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIPHiOSSwipeBackForwardFeatureDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHiOSSwipeBackForwardFeature)},
+    {"ios-iph-swipe-toolbar-to-change-tab",
+     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureName,
+     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)},
     {"ios-iph-tab-grid-swipe-right-for-incognito",
      flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoName,
      flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoDescription,

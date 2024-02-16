@@ -152,6 +152,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoMadeForIOSFeature,
     &kIPHiOSPromoStaySafeFeature,
     &kIPHiOSSwipeBackForwardFeature,
+    &kIPHiOSSwipeToolbarToChangeTabFeature,
     &kIPHiOSPostDefaultAbandonmentPromoFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

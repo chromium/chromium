@@ -41423,6 +41423,8 @@ should be able to be added at any place in this file.
       label="For iOSShareToolbarItemFeature feature"/>
   <suffix name="iOSSwipeBackForwardFeature"
       label="For iOSSwipeBackForwardFeature feature"/>
+  <suffix name="iOSSwipeToolbarToChangeTabFeature"
+      label="For iOSSwipeToolbarToChangeTabFeature feature"/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
   <suffix name="iOSTabGridToolbarItemFeature"

@@ -281,6 +281,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoMadeForIOSFeature, "IPH_iOSPromoMadeForIOS");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoStaySafeFeature, "IPH_iOSPromoStaySafe");
 DEFINE_VARIATION_PARAM(kIPHiOSSwipeBackForwardFeature,
                        "IPH_iOSSwipeBackForward");
+DEFINE_VARIATION_PARAM(kIPHiOSSwipeToolbarToChangeTabFeature,
+                       "IPH_iOSSwipeToolbarToChangeTab");
 DEFINE_VARIATION_PARAM(kIPHiOSPostDefaultAbandonmentPromoFeature,
                        "IPH_iOSPostDefaultAbandonmentPromo");
 #endif  // BUILDFLAG(IS_IOS)
@@ -610,6 +612,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoMadeForIOSFeature),
         VARIATION_ENTRY(kIPHiOSPromoStaySafeFeature),
         VARIATION_ENTRY(kIPHiOSSwipeBackForwardFeature),
+        VARIATION_ENTRY(kIPHiOSSwipeToolbarToChangeTabFeature),
         VARIATION_ENTRY(kIPHiOSPostDefaultAbandonmentPromoFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
