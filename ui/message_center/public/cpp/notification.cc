@@ -61,6 +61,10 @@ NotificationItem& NotificationItem::operator=(const NotificationItem& other) =
 
 ButtonInfo::ButtonInfo(const std::u16string& title) : title(title) {}
 
+ButtonInfo::ButtonInfo(const gfx::VectorIcon* vector_icon,
+                       const std::u16string& accessible_name)
+    : vector_icon(vector_icon), accessible_name(accessible_name) {}
+
 ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
 
 ButtonInfo::ButtonInfo() = default;

@@ -31,8 +31,12 @@ class MessageViewContainer : public views::View {
   int CalculateHeight() const;
 
   // Updates the corner radius based on if the view is at the top or the bottom
-  // of its parent list view.
-  void UpdateBorder(const bool is_top, const bool is_bottom);
+  // of its parent list view. If `force_update` is true, the corner radius and
+  // background will be updated even if `is_top` and `is_bottom` have the same
+  // value as the stored variables.
+  void UpdateBorder(const bool is_top,
+                    const bool is_bottom,
+                    const bool force_update = false);
 
   // Gets the `notification_id` stored in `message_view_`.
   const std::string GetNotificationId() const;

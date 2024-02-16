@@ -179,6 +179,15 @@ void LogExpandButtonClickAction(ExpandButtonClickAction action);
 // Logs the type of group notification added to the system.
 void LogGroupNotificationAddedType(GroupNotificationType type);
 
+// Logs when a pinned notification was shown without having provided a
+// `vector_small_image`.
+void LogPinnedNotificationShownWithoutIcon(
+    NotificationCatalogName catalog_name);
+
+// Logs when a pinned notification was shown without having provided a `title`.
+void LogPinnedNotificationShownWithoutTitle(
+    NotificationCatalogName catalog_name);
+
 }  // namespace metrics_utils
 
 }  // namespace ash

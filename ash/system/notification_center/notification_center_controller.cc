@@ -93,7 +93,7 @@ void NotificationCenterController::InitNotificationCenterView() {
   for (auto* notification : pinned_notifications) {
     AddNotificationChildView(notification);
   }
-  UpdateListViewBorders(/*pinned=*/true);
+  UpdateListViewBorders(/*pinned=*/true, /*force_update=*/true);
 
   notification_center_view_->Init(unpinned_notifications,
                                   std::move(pinned_notification_list_view));
@@ -197,7 +197,9 @@ void NotificationCenterController::OnNotificationUpdated(
   }
 }
 
-void NotificationCenterController::UpdateListViewBorders(const bool pinned) {
+void NotificationCenterController::UpdateListViewBorders(
+    const bool pinned,
+    const bool force_update) {
   auto list_view = pinned ? pinned_notification_list_view_ : nullptr;
   if (!list_view) {
     return;
@@ -206,7 +208,8 @@ void NotificationCenterController::UpdateListViewBorders(const bool pinned) {
   auto children = list_view->children();
   for (views::View* child : children) {
     AsMVC(child)->UpdateBorder(/*is_top=*/child == children.front(),
-                               /*is_bottom=*/child == children.back());
+                               /*is_bottom=*/child == children.back(),
+                               force_update);
   }
 }
 

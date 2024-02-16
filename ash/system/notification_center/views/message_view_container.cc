@@ -39,10 +39,12 @@ int MessageViewContainer::CalculateHeight() const {
 }
 
 void MessageViewContainer::UpdateBorder(const bool is_top,
-                                        const bool is_bottom) {
-  if (is_top_ == is_top && is_bottom_ == is_bottom) {
+                                        const bool is_bottom,
+                                        const bool force_update) {
+  if (is_top_ == is_top && is_bottom_ == is_bottom && !force_update) {
     return;
   }
+
   is_top_ = is_top;
   is_bottom_ = is_bottom;
 
@@ -62,7 +64,8 @@ void MessageViewContainer::UpdateBorder(const bool is_top,
 
   message_view_->SetBackground(
       notification_style_utils::CreateNotificationBackground(
-          top_radius, bottom_radius, false, false));
+          top_radius, bottom_radius, /*is_popup_notification=*/false,
+          /*is_grouped_child_notification=*/false));
 }
 
 const std::string MessageViewContainer::GetNotificationId() const {

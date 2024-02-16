@@ -86,6 +86,8 @@ enum class ButtonType {
 // Represents a button to be shown as part of a notification.
 struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   explicit ButtonInfo(const std::u16string& title);
+  ButtonInfo(const gfx::VectorIcon* vector_icon,
+             const std::u16string& accessible_name);
   ButtonInfo(const ButtonInfo& other);
   ButtonInfo();
   ~ButtonInfo();
@@ -94,11 +96,20 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // Title that should be displayed on the notification button.
   std::u16string title;
 
+  // TODO(b/324953777): Consider removing this member variable in favor of
+  // replacing it with `vector_icon`.
   // Icon that should be displayed on the notification button. Optional. On some
   // platforms, a mask will be applied to the icon, to match the visual
   // requirements of the notification. As with Android, MD notifications don't
   // display this icon.
   gfx::Image icon;
+
+  // Vector icon to that's used for icon-only notification buttons.
+  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::kNoneIcon;
+
+  // Accessible name to be used for the button's tooltip. Required when creating
+  // an icon-only notification button.
+  std::u16string accessible_name;
 
   // The placeholder string that should be displayed in the input field for
   // text input type buttons until the user has entered a response themselves.
@@ -212,6 +223,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Flag if the notification is pinned. If true, the notification is pinned
   // and the user can't remove it.
   bool pinned = false;
+
+  // Presents a shortcut that will dismiss the notification when performed.
+  // Only used in in ash pinned notifications. See `PinnedNotificationView`.
+  std::u16string shortcut_text;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vibration pattern to play when displaying the notification. There must be
@@ -509,6 +524,14 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 #if BUILDFLAG(IS_CHROMEOS)
   void set_pinned(bool pinned) { optional_fields_.pinned = pinned; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  const std::u16string shortcut_text() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return optional_fields_.shortcut_text;
+#else
+    return std::u16string();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   // Gets a text for spoken feedback.
   const std::u16string& accessible_name() const {

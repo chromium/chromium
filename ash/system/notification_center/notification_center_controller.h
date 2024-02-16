@@ -57,9 +57,12 @@ class ASH_EXPORT NotificationCenterController
   }
 
  private:
-  // Updates `MessageViewContainer` borders of the edges of the specified pinned
-  // or unpinned list view, based on the `pinned` parameter.
-  void UpdateListViewBorders(const bool pinned);
+  // Updates `MessageViewContainer` borders of the specified pinned or unpinned
+  // list view, based on the `pinned` parameter. If `force_update` is true, all
+  // borders will update even if their `is_top` and `is_bottom` values remain
+  // unchanged from their stored values.
+  void UpdateListViewBorders(const bool pinned,
+                             const bool force_update = false);
 
   // Creates a `MessageView` that will be owned by a `MessageViewContainer`.
   std::unique_ptr<message_center::MessageView> CreateMessageView(

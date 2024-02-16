@@ -4951,6 +4951,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutIcon"
+    enum="NotificationCatalogName" expires_after="2025-02-15">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records a `catalog_name` whenever a pinned notification is shown without
+    having provided a `vector_small_image` through its `Notification` object.
+    All pinned notifications must have an icon, so the metric will be used to
+    track misbehaving notifications.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutTitle"
+    enum="NotificationCatalogName" expires_after="2025-02-15">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records a `catalog_name` whenever a pinned notification is shown without
+    having provided a `title` through its `Notification` object. All pinned
+    notifications must have a title, so the metric will be used to track
+    misbehaving notifications.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotifierFramework.Toast.Dismissed.{TimeRange}"
     enum="ToastCatalogName" expires_after="2025-01-15">
   <owner>kradtke@google.com</owner>
