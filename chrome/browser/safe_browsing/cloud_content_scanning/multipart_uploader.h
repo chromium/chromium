@@ -11,22 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
-#include "components/file_access/scoped_file_access.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-class SimpleURLLoader;
-}  // namespace network
 
 namespace safe_browsing {
 
@@ -34,10 +25,9 @@ class MultipartUploadRequestFactory;
 
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
-class MultipartUploadRequest {
+class MultipartUploadRequest : public ConnectorUploadRequest {
  public:
-  using Callback = base::OnceCallback<
-      void(bool success, int http_status, const std::string& response_data)>;
+  using Callback = ConnectorUploadRequest::Callback;
 
   // Creates a MultipartUploadRequest, which will upload `data` to the given
   // `base_url` with `metadata` attached.
@@ -75,7 +65,7 @@ class MultipartUploadRequest {
   MultipartUploadRequest(MultipartUploadRequest&&) = delete;
   MultipartUploadRequest& operator=(MultipartUploadRequest&&) = delete;
 
-  virtual ~MultipartUploadRequest();
+  ~MultipartUploadRequest() override;
 
   // Start the upload. This must be called on the UI thread. When complete, this
   // will call `callback_` on the UI thread.
@@ -115,8 +105,6 @@ class MultipartUploadRequest {
   ConnectorDataPipeGetter* data_pipe_getter_for_testing() {
     return data_pipe_getter_.get();
   }
-
-  void set_access_token(const std::string& access_token);
 
   void SetRequestHeaders(network::ResourceRequest* request);
 
@@ -170,43 +158,12 @@ class MultipartUploadRequest {
 
   static MultipartUploadRequestFactory* factory_;
 
-  GURL base_url_;
-  std::string metadata_;
-
-  // Indicates what the source of the data to upload is.
-  const enum { STRING = 0, FILE = 1, PAGE = 2 } data_source_;
-
-  // String of content to upload. Only populated for STRING requests.
-  std::string data_;
-
-  // Path to read the file to upload. Only populated for FILE requests.
-  base::FilePath path_;
-
-  // Memory to upload. Only populated for PAGE requests.
-  base::ReadOnlySharedMemoryRegion page_region_;
-
-  // Size of the file or page region.
-  uint64_t data_size_ = 0;
-
-  // Data pipe getter used to stream a file or a page. Only populated for the
-  // corresponding requests.
-  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
-
   std::string boundary_;
-  Callback callback_;
 
   base::TimeDelta current_backoff_;
   int retry_count_;
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  net::NetworkTrafficAnnotationTag traffic_annotation_;
-
   base::Time start_time_;
-
-  std::string access_token_;
-
-  std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
 };

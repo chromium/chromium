@@ -73,16 +73,15 @@ MultipartUploadRequest::MultipartUploadRequest(
     const std::string& data,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(STRING),
-      data_(data),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             data,
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -94,17 +93,16 @@ MultipartUploadRequest::MultipartUploadRequest(
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(FILE),
-      path_(path),
-      data_size_(file_size),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             path,
+                             file_size,
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -115,17 +113,15 @@ MultipartUploadRequest::MultipartUploadRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(PAGE),
-      page_region_(std::move(page_region)),
-      data_size_(page_region_.GetSize()),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             std::move(page_region),
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -400,9 +396,4 @@ MultipartUploadRequest::CreatePageRequest(
                                      std::move(page_region), traffic_annotation,
                                      std::move(callback));
 }
-
-void MultipartUploadRequest::set_access_token(const std::string& access_token) {
-  access_token_ = access_token;
-}
-
 }  // namespace safe_browsing
