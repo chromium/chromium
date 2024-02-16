@@ -1435,6 +1435,7 @@
 <translation id="206308717637808771">يتم حذف البيانات عند إغلاق جميع النوافذ، كما تتطابق طريقة معالجة البيانات مع طريقة معالجة الموقع الإلكتروني الذي تزوره.</translation>
 <translation id="2065405795449409761">‏يتم التحكم في Chrome من خلال برامج اختبار مبرمجة.</translation>
 <translation id="2067591192939433190">من "<ph name="VENDOR_NAME" />"</translation>
+<translation id="206960706005837784">أكمَل "<ph name="APP_NAME" />" مَهمة الطباعة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2071393345806050157">ليس هناك ملف سجل محلي.</translation>
 <translation id="2071692954027939183">تم حظر الإشعارات تلقائيًا لأنّك عادةً لا تسمح بظهورها.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{انقر لتثبيت الإضافة.}zero{انقر لتثبيت الإضافات.}two{انقر لتثبيت هاتَين الإضافتَين.}few{انقر لتثبيت هذه الإضافات.}many{انقر لتثبيت هذه الإضافات.}other{انقر لتثبيت هذه الإضافات.}}</translation>
@@ -1810,6 +1811,7 @@
 <translation id="233471714539944337">يتضمّن الملف محتوى حسّاسًا.</translation>
 <translation id="2335111415680198280">{0,plural, =1{إغلاق نافذة واحدة}zero{عدم إغلاق أي نوافذ}two{إغلاق نافذتَين}few{إغلاق # نوافذ}many{إغلاق # نافذةً}other{إغلاق # نافذة}}</translation>
 <translation id="2336228925368920074">وضع إشارة على جميع علامات التبويب...</translation>
+<translation id="2336258397628212480">يطبع "<ph name="APP_NAME" />" صفحة واحدة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">لا يمكن تنزيل الملف <ph name="FILE_NAME" /> بشكل آمن.</translation>
 <translation id="2342180549977909852">يمكن لطفلك استخدام رقم (رقم تعريف شخصي) بدلاً من كلمة مرور لفتح قفل هذا الجهاز. ويمكنك لاحقًا ضبط رقم تعريف شخصي من خلال "الإعدادات".</translation>
@@ -2652,6 +2654,7 @@
 <translation id="2967926928600500959">‏سيتم فرض فتح عناوين URL المتوافقة مع هذه القواعد في متصفِّح محدّد.</translation>
 <translation id="2969411787010981955">تم تصدير البيانات إلى المكان المحدد.</translation>
 <translation id="2970766364519518369">يمكن لجهات اتصال محددة المشاركة معك عندما تكون قريبة من جهازك. ستُطلَب منك الموافقة على هذه الطلبات. لن تحتاج إلى الموافقة على مشاركة المحتوى بين الأجهزة التي تم تسجيل الدخول إلى <ph name="USER_EMAIL" /> عليها.</translation>
+<translation id="2972557485845626008">البرامج الثابتة</translation>
 <translation id="2972581237482394796">إعا&amp;دة</translation>
 <translation id="2973324205039581528">كتم صوت الموقع الإلكتروني</translation>
 <translation id="2975761176769946178">‏عنوان URL مطلوب.</translation>
@@ -3998,6 +4001,7 @@
 <translation id="4021909830315618592">نسخ تفاصيل الإصدار</translation>
 <translation id="4021941025609472374">إغلاق علامات التبويب على اليسار</translation>
 <translation id="4022426551683927403">إ&amp;ضافة إلى القاموس</translation>
+<translation id="4023048917751563912">يطبع "<ph name="APP_NAME" />"‏ <ph name="PAGE_NUMBER" /> صفحة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="4024768890073681126">يتولّى أحد والدَيك إدارة متصفِّحك.</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
 <translation id="402707738228916911">تم تلقي تعليمات "<ph name="AUTHORIZE_INSTRUCTION_NAME" />".</translation>
@@ -4599,6 +4603,7 @@
 <translation id="4507128560633489176">تم محو البيانات.</translation>
 <translation id="4507373251891673233">لقد حظرت جميع الإضافات من الوصول إلى الموقع الإلكتروني <ph name="HOST" />.</translation>
 <translation id="4507401683427517298">انقر على "إضافة اختصار".</translation>
+<translation id="4508332912150723117">اسم المستخدم (<ph name="USER_EMAIL" />). الاطّلاع على التفاصيل</translation>
 <translation id="450867954911715010">إعدادات إمكانية الدخول</translation>
 <translation id="4508765956121923607">عرض الم&amp;صدر</translation>
 <translation id="4509277363725254222">‏عند مشاركة نسخة من <ph name="BEGIN_BOLD_USERNAME" />اسم المستخدم<ph name="END_BOLD_USERNAME" /> و<ph name="BEGIN_BOLD_PASSWORD" />كلمة المرور<ph name="END_BOLD_PASSWORD" />، يمكن لأحد أفراد عائلتك ملء هذه البيانات باستخدام "مدير كلمات المرور في Google".</translation>
@@ -6527,6 +6532,7 @@
 <translation id="6050189528197190982">تدرج الرمادي</translation>
 <translation id="6051354611314852653">عفوًا! تعذّر النظام في السماح بالدخول إلى واجهة برمجة التطبيقات على هذا الجهاز.</translation>
 <translation id="6051811090255711417">حظرت مؤسستك هذا الملف لأنّه لا يمتثل لإحدى سياسات الأمان.</translation>
+<translation id="6052261338768299955">يحاول "<ph name="APP_NAME" />" الطباعة باستخدام "<ph name="PRINTER_NAME" />"</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">كتابة رمز الدخول لبدء البث</translation>
 <translation id="6052976518993719690">‏صلاحية شهادة SSL (طبقة المقابس الآمنة)</translation>
@@ -7380,7 +7386,7 @@
 <translation id="6716798148881908873">‏تم فقد اتصال الشبكة، يُرجى التحقّق من اتصالك بالشبكة أو تجربة شبكة Wi-Fi أخرى.</translation>
 <translation id="6718849325281682232">‏تم تحديث ألوان المظاهر في Chrome لتلائم جميع الأذواق، سواء كنت تستخدم الوضع الداكن أو الفاتح.</translation>
 <translation id="671928215901716392">قفل الشاشة</translation>
-<translation id="6721744718589119342">قد نرسل إليك رسالة إلكترونية للحصول على مزيد من المعلومات أو لإطلاعك على آخر التعديلات.</translation>
+<translation id="6721744718589119342">قد نرسل إليك رسائل إلكترونية لمشاركة المزيد من المعلومات أو آخر الأخبار.</translation>
 <translation id="6721972322305477112">&amp;ملف</translation>
 <translation id="672208878794563299">سيطلب هذا الموقع الإلكتروني الإذن في المرة القادمة.</translation>
 <translation id="6722744767592605627">يمكنك استرداد حساب <ph name="EMAIL" />، ولكن سيتم حذف البيانات المُخزَّنة على جهازك.</translation>
@@ -7467,6 +7473,7 @@
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786747875388722282">الإضافات</translation>
 <translation id="6787097042755590313">علامة تبويب أخرى</translation>
+<translation id="6787531944787756058">تم حفظ اسم المستخدم (<ph name="USER_EMAIL" />) على هذا الجهاز فقط. الاطّلاع على التفاصيل</translation>
 <translation id="6787839852456839824">اختصارات لوحة المفاتيح</translation>
 <translation id="6788210894632713004">إضافة تم فك حزمتها</translation>
 <translation id="6789592661892473991">تقسيم أفقي</translation>

@@ -2649,6 +2649,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2967926928600500959">URL's die overeenkomen met deze regels, worden verplicht in een bepaalde browser geopend.</translation>
 <translation id="2969411787010981955">Gegevens zijn geëxporteerd naar de geselecteerde locatie</translation>
 <translation id="2970766364519518369">Geselecteerde contacten kunnen content met je delen als ze in de buurt zijn. Je wordt gevraagd om deze verzoeken te bevestigen. Je hoeft deelverzoeken tussen apparaten die zijn ingelogd op <ph name="USER_EMAIL" /> niet goed te keuren.</translation>
+<translation id="2972557485845626008">Firmware</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
 <translation id="2973324205039581528">Geluid van site uitzetten</translation>
 <translation id="2975761176769946178">Er is een URL vereist</translation>
@@ -7814,6 +7815,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7044606776288350625">Gegevens synchroniseren</translation>
 <translation id="7047059339731138197">Een achtergrond kiezen</translation>
 <translation id="7049293980323620022">Bestand behouden?</translation>
+<translation id="7049524156282610342">Browsegegevens <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
 <translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
@@ -8530,6 +8532,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>
+<translation id="7632437836497571618">Beveiligde verbindingen gebruiken om sites op te zoeken</translation>
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
 <translation id="7633724038415831385">Dit is de enige keer dat je moet wachten op een update. Op Chromebooks vinden software-updates in de achtergrond plaats.</translation>
 <translation id="7634337648687970851">Herstel van lokale gegevens wordt op dit moment niet ondersteund.</translation>
@@ -8791,6 +8794,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7803657407897251194">Verbind je <ph name="DEVICE_TYPE" /> met een netwerk om door te gaan met instellen op je Android-apparaat</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
 <translation id="780446144738273886">Scan de pdf om tekst voor de schermlezer te extraheren. Wordt alleen ondersteund in de Chrome-browser.</translation>
+<translation id="7805371082115476536">Licht</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tip sluiten</translation>
 <translation id="7806722269368320106">Een app die wordt geïnstalleerd</translation>

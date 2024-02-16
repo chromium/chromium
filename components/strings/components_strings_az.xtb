@@ -1790,6 +1790,7 @@
 <translation id="4731638775147756694">Bu tətbiq admin tərəfindən bloklanıb</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi endirilir... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> cihazın məkanını istifadə etmək istəyir</translation>
+<translation id="473414950835101501">Kameralardan istifadə edin</translation>
 <translation id="4736825316280949806">Chromium'u yenidən başladın</translation>
 <translation id="4736934858538408121">Virtual kart</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
@@ -1900,6 +1901,7 @@
 <translation id="4936675324097895694">Maliyyə</translation>
 <translation id="4940163644868678279">Chrome'da Anonim Rejim</translation>
 <translation id="494111439860963024">"Axtarış datasını silin" düyməsi, aktivləşdirərək Chrome ayarlarında brauzer tarixçəsi, kukilər, keş və s. silin</translation>
+<translation id="4943620199112228840">Mikrofonlardan istifadə edin</translation>
 <translation id="4943872375798546930">Nəticə yoxdur</translation>
 <translation id="4950898438188848926">Keçid düyməsinə klikləyin, açıq <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> tabına keçmək üçün "Daxil olun" düyməsinə basın</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
@@ -3398,7 +3400,6 @@
 <translation id="8078141288243656252">Döndərilidikdə annotasiya mümkün deyil</translation>
 <translation id="8079031581361219619">Sayt yenidən yüklənsin?</translation>
 <translation id="8079976827192572403">Təhlükəli sayt</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedan</translation>
 <translation id="8086971161893892807">Qaralama</translation>
 <translation id="8088680233425245692">Məqaləyə baxmaq olmadı.</translation>

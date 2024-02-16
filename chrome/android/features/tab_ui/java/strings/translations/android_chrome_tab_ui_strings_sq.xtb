@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Ndaj skedën}other{Ndaj skedat}}</translation>
 <translation id="7129458170538955174">Informacioni për këtë dyqan është hapur në gjysmë të lartësisë</translation>
 <translation id="7204204600596740190">Modaliteti i zgjedhjes së shumëfishtë</translation>
+<translation id="731648547091221002"><ph name="COLOR_NAME" /> - është zgjedhur</translation>
 <translation id="7326879924029668159">Shiko politikën e kthimit etj.</translation>
 <translation id="7352298686197644113">Shiko se cili artikull në skedat e tua të hapura ka çmim më të ulët</translation>
 <translation id="753732157349120914">Ndërruesi i skedave</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupo <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Grupo <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>
+<translation id="7939917283308035850"><ph name="COLOR_NAME" /> - nuk është zgjedhur</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7966321538264951561">Largo sugjerimet.</translation>
 <translation id="8029301326595421733">Informacioni për këtë dyqan është hapur në lartësi të plotë</translation>

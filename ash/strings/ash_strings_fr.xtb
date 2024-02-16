@@ -329,6 +329,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2369165858548251131">"Bonjour" en chinois</translation>
 <translation id="2382875860893882175">La diffusion est actuellement suspendue. Vous pouvez la reprendre ou l'arrêter à tout moment.</translation>
 <translation id="2386292613071805067">Sélectionner toute la page</translation>
+<translation id="2392659840443812875">Aucun point d'accès disponible. Vérifiez que votre appareil est à proximité et que le Bluetooth est activé.</translation>
 <translation id="2397416548179033562">Afficher le menu Chrome</translation>
 <translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2402411679569069051">Pour déverrouiller votre Chromebook, utilisez votre empreinte ou déverrouillez votre téléphone</translation>
@@ -1085,6 +1086,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement d'écran effectué</translation>
 <translation id="5314489738835854379">Revenir à la fenêtre précédente</translation>
+<translation id="5315931444962548795">Activez le Bluetooth pour découvrir les points d'accès disponibles à proximité</translation>
 <translation id="5316716239522500219">Mettre en miroir les moniteurs</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>

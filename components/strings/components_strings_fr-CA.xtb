@@ -1794,6 +1794,7 @@
 <translation id="4731638775147756694">Cette application a été bloquée par votre administrateur</translation>
 <translation id="4732860731866514038">Téléchargement du module linguistique <ph name="LANGUAGE" /> en cours… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">L'URL <ph name="URL" /> veut utiliser la position de votre appareil</translation>
+<translation id="473414950835101501">Utiliser votre appareil photo</translation>
 <translation id="4736825316280949806">Redémarrer Chromium</translation>
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mise à jour</translation>
@@ -1904,6 +1905,7 @@
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Navigation privée dans Chrome</translation>
 <translation id="494111439860963024">Bouton Effacer les données de navigation, activez-le pour effacer votre historique de navigation, vos témoins, votre cache et plus dans les paramètres de Chrome</translation>
+<translation id="4943620199112228840">Utiliser votre micro</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4950898438188848926">Bouton de commutation d'onglet, appuyez sur Entrée pour basculer vers l'onglet ouvert, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Actions</translation>
@@ -3402,7 +3404,6 @@ Détails supplémentaires :
 <translation id="8078141288243656252">Impossible d'annoter lorsque le document est pivoté</translation>
 <translation id="8079031581361219619">Actualiser le site?</translation>
 <translation id="8079976827192572403">Site dangereux</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086971161893892807">Brouillon</translation>
 <translation id="8088680233425245692">Échec de visionnement de l'article.</translation>

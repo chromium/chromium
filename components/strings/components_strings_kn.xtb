@@ -1791,6 +1791,7 @@
 <translation id="4731638775147756694">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ಭಾಷೆಯ ಪ್ಯಾಕ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
+<translation id="473414950835101501">ನಿಮ್ಮ ಕ್ಯಾಮರಾಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4736825316280949806">Chromium ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4736934858538408121">ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
@@ -1901,6 +1902,7 @@
 <translation id="4936675324097895694">ಹಣಕಾಸು</translation>
 <translation id="4940163644868678279">Chrome ನಲ್ಲಿ ಅದೃಶ್ಯ ಮೋಡ್</translation>
 <translation id="494111439860963024">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ ಬಟನ್, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕಿಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಮುಂತಾದವುಗಳನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ತೆರವುಗೊಳಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="4943620199112228840">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4950898438188848926">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ತೆರೆದಿರುವ ಟ್ಯಾಬ್, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
@@ -3398,7 +3400,6 @@
 <translation id="8078141288243656252">ಡಾಕ್ಯುಮೆಂಟ್‌ ಅನ್ನು ತಿರುಗಿಸಿದಾಗ ಟಿಪ್ಪಣಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8079031581361219619">ಸೈಟ್ ಅನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="8079976827192572403">ಅಪಾಯಕಾರಿ ಸೈಟ್</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">ಸೆಡಾನ್‌ಗಳು</translation>
 <translation id="8086971161893892807">ಡ್ರಾಫ್ಟ್‌</translation>
 <translation id="8088680233425245692">ಲೇಖನವನ್ನು ವೀಕ್ಷಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>

@@ -2648,6 +2648,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2967926928600500959">Bu qaydalara uyğun gələn URL-lər xüsusi brauzerdə məcburi açılacaq.</translation>
 <translation id="2969411787010981955">Data seçilmiş yerə ixrac edilib</translation>
 <translation id="2970766364519518369">Seçilmiş kontaktlar yaxında olduqda sizinlə paylaşım edə bilər. Bu sorğuları təsdiq etməlisiniz. <ph name="USER_EMAIL" /> hesabına daxil olmuş cihazlar arasında paylaşımı təsdiqləməli deyilsiniz.</translation>
+<translation id="2972557485845626008">Mikro proqram</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
 <translation id="2973324205039581528">Saytı səssiz edin</translation>
 <translation id="2975761176769946178">Keçid tələb olunur</translation>
@@ -3105,6 +3106,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3348038390189153836">Çıxarıla bilən cihaz aşkarlandı</translation>
 <translation id="3348131053948466246">Emoji təklif edilib. Hərəkət etmək üçün yuxarı və ya aşağı, daxil etmək üçün isə enter düyməsinə basın.</translation>
 <translation id="3349933790966648062">Yaddaş Sahəsi</translation>
+<translation id="3351472127384196879">Qələmdə düymələr əlavə edin və ya yerlərini müəyyənləşdirin</translation>
 <translation id="3353786022389205125">"Yuxudan oyanarkən kilid ekranını göstər" seçimini aktiv edin və yenidən cəhd edin</translation>
 <translation id="3354768182971982851">Chrome tətbiqlərinin köhnə versiyaları 2022-ci ilin dekabrından sonra Mac cihazlarında açılmayacaq. Yeni versiyanın əlçatan olub-olmadığını yoxlayın.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> cihazı ilə birləşdirmək mümkün olmadı; yenidən cəhd etmək üçün cihaz seçin</translation>
@@ -7070,6 +7072,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6474884162850599008">Google Disk hesabı bağlantısını kəsin</translation>
 <translation id="6475294023568239942">Diskdə yer boşaldın və ya Ayarlar bölməsində Linux diskinin ölçüsünü dəyişdirin</translation>
 <translation id="6476482583633999078">Nitq sürəti</translation>
+<translation id="6476671549211161535"><ph name="DEVICE_NAME" /> cihazında sol və ya sağ maus düyməsi olmayan düyməni basın.</translation>
 <translation id="6477822444490674459">İş profili olan telefonlar üçün bildirişin sinxronlaşdırılması dəstəklənmir. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Təhlükəli fayllar saxlanılsın?</translation>
 <translation id="6479881432656947268">Chrome Veb Dükanına daxil olun</translation>
@@ -8625,6 +8628,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7684913007876670600">Bu səhifənin sadə görünüşü üçün yan paneli açın və Oxu rejimini seçin</translation>
 <translation id="7685049629764448582">JavaScript yaddaşı</translation>
 <translation id="7685087414635069102">PIN tələb olunur</translation>
+<translation id="7685351732518564314"><ph name="DEVICE_NAME" /> cihazında düyməyə basın.</translation>
 <translation id="7686086654630106285">Saytın təklif etdiyi reklamlar haqqında ətraflı</translation>
 <translation id="7686581688229391955">Bu saytda bütün artırmalara icazə vermək üçün seçin</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10061,6 +10065,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}other{# saniyədən sonra <ph name="DEVICE_TYPE" /> avtomatik kilidlənəcək.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}}</translation>
 <translation id="8776294611668764629">Təşkilatınız güvənlik yoxlanışı üçün çox böyük olduğuna görə bu faylı bloklayıb. 50 MB-a qədər faylları aça bilərsiniz.</translation>
+<translation id="8777509665768981163">Planşetdə düymələr əlavə edin və ya yerlərini müəyyənləşdirin</translation>
 <translation id="8777628254805677039">əsas parol</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Saytlar yalnız öz saytlarında axtarış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər</translation>

@@ -1442,6 +1442,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="206308717637808771">Radera data när du stänger alla fönster. Data behandlas på samma sätt som webbplatsen du visar</translation>
 <translation id="2065405795449409761">Chrome kontrolleras av automatisk testprogramvara.</translation>
 <translation id="2067591192939433190">Från <ph name="VENDOR_NAME" /></translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> har skrivit ut på till <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Det finns ingen lokal loggfil.</translation>
 <translation id="2071692954027939183">Aviseringar blockerades automatiskt eftersom du vanligtvis inte tillåter dem</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klicka för att installera tillägget}other{Klicka för att installera dessa tillägg}}</translation>
@@ -1820,6 +1821,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="233471714539944337">Känsligt innehåll</translation>
 <translation id="2335111415680198280">{0,plural, =1{Stäng # fönster}other{Stäng # fönster}}</translation>
 <translation id="2336228925368920074">Skapa bokmärken för alla flikar ...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> skriver ut 1 sida på <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt</translation>
 <translation id="2342180549977909852">Ditt barn kan låsa upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
@@ -2662,6 +2664,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2967926928600500959">Webbadresser som matchar dessa regler tvingas att öppnas i en viss webbläsare.</translation>
 <translation id="2969411787010981955">Data har exporterats till den valda platsen</translation>
 <translation id="2970766364519518369">Utvalda kontakter kan dela filer med dig när de är i närheten. Du blir ombedd att godkänna dessa förfrågningar. Du behöver inte godkänna delning mellan enheter som är inloggade på <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Fast programvara</translation>
 <translation id="2972581237482394796">&amp;Upprepa</translation>
 <translation id="2973324205039581528">Stäng av webbplatsens ljud</translation>
 <translation id="2975761176769946178">En webbadress krävs</translation>
@@ -3469,7 +3472,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3627671146180677314">Förnyelsetid för Netscape-certifikat</translation>
 <translation id="3628275722731025472">Inaktivera Bluetooth</translation>
 <translation id="3629664892718440872">Kom ihåg det här valet</translation>
-<translation id="3630132874740063857">Din mobil</translation>
+<translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Lägg till den här webbplatsen på hyllan och använd den när som helst</translation>
 <translation id="3634652306074934350">Begäran om behörighet har löpt ut</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) upptäcktes</translation>
@@ -4010,6 +4013,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4021909830315618592">Kopiera versionsinformation</translation>
 <translation id="4021941025609472374">Stäng flikar till vänster</translation>
 <translation id="4022426551683927403">&amp;Lägg till i ordlistan</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> skriver ut <ph name="PAGE_NUMBER" /> sidor på <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Webbläsaren hanteras av din förälder</translation>
 <translation id="4025039777635956441">Stäng av ljudet för den valda webbplatsen</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
@@ -4612,6 +4616,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4507128560633489176">Datan har rensats.</translation>
 <translation id="4507373251891673233">Du har blockerat alla tillägg från <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klicka på Lägg till genväg</translation>
+<translation id="4508332912150723117">användarnamnet <ph name="USER_EMAIL" />. Se information</translation>
 <translation id="450867954911715010">Inställningar för tillgänglighet</translation>
 <translation id="4508765956121923607">Visa &amp;källa</translation>
 <translation id="4509277363725254222">När du delar en kopia av ditt <ph name="BEGIN_BOLD_USERNAME" />användarnamn<ph name="END_BOLD_USERNAME" /> och <ph name="BEGIN_BOLD_PASSWORD" />lösenord<ph name="END_BOLD_PASSWORD" /> kan familjemedlemmen fylla i uppgifterna med Google Lösenordshantering</translation>
@@ -6540,6 +6545,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6050189528197190982">Gråskala</translation>
 <translation id="6051354611314852653">Hoppsan! Det gick inte att auktorisera API-åtkomst för den här enheten.</translation>
 <translation id="6051811090255711417">Organisationen blockerade den här filen eftersom den inte uppfyller kraven i säkerhetspolicyn</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> försöker skriva ut på <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Skriv åtkomstkoden om du vill börja casta</translation>
 <translation id="6052976518993719690">SSL-certifikatauktoritet</translation>
@@ -7472,6 +7478,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786747875388722282">Tillägg</translation>
 <translation id="6787097042755590313">Annan flik</translation>
+<translation id="6787531944787756058">användarnamnet <ph name="USER_EMAIL" /> sparas endast på den här enheten. Se information</translation>
 <translation id="6787839852456839824">Kortkommandon</translation>
 <translation id="6788210894632713004">Okomprimerat tillägg</translation>
 <translation id="6789592661892473991">Dela vågrätt</translation>

@@ -1794,6 +1794,7 @@
 <translation id="4731638775147756694">Администраторот ја блокирал апликацијата</translation>
 <translation id="4732860731866514038">Се презема јазичен пакет за <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> сака да ја користи локацијата на вашиот уред</translation>
+<translation id="473414950835101501">да ги користи вашите камери</translation>
 <translation id="4736825316280949806">Рестартирајте го Chromium</translation>
 <translation id="4736934858538408121">Виртуелна картичка</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -1904,6 +1905,7 @@
 <translation id="4936675324097895694">Финансии</translation>
 <translation id="4940163644868678279">„Инкогнито“ во Chrome</translation>
 <translation id="494111439860963024">Копче за бришење на податоците од прелистување, активирајте го за да ги избришете историјата на прелистувањето, колачињата, кешот и други работи во поставките за Chrome</translation>
+<translation id="4943620199112228840">да ги користи вашите микрофони</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4950898438188848926">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите на отворената картичка, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дејства</translation>
@@ -3402,7 +3404,6 @@
 <translation id="8078141288243656252">Не може да се стави прибелешка кога документот е ротиран</translation>
 <translation id="8079031581361219619">Дали повторно да се вчита сајтот?</translation>
 <translation id="8079976827192572403">Опасен сајт</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086971161893892807">Нацрт</translation>
 <translation id="8088680233425245692">Не успеа да прикаже напис.</translation>

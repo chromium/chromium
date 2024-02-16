@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поделиться вкладкой}one{Поделиться вкладками}few{Поделиться вкладками}many{Поделиться вкладками}other{Поделиться вкладками}}</translation>
 <translation id="7129458170538955174">Информация об этом магазине развернута на половину экрана</translation>
 <translation id="7204204600596740190">Режим выбора вкладок</translation>
+<translation id="731648547091221002">Цвет "<ph name="COLOR_NAME" />" выбран</translation>
 <translation id="7326879924029668159">Правила возврата и другая информация</translation>
 <translation id="7352298686197644113">Узнайте, какой из товаров на открытых вкладках стал дешевле.</translation>
 <translation id="753732157349120914">Переключатель вкладок</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Сгруппировать <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Сгруппировать <ph name="TABS_COUNT_MANY" /> выбранных вкладки}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзыв}one{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыв}few{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}many{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзывов}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}}</translation>
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>
+<translation id="7939917283308035850">Цвет "<ph name="COLOR_NAME" />" не выбран</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7966321538264951561">Скрыть подсказки.</translation>
 <translation id="8029301326595421733">Информация об этом магазине открыта на весь экран</translation>

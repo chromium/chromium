@@ -1427,6 +1427,7 @@
 <translation id="206308717637808771">તમે બધી વિન્ડો બંધ કરો ત્યારે ડેટા ડિલીટ કરો. ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
 <translation id="2065405795449409761">Chrome, સ્વચલિત પરીક્ષણ સોફ્ટવેર દ્વારા નિયંત્રિત કરવામાં આવી રહ્યું છે.</translation>
 <translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" તરફથી</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> દ્વારા <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનું સમાપ્ત કરવામાં આવ્યું</translation>
 <translation id="2071393345806050157">કોઇ સ્થાનિક લૉગ ફાઇલ નથી.</translation>
 <translation id="2071692954027939183">નોટિફિકેશન ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવ્યા હતા કારણ કે તમે સામાન્ય રીતે તેમને મંજૂરી આપતા નથી</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}one{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}other{આ એક્સ્ટેંશન ઇન્સ્ટૉલ કરવા માટે ક્લિક કરો}}</translation>
@@ -1803,6 +1804,7 @@
 <translation id="233471714539944337">સંવેદનશીલ કન્ટેન્ટ</translation>
 <translation id="2335111415680198280">{0,plural, =1{# વિન્ડો બંધ કરો}one{# વિન્ડો બંધ કરો}other{# વિન્ડો બંધ કરો}}</translation>
 <translation id="2336228925368920074">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> પર 1 પેજ પ્રિન્ટ કરી રહી છે</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> સુરક્ષિતપણે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="2342180549977909852">આ ડિવાઇસ અનલૉક કરવા માટે તમારું બાળક કોઈ પાસવર્ડને બદલે કોઈ નંબર (પિન)નો ઉપયોગ કરી શકે છે. થોડા સમય પછી પિનને સેટ કરવા માટે સેટિંગમાં જાઓ.</translation>
@@ -2645,6 +2647,7 @@
 <translation id="2967926928600500959">આ નિયમો સાથે મેળ ખાતા URLsને કોઈ ચોક્કસ બ્રાઉઝરમાં જ ખોલવામાં આવશે.</translation>
 <translation id="2969411787010981955">પસંદ કરેલા લોકેશન પર ડેટાની નિકાસ કરવામાં આવી છે</translation>
 <translation id="2970766364519518369">જ્યારે તેઓ નજીકમાં હોય, ત્યારે પસંદ કરેલા સંપર્કો તમારી સાથે શેર કરી શકે છે. આ વિનંતીઓ મંજૂર કરવા માટે તમને પૂછવામાં આવશે. <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા ડિવાઇસ વચ્ચે તમારે શેરિંગ મંજૂર કરવાની કોઈ જરૂર રહેશે નહીં.</translation>
+<translation id="2972557485845626008">ફર્મવેર</translation>
 <translation id="2972581237482394796">&amp;ફરી કરો</translation>
 <translation id="2973324205039581528">સાઇટને મ્યૂટ કરો</translation>
 <translation id="2975761176769946178">URL જરૂરી છે</translation>
@@ -3102,6 +3105,7 @@
 <translation id="3348038390189153836">કાઢી નાખવા યોગ્ય ઉપકરણ મળ્યું</translation>
 <translation id="3348131053948466246">સૂચવેલા ઇમોજી. નૅવિગેટ કરવા માટે ઉપર અથવા નીચેની ઍરો કી દબાવો અને મનપસંદ ઇમોજીને શામેલ કરવા enter કી દબાવો.</translation>
 <translation id="3349933790966648062">મેમરી ફૂટપ્રિન્ટ</translation>
+<translation id="3351472127384196879">તમારી પેન પર બટન ઉમેરો અથવા શોધો</translation>
 <translation id="3353786022389205125">"સ્લીપ મોડમાંથી સક્રિય થાઓ, ત્યારે લૉક સ્ક્રીન બતાવો" ચાલુ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="3354768182971982851">ડિસેમ્બર 2022 પછી Mac ડિવાઇસ પર Chrome ઍપના જૂના વર્ઝન ખૂલશે નહીં. નવું વર્ઝન ઉપલબ્ધ છે કે નહીં તે તમે ચેક કરી શકો છો.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ડિવાઇસ સાથે જોડાણ કરી શક્યા નથી; ફરી પ્રયાસ કરવા માટે ડિવાઇસ પસંદ કરો</translation>
@@ -3992,6 +3996,7 @@
 <translation id="4021909830315618592">બિલ્ડની વિગતો કૉપિ કરો</translation>
 <translation id="4021941025609472374">ડાબી બાજુની ટૅબ બંધ કરો</translation>
 <translation id="4022426551683927403">શબ્દકોષમાં &amp;ઉમેરો</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> પર <ph name="PAGE_NUMBER" /> પેજ પ્રિન્ટ કરી રહી છે</translation>
 <translation id="4024768890073681126">તમારા માતાપિતા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="4025039777635956441">પસંદ કરેલી સાઇટને મ્યૂટ કરો</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
@@ -4593,6 +4598,7 @@
 <translation id="4507128560633489176">ડેટા સાફ કરવામાં આવ્યો.</translation>
 <translation id="4507373251891673233">તમે <ph name="HOST" />ના તમામ એક્સ્ટેન્શન બ્લૉક કર્યા છે</translation>
 <translation id="4507401683427517298">“શૉર્ટકટ ઉમેરો” પર ક્લિક કરો</translation>
+<translation id="4508332912150723117">વપરાશકર્તાનું નામ <ph name="USER_EMAIL" />. વિગતો જુઓ</translation>
 <translation id="450867954911715010">ઍક્સેસિબિલિટી સેટિંગ્સ</translation>
 <translation id="4508765956121923607">&amp;સ્રોત જુઓ</translation>
 <translation id="4509277363725254222">તમે તમારા <ph name="BEGIN_BOLD_USERNAME" />વપરાશકર્તા નામ<ph name="END_BOLD_USERNAME" /> અને <ph name="BEGIN_BOLD_PASSWORD" />પાસવર્ડ<ph name="END_BOLD_PASSWORD" />ની એક કૉપિ શેર કરો ત્યારે, તમારા કુટુંબનો સભ્ય તેમને Google Password Managerનો ઉપયોગ કરીને ભરી શકે છે</translation>
@@ -6523,6 +6529,7 @@ USB ડિવાઇસ</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6051354611314852653">અરેરે!  આ ઉપકરણ માટે અધિકૃત API ઍક્સેસ કરવા આ સિસ્ટમ નિષ્ફળ થઈ છે.</translation>
 <translation id="6051811090255711417">આ ફાઇલ સુરક્ષા પૉલિસીનું પાલન કરતી ન હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" />, <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનો પ્રયાસ કરી રહી છે</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">કાસ્ટ કરવાનું શરૂ કરવા માટે, ઍક્સેસ કોડ ટાઇપ કરો</translation>
 <translation id="6052976518993719690">SSL પ્રમાણન અધિકારી</translation>
@@ -7070,6 +7077,7 @@ USB ડિવાઇસ</translation>
 <translation id="6474884162850599008">Google ડ્રાઇવ એકાઉન્ટ ડિસ્કનેક્ટ કરો</translation>
 <translation id="6475294023568239942">ડિસ્કમાં સ્પેસ ખાલી કરો અથવા સેટિંગમાં Linux ડિસ્કનું કદ બદલો</translation>
 <translation id="6476482583633999078">સ્પીચની સ્પીડ</translation>
+<translation id="6476671549211161535">તમારા <ph name="DEVICE_NAME" /> પર એ બટન દબાવો જે માઉસનું ડાબું કે જમણું બટન નથી.</translation>
 <translation id="6477822444490674459">ઑફિસની પ્રોફાઇલમાંના ફોન માટે નોટિફિકેશન સિંક કરવાની સુવિધાને સપોર્ટ કરવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">જોખમી ફાઇલ રાખીએ?</translation>
 <translation id="6479881432656947268">Chrome વેબ સ્ટોરની મુલાકાત લો</translation>
@@ -7456,6 +7464,7 @@ USB ડિવાઇસ</translation>
 <translation id="67862343314499040">જાંબુડિયો</translation>
 <translation id="6786747875388722282">એક્સ્ટેન્શન</translation>
 <translation id="6787097042755590313">અન્ય ટૅબ</translation>
+<translation id="6787531944787756058">વપરાશકર્તાનું નામ <ph name="USER_EMAIL" /> માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. વિગતો જુઓ</translation>
 <translation id="6787839852456839824">કીબોર્ડ શોર્ટકટ્સ</translation>
 <translation id="6788210894632713004">અનપૅક કરેલ એક્સ્ટેન્શન</translation>
 <translation id="6789592661892473991">સ્ક્રીનને આડી વિભાજિત કરો</translation>
@@ -8627,6 +8636,7 @@ USB ડિવાઇસ</translation>
 <translation id="7684913007876670600">આ પેજનું સરળીકૃત વ્યૂ બતાવવા માટે, બાજુની પૅનલ ખોલો અને વાંચન મોડ પસંદ કરો</translation>
 <translation id="7685049629764448582">JavaScript મેમરી</translation>
 <translation id="7685087414635069102">પિન જરૂરી છે</translation>
+<translation id="7685351732518564314">તમારા <ph name="DEVICE_NAME" /> પર બટન દબાવો.</translation>
 <translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
 <translation id="7686581688229391955">આ સાઇટ પર એક્સ્ટેન્શનને મંજૂરી આપવાનું પસંદ કરો</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10061,6 +10071,7 @@ USB ડિવાઇસ</translation>
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમારું <ph name="DEVICE_TYPE" /> # સેકન્ડમાં ઑટોમૅટિક રીતે લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
 <translation id="8776294611668764629">આ ફાઇલ સુરક્ષા તપાસ માટે ખૂબ જ મોટી હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તમે 50 MB સુધીના કદવાળી ફાઇલો ખોલી શકશો.</translation>
+<translation id="8777509665768981163">તમારા ટૅબ્લેટ પર બટન ઉમેરો અથવા શોધો</translation>
 <translation id="8777628254805677039">રુટ પાસવર્ડ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">અલગ-અલગ સાઇટ પોતપોતાની સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર કુકીનો ઉપયોગ કરી શકશે</translation>

@@ -1795,6 +1795,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4731638775147756694">Järjestelmänvalvoja on estänyt tämän sovelluksen</translation>
 <translation id="4732860731866514038">Ladataan kielipakettia (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> haluaa käyttää laitteesi sijaintia.</translation>
+<translation id="473414950835101501">Käyttää kameraasi</translation>
 <translation id="4736825316280949806">Käynnistä Chromium uudelleen.</translation>
 <translation id="4736934858538408121">Virtuaalinen kortti</translation>
 <translation id="473775607612524610">Päivitä</translation>
@@ -1905,6 +1906,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4936675324097895694">Talous</translation>
 <translation id="4940163644868678279">Chromen incognito-tila</translation>
 <translation id="494111439860963024">Tyhjennä selausdata ‑painike, aktivoi tyhjentääksesi selaushistorian, evästeet, välimuistin ja muita tietoja Chromen asetuksista</translation>
+<translation id="4943620199112228840">Käyttää mikrofoniasi</translation>
 <translation id="4943872375798546930">Ei tuloksia</translation>
 <translation id="4950898438188848926">Välilehden vaihtopainike, siirry avoimelle välilehdelle painamalla Enter, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Toiminnot</translation>
@@ -3403,7 +3405,6 @@ Lisätietoja:
 <translation id="8078141288243656252">Kierrettyyn asiakirjaan ei voi tehdä merkintöjä</translation>
 <translation id="8079031581361219619">Ladataanko sivusto uudelleen?</translation>
 <translation id="8079976827192572403">Vaarallinen sivusto</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedan-autot</translation>
 <translation id="8086971161893892807">Luonnos</translation>
 <translation id="8088680233425245692">Artikkelin näyttäminen epäonnistui.</translation>

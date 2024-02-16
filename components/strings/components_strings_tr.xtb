@@ -1794,6 +1794,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4731638775147756694">Bu uygulama, yöneticiniz tarafından engellendi</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" />, cihazınızın konumunu kullanmak istiyor</translation>
+<translation id="473414950835101501">Kameralarınızı kullanma</translation>
 <translation id="4736825316280949806">Chromium'u yeniden başlatın</translation>
 <translation id="4736934858538408121">Sanal kart</translation>
 <translation id="473775607612524610">Güncelle</translation>
@@ -1904,6 +1905,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4936675324097895694">Finans</translation>
 <translation id="4940163644868678279">Chrome'daki Gizli mod</translation>
 <translation id="494111439860963024">Tarama verilerini temizle düğmesi, Chrome ayarlarında tarama geçmişinizi, çerezleri, önbelleği ve diğer öğeleri temizlemek için etkinleştirin</translation>
+<translation id="4943620199112228840">Mikrofonlarınızı kullanma</translation>
 <translation id="4943872375798546930">Sonuç yok</translation>
 <translation id="4950898438188848926">Sekme değiştirme düğmesi, açık sekmeye geçmek için enter tuşuna basın, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">İşlemler</translation>
@@ -3402,7 +3404,6 @@ Ek ayrıntılar:
 <translation id="8078141288243656252">Doküman döndürüldüğünde ek açıklama özelliği kullanılamaz</translation>
 <translation id="8079031581361219619">Site yeniden yüklensin mi?</translation>
 <translation id="8079976827192572403">Tehlikeli site</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedan araçlar</translation>
 <translation id="8086971161893892807">Taslak</translation>
 <translation id="8088680233425245692">Makale görüntülenemedi.</translation>

@@ -1441,6 +1441,7 @@
 <translation id="206308717637808771">আপনি যখন সমস্ত উইন্ডো বন্ধ করেন তখন ডেটা মুছুন। আপনি যে সাইটটি দেখছেন সেটির মতোই ডেটা ব্যবহার করা হয়</translation>
 <translation id="2065405795449409761">স্বয়ংক্রিয় পরীক্ষার সফ্টওয়্যার দ্বারা Chrome নিয়ন্ত্রিত হচ্ছে।</translation>
 <translation id="2067591192939433190">"<ph name="VENDOR_NAME" />"-এর থেকে</translation>
+<translation id="206960706005837784"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে প্রিন্ট করা হয়েছে</translation>
 <translation id="2071393345806050157">কোনো স্থানীয় লগ ফাইল নেই।</translation>
 <translation id="2071692954027939183">আপনি সাধারণত বিজ্ঞপ্তি অনুমোদন না করার জন্য অটোমেটিক ব্লক হয়ে গেছে</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{এক্সটেনশন ইনস্টল করতে ক্লিক করুন}one{এই এক্সটেনশনগুলি ইনস্টল করতে ক্লিক করুন}other{এই এক্সটেনশনগুলি ইনস্টল করতে ক্লিক করুন}}</translation>
@@ -1819,6 +1820,7 @@
 <translation id="233471714539944337">সংবেদনশীল কন্টেন্ট</translation>
 <translation id="2335111415680198280">{0,plural, =1{#টি উইন্ডো বন্ধ করুন}one{#টি উইন্ডো বন্ধ করুন}other{#টি উইন্ডো বন্ধ করুন}}</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
+<translation id="2336258397628212480"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে ১টি পৃষ্ঠা প্রিন্ট করা হচ্ছে</translation>
 <translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ফাইলটি নিরাপদে ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="2342180549977909852">এই ডিভাইস আনলক করতে আপনার সন্তান পাসওয়ার্ডের পরিবর্তে একটি নম্বর (পিন) ব্যবহার করতে পারবে। পরে একটি পিন সেট করতে, 'সেটিংস'-এ যান।</translation>
@@ -2655,6 +2657,7 @@
 <translation id="2967926928600500959">এই নিয়মগুলির সাথে মিলে যাওয়া URLগুলি একটি নির্দিষ্ট ব্রাউজারে খুলবে।</translation>
 <translation id="2969411787010981955">বেছে নেওয়া লোকেশনে ডেটা এক্সপোর্ট করা হয়েছে</translation>
 <translation id="2970766364519518369">আশপাশে থাকলে তবেই পরিচিতি থেকে বেছে নেওয়া ব্যক্তিরা আপনার সাথে শেয়ার করতে পারবেন। আপনার কাছে এইসব অনুরোধের অনুমোদন চাওয়া হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করা বিভিন্ন ডিভাইসের মধ্যে শেয়ার করার জন্য আপনাকে অনুমতি দিতে হবে না।</translation>
+<translation id="2972557485845626008">ফার্মওয়্যার</translation>
 <translation id="2972581237482394796">&amp;পুনরায় করুন</translation>
 <translation id="2973324205039581528">সাইটটি মিউট করুন</translation>
 <translation id="2975761176769946178">URL দিতে হবে</translation>
@@ -4000,6 +4003,7 @@
 <translation id="4021909830315618592">বিল্ডের বিশদ বিবরণ কপি করুন</translation>
 <translation id="4021941025609472374">বাঁদিকের ট্যাব বন্ধ করুন</translation>
 <translation id="4022426551683927403">&amp;অভিধানে যুক্ত করুন</translation>
+<translation id="4023048917751563912"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে <ph name="PAGE_NUMBER" />টি পৃষ্ঠা প্রিন্ট করা হচ্ছে</translation>
 <translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
 <translation id="4025039777635956441">বেছে নেওয়া সাইট মিউট করুন</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> নির্দেশ রিসিভ করা হয়েছে</translation>
@@ -4601,6 +4605,7 @@
 <translation id="4507128560633489176">ডেটা মোছা হয়েছে।</translation>
 <translation id="4507373251891673233"><ph name="HOST" />-এর সব এক্সটেনশন আপনি ব্লক করেছেন</translation>
 <translation id="4507401683427517298">“শর্টকাট যোগ করুন” বিকল্পে ক্লিক করুন</translation>
+<translation id="4508332912150723117">ইউজারনেম <ph name="USER_EMAIL" />. বিবরণ দেখুন</translation>
 <translation id="450867954911715010">অ্যাক্সেসযোগ্যতার সেটিংস</translation>
 <translation id="4508765956121923607">উ&amp;ৎস দেখুন</translation>
 <translation id="4509277363725254222">আপনি নিজের <ph name="BEGIN_BOLD_USERNAME" />ইউজারনেম<ph name="END_BOLD_USERNAME" /> ও <ph name="BEGIN_BOLD_PASSWORD" />পাসওয়ার্ড<ph name="END_BOLD_PASSWORD" /> শেয়ার করলে, আপনার পরিবারের সদস্যরা, সেগুলি Google Password Manager ব্যবহার করে পূরণ করতে পারবেন</translation>
@@ -6523,6 +6528,7 @@
 <translation id="6050189528197190982">গ্রেস্কেল</translation>
 <translation id="6051354611314852653">সিস্টেমটি এই ডিভাইসের জন্য এপিআই অ্যাক্সেস অনুমোদন করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="6051811090255711417">আপনার সংস্থা এই ফাইলটিকে ব্লক করেছে কারণ এটি নিরাপত্তা নীতি পূরণ করেনি</translation>
+<translation id="6052261338768299955"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে প্রিন্ট করার চেষ্টা করা হচ্ছে</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">কাস্টিং শুরু করার জন্য অ্যাক্সেস কোড টাইপ করুন</translation>
 <translation id="6052976518993719690">SSL শংসাপত্র কর্তৃপক্ষ</translation>
@@ -7454,6 +7460,7 @@
 <translation id="67862343314499040">বেগুনি</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
 <translation id="6787097042755590313">অন্য ট্যাব</translation>
+<translation id="6787531944787756058">ইউজারনেম <ph name="USER_EMAIL" /> শুধুমাত্র এই ডিভাইসে সেভ করা আছে। বিবরণ দেখুন</translation>
 <translation id="6787839852456839824">কীবোর্ড শর্টকাটগুলি</translation>
 <translation id="6788210894632713004">এক্সটেনশন আনপ্যাক করুন</translation>
 <translation id="6789592661892473991">হরিজন্টাল স্প্লিট করুন</translation>

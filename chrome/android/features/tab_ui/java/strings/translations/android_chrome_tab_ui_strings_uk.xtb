@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Поділитися вкладкою}one{Поділитися вкладками}few{Поділитися вкладками}many{Поділитися вкладками}other{Поділитися вкладками}}</translation>
 <translation id="7129458170538955174">Інформацію про цей магазин відкрито на половину висоти</translation>
 <translation id="7204204600596740190">Режим вибору кількох вкладок</translation>
+<translation id="731648547091221002">Вибрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Переглянути правила повернення й інше</translation>
 <translation id="7352298686197644113">Дізнайтеся, який товар на відкритих вкладках дешевший</translation>
 <translation id="753732157349120914">Перемикач вкладок</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Додати <ph name="TABS_COUNT_ONE" /> вибрану вкладку в групу}one{Додати <ph name="TABS_COUNT_MANY" /> вибрану вкладку в групу}few{Додати <ph name="TABS_COUNT_MANY" /> вибрані вкладки в групу}many{Додати <ph name="TABS_COUNT_MANY" /> вибраних вкладок у групу}other{Додати <ph name="TABS_COUNT_MANY" /> вибраної вкладки в групу}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> відгук}one{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгук}few{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуки}many{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуків}other{Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> відгуку}}</translation>
 <translation id="7885132941432959125">Перемістити вкладку праворуч</translation>
+<translation id="7939917283308035850">Не вибрано: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7966321538264951561">Закрити пропозицію.</translation>
 <translation id="8029301326595421733">Інформацію про цей магазин відкрито на всю висоту</translation>

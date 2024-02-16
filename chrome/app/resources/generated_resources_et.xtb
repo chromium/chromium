@@ -2655,6 +2655,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2967926928600500959">Nendele reeglitele vastavad URL-id sundavatakse kindlas brauseris.</translation>
 <translation id="2969411787010981955">Andmed on valitud kohta eksporditud</translation>
 <translation id="2970766364519518369">Valitud kontaktid, kes on teie läheduses, saavad teiega jagada. Teil palutakse need taotlused kinnitada. Te ei pea heaks kiitma jagamist seadmete vahel, mis on kontole <ph name="USER_EMAIL" /> sisse logitud.</translation>
+<translation id="2972557485845626008">Püsivara</translation>
 <translation id="2972581237482394796">&amp;Tee uuesti</translation>
 <translation id="2973324205039581528">Vaigista sait</translation>
 <translation id="2975761176769946178">URL on nõutav</translation>
@@ -3112,6 +3113,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3348038390189153836">Leiti irdseade</translation>
 <translation id="3348131053948466246">Soovitatakse emotikone. Navigeerimiseks vajutage üles- või allanoolt ja sisestamiseks sisestusklahvi.</translation>
 <translation id="3349933790966648062">Mälu jalajälg</translation>
+<translation id="3351472127384196879">Pliiatsi nuppude lisamine või nende asukoha leidmine</translation>
 <translation id="3353786022389205125">Lülitage sisse valik „Kuva unerežiimist ärkamisel lukustuskuva“ ja proovige uuesti</translation>
 <translation id="3354768182971982851">Chrome'i rakenduste vanad versioonid ei avane Maci seadmetes enam pärast 2022. aasta detsembrit. Võite kontrollida, kas saadaval on uus versioon.</translation>
 <translation id="3354972872297836698">Ei saanud seadmega <ph name="DEVICE_NAME" /> siduda; valige seade, et uuesti proovida</translation>
@@ -7081,6 +7083,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6474884162850599008">Google Drive'i konto ühenduse katkestamine</translation>
 <translation id="6475294023568239942">Vabastage seadetes kettaruumi või muutke Linuxi ketta suurust</translation>
 <translation id="6476482583633999078">Kõne kiirus</translation>
+<translation id="6476671549211161535">Puudutage oma seadmes <ph name="DEVICE_NAME" /> nuppu, mis ei ole vasak ega parem hiirenupp.</translation>
 <translation id="6477822444490674459">Tööprofiili kasutavate telefonide puhul märguannete sünkroonimist ei toetata. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Kas soovite ohtliku faili säilitada?</translation>
 <translation id="6479881432656947268">Külastage Chrome'i veebipoodi</translation>
@@ -8637,6 +8640,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7684913007876670600">Selle lehe lihtsustatud vaate kuvamiseks avage külgpaneel ja valige Lugemisrežiim</translation>
 <translation id="7685049629764448582">JavaScripti mälu</translation>
 <translation id="7685087414635069102">PIN-kood on kohustuslik</translation>
+<translation id="7685351732518564314">Vajutage oma seadmes <ph name="DEVICE_NAME" /> nuppu.</translation>
 <translation id="7686086654630106285">Lisateave saidi soovitatud reklaamide kohta</translation>
 <translation id="7686581688229391955">Valige, et laiendused sellel saidil lubada</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10076,6 +10080,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}other{Teie <ph name="DEVICE_TYPE" /> lukustatakse # sekundi pärast automaatselt.
 <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}}</translation>
 <translation id="8776294611668764629">Teie organisatsioon blokeeris selle faili, kuna see on turvalisuse kontrollimiseks liiga suur. Saate avada kuni 50 MB faile.</translation>
+<translation id="8777509665768981163">Tahvelarvuti nuppude lisamine või nende asukoha leidmine</translation>
 <translation id="8777628254805677039">juurparool</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Saidid võivad küpsisefaile kasutada vaid selleks, et vaadata teie sirvimistegevust samal saidil</translation>

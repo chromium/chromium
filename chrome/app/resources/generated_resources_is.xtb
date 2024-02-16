@@ -2665,6 +2665,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2967926928600500959">Vefslóðir sem passa við þessar reglur verða þvingaðar til að opnast í tilteknum vafra.</translation>
 <translation id="2969411787010981955">Gögn voru flutt út á valda staðsetningu</translation>
 <translation id="2970766364519518369">Valdir tengiliðir geta deilt með þér þegar þeir eru nálægt. Þú færð beiðni um að samþykkja þessar beiðnir. Þú þarft ekki að samþykkja deilingu á milli tækja sem eru skráð inn á <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Fastbúnaður</translation>
 <translation id="2972581237482394796">Endurge&amp;ra</translation>
 <translation id="2973324205039581528">Slökkva á hljóði svæðis</translation>
 <translation id="2975761176769946178">Vefslóð er áskilin</translation>
@@ -3122,6 +3123,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3348038390189153836">Laust tæki fannst</translation>
 <translation id="3348131053948466246">Tillaga að emoji. Ýttu upp eða niður til að fletta og ýttu á Enter til að færa inn.</translation>
 <translation id="3349933790966648062">Minnisferill</translation>
+<translation id="3351472127384196879">Bættu við eða staðsettu hnappa á pennanum</translation>
 <translation id="3353786022389205125">Kveiktu á „Sýna lásskjá þegar komið er úr hvíldarstillingu“ og reyndu aftur</translation>
 <translation id="3354768182971982851">Þegar desember 2022 er liðinn verður ekki hægt að opna gamlar útgáfur Chrome forrita í Mac-tækjum. Þú getur athugað hvort ný útgáfa sé í boði.</translation>
 <translation id="3354972872297836698">Ekki tókst að para við tækið <ph name="DEVICE_NAME" />, veldu tæki til að reyna aftur</translation>
@@ -7092,6 +7094,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6474884162850599008">Aftengja Google Drive reikning</translation>
 <translation id="6475294023568239942">Losaðu um diskpláss eða breyttu stærð Linux-disksins í stillingunum</translation>
 <translation id="6476482583633999078">Talhraði</translation>
+<translation id="6476671549211161535">Ýttu á hnapp á <ph name="DEVICE_NAME" /> sem er hvorki vinstri né hægri músarhnappurinn.</translation>
 <translation id="6477822444490674459">Samstilling tilkynninga er ekki studd í símum sem nota vinnusnið. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Viltu halda hættulegri skrá?</translation>
 <translation id="6479881432656947268">Opna Vefverslun Chrome</translation>
@@ -8649,6 +8652,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7684913007876670600">Til að birta einfaldað yfirlit þessarar síðu skaltu opna hliðargluggann og velja lesstillingu</translation>
 <translation id="7685049629764448582">JavaScript-minni</translation>
 <translation id="7685087414635069102">PIN-númers krafist</translation>
+<translation id="7685351732518564314">Ýttu á hnapp á <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Nánar um auglýsingar sem vefsvæði leggja til</translation>
 <translation id="7686581688229391955">Velja að leyfa viðbætur á þessari síðu</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10088,6 +10092,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.}other{<ph name="DEVICE_TYPE" /> verður læst sjálfkrafa eftir # sekúndur.
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.}}</translation>
 <translation id="8776294611668764629">Fyrirtækið þitt lokaði á þessa skrá því hún er of stór fyrir öryggisathugun. Þú getur opnað allt að 50 MB skrár.</translation>
+<translation id="8777509665768981163">Bættu við eða staðsettu hnappa á spjaldtölvunni</translation>
 <translation id="8777628254805677039">rótaraðgangsorð</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Vefsvæði geta einungis notað fótspor til að sjá vafranotkun þína á eigin vefsvæði</translation>

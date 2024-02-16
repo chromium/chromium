@@ -661,6 +661,7 @@ Si cette règle n'est pas configurée, l'outil de sélection d'emoji est activé
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
 <translation id="1534007181698071943">Autoriser les gestionnaires d'événements "unload" à être désactivés par défaut pendant le processus d'abandon</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
+<translation id="1542958897137600427">Activer le provisionnement des certificats client</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
 <translation id="1551782388466447648">Active le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
@@ -1864,6 +1865,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2467896267442150508">Intervalle d'une semaine (au maximum). Si l'heure de début est postérieure à l'heure de fin, l'heure de fin sera décalée au jour suivant.</translation>
 <translation id="2476249479201711962">Activer l'accès au menu contextuel du moteur de recherche par défaut</translation>
 <translation id="2478756867046106663">Autoriser les sites aux expériences abusives à ouvrir de nouvelles fenêtres ou de nouveaux onglets</translation>
+<translation id="2479760962196319822">Cette règle détermine si les utilisateurs de <ph name="PRODUCT_OS_NAME" /> peuvent stocker des données localement ou non.
+      Si cette règle est définie sur "False", le stockage local est bloqué sur <ph name="PRODUCT_OS_NAME" /> : les utilisateurs ne peuvent ni stocker des données localement, ni accéder aux répertoires locaux.
+      Si elle est définie sur "True" ou n'est pas configurée, le stockage local est autorisé sur <ph name="PRODUCT_OS_NAME" />. Aucune restriction ne s'applique aux emplacements où les utilisateurs peuvent stocker des données, ni aux répertoires auxquels ils peuvent accéder.</translation>
 <translation id="2480971699591919564">Cette règle active la fonctionnalité Click to Call, qui autorise les utilisateurs à envoyer des numéros de téléphone depuis leur ordinateur équipé de Chrome vers un appareil Android lorsqu'ils sont connectés. Pour plus d'informations, consultez cet article du centre d'aide : https://support.google.com/chrome/answer/9430554?hl=fr.
 
       Si cette règle est activée, la fonctionnalité permettant d'envoyer des numéros de téléphone vers des appareils Android sera activée pour l'utilisateur Chrome.
@@ -1979,6 +1983,7 @@ Si cette règle est définie sur "True" ou n'est pas configurée, la fonctionnal
 
 Si cette règle est définie sur "False", la fonctionnalité d'ensembles de sites Web associés est désactivée.</translation>
 <translation id="2555244983262829274">Masquer le bouton Accueil dans la barre d'outils</translation>
+<translation id="2558154810835597313">Activer le provisionnement des certificats client pour un utilisateur ou profil géré</translation>
 <translation id="2562213287271514629">Autoriser le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /> à être utilisé comme un plug-in <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Spécifie l'URL du moteur de recherche utilisé pour fournir des résultats instantanés. Cette URL doit contenir la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée lors de la requête par le texte déjà saisi par l'utilisateur.
 
@@ -2474,6 +2479,14 @@ Si la valeur est définie sur <ph name="DEFAULT_ENUM_VALUE" />, le comportement 
 Si la valeur est définie sur <ph name="ENABLED_ENUM_VALUE" />, les entités sont détectées, soulignées et déclenchées par un appui simple ou prolongé.
 Si la valeur est définie sur <ph name="DISABLED_ENUM_VALUE" />, les entités ne sont ni détectées ni exploitables.
 Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entités sont détectées et exploitables uniquement par un appui prolongé.</translation>
+<translation id="3008742113889107443">Définit le niveau d'accès à la géolocalisation du système <ph name="PRODUCT_OS_NAME" />.
+
+Il s'agit d'une couche de contrôle supplémentaire, située en dessous de la couche d'autorisation pour les applis et les sites Web. Par exemple, si cette règle est définie sur <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, aucune appli ni aucun site ne peuvent déterminer la position, quelles que soient leur autorisation respective d'accéder à la position. Toutefois, si cette règle est définie sur <ph name="GLS_ALLOWED" />, les applis et sites peuvent configurer individuellement l'autorisation d'accéder à la position, ce qui définira efficacement leur capacité à déterminer la position.
+
+Les utilisateurs ne peuvent pas ignorer les paramètres sélectionnés par l'administrateur. Si cette règle n'est pas configurée, les utilisateurs bénéficient d'une expérience grand public (c'est-à-dire qu'ils peuvent modifier librement le paramètre de localisation du système).
+
+Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME" />.
+De plus, lorsque cette règle est configurée, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> n'a plus d'incidence sur la préférence de localisation <ph name="ANDROID_NAME" /> sur ChromeOS.</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
 <translation id="3020623128585817424">Désactiver le contrôle du navigateur par défaut au démarrage</translation>
@@ -3289,6 +3302,7 @@ Si cette règle n'est pas configurée, aucun rapport de données de télémétri
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le démarrage au branchement de l'alimentation CA est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
+<translation id="3662660961914441274">Désactiver le stockage local des fichiers utilisateur</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
@@ -4009,6 +4023,7 @@ Si cette règle est désactivée, un message d'erreur s'affiche à la place.</tr
       Elle est ignorée et la notification est toujours affichée si l'appareil n'est pas géré ou s'il n'y a qu'un seul utilisateur.
 
       Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
+<translation id="4293419489636673391">Activer les fichiers utilisateur locaux</translation>
 <translation id="4294886370621883282">Autoriser l'affichage du clavier à l'écran dans les circonstances appropriées.</translation>
 <translation id="4297483555396496700">Les utilisateurs ne sont autorisés à modifier la version de l'appareil que si cette règle est définie sur "True". Si elle est définie sur "False" ou si elle n'est pas configurée, les utilisateurs peuvent modifier la version.
 
@@ -4147,6 +4162,7 @@ Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dan
 <translation id="4423597592074154136">Spécifier manuellement les paramètres de proxy</translation>
 <translation id="4424004842303301809">Désactiver la création de rapports sur les événements de prévention des fuites de données</translation>
 <translation id="4426601693403743089">Désactiver la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
+<translation id="4426986640594727372">Autoriser l'accès à la géolocalisation du système</translation>
 <translation id="4427173305799125784">La visionneuse de PDF ne peut pas annoter les PDF</translation>
 <translation id="4432762137771104529">Autoriser la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
 <translation id="4434531680131327140">Configure les paramètres de durée de conservation des données de navigation dans <ph name="PRODUCT_NAME" />. Cette règle permet aux administrateurs de définir (selon le type de données) quand le navigateur supprime ces données. C'est utile pour les clients qui utilisent des données sensibles.
@@ -4846,6 +4862,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
 <translation id="5041315457555330432">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils avec une adresse IP privée, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
+<translation id="504689994545234073">Activer le stockage local des fichiers utilisateur</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
 <translation id="5058573563327660283">Sélectionner la stratégie utilisée pour libérer de l'espace disque au cours du nettoyage automatique (obsolète)</translation>
@@ -5241,6 +5258,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="537786648513450280">Contrôler l'accès de l'appareil aux applications Android provenant de sources non approuvées</translation>
 <translation id="5378885577701865339">Désactiver la fonctionnalité de presse-papiers partagé</translation>
 <translation id="538108065117008131">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenus suivants.</translation>
+<translation id="5385337904220716757">Autoriser uniquement l'accès à la géolocalisation du système pour les services système</translation>
 <translation id="538768040137709073">Permet d'activer la fonctionnalité de presse-papiers partagé, qui donne la possibilité aux utilisateurs d'envoyer du texte entre un ordinateur de bureau Chrome et un appareil Android lorsque la synchronisation est activée et que l'utilisateur est connecté.
 
           Si cette règle est définie sur "True", la possibilité d'envoyer du texte entre deux appareils est activée pour les utilisateurs de Chrome.
@@ -5291,6 +5309,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       Si la règle est définie sur "False" ou n'est pas configurée, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant les applications et l'utilisation de l'appareil sont transmises.</translation>
 <translation id="5420245232720940848">Désactive la tunnellisation PCIe pour les périphériques Thunderbolt/USB4, ce qui limitera leur capacité</translation>
+<translation id="5420673997623782432">Bloquer l'accès à la géolocalisation du système pour tous les clients</translation>
 <translation id="5420774177427557782">Détermine si les VM utilisant cette configuration peuvent être installées et exécutées (<ph name="INSTALL_ALLOWED" />), exécutées mais pas installées (<ph name="RUN_ALLOWED" />) ou ne peuvent pas être exécutées (<ph name="BLOCKED" />). Notez que pour installer une VM, la clé installer_image_x86_64 doit également être définie. Si vous supprimez complètement une configuration, elle est implicitement définie sur <ph name="BLOCKED" />, ce qui empêche les VM de s'exécuter sans règle.</translation>
 <translation id="5422643441807528365">Clé de licence <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nom de la restriction Android WebView :</translation>
@@ -5375,6 +5394,7 @@ Si vous la désactivez ou que vous ne la configurez pas, les paramètres de rest
 Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé consiste à permettre au navigateur d'accueil d'effectuer le rendu. Mais vous avez la possibilité de remplacer ce paramètre et de demander que les pages HTML soient affichées par <ph name="PRODUCT_FRAME_NAME" /> par défaut.</translation>
 <translation id="545817252640069915">Activer l'interception de connexion</translation>
 <translation id="5460797984317417682">Activer l'affichage de l'alerte plein écran</translation>
+<translation id="5462898272514237681">Contrôler l'accès de <ph name="PRODUCT_OS_NAME" /> aux services de localisation Google</translation>
 <translation id="5464816904705580310">Configurer les paramètres des utilisateurs gérés</translation>
 <translation id="5466596281866046569">Transmettre des informations sur les applications</translation>
 <translation id="5467175549232776406">La page de test des règles est accessible</translation>
@@ -7074,6 +7094,11 @@ Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</transl
 Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> à partir du menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir cette option dans le menu contextuel.
 Elle ne les empêche pas d'enregistrer des images dans <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> par d'autres moyens que le menu contextuel.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
+<translation id="6827666400941600157">Cette règle définit une série d'intervalles hebdomadaires pour la planification des suspensions automatiques. L'appareil <ph name="PRODUCT_OS_NAME" /> passe en mode suspendu au début d'un intervalle, puis se réactive à la fin de l'intervalle.
+
+Les plannings dont les intervalles se chevauchent ne sont pas acceptés. Cette règle n'aura aucune incidence si elle contient deux intervalles qui se chevauchent.
+
+Les appareils <ph name="PRODUCT_OS_NAME" /> utiliseront le fuseau horaire du système pour appliquer ces intervalles.</translation>
 <translation id="6828729771894228555">Permet de définir une liste de formats d'URL indiquant des origines de premier niveau (URL dans la barre d'adresse de l'onglet) qui bloquent le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine).
           Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond pas, la valeur de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> est utilisée.
           Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
@@ -7324,6 +7349,9 @@ Si cette règle n'est pas configurée, l'affichage d'images est autorisé, mais 
 <translation id="7008308728445338159">Contrôles d'interception des requêtes DNS activés</translation>
 <translation id="7009043124653876961">Désactiver les suggestions d'emoji lors de la saisie</translation>
 <translation id="7010006999849135962">Activer l'authentification sans code pour l'hôte d'accès à distance</translation>
+<translation id="7013333561002112085">Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_ENABLED" /> (valeur 1), le navigateur demande un certificat client au serveur de gestion des appareils pour un utilisateur ou profil géré. Ce certificat sera disponible, par exemple, pour les connexions mTLS.
+
+Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (valeur 0), le navigateur ne peut pas demander le certificat client. Si le certificat client géré d'un profil a déjà été provisionné en raison de l'activation de cette règle auparavant, il ne sera pas supprimé. Toutefois, il ne sera pas disponible pour les connexions mTLS ni renouvelé quand il arrivera à expiration.</translation>
 <translation id="7013484314513229844">Activer le démarrage sur secteur</translation>
 <translation id="7014427417852575165">Les utilisateurs inscrits au Programme Protection Avancée bénéficieront de protections supplémentaires</translation>
 <translation id="7016587686120059767">Désactiver le mode Invité</translation>
@@ -7756,6 +7784,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Pour épingler des applications dans la barre des tâches, consultez PinnedLauncherApps.</translation>
 <translation id="7339315111520512972">Forcer le code réseau à s'exécuter dans le processus du navigateur</translation>
 <translation id="7340034977315324840">Indiquer les périodes d'activité de l'appareil</translation>
+<translation id="734095828044419464">Désactiver le provisionnement des certificats client</translation>
 <translation id="7343004974628511824">Procéder aux contrôles d'interception DNS</translation>
 <translation id="7343497214039883642">Fichier de configuration des imprimantes d'entreprise pour des appareils</translation>
 <translation id="7357148531287978404">Désactiver l'entrée audio</translation>

@@ -1431,6 +1431,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez.</translation>
 <translation id="2065405795449409761">Chrome est contrôlé par un logiciel de test automatisé.</translation>
 <translation id="2067591192939433190">Venant de "<ph name="VENDOR_NAME" />"</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> a terminé l'impression sur <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Aucun fichier journal local.</translation>
 <translation id="2071692954027939183">Notifications bloquées automatiquement, car vous les refusez d'habitude</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Cliquez ici pour installer l'extension}one{Cliquez ici pour installer l'extension}other{Cliquez ici pour installer ces extensions}}</translation>
@@ -1806,6 +1807,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="233471714539944337">Contenu sensible</translation>
 <translation id="2335111415680198280">{0,plural, =1{Fermer # fenêtre}one{Fermer # fenêtre}other{Fermer # fenêtres}}</translation>
 <translation id="2336228925368920074">Ajouter tous les onglets aux favoris...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> imprime 1 page sur <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Impossible de télécharger <ph name="FILE_NAME" /> de manière sécurisée</translation>
 <translation id="2342180549977909852">Votre enfant peut utiliser un numéro (code) au lieu d'un mot de passe pour déverrouiller cet appareil. Pour définir un code plus tard, accédez aux paramètres.</translation>
@@ -2648,6 +2650,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2967926928600500959">Les URL qui suivent ces règles seront ouvertes de force dans un navigateur spécifique.</translation>
 <translation id="2969411787010981955">Les données ont été exportées vers l'emplacement sélectionné</translation>
 <translation id="2970766364519518369">Les contacts sélectionnés qui sont à proximité peuvent partager avec vous. Vous devrez approuver ces demandes. Vous n'aurez pas besoin d'approuver le partage entre les appareils connectés à <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Micrologiciel</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Couper le son du site</translation>
 <translation id="2975761176769946178">Veuillez saisir une URL</translation>
@@ -3996,6 +3999,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4021909830315618592">Copier les détails de la version</translation>
 <translation id="4021941025609472374">Fermer les onglets à gauche</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> imprime <ph name="PAGE_NUMBER" /> pages sur <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Ton navigateur est géré par ton parent</translation>
 <translation id="4025039777635956441">Bloquer le site sélectionné</translation>
 <translation id="402707738228916911">Instruction <ph name="AUTHORIZE_INSTRUCTION_NAME" /> reçue</translation>
@@ -4597,6 +4601,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4507128560633489176">Données effacées.</translation>
 <translation id="4507373251891673233">Vous avez bloqué toutes les extensions pour <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Cliquez sur "Ajouter un raccourci"</translation>
+<translation id="4508332912150723117">nom d'utilisateur <ph name="USER_EMAIL" />. Voir les détails</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Afficher la s&amp;ource</translation>
 <translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de votre famille peut les renseigner à l'aide du Gestionnaire de mots de passe de Google</translation>
@@ -6526,6 +6531,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6051354611314852653">Petit problème… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="6051811090255711417">Votre organisation a bloqué ce fichier, car il ne respectait pas l'une des règles de sécurité</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> tente d'imprimer sur <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Saisir le code d'accès pour commencer à caster</translation>
 <translation id="6052976518993719690">Autorité de certification SSL</translation>
@@ -7460,6 +7466,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
+<translation id="6787531944787756058">le nom d'utilisateur <ph name="USER_EMAIL" /> n'est enregistré que sur cet appareil. Voir les détails</translation>
 <translation id="6787839852456839824">Raccourcis clavier</translation>
 <translation id="6788210894632713004">Extension non empaquetée</translation>
 <translation id="6789592661892473991">Séparation horizontale</translation>

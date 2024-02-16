@@ -1441,6 +1441,7 @@
 <translation id="206308717637808771">כשכל החלונות נסגרים, הנתונים נמחקים. אופן הטיפול בנתונים זהה לאופן הטיפול באתר הזה</translation>
 <translation id="2065405795449409761">‏Chrome נשלט על-ידי תוכנת בדיקה אוטומטית.</translation>
 <translation id="2067591192939433190">מהספק '<ph name="VENDOR_NAME" />'</translation>
+<translation id="206960706005837784">האפליקציה <ph name="APP_NAME" /> סיימה להדפיס במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">אין קובץ יומן מקומי.</translation>
 <translation id="2071692954027939183">ההתראות נחסמו באופן אוטומטי כי ברוב המקרים לא נתת הרשאה להציג אותן</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{יש ללחוץ כדי להתקין את התוסף}one{יש ללחוץ כדי להתקין את התוספים האלה}two{יש ללחוץ כדי להתקין את התוספים האלה}other{יש ללחוץ כדי להתקין את התוספים האלה}}</translation>
@@ -1819,6 +1820,7 @@
 <translation id="233471714539944337">תוכן רגיש</translation>
 <translation id="2335111415680198280">{0,plural, =1{סגירת חלון אחד (#)}one{סגירת # חלונות}two{סגירת # חלונות}other{סגירת # חלונות}}</translation>
 <translation id="2336228925368920074">יצירת סימנייה לכל הכרטיסיות...</translation>
+<translation id="2336258397628212480">דף אחד מודפס על ידי <ph name="APP_NAME" /> במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">שחזור הגדרות יצרן</translation>
 <translation id="2340239562261172947">לא ניתן להוריד את <ph name="FILE_NAME" /> בצורה מאובטחת</translation>
 <translation id="2342180549977909852">לילד או לילדה שלך יש אפשרות להשתמש במספר (קוד אימות) במקום בסיסמה כדי לבטל את נעילת המכשיר הזה. ניתן להגדיר את הקוד מאוחר יותר ב'הגדרות'.</translation>
@@ -2662,6 +2664,7 @@
 <translation id="2967926928600500959">‏כתובות ה‑URL שמתאימות לכללים האלה יאולצו להיפתח בדפדפן מסוים.</translation>
 <translation id="2969411787010981955">יוצאו נתונים למיקום שנבחר</translation>
 <translation id="2970766364519518369">אנשי קשר שייבחרו יכולים לשתף איתך כשהם בקרבת מקום. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">קושחה</translation>
 <translation id="2972581237482394796">&amp;ביצוע חוזר</translation>
 <translation id="2973324205039581528">השתקת האודיו באתר</translation>
 <translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
@@ -3119,6 +3122,7 @@
 <translation id="3348038390189153836">זוהה התקן נשלף</translation>
 <translation id="3348131053948466246">‏הצעות לאמוג'י. כדי לעבור בין ההצעות, מקישים על החיצים למעלה או למטה. כדי להוסיף אמוג'י, מקישים על Enter.</translation>
 <translation id="3349933790966648062">הזיכרון שבשימוש</translation>
+<translation id="3351472127384196879">הוספה או זיהוי לחצנים בעט</translation>
 <translation id="3353786022389205125">צריך להפעיל את האפשרות 'הצגת מסך הנעילה ביציאה ממצב שינה' ולנסות שוב</translation>
 <translation id="3354768182971982851">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו במכשירי Mac אחרי דצמבר 2022. ניתן לבדוק אם יש גרסה חדשה להורדה.</translation>
 <translation id="3354972872297836698">לא ניתן היה לבצע התאמה למכשיר <ph name="DEVICE_NAME" />. יש לבחור מכשיר כדי לנסות שוב</translation>
@@ -4009,6 +4013,7 @@
 <translation id="4021909830315618592">‏העתקת פרטי build</translation>
 <translation id="4021941025609472374">סגירת הכרטיסיות משמאל</translation>
 <translation id="4022426551683927403">&amp;הוספה למילון</translation>
+<translation id="4023048917751563912">‫<ph name="PAGE_NUMBER" /> דפים מודפסים על ידי <ph name="APP_NAME" /> במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">הדפדפן מנוהל על ידי ההורה שלך</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
 <translation id="402707738228916911">התקבלה הוראה של <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
@@ -4612,6 +4617,7 @@
 <translation id="4507128560633489176">הנתונים נוקו.</translation>
 <translation id="4507373251891673233">חסמת את כל התוספים מ-<ph name="HOST" /></translation>
 <translation id="4507401683427517298">לוחצים על 'הוספת קיצור דרך'</translation>
+<translation id="4508332912150723117">שם המשתמש <ph name="USER_EMAIL" />. לפרטים</translation>
 <translation id="450867954911715010">הגדרות נגישות</translation>
 <translation id="4508765956121923607">הצגת מ&amp;קור</translation>
 <translation id="4509277363725254222">‏כשמשתפים עותק של <ph name="BEGIN_BOLD_USERNAME" />שם המשתמש<ph name="END_BOLD_USERNAME" /> ו<ph name="BEGIN_BOLD_PASSWORD" />הסיסמה<ph name="END_BOLD_PASSWORD" />, החברים בקבוצה המשפחתית יכולים למלא את הפרטים האלה באמצעות מנהל הסיסמאות של Google.</translation>
@@ -6540,6 +6546,7 @@
 <translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6051354611314852653">‏אופס!  המערכת לא הצליחה לאמת את הגישה של מכשיר זה לממשק ה-API.</translation>
 <translation id="6051811090255711417">הקובץ הזה לא עמד בתנאים של מדיניות האבטחה ולכן הוא נחסם על ידי הארגון שלך</translation>
+<translation id="6052261338768299955">האפליקציה <ph name="APP_NAME" /> מנסה להדפיס במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">‏צריך להזין את קוד הגישה כדי להתחיל בהעברה (cast)</translation>
 <translation id="6052976518993719690">‏רשות אישורי SSL </translation>
@@ -6818,7 +6825,7 @@
 <translation id="6249200942125593849">ניהול הנגישוּת</translation>
 <translation id="6250186368828697007">הפרטים מוסתרים בזמן שיתוף המסך</translation>
 <translation id="6251870443722440887">‏מזהים ייחודיים של GDI</translation>
-<translation id="6251924700383757765">מדיניות פרטיות</translation>
+<translation id="6251924700383757765">מדיניות הפרטיות</translation>
 <translation id="625369703868467034">תקינות הרשת</translation>
 <translation id="6253801023880399036">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">המפתח בסכנה</translation>
@@ -7087,6 +7094,7 @@
 <translation id="6474884162850599008">‏ניתוק חשבון Google Drive</translation>
 <translation id="6475294023568239942">‏עליך לפנות נפח אחסון או לשנות בהגדרות את גודל הנפח המיועד ל-Linux</translation>
 <translation id="6476482583633999078">מהירות הדיבור</translation>
+<translation id="6476671549211161535">צריך ללחוץ על לחצן שונה מהלחצן השמאלי או הימני בעכבר במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">אין תמיכה בסנכרון התראות בטלפונים שמחוברים לפרופיל עבודה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">להשאיר את הקובץ המסוכן?</translation>
 <translation id="6479881432656947268">‏לחנות האינטרנט של Chrome</translation>
@@ -7475,6 +7483,7 @@
 <translation id="67862343314499040">סגול סיגלית</translation>
 <translation id="6786747875388722282">תוספים</translation>
 <translation id="6787097042755590313">כרטיסייה אחרת</translation>
+<translation id="6787531944787756058">שם המשתמש <ph name="USER_EMAIL" /> שמור רק במכשיר הזה. לפרטים</translation>
 <translation id="6787839852456839824">מקשי קיצור</translation>
 <translation id="6788210894632713004">‏תוסף Unpacked</translation>
 <translation id="6789592661892473991">פיצול אופקי</translation>
@@ -8646,6 +8655,7 @@
 <translation id="7684913007876670600">כדי להציג תצוגה פשוטה יותר של הדף הזה, פותחים את החלונית הצדדית ובוחרים באפשרות 'מצב קריאה'</translation>
 <translation id="7685049629764448582">‏זיכרון JavaScript</translation>
 <translation id="7685087414635069102">נדרש קוד אימות</translation>
+<translation id="7685351732518564314">צריך ללחוץ על לחצן כלשהו במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="7686581688229391955">יש לבחור באפשרות הזו כדי להתיר תוספים באתר הזה</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10088,6 +10098,7 @@
 כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}other{מכשיר ה-<ph name="DEVICE_TYPE" /> יינעל אוטומטית בעוד # שניות.
 כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}}</translation>
 <translation id="8776294611668764629">‏הקובץ הזה גדול מדי לבדיקת אבטחה ולכן הוא נחסם על ידי הארגון שלך. אפשר לפתוח קבצים בגודל של עד 50MB.</translation>
+<translation id="8777509665768981163">הוספה או זיהוי לחצנים בטאבלט</translation>
 <translation id="8777628254805677039">‏סיסמת root</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">‏אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה בהם, ולא באתרים אחרים</translation>

@@ -1442,7 +1442,7 @@
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與處理目前瀏覽網站的方式相同</translation>
 <translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
 <translation id="2067591192939433190">來自「<ph name="VENDOR_NAME" />」</translation>
-<translation id="206960706005837784">「<ph name="APP_NAME" />」已在「<ph name="PRINTER_NAME" />」完成列印</translation>
+<translation id="206960706005837784">「<ph name="APP_NAME" />」已完成使用「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{按一下即可安裝擴充程式}other{按一下即可安裝這些擴充程式}}</translation>
@@ -1821,7 +1821,7 @@
 <translation id="233471714539944337">敏感內容</translation>
 <translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
 <translation id="2336228925368920074">將所有分頁加入書籤…</translation>
-<translation id="2336258397628212480">「<ph name="APP_NAME" />」正在透過「<ph name="PRINTER_NAME" />」列印 1 頁內容</translation>
+<translation id="2336258397628212480">「<ph name="APP_NAME" />」正在使用「<ph name="PRINTER_NAME" />」列印 1 頁內容</translation>
 <translation id="2336381494582898602">執行 Powerwash</translation>
 <translation id="2340239562261172947">無法安全下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2342180549977909852">子女可使用數字 (PIN) 代替密碼來為此裝置解鎖。如要稍後設定 PIN，請前往「設定」。</translation>
@@ -2664,6 +2664,7 @@
 <translation id="2967926928600500959">符合這些規則的網址會在強制以特定瀏覽器開啟。</translation>
 <translation id="2969411787010981955">資料已匯出至所選位置</translation>
 <translation id="2970766364519518369">此裝置附近的指定聯絡人可與你分享內容。系統會詢問你是否允許要求。只要裝置已登入 <ph name="USER_EMAIL" />，你就無需另外核准在裝置之間的分享要求。</translation>
+<translation id="2972557485845626008">韌體</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">將單一網站靜音</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
@@ -4010,7 +4011,7 @@
 <translation id="4021909830315618592">複製版本詳情</translation>
 <translation id="4021941025609472374">關閉左側分頁</translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
-<translation id="4023048917751563912">「<ph name="APP_NAME" />」正在透過「<ph name="PRINTER_NAME" />」列印 <ph name="PAGE_NUMBER" /> 頁內容</translation>
+<translation id="4023048917751563912">「<ph name="APP_NAME" />」正在使用「<ph name="PRINTER_NAME" />」列印 <ph name="PAGE_NUMBER" /> 頁內容</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4025039777635956441">將已選取的網站設定為靜音</translation>
 <translation id="402707738228916911">已接收「<ph name="AUTHORIZE_INSTRUCTION_NAME" />」指示</translation>
@@ -4611,7 +4612,7 @@
 <translation id="4507128560633489176">清除咗資料。</translation>
 <translation id="4507373251891673233">您已封鎖所有來自 <ph name="HOST" /> 的擴充程式</translation>
 <translation id="4507401683427517298">按一下 [新增捷徑]</translation>
-<translation id="4508332912150723117">使用者名稱 <ph name="USER_EMAIL" />。查看詳細資料</translation>
+<translation id="4508332912150723117">使用者名稱 <ph name="USER_EMAIL" />。睇下詳細資料</translation>
 <translation id="450867954911715010">無障礙功能設定</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
 <translation id="4509277363725254222">當你分享<ph name="BEGIN_BOLD_USERNAME" />使用者名稱<ph name="END_BOLD_USERNAME" />和<ph name="BEGIN_BOLD_PASSWORD" />密碼<ph name="END_BOLD_PASSWORD" />副本後，家庭成員就能使用「Google 密碼管理工具」填寫這些資料</translation>
@@ -6537,7 +6538,7 @@
 <translation id="6050189528197190982">灰階</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6051811090255711417">由於此檔案不符合安全政策要求，因此已被您的機構封鎖</translation>
-<translation id="6052261338768299955">「<ph name="APP_NAME" />」正在嘗試透過「<ph name="PRINTER_NAME" />」列印</translation>
+<translation id="6052261338768299955">「<ph name="APP_NAME" />」正在嘗試使用「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">輸入存取碼以開始投放</translation>
 <translation id="6052976518993719690">SSL 憑證授權單位</translation>
@@ -7471,7 +7472,7 @@
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
-<translation id="6787531944787756058">使用者名稱 <ph name="USER_EMAIL" /> 只會儲存到這部裝置。查看詳細資料</translation>
+<translation id="6787531944787756058">使用者名稱 <ph name="USER_EMAIL" /> 淨係會儲存去呢部裝置。睇下詳細資料</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">已解除壓縮的擴充程式</translation>
 <translation id="6789592661892473991">水平分割</translation>

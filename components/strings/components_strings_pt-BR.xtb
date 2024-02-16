@@ -223,7 +223,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1414134146594747368">Pré-escola</translation>
 <translation id="141826476809826269">Fim do texto extraído</translation>
 <translation id="1418611192881166179">Enquanto o Chrome atualiza esse recurso, os sites podem usar cookies de terceiros temporariamente, a menos que você os bloqueie nas configurações.</translation>
-<translation id="1419305130220238697">Botão "Gerenciar downloads no Chrome". Ative para gerenciar os arquivos transferidos por download no Chrome</translation>
+<translation id="1419305130220238697">Botão "Gerenciar downloads no Chrome". Ative para gerenciar os arquivos baixados no Chrome</translation>
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1427192966110103169">Piscinas, saunas e spas para residências</translation>
@@ -636,7 +636,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
-<translation id="2241693394036365668">Um arquivo é transferido por download</translation>
+<translation id="2241693394036365668">Um arquivo é baixado</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
 <translation id="2246480341630108201">Seu familiar responsável ainda não deu permissão</translation>
 <translation id="2247789808226901522">Cartão vencido</translation>
@@ -736,7 +736,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2462599289530201834">Pesquisar "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465688316154986572">Grampear</translation>
-<translation id="2465914000209955735">Gerencie os arquivos transferidos por download no Chrome</translation>
+<translation id="2465914000209955735">Gerencie os arquivos baixados no Chrome</translation>
 <translation id="2466004615675155314">Mostrar informações da Web</translation>
 <translation id="2467272921457885625">Especificações e estatísticas de hardware do dispositivo, como histórico de uso da CPU/RAM</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Rede<ph name="END_LINK" /></translation>
@@ -1794,6 +1794,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4731638775147756694">Este aplicativo foi bloqueado pelo seu administrador</translation>
 <translation id="4732860731866514038">Baixando o pacote de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quer acessar o local do seu dispositivo</translation>
+<translation id="473414950835101501">Usar as câmeras</translation>
 <translation id="4736825316280949806">Reiniciar o Chromium</translation>
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
@@ -1904,6 +1905,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4936675324097895694">Finanças</translation>
 <translation id="4940163644868678279">Navegação anônima no Chrome</translation>
 <translation id="494111439860963024">Botão "Limpar dados de navegação". Ative para limpar o histórico de navegação, cookies, cache e muito mais nas configurações do Chrome</translation>
+<translation id="4943620199112228840">Usar os microfones</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950898438188848926">Botão de alternância de guia. Pressione Enter para mudar para a guia aberta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ações</translation>
@@ -2498,7 +2500,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço de criação de impressão</translation>
 <translation id="6251906504834538140">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
-<translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos transferidos por download no Chrome</translation>
+<translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos baixados no Chrome</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="625463612687472648">Parar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
@@ -2997,7 +2999,7 @@ Mais detalhes:
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda você a salvar todas as suas páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais</translation>
 <translation id="7265608370113700582">O endereço está disponível somente neste dispositivo</translation>
-<translation id="7273111226200291353">Os arquivos transferidos por download são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
+<translation id="7273111226200291353">Os arquivos baixados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para mudar a senha da sua Conta do Google</translation>
 <translation id="7292031607255951991">Nome do destinatário</translation>
@@ -3402,7 +3404,6 @@ Mais detalhes:
 <translation id="8078141288243656252">Não é possível fazer anotações em documentos girados</translation>
 <translation id="8079031581361219619">Atualizar o site?</translation>
 <translation id="8079976827192572403">Site perigoso</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedãs</translation>
 <translation id="8086971161893892807">Rascunho</translation>
 <translation id="8088680233425245692">Falha ao exibir artigo.</translation>

@@ -677,6 +677,7 @@ Si no estableces esta política, se habilitará el selector de emojis para los u
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1534007181698071943">Permitir que los controladores del evento de descarga estén inhabilitados de forma predeterminada durante la baja</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
+<translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
 <translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
 <translation id="1551782388466447648">Habilitar el teclado virtual táctil en la pantalla de acceso</translation>
 <translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán activar la función Compartir con Nearby, lo que les permitirá enviar archivos a personas cercanas y recibirlos.
@@ -1918,6 +1919,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2467896267442150508">El intervalo de tiempo que se extiende como máximo una semana. Si la hora de inicio es más tarde que la hora de finalización, el intervalo continuará al día siguiente.</translation>
 <translation id="2476249479201711962">Habilitar el acceso al menú contextual del proveedor de búsqueda predeterminado</translation>
 <translation id="2478756867046106663">Permite que los sitios que brindan experiencias abusivas abran ventanas o pestañas nuevas</translation>
+<translation id="2479760962196319822">Esta política controla si los usuarios de <ph name="PRODUCT_OS_NAME" /> pueden almacenar datos de forma local o no.
+      Si estableces esta política como falsa, se bloqueará el almacenamiento local en <ph name="PRODUCT_OS_NAME" />. Los usuarios no podrán almacenar datos de forma local ni acceder a ningún directorio local.
+      Si estableces esta política como verdadera o no la estableces, se permitirá el almacenamiento local en <ph name="PRODUCT_OS_NAME" />. No habrá restricciones respecto de dónde los usuarios pueden almacenar los datos ni a qué directorios pueden acceder.</translation>
 <translation id="2480971699591919564">Habilita la función Llamar con un clic, que permite que los usuarios envíen números de teléfono desde computadoras de escritorio con Chrome hacia dispositivos Android donde el usuario accedió a su cuenta. Para obtener más información, consulta el artículo del Centro de ayuda: https://support.google.com/chrome/answer/9430554?hl=en.
 
       Si se habilita esta política, el usuario de Chrome podrá enviar números de teléfono a dispositivos Android.
@@ -2044,6 +2048,7 @@ Si no la estableces o la estableces como verdadera, se habilitará la función C
 
 Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios web relacionados.</translation>
 <translation id="2555244983262829274">Ocultar el botón Página principal en la barra de herramientas</translation>
+<translation id="2558154810835597313">Habilita el aprovisionamiento de certificados de cliente para un usuario o perfil administrado</translation>
 <translation id="2562213287271514629">Permitir que se use el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado como complemento de <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Especifica la URL del motor de búsqueda que se usa para proporcionar resultados al instante. La URL debe contener el string "<ph name="SEARCH_TERM_MARKER" />", el cual se reemplazará en el momento de la consulta con el texto que el usuario haya ingresado hasta entonces.
 
@@ -2557,6 +2562,14 @@ Si el valor se establece en <ph name="DEFAULT_ENUM_VALUE" />, se aplica el compo
 Si el valor se establece en <ph name="ENABLED_ENUM_VALUE" />, las entidades se detectan, se subrayan y se activan si presionas una vez o mantienes presionado.
 Si el valor se establece como <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectan y no se pueden realizar acciones.
 Si el valor se establece como <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectan las entidades y solo se puede realizar una acción si se mantiene presionado.</translation>
+<translation id="3008742113889107443">Establece el nivel de acceso de la ubicación geográfica del sistema <ph name="PRODUCT_OS_NAME" />.
+
+Esta es una capa de control adicional que se encuentra debajo de la capa de permisos para apps y sitios web. Por ejemplo, si estableces esta política como <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, ninguna app ni sitio web podrá determinar la ubicación, independientemente de sus respectivos permisos de ubicación. Sin embargo, si la estableces como <ph name="GLS_ALLOWED" />, las apps y los sitios web pueden configurar el permiso de ubicación de forma individual, lo que definirá de forma eficaz su capacidad para determinar la ubicación.
+
+Los usuarios no pueden anular la selección de administrador. Si no estableces la política, los usuarios disfrutarán de la experiencia del consumidor, es decir, podrán modificar libremente la configuración de ubicación del sistema.
+
+Nota: Esta política da de baja la política <ph name="ARC_GLS_POLICY_NAME" />.
+Además, si estableces esta política, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ya no afectará la preferencia de ubicación de <ph name="ANDROID_NAME" /> en ChromeOS.</translation>
 <translation id="3010907817113180883">Tasa de recopilación de la señal de monitoreo de funcionamiento de la actividad del dispositivo en milisegundos.</translation>
 <translation id="3017578958356048910">El visor de PDF puede agregar anotaciones en archivos PDF</translation>
 <translation id="3020623128585817424">Inhabilitar la verificación de navegador predeterminado en el inicio</translation>
@@ -3396,6 +3409,7 @@ Si no la estableces, no se informarán los datos de telemetría de sitios web.</
 
       Si la estableces, los usuarios no podrán cambiar esta acción. Si no la estableces, se desactivará el inicio mediante CA, y los usuarios no podrán activarlo.</translation>
 <translation id="3660562134618097814">Transferir cookies del IdP de SAML durante el acceso</translation>
+<translation id="3662660961914441274">Inhabilitar el almacenamiento local de archivos del usuario</translation>
 <translation id="3665437376055221832">Solo notificar al usuario cuando ningún certificado coincide con la selección automática</translation>
 <translation id="3671773704245936868">Inhabilitar el enfoque del teclado destacado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitudes sin comodín CORS</translation>
@@ -4149,6 +4163,7 @@ Si inhabilitas la política, se mostrará un mensaje de error en lugar de la sol
       Se ignorará esta política y se mostrará la notificación siempre si el dispositivo no está administrado o hay solo un usuario.
 
       Si hay múltiples cuentas de usuario en un dispositivo administrado, se mostrará la notificación solo cuando esté habilitada la política.</translation>
+<translation id="4293419489636673391">Habilitar los archivos locales de usuarios</translation>
 <translation id="4294886370621883282">Permitir que aparezca el teclado en pantalla cuando corresponda.</translation>
 <translation id="4297483555396496700">Los usuarios solo podrán cambiar el canal de versiones del dispositivo si estableces esta política como verdadera. Si la estableces como falsa o no la estableces, los usuarios no podrán cambiar el canal.
 
@@ -4287,6 +4302,7 @@ Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRO
 <translation id="4423597592074154136">Especificar manualmente la configuración del proxy</translation>
 <translation id="4424004842303301809">Inhabilitar la generación de informes para los eventos de prevención de filtración de datos</translation>
 <translation id="4426601693403743089">Inhabilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
+<translation id="4426986640594727372">Permitir el acceso a la ubicación geográfica del sistema</translation>
 <translation id="4427173305799125784">El visor de PDF no puede agregar anotaciones en archivos PDF</translation>
 <translation id="4432762137771104529">Habilitar el informe extendido de Navegación segura</translation>
 <translation id="4434531680131327140">Establece la configuración de la duración de los datos de navegación para <ph name="PRODUCT_NAME" />. Esta política les permite a los administradores configurar la duración (por tipo de datos) cuando el navegador borra los datos. Esto es útil para los clientes que trabajan con datos sensibles de clientes.
@@ -5020,6 +5036,7 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada</translation>
+<translation id="504689994545234073">Habilitar el almacenamiento local de archivos del usuario</translation>
 <translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
@@ -5429,6 +5446,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 <translation id="537786648513450280">Controla la forma en que se usan las apps para Android de fuentes no confiables</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> maneje los siguientes tipos de contenido.</translation>
+<translation id="5385337904220716757">Permitir solo el acceso a la ubicación geográfica del sistema a los servicios del sistema</translation>
 <translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite que los usuarios compartan texto entre computadoras de escritorios con Chrome y dispositivos Android cuando está habilitada la sincronización y el usuario accedió a su cuenta.
 
           Si se establece la política como verdadera, el usuario de Chrome podrá compartir texto entre dispositivos.
@@ -5483,6 +5501,7 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se enviará la información.</translation>
 <translation id="5420245232720940848">Inhabilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4, lo que limita las capacidades de los dispositivos</translation>
+<translation id="5420673997623782432">Bloquear el acceso a la ubicación geográfica del sistema para todos los clientes</translation>
 <translation id="5420774177427557782">Controla si las VM que usan esta configuración se pueden instalar y ejecutar (<ph name="INSTALL_ALLOWED" />), ejecutar, pero no instalar (<ph name="RUN_ALLOWED" />) o si no se pueden ejecutar (<ph name="BLOCKED" />). Ten en cuenta que, para instalar una VM, también se debe configurar la clave installer_image_x86_64. Si quitas una configuración, se la establece de forma implícita en <ph name="BLOCKED" />, lo que evita que las VMs se ejecuten sin una política.</translation>
 <translation id="5422643441807528365">Clave de licencia de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nombre de restricción de WebView de Android:</translation>
@@ -5564,6 +5583,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="5457924070961220141">Te permite configurar el procesador HTML predeterminado cuando se instala <ph name="PRODUCT_FRAME_NAME" />. La configuración predeterminada que se usa cuando esta política no se configura es permitir que el navegador del host realice la representación, pero puedes anular esta opción y hacer que <ph name="PRODUCT_FRAME_NAME" /> muestre páginas HTML de forma predeterminada.</translation>
 <translation id="545817252640069915">Habilita la intercepción de acceso</translation>
 <translation id="5460797984317417682">Habilita la alerta de pantalla completa</translation>
+<translation id="5462898272514237681">Controlar el acceso de <ph name="PRODUCT_OS_NAME" /> a los Servicios de ubicación de Google</translation>
 <translation id="5464816904705580310">Permite establecer parámetros de configuración para los usuarios administrados.</translation>
 <translation id="5466596281866046569">Envía información sobre apps</translation>
 <translation id="5467175549232776406">La página de prueba de políticas es accesible</translation>
@@ -7339,6 +7359,11 @@ las configuren.</translation>
 Si habilitas la política o no la estableces, los usuarios podrán guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> desde el menú contextual. Si la inhabilitas, los usuarios no podrán ver la opción en el menú contextual.
 Esta política no impide que los usuarios guarden imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de otras formas además del menú contextual.</translation>
 <translation id="6823711520976094072">Si la estableces en menos de 1 MB o no la estableces, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado (256 MB) para almacenar en caché las apps y extensiones cuando las instalen varios usuarios del mismo dispositivo. Esta acción evitará que cada usuario las tenga que volver a descargar.</translation>
+<translation id="6827666400941600157">Esta política establece una serie de intervalos semanales para programar la suspensión automática. Cuando se inicia un intervalo, el dispositivo <ph name="PRODUCT_OS_NAME" /> entrará en modo de suspensión y se activará cuando dicho intervalo finalice.
+
+No se admiten programas con intervalos que se superponen. Esta política no tendrá ningún efecto si contiene dos intervalos superpuestos.
+
+Los dispositivos <ph name="PRODUCT_OS_NAME" /> usarán la zona horaria del sistema para aplicar estos intervalos.</translation>
 <translation id="6828729771894228555">Te permite configurar una lista de patrones de URL que especifican los orígenes de nivel superior (la URL en la barra de direcciones de la pestaña) que bloquean la partición de almacenamiento de terceros (partición de almacenamiento de iframe de origen cruzado).
           Si no estableces esta política o un origen de nivel superior no coincide, se usará el valor de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
           Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
@@ -7598,6 +7623,9 @@ Si no la estableces, se podrán mostrar imágenes, pero los usuarios podrán cam
 <translation id="7008308728445338159">Revisiones habilitadas de la intercepción de DNS</translation>
 <translation id="7009043124653876961">Inhabilitar sugerencias de emojis cuando los usuarios escriben</translation>
 <translation id="7010006999849135962">Habilitar la autenticación sin PIN para el host de acceso remoto</translation>
+<translation id="7013333561002112085">Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_ENABLED" /> (valor 1), el navegador solicitará un certificado de cliente del servidor de administración de dispositivos para un usuario o perfil administrado. Este certificado estará disponible, p. ej., para conexiones mTLS.
+
+Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (valor 0), el navegador no podrá solicitar el certificado de cliente. Si ya se aprovisionó el certificado de cliente administrado de un perfil debido a que esta política ya estaba habilitada, no se borrará, pero no estará disponible para las conexiones mTLS y no se renovará cuando venza.</translation>
 <translation id="7013484314513229844">Habilitar el inicio con CA</translation>
 <translation id="7014427417852575165">Brindar protección adicional a los usuarios inscritos en el Programa de Protección Avanzada</translation>
 <translation id="7016587686120059767">Inhabilitar el modo de invitado</translation>
@@ -8031,6 +8059,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
       Para fijar apps al Selector, consulta PinnedLauncherApps.</translation>
 <translation id="7339315111520512972">Forzar el código de red para que se ejecute en el proceso de navegación</translation>
 <translation id="7340034977315324840">Notificar tiempo de actividad del dispositivo</translation>
+<translation id="734095828044419464">Inhabilitar el aprovisionamiento de certificados de cliente</translation>
 <translation id="7343004974628511824">Realizar comprobaciones de intercepción de DNS</translation>
 <translation id="7343497214039883642">Archivo de configuración de las impresoras empresariales para los dispositivos</translation>
 <translation id="7357148531287978404">Inhabilitar la entrada de audio</translation>

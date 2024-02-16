@@ -2652,6 +2652,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2967926928600500959">Les URL correspondant à ces règles s'ouvriront obligatoirement dans un navigateur particulier.</translation>
 <translation id="2969411787010981955">Les données ont été exportées vers l'emplacement sélectionné</translation>
 <translation id="2970766364519518369">Les contacts sélectionnés peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Vous serez invité à approuver ces requêtes. Vous n'aurez pas besoin d'approuver le partage entre les appareils connectés au compte <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Micrologiciel</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Désactiver le son sur le site</translation>
 <translation id="2975761176769946178">Veuillez entrer une URL</translation>
@@ -3109,6 +3110,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3348038390189153836">Appareil amovible détecté</translation>
 <translation id="3348131053948466246">Émojis suggérés. Appuyez sur la flèche vers le haut ou vers le bas pour naviguer, et appuyez sur la touche Entrée pour en insérer un.</translation>
 <translation id="3349933790966648062">Empreinte mémoire</translation>
+<translation id="3351472127384196879">Ajoutez ou localisez des boutons sur votre stylet</translation>
 <translation id="3353786022389205125">Activez « Afficher l'écran de verrouillage à l'activation » et réessayez</translation>
 <translation id="3354768182971982851">Les anciennes versions des applications Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Vous pouvez vérifier si une nouvelle version est proposée.</translation>
 <translation id="3354972872297836698">Impossible d'effectuer l'association à l'appareil <ph name="DEVICE_NAME" />; sélectionnez l'appareil pour réessayer</translation>
@@ -7078,6 +7080,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6474884162850599008">Se déconnecter du compte Google Disque</translation>
 <translation id="6475294023568239942">Libérez de l'espace disque ou redimensionnez le disque Linux dans le menu Paramètres</translation>
 <translation id="6476482583633999078">Débit de parole</translation>
+<translation id="6476671549211161535">Appuyez sur un bouton autre que le bouton gauche ou droit de la souris sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas prise en charge sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conserver le fichier dangereux?</translation>
 <translation id="6479881432656947268">Visiter la boutique en ligne Chrome Web Store</translation>
@@ -8635,6 +8638,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez Mode de lecture</translation>
 <translation id="7685049629764448582">Mémoire pour JavaScript</translation>
 <translation id="7685087414635069102">NIP requis</translation>
+<translation id="7685351732518564314">Appuyez sur un bouton de votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="7686581688229391955">Sélectionner pour autoriser les extensions sur ce site</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10073,6 +10077,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # secondes.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
 <translation id="8776294611668764629">Votre organisation a bloqué ce fichier parce qu'il est trop volumineux pour faire l'objet d'une vérification de sécurité. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
+<translation id="8777509665768981163">Ajoutez ou localisez des boutons sur votre tablette</translation>
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Les sites ont uniquement recours aux témoins pour connaître votre activité de navigation sur leurs propres pages</translation>

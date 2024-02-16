@@ -1445,6 +1445,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="206308717637808771">Dileu data pan fyddwch yn cau pob ffenestr. Mae data'n cael eu trin yr un peth â'r wefan rydych yn edrych arni</translation>
 <translation id="2065405795449409761">Mae Chrome yn cael ei reoli gan feddalwedd prawf awtomataidd.</translation>
 <translation id="2067591192939433190">O "<ph name="VENDOR_NAME" />"</translation>
+<translation id="206960706005837784">Mae <ph name="APP_NAME" /> wedi gorffen argraffu i <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Dim ffeil cofnodion leol.</translation>
 <translation id="2071692954027939183">Cafodd hysbysiadau eu rhwystro'n awtomatig oherwydd nid ydych fel arfer yn eu caniatáu</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Cliciwch i osod yr estyniad}zero{Cliciwch i osod yr estyniadau hyn}two{Cliciwch i osod yr estyniadau hyn}few{Cliciwch i osod yr estyniadau hyn}many{Cliciwch i osod yr estyniadau hyn}other{Cliciwch i osod yr estyniadau hyn}}</translation>
@@ -1823,6 +1824,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="233471714539944337">Cynnwys sensitif</translation>
 <translation id="2335111415680198280">{0,plural, =1{Cau # ffenestr}zero{Cau # ffenestr}two{Cau # ffenestr}few{Cau # ffenestr}many{Cau # ffenestr}other{Cau # ffenestr}}</translation>
 <translation id="2336228925368920074">Creu Nod Tudalen ar gyfer Pob Tab...</translation>
+<translation id="2336258397628212480">Mae <ph name="APP_NAME" /> yn argraffu 1 dudalen i <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Clirio'n gyfan gwbl</translation>
 <translation id="2340239562261172947">Ni ellir lawrlwytho <ph name="FILE_NAME" /> yn ddiogel</translation>
 <translation id="2342180549977909852">Gall eich plentyn ddefnyddio rhif (PIN) yn hytrach na chyfrinair i ddatgloi'r ddyfais hon. Ewch i'r Gosodiadau i osod PIN yn nes ymlaen.</translation>
@@ -4013,6 +4015,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4021909830315618592">Copïo manylion y datblygiad</translation>
 <translation id="4021941025609472374">Cau tabiau i'r chwith</translation>
 <translation id="4022426551683927403">&amp;Ychwanegu at y Geiriadur</translation>
+<translation id="4023048917751563912">Mae <ph name="APP_NAME" /> yn argraffu <ph name="PAGE_NUMBER" /> o dudalennau i <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Rheolir dy borwr gan dy riant</translation>
 <translation id="4025039777635956441">Distewi'r Wefan a Ddewisir</translation>
 <translation id="402707738228916911">Derbyniwyd cyfarwyddyd <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
@@ -4615,6 +4618,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4507128560633489176">Cliriwyd data.</translation>
 <translation id="4507373251891673233">Rydych wedi rhwystro pob estyniad rhag <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Cliciwch 'Ychwanegu llwybr byr'</translation>
+<translation id="4508332912150723117">enw defnyddiwr <ph name="USER_EMAIL" />. Gweld y manylion</translation>
 <translation id="450867954911715010">Gosodiadau hygyrchedd</translation>
 <translation id="4508765956121923607">Gweld y Ff&amp;ynhonnell</translation>
 <translation id="4509277363725254222">Pan fyddwch yn rhannu copi o'ch <ph name="BEGIN_BOLD_USERNAME" />enw defnyddiwr<ph name="END_BOLD_USERNAME" /> a'ch <ph name="BEGIN_BOLD_PASSWORD" />cyfrinair<ph name="END_BOLD_PASSWORD" />, gall aelod o'ch teulu eu llenwi gan ddefnyddio'r Rheolwr Cyfrineiriau Google</translation>
@@ -6543,6 +6547,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6050189528197190982">Graddlwyd</translation>
 <translation id="6051354611314852653">Wps!  Gwnaeth y system fethu ag awdurdodi mynediad API ar gyfer y ddyfais hon.</translation>
 <translation id="6051811090255711417">Gwnaeth eich sefydliad rwystro'r ffeil hon oherwydd nad oedd yn bodloni polisi diogelwch</translation>
+<translation id="6052261338768299955">Mae <ph name="APP_NAME" /> yn ceisio argraffu i <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Teipiwch y cod mynediad i ddechrau castio</translation>
 <translation id="6052976518993719690">Awdurdod Ardystio SSL</translation>
@@ -7483,6 +7488,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="67862343314499040">Fioled</translation>
 <translation id="6786747875388722282">Estyniadau</translation>
 <translation id="6787097042755590313">Tab Arall</translation>
+<translation id="6787531944787756058">mae enw defnyddiwr <ph name="USER_EMAIL" /> yn cael ei gadw i'r ddyfais hon yn unig. Gweld y manylion</translation>
 <translation id="6787839852456839824">Llwybrau byr bysellfwrdd</translation>
 <translation id="6788210894632713004">Wedi dadbacio'r estyniad</translation>
 <translation id="6789592661892473991">Hollti'n Llorweddol</translation>

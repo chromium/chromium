@@ -329,7 +329,7 @@
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2382875860893882175">投放已暫停。您可以隨時繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取頁面上所有內容</translation>
-<translation id="2392659840443812875">沒有可用的無線基地台。請確認裝置在附近，而且藍牙已開啟。</translation>
+<translation id="2392659840443812875">沒有可用的熱點。請確認裝置在附近且已開啟藍牙。</translation>
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
 <translation id="240006516586367791">媒體控制項</translation>
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
@@ -1085,7 +1085,7 @@
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
 <translation id="5314489738835854379">向後循環切換視窗</translation>
-<translation id="5315931444962548795">開啟藍牙即可偵測附近可用的無線基地台</translation>
+<translation id="5315931444962548795">開啟藍牙即可偵測附近可用的熱點</translation>
 <translation id="5316716239522500219">建立顯示器鏡像</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>

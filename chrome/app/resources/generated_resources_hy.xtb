@@ -1432,6 +1432,7 @@
 <translation id="206308717637808771">Բոլոր պատուհանները փակելիս ջնջել տվյալները։ Տվյալների նկատմամբ կիրառվում են նույն պարամետրերը, ինչ ընտրված է ձեր դիտած կայքի համար։</translation>
 <translation id="2065405795449409761">Chrome դիտարկիչը կառավարվում է ավտոմատացված փորձնական ծրագրակազմի կողմից:</translation>
 <translation id="2067591192939433190">Աղբյուրը՝ «<ph name="VENDOR_NAME" />»</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> հավելվածն ավարտեց տպումը <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="2071393345806050157">Տեղային մատյան-ֆայլ չկա:</translation>
 <translation id="2071692954027939183">Ծանուցումներն ավտոմատ արգելափակվել են, քանի որ դուք դրանք սովորաբար մերժում եք։</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Սեղմեք՝ ընդլայնումը տեղադրելու համար}one{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}other{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}}</translation>
@@ -1807,6 +1808,7 @@
 <translation id="233471714539944337">Խիստ անձնական տվյալներ</translation>
 <translation id="2335111415680198280">{0,plural, =1{Փակել # պատուհանը}one{Փակել # պատուհանները}other{Փակել # պատուհանները}}</translation>
 <translation id="2336228925368920074">Էջանշել բոլոր ներդիրները…</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> հավելվածը 1 էջ է տպում <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ֆայլը հնարավոր չէ անվտանգ ներբեռնել</translation>
 <translation id="2342180549977909852">Սարքն ապակողպելու համար ձեր երեխան կարող է գաղտնաբառի փոխարեն օգտագործել թիվ (PIN կոդ): PIN կոդը սահմանելու համար անցեք Կարգավորումներ։</translation>
@@ -2647,6 +2649,7 @@
 <translation id="2967926928600500959">Այս կանոններին համապատասխանող URL-ները հարկադրաբար կբացվեն հատուկ դիտարկիչում։</translation>
 <translation id="2969411787010981955">Տվյալներն արտահանվել են ընտրված վայր</translation>
 <translation id="2970766364519518369">Ընտրված կոնտակտները կարող են կիսվել ձեզ հետ տվյալներով, երբ մոտակայքում են։ Ձեզնից կպահանջվի հաստատել տվյալների փոխանցման հարցումները։ Ձեզնից չի պահանջվի հաստատել տվյալների փոխանցումը սարքերից, որտեղ մտել եք <ph name="USER_EMAIL" /> հաշիվ։</translation>
+<translation id="2972557485845626008">Ներկառուցված ծրագրաշար</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
 <translation id="2973324205039581528">Անջատել կայքի ձայնը</translation>
 <translation id="2975761176769946178">Պահանջվում է նշել URL</translation>
@@ -3993,6 +3996,7 @@
 <translation id="4021909830315618592">Պատճենել կառուցման տվյալները</translation>
 <translation id="4021941025609472374">Փակել ձախ կողմի ներդիրները</translation>
 <translation id="4022426551683927403">&amp;Ավելացնել բառացանկին</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> հավելվածը <ph name="PAGE_NUMBER" /> էջ է տպում <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
 <translation id="4025039777635956441">Անջատել նշված կայքի ձայնը</translation>
 <translation id="402707738228916911">Ստացվել է ուղեցույց՝ <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
@@ -4594,6 +4598,7 @@
 <translation id="4507128560633489176">Տվյալները ջնջվեցին։</translation>
 <translation id="4507373251891673233">Դուք արգելափակել եք <ph name="HOST" /> կայքի բոլոր ընդլայնումները</translation>
 <translation id="4507401683427517298">Սեղմեք «Ավելացնել դյուրանցում»</translation>
+<translation id="4508332912150723117">օգտանուն (<ph name="USER_EMAIL" />): Դիտել մանրամասները</translation>
 <translation id="450867954911715010">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="4508765956121923607">Դիտել աղ&amp;բյուրը</translation>
 <translation id="4509277363725254222">Եթե դուք տրամադրեք ձեր <ph name="BEGIN_BOLD_USERNAME" />օգտանվան<ph name="END_BOLD_USERNAME" /> և <ph name="BEGIN_BOLD_PASSWORD" />գաղտնաբառի<ph name="END_BOLD_PASSWORD" /> պատճենը, ձեր ընտանիքի անդամները կկարողանան դրանք օգտագործել Google գաղտնաբառերի կառավարչի միջոցով։</translation>
@@ -6520,6 +6525,7 @@
 <translation id="6050189528197190982">Գորշասանդղակ</translation>
 <translation id="6051354611314852653">Չհաջողվեց API-ին մուտք շնորհել այս սարքում:</translation>
 <translation id="6051811090255711417">Ձեր կազմակերպությունն արգելափակել է այս ֆայլը, քանի որ այն չի համապատասխանում անվտանգության կանոններին</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> հավելվածը փորձում է տպել <ph name="PRINTER_NAME" /> տպիչում</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Հեռարձակումը սկսելու համար մուտքագրեք մուտքի կոդը</translation>
 <translation id="6052976518993719690">SSL հավաստագրման կենտրոն</translation>
@@ -7454,6 +7460,7 @@
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
 <translation id="6787097042755590313">Այլ ներդիր</translation>
+<translation id="6787531944787756058">օգտանունը (<ph name="USER_EMAIL" />) պահվում է միայն այս սարքում։ Դիտել մանրամասները</translation>
 <translation id="6787839852456839824">Ստեղնային դյուրանցումներ</translation>
 <translation id="6788210894632713004">Չփաթեթավորված ընդլայնում</translation>
 <translation id="6789592661892473991">Հորիզոնական տրոհում</translation>

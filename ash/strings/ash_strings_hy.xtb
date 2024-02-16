@@ -329,6 +329,7 @@
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2382875860893882175">Հեռարձակումն այս պահին դադարեցված է։ Ցանկացած պահի կարող եք վերսկսել կամ ավարտել հեռարձակումը։</translation>
 <translation id="2386292613071805067">Ընտրել էջի ամբողջ բովանդակությունը</translation>
+<translation id="2392659840443812875">Հասանելի թեժ կետ չկա։ Համոզվեք, որ ձեր սարքը մոտակայքում է, և որ Bluetooth-ը միացված է։</translation>
 <translation id="2397416548179033562">Ցույց տալ Chrome-ի ընտրացանկը</translation>
 <translation id="240006516586367791">Մեդիա կարգավորումներ</translation>
 <translation id="2402411679569069051">Ապակողպեք ձեր Chromebook-ը մատնահետքի կամ հեռախոսն ապակողպելու միջոցով</translation>
@@ -1085,6 +1086,7 @@
 <translation id="5313326810920013265">Bluetooth-ի կարգավորումներ</translation>
 <translation id="5314219114274263156">Էկրանը տեսագրվել է</translation>
 <translation id="5314489738835854379">Անցնել նախորդ պատուհանին</translation>
+<translation id="5315931444962548795">Միացրեք Bluetooth-ը՝ մոտակա հասանելի թեժ կետեր գտնելու համար</translation>
 <translation id="5316716239522500219">Հայելապատճենել մոնիտորների պատկերները</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319712128756744240">Նոր սարքի զուգակցում</translation>

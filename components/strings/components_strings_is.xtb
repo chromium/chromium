@@ -1794,6 +1794,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4731638775147756694">Kerfisstjóri hefur lokað á þetta forrit</translation>
 <translation id="4732860731866514038">Sækir tungumálapakka fyrir „<ph name="LANGUAGE" />“... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vill nota staðsetningu tækisins</translation>
+<translation id="473414950835101501">Notaðu myndavélarnar</translation>
 <translation id="4736825316280949806">Endurræsa Chromium</translation>
 <translation id="4736934858538408121">Sýndarkort</translation>
 <translation id="473775607612524610">Uppfæra</translation>
@@ -1904,6 +1905,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4936675324097895694">Fjármál</translation>
 <translation id="4940163644868678279">Huliðsstilling í Chrome</translation>
 <translation id="494111439860963024">Hnappurinn „Hreinsa vafragögn“, virkjaðu til að hreinsa vafraferil, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
+<translation id="4943620199112228840">Notaðu hljóðnemana</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
 <translation id="4950898438188848926">Hnappur til að skipta um flipa; ýttu á færslulykilinn til að skipta yfir í opinn flipa, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Aðgerðir</translation>
@@ -3402,7 +3404,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8078141288243656252">Ekki er hægt að skrifa skýringu þegar skjalinu hefur verið snúið</translation>
 <translation id="8079031581361219619">Viltu endurhlaða vefsvæðið?</translation>
 <translation id="8079976827192572403">Hættulegt vefsvæði</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Fólksbifreiðar</translation>
 <translation id="8086971161893892807">Drög</translation>
 <translation id="8088680233425245692">Mistókst að skoða grein.</translation>

@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartilhar guia}one{Compartilhar guia}other{Compartilhar guias}}</translation>
 <translation id="7129458170538955174">As informações sobre a loja estão abertas na metade da altura</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="731648547091221002">Cor selecionada: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Veja a política de devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual item nas guias abertas tem o menor preço</translation>
 <translation id="753732157349120914">Seletor de guias</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_ONE" /> avaliação}one{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliação}other{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliações}}</translation>
 <translation id="7885132941432959125">Mover guia para a direita</translation>
+<translation id="7939917283308035850">Cor não selecionada: <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7966321538264951561">Dispensar as sugestões.</translation>
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>

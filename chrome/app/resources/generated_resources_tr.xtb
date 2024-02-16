@@ -2647,6 +2647,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2967926928600500959">Bu kurallarla eşleşen URL'ler belirli bir tarayıcıda açılmaya zorlanacak.</translation>
 <translation id="2969411787010981955">Veriler, seçilen konuma aktarıldı</translation>
 <translation id="2970766364519518369">Seçili kişiler yakınınızda olduklarında sizinle içerik paylaşabilirler. Bu istekleri onaylamanız gerekir. <ph name="USER_EMAIL" /> oturumunun açık olduğu cihazlar arasında yapılan paylaşımı onaylamanız gerekmez.</translation>
+<translation id="2972557485845626008">Donanım yazılımı</translation>
 <translation id="2972581237482394796">&amp;Yinele</translation>
 <translation id="2973324205039581528">Sitenin Sesini Kapat</translation>
 <translation id="2975761176769946178">URL girilmesi zorunludur</translation>
@@ -3104,6 +3105,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3348038390189153836">Kaldırılabilir cihaz algılandı</translation>
 <translation id="3348131053948466246">Emoji önerildi. Aralarında gezinmek için yukarı veya aşağı, eklemek için Enter'a basın.</translation>
 <translation id="3349933790966648062">Kullanılan Bellek Miktarı</translation>
+<translation id="3351472127384196879">Kaleminizdeki düğmeleri ekleyin veya bulun</translation>
 <translation id="3353786022389205125">"Uykudan uyanırken kilit ekranını göster" ayarını etkinleştirip tekrar deneyin</translation>
 <translation id="3354768182971982851">Chrome Uygulamalarının eski sürümleri Aralık 2022'den sonra Mac cihazlarda açılmayacaktır. Yeni bir sürümün olup olmadığını kontrol edebilirsiniz.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> cihazıyla eşlenemedi; Tekrar denemek için cihaz seçin</translation>
@@ -7074,6 +7076,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6474884162850599008">Google Drive hesabının bağlantısını kes</translation>
 <translation id="6475294023568239942">Disk alanını boşaltın veya Ayarlar'da Linux diskini yeniden boyutlandırın</translation>
 <translation id="6476482583633999078">Konuşma hızı</translation>
+<translation id="6476671549211161535"><ph name="DEVICE_NAME" /> cihazınızda sol veya sağ fare düğmesi olmayan bir düğmeye basın.</translation>
 <translation id="6477822444490674459">İş profiline sahip telefonlarda bildirim senkronizasyonu desteklenmiyor. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Tehlikeli dosya tutulsun mu?</translation>
 <translation id="6479881432656947268">Chrome Web Mağazası'nı ziyaret edin</translation>
@@ -8629,6 +8632,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7684913007876670600">Bu sayfanın basitleştirilmiş bir görünümünü göstermek için yan paneli açıp Okuma modu'nu seçin</translation>
 <translation id="7685049629764448582">JavaScript belleği</translation>
 <translation id="7685087414635069102">PIN gerekli</translation>
+<translation id="7685351732518564314"><ph name="DEVICE_NAME" /> cihazınızda bir düğmeye basın.</translation>
 <translation id="7686086654630106285">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
 <translation id="7686581688229391955">Bu sitede uzantılara izin vermek için seçin</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10068,6 +10072,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.}other{<ph name="DEVICE_TYPE" /> cihazınız # saniye sonra otomatik olarak kilitlenecek.
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.}}</translation>
 <translation id="8776294611668764629">Güvenlik kontrolü için fazla büyük olduğundan bu dosya kuruluşunuz tarafından engellendi. 50 MB'a kadar olan dosyaları açabilirsiniz.</translation>
+<translation id="8777509665768981163">Tabletinizdeki düğmeleri ekleyin veya bulun</translation>
 <translation id="8777628254805677039">kök şifre</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Siteler, çerezleri yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>

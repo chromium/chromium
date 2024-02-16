@@ -1793,6 +1793,7 @@
 <translation id="4731638775147756694">ഈ ആപ്പ് നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ഭാഷാ പായ്ക്ക് ഡൗൺലോഡ് ചെയ്യുന്നു..<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">നിങ്ങളുടെ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
+<translation id="473414950835101501">നിങ്ങളുടെ ക്യാമറകൾ ഉപയോഗിക്കുക</translation>
 <translation id="4736825316280949806">Chromium റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -1903,6 +1904,7 @@
 <translation id="4936675324097895694">ധനകാര്യം</translation>
 <translation id="4940163644868678279">Chrome-ലെ അദൃശ്യ മോഡ്</translation>
 <translation id="494111439860963024">'ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്ക്കാൻ സജീവമാക്കുക</translation>
+<translation id="4943620199112228840">നിങ്ങളുടെ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4950898438188848926">ടാബ് മാറാനുള്ള ബട്ടൺ, തുറന്നിരിക്കുന്ന ടാബായ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> എന്നതിലേക്ക് മാറാൻ എൻ്റർ അമർത്തുക</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
@@ -3399,7 +3401,6 @@
 <translation id="8078141288243656252">തിരിക്കുമ്പോൾ അനോട്ടേറ്റ് ചെയ്യാനാവില്ല</translation>
 <translation id="8079031581361219619">സൈറ്റ് റീലോഡ് ചെയ്യണോ?</translation>
 <translation id="8079976827192572403">അപകടകരമായ സൈറ്റ്</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">സെഡാൻ കാറുകൾ</translation>
 <translation id="8086971161893892807">ഡ്രാഫ്റ്റ്</translation>
 <translation id="8088680233425245692">ലേഖനം കാണുന്നത് പരാജയപ്പെട്ടു.</translation>

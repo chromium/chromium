@@ -595,6 +595,7 @@
 <translation id="5088172560898466307">Enw gwesteiwr y gweinydd</translation>
 <translation id="5089810972385038852">Talaith</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5107243100836678918">Gallai llwybr byr heb fysell <ph name="META_KEY" /> wrthdaro â llwybr byr rhai apiau. Pwyswch y llwybr byr hwn eto i barhau i'w ddefnyddio, neu pwyswch lwybr byr newydd gan ddefnyddio'r fysell <ph name="KEY" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Tebyg:</translation>
 <translation id="5137451382116112100">Llawn</translation>
 <translation id="5142961317498132443">Dilysu</translation>

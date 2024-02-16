@@ -1443,6 +1443,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="206308717637808771">Slet data, når du lukker alle vinduer. Data behandles på samme måde som det website, du besøger</translation>
 <translation id="2065405795449409761">Chrome kontrolleres af automatiseret testsoftware.</translation>
 <translation id="2067591192939433190">Fra "<ph name="VENDOR_NAME" />"</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> er blevet udskrevet til <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Ingen lokal logfil.</translation>
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klik for at installere udvidelsen}one{Klik for at installere udvidelsen}other{Klik for at installere disse udvidelser}}</translation>
@@ -1821,6 +1822,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="233471714539944337">Følsomt indhold</translation>
 <translation id="2335111415680198280">{0,plural, =1{Luk # vindue}one{Luk # vindue}other{Luk # vinduer}}</translation>
 <translation id="2336228925368920074">Tilføj alle faner som bogmærker...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> udskriver 1 side til <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kan ikke downloades sikkert</translation>
 <translation id="2342180549977909852">Dit barn kan bruge tal (pinkode) i stedet for en adgangskode til at låse denne enhed op. Hvis du vil angive en pinkode senere, skal du gå til Indstillinger.</translation>
@@ -2663,6 +2665,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2967926928600500959">De webadresser, der matcher disse regler, tvinges til at åbne i en bestemt browser.</translation>
 <translation id="2969411787010981955">Dataene er blevet eksporteret til den valgte lokation</translation>
 <translation id="2970766364519518369">Udvalgte kontakter kan dele indhold med dig, når de er i nærheden. Du bliver bedt om at godkende disse anmodninger. Du behøver ikke at godkende deling af indhold mellem enheder, der er logget ind med <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Firmware</translation>
 <translation id="2972581237482394796">&amp;Annuller fortryd</translation>
 <translation id="2973324205039581528">Slå lyden fra på dette website</translation>
 <translation id="2975761176769946178">En webadresse er påkrævet</translation>
@@ -3120,6 +3123,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3348038390189153836">Der er registreret en flytbar enhed</translation>
 <translation id="3348131053948466246">Forslag til emojis. Tryk op eller ned for at navigere, og skriv for at indsætte.</translation>
 <translation id="3349933790966648062">Hukommelsesforbrug</translation>
+<translation id="3351472127384196879">Tilføj eller find knapper på din pen</translation>
 <translation id="3353786022389205125">Aktivér "Vis låseskærmen, når enheden vågner fra dvale", og prøv igen</translation>
 <translation id="3354768182971982851">Gamle versioner af Chrome-apps kan ikke åbnes på Mac-enheder efter december 2022. Du kan tjekke, om en ny version er tilgængelig.</translation>
 <translation id="3354972872297836698">Parringen med enheden <ph name="DEVICE_NAME" /> mislykkedes. Vælg en enhed for at prøve igen</translation>
@@ -4010,6 +4014,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4021909830315618592">Kopiér buildoplysninger</translation>
 <translation id="4021941025609472374">Luk fanerne til venstre</translation>
 <translation id="4022426551683927403">&amp;Føj til ordbog</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> udskriver <ph name="PAGE_NUMBER" /> sider til <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Din browser administreres af din forælder</translation>
 <translation id="4025039777635956441">Slå lyden fra på det valgte website</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" />-instruktionen er modtaget</translation>
@@ -4612,6 +4617,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4507128560633489176">Dataene er ryddet.</translation>
 <translation id="4507373251891673233">Du har blokeret alle udvidelser fra <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Klik på "Tilføj genvej"</translation>
+<translation id="4508332912150723117">brugernavn <ph name="USER_EMAIL" />. Se oplysninger</translation>
 <translation id="450867954911715010">Indstillinger for hjælpefunktioner</translation>
 <translation id="4508765956121923607">Vis k&amp;ilde</translation>
 <translation id="4509277363725254222">Når du deler en kopi af dit <ph name="BEGIN_BOLD_USERNAME" />brugernavn<ph name="END_BOLD_USERNAME" /> og din <ph name="BEGIN_BOLD_PASSWORD" />adgangskode<ph name="END_BOLD_PASSWORD" />, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangskodeadministrator</translation>
@@ -6540,6 +6546,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6050189528197190982">Gråtone</translation>
 <translation id="6051354611314852653">Ups! Systemet har ikke godkendt API-adgang for denne enhed.</translation>
 <translation id="6051811090255711417">Din organisation har blokeret denne fil, fordi den ikke opfylder en sikkerhedspolitik</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> forsøger at udskrive til <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Angiv adgangskoden for at caste</translation>
 <translation id="6052976518993719690">SSL-certificeringsautoritet</translation>
@@ -7087,6 +7094,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6474884162850599008">Fjern tilknytningen af din Google Drev-konto</translation>
 <translation id="6475294023568239942">Du skal frigøre diskplads eller vælge en anden størrelse på Linux-disken i Indstillinger</translation>
 <translation id="6476482583633999078">Talehastighed</translation>
+<translation id="6476671549211161535">Tryk på en knap, der ikke er venstre eller højre museknap på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering af notifikationer understøttes ikke for telefoner med en arbejdsprofil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vil du beholde den farlige fil?</translation>
 <translation id="6479881432656947268">Gå til Chrome Webshop</translation>
@@ -7473,6 +7481,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
 <translation id="6787097042755590313">Anden fane</translation>
+<translation id="6787531944787756058">brugernavnet <ph name="USER_EMAIL" /> gemmes kun på denne enhed. Se oplysninger</translation>
 <translation id="6787839852456839824">Tastaturgenveje</translation>
 <translation id="6788210894632713004">Upakket udvidelse</translation>
 <translation id="6789592661892473991">Opdel vandret</translation>
@@ -8644,6 +8653,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7684913007876670600">Du kan se en enkel visning af denne side ved at åbne sidepanelet og vælge Læsetilstand</translation>
 <translation id="7685049629764448582">JavaScript-hukommelse</translation>
 <translation id="7685087414635069102">Der skal angives en pinkode</translation>
+<translation id="7685351732518564314">Tryk på en knap på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="7686581688229391955">Vælg for at tillade udvidelser på dette website</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10084,6 +10094,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.}other{Din <ph name="DEVICE_TYPE" /> låses automatisk om # sekunder.
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.}}</translation>
 <translation id="8776294611668764629">Din organisation har blokeret denne fil, fordi den er for stor til at gå igennem et sikkerhedstjek. Du kan åbne filer på op til 50 MB.</translation>
+<translation id="8777509665768981163">Tilføj eller find knapper på din tablet</translation>
 <translation id="8777628254805677039">adgangskoderod</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Websites kan kun bruge cookies til at se din browseraktivitet på deres eget website</translation>

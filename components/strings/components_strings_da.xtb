@@ -1794,6 +1794,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4731638775147756694">Denne app er blokeret af din administrator</translation>
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
+<translation id="473414950835101501">Brug dine kameraer</translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
@@ -1904,6 +1905,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4936675324097895694">Økonomi</translation>
 <translation id="4940163644868678279">Inkognitotilstand i Chrome</translation>
 <translation id="494111439860963024">Knappen Ryd browserdata, aktivér for at rydde din browserhistorik, cookies, cachen m.m. i Chrome-indstillingerne</translation>
+<translation id="4943620199112228840">Brug dine mikrofoner</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4950898438188848926">Knap til faneskift. Tryk på Enter for at skifte til den åbne fane, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Handlinger</translation>
@@ -3402,7 +3404,6 @@ Yderligere oplysninger:
 <translation id="8078141288243656252">Der kan ikke annoteres ved rotering</translation>
 <translation id="8079031581361219619">Vil du genindlæse websitet?</translation>
 <translation id="8079976827192572403">Farligt website</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedaner</translation>
 <translation id="8086971161893892807">Kladde</translation>
 <translation id="8088680233425245692">Artiklen kunne ikke vises.</translation>

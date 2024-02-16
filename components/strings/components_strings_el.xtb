@@ -1795,6 +1795,7 @@
 <translation id="4731638775147756694">Η εφαρμογή έχει αποκλειστεί από τον διαχειριστή σας</translation>
 <translation id="4732860731866514038">Λήψη πακέτου γλώσσας για <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Ο ιστότοπος <ph name="URL" /> ζητά να χρησιμοποιήσει την τοποθεσία της συσκευής σας</translation>
+<translation id="473414950835101501">Χρήση των καμερών σας</translation>
 <translation id="4736825316280949806">Επανεκκινήστε το Chromium</translation>
 <translation id="4736934858538408121">Εικονική κάρτα</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
@@ -1905,6 +1906,7 @@
 <translation id="4936675324097895694">Οικονομικά</translation>
 <translation id="4940163644868678279">Ανώνυμη περιήγηση στο Chrome</translation>
 <translation id="494111439860963024">Κουμπί Διαγραφή δεδομένων περιήγησης, ενεργοποιήστε το για να διαγράψετε το ιστορικό περιήγησης, τα cookie, την κρυφή μνήμη και πολλά άλλα από τις ρυθμίσεις του Chrome</translation>
+<translation id="4943620199112228840">Χρήση των μικροφώνων σας</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
 <translation id="4950898438188848926">Κουμπί εναλλαγής καρτέλας, πατήστε Enter για μετάβαση στην ανοιχτή καρτέλα, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Ενέργειες</translation>
@@ -3403,7 +3405,6 @@
 <translation id="8078141288243656252">Δεν είναι δυνατός ο σχολιασμός μετά από περιστροφή</translation>
 <translation id="8079031581361219619">Να επαναληφθεί η φόρτωση του ιστοτόπου;</translation>
 <translation id="8079976827192572403">Επικίνδυνος ιστότοπος</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Αυτοκίνητα τύπου σεντάν</translation>
 <translation id="8086971161893892807">Πρόχειρο</translation>
 <translation id="8088680233425245692">Αποτυχία προβολής άρθρου.</translation>

@@ -1794,6 +1794,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4731638775147756694">Administraator blokeeris selle rakenduse</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> keele paketi allalaadimine... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> soovib kasutada teie seadme asukohta</translation>
+<translation id="473414950835101501">Kasutada teie kaameraid</translation>
 <translation id="4736825316280949806">Taaskäivitage Chromium</translation>
 <translation id="4736934858538408121">Virtuaalkaart</translation>
 <translation id="473775607612524610">Värskenda</translation>
@@ -1904,6 +1905,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Inkognito režiim Chrome'is</translation>
 <translation id="494111439860963024">Nupp Kustuta sirvimisandmed, aktiveerige nupp, et tühjendada Chrome'i seadetes sirvimisajalugu, küpsisefailid, vahemälu jms</translation>
+<translation id="4943620199112228840">Kasutada teie mikrofone</translation>
 <translation id="4943872375798546930">Tulemusi pole</translation>
 <translation id="4950898438188848926">Vahelehe vahetamise nupp, vajutage sisestusklahvi avatud vahelehe aktiveerimiseks, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Toimingud</translation>
@@ -3402,7 +3404,6 @@ Lisateave:
 <translation id="8078141288243656252">Pööramisel ei saa märkusi lisada</translation>
 <translation id="8079031581361219619">Kas laadida sait uuesti?</translation>
 <translation id="8079976827192572403">Ohtlik sait</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedaanid</translation>
 <translation id="8086971161893892807">Mustand</translation>
 <translation id="8088680233425245692">Artikli kuvamine ebaõnnestus.</translation>

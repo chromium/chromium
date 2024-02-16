@@ -1864,6 +1864,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2467896267442150508">Intervalo de tiempo inferior o igual a una semana. Si la fecha de inicio es posterior a la fecha de finalización, el intervalo se ajustará.</translation>
 <translation id="2476249479201711962">Habilitar el acceso al menú contextual del proveedor de búsqueda predeterminado</translation>
 <translation id="2478756867046106663">Permitir que los sitios con experiencias engañosas abran nuevas ventanas o pestañas</translation>
+<translation id="2479760962196319822">Esta política controla si los usuarios de <ph name="PRODUCT_OS_NAME" /> pueden almacenar datos de forma local o no.
+      Si se asigna el valor False a esta política, se bloqueará el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y los usuarios no podrán almacenar ningún dato de forma local ni acceder a ningún directorio local.
+      Si se asigna el valor True a esta política o no se define, se permitirá el almacenamiento local en <ph name="PRODUCT_OS_NAME" /> y no habrá restricciones sobre dónde pueden almacenar datos los usuarios ni a qué directorios pueden acceder.</translation>
 <translation id="2480971699591919564">Habilita la función Clic de llamada, que permite a los usuarios enviar números de teléfono desde Chrome para ordenador a un dispositivo Android si el usuario ha iniciado sesión. Puedes consultar más información en este artículo del Centro de Ayuda: https://support.google.com/chrome/answer/9430554?hl=es
 
       Si se habilita esta política, el usuario de Chrome podrá enviar números de teléfono a dispositivos Android.
@@ -3307,6 +3310,7 @@ Si no se define, no se enviará ningún informe de datos de telemetría de sitio
 
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, el inicio con CA estará desactivado y los usuarios no podrán activarlo.</translation>
 <translation id="3660562134618097814">Transferir las cookies del proveedor de identidad SAML durante el inicio de sesión</translation>
+<translation id="3662660961914441274">Inhabilitar el almacenamiento local de archivos de usuario</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
 <translation id="3671773704245936868">Inhabilitar el resaltado del foco del teclado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
@@ -4030,6 +4034,7 @@ Si se inhabilita, se mostrará un mensaje de error en lugar de la solicitud de c
       Si el dispositivo no está gestionado o solo hay un usuario, esta política se ignorará y siempre se mostrará la notificación.
 
       Si hay varias cuentas de usuario en un dispositivo gestionado, la notificación solo se mostrará si esta política está habilitada.</translation>
+<translation id="4293419489636673391">Habilitar archivos de usuario locales</translation>
 <translation id="4294886370621883282">Permitir que aparezca el teclado en pantalla cuando corresponda.</translation>
 <translation id="4297483555396496700">Los usuarios solo pueden cambiar el canal de lanzamiento del dispositivo si se le asigna el valor True a esta política. Si se le asigna el valor False o no se establece, los usuarios no podrán cambiar el canal.
 
@@ -4872,6 +4877,7 @@ En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el 
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada.</translation>
+<translation id="504689994545234073">Habilitar el almacenamiento local de archivos de usuario</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>

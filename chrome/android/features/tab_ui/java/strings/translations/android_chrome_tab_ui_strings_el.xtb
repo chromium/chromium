@@ -88,6 +88,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Κοινοποίηση καρτέλας}other{Κοινοποίηση καρτελών}}</translation>
 <translation id="7129458170538955174">Άνοιγμα στο μισό ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
 <translation id="7204204600596740190">Λειτουργία πολλαπλής επιλογής</translation>
+<translation id="731648547091221002">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Δείτε την πολιτική επιστροφής και άλλα.</translation>
 <translation id="7352298686197644113">Δείτε ποιο στοιχείο στις ανοικτές καρτέλες σας έχει τη χαμηλότερη τιμή.</translation>
 <translation id="753732157349120914">Εναλλαγή καρτελών</translation>
@@ -98,6 +99,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Ομαδοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Ομαδοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> κριτική}other{Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> κριτικές}}</translation>
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
+<translation id="7939917283308035850">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>
 <translation id="8029301326595421733">Άνοιγμα σε πλήρες ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>

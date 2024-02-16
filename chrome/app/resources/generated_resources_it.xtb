@@ -2649,6 +2649,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2967926928600500959">Gli URL corrispondenti a queste regole dovranno essere aperti in un browser specifico.</translation>
 <translation id="2969411787010981955">I dati sono stati esportati nella posizione selezionata</translation>
 <translation id="2970766364519518369">I contatti selezionati possono condividere contenuti con te quando si trovano nelle vicinanze. Ti verrà chiesto di approvare queste richieste. Non dovrai approvare la condivisione tra i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Firmware</translation>
 <translation id="2972581237482394796">&amp;Ripeti</translation>
 <translation id="2973324205039581528">Disattiva l'audio del sito</translation>
 <translation id="2975761176769946178">È necessario specificare un URL</translation>
@@ -3106,6 +3107,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3348038390189153836">Dispositivo rimovibile rilevato</translation>
 <translation id="3348131053948466246">Emoji suggerite. Premi la freccia Su o Giù per spostarti e Invio per inserire l'emoji desiderata.</translation>
 <translation id="3349933790966648062">Footprint di memoria</translation>
+<translation id="3351472127384196879">Aggiungi o individua i pulsanti della penna</translation>
 <translation id="3353786022389205125">Attiva "Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione" e riprova</translation>
 <translation id="3354768182971982851">Le versioni precedenti delle app di Chrome non si apriranno più sui dispositivi Mac dopo dicembre 2022. Puoi verificare se è disponibile una nuova versione.</translation>
 <translation id="3354972872297836698">Impossibile eseguire l'accoppiamento con il dispositivo <ph name="DEVICE_NAME" />; seleziona il dispositivo per riprovare</translation>
@@ -7072,6 +7074,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6474884162850599008">Scollega account Google Drive</translation>
 <translation id="6475294023568239942">Libera spazio sul disco o ridimensiona il disco Linux nelle Impostazioni</translation>
 <translation id="6476482583633999078">Velocità della voce</translation>
+<translation id="6476671549211161535">Premi un pulsante diverso dal pulsante destro o sinistro del <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La sincronizzazione delle notifiche non è supportata per i telefoni in un profilo di lavoro. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conservare il file pericoloso?</translation>
 <translation id="6479881432656947268">Visita il Chrome Web Store</translation>
@@ -8628,6 +8631,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7684913007876670600">Per una visualizzazione semplificata di questa pagina, apri il riquadro laterale e seleziona la modalità Lettura</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>
 <translation id="7685087414635069102">PIN obbligatorio</translation>
+<translation id="7685351732518564314">Premi un pulsante sul tuo <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="7686581688229391955">Seleziona per consentire le estensioni su questo sito</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10067,6 +10071,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}other{Il tuo <ph name="DEVICE_TYPE" /> verrà bloccato automaticamente tra # secondi.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.}}</translation>
 <translation id="8776294611668764629">La tua organizzazione ha bloccato questo file perché è troppo grande per un controllo di sicurezza. La dimensione massima dei file che puoi aprire è di 50 MB.</translation>
+<translation id="8777509665768981163">Aggiungi o individua i pulsanti del tablet</translation>
 <translation id="8777628254805677039">password root</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">I siti possono utilizzare i cookie solo per visualizzare la tua attività di navigazione su se stessi</translation>

@@ -1794,6 +1794,7 @@
 <translation id="4731638775147756694">ඔබේ පරිපාලකයා මෙම යෙදුම අවහිර කර ඇත</translation>
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> භාෂා ඇසුරුම බා ගත කරමින්... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> හට ඔබේ උපාංගයෙහි පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
+<translation id="473414950835101501">ඔබේ කැමරා භාවිතා කරන්න</translation>
 <translation id="4736825316280949806">Chromium යළි අරඹන්න</translation>
 <translation id="4736934858538408121">අතථ්‍ය කාඩ්පත</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
@@ -1904,6 +1905,7 @@
 <translation id="4936675324097895694">මූල්‍යය</translation>
 <translation id="4940163644868678279">Chrome තුළ අප්‍රසිද්ධ</translation>
 <translation id="494111439860963024">බ්‍රවුස් කිරීමේ දත්ත හිස් කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකීස්, කෑෂය, සහ තවත් දේ හිස් කිරීමට සක්‍රිය කරන්න</translation>
+<translation id="4943620199112228840">ඔබේ මයික්‍රෆෝන භාවිතා කරන්න</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
 <translation id="4950898438188848926">පටිත්ත මාරු වීමේ බොත්තමෙන්, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> විවෘත පටිත්තට මාරු වීමට Enter ඔබන්න</translation>
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
@@ -3402,7 +3404,6 @@
 <translation id="8078141288243656252">කරකැවූ විට අනුසටහන් කළ නොහැක</translation>
 <translation id="8079031581361219619">අඩවිය නැවත පූරණය කරන්න ද?</translation>
 <translation id="8079976827192572403">භයානක අඩවිය</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">සෙඩාන්</translation>
 <translation id="8086971161893892807">කෙටුම්පත</translation>
 <translation id="8088680233425245692">ලිපිය බැලීමට අසමත් විය.</translation>

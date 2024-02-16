@@ -288,6 +288,7 @@
 <translation id="2473876017985765807">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2476359652512522418">មិនបាន​ជ្រើសរើសទេ</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
+<translation id="2480445180439820402">ប្រវត្តិ</translation>
 <translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="2484459871750294497">តើ​ខ្ញុំ​បើក​មុខងារ​នេះ​ដោយ​របៀបណា?</translation>
 <translation id="2496626742194544812">ចូលទៅ​ផ្ទាំង​ដំបូង</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">រក្សាទុក</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
 <translation id="3968505803272650567">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
+<translation id="3976922811715736829">ផ្ទាំង​ថ្មីៗ</translation>
 <translation id="3989635538409502728">ចេញ</translation>
 <translation id="3994422733891749358">ជ្រើសរើស​ការជូនដំណឹង​ដែលអ្នក​ចង់ទទួលបាន</translation>
 <translation id="3995521777587992544">របារដំណើរការនៃការផ្ទុកទំព័រ បានផ្ទុក <ph name="EMAIL" /> ។</translation>
@@ -633,6 +635,7 @@
 <translation id="4279431713294750185">អ្នកអាច​អូសគែម​ដើម្បី​ទៅមុខ។</translation>
 <translation id="4281844954008187215">លក្ខខណ្ឌសេវាកម្ម</translation>
 <translation id="4286718549648564014">បានផ្លាស់ទី​អាសយដ្ឋាន​ទៅគណនី <ph name="USER_EMAIL" /> របស់អ្នក</translation>
+<translation id="428768789042547925">អ្វីដែលថ្មី</translation>
 <translation id="4293080268407233932">ស្វែងរក</translation>
 <translation id="4302248187517737842">មិនមានឈ្មោះ​អ្នកប្រើប្រាស់​ទេ ••••••••</translation>
 <translation id="4302415908542657649">កំពុង​ចែករំលែក​ពាក្យសម្ងាត់</translation>
@@ -687,6 +690,7 @@
 <translation id="4587589328781138893">ទំព័រ</translation>
 <translation id="4588014171431912783">ការ​កំណត់​​សមកាលកម្ម​របស់​អ្នក​នឹង​ត្រូវបាន​ស្ដារ ដោយ​ផ្អែកលើ​ការបម្រុងទុក​ចុងក្រោយ​របស់​អ្នក។ <ph name="BEGIN_LINK" />មើលអ្វី​ដែលអ្នកអាច​ធ្វើសមកាលកម្ម<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">ក្ដារចុច</translation>
+<translation id="4596899661486753028">បញ្ជីអាន</translation>
 <translation id="4601095002996233687">ការស្កេន​ស៊ីជម្រៅ ដើម្បីរក​មើលការទាញយក​គួរឱ្យសង្ស័យ។</translation>
 <translation id="4606247758155004938">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោមការគ្រប់គ្រង​របស់​ស្ថាប័នអ្នក។</translation>
 <translation id="4607887340472970274">ការតាម​ដានតម្លៃ</translation>
@@ -1152,6 +1156,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6807889908376551050">បង្ហាញទាំងអស់...</translation>
 <translation id="681368974849482173">ធាតុត្រូវបានបង្កើត</translation>
 <translation id="6822587385560699678">នៅ​ពេលបើក ពាក្យសម្ងាត់​ត្រូវបានរក្សាទុកនៅ​ក្នុង <ph name="ACCOUNT" />។ នៅ​ពេលបិទ ពាក្យសម្ងាត់​ត្រូវបានរក្សាទុកតែ​នៅ​លើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ។</translation>
+<translation id="6824350924364057989">ការកំណត់</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>
 <translation id="6842136130964845393">ដើម្បី​ប្រាកដថា អ្នកអាចចូលប្រើ​ពាក្យសម្ងាត់ដែលបានរក្សាទុក​របស់អ្នក​បានជានិច្ច សូមផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="6851516051005285358">ស្នើគេហទំព័រសម្រាប់​កុំព្យូទ័រ</translation>
@@ -1190,6 +1195,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
 <translation id="7006788746334555276">ការកំណត់មាតិកា</translation>
 <translation id="7016070607649558507">អ្នកមាន​ពាក្យសម្ងាត់ខ្សោយ 1។ សូម​ដោះស្រាយ​បញ្ហានេះ​ឥឡូវ ដើម្បីរក្សា​សុវត្ថិភាព។</translation>
+<translation id="7022197654033719543">ព័ត៌មាន​អំពីគេហទំព័រ</translation>
 <translation id="7029809446516969842">ពាក្យសម្ងាត់</translation>
 <translation id="704692552158601232">កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម</translation>
 <translation id="7062545763355031412">ទទួលយក និងប្តូរគណនី</translation>
@@ -1288,6 +1294,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7603852183842204213">ការលេចឡើងត្រូវបានរារាំង (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ក្រុមផ្ទាំង</translation>
 <translation id="7607521702806708809">លុបពាក្យសម្ងាត់</translation>
+<translation id="7609559547731036746">ចំណាំ</translation>
 <translation id="7638584964844754484">ឃ្លាសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="7640669552036055091">ផ្ទាំង​ពី Android</translation>
 <translation id="7646263789464975852">ម៉ឺនុយ → ការកំណត់ → ការពិនិត្យសុវត្ថិភាព</translation>
@@ -1325,8 +1332,10 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7781069478569868053">ទំព័រផ្ទាំងថ្មី</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{ក្រោយពេល 1 ថ្ងៃ}other{ក្រោយពេល {COUNT} ថ្ងៃ}}</translation>
+<translation id="7788868432173225918">ច្រានចោលទិដ្ឋភាពពង្រីក</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7792549458069452436">យកកម្មវិធី</translation>
+<translation id="7800723706644914607">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
 <translation id="7812377703891978671">អ្នកអាច​ចូលប្រើ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​ទាំងអស់​របស់អ្នក​បានដោយ​ជ្រើសរើស<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />។</translation>
 <translation id="78146569776629510">ទាញយក</translation>
@@ -1399,6 +1408,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="81313319706244542">2. ចុច "ពាក្យសម្ងាត់"</translation>
 <translation id="8132598642024322408">ឥឡូវ <ph name="PRICE" /> ពីមុន <ph name="PREVIOUS_PRICE" />។</translation>
 <translation id="813370552429173916">ប្រើ​ពាក្យសម្ងាត់​ខុសប្លែកពីគេ​សម្រាប់​រាល់​គេហទំព័រ ឬ​កម្មវិធី​។ ប្រសិនបើ​នរណាម្នាក់​រកឃើញ​ពាក្យសម្ងាត់​ដែលប្រើឡើងវិញ បុគ្គលនោះអាចប្រើវា​ដើម្បីចូលប្រើ​ប្រាស់គណនី​ផ្សេងទៀត​របស់អ្នក​។ ចុច​ដើម្បី​បើក​គេហទំព័រ រួច​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​ឥឡូវ​នេះ។</translation>
+<translation id="814463369662540460">តាម​ដាន​តម្លៃ</translation>
 <translation id="8156478151976189188">សមកាលកម្ម​ពាក្យសម្ងាត់​មិនដំណើរការទេ</translation>
 <translation id="8157532349231307196">គណនីចនួន <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">អម្បាញ់មិញ</translation>
@@ -1505,6 +1515,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8703536910991780768">ពាក្យសម្ងាត់របស់អ្នកមើលទៅខ្លាំងហើយ</translation>
 <translation id="8706253136355675497">សីតុណ្ហភាព</translation>
 <translation id="8709409604518538305">ផ្ទាំងត្រូវបានបិទ</translation>
+<translation id="8709773186849937451">ការទាញយក</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8717864919010420084">ចម្លងតំណ</translation>
 <translation id="8721297211384281569">ម៉ឺនុយឧបករណ៍</translation>

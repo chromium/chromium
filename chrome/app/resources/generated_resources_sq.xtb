@@ -1427,6 +1427,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="206308717637808771">Fshiji të dhënat kur mbyll të gjitha dritaret. Të dhënat trajtohen njëlloj si sajti që po shikon</translation>
 <translation id="2065405795449409761">Chrome po kontrollohet nga një softuer testues i automatizuar.</translation>
 <translation id="2067591192939433190">Nga "<ph name="VENDOR_NAME" />"</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> ka përfunduar printimin te <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nuk ka skedar lokal të regjistrit.</translation>
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Kliko për të instaluar shtesën}other{Kliko për të instaluar këto shtesa}}</translation>
@@ -1803,6 +1804,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="233471714539944337">Përmbajtje delikate</translation>
 <translation id="2335111415680198280">{0,plural, =1{Mbyll # dritare}other{Mbyll # dritare}}</translation>
 <translation id="2336228925368920074">Regjistroji të gjithë skedat në faqeshënues...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> po printon 1 faqe te <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Rivendosje në gjendjen e fabrikës</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="2342180549977909852">Fëmija yt mund të përdorë një numër (PIN) në vend të një fjalëkalimi për të shkyçur këtë pajisje. Për të caktuar një PIN më vonë, shko te "Cilësimet".</translation>
@@ -2645,6 +2647,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2967926928600500959">URL-të që përputhen me këto rregulla do të hapen me forcë në një shfletues specifik.</translation>
 <translation id="2969411787010981955">Të dhënat janë eksportuar në vendndodhjen e zgjedhur</translation>
 <translation id="2970766364519518369">Kontaktet e zgjedhura mund të ndajnë me ty kur janë në afërsi. Do të të kërkohet t'i miratosh këto kërkesa. Nuk do të të duhet të miratosh ndarjen mes pajisjeve ku është kryer identifikimi me <ph name="USER_EMAIL" />.</translation>
+<translation id="2972557485845626008">Firmueri</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2973324205039581528">Hiq zërin e sajtit</translation>
 <translation id="2975761176769946178">Kërkohet një URL</translation>
@@ -3102,6 +3105,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3348038390189153836">U diktua pajisje e lëvizshme</translation>
 <translation id="3348131053948466246">Emoji që sugjerohet. Shtyp shigjetën lart ose poshtë për të naviguar dhe "Enter" për të futur.</translation>
 <translation id="3349933790966648062">Gjurma e memories</translation>
+<translation id="3351472127384196879">Shto ose lokalizo butonat në stilolapsin tënd</translation>
 <translation id="3353786022389205125">Aktivizo "Shfaq ekranin e kyçjes kur zgjohet nga gjumi" dhe provo përsëri</translation>
 <translation id="3354768182971982851">Versionet e vjetra të aplikacioneve të Chrome nuk do të hapen në pajisjet Mac pas dhjetorit 2022. Mund të kontrollosh nëse ofrohet një version i ri.</translation>
 <translation id="3354972872297836698">Nuk mund të çiftohej me pajisjen <ph name="DEVICE_NAME" />; zgjidh pajisjen për të provuar sërish</translation>
@@ -3992,6 +3996,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4021909830315618592">Kopjo të dhënat e ndërtimit</translation>
 <translation id="4021941025609472374">Mbyll skedat në të majtë</translation>
 <translation id="4022426551683927403">&amp;Shto në fjalor</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> po printon <ph name="PAGE_NUMBER" /> faqe te <ph name="PRINTER_NAME" /></translation>
 <translation id="4024768890073681126">Shfletuesi yt menaxhohet nga prindi yt</translation>
 <translation id="4025039777635956441">Çaktivizo zërin e sajtit të zgjedhur</translation>
 <translation id="402707738228916911">U mor udhëzimi: <ph name="AUTHORIZE_INSTRUCTION_NAME" /></translation>
@@ -4593,6 +4598,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4507128560633489176">Të dhënat u pastruan.</translation>
 <translation id="4507373251891673233">Ke bllokuar të gjitha shtesat nga <ph name="HOST" /></translation>
 <translation id="4507401683427517298">Kliko te “Shto shkurtoren”</translation>
+<translation id="4508332912150723117">Emri i përdoruesit <ph name="USER_EMAIL" />. Shiko detajet</translation>
 <translation id="450867954911715010">Cilësimet e qasjes</translation>
 <translation id="4508765956121923607">Shiko b&amp;urimin</translation>
 <translation id="4509277363725254222">Kur ndan një kopje të <ph name="BEGIN_BOLD_USERNAME" />emrit të përdoruesit<ph name="END_BOLD_USERNAME" /> dhe <ph name="BEGIN_BOLD_PASSWORD" />fjalëkalimit tënd<ph name="END_BOLD_PASSWORD" />, anëtari i familjes mund t'i plotësojë ato duke përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
@@ -4815,7 +4821,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4675828034887792601">Krijo shkurtore për të kërkuar në sajte dhe për të menaxhuar motorin e kërkimit</translation>
 <translation id="4676595058027112862">Phone Hub. Mëso më shumë</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
-<translation id="467809019005607715">Google Slides</translation>
+<translation id="467809019005607715">Diapozitivat e Google</translation>
 <translation id="4678848110205818817">Kartë krediti/debiti</translation>
 <translation id="4680105648806843642">Tingulli u çaktivizua në këtë faqe</translation>
 <translation id="4680112532510845139">Lësho një imazh këtu</translation>
@@ -6521,6 +6527,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6051354611314852653">Mos! Sistemi nuk arriti të autorizonte qasjen e API-së për këtë pajisje.</translation>
 <translation id="6051811090255711417">Organizata jote e bllokoi këtë skedar sepse ai nuk u përputh me një politikë sigurie</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> po përpiqet të printojë te <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Shkruaj kodin e qasjes për të nisur transmetimin</translation>
 <translation id="6052976518993719690">Autoriteti i Certifikimit SSL</translation>
@@ -7068,6 +7075,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
 <translation id="6475294023568239942">Liro hapësirën e diskut ose ndrysho përmasat e diskut të Linux te "Cilësimet"</translation>
 <translation id="6476482583633999078">Shpejtësia e të folurës</translation>
+<translation id="6476671549211161535">Shtyp një buton që nuk është butoni i majtë ose i djathtë i miut te <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sinkronizimi i njoftimeve nuk mbështetet për telefonat në një profil pune. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Dëshiron ta mbash skedarin e rrezikshëm?</translation>
 <translation id="6479881432656947268">Vizito "Dyqanin e uebit të Chrome"</translation>
@@ -7452,6 +7460,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="67862343314499040">Vjollcë</translation>
 <translation id="6786747875388722282">Shtesat</translation>
 <translation id="6787097042755590313">Skedë tjetër</translation>
+<translation id="6787531944787756058">Emri i përdoruesit i <ph name="USER_EMAIL" /> është ruajtur vetëm në këtë pajsije. Shiko detajet</translation>
 <translation id="6787839852456839824">Shkurtoret e tastierës</translation>
 <translation id="6788210894632713004">Shtesë e shpaketuar</translation>
 <translation id="6789592661892473991">Horizontal i ndarë</translation>
@@ -8622,6 +8631,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7684913007876670600">Për të shfaqur një pamje të thjeshtuar të kësaj faqeje, hap panelin anësor dhe zgjidh "Modalitetin e leximit"</translation>
 <translation id="7685049629764448582">Memoria e JavaScript</translation>
 <translation id="7685087414635069102">Kërkohet kodi PIN</translation>
+<translation id="7685351732518564314">Shtyp nj buton te <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="7686581688229391955">Zgjidh që të lejosh shtesat në këtë sajt</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
@@ -10059,6 +10069,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.}other{Pajisja jote <ph name="DEVICE_TYPE" /> do të kyçet automatikisht brenda # sekondash.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.}}</translation>
 <translation id="8776294611668764629">Organizata jote e bllokoi këtë skedar sepse ai është shumë i madh për një kontroll sigurie. Mund të hapësh skedarë deri në 50 MB.</translation>
+<translation id="8777509665768981163">Shto ose lokalizo butonat në tabletin tënd</translation>
 <translation id="8777628254805677039">fjalëkalimi rrënjë</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Sajtet mund t'i përdorin kukit vetëm për të parë aktivitetin tënd të shfletimit në sajtin e tyre</translation>

@@ -1795,6 +1795,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4731638775147756694">El administrador bloqueó esta aplicación</translation>
 <translation id="4732860731866514038">Descargando el paquete del idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> desea usar la ubicación de tu dispositivo</translation>
+<translation id="473414950835101501">Usar las cámaras</translation>
 <translation id="4736825316280949806">Reinicia Chromium.</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -1905,6 +1906,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4936675324097895694">Finanzas</translation>
 <translation id="4940163644868678279">Modo Incógnito en Chrome</translation>
 <translation id="494111439860963024">Botón Borrar datos de navegación: actívalo para borrar el historial de navegación, las cookies, la caché y más en la configuración de Chrome</translation>
+<translation id="4943620199112228840">Usar los micrófonos</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4950898438188848926">Botón para cambiar de pestaña; presiona Intro para cambiar a la pestaña abierta <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Acciones</translation>
@@ -3403,7 +3405,6 @@ Detalles adicionales:
 <translation id="8078141288243656252">No se pueden realizar anotaciones cuando el documento está rotado</translation>
 <translation id="8079031581361219619">¿Deseas volver a cargar el sitio?</translation>
 <translation id="8079976827192572403">Sitio peligroso</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Vehículos tipo sedán</translation>
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8088680233425245692">Error al visualizar artículo</translation>

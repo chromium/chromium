@@ -1794,6 +1794,7 @@
 <translation id="4731638775147756694">האפליקציה נחסמה על ידי מנהל המערכת</translation>
 <translation id="4732860731866514038">חבילת השפה <ph name="LANGUAGE" /> בהורדה… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />‏ רוצה להשתמש במיקום המכשיר שלך</translation>
+<translation id="473414950835101501">שימוש במצלמות</translation>
 <translation id="4736825316280949806">‏אתחול ה-Chromium</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
 <translation id="473775607612524610">עדכון</translation>
@@ -1908,6 +1909,7 @@ Del</translation>
 <translation id="4936675324097895694">פיננסים</translation>
 <translation id="4940163644868678279">‏מצב פרטי ב-Chrome</translation>
 <translation id="494111439860963024">‏הלחצן לניקוי נתוני הגלישה, מפעילים אותו כדי לנקות את היסטוריית הגלישה, קובצי ה-cookie, המטמון ועוד בהגדרות Chrome</translation>
+<translation id="4943620199112228840">שימוש במיקרופונים</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4950898438188848926">‏לחצן החלפת כרטיסיות, יש להקיש על Enter כדי לעבור לכרטיסייה הפתוחה, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">פעולות</translation>
@@ -3407,7 +3409,6 @@ Del</translation>
 <translation id="8078141288243656252">לא ניתן להוסיף הערה במצב מסובב</translation>
 <translation id="8079031581361219619">לטעון את האתר מחדש?</translation>
 <translation id="8079976827192572403">אתר מסוכן</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">מכוניות משפחתיות</translation>
 <translation id="8086971161893892807">טיוטה</translation>
 <translation id="8088680233425245692">הצגת הפריט נכשלה.</translation>

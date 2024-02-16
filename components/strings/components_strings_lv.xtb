@@ -1793,6 +1793,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4731638775147756694">Šo lietojumprogrammu bloķēja jūsu administrators.</translation>
 <translation id="4732860731866514038">Notiek šādas valodas pakotnes lejupielāde: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu ierīces atrašanās vietu.</translation>
+<translation id="473414950835101501">Izmantot jūsu kameras</translation>
 <translation id="4736825316280949806">Restartējiet pārlūku Chromium</translation>
 <translation id="4736934858538408121">Virtuāla karte</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
@@ -1903,6 +1904,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4936675324097895694">Finanses</translation>
 <translation id="4940163644868678279">Inkognito režīms pārlūkā Chrome</translation>
 <translation id="494111439860963024">Poga “Notīrīt pārlūkošanas datus”. Aktivizējiet, lai Chrome iestatījumos notīrītu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus.</translation>
+<translation id="4943620199112228840">Izmantot jūsu mikrofonus</translation>
 <translation id="4943872375798546930">Nav rezultātu</translation>
 <translation id="4950898438188848926">Ciļņu pārslēgšanas poga. Nospiediet ievadīšanas taustiņu, lai pārslēgtos uz atvērto cilni, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="495170559598752135">Darbības</translation>
@@ -3401,7 +3403,6 @@ Papildu informācija:
 <translation id="8078141288243656252">Pagrieztiem dokumentiem nevar pievienot piezīmes</translation>
 <translation id="8079031581361219619">Vai atkārtoti ielādēt vietni?</translation>
 <translation id="8079976827192572403">Bīstama vietne</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8081087320434522107">Sedani</translation>
 <translation id="8086971161893892807">Melnraksts</translation>
 <translation id="8088680233425245692">Rakstu neizdevās skatīt.</translation>
