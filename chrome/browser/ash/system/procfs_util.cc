@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system/procfs_util.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -55,7 +57,7 @@ std::optional<SingleProcStat> GetSingleProcStat(
   const std::string truncated_proc_stat_contents =
       stat_contents.substr(last_parenthesis + 1);
 
-  std::vector<base::StringPiece> proc_stat_split =
+  std::vector<std::string_view> proc_stat_split =
       base::SplitStringPiece(truncated_proc_stat_contents, " \t\n",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -98,13 +100,13 @@ std::optional<int64_t> GetCpuTimeJiffies(const base::FilePath& stat_file) {
   // has been running across all states. The last 2 numbers are guest and
   // guest_nice, which are already accounted for in the first 2 numbers of user
   // and nice respectively.
-  std::vector<base::StringPiece> stat_lines = base::SplitStringPiece(
+  std::vector<std::string_view> stat_lines = base::SplitStringPiece(
       stat_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : stat_lines) {
     // Find the line that starts with "cpu " and sum the first 8 numbers to
     // get the total amount of jiffies used.
     if (base::StartsWith(line, "cpu ", base::CompareCase::SENSITIVE)) {
-      std::vector<base::StringPiece> cpu_info_parts = base::SplitStringPiece(
+      std::vector<std::string_view> cpu_info_parts = base::SplitStringPiece(
           line, " \t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (cpu_info_parts.size() != 11)
         return std::nullopt;
