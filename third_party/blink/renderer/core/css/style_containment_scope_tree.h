@@ -69,7 +69,7 @@ class CORE_EXPORT StyleContainmentScopeTree final
   // The outermost dirty scope for the anchor-name update.
   Member<StyleContainmentScope> outermost_anchor_name_dirty_scope_;
   // The map from element with style containment to the scope it creates.
-  HeapHashMap<Member<const Element>, Member<StyleContainmentScope>> scopes_;
+  HeapHashMap<WeakMember<const Element>, Member<StyleContainmentScope>> scopes_;
   // The cache of layout object <-> [identifier, counter] for correct removal of
   // counters when the FlatTreeTraversal is forbidden.
   HeapHashMap<AtomicString,

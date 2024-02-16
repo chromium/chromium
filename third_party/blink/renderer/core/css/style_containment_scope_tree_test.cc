@@ -457,4 +457,37 @@ TEST_F(StyleContainmentScopeTreeTest,
   EXPECT_EQ(scope->Counters().back()->ValueBefore(), 5);
 }
 
+TEST_F(StyleContainmentScopeTreeTest, LeakedElement) {
+  class WeakElement : public GarbageCollected<WeakElement> {
+   public:
+    WeakElement(Element* element) : element_(element) {}
+    Element* GetElement() { return element_.Get(); }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(element_); }
+
+   private:
+    WeakMember<Element> element_;
+  };
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="leaked"></div>
+    )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* leaked = GetDocument().getElementById(AtomicString("leaked"));
+  Persistent<WeakElement> weak = MakeGarbageCollected<WeakElement>(leaked);
+  leaked->SetInlineStyleProperty(CSSPropertyID::kContain, "style");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div></div>
+    )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  leaked = nullptr;
+  TestSupportingGC::PreciselyCollectGarbage();
+
+  EXPECT_EQ(weak->GetElement(), nullptr);
+}
+
 }  // namespace blink

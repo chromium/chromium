@@ -75,7 +75,7 @@ class StyleContainmentScope final
   int ComputeInitialQuoteDepth() const;
 
   // Element with style containment which is the root of the scope.
-  Member<const Element> element_;
+  WeakMember<const Element> element_;
   // Parent scope.
   Member<StyleContainmentScope> parent_;
   // Vector of quotes.
