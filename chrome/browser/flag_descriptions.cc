@@ -2157,10 +2157,6 @@ const char kInProductHelpSnoozeName[] = "In-Product Help Snooze";
 const char kInProductHelpSnoozeDescription[] =
     "Enables the snooze button on In-Product Help.";
 
-const char kInProductHelpUseClientConfigName[] = "IPH Use Client Config";
-const char kInProductHelpUseClientConfigDescription[] =
-    "Enable In-Product Help to use client side configuration.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kUserEducationExperienceVersion2Name[] =
     "User Education Experience Version 2";

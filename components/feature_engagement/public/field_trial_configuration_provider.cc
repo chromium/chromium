@@ -613,11 +613,6 @@ bool FieldTrialConfigurationProvider::MaybeProvideFeatureConfiguration(
     FeatureConfig& config,
     const FeatureVector& known_features,
     const GroupVector& known_groups) const {
-  // If UseClientConfig is set, never parse field trial data.
-  if (base::FeatureList::IsEnabled(kUseClientConfigIPH)) {
-    return false;
-  }
-
   if (config.valid) {
     return false;
   }
@@ -667,11 +662,6 @@ bool FieldTrialConfigurationProvider::MaybeProvideFeatureConfiguration(
 bool FieldTrialConfigurationProvider::MaybeProvideGroupConfiguration(
     const base::Feature& feature,
     GroupConfig& config) const {
-  // If UseClientConfig is set, never parse field trial data.
-  if (base::FeatureList::IsEnabled(kUseClientConfigIPH)) {
-    return false;
-  }
-
   if (config.valid) {
     return false;
   }

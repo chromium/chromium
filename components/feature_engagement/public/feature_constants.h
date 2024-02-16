@@ -16,11 +16,6 @@ namespace feature_engagement {
 // A feature for enabling a demonstration mode for In-Product Help (IPH).
 BASE_DECLARE_FEATURE(kIPHDemoMode);
 
-// A feature for enabling In-Product Help (IPH) to use client side
-// configuration. When this flag is enabled, finch config will be ignored for
-// all IPHs.
-BASE_DECLARE_FEATURE(kUseClientConfigIPH);
-
 // A feature to ensure all arrays can contain at least one feature.
 BASE_DECLARE_FEATURE(kIPHDummyFeature);
 

@@ -4648,10 +4648,6 @@ const FeatureEntry kFeatureEntries[] = {
          feature_engagement::kIPHDemoMode,
          feature_engagement::kIPHDemoModeChoiceVariations,
          "IPH_DemoMode")},
-    {"in-product-help-use-client-config",
-     flag_descriptions::kInProductHelpUseClientConfigName,
-     flag_descriptions::kInProductHelpUseClientConfigDescription, kOsAll,
-     FEATURE_VALUE_TYPE(feature_engagement::kUseClientConfigIPH)},
 #if !BUILDFLAG(IS_ANDROID)
     {"user-education-experience-v2",
      flag_descriptions::kUserEducationExperienceVersion2Name,

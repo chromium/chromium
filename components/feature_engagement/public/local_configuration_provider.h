@@ -20,8 +20,7 @@ struct FeatureConfig;
 // this one should go after the field trial provider, as its job is only to fill
 // in configuration for features where there is no explicit field trial.
 //
-// Does not override valid configurations; the field trial provider will defer
-// to this provider if "UseClientConfigIPH" is set.
+// Does not override valid configurations.
 class LocalConfigurationProvider : public ConfigurationProvider {
  public:
   explicit LocalConfigurationProvider();
