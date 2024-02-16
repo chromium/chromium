@@ -44,6 +44,7 @@
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/touchui/touch_selection_controller.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/word_lookup_client.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -74,7 +75,8 @@ class VIEWS_EXPORT Textfield : public View,
                                public WordLookupClient,
                                public SelectionControllerDelegate,
                                public ui::TouchEditable,
-                               public ui::TextInputClient {
+                               public ui::TextInputClient,
+                               public views::ViewObserver {
   METADATA_HEADER(Textfield, View)
 
  public:
@@ -480,6 +482,9 @@ class VIEWS_EXPORT Textfield : public View,
       const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
+
+  // ViewObserver overrides:
+  void OnViewFocused(views::View* observed_view) override;
 
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
@@ -895,6 +900,8 @@ class VIEWS_EXPORT Textfield : public View,
   // Helper flag that tracks whether SetBorder was called with a custom
   // border.
   bool use_default_border_ = true;
+
+  bool is_processing_focus_ = false;
 
   // Holds the subscription object for the enabled changed callback.
   base::CallbackListSubscription enabled_changed_subscription_ =
