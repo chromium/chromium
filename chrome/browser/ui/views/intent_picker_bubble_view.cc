@@ -61,6 +61,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/chromeos/devicetype_utils.h"
@@ -172,7 +173,7 @@ class IntentPickerAppGridButton : public views::Button {
 
     Views siblings = parent()->children();
     auto it = base::ranges::find_if(siblings, [](views::View* v) {
-      return static_cast<IntentPickerAppGridButton*>(v)->selected_;
+      return views::AsViewClass<IntentPickerAppGridButton>(v)->selected_;
     });
 
     return it != siblings.end() ? *it : nullptr;
@@ -315,7 +316,7 @@ class IntentPickerAppGridView
 
   IntentPickerAppGridButton* GetButtonAtIndex(size_t index) {
     const auto& children = contents()->children();
-    return static_cast<IntentPickerAppGridButton*>(children[index]);
+    return views::AsViewClass<IntentPickerAppGridButton>(children[index]);
   }
 
   AppSelectedCallback selected_callback_;
@@ -479,7 +480,7 @@ class IntentPickerAppListView
   IntentPickerLabelButton* GetIntentPickerLabelButtonAt(size_t index) {
     const auto& children = contents()->children();
     DCHECK_LT(index, children.size());
-    return static_cast<IntentPickerLabelButton*>(children[index]);
+    return views::AsViewClass<IntentPickerLabelButton>(children[index]);
   }
 
   AppSelectedCallback selected_callback_;

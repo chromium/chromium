@@ -54,6 +54,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -203,8 +204,9 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
   views::Checkbox* remember_selection_checkbox() {
-    return static_cast<views::Checkbox*>(intent_picker_bubble()->GetViewByID(
-        IntentPickerBubbleView::ViewId::kRememberCheckbox));
+    return views::AsViewClass<views::Checkbox>(
+        intent_picker_bubble()->GetViewByID(
+            IntentPickerBubbleView::ViewId::kRememberCheckbox));
   }
 
   // TODO(crbug.com/1265991): There should be an explicit signal we can wait on

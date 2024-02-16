@@ -44,6 +44,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -137,12 +138,12 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
         bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
             ->children();
     CHECK_LT(index, children.size());
-    return static_cast<views::Button*>(children[index]);
+    return views::AsViewClass<views::Button>(children[index]);
   }
 
   views::LabelButton* GetLabelButtonAtIndex(size_t index) {
     CHECK(!apps::features::ShouldShowLinkCapturingUX());
-    return static_cast<views::LabelButton*>(GetButtonAtIndex(index));
+    return views::AsViewClass<views::LabelButton>(GetButtonAtIndex(index));
   }
 
   void ClickApp(size_t index) {
@@ -373,7 +374,7 @@ TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/std::nullopt);
 
-  views::Checkbox* checkbox = static_cast<views::Checkbox*>(
+  auto* checkbox = views::AsViewClass<views::Checkbox>(
       bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
 
   // kDevice entries should not allow persistence.
@@ -413,7 +414,7 @@ TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialogWithRememberSelection) {
 
   ClickApp(0);
 
-  views::Checkbox* checkbox = static_cast<views::Checkbox*>(
+  auto* checkbox = views::AsViewClass<views::Checkbox>(
       bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
   checkbox->SetChecked(true);
 
