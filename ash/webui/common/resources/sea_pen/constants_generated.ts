@@ -1180,10 +1180,12 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kDreamscapes,
-      title: 'Dreamscape',
-      text: `A surreal <${SeaPenTemplateChip.kDreamscapesObject}> made of <${
-          SeaPenTemplateChip.kDreamscapesMaterial}> in <${
-          SeaPenTemplateChip.kDreamscapesColors}>`,
+      title: loadTimeData.getString('seaPenTemplateTitleDreamscapes'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateDreamscapes',
+          `<${SeaPenTemplateChip.kDreamscapesObject}>`,
+          `<${SeaPenTemplateChip.kDreamscapesMaterial}>`,
+          `<${SeaPenTemplateChip.kDreamscapesColors}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
@@ -1194,51 +1196,63 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kDreamscapesObjectBicycle,
-              translation: 'bicycle',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectBicycle'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectCastle,
-              translation: 'castle',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectCastle'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectBuilding,
-              translation: 'building',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectBuilding'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectBoat,
-              translation: 'boat',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectBoat'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectLamp,
-              translation: 'lamp',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectLamp'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectTable,
-              translation: 'table',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectTable'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectBridge,
-              translation: 'bridge',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectBridge'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectLighthouse,
-              translation: 'lighthouse',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesObjectLighthouse'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectPagoda,
-              translation: 'pagoda',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectPagoda'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectPalace,
-              translation: 'palace',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectPalace'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectTower,
-              translation: 'tower',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectTower'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectChair,
-              translation: 'chair',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesObjectChair'),
             },
           ],
         ],
@@ -1247,91 +1261,113 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialFlowers,
-              translation: 'flowers',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialFlowers'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialSilk,
-              translation: 'silk',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialSilk'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialFelt,
-              translation: 'felt',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFelt'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialBurlap,
-              translation: 'burlap',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialBurlap'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialChiffon,
-              translation: 'chiffon',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialChiffon'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialCotton,
-              translation: 'cotton',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialCotton'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialFur,
-              translation: 'fur',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialFur'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialLace,
-              translation: 'lace',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialLace'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialLinen,
-              translation: 'linen',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialLinen'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialOrganza,
-              translation: 'organza',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialOrganza'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialTulle,
-              translation: 'tulle',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialTulle'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialWool,
-              translation: 'wool',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWool'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialYarn,
-              translation: 'yarn',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialYarn'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialFleece,
-              translation: 'fleece',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialFleece'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialClay,
-              translation: 'clay',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialClay'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialStone,
-              translation: 'stone',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialStone'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialWood,
-              translation: 'wood',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialWood'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialAmethyst,
-              translation: 'amethyst',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialAmethyst'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialLapisLuzuli,
-              translation: 'lapis luzuli',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialLapisLuzuli'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialObsidian,
-              translation: 'obsidian',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialObsidian'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialOpal,
-              translation: 'opal',
+              translation:
+                  loadTimeData.getString('seaPenOptionDreamscapesMaterialOpal'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesMaterialSapphire,
-              translation: 'sapphire',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesMaterialSapphire'),
             },
           ],
         ],
@@ -1340,31 +1376,38 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kDreamscapesColorsPinkPurple,
-              translation: 'pink and purple',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsPinkPurple'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsCoralTan,
-              translation: 'coral and tan',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsCoralTan'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsCreamOrange,
-              translation: 'cream and orange',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsCreamOrange'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsBlueIndigo,
-              translation: 'blue and indigo',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsBlueIndigo'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsGreenTeal,
-              translation: 'green and teal',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsGreenTeal'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsBurgundyMaroon,
-              translation: 'burgundy and maroon',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsBurgundyMaroon'),
             },
             {
               value: SeaPenTemplateOption.kDreamscapesColorsYellowTeal,
-              translation: 'yellow and teal',
+              translation: loadTimeData.getString(
+                  'seaPenOptionDreamscapesColorsYellowTeal'),
             },
           ],
         ],

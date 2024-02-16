@@ -3638,6 +3638,136 @@
         <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
           blue and pink
         </message>
+        <!-- Wallpaper template dreamscapes -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_DREAMSCAPES" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          Dreamscape
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_DREAMSCAPES" desc="Template used to generate an image of DREAMSCAPES. Users can select the variables from a drop-down menu.">
+          A surreal <ph name="DREAMSCAPES_OBJECT">$1<ex>bicycle</ex></ph> made of <ph name="DREAMSCAPES_MATERIAL">$2<ex>flowers</ex></ph> in <ph name="DREAMSCAPES_COLORS">$3<ex>pink and purple</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BICYCLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          bicycle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_CASTLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          castle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BUILDING" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          building
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BOAT" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          boat
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_LAMP" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lamp
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_TABLE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          table
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BRIDGE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          bridge
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_LIGHTHOUSE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lighthouse
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PAGODA" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          pagoda
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PALACE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          palace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_TOWER" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          tower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_CHAIR" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          chair
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FLOWERS" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_SILK" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          silk
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FELT" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          felt
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_BURLAP" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          burlap
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_CHIFFON" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          chiffon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_COTTON" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          cotton
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FUR" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          fur
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LACE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LINEN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          linen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_ORGANZA" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          organza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_TULLE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          tulle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_WOOL" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          wool
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_YARN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          yarn
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_FLEECE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          fleece
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_CLAY" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          clay
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_STONE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          stone
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_WOOD" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          wood
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_AMETHYST" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          amethyst
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_LAPIS_LUZULI" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          lapis luzuli
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_OBSIDIAN" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          obsidian
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_OPAL" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          opal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_MATERIAL_SAPPHIRE" desc="Option to fill in the DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          sapphire
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_PINK_PURPLE" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          pink and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_CORAL_TAN" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          coral and tan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_CREAM_ORANGE" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          cream and orange
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_BLUE_INDIGO" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          blue and indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_GREEN_TEAL" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          green and teal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_BURGUNDY_MAROON" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          burgundy and maroon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_COLORS_YELLOW_TEAL" desc="Option to fill in the DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
+          yellow and teal
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
