@@ -737,7 +737,7 @@ BASE_FEATURE(kGlobalMediaControlsAutoDismiss,
 // Updated global media controls UI for CrOS.
 BASE_FEATURE(kGlobalMediaControlsCrOSUpdatedUI,
              "GlobalMediaControlsCrOSUpdatedUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else   // BUILDFLAG(IS_CHROMEOS)
 // Updated global media controls UI for all the non-CrOS desktop platforms.
 BASE_FEATURE(kGlobalMediaControlsUpdatedUI,
