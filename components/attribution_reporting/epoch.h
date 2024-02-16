@@ -1,7 +1,3 @@
-// Copyright 2022 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_EPOCH_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_EPOCH_H_
 
