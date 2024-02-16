@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -99,6 +100,9 @@ using content::BrowserThread;
 namespace safe_browsing {
 
 namespace {
+
+// The number of user gestures to trace back for the referrer chain.
+const int kReferrerChainUserGestureLimit = 2;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void PopulateDownloadWarningActions(download::DownloadItem* download,
@@ -584,6 +588,43 @@ bool SafeBrowsingService::SendPhishyInteractionsReport(
 }
 #endif
 
+bool SafeBrowsingService::MaybeSendNotificationsAcceptedReport(
+    content::RenderFrameHost* render_frame_host,
+    Profile* profile,
+    const GURL& url,
+    const GURL& page_url,
+    const GURL& permission_prompt_origin,
+    base::TimeDelta permission_prompt_display_duration_sec) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(
+          kCreateNotificationsAcceptedClientSafeBrowsingReports)) {
+    return false;
+  }
+  // Only send report if the UnsafeResource was allowlisted, due to the user
+  // bypassing an interstitial. Note that we want to check the
+  // permission_prompt_origin URL because if an interstitial was shown, then it
+  // was warning the user about the URL where the permission request originated.
+  if (!IsURLAllowlisted(permission_prompt_origin, render_frame_host)) {
+    return false;
+  }
+
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(
+      ClientSafeBrowsingReportRequest::NOTIFICATION_PERMISSION_ACCEPTED);
+  report->set_url(url.spec());
+  report->set_page_url(page_url.spec());
+  report->mutable_permission_prompt_info()->set_origin(
+      permission_prompt_origin.spec());
+  report->mutable_permission_prompt_info()->set_display_duration_sec(
+      permission_prompt_display_duration_sec.InSeconds());
+  FillReferrerChain(profile, render_frame_host,
+                    report->mutable_referrer_chain());
+  return ChromePingManagerFactory::GetForBrowserContext(profile)
+             ->ReportThreatDetails(std::move(report)) ==
+         PingManager::ReportThreatDetailsResult::SUCCESS;
+}
+
 void SafeBrowsingService::CreateTriggerManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   trigger_manager_ = std::make_unique<TriggerManager>(
@@ -626,6 +667,39 @@ void SafeBrowsingService::RecordStartupCookieMetrics(Profile* profile) {
   (*cookie_manager_raw)
       ->GetAllCookies(
           base::BindOnce(&OnGotCookies, std::move(cookie_manager_remote)));
+}
+
+void SafeBrowsingService::FillReferrerChain(
+    Profile* profile,
+    content::RenderFrameHost* render_frame_host,
+    google::protobuf::RepeatedPtrField<ReferrerChainEntry>*
+        out_referrer_chain) {
+  ReferrerChainProvider* provider =
+      GetReferrerChainProviderFromBrowserContext(profile);
+  if (!provider) {
+    return;
+  }
+  provider->IdentifyReferrerChainByRenderFrameHost(
+      render_frame_host, kReferrerChainUserGestureLimit, out_referrer_chain);
+}
+
+bool SafeBrowsingService::IsURLAllowlisted(
+    const GURL& url,
+    content::RenderFrameHost* primary_main_frame) {
+  if (url_is_allowlisted_for_testing_) {
+    return true;
+  }
+
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.original_url = url;
+  resource.is_subresource = false;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      primary_main_frame->GetGlobalId();
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_token = primary_main_frame->GetFrameToken().value();
+  return ui_manager_->IsAllowlisted(resource);
 }
 
 // The default SafeBrowsingServiceFactory.  Global, made a singleton so we

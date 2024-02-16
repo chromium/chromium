@@ -16,6 +16,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
@@ -314,6 +315,121 @@ TEST_F(SafeBrowsingServiceAntiPhishingTelemetryTest,
 
   EXPECT_TRUE(sb_service_->SendPhishyInteractionsReport(
       profile(), test_url, test_page_url, test_map));
+}
+
+class SendNotificationsAcceptedTest : public SafeBrowsingServiceTest {
+ public:
+  void EnableNotificationsAcceptedFeature() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kCreateNotificationsAcceptedClientSafeBrowsingReports);
+  }
+
+  std::unique_ptr<ClientSafeBrowsingReportRequest> GetActualRequest(
+      const network::ResourceRequest& request) {
+    std::string request_string = GetUploadData(request);
+    auto actual_request = std::make_unique<ClientSafeBrowsingReportRequest>();
+    actual_request->ParseFromString(request_string);
+    return actual_request;
+  }
+
+  void VerifyNotificationAcceptedReportRequest(
+      ClientSafeBrowsingReportRequest* actual_request,
+      GURL& expected_url,
+      GURL& expected_page_url,
+      GURL& expected_permission_prompt_origin,
+      int64_t expected_prompt_duration) {
+    EXPECT_EQ(
+        actual_request->type(),
+        ClientSafeBrowsingReportRequest::NOTIFICATION_PERMISSION_ACCEPTED);
+    EXPECT_EQ(actual_request->url(), expected_url.spec());
+    EXPECT_EQ(actual_request->page_url(), expected_page_url.spec());
+    EXPECT_EQ(actual_request->permission_prompt_info().origin(),
+              expected_permission_prompt_origin.spec());
+    EXPECT_EQ(actual_request->permission_prompt_info().display_duration_sec(),
+              expected_prompt_duration);
+  }
+
+  void SetUrlIsAllowlistedForTesting() {
+    sb_service_->SetUrlIsAllowlistedForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
+  EnableNotificationsAcceptedFeature();
+  SetUrlIsAllowlistedForTesting();
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  GURL notification_url1("http://www.notification1.com/");
+  GURL notification_url2("http://www.notification2.com/");
+  GURL notification_url3("http://www.notification3.com/");
+  base::TimeDelta display_duration = base::Seconds(10);
+
+  auto* ping_manager =
+      ChromePingManagerFactory::GetForBrowserContext(profile());
+  network::TestURLLoaderFactory test_url_loader_factory;
+  bool request_validated = false;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        VerifyNotificationAcceptedReportRequest(
+            actual_request.get(), notification_url1, notification_url2,
+            notification_url3, display_duration.InSeconds());
+        request_validated = true;
+      }));
+  ping_manager->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+// TODO(b/325636200): We should remove this once we figure out why the test is
+// crashing for ChromeOS and how to properly test it.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(sb_service_->MaybeSendNotificationsAcceptedReport(
+      nullptr, profile(), notification_url1, notification_url2,
+      notification_url3, display_duration));
+  EXPECT_TRUE(request_validated);
+#endif
+}
+
+TEST_F(SendNotificationsAcceptedTest,
+       DontSendReportForNonExtendedReportingUser) {
+  EnableNotificationsAcceptedFeature();
+  SetUrlIsAllowlistedForTesting();
+  GURL notification_url1("http://www.notification1.com/");
+  GURL notification_url2("http://www.notification2.com/");
+  GURL notification_url3("http://www.notification3.com/");
+  base::TimeDelta display_duration = base::Seconds(10);
+  EXPECT_FALSE(sb_service_->MaybeSendNotificationsAcceptedReport(
+      nullptr, profile(), notification_url1, notification_url2,
+      notification_url3, display_duration));
+}
+
+TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenFeatureIsNotEnabled) {
+  SetUrlIsAllowlistedForTesting();
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  GURL notification_url1("http://www.notification1.com/");
+  GURL notification_url2("http://www.notification2.com/");
+  GURL notification_url3("http://www.notification3.com/");
+  base::TimeDelta display_duration = base::Seconds(10);
+
+  auto* ping_manager =
+      ChromePingManagerFactory::GetForBrowserContext(profile());
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        VerifyNotificationAcceptedReportRequest(
+            actual_request.get(), notification_url1, notification_url2,
+            notification_url3, display_duration.InSeconds());
+      }));
+  ping_manager->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+  EXPECT_FALSE(sb_service_->MaybeSendNotificationsAcceptedReport(
+      nullptr, profile(), notification_url1, notification_url2,
+      notification_url3, display_duration));
 }
 
 }  // namespace safe_browsing

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -390,6 +392,16 @@ void ChromePermissionsClient::OnPromptResolved(
              QuietUiReason::kTriggeredDueToDisruptiveBehavior)) {
       PermissionRevocationRequest::ExemptOriginFromFutureRevocations(profile,
                                                                      origin);
+    }
+    if (action == permissions::PermissionAction::GRANTED) {
+      if (g_browser_process->safe_browsing_service()) {
+        g_browser_process->safe_browsing_service()
+            ->MaybeSendNotificationsAcceptedReport(
+                web_contents->GetPrimaryMainFrame(), profile,
+                web_contents->GetLastCommittedURL(),
+                web_contents->GetController().GetLastCommittedEntry()->GetURL(),
+                origin, prompt_display_duration);
+      }
     }
   }
 

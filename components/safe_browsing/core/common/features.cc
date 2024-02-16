@@ -34,6 +34,10 @@ BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCreateNotificationsAcceptedClientSafeBrowsingReports,
+             "CreateNotificationsAcceptedClientSafeBrowsingReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -323,6 +327,7 @@ constexpr struct {
     {&kAdSamplerTriggerFeature, false},
     {&kAddWarningShownTSToClientSafeBrowsingReport, false},
     {&kClientSideDetectionKillswitch, true},
+    {&kCreateNotificationsAcceptedClientSafeBrowsingReports, true},
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
     {&kDownloadTailoredWarnings, true},

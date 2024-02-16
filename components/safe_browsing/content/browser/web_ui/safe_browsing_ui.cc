@@ -1657,6 +1657,9 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::WARNING_SHOWN:
         report_type = "WARNING_SHOWN";
         break;
+      case ClientSafeBrowsingReportRequest::NOTIFICATION_PERMISSION_ACCEPTED:
+        report_type = "NOTIFICATION_PERMISSION_ACCEPTED";
+        break;
       case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
       case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
         // Deprecated!
