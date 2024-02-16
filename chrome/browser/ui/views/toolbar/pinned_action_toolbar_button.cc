@@ -11,11 +11,13 @@
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace {
@@ -48,6 +50,9 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
 
   // Do not flip the icon for RTL languages.
   SetFlipCanvasOnPaintForRTLUI(false);
+  action_count_changed_subscription_ = AddAnchorCountChangedCallback(
+      base::BindRepeating(&PinnedActionToolbarButton::OnAnchorCountChanged,
+                          base::Unretained(this)));
 }
 
 PinnedActionToolbarButton::~PinnedActionToolbarButton() = default;
@@ -149,6 +154,18 @@ PinnedActionToolbarButton::CreateMenuModel() {
   model->AddItemWithStringId(IDC_UPDATE_SIDE_PANEL_PIN_STATE,
                              IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN);
   return model;
+}
+
+void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
+  // If there is something anchored to the button we want to make sure the
+  // button will be visible in the toolbar in cases where the window might be
+  // small enough that icons must overflow. Update the kFlexBehaviorKey to make
+  // sure icons are forced visible or able to overflow.
+  if (anchor_count > 0) {
+    SetProperty(views::kFlexBehaviorKey, views::FlexSpecification());
+  } else {
+    ClearProperty(views::kFlexBehaviorKey);
+  }
 }
 
 bool PinnedActionToolbarButton::IsItemForCommandIdDynamic(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/controls/button/button.h"
 
 class Browser;
 class PinnedToolbarActionsContainer;
@@ -44,7 +45,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
-  // Button:
+  // ToolbarButton:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
@@ -60,9 +61,12 @@ class PinnedActionToolbarButton : public ToolbarButton,
  private:
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
+  void OnAnchorCountChanged(size_t anchor_count);
+
   raw_ptr<Browser> browser_;
   actions::ActionId action_id_;
   base::CallbackListSubscription action_changed_subscription_;
+  base::CallbackListSubscription action_count_changed_subscription_;
   // Used to ensure the button remains highlighted while active.
   std::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
   bool pinned_ = false;

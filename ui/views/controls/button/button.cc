@@ -409,13 +409,18 @@ Button::ScopedAnchorHighlight Button::AddAnchorHighlight() {
   if (0 == anchor_count_++) {
     SetHighlighted(true);
   }
-
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
   return ScopedAnchorHighlight(GetWeakPtr());
 }
 
 base::CallbackListSubscription Button::AddStateChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&state_, std::move(callback));
+}
+
+base::CallbackListSubscription Button::AddAnchorCountChangedCallback(
+    base::RepeatingCallback<void(size_t)> callback) {
+  return anchor_count_changed_callbacks_.Add(std::move(callback));
 }
 
 Button::KeyClickAction Button::GetKeyClickActionForEvent(
@@ -812,6 +817,7 @@ void Button::ReleaseAnchorHighlight() {
   if (0 == --anchor_count_) {
     SetHighlighted(false);
   }
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
 }
 
 ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)

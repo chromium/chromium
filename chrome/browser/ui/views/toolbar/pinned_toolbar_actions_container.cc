@@ -213,10 +213,8 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
   // Update button highlight and force visibility if the button is active.
   if (is_active) {
     button->AddHighlight();
-    button->SetProperty(views::kFlexBehaviorKey, views::FlexSpecification());
   } else {
     button->ResetHighlight();
-    button->ClearProperty(views::kFlexBehaviorKey);
   }
 
   if (!pinned && !is_active) {

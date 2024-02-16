@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -225,6 +226,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);
+  base::CallbackListSubscription AddAnchorCountChangedCallback(
+      base::RepeatingCallback<void(size_t)> callback);
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -349,6 +352,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;
+
+  // Callbacks called when the anchor count changes.
+  base::RepeatingCallbackList<void(size_t)> anchor_count_changed_callbacks_;
 
   // The id tag associated with this button. Used to disambiguate buttons.
   // TODO(pbos): See if this can be removed, e.g. by replacing with SetID().
