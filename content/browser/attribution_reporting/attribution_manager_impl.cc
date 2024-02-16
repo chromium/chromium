@@ -656,8 +656,8 @@ void AttributionManagerImpl::HandleTrigger(
   LOG(INFO) << "HANDLE TRIGGER" ;
   LOG(INFO) << "Epochs" ;
   for (auto epoch : trigger.registration().epochs) {
-    LOG(INFO) <<  epoch.epoch_start;
-    LOG(INFO) <<  epoch.epoch_end;
+    LOG(INFO) <<  epoch.epoch_start();
+    LOG(INFO) <<  epoch.epoch_end();
   }
 
   MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),

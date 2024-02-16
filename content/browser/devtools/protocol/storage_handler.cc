@@ -2008,20 +2008,29 @@ ToEventTriggerData(const std::vector<attribution_reporting::EventTriggerData>&
   return out;
 }
 
-
 std::unique_ptr<Array<Storage::AttributionReportingEpoch>>
 ToEpochs(const std::vector<attribution_reporting::Epoch>& epochs) {
   auto out = std::make_unique<Array<Storage::AttributionReportingEpoch>>();
   for (const auto& epoch : epochs) {
     out->emplace_back(
         Storage::AttributionReportingEpoch::Create()
-            .SetEpoch(epoch)
+            .SetEpochStart(base::NumberToString(epoch.epoch_start()))
+            .SetEpochEnd(base::NumberToString(epoch.epoch_end()))
             .Build());
   }
 
   return out;
 }
 
+std::unique_ptr<Array<std::string>>
+ToSourceIdCandidates(const std::vector<uint64_t>& source_id_candidates) {
+  auto out = std::make_unique<Array<std::string>>();
+  for (const auto& source_id_candidate : source_id_candidates) {
+    out->emplace_back(base::NumberToString(source_id_candidate));
+  }
+
+  return out;
+}
 
 std::unique_ptr<Array<Storage::AttributionReportingAggregatableTriggerData>>
 ToAggregatableTriggerData(
@@ -2146,7 +2155,9 @@ void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
               registration.aggregatable_trigger_config
                   .source_registration_time_config()))
           .SetPamEpsilon(registration.pam_epsilon)
-          .SetEpochs(registration.epochs)
+          .SetEpochs(ToEpochs(registration.epochs))
+          .SetSourceIdCandidates(ToSourceIdCandidates(registration.source_id_candidates))
+          .SetAttributionLogic(registration.attribution_logic)
           .Build();
 
   if (registration.debug_key.has_value()) {

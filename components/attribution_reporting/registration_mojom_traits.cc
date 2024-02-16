@@ -397,6 +397,14 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
+  if (!data.ReadSourceIdCandidates(&out->source_id_candidates)) {
+    return false;
+  }
+
+  if (!data.ReadAttributionLogic(&out->attribution_logic)) {
+    return false;
+  }
+  
   return true;
 }
 

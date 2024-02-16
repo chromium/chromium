@@ -392,6 +392,16 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return trigger.epochs;
   }
 
+  static const std::vector<uint64_t>& source_id_candidates(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.source_id_candidates;
+  }
+
+  static std::string attribution_logic(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.attribution_logic;
+  }
+  
   static bool Read(
       attribution_reporting::mojom::TriggerRegistrationDataView data,
       attribution_reporting::TriggerRegistration* out);

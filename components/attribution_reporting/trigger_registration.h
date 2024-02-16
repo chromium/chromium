@@ -68,7 +68,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   
   PamEpsilon pam_epsilon;
   std::vector<Epoch> epochs;
-  // std::vector<> requested_source_ids;
+  std::vector<uint64_t> source_id_candidates;
+  std::string attribution_logic;
 
 };
 

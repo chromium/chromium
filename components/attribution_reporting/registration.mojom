@@ -210,6 +210,12 @@ struct TriggerRegistration {
   // The epochs in which the attribution logic will look for matching sources
   array<Epoch> epochs;
 
+  // The ids of the sources that are candidates for attribution
+  array<uint64> source_id_candidates;
+
+  // The attribution logic
+  string attribution_logic;
+
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

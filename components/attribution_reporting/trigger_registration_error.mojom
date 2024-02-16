@@ -57,4 +57,10 @@ enum TriggerRegistrationError {
   kEpochStartMissing = 43,
   kEpochEndMissing = 44,
   kEpochListWrongType = 45,
+
+  kSourceIdCandidatesListWrongType = 46,
+  kSourceIdCandidatesWrongType = 47,
+  kSourceIdCandidatesValueInvalid = 48,
+
+  kAttributionLogicValueInvalid = 49,
 };

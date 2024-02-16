@@ -46,6 +46,9 @@ constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
 constexpr char kEpochs[] = "epochs";
+constexpr char kSourceIdCandidates[] = "source_id_candidates";
+constexpr char kAttributionLogic[] = "attribution_logic";
+
 
 base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
 ParseAggregationCoordinator(const base::Value* value) {
@@ -74,6 +77,12 @@ ParseAggregationCoordinator(const base::Value* value) {
   return *aggregation_coordinator_origin;
 }
 
+template <typename T, typename = std::void_t<>>
+struct has_to_json : std::false_type {};
+
+template <typename T>
+struct has_to_json<T, std::void_t<decltype(std::declval<T>().ToJson())>> : std::true_type {};
+
 template <typename T>
 void SerializeListIfNotEmpty(base::Value::Dict& dict,
                              std::string_view key,
@@ -83,8 +92,14 @@ void SerializeListIfNotEmpty(base::Value::Dict& dict,
   }
 
   base::Value::List list;
-  for (const auto& value : vec) {
-    list.Append(value.ToJson());
+  if constexpr (has_to_json<T>::value) {
+    for (const auto& value : vec) {
+      list.Append(value.ToJson());
+    }
+  } else {
+    for (const auto& value : vec) {
+      list.Append(base::NumberToString(value));
+    }
   }
   dict.Set(key, std::move(list));
 }
@@ -108,6 +123,8 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   vec.reserve(list->size());
 
   for (auto& value : *list) {
+      LOG(INFO) << value ;
+
     ASSIGN_OR_RETURN(T element, build_element(value));
     vec.emplace_back(std::move(element));
   }
@@ -121,7 +138,7 @@ void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   static_assert(
       TriggerRegistrationError::kMaxValue ==
           TriggerRegistrationError::
-              kEpochListWrongType,
+              kAttributionLogicValueInvalid,
       "Bump version of Conversions.TriggerRegistrationError9 histogram.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
 }
@@ -160,15 +177,48 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   ASSIGN_OR_RETURN(registration.pam_epsilon,
                    PamEpsilon::Parse(dict));
 
-  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
-  LOG(INFO) << registration.ToJson() ;
-
   ASSIGN_OR_RETURN(
       registration.epochs,
       ParseList<Epoch>(
           dict.Find(kEpochs),
           TriggerRegistrationError::kEpochListWrongType,
           &Epoch::FromJSON));
+
+  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
+  LOG(INFO) << registration.ToJson() ;
+
+  auto parseUint64Lambda = [](base::Value& value) -> base::expected<uint64_t, TriggerRegistrationError> {
+      uint64_t parsed_val;
+      LOG(INFO) << value ;
+      if (const std::string* str = value.GetIfString();
+        !str || !base::StringToUint64(*str, &parsed_val)) {
+        LOG(INFO) << str ;
+        return base::unexpected(TriggerRegistrationError::kSourceIdCandidatesWrongType);
+      }
+      return parsed_val;
+  };
+
+  ASSIGN_OR_RETURN(
+      registration.source_id_candidates,
+        ParseList<uint64_t>(
+          dict.Find(kSourceIdCandidates),
+          TriggerRegistrationError::kSourceIdCandidatesListWrongType,
+          parseUint64Lambda));
+
+  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
+  LOG(INFO) << registration.ToJson() ;
+
+  auto parseStringLambda = [](base::Value& value) -> base::expected<std::string, TriggerRegistrationError> {
+      const std::string* str = value.GetIfString();
+      if (!str) {
+        return base::unexpected(TriggerRegistrationError::kAttributionLogicValueInvalid);
+      }
+      return *str;
+  };
+
+  ASSIGN_OR_RETURN(
+      registration.attribution_logic, 
+      parseStringLambda(*dict.Find(kAttributionLogic)));
 
   LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
   LOG(INFO) << registration.ToJson() ;
@@ -255,8 +305,9 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   aggregatable_trigger_config.Serialize(dict);
   pam_epsilon.Serialize(dict);
-
   SerializeListIfNotEmpty(dict, kEpochs, epochs);
+  SerializeListIfNotEmpty(dict, kSourceIdCandidates, source_id_candidates);
+  dict.Set(kAttributionLogic, attribution_logic);
   return dict;
 }
 

@@ -3996,6 +3996,10 @@ Called by update_net_error_codes.py.-->
   <int value="43" label="epoch start missing"/>
   <int value="44" label="epoch end missing"/>
   <int value="45" label="epoch list has wrong type"/>
+  <int value="46" label="source id candidates list wrong type"/>
+  <int value="47" label="source id candidates wrong type"/>
+  <int value="48" label="source id candidates value invalid"/>
+  <int value="49" label="attribution logic value invalid"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">
