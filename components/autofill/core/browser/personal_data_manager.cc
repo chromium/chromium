@@ -615,10 +615,6 @@ void PersonalDataManager::OnAutofillChangedBySync(
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   DCHECK_EQ(sync_service_, sync_service);
 
-  for (PersonalDataManagerObserver& observer : observers_) {
-    observer.OnPersonalDataSyncStateChanged();
-  }
-
   // Use the ephemeral account storage when the user didn't enable the sync
   // feature explicitly. `sync_service` is nullptr-checked because this
   // method can also be used (apart from the Sync service observer's calls) in
