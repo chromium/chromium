@@ -60,6 +60,7 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/views_features.h"
@@ -70,7 +71,11 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_bstr.h"
+#include "base/win/scoped_safearray.h"
 #include "chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h"
+#include "ui/display/win/screen_win.h"
+#include "ui/views/win/hwnd_util.h"
 #endif
 
 namespace {
@@ -801,9 +806,33 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
 // The following set of tests require UIA accessibility support, which only
 // exists on Windows.
 #if BUILDFLAG(IS_WIN)
+using Microsoft::WRL::ComPtr;
+
 class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
  public:
   OmniboxViewViewsUIATest() {}
+
+  void ExpectUIADoubleSafearrayEQ(
+      SAFEARRAY* safearray,
+      const std::vector<double>& expected_property_values) {
+    EXPECT_EQ(sizeof(V_R8(LPVARIANT(NULL))), ::SafeArrayGetElemsize(safearray));
+    ASSERT_EQ(1u, SafeArrayGetDim(safearray));
+    LONG array_lower_bound;
+    ASSERT_HRESULT_SUCCEEDED(
+        SafeArrayGetLBound(safearray, 1, &array_lower_bound));
+    LONG array_upper_bound;
+    ASSERT_HRESULT_SUCCEEDED(
+        SafeArrayGetUBound(safearray, 1, &array_upper_bound));
+    double* array_data;
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+        safearray, reinterpret_cast<void**>(&array_data)));
+    size_t count = array_upper_bound - array_lower_bound + 1;
+    ASSERT_EQ(expected_property_values.size(), count);
+    for (size_t i = 0; i < count; ++i) {
+      EXPECT_EQ(array_data[i], expected_property_values[i]);
+    }
+    ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(safearray));
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
@@ -861,6 +890,91 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   ClickBrowserWindowCenter();
   close_waiter.Wait();
   EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
+  OmniboxViewViews* omnibox_view_views =
+      static_cast<OmniboxViewViews*>(omnibox_view);
+
+  views::AtomicViewAXTreeManager* ax_tree_manager =
+      omnibox_view_views->GetViewAccessibility()
+          .GetAtomicViewAXTreeManagerForTesting();
+
+  // Set the text and select a substring.
+  gfx::Range selection_range(4, 8);
+
+  omnibox_view_views->SetUserText(u"helloworld");
+  omnibox_view_views->SetSelectedRange(selection_range);
+
+  // Get the UIA providers we need to perform the tests.
+  ui::AXPlatformNode* ax_platform_node =
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          ax_tree_manager->RootDelegate()->GetNativeViewAccessible());
+
+  ComPtr<IRawElementProviderSimple> root_node_raw;
+  ax_platform_node->GetNativeViewAccessible()->QueryInterface(
+      __uuidof(IRawElementProviderSimple), &root_node_raw);
+  ComPtr<ITextProvider> document_provider;
+  ASSERT_HRESULT_SUCCEEDED(
+      root_node_raw->GetPatternProvider(UIA_TextPatternId, &document_provider));
+
+  CComPtr<ITextRangeProvider> selected_text_range_provider;
+  base::win::ScopedSafearray selection;
+  LONG index = 0;
+
+  // The actual testing starts:
+  // 1. Call ITextProvider::GetSelection to get the selected text range.
+  document_provider->GetSelection(selection.Receive());
+  ASSERT_NE(nullptr, selection.Get());
+  ASSERT_HRESULT_SUCCEEDED(SafeArrayGetElement(selection.Get(), &index,
+                                               &selected_text_range_provider));
+
+  // 2. Call ITextRangeProvider::GetText to get the selected text.
+  base::win::ScopedBstr text_content;
+  ASSERT_HRESULT_SUCCEEDED(
+      selected_text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_STREQ(L"owor", text_content.Get());
+
+  // 3. Call ITextRangeProvider::GetBoundingRectangles to get the bounding rect.
+  base::win::ScopedSafearray safearray;
+  ASSERT_HRESULT_SUCCEEDED(
+      selected_text_range_provider->GetBoundingRectangles(safearray.Receive()));
+
+  ComPtr<IRawElementProviderFragment> textfield_fragment;
+  ax_platform_node->GetNativeViewAccessible()->QueryInterface(
+      __uuidof(IRawElementProviderFragment), &textfield_fragment);
+  UiaRect textfield_rect;
+
+  ASSERT_HRESULT_SUCCEEDED(
+      textfield_fragment->get_BoundingRectangle(&textfield_rect));
+
+  // Create the expected bounds for the text range from the bounds of the text
+  // field and the selected range offsets.
+  gfx::Rect bounds_in_screen = omnibox_view_views->GetContentsBounds();
+  omnibox_view_views->ConvertRectToScreen(omnibox_view_views,
+                                          &bounds_in_screen);
+
+  std::vector<int32_t> offsets =
+      ax_tree_manager->GetRoot()->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kCharacterOffsets);
+  int range_start_offset = offsets[selection_range.start()];
+  int range_end_offset = offsets[selection_range.end()];
+
+  int left_bound =
+      display::win::ScreenWin::DIPToScreenRect(
+          HWNDForView(omnibox_view_views),
+          gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
+          .x();
+
+  std::vector<double> expected_values = std::vector<double>{
+      static_cast<double>(left_bound), textfield_rect.top,
+      static_cast<double>(range_end_offset - range_start_offset),
+      textfield_rect.height};
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUIADoubleSafearrayEQ(safearray.Get(), expected_values));
 }
 
 namespace {

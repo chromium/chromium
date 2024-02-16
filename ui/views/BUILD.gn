@@ -78,6 +78,7 @@ component("views") {
 
   public = [
     "accessibility/accessibility_paint_checks.h",
+    "accessibility/atomic_view_ax_tree_manager.h",
     "accessibility/ax_event_manager.h",
     "accessibility/ax_event_observer.h",
     "accessibility/ax_virtual_view.h",
@@ -320,6 +321,7 @@ component("views") {
 
   sources = [
     "accessibility/accessibility_paint_checks.cc",
+    "accessibility/atomic_view_ax_tree_manager.cc",
     "accessibility/ax_event_manager.cc",
     "accessibility/ax_event_observer.cc",
     "accessibility/ax_virtual_view.cc",
@@ -943,8 +945,6 @@ component("views") {
 
   if (has_native_accessibility) {
     sources += [
-      "accessibility/atomic_view_ax_tree_manager.cc",
-      "accessibility/atomic_view_ax_tree_manager.h",
       "accessibility/view_ax_platform_node_delegate.cc",
       "accessibility/view_ax_platform_node_delegate.h",
     ]
