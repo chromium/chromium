@@ -3939,7 +3939,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           This card shows any privacy or security issues that Safety Check automatically detects for you.
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_ALL_SAFE" desc="Tag label description displayed for the Safety Check module in the Magic Stack when there are no Safety Check issue found. [iOS only]">
-        Safety Check didn't find any security issues for you to fix.
+        There are no security issues for you to fix.
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_COMPROMISED_PASSWORD" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Password check finds a compromised password issue. [iOS only]">
         You have 1 compromised password. Fix it now to stay safe.
@@ -3969,7 +3969,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         You have 1 weak password. Fix it now to stay safe.
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK" desc="Subtitle for Safety Check (Magic Stack) module which shows the timestamp of the last check." meaning="Time when the Safety Check was last run.">
-        Last run <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
+        <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_PASSWORD_CHECKUP_ONGOING" desc="In sentence case: Subtitle for the password check item in Safety Check indicating that the checks are running. Sentence case. [CHAR_LIMIT=25] [iOS only]" meaning="In sentence case.">
         Checking passwords…

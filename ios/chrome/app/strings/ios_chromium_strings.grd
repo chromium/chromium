@@ -779,7 +779,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
         Your Chromium is out of date.
       </message>
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
-        Chromium is out of date, update to the latest version to stay secure.
+        Your Chromium is out of date. Update it to stay safe.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.
