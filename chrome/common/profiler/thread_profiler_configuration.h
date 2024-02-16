@@ -90,6 +90,9 @@ class ThreadProfilerConfiguration {
 
     // Enabled outside of the experiment.
     kProfileEnabled,
+
+    // Disabled outside of the experiment.
+    kProfileDisabledOutsideOfExperiment,
   };
 
   struct BrowserProcessConfiguration {

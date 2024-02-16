@@ -121,6 +121,9 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     case kProfileEnabled:
       *group_name = "Enabled";
       break;
+    case kProfileDisabledOutsideOfExperiment:
+      *group_name = "DisabledOutsideOfExperiment";
+      break;
   }
 
   return true;
@@ -258,22 +261,26 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
 
 #if BUILDFLAG(IS_ANDROID)
   CHECK_EQ(0, relative_populations.experiment % 3);
-  return {ChooseVariationGroup({
-              {kProfileEnabled, relative_populations.enabled},
-              {kProfileControl, relative_populations.experiment / 3},
-              {kProfileEnabledWithJavaNameHashing,
-               relative_populations.experiment / 3},
-              {kProfileDisabled, relative_populations.experiment / 3},
-          }),
-          process_type_to_sample};
+  return {
+      ChooseVariationGroup({
+          {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
+          {kProfileEnabled, relative_populations.enabled},
+          {kProfileControl, relative_populations.experiment / 3},
+          {kProfileEnabledWithJavaNameHashing,
+           relative_populations.experiment / 3},
+          {kProfileDisabled, relative_populations.experiment / 3},
+      }),
+      process_type_to_sample};
 #else
   CHECK_EQ(0, relative_populations.experiment % 2);
-  return {ChooseVariationGroup({
-              {kProfileEnabled, relative_populations.enabled},
-              {kProfileControl, relative_populations.experiment / 2},
-              {kProfileDisabled, relative_populations.experiment / 2},
-          }),
-          process_type_to_sample};
+  return {
+      ChooseVariationGroup({
+          {kProfileDisabledOutsideOfExperiment, relative_populations.disabled},
+          {kProfileEnabled, relative_populations.enabled},
+          {kProfileControl, relative_populations.experiment / 2},
+          {kProfileDisabled, relative_populations.experiment / 2},
+      }),
+      process_type_to_sample};
 #endif
 }
 

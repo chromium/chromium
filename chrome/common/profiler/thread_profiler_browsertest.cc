@@ -129,12 +129,13 @@ class ThreadProfilerBrowserTest : public PlatformBrowserTest {
 bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
                     metrics::Process process,
                     metrics::Thread thread) {
-  // Profiling is only enabled for trunk builds and canary and dev channels.
+  // Profiling is only enabled for trunk builds and non-stable channels.
   // Perform an early return and pass the test for the other channels.
   switch (chrome::GetChannel()) {
     case version_info::Channel::UNKNOWN:
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
       break;
 
     default:

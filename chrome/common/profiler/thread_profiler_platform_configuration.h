@@ -32,11 +32,16 @@
 class ThreadProfilerPlatformConfiguration {
  public:
   // The relative populations to use for enabling/disabling the profiler.
-  // |enabled| + |experiment| is expected to equal 100. Profiling is to be
-  // enabled with probability |enabled|/100. The fraction |experiment|/100 is to
-  // be split in to two equal-sized experiment groups with probability
-  // |experiment|/(2 * 100), one of which will be enabled and one disabled.
+  // |disabled| + |enabled| + |experiment| is expected to equal 100.
+  // - Within the enabled population, profiling is always enabled.
+  // - Within the disabled population, profiling is always disabled.
+  // - The experiment population is further split down to N equal-sized
+  // subgroups with different configurations. Often, N = 2, where one subgroup
+  // is disabled and one is enabled, but it could be more than 2 if we're
+  // experimenting with more specific details of how and where we enable the
+  // profiler. |experiment| must be divisible by N.
   struct RelativePopulations {
+    int disabled;
     int enabled;
     int experiment;
   };
