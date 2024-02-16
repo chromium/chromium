@@ -16,15 +16,41 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 class AudioDeviceListener {
     private static final boolean DEBUG = false;
 
     private static final String TAG = "media";
+
+    private static final String CONNECTION_HISTOGRAM_PREFIX = "Media.AudioDeviceConnectionStatus.";
+
+    // Common enum for recording audio device connection status.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        ConnectionStatus.DISCONNECTED,
+        ConnectionStatus.CONNECTING,
+        ConnectionStatus.CONNECTED,
+        ConnectionStatus.DISCONNECTING,
+        ConnectionStatus.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ConnectionStatus {
+        int DISCONNECTED = 0;
+        int CONNECTING = 1;
+        int CONNECTED = 2;
+        int DISCONNECTING = 3;
+        int MAX_VALUE = DISCONNECTING + 1;
+    }
 
     // Enabled during initialization if BLUETOOTH permission is granted.
     private boolean mHasBluetoothPermission;
@@ -207,20 +233,24 @@ class AudioDeviceListener {
                                             + ", sb="
                                             + isInitialStickyBroadcast());
                         }
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
                         switch (state) {
                             case STATE_UNPLUGGED:
                                 mDeviceStates.setDeviceExistence(
                                         AudioDeviceSelector.Devices.ID_WIRED_HEADSET, false);
+                                histogramValue = ConnectionStatus.DISCONNECTED;
                                 break;
                             case STATE_PLUGGED:
                                 mDeviceStates.setDeviceExistence(
                                         AudioDeviceSelector.Devices.ID_WIRED_HEADSET, true);
+                                histogramValue = ConnectionStatus.CONNECTED;
                                 break;
                             default:
                                 break;
                         }
 
                         mDeviceStates.onPotentialDeviceStatusChange();
+                        recordConnectionHistogram("Wired", histogramValue);
                     }
                 };
 
@@ -270,6 +300,7 @@ class AudioDeviceListener {
                                             + isInitialStickyBroadcast());
                         }
 
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
                         switch (profileState) {
                             case android.bluetooth.BluetoothProfile.STATE_DISCONNECTED:
                                 // We do not have to explicitly call stopBluetoothSco()
@@ -278,21 +309,28 @@ class AudioDeviceListener {
                                 mDeviceStates.setDeviceExistence(
                                         AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, false);
                                 mDeviceStates.onPotentialDeviceStatusChange();
+                                histogramValue = ConnectionStatus.DISCONNECTED;
                                 break;
                             case android.bluetooth.BluetoothProfile.STATE_CONNECTED:
                                 mDeviceStates.setDeviceExistence(
                                         AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, true);
                                 mDeviceStates.onPotentialDeviceStatusChange();
+                                histogramValue = ConnectionStatus.CONNECTED;
                                 break;
                             case android.bluetooth.BluetoothProfile.STATE_CONNECTING:
                                 // Bluetooth service is switching from off to on.
+                                histogramValue = ConnectionStatus.CONNECTING;
                                 break;
                             case android.bluetooth.BluetoothProfile.STATE_DISCONNECTING:
                                 // Bluetooth service is switching from on to off.
+                                histogramValue = ConnectionStatus.DISCONNECTING;
                                 break;
                             default:
                                 break;
                         }
+
+                        // Note, disconnection may take more than 15 seconds to detect.
+                        recordConnectionHistogram("Bluetooth", histogramValue);
                     }
                 };
 
@@ -344,16 +382,22 @@ class AudioDeviceListener {
                         // Not a USB audio device.
                         if (!hasUsbAudioCommInterface(device)) return;
 
+                        @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
                         if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                             mDeviceStates.setDeviceExistence(
                                     AudioDeviceSelector.Devices.ID_USB_AUDIO, true);
+                            histogramValue = ConnectionStatus.CONNECTED;
                         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())
                                 && !hasUsbAudio()) {
                             mDeviceStates.setDeviceExistence(
                                     AudioDeviceSelector.Devices.ID_USB_AUDIO, false);
+                            histogramValue = ConnectionStatus.DISCONNECTED;
                         }
 
                         mDeviceStates.onPotentialDeviceStatusChange();
+                        // Note, this may also be recorded for headphones plugged in with a
+                        // 3.5mm-to-USB adapter.
+                        recordConnectionHistogram("USB", histogramValue);
                     }
                 };
 
@@ -378,6 +422,11 @@ class AudioDeviceListener {
                 .hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
     }
 
+    private static void recordConnectionHistogram(String name, @ConnectionStatus int value) {
+        RecordHistogram.recordEnumeratedHistogram(
+                CONNECTION_HISTOGRAM_PREFIX + name, value, ConnectionStatus.MAX_VALUE);
+    }
+
     /** Trivial helper method for debug logging */
     private static void logd(String msg) {
         Log.d(TAG, msg);
@@ -386,5 +435,17 @@ class AudioDeviceListener {
     /** Trivial helper method for error logging */
     private static void loge(String msg) {
         Log.e(TAG, msg);
+    }
+
+    BroadcastReceiver getWiredHeadsetReceiverForTesting() {
+        return mWiredHeadsetReceiver;
+    }
+
+    BroadcastReceiver getBluetoothHeadsetReceiverForTesting() {
+        return mBluetoothHeadsetReceiver;
+    }
+
+    BroadcastReceiver getUsbReceiverForTesting() {
+        return mUsbAudioReceiver;
     }
 }

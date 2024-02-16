@@ -1481,6 +1481,24 @@ chromium-metrics-reviews@google.com.
   <summary>Audio codec profile used in HTML5 media for AAC playback.</summary>
 </histogram>
 
+<histogram name="Media.AudioDeviceConnectionStatus.{AudioDeviceType}"
+    enum="AudioDeviceConnectionStatus" expires_after="2025-01-31">
+  <owner>iwells@chromium.org</owner>
+  <owner>clank-readaloud@google.com</owner>
+  <summary>
+    Records connection status changes for {AudioDeviceType} audio devices,
+    emitted when a device is connected or disconnected. Disconnection of
+    Bluetooth devices may be reported more than fifteen seconds after the device
+    is actually disconnected. If using a 3.5mm-to-USB adapter, a 3.5mm device
+    may be reported as USB.
+  </summary>
+  <token key="AudioDeviceType">
+    <variant name="Bluetooth"/>
+    <variant name="USB"/>
+    <variant name="Wired"/>
+  </token>
+</histogram>
+
 <histogram name="Media.AudioInputController" units="ms" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->
 

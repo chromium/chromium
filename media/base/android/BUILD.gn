@@ -223,6 +223,7 @@ if (is_android) {
 
   robolectric_binary("media_base_junit_tests") {
     sources = [
+      "java/src/test/org/chromium/media/AudioDeviceListenerTest.java",
       "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
       "java/src/test/org/chromium/media/BitrateAdjusterTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",

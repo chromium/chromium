@@ -52,6 +52,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="No data received and capture stopped within 500ms"/>
 </enum>
 
+<enum name="AudioDeviceConnectionStatus">
+  <int value="0" label="Disconnected"/>
+  <int value="1" label="Connecting"/>
+  <int value="2" label="Connected"/>
+  <int value="3" label="Disconnecting"/>
+</enum>
+
 <enum name="AudioGlitchResult">
   <int value="0" label="No audio glitches"/>
   <int value="1" label="Audio glitches"/>
