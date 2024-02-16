@@ -20,6 +20,7 @@ ServiceWorkerRouterInfo::ToMojo() const {
   network::mojom::blink::ServiceWorkerRouterInfoPtr info =
       network::mojom::blink::ServiceWorkerRouterInfo::New();
   info->rule_id_matched = rule_id_matched_;
+  info->matched_source_type = matched_source_type_;
   return info;
 }
 

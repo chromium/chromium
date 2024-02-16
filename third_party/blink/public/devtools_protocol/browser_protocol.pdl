@@ -5736,9 +5736,18 @@ domain Network
       # This value is used when the reason is unknown.
       unspecifiedReason
 
+  # Source of service worker router.
+  type ServiceWorkerRouterSource extends string
+    enum
+      network
+      cache
+      fetch-event
+      race-network-and-fetch-handler
+
   experimental type ServiceWorkerRouterInfo extends object
     properties
       integer ruleIdMatched
+      ServiceWorkerRouterSource matchedSourceType
 
   # HTTP response data.
   type Response extends object

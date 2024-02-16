@@ -581,6 +581,21 @@ String BuildServiceWorkerResponseSource(const ResourceResponse& response) {
   }
 }
 
+String BuildServiceWorkerRouterSourceType(
+    const network::mojom::ServiceWorkerRouterSourceType& type) {
+  switch (type) {
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+      return protocol::Network::ServiceWorkerRouterSourceEnum::Network;
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+      return protocol::Network::ServiceWorkerRouterSourceEnum::
+          RaceNetworkAndFetchHandler;
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+      return protocol::Network::ServiceWorkerRouterSourceEnum::FetchEvent;
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
+      return protocol::Network::ServiceWorkerRouterSourceEnum::Cache;
+  }
+}
+
 WebConnectionType ToWebConnectionType(const String& connection_type) {
   if (connection_type == protocol::Network::ConnectionTypeEnum::None)
     return kWebConnectionTypeNone;
@@ -1075,6 +1090,8 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
         protocol::Network::ServiceWorkerRouterInfo::create()
             .setRuleIdMatched(
                 response.GetServiceWorkerRouterInfo()->RuleIdMatched())
+            .setMatchedSourceType(BuildServiceWorkerRouterSourceType(
+                response.GetServiceWorkerRouterInfo()->MatchedSourceType()))
             .build());
   }
 

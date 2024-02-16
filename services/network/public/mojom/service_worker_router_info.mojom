@@ -23,4 +23,7 @@ enum ServiceWorkerRouterSourceType {
 struct ServiceWorkerRouterInfo {
   // ID of the rule matchhed. Zero (invalid) by default.
   uint32 rule_id_matched = 0;
+
+  // The router source of the matched rule.
+  ServiceWorkerRouterSourceType matched_source_type;
 };

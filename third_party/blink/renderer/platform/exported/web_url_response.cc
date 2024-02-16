@@ -513,6 +513,7 @@ void WebURLResponse::SetServiceWorkerRouterInfo(
     const network::mojom::ServiceWorkerRouterInfo& value) {
   auto info = ServiceWorkerRouterInfo::Create();
   info->SetRuleIdMatched(value.rule_id_matched);
+  info->SetMatchedSourceType(value.matched_source_type);
   resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 

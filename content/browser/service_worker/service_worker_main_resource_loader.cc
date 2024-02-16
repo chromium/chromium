@@ -312,17 +312,19 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     active_worker->CountFeature(
         blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
     if (eval_result) {  // matched the rule.
+      const auto& sources = eval_result->sources;
+      auto source_type = sources[0].type;
+      set_used_router_source_type(source_type);
+
       // Set router information of matched rule for DevTools.
       // TODO(crbug.com/1502443): Prepare the router info in ResponseHead even
       // when the response is not set by `DidDispatchFetchEvent()`.
       network::mojom::ServiceWorkerRouterInfoPtr router_info =
           network::mojom::ServiceWorkerRouterInfo::New();
       router_info->rule_id_matched = eval_result->id;
+      router_info->matched_source_type = source_type;
       response_head_->service_worker_router_info = std::move(router_info);
 
-      const auto& sources = eval_result->sources;
-      auto source_type = sources[0].type;
-      set_used_router_source_type(source_type);
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
       switch (source_type) {

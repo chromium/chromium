@@ -373,15 +373,17 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
     kSkipped
   } race_network_request_mode = kDefault;
   if (eval_result) {  // matched the rule.
-    auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
-    router_info->rule_id_matched = eval_result->id;
-    response_head_->service_worker_router_info = std::move(router_info);
-
     const auto& sources = eval_result->sources;
     // TODO(crbug.com/1371756): support other sources in the full form.
     // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
     auto source_type = sources[0].type;
     set_used_router_source_type(source_type);
+
+    auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
+    router_info->rule_id_matched = eval_result->id;
+    router_info->matched_source_type = source_type;
+    response_head_->service_worker_router_info = std::move(router_info);
+
     switch (source_type) {
       case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
         // Network fallback is requested.

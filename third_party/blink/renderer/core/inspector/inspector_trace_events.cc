@@ -987,6 +987,8 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
     auto info = dict.AddDictionary("staticRoutingInfo");
     info.Add("ruleIdMatched",
              response.GetServiceWorkerRouterInfo()->RuleIdMatched());
+    info.Add("matchedSourceType",
+             response.GetServiceWorkerRouterInfo()->MatchedSourceType());
   }
 
   SetHeaders(dict.AddItem("headers"), response.HttpHeaderFields());

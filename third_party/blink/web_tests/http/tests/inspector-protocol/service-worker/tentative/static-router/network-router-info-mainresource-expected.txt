@@ -1,5 +1,6 @@
 Verifies that the request head has static routing information on the main resource.
 {
+    matchedSourceType : fetch-event
     ruleIdMatched : 1
 }
 
