@@ -136,7 +136,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   TextControlInnerEditorElement* InnerEditorElement() const {
     return inner_editor_.Get();
   }
-  virtual TextControlInnerEditorElement* EnsureInnerEditorElement() const = 0;
   HTMLElement* CreateInnerEditorElement();
   void DropInnerEditorElement() { inner_editor_ = nullptr; }
 
@@ -169,8 +168,12 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
  protected:
   TextControlElement(const QualifiedName&, Document&);
-  virtual void UpdatePlaceholderText() = 0;
+  virtual HTMLElement* UpdatePlaceholderText() = 0;
   virtual String GetPlaceholderValue() const = 0;
+
+  // Creates the editor if necessary. Implementations that support an editor
+  // should callback to CreateInnerEditorElement().
+  virtual void CreateInnerEditorElementIfNecessary() const = 0;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
@@ -199,6 +202,14 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
     unsigned end = 0;
     TextFieldSelectionDirection direction = kSelectionHasNoDirection;
   };
+
+  TextControlInnerEditorElement* EnsureInnerEditorElement() const {
+    if (inner_editor_) {
+      return inner_editor_.Get();
+    }
+    CreateInnerEditorElementIfNecessary();
+    return inner_editor_.Get();
+  }
 
   bool ShouldApplySelectionCache() const;
   // Computes the selection. `flags` is a bitmask of ComputeSelectionFlags that

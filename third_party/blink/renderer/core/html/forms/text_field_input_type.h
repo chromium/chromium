@@ -87,7 +87,7 @@ class TextFieldInputType : public InputType,
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;
-  void UpdatePlaceholderText(bool is_suggested_value) final;
+  HTMLElement* UpdatePlaceholderText(bool is_suggested_value) final;
   void SubtreeHasChanged() final;
   void OpenPopupView() override;
 

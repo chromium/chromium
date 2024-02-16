@@ -53,12 +53,12 @@ class ComputedStyleBuilder;
 class Element;
 class Event;
 class FormControlState;
+class HTMLElement;
 class HTMLFormElement;
 class HTMLInputElement;
 class KeyboardEvent;
 class LayoutObject;
 class MouseEvent;
-class TextControlInnerEditorElement;
 
 class ClickHandlingState final : public EventDispatchHandlingState {
  public:
@@ -122,11 +122,9 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   // Functions for shadow trees
 
-  TextControlInnerEditorElement* EnsureInnerEditorElement();
   bool HasCreatedShadowSubtree() const { return has_created_shadow_subtree_; }
   void CreateShadowSubtreeIfNeeded();
   virtual bool NeedsShadowSubtree() const;
-  virtual void CreateShadowSubtree();
   virtual void DestroyShadowSubtree();
   virtual HTMLInputElement* UploadButton() const;
   virtual String FileStatusText() const;
@@ -146,7 +144,10 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;
   virtual void UpdateClearButtonVisibility();
-  virtual void UpdatePlaceholderText(bool is_suggested_value);
+
+  // Updates the text in the placeholder, returning the Element representing the
+  // placeholder. Returns null if there is no placeholder.
+  virtual HTMLElement* UpdatePlaceholderText(bool is_suggested_value);
   virtual AXObject* PopupRootAXObject();
   virtual void EnsureFallbackContent() {}
   virtual void EnsurePrimaryContent() {}
@@ -163,6 +164,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
  protected:
   InputTypeView(HTMLInputElement& element) : element_(&element) {}
   HTMLInputElement& GetElement() const { return *element_; }
+
+  virtual void CreateShadowSubtree();
 
   bool will_be_destroyed_ = false;
 

@@ -2003,12 +2003,11 @@ bool HTMLInputElement::SupportsPlaceholder() const {
   return input_type_->SupportsPlaceholder();
 }
 
-TextControlInnerEditorElement* HTMLInputElement::EnsureInnerEditorElement()
-    const {
-  return input_type_view_->EnsureInnerEditorElement();
+void HTMLInputElement::CreateInnerEditorElementIfNecessary() const {
+  input_type_view_->CreateShadowSubtreeIfNeeded();
 }
 
-void HTMLInputElement::UpdatePlaceholderText() {
+HTMLElement* HTMLInputElement::UpdatePlaceholderText() {
   return input_type_view_->UpdatePlaceholderText(!SuggestedValue().empty());
 }
 

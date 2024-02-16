@@ -457,8 +457,8 @@ class CORE_EXPORT HTMLInputElement
   bool TooLong(const String&, NeedsToCheckDirtyFlag) const;
   bool TooShort(const String&, NeedsToCheckDirtyFlag) const;
 
-  TextControlInnerEditorElement* EnsureInnerEditorElement() const final;
-  void UpdatePlaceholderText() final;
+  void CreateInnerEditorElementIfNecessary() const final;
+  HTMLElement* UpdatePlaceholderText() final;
   void HandleBlurEvent() final;
   void DispatchFocusInEvent(const AtomicString& event_type,
                             Element* old_focused_element,

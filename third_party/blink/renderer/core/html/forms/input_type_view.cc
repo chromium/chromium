@@ -141,11 +141,6 @@ bool InputTypeView::NeedsShadowSubtree() const {
   return true;
 }
 
-TextControlInnerEditorElement* InputTypeView::EnsureInnerEditorElement() {
-  CreateShadowSubtreeIfNeeded();
-  return GetElement().InnerEditorElement();
-}
-
 void InputTypeView::CreateShadowSubtree() {}
 
 void InputTypeView::CreateShadowSubtreeIfNeeded() {
@@ -212,7 +207,9 @@ bool InputTypeView::ShouldDrawCapsLockIndicator() const {
 
 void InputTypeView::UpdateClearButtonVisibility() {}
 
-void InputTypeView::UpdatePlaceholderText(bool) {}
+HTMLElement* InputTypeView::UpdatePlaceholderText(bool) {
+  return nullptr;
+}
 
 AXObject* InputTypeView::PopupRootAXObject() {
   return nullptr;
