@@ -21513,6 +21513,24 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Vulkan",
+                    "enable_features": [
+                        "DefaultANGLEVulkan",
+                        "Vulkan",
+                        "VulkanFromANGLE"
+                    ],
+                    "disable_features": [
+                        "VaapiVideoDecoder"
+                    ]
+                }
+            ]
         }
     ],
     "VulkanV2": [
