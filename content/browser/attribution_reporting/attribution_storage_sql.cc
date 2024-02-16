@@ -937,15 +937,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
-
-
-  LOG(INFO) << trigger_registration.ToJson() ;
-
-  LOG(INFO) << "Epochs" ;
-  for (auto epoch : trigger_registration.epochs) {
-    LOG(INFO) <<  epoch.epoch_start();
-    LOG(INFO) <<  epoch.epoch_end();
-  }
   
   const base::Time trigger_time = base::Time::Now();
 

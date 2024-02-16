@@ -123,8 +123,6 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   vec.reserve(list->size());
 
   for (auto& value : *list) {
-      LOG(INFO) << value ;
-
     ASSIGN_OR_RETURN(T element, build_element(value));
     vec.emplace_back(std::move(element));
   }
@@ -184,18 +182,13 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
           TriggerRegistrationError::kEpochListWrongType,
           &Epoch::FromJSON));
 
-  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
-  LOG(INFO) << registration.ToJson() ;
-
-  auto parseUint64Lambda = [](base::Value& value) -> base::expected<uint64_t, TriggerRegistrationError> {
-      uint64_t parsed_val;
-      LOG(INFO) << value ;
-      if (const std::string* str = value.GetIfString();
-        !str || !base::StringToUint64(*str, &parsed_val)) {
-        LOG(INFO) << str ;
-        return base::unexpected(TriggerRegistrationError::kSourceIdCandidatesWrongType);
-      }
-      return parsed_val;
+  auto parseUint64Lambda = [](base::Value& value) -> base::expected<uint64_t, TriggerRegistrationError> {      
+    std::optional<uint64_t> v = value.GetIfInt();
+    if (!v.has_value()) {
+      return base::unexpected(
+          TriggerRegistrationError::kPamEpsilonWrongType);
+    }
+      return *v;
   };
 
   ASSIGN_OR_RETURN(
@@ -204,9 +197,6 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
           dict.Find(kSourceIdCandidates),
           TriggerRegistrationError::kSourceIdCandidatesListWrongType,
           parseUint64Lambda));
-
-  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
-  LOG(INFO) << registration.ToJson() ;
 
   auto parseStringLambda = [](base::Value& value) -> base::expected<std::string, TriggerRegistrationError> {
       const std::string* str = value.GetIfString();
@@ -220,9 +210,6 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.attribution_logic, 
       parseStringLambda(*dict.Find(kAttributionLogic)));
 
-  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
-  LOG(INFO) << registration.ToJson() ;
-
   if (base::FeatureList::IsEnabled(
           aggregation_service::kAggregationServiceMultipleCloudProviders)) {
     ASSIGN_OR_RETURN(
@@ -235,6 +222,9 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
 
   ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
                    AggregatableTriggerConfig::Parse(dict));
+
+  LOG(INFO) << "PARSE TRIGGER REGISTRATION" ;
+  LOG(INFO) << registration.ToJson() ;
 
   return registration;
 }
