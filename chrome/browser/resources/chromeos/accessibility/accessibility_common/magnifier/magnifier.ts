@@ -23,6 +23,15 @@ export class Magnifier {
    */
   private screenMagnifierFocusFollowing_: boolean|undefined;
   /**
+   * Whether Select to Speak focus following is enabled or not.
+   * TODO(b/259363112): This should be based on a pref but is currently
+   * always true; when the feature flag AccessibilityMagnifierFollowsSts
+   * is turned on then STS focus events will be sent from
+   * chrome.accessibilityCommon, and when the flag is off then events will
+   * not be sent, so magnifier will never notice them.
+   */
+  private screenMagnifierStsFollowing_ = true;
+  /**
    * Whether magnifier is current initializing, and so should ignore
    * focus updates.
    */
@@ -156,7 +165,7 @@ export class Magnifier {
 
   private onSelectToSpeakFocusChanged_(bounds: ScreenRect): void {
     // Don't follow select to speak if focus following is off.
-    if (!this.shouldFollowFocus()) {
+    if (!this.shouldFollowStsFocus()) {
       return;
     }
 
@@ -194,6 +203,8 @@ export class Magnifier {
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
           this.screenMagnifierFocusFollowing_ = Boolean(pref.value);
           break;
+        // TODO(b/259363112): Update screenMagnifierStsFollowing_ when pref is
+        // available.
         default:
           return;
       }
@@ -213,6 +224,10 @@ export class Magnifier {
         (this.type === Magnifier.Type.DOCKED ||
          this.type === Magnifier.Type.FULL_SCREEN &&
              this.screenMagnifierFocusFollowing_));
+  }
+
+  shouldFollowStsFocus(): boolean {
+    return Boolean(!this.isInitializing_ && this.screenMagnifierStsFollowing_);
   }
 
   /**
