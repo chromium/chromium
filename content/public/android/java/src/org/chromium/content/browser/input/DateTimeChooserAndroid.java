@@ -17,15 +17,23 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Plumbing for the different date/time dialog adapters. */
 @JNINamespace("content")
-class DateTimeChooserAndroid {
+public class DateTimeChooserAndroid {
     private long mNativeDateTimeChooserAndroid;
     private final InputDialogContainer mInputDialogContainer;
 
+    public interface Factory {
+        public InputDialogContainer create(Context context, InputDialogContainer.InputActionDelegate delegate);
+    }
+
+    private static Factory sFactory;
+
+    public static void setFactory(Factory factory) {
+        sFactory = factory;
+    }
+
     private DateTimeChooserAndroid(Context context, long nativeDateTimeChooserAndroid) {
         mNativeDateTimeChooserAndroid = nativeDateTimeChooserAndroid;
-        mInputDialogContainer =
-                new InputDialogContainer(
-                        context,
+        InputDialogContainer.InputActionDelegate delegate =
                         new InputDialogContainer.InputActionDelegate() {
                             @Override
                             public void replaceDateTime(double value) {
@@ -49,7 +57,14 @@ class DateTimeChooserAndroid {
                                                 mNativeDateTimeChooserAndroid,
                                                 DateTimeChooserAndroid.this);
                             }
-                        });
+                        };
+
+        if (sFactory != null) {
+            mInputDialogContainer = sFactory.create(context, delegate);
+        } else {
+            mInputDialogContainer =
+                    new InputDialogContainer(context, delegate);
+        }
     }
 
     private void showDialog(
