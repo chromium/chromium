@@ -140,6 +140,15 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         notify: true,
       },
 
+      /**
+       * If this menu exists in the drawer. Used to compute responsiveness in
+       * smaller window sizes.
+       */
+      isDrawerMenu: {
+        type: Boolean,
+        value: false,
+      },
+
       basicMenuItems_: {
         type: Array,
         computed: 'computeBasicMenuItems_(pageAvailability.*,' +
@@ -221,6 +230,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   advancedOpened: boolean;
+  isDrawerMenu: boolean;
   pageAvailability: OsPageAvailability;
   private basicMenuItems_: MenuItemData[];
   private advancedMenuItems_: MenuItemData[];
@@ -608,6 +618,10 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
   private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+
+  private getMenuItemTooltipPosition_(): 'right'|'bottom' {
+    return this.isDrawerMenu ? 'bottom' : 'right';
   }
 
   /**

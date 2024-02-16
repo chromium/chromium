@@ -58,6 +58,8 @@
     height: 100%;
     position: sticky;
     top: 0;
+    /* Specify z-index so menu item tooltips overlay #center content. */
+    z-index: 100;
   }
 
   #left os-settings-menu {
@@ -148,6 +150,7 @@
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
+            is-drawer-menu
             page-availability="[[pageAvailability_]]"
             on-iron-activate="onMenuItemSelected_"
             advanced-opened="{{advancedOpenedInMenu_}}">

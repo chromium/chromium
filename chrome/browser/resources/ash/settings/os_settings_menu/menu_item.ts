@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
 
@@ -41,16 +42,28 @@ export class OsSettingsMenuItemElement extends PolymerElement {
         value: '',
       },
 
+      label: {
+        type: String,
+        value: '',
+      },
+
       sublabel: {
         type: String,
         value: '',
+      },
+
+      tooltipPosition: {
+        type: String,
+        value: 'right',
       },
     };
   }
 
   icon: string;
   path: string;
+  label: string;
   sublabel: string;
+  tooltipPosition: 'right'|'bottom';
 
   override ready(): void {
     super.ready();
