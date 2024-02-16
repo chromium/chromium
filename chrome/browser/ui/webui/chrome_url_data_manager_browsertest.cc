@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,7 +42,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #else
@@ -195,6 +199,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       enabled_features.push_back(welcome::kForceEnabled);
     }
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     enabled_features.push_back(ash::features::kDriveFsMirroring);
     enabled_features.push_back(ash::features::kShimlessRMAOsUpdate);
@@ -263,6 +268,17 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kSamlInSessionPasswordChangeEnabled, true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // This is needed to simulate the presence of the ODFS extension, which is
+    // checked in `IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled`.
+    auto fake_provider =
+        ash::file_system_provider::FakeExtensionProvider::Create(
+            extension_misc::kODFSExtensionId);
+    auto* service =
+        ash::file_system_provider::Service::Get(browser()->profile());
+    service->RegisterProvider(std::move(fake_provider));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif
 

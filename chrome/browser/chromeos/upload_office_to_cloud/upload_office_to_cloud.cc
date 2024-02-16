@@ -60,6 +60,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile) {
+  if (!IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+    return false;
+  }
+
   if (profile->GetProfilePolicyConnector()->IsManaged()) {
     return chromeos::features::
                IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
@@ -67,7 +71,7 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile) {
                std::vector<Mount>{Mount::kAllowed, Mount::kAutomated},
                chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile));
   }
-  return IsEligibleAndEnabledUploadOfficeToCloud(profile);
+  return true;
 }
 
 bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {

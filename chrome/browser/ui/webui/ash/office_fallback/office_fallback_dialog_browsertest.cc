@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -9,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -70,6 +73,7 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
   OfficeFallbackDialogBrowserTest() {
     feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
+         chromeos::features::kMicrosoftOneDriveIntegrationForEnterprise,
          chromeos::features::kUploadOfficeToCloudForEnterprise},
         {});
   }
@@ -81,6 +85,15 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    // This is needed to simulate the presence of the ODFS extension, which is
+    // checked in `IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled`.
+    auto fake_provider =
+        ash::file_system_provider::FakeExtensionProvider::Create(
+            extension_misc::kODFSExtensionId);
+    auto* service =
+        ash::file_system_provider::Service::Get(browser()->profile());
+    service->RegisterProvider(std::move(fake_provider));
 
     files_ = file_manager::test::CopyTestFilesIntoMyFiles(browser()->profile(),
                                                           {"text.docx"});

@@ -1656,7 +1656,9 @@ void PopulateChromeWebUIFrameBinders(
         ash::cloud_upload::CloudUploadUI>(map);
   }
 
-  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (ash::cloud_upload::
+          IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
+              profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::office_fallback::mojom::PageHandlerFactory,
         ash::office_fallback::OfficeFallbackUI>(map);
