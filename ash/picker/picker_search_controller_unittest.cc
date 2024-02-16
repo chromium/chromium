@@ -108,20 +108,11 @@ using MockSearchResultsCallback =
 
 using PickerSearchControllerTest = testing::Test;
 
-TEST_F(PickerSearchControllerTest, ShowsInitialHeadingsOnSearch) {
+TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client);
   MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          ElementsAre(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching expressions"),
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching links")))))
-      .Times(1);
+  EXPECT_CALL(search_results_callback, Call).Times(0);
 
   controller.StartSearch(
       u"cat", std::nullopt,

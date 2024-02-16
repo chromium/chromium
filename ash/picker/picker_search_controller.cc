@@ -34,9 +34,6 @@ enum class AppListSearchResultType;
 
 namespace {
 
-// TODO: b/316936687 - Use the icons from real search results.
-const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
-
 base::span<const std::string> FirstNOrLessElements(
     base::span<const std::string> container,
     size_t n) {
@@ -72,29 +69,13 @@ void PickerSearchController::StartSearch(
   // Emoji search is currently synchronous.
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
 
-  // Show fake results while we wait for responses.
-  // TODO: b/324154537 - Show a loading animation instead.
-  RunCallback();
+  // TODO: b/324154537 - Show a loading animation while waiting for results.
 }
 
 void PickerSearchController::ResetResults() {
-  omnibox_results_ = std::vector({
-      PickerSearchResult::BrowsingHistory(
-          GURL("http://www.foo.com"), u"Foo",
-          ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
-      PickerSearchResult::BrowsingHistory(
-          GURL("http://crbug.com"), u"Crbug",
-          ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
-  });
-  gif_results_ = std::vector({PickerSearchResult::Gif(
-      GURL("https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"),
-      GURL("https://media.tenor.com/BzfS_9uPq_AAAAAe/cat-bonfire.png"),
-      gfx::Size(140, 140), u"gif")});
-  emoji_search_results_ = std::vector(
-      {PickerSearchResult::Emoji(u"👍"), PickerSearchResult::Emoji(u"😊"),
-       PickerSearchResult::Symbol(u"⊃"), PickerSearchResult::Symbol(u"⊇"),
-       PickerSearchResult::Symbol(u"♬"),
-       PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")});
+  omnibox_results_.clear();
+  gif_results_.clear();
+  emoji_search_results_.clear();
 }
 
 void PickerSearchController::RunCallback() {
