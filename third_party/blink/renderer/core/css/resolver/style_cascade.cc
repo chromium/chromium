@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -1387,11 +1388,20 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
 // through a large tree of function calls.
 const CSSValue* StyleCascade::ResolveFunctionExpression(
     StringView expr,
-    const CSSSyntaxDefinition& type,
+    const StyleRuleFunction::Type& type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     const FunctionContext& function_context) {
   TokenSequence resolved_expr;
+
+  // See documentation on should_add_implicit_calc.
+  if (type.should_add_implicit_calc) {
+    static const char kCalcToken[] = "calc";
+    static const char kCalcStart[] = "calc(";
+    resolved_expr.Append(
+        CSSParserToken(kFunctionToken, kCalcToken, CSSParserToken::kBlockStart),
+        kCalcStart);
+  }
 
   CSSTokenizer tokenizer(expr);
   CSSParserTokenStream argument_stream(tokenizer);
@@ -1400,9 +1410,25 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
     return nullptr;
   }
 
-  return type.Parse(CSSTokenizedValue{resolved_expr.TokenRange(),
-                                      resolved_expr.OriginalText()},
-                    context, /*is_animation_tainted=*/false);
+  if (type.should_add_implicit_calc) {
+    static const char kCalcEnd[] = ")";
+    resolved_expr.Append(
+        CSSParserToken(kRightParenthesisToken, CSSParserToken::kBlockEnd),
+        kCalcEnd);
+  }
+
+  const CSSValue* value =
+      type.syntax.Parse(CSSTokenizedValue{resolved_expr.TokenRange(),
+                                          resolved_expr.OriginalText()},
+                        context, /*is_animation_tainted=*/false);
+  if (!value) {
+    return nullptr;
+  }
+
+  // Resolve the value as if it were a registered property, to get rid of
+  // extraneous calc(), resolve lengths and so on.
+  return &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
+                                                                &context);
 }
 
 bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,

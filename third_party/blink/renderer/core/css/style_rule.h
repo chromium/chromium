@@ -702,21 +702,33 @@ class StyleRuleCharset : public StyleRuleBase {
 // An @function rule, representing a CSS function.
 class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
  public:
+  struct Type {
+    CSSSyntaxDefinition syntax;
+
+    // Whether this is a numeric type, that would be accepted by calc()
+    // (see https://drafts.csswg.org/css-values/#calc-func). This is used
+    // to allow the user to not have to write calc() around every single
+    // expression, so that one could do e.g. --foo(2 + 2) instead of
+    // --foo(calc(2 + 2)). Since writing calc() around an expression of
+    // such a type will never change its meaning, and nested calc is allowed,
+    // this is always safe even when not needed.
+    bool should_add_implicit_calc;
+  };
   struct Parameter {
     String name;
-    CSSSyntaxDefinition type;
+    Type type;
   };
 
   StyleRuleFunction(AtomicString name,
                     Vector<Parameter> parameters,
                     scoped_refptr<CSSVariableData> function_body,
-                    CSSSyntaxDefinition return_type);
+                    Type return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
   const AtomicString& GetName() const { return name_; }
   const Vector<Parameter>& GetParameters() const { return parameters_; }
   CSSVariableData& GetFunctionBody() const { return *function_body_; }
-  const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
+  const Type& GetReturnType() const { return return_type_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -724,7 +736,7 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
   AtomicString name_;
   Vector<Parameter> parameters_;
   scoped_refptr<CSSVariableData> function_body_;
-  CSSSyntaxDefinition return_type_;
+  Type return_type_;
 };
 
 template <>

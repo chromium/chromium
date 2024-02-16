@@ -945,7 +945,7 @@ StyleRuleFunction::StyleRuleFunction(
     AtomicString name,
     Vector<StyleRuleFunction::Parameter> parameters,
     scoped_refptr<CSSVariableData> function_body,
-    CSSSyntaxDefinition return_type)
+    StyleRuleFunction::Type return_type)
     : StyleRuleBase(kFunction),
       name_(std::move(name)),
       parameters_(std::move(parameters)),

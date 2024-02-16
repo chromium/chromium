@@ -2065,13 +2065,52 @@ StyleRuleTry* CSSParserImpl::ConsumeTryRule(CSSParserTokenStream& stream) {
 // Parse a type for CSS Functions; e.g. length, color, etc..
 // These are being converted to the syntax used by registered custom properties.
 // The parameter is assumed to be a single ident token.
-static std::optional<CSSSyntaxDefinition> ParseFunctionType(
+static std::optional<StyleRuleFunction::Type> ParseFunctionType(
     StringView type_name) {
+  std::optional<CSSSyntaxDefinition> syntax_def;
   if (type_name == "any") {
-    return CSSSyntaxStringParser("*").Parse();
+    syntax_def = CSSSyntaxStringParser("*").Parse();
   } else {
-    return CSSSyntaxStringParser("<" + type_name.ToString() + ">").Parse();
+    syntax_def =
+        CSSSyntaxStringParser("<" + type_name.ToString() + ">").Parse();
   }
+  if (!syntax_def) {
+    return {};
+  }
+
+  CHECK_EQ(syntax_def->Components().size(), 1u);
+  bool should_add_implicit_calc = false;
+  if (!syntax_def->IsUniversal()) {
+    // These are all the supported values in CSSSyntaxDefinition that are
+    // acceptable as inputs to calc(); see
+    // https://drafts.csswg.org/css-values/#math.
+    switch (syntax_def->Components()[0].GetType()) {
+      case CSSSyntaxType::kLength:
+        // kFrequency is missing.
+      case CSSSyntaxType::kAngle:
+      case CSSSyntaxType::kTime:
+        // kFlex is missing.
+      case CSSSyntaxType::kResolution:
+      case CSSSyntaxType::kPercentage:
+      case CSSSyntaxType::kNumber:
+      case CSSSyntaxType::kInteger:
+      case CSSSyntaxType::kLengthPercentage:
+        should_add_implicit_calc = true;
+        break;
+      case CSSSyntaxType::kTokenStream:
+      case CSSSyntaxType::kIdent:
+      case CSSSyntaxType::kColor:
+      case CSSSyntaxType::kImage:
+      case CSSSyntaxType::kUrl:
+      case CSSSyntaxType::kTransformFunction:
+      case CSSSyntaxType::kTransformList:
+      case CSSSyntaxType::kCustomIdent:
+        break;
+    }
+  }
+
+  return StyleRuleFunction::Type{std::move(*syntax_def),
+                                 should_add_implicit_calc};
 }
 
 StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
@@ -2115,7 +2154,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
     return nullptr;
   }
   StringView return_type_name = prelude.ConsumeIncludingWhitespace().Value();
-  std::optional<CSSSyntaxDefinition> return_type =
+  std::optional<StyleRuleFunction::Type> return_type =
       ParseFunctionType(return_type_name);
   if (!return_type) {
     return nullptr;  // Invalid type name.
@@ -2193,13 +2232,12 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenRange& stream) {
       return {};
     }
     StringView type_name = stream.ConsumeIncludingWhitespace().Value();
-    std::optional<CSSSyntaxDefinition> syntax_def =
-        ParseFunctionType(type_name);
-    if (!syntax_def) {
+    std::optional<StyleRuleFunction::Type> type = ParseFunctionType(type_name);
+    if (!type) {
       return {};  // Invalid type name.
     }
     parameters.push_back(StyleRuleFunction::Parameter{parameter_name.ToString(),
-                                                      std::move(*syntax_def)});
+                                                      std::move(*type)});
     if (stream.Peek().GetType() == kRightParenthesisToken) {
       // No more arguments.
       break;
