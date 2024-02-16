@@ -72,6 +72,50 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundInvalid) {
   )").get()));
 }
 
+TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundTwoInvalid) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
+   <body>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+  </form>
+  )").get()));
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_IgnoreFirstInvalid) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
+   <body>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+    <div>
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
+    </div>
+  </form>
+  )").get()));
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_IgnoreSecondInvalid) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
+   <body>
+    <div>
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
+    </div>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+  </form>
+  )").get()));
+}
+
 TEST_F(FacilitatedPaymentsAgentTest,
        TriggerPixCodeDetection_NotFoundWhenDeleting) {
   std::unique_ptr<FacilitatedPaymentsAgent> agent = CreateAgentFor(R"(

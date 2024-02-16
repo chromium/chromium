@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
+#include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
@@ -106,9 +107,11 @@ class BLINK_EXPORT WebNode {
   WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
   // Returns the contents of the first descendant element, if any, that contains
-  // only text, a part of which is the given substring. The search is
-  // case-sensitive.
-  WebString FindTextInElementWith(const WebString& substring) const;
+  // only text, a part of which is the given substring, if the given validity
+  // checker returns true for it. The substring search is case-sensitive.
+  WebString FindTextInElementWith(
+      const WebString& substring,
+      base::FunctionRef<bool(const WebString&)> validity_checker) const;
 
   bool Focused() const;
 

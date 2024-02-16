@@ -1578,11 +1578,12 @@ RadioNodeList* ContainerNode::GetRadioNodeList(const AtomicString& name,
 }
 
 String ContainerNode::FindTextInElementWith(
-    const AtomicString& substring) const {
+    const AtomicString& substring,
+    base::FunctionRef<bool(const String&)> validity_checker) const {
   for (Element& element : ElementTraversal::DescendantsOf(*this)) {
     if (element.HasOnlyText()) {
       const String& text = element.TextFromChildren();
-      if (text.Find(substring) != WTF::kNotFound) {
+      if (text.Find(substring) != WTF::kNotFound && validity_checker(text)) {
         return text;
       }
     }

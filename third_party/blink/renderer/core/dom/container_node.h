@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 
+#include "base/functional/function_ref.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -154,8 +155,11 @@ class CORE_EXPORT ContainerNode : public Node {
                                   bool only_match_img_elements = false);
 
   // Returns the contents of the first descendant element, if any, that contains
-  // only text, a part of which is the given substring.
-  String FindTextInElementWith(const AtomicString& substring) const;
+  // only text, a part of which is the given substring, if the given validity
+  // checker returns true for it.
+  String FindTextInElementWith(
+      const AtomicString& substring,
+      base::FunctionRef<bool(const String&)> validity_checker) const;
 
   // These methods are only used during parsing.
   // They don't send DOM mutation events or accept DocumentFragments.

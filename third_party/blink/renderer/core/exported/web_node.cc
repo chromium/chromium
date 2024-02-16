@@ -225,13 +225,16 @@ WebVector<WebElement> WebNode::QuerySelectorAll(
   return WebVector<WebElement>();
 }
 
-WebString WebNode::FindTextInElementWith(const WebString& substring) const {
+WebString WebNode::FindTextInElementWith(
+    const WebString& substring,
+    base::FunctionRef<bool(const WebString&)> validity_checker) const {
   ContainerNode* container_node =
       blink::DynamicTo<ContainerNode>(private_.Get());
   if (!container_node) {
     return WebString();
   }
-  return WebString(container_node->FindTextInElementWith(substring));
+  return WebString(container_node->FindTextInElementWith(
+      substring, [&](const String& text) { return validity_checker(text); }));
 }
 
 bool WebNode::Focused() const {
