@@ -2638,7 +2638,11 @@ void View::OnBlur() {}
 
 void View::Focus() {
   OnFocus();
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1492220) - Get this working on Lacros as well.
   UpdateTooltipForFocus();
+#endif
 
   // TODO(pbos): Investigate if parts of this can run unconditionally.
   if (!suppress_default_focus_handling_) {
