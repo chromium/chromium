@@ -497,14 +497,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
           kOmniboxVoiceSearchButtonIdentifier;
-
-      UIButtonConfiguration* buttonConfig =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-      self.locationBarSteadyView.trailingButton.configuration = buttonConfig;
-      // Make the pointer shape fit the location bar's semi-circle end shape.
-      self.locationBarSteadyView.trailingButton.pointerStyleProvider =
-          CreateLiftEffectCirclePointerStyleProvider();
+      self.locationBarSteadyView.trailingButton.layer.cornerRadius =
+          self.locationBarSteadyView.trailingButton.frame.size.width / 2;
+      self.locationBarSteadyView.trailingButton.clipsToBounds = YES;
 
       [self.locationBarSteadyView enableTrailingButton:YES];
     }
