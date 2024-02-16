@@ -35,12 +35,14 @@ source_set("network") {
   public_deps = [
     ":common",
     "//base",
+    "//components/enterprise/client_certificates/core",
     "//net",
     "//url",
   ]
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//components/policy/proto",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//services/network/public/cpp",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/policy/proto",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network:test_support",

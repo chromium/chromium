@@ -5,19 +5,24 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -25,23 +30,10 @@ namespace {
 
 constexpr int kMaxRetryCount = 7;
 
-}  // namespace
-
-MojoKeyNetworkDelegate::MojoKeyNetworkDelegate(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
-  DCHECK(shared_url_loader_factory_);
-}
-
-MojoKeyNetworkDelegate::~MojoKeyNetworkDelegate() = default;
-
-void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
+std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
     const GURL& url,
     const std::string& dm_token,
-    const std::string& body,
-    UploadKeyCompletedCallback upload_key_completed_callback) {
-  // Parallel requests are not supported.
-  DCHECK(!url_loader_);
+    const std::string& body) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("device_trust_key_rotation", R"(
         semantics {
@@ -77,30 +69,93 @@ void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  std::string header_auth = "GoogleDMToken token=" + dm_token;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      header_auth);
+
+  static constexpr char kDMTokenHeaderFormat[] = "GoogleDMToken token=%s";
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StringPrintf(kDMTokenHeaderFormat, dm_token.c_str()));
   resource_request->method = "POST";
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation);
-  url_loader_->AttachStringForUpload(body, "application/octet-stream");
-  url_loader_->SetRetryOptions(
+  auto url_loader = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  url_loader->AttachStringForUpload(body, "application/octet-stream");
+  url_loader->SetRetryOptions(
       kMaxRetryCount, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX);
-  url_loader_->SetTimeoutDuration(timeouts::kKeyUploadTimeout);
-  url_loader_->DownloadHeadersOnly(
+  url_loader->SetTimeoutDuration(timeouts::kKeyUploadTimeout);
+  return url_loader;
+}
+
+}  // namespace
+
+MojoKeyNetworkDelegate::MojoKeyNetworkDelegate(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+  DCHECK(shared_url_loader_factory_);
+}
+
+MojoKeyNetworkDelegate::~MojoKeyNetworkDelegate() = default;
+
+void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
+    const GURL& url,
+    const std::string& dm_token,
+    const std::string& body,
+    UploadKeyCompletedCallback upload_key_completed_callback) {
+  auto url_loader = CreateURLLoader(url, dm_token, body);
+  auto* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadHeadersOnly(
       shared_url_loader_factory_.get(),
       base::BindOnce(&MojoKeyNetworkDelegate::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(),
+                     weak_factory_.GetWeakPtr(), std::move(url_loader),
                      std::move(upload_key_completed_callback)));
 }
 
+void MojoKeyNetworkDelegate::SendRequest(
+    const GURL& url,
+    std::string_view dm_token,
+    const enterprise_management::DeviceManagementRequest& request_body,
+    SendRequestCallback callback) {
+  std::string body;
+  if (!request_body.SerializeToString(&body)) {
+    std::move(callback).Run(0, std::nullopt);
+    return;
+  }
+
+  auto url_loader = CreateURLLoader(url, std::string(dm_token), body);
+  auto* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadToString(
+      shared_url_loader_factory_.get(),
+      base::BindOnce(&MojoKeyNetworkDelegate::OnDownloadStringComplete,
+                     weak_factory_.GetWeakPtr(), std::move(url_loader),
+                     std::move(callback)),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
 void MojoKeyNetworkDelegate::OnURLLoaderComplete(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
     UploadKeyCompletedCallback upload_key_completed_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   HttpResponseCode response_code = headers ? headers->response_code() : 0;
-  url_loader_.reset();
   std::move(upload_key_completed_callback).Run(response_code);
+}
+
+void MojoKeyNetworkDelegate::OnDownloadStringComplete(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    SendRequestCallback callback,
+    std::optional<std::string> response_body) {
+  HttpResponseCode response_code = 0;
+  if (url_loader && url_loader->ResponseInfo() &&
+      url_loader->ResponseInfo()->headers) {
+    response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
+
+  enterprise_management::DeviceManagementResponse response;
+  if (response_body.has_value() &&
+      response.ParseFromString(response_body.value())) {
+    std::move(callback).Run(response_code, std::move(response));
+    return;
+  }
+
+  std::move(callback).Run(response_code, std::nullopt);
 }
 
 }  // namespace enterprise_connectors
