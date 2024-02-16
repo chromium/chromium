@@ -26,7 +26,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_ellipse.h"
 
-#include <cmath>
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/svg_circle_element.h"
 #include "third_party/blink/renderer/core/svg/svg_ellipse_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -130,11 +130,7 @@ bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     EnsurePath();
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
   }
-
-  const gfx::PointF& point = location.TransformedPoint();
-  const gfx::Vector2dF center_offset = center_ - point;
-  const float half_stroke_width = StrokeWidth() / 2;
-  return std::abs(center_offset.Length() - radius_x_) <= half_stroke_width;
+  return location.IntersectsCircleStroke(center_, radius_x_, StrokeWidth());
 }
 
 bool LayoutSVGEllipse::ShapeDependentFillContains(
@@ -145,16 +141,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
   DCHECK_GE(radius_y_, 0);
   if (!radius_x_ || !radius_y_)
     return false;
-
-  const gfx::PointF& point = location.TransformedPoint();
-  const gfx::PointF center =
-      gfx::PointF(center_.x() - point.x(), center_.y() - point.y());
-
-  // This works by checking if the point satisfies the ellipse equation.
-  // (x/rX)^2 + (y/rY)^2 <= 1
-  const float xr_x = center.x() / radius_x_;
-  const float yr_y = center.y() / radius_y_;
-  return xr_x * xr_x + yr_y * yr_y <= 1.0;
+  return location.IntersectsEllipse(center_, gfx::SizeF(radius_x_, radius_y_));
 }
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {

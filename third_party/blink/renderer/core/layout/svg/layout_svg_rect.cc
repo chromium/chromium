@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -110,24 +109,7 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(
     EnsurePath();
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
   }
-
-  const gfx::PointF& point = location.TransformedPoint();
-  const float half_stroke_width = StrokeWidth() / 2;
-  const float half_width = fill_bounding_box_.width() / 2;
-  const float half_height = fill_bounding_box_.height() / 2;
-
-  const gfx::PointF fill_bounding_box_center =
-      gfx::PointF(fill_bounding_box_.x() + half_width,
-                  fill_bounding_box_.y() + half_height);
-  const float abs_delta_x = std::abs(point.x() - fill_bounding_box_center.x());
-  const float abs_delta_y = std::abs(point.y() - fill_bounding_box_center.y());
-
-  if (!(abs_delta_x <= half_width + half_stroke_width &&
-        abs_delta_y <= half_height + half_stroke_width))
-    return false;
-
-  return (half_width - half_stroke_width <= abs_delta_x) ||
-         (half_height - half_stroke_width <= abs_delta_y);
+  return location.IntersectsStroke(fill_bounding_box_, StrokeWidth());
 }
 
 bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
@@ -136,7 +118,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   if (GetGeometryType() != GeometryType::kRectangle) {
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
   }
-  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
+  return location.Intersects(fill_bounding_box_);
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

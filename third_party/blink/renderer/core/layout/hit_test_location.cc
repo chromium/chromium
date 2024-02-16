@@ -21,9 +21,58 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
+
+namespace {
+
+bool PointInRectangleStroke(const gfx::PointF& point,
+                            const gfx::RectF& rect,
+                            float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  const float half_width = rect.width() / 2;
+  const float half_height = rect.height() / 2;
+
+  const gfx::PointF rect_center(rect.x() + half_width, rect.y() + half_height);
+  const float abs_delta_x = std::abs(point.x() - rect_center.x());
+  const float abs_delta_y = std::abs(point.y() - rect_center.y());
+
+  if (!(abs_delta_x <= half_width + half_stroke_width &&
+        abs_delta_y <= half_height + half_stroke_width)) {
+    return false;
+  }
+
+  return (half_width - half_stroke_width <= abs_delta_x) ||
+         (half_height - half_stroke_width <= abs_delta_y);
+}
+
+bool PointInEllipse(const gfx::PointF& point,
+                    const gfx::PointF& center,
+                    const gfx::SizeF& radii) {
+  const gfx::PointF point_to_center =
+      gfx::PointF(center.x() - point.x(), center.y() - point.y());
+
+  // This works by checking if the point satisfies the ellipse equation.
+  // (x/rX)^2 + (y/rY)^2 <= 1
+  const float xr_x = point_to_center.x() / radii.width();
+  const float yr_y = point_to_center.y() / radii.height();
+  return xr_x * xr_x + yr_y * yr_y <= 1.0;
+}
+
+bool PointInCircleStroke(const gfx::PointF& point,
+                         const gfx::PointF& center,
+                         float radius,
+                         float stroke_width) {
+  const gfx::Vector2dF center_offset = center - point;
+  const float half_stroke_width = stroke_width / 2;
+  return std::abs(center_offset.Length() - radius) <= half_stroke_width;
+}
+
+}  // namespace
 
 HitTestLocation::HitTestLocation()
     : is_rect_based_(false), is_rectilinear_(true) {}
@@ -149,6 +198,36 @@ bool HitTestLocation::Intersects(const gfx::QuadF& quad) const {
 
 bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
   return transformed_rect_.Contains(point);
+}
+
+bool HitTestLocation::Intersects(const Path& path) const {
+  // TODO(fs): Support rect-based hit-test.
+  return path.Contains(transformed_point_);
+}
+
+bool HitTestLocation::Intersects(const Path& path,
+                                 WindRule winding_rule) const {
+  // TODO(fs): Support rect-based hit-test.
+  return path.Contains(transformed_point_, winding_rule);
+}
+
+bool HitTestLocation::IntersectsStroke(const gfx::RectF& rect,
+                                       float stroke_width) const {
+  // TODO(fs): Support rect-based hit-test.
+  return PointInRectangleStroke(transformed_point_, rect, stroke_width);
+}
+
+bool HitTestLocation::IntersectsEllipse(const gfx::PointF& center,
+                                        const gfx::SizeF& radii) const {
+  // TODO(fs): Support rect-based hit-test.
+  return PointInEllipse(transformed_point_, center, radii);
+}
+
+bool HitTestLocation::IntersectsCircleStroke(const gfx::PointF& center,
+                                             float radius,
+                                             float stroke_width) const {
+  // TODO(fs): Support rect-based hit-test.
+  return PointInCircleStroke(transformed_point_, center, radius, stroke_width);
 }
 
 }  // namespace blink

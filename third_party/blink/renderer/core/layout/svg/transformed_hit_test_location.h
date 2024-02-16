@@ -30,6 +30,12 @@ class CORE_EXPORT TransformedHitTestLocation {
   // false, in which case the object cannot (must not) be used.
   TransformedHitTestLocation(const HitTestLocation&, const AffineTransform&);
 
+  // The AffineTransform passed will be applied without computing the inverse.
+  enum InverseTag { kDontComputeInverse };
+  TransformedHitTestLocation(const HitTestLocation&,
+                             const AffineTransform&,
+                             InverseTag);
+
   const HitTestLocation* operator->() const {
     DCHECK(location_);
     return location_;
