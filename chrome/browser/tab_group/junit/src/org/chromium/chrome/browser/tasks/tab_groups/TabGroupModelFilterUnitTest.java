@@ -791,6 +791,7 @@ public class TabGroupModelFilterUnitTest {
 
         // Ungrouping the last tab in group should have no effect on tab model.
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+        verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab1, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab1, POSITION1);
         assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
         assertNull(mTab1.getTabGroupId());

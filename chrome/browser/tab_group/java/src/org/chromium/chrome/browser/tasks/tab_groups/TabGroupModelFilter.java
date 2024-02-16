@@ -335,6 +335,9 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         int prevFilterIndex = mRootIdToGroupIndexMap.get(sourceTab.getRootId());
         if (sourceTabGroup.size() == 1) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.willMoveTabOutOfGroup(sourceTab, sourceTab.getRootId());
+            }
             sourceTab.setTabGroupId(null);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
@@ -1086,6 +1089,20 @@ public class TabGroupModelFilter extends TabModelFilter {
     public int getGroupLastShownTabId(int rootId) {
         TabGroup group = mRootIdToGroupMap.get(rootId);
         return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
+    }
+
+    /**
+     * @param rootId The rootId of the group to lookup.
+     * @return the last shown tab in that group or null otherwise.
+     */
+    public @Nullable Tab getGroupLastShownTab(int rootId) {
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        if (group == null) return null;
+
+        int lastShownId = group.getLastShownTabId();
+        if (lastShownId == Tab.INVALID_TAB_ID) return null;
+
+        return TabModelUtils.getTabById(getTabModel(), lastShownId);
     }
 
     /**

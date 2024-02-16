@@ -457,7 +457,7 @@ public class TabGroupUiMediatorUnitTest {
     public void tabClosure_NotLastTabInGroup_Selection_SingleTabGroupsDisabled() {
         initAndAssertProperties(mTab2);
 
-        doReturn(TAB3_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB2_ROOT_ID);
+        doReturn(mTab3).when(mTabGroupModelFilter).getGroupLastShownTab(TAB2_ROOT_ID);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
@@ -478,7 +478,7 @@ public class TabGroupUiMediatorUnitTest {
     public void tabClosure_NotLastTabInGroup_Selection_SingleTabGroupsEnabled() {
         initAndAssertProperties(mTab2);
 
-        doReturn(TAB3_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB2_ROOT_ID);
+        doReturn(mTab3).when(mTabGroupModelFilter).getGroupLastShownTab(TAB2_ROOT_ID);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
@@ -497,7 +497,7 @@ public class TabGroupUiMediatorUnitTest {
     public void tabClosure_NotLastTabInGroup_NoSelection_SingleTabGroupsDisabled() {
         initAndAssertProperties(mTab2);
 
-        doReturn(TAB2_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB3_ROOT_ID);
+        doReturn(mTab2).when(mTabGroupModelFilter).getGroupLastShownTab(TAB3_ROOT_ID);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
@@ -512,7 +512,7 @@ public class TabGroupUiMediatorUnitTest {
     public void tabClosure_NotLastTabInGroup_NoSelection_SingleTabGroupsEnabled() {
         initAndAssertProperties(mTab2);
 
-        doReturn(TAB2_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(TAB3_ROOT_ID);
+        doReturn(mTab2).when(mTabGroupModelFilter).getGroupLastShownTab(TAB3_ROOT_ID);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 

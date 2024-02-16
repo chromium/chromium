@@ -166,10 +166,7 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                         // Check if the group the tab was part of is still a tab group.
                         TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
-                        int tabId = filter.getGroupLastShownTabId(tab.getRootId());
-                        if (tabId == Tab.INVALID_TAB_ID) return;
-
-                        Tab groupTab = mTabModelSelector.getTabById(tabId);
+                        Tab groupTab = filter.getGroupLastShownTab(tab.getRootId());
                         if (groupTab == null) return;
 
                         if (!getCurrentTabGroupModelFilter().isTabInTabGroup(groupTab)) {
