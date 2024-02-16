@@ -202,7 +202,7 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
       guids_to_delete.size());
 }
 
-void AddressDataCleaner::OnPersonalDataFinishedProfileTasks() {
+void AddressDataCleaner::OnPersonalDataChanged() {
   MaybeCleanupAddressData();
 }
 

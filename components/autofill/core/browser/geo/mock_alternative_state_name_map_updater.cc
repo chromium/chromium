@@ -19,7 +19,7 @@ MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
     : AlternativeStateNameMapUpdater(local_state, personal_data_manager),
       callback_(std::move(callback)) {}
 
-void MockAlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
+void MockAlternativeStateNameMapUpdater::OnPersonalDataChanged() {
   PopulateAlternativeStateNameMap(std::move(callback_));
 }
 

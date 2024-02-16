@@ -612,7 +612,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
 
-  external_delegate().OnPersonalDataFinishedProfileTasks();
+  external_delegate().OnPersonalDataChanged();
   histogram.ExpectUniqueSample("Autofill.ExtendedMenu.EditAddress", 1, 1);
 }
 
@@ -788,7 +788,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
 
-  external_delegate().OnPersonalDataFinishedProfileTasks();
+  external_delegate().OnPersonalDataChanged();
   histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 1, 1);
   histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
 }

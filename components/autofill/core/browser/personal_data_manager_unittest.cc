@@ -313,8 +313,6 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   // Verifies the credit card art image fetching should begin.
   void WaitForFetchImagesForUrls() {
     base::RunLoop run_loop;
-    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .Times(testing::AnyNumber());
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
         .Times(testing::AnyNumber());
     EXPECT_CALL(*personal_data_, FetchImagesForURLs(testing::_))
@@ -3015,48 +3013,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-namespace {
-
-class OneTimeObserver : public PersonalDataManagerObserver {
- public:
-  explicit OneTimeObserver(PersonalDataManager* manager) : manager_(manager) {}
-
-  ~OneTimeObserver() override {
-    if (manager_)
-      manager_->RemoveObserver(this);
-  }
-
-  void OnPersonalDataChanged() override {
-    ASSERT_TRUE(manager_) << "Callback called after RemoveObserver()";
-    manager_->RemoveObserver(this);
-    manager_ = nullptr;
-  }
-
-  void OnPersonalDataFinishedProfileTasks() override {
-    EXPECT_TRUE(manager_) << "Callback called after RemoveObserver()";
-  }
-
-  bool IsConnected() { return manager_; }
-
- private:
-  raw_ptr<PersonalDataManager> manager_;
-};
-
-}  // namespace
-
-TEST_F(PersonalDataManagerTest, RemoveObserverInOnPersonalDataChanged) {
-  OneTimeObserver observer(personal_data_.get());
-
-  personal_data_->AddObserver(&observer);
-
-  // Do something to trigger a data change
-  personal_data_->AddProfile(test::GetFullProfile());
-
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-
-  EXPECT_FALSE(observer.IsConnected()) << "Observer not called";
-}
 
 TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
   // All data types are running by default.

@@ -122,21 +122,6 @@ class PersonalDatabaseHelper;
 // performed if the profile exists. Without the queuing, if a remove operation
 // was posted before the add operation has finished, the remove would
 // incorrectly get rejected by the PDM.
-//
-// Notifications from the PersonalDataManagerObserver():
-// - `OnPersonalDataChanged()` is called whenever some of the exposed data from
-//   the PDM changes. In particular, a `Refresh()` triggers this multiple times,
-//   once for every read that finishes (profiles, credit cards, etc are separate
-//   reads each).
-//   Due to the way changes are implemented, changes to credit cards trigger
-//   `OnPersonalDataChanged()` multiple times. Changes to AutofillProfiles only
-//   trigger it once.
-// - `OnPersonalDataFinishedProfileTasks()` is called once all pending changes,
-//   including reads and writes, have finished.
-//   TODO(crbug.com/1420547): While "ProfileTasks" sounds like it only affects
-//   AutofillProfile operations, it applies to all data types. For example, if
-//   credit card read operations are still pending,
-//   `OnPersonalDataFinishedProfileTasks()` is not triggered. Rename this event.
 class PersonalDataManager : public KeyedService,
                             public WebDataServiceConsumer,
                             public AutofillWebDataServiceObserverOnUISequence,

@@ -15,7 +15,7 @@ PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
 PersonalDataProfileTaskWaiter::PersonalDataProfileTaskWaiter(
     PersonalDataManager& pdm) {
   scoped_observation_.Observe(&pdm);
-  ON_CALL(mock_observer_, OnPersonalDataFinishedProfileTasks())
+  ON_CALL(mock_observer_, OnPersonalDataChanged())
       .WillByDefault(base::test::RunClosure(run_loop_.QuitClosure()));
 }
 

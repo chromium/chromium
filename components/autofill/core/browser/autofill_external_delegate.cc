@@ -894,7 +894,7 @@ void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
                                                       GetReopenTriggerSource());
 }
 
-void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
+void AutofillExternalDelegate::OnPersonalDataChanged() {
   pdm_observation_.Reset();
   manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
                                                       GetReopenTriggerSource());

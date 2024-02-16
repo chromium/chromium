@@ -47,7 +47,7 @@ class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
       const AlternativeStateNameMapUpdater&) = delete;
 
   // PersonalDataManagerObserver:
-  void OnPersonalDataFinishedProfileTasks() override;
+  void OnPersonalDataChanged() override;
 
   // Extracts the country and state values from the profiles and adds them to
   // the AlternativeStateNameMap.

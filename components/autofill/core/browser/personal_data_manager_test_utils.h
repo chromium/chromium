@@ -21,7 +21,6 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
   ~PersonalDataLoadedObserverMock() override;
 
   MOCK_METHOD(void, OnPersonalDataChanged, (), (override));
-  MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
 // Helper class to wait for a `OnPersonalDataFinishedProfileTasks()` call from

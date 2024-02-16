@@ -124,7 +124,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   void DidEndTextFieldEditing();
 
   // PersonalDataManagerObserver:
-  void OnPersonalDataFinishedProfileTasks() override;
+  void OnPersonalDataChanged() override;
 
   const FormData& query_form() const { return query_form_; }
 

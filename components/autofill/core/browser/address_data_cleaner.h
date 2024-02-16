@@ -56,7 +56,7 @@ class AddressDataCleaner : public PersonalDataManagerObserver,
   void DeleteDisusedAddresses();
 
   // PersonalDataManagerObserver
-  void OnPersonalDataFinishedProfileTasks() override;
+  void OnPersonalDataChanged() override;
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override;

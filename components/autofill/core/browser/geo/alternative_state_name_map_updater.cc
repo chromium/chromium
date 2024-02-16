@@ -77,7 +77,7 @@ bool AlternativeStateNameMapUpdater::ContainsState(
       });
 }
 
-void AlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
+void AlternativeStateNameMapUpdater::OnPersonalDataChanged() {
   PopulateAlternativeStateNameMap();
 }
 

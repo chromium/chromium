@@ -2392,11 +2392,6 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
-  // Call `OnPersonalDataFinishedProfileTasks()` in a separate loop as
-  // the observers might have removed themselves in OnPersonalDataChanged
-  for (PersonalDataManagerObserver& observer : observers_) {
-    observer.OnPersonalDataFinishedProfileTasks();
-  }
 }
 
 void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
