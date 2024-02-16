@@ -559,6 +559,7 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
 class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
  public:
   explicit ActiveSettingsProvider(bool enabled) : enabled_(enabled) {}
+  bool IsMetaExperimentActive() const override { return false; }
   bool IsActive() const override { return enabled_; }
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface surface) const override {

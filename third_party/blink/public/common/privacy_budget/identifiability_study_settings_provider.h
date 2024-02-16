@@ -14,6 +14,12 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettingsProvider {
  public:
   virtual ~IdentifiabilityStudySettingsProvider();
 
+  // Returns true if the meta experiment of the identifiability study is active
+  // (meaning that this client is selected for collecting meta surfaces). For
+  // any specific instance of IdentifiabilityStudySettings, this answer cannot
+  // change. It will only be queried once.
+  virtual bool IsMetaExperimentActive() const = 0;
+
   // Returns true if the identifiability study is active. For any specific
   // instance of IdentifiabilityStudySettings, this answer cannot change. It
   // will only be queried once.

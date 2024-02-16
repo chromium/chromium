@@ -33,8 +33,53 @@ TEST(IdentifiabilityStudySettingsTest, DisabledProvider) {
   EXPECT_EQ(0, counts.count_of_is_type_allowed);
 }
 
+TEST(IdentifiabilityStudySettingsTest, MetaExperimentActive) {
+  CallCounts counts{.response_for_is_meta_experiment_active = true};
+
+  IdentifiabilityStudySettings settings(
+      std::make_unique<CountingSettingsProvider>(&counts));
+
+  // No other calls should be made.
+  EXPECT_TRUE(settings.IsActive());
+  EXPECT_TRUE(settings.ShouldSampleSurface(IdentifiableSurface()));
+  EXPECT_TRUE(
+      settings.ShouldSampleType(IdentifiableSurface::Type::kWebFeature));
+
+  EXPECT_EQ(1, counts.count_of_is_meta_experiment_active);
+  EXPECT_EQ(1, counts.count_of_is_active);
+  EXPECT_EQ(1, counts.count_of_is_any_type_or_surface_blocked);
+  EXPECT_EQ(0, counts.count_of_is_surface_allowed);
+  EXPECT_EQ(0, counts.count_of_is_type_allowed);
+}
+
+TEST(IdentifiabilityStudySettingsTest,
+     MetaExperimentActiveWithBlockedTypeOrSurface) {
+  CallCounts counts{
+      .response_for_is_meta_experiment_active = true,
+      .response_for_is_active = true,
+      .response_for_is_anything_blocked = true,
+      .response_for_is_allowed = false,
+  };
+
+  IdentifiabilityStudySettings settings(
+      std::make_unique<CountingSettingsProvider>(&counts));
+
+  // No other calls should be made.
+  EXPECT_TRUE(settings.IsActive());
+  EXPECT_TRUE(settings.ShouldSampleSurface(IdentifiableSurface()));
+  EXPECT_TRUE(
+      settings.ShouldSampleType(IdentifiableSurface::Type::kWebFeature));
+
+  EXPECT_EQ(1, counts.count_of_is_meta_experiment_active);
+  EXPECT_EQ(1, counts.count_of_is_active);
+  EXPECT_EQ(1, counts.count_of_is_any_type_or_surface_blocked);
+  EXPECT_EQ(0, counts.count_of_is_surface_allowed);
+  EXPECT_EQ(0, counts.count_of_is_type_allowed);
+}
+
 TEST(IdentifiabilityStudySettingsTest, IsActiveButNothingIsBlocked) {
-  CallCounts counts{.response_for_is_active = true,
+  CallCounts counts{.response_for_is_meta_experiment_active = false,
+                    .response_for_is_active = true,
                     .response_for_is_anything_blocked = false,
 
                     // Note that this contradicts the above, but it shouldn't
@@ -57,7 +102,8 @@ TEST(IdentifiabilityStudySettingsTest, IsActiveButNothingIsBlocked) {
 }
 
 TEST(IdentifiabilityStudySettingsTest, IsSurfaceOrTypeBlocked) {
-  CallCounts counts{.response_for_is_active = true,
+  CallCounts counts{.response_for_is_meta_experiment_active = false,
+                    .response_for_is_active = true,
                     .response_for_is_anything_blocked = true,
                     .response_for_is_allowed = false};
 
@@ -85,7 +131,8 @@ TEST(IdentifiabilityStudySettingsTest, DefaultSettings) {
 }
 
 TEST(IdentifiabilityStudySettingsTest, StaticSetProvider) {
-  CallCounts counts{.response_for_is_active = true,
+  CallCounts counts{.response_for_is_meta_experiment_active = false,
+                    .response_for_is_active = true,
                     .response_for_is_anything_blocked = true,
                     .response_for_is_allowed = true};
 

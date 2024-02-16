@@ -105,7 +105,8 @@ IdentifiabilityStudySettings::IdentifiabilityStudySettings(
     std::unique_ptr<IdentifiabilityStudySettingsProvider> provider)
     : provider_(std::move(provider)),
       is_enabled_(provider_->IsActive()),
-      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()) {}
+      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()),
+      is_meta_experiment_active_(provider_->IsMetaExperimentActive()) {}
 
 IdentifiabilityStudySettings::~IdentifiabilityStudySettings() = default;
 
@@ -125,7 +126,7 @@ void IdentifiabilityStudySettings::ResetStateForTesting() {
 }
 
 bool IdentifiabilityStudySettings::IsActive() const {
-  return is_enabled_;
+  return is_enabled_ || is_meta_experiment_active_;
 }
 
 bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
@@ -142,6 +143,10 @@ bool IdentifiabilityStudySettings::ShouldSampleSurface(
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
 
+  if (is_meta_experiment_active_) {
+    return true;
+  }
+
   return provider_->IsSurfaceAllowed(surface);
 }
 
@@ -153,6 +158,10 @@ bool IdentifiabilityStudySettings::ShouldSampleType(
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
 
+  if (is_meta_experiment_active_) {
+    return true;
+  }
+
   return provider_->IsTypeAllowed(type);
 }
 
@@ -163,6 +172,10 @@ bool IdentifiabilityStudySettings::ShouldSampleAnyType(
 
   if (LIKELY(!is_any_surface_or_type_blocked_))
     return true;
+
+  if (is_meta_experiment_active_) {
+    return true;
+  }
 
   for (IdentifiableSurface::Type type : types) {
     if (provider_->IsTypeAllowed(type))

@@ -44,6 +44,7 @@ constexpr IdentifiableToken kTestValue1 = 1;
 // types.
 class TestSettingsProvider : public IdentifiabilityStudySettingsProvider {
  public:
+  bool IsMetaExperimentActive() const override { return false; }
   bool IsActive() const override { return true; }
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface) const override { return true; }

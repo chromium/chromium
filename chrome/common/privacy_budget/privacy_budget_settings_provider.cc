@@ -19,13 +19,18 @@ PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider()
       blocked_types_(
           DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeSet>(
               features::kIdentifiabilityStudyBlockedTypes.Get())),
-      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)) {}
+      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)),
+      meta_experiment_active_(false) {}
 
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     const PrivacyBudgetSettingsProvider&) = default;
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     PrivacyBudgetSettingsProvider&&) = default;
 PrivacyBudgetSettingsProvider::~PrivacyBudgetSettingsProvider() = default;
+
+bool PrivacyBudgetSettingsProvider::IsMetaExperimentActive() const {
+  return meta_experiment_active_;
+}
 
 bool PrivacyBudgetSettingsProvider::IsActive() const {
   return enabled_;
