@@ -2594,6 +2594,8 @@ bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
   if (resolve_result) {
     text_direction = *resolve_result;
     ClearDirAutoInheritsFromParent();
+  } else if (RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled()) {
+    text_direction = TextDirection::kLtr;
   } else {
     text_direction = ParentDirectionality();
     SetDirAutoInheritsFromParent();

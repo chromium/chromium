@@ -1001,6 +1001,10 @@ class CORE_EXPORT Node : public EventTarget {
     return GetFlag(kDirAutoInheritsFromParent);
   }
   void SetDirAutoInheritsFromParent() {
+    // When we remove the DirAutoNoInheritance feature flag (by enabling
+    // the code permanently), we can remove the
+    // kDirAutoInheritsFromParent node flag.
+    CHECK(!RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled());
     return SetFlag(kDirAutoInheritsFromParent);
   }
   void ClearDirAutoInheritsFromParent() {

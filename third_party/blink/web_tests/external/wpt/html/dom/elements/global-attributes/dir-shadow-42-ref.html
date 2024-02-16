@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <title>[dir] and shadow slots: dir=ltr on a div in the shadow tree, dir=rtl on the shadow host, no slotted text in the light or dark trees</title>
 <link rel="author" title="Eric Meyer" href="mailto:emeyer@igalia.com">
+<link rel="author" title="L. David Baron" href="mailto:dbaron@chromium.org">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/C#the-dir-attribute">
 <link rel="help" href="https://github.com/whatwg/html/issues/3699">
 <link rel="help" href="https://github.com/whatwg/html/pull/9796">
@@ -16,8 +17,8 @@ span {border: 1px solid silver;}
 </head>
 <body>
 
-<p>`dir=rtl` on a div in the shadow tree, `dir=ltr` on the shadow host, no slotted text in the light or dark trees</p>
-<div id="host" dir="ltr"><div dir="rtl"><span></span></div></div>
+<p>`dir=ltr` on a div in the shadow tree, `dir=rtl` on the shadow host, no slotted text in the light or dark trees</p>
+<div id="host" dir="rtl"><div dir="ltr"><span></span></div></div>
 <p id="result">The HTML direction / computed CSS `direction` value is: ltr / ltr (on the slot).</p>
 
 </body>

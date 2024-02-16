@@ -12,7 +12,8 @@ HTMLBDIElement::HTMLBDIElement(Document& document)
   // https://html.spec.whatwg.org/C/#the-bdi-element
   SetSelfOrAncestorHasDirAutoAttribute();
   GetDocument().SetHasDirAttribute();
-  if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
+  if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled() &&
+      !RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled()) {
     SetDirAutoInheritsFromParent();
   }
 }
