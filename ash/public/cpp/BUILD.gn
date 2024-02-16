@@ -138,6 +138,8 @@ component("cpp") {
     "hats_bluetooth_revamp_trigger.cc",
     "hats_bluetooth_revamp_trigger.h",
     "holding_space/holding_space_client.h",
+    "holding_space/holding_space_colors.cc",
+    "holding_space/holding_space_colors.h",
     "holding_space/holding_space_constants.h",
     "holding_space/holding_space_controller.cc",
     "holding_space/holding_space_controller.h",

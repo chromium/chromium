@@ -31,7 +31,7 @@ bool HoldingSpaceItemUpdatedFields::operator!=(
 bool HoldingSpaceItemUpdatedFields::IsEmpty() const {
   return !previous_accessible_name && !previous_backing_file &&
          !previous_in_progress_commands && !previous_progress &&
-         !previous_secondary_text && !previous_secondary_text_color_id &&
+         !previous_secondary_text && !previous_secondary_text_color_variant &&
          !previous_text;
 }
 

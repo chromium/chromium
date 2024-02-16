@@ -60,9 +60,10 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   }
 
   // Update secondary text color.
-  if (secondary_text_color_id_) {
-    updated_fields.previous_secondary_text_color_id =
-        item_->SetSecondaryTextColorId(secondary_text_color_id_.value());
+  if (secondary_text_color_variant_) {
+    updated_fields.previous_secondary_text_color_variant =
+        item_->SetSecondaryTextColorVariant(
+            secondary_text_color_variant_.value());
   }
 
   // Update text.
@@ -143,9 +144,10 @@ HoldingSpaceModel::ScopedItemUpdate::SetSecondaryText(
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
-HoldingSpaceModel::ScopedItemUpdate::SetSecondaryTextColorId(
-    const std::optional<ui::ColorId>& secondary_text_color_id) {
-  secondary_text_color_id_ = secondary_text_color_id;
+HoldingSpaceModel::ScopedItemUpdate::SetSecondaryTextColorVariant(
+    const std::optional<HoldingSpaceColorVariant>&
+        secondary_text_color_variant) {
+  secondary_text_color_variant_ = secondary_text_color_variant;
   return *this;
 }
 

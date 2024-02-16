@@ -916,7 +916,8 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())
-      .SetSecondaryTextColorId(in_progress_download->GetSecondaryTextColorId())
+      .SetSecondaryTextColorVariant(
+          in_progress_download->GetSecondaryTextColorId())
       .SetProgress(in_progress_download->GetProgress());
 }
 

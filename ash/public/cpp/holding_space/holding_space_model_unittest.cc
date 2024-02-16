@@ -5,6 +5,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -25,10 +26,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 namespace {
+
+// Aliases ---------------------------------------------------------------------
+
+using testing::VariantWith;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -372,16 +378,17 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
 
   // Update secondary text color.
   expected_update = HoldingSpaceItemUpdatedFields();
-  expected_update.previous_secondary_text_color_id =
-      item_ptr->secondary_text_color_id();
+  expected_update.previous_secondary_text_color_variant =
+      item_ptr->secondary_text_color_variant();
   ui::ColorId secondary_text_color_id(cros_tokens::kTextColorAlert);
   model()
       .UpdateItem(item_ptr->id())
-      ->SetSecondaryTextColorId(secondary_text_color_id);
+      ->SetSecondaryTextColorVariant(secondary_text_color_id);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), expected_update);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
-  EXPECT_EQ(item_ptr->secondary_text_color_id(), secondary_text_color_id);
+  EXPECT_THAT(*item_ptr->secondary_text_color_variant(),
+              VariantWith<ui::ColorId>(secondary_text_color_id));
 
   // Update all attributes.
   expected_update = HoldingSpaceItemUpdatedFields();
@@ -391,8 +398,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       item_ptr->in_progress_commands();
   expected_update.previous_progress = item_ptr->progress();
   expected_update.previous_secondary_text = item_ptr->secondary_text();
-  expected_update.previous_secondary_text_color_id =
-      item_ptr->secondary_text_color_id();
+  expected_update.previous_secondary_text_color_variant =
+      item_ptr->secondary_text_color_variant();
   expected_update.previous_text = item_ptr->GetText();
   accessible_name = u"updated_accessible_name";
   backing_file = HoldingSpaceFile(base::FilePath("updated_file_path"),
@@ -411,7 +418,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .SetInProgressCommands(in_progress_commands)
       .SetText(text)
       .SetSecondaryText(secondary_text)
-      .SetSecondaryTextColorId(secondary_text_color_id)
+      .SetSecondaryTextColorVariant(secondary_text_color_id)
       .SetProgress(progress);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), expected_update);
@@ -422,7 +429,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->progress(), progress);
   EXPECT_EQ(item_ptr->GetText(), text);
   EXPECT_EQ(item_ptr->secondary_text(), secondary_text);
-  EXPECT_EQ(item_ptr->secondary_text_color_id(), secondary_text_color_id);
+  EXPECT_THAT(*item_ptr->secondary_text_color_variant(),
+              VariantWith<ui::ColorId>(secondary_text_color_id));
 }
 
 // Verifies that updating items will no-op appropriately.
@@ -459,7 +467,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
       .SetInProgressCommands({})
       .SetText(std::nullopt)
       .SetSecondaryText(std::nullopt)
-      .SetSecondaryTextColorId(std::nullopt)
+      .SetSecondaryTextColorVariant(std::nullopt)
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);
 }

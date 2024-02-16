@@ -5,9 +5,12 @@
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
 #include <algorithm>
+#include <optional>
+#include <variant>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
+#include "ash/public/cpp/holding_space/holding_space_colors.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -28,11 +31,13 @@
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
@@ -636,11 +641,28 @@ void HoldingSpaceItemChipView::UpdateLabels() {
   secondary_label_->SetText(
       item()->secondary_text().value_or(std::u16string()));
 
-  secondary_label_->SetEnabledColorId(
-      selected() && multiselect ? kColorAshMultiSelectTextColor
-      : item()->secondary_text_color_id()
-          ? item()->secondary_text_color_id().value()
-          : kColorAshTextColorSecondary);
+  if (selected() && multiselect) {
+    secondary_label_->SetEnabledColorId(kColorAshMultiSelectTextColor);
+  } else if (const std::optional<HoldingSpaceColorVariant>& color_variant =
+                 item()->secondary_text_color_variant()) {
+    // Handle the case where the `color_variant` is set.
+    std::visit(base::Overloaded{
+                   [&](const ui::ColorId& color_id) {
+                     secondary_label_->SetEnabledColorId(color_id);
+                   },
+                   [&](const HoldingSpaceColors& colors) {
+                     secondary_label_->SetEnabledColor(
+                         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                             ? colors.dark_mode()
+                             : colors.light_mode());
+                   },
+               },
+               *color_variant);
+  } else {
+    // Use the default color.
+    secondary_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+  }
+
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
 
   // Tooltip.

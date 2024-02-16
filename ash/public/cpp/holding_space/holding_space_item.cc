@@ -72,7 +72,7 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_ == rhs.file_ &&
          text_ == rhs.text_ && secondary_text_ == rhs.secondary_text_ &&
-         secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
+         secondary_text_color_variant_ == rhs.secondary_text_color_variant_ &&
          *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
          in_progress_commands_ == rhs.in_progress_commands_;
 }
@@ -340,17 +340,18 @@ std::optional<std::optional<std::u16string>> HoldingSpaceItem::SetSecondaryText(
   return previous_secondary_text;
 }
 
-std::optional<std::optional<ui::ColorId>>
-HoldingSpaceItem::SetSecondaryTextColorId(
-    const std::optional<ui::ColorId>& secondary_text_color_id) {
-  if (secondary_text_color_id_ == secondary_text_color_id) {
+std::optional<std::optional<HoldingSpaceColorVariant>>
+HoldingSpaceItem::SetSecondaryTextColorVariant(
+    const std::optional<HoldingSpaceColorVariant>&
+        secondary_text_color_variant) {
+  if (secondary_text_color_variant_ == secondary_text_color_variant) {
     return std::nullopt;
   }
 
-  auto previous_secondary_text_color_id = secondary_text_color_id_;
-  secondary_text_color_id_ = secondary_text_color_id;
+  auto previous_secondary_text_color_variant = secondary_text_color_variant_;
+  secondary_text_color_variant_ = secondary_text_color_variant;
 
-  return previous_secondary_text_color_id;
+  return previous_secondary_text_color_variant;
 }
 
 std::u16string HoldingSpaceItem::GetAccessibleName() const {
