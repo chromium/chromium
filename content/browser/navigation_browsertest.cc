@@ -55,6 +55,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -94,6 +95,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -4063,6 +4065,179 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     parent.document.querySelector("iframe").remove();
   )");
   loop.Run();
+}
+
+// A class to intercept RemoteFrameHost IPCs, specifically OpenURL. When an
+// OpenURL IPC is received, this interceptor closes the initiator's Shell,
+// `shell_to_close`, and ensures the corresponding process exits before
+// proceeding with the OpenURL call.
+class InitiatorClosingOpenURLInterceptor
+    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
+ public:
+  // `this` takes ownership of `shell_to_close` and eventually deletes it.
+  InitiatorClosingOpenURLInterceptor(content::RenderFrameProxyHost* proxy_host,
+                                     std::unique_ptr<Shell> shell_to_close,
+                                     RenderProcessHost* renderer_to_exit)
+      : proxy_host_(proxy_host),
+        shell_to_close_(std::move(shell_to_close)),
+        renderer_to_exit_(renderer_to_exit),
+        swapped_impl_(proxy_host_->frame_host_receiver_for_testing(), this) {}
+  ~InitiatorClosingOpenURLInterceptor() override = default;
+
+  blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
+    return proxy_host_;
+  }
+
+  // This closes `shell_to_close_` and causes `renderer_to_exit_` to exit
+  // before forwarding the call to the RenderFrameProxyHost. This mimics the
+  // case where the frame that sent the OpenURL gets closed before the IPC
+  // reaches its destination. Once the OpenURL IPC is sent, the proxy should
+  // receive it, even if the sender is gone.
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override {
+    // `Close()` internally deletes the pointer, so it must be released so
+    // `shell_to_close_` doesn't point to a deleted value.
+    shell_to_close_.release()->Close();
+    renderer_to_exit_->Shutdown(content::RESULT_CODE_KILLED);
+
+    GetForwardingInterface()->OpenURL(std::move(params));
+  }
+
+ private:
+  const raw_ptr<content::RenderFrameProxyHost> proxy_host_;
+  std::unique_ptr<Shell> shell_to_close_;
+  raw_ptr<RenderProcessHost> renderer_to_exit_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+      swapped_impl_;
+};
+
+// Test the case that once an OpenURL IPC is sent, it is received and the
+// navigation occurs even if the sender is deleted while the IPC is in flight.
+// This test opens a main frame, which opens a cross-site popup. The test then
+// does a form submission to the popup and closes the main frame.
+// Unlike FormSubmissionInRemoteFrameThenDeleteFrame, the initiator is the last
+// (and only) frame of that SiteInstance. Deleting it usually causes proxies in
+// the same SiteInstanceGroup to be deleted, meaning the OpenURL IPC may never
+// be received.
+// TODO(crbug.com/323753235, yangsharon): Enable this test when the navigation
+// state keep alive is introduced.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    DISABLED_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL) {
+  // We crash a renderer in the OpenURL interceptor.
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+  // Get a unique_ptr to the shell, which will be used to transfer ownership
+  // later on.
+  std::unique_ptr<Shell> shell_a = base::WrapUnique(CreateBrowser());
+
+  // Setup the main page, a.com. The referrer policy is needed to test the
+  // keep alive part of PolicyContainerHost.
+  GURL always_referrer_url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Referrer-Policy: unsafe-url"));
+  EXPECT_TRUE(NavigateToURL(shell_a.get(), always_referrer_url_a));
+  EXPECT_TRUE(WaitForLoadStop(shell_a->web_contents()));
+
+  // The a.com's RenderFrameHost will be the initiator of the form submission.
+  RenderFrameHostImpl* rfh_a = static_cast<RenderFrameHostImpl*>(
+      shell_a->web_contents()->GetPrimaryMainFrame());
+
+  // Create a cross origin popup that will be the target of the form submission.
+  // This is cross-site so we can test the case where the last RenderFrameHost
+  // for the initiator's site is gone when the initiator deletes itself, causing
+  // all proxies in its SiteInstanceGroup to potentially delete themselves
+  // before the OpenURL call can be received.
+  // However, we also need to be able to navigate the target frame, so this is
+  // opened as a popup.
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  WebContentsImpl* web_contents_b = nullptr;
+  {
+    WebContentsAddedObserver observer_b;
+    ASSERT_TRUE(ExecJs(rfh_a, JsReplace("window.open($1, '_bpopup')", url_b)));
+    web_contents_b = static_cast<WebContentsImpl*>(observer_b.GetWebContents());
+  }
+  WaitForLoadStop(web_contents_b);
+
+  base::RunLoop loop;
+  auto initiator_global_token = rfh_a->GetGlobalFrameToken();
+
+  // Register a callback to make sure the script below triggers a
+  // DidStartNavigation event to fire. This indicates that the popup main
+  // frame's proxy in A's SiteInstanceGroup received and ran the OpenURL call.
+  DidStartNavigationCallback callback(
+      web_contents_b, base::BindLambdaForTesting([&](NavigationHandle* handle) {
+        auto* request = NavigationRequest::From(handle);
+        ASSERT_TRUE(request->IsPost());
+
+        const std::optional<blink::LocalFrameToken>& frame_token =
+            request->GetInitiatorFrameToken();
+        EXPECT_TRUE(frame_token.has_value());
+        EXPECT_EQ(initiator_global_token.frame_token, frame_token.value());
+        EXPECT_EQ(initiator_global_token.child_id,
+                  request->GetInitiatorProcessId());
+
+        // This is the RenderFrameHost in the WebContents that was forced to
+        // `Close()` in the interceptor, so it should be deleted.
+        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+            request->GetInitiatorProcessId(), frame_token.value());
+        EXPECT_FALSE(initiator_rfh);
+
+        // Even if the initiator RenderFrameHost is gone, its
+        // PolicyContainerHost should still be around since the LocalFrame has
+        // not been destroyed yet.
+        auto* initiator_policy_container =
+            PolicyContainerHost::FromFrameToken(frame_token.value());
+        ASSERT_TRUE(initiator_policy_container);
+        EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
+                  initiator_policy_container->referrer_policy());
+        EXPECT_EQ(
+            network::mojom::ReferrerPolicy::kAlways,
+            request->GetInitiatorPolicyContainerPolicies()->referrer_policy);
+
+        loop.Quit();
+      }));
+
+  // Intercept the OpenURL call to the proxy for the popup in A's
+  // SiteInstanceGroup, which will happen in a separate navigation task posted
+  // from the form submission task in the script below.
+  // Ownership of `shell_a` is being transferred to the interceptor. The
+  // interceptor will delete `shell_a` so it should not be used after this.
+  SiteInstanceGroup* a_sig = rfh_a->GetSiteInstance()->group();
+  auto proxy_host_interceptor =
+      std::make_unique<InitiatorClosingOpenURLInterceptor>(
+          web_contents_b->GetPrimaryMainFrame()
+              ->browsing_context_state()
+              ->GetRenderFrameProxyHost(a_sig),
+          std::move(shell_a), a_sig->process());
+
+  // Initiate a form submission into the b.com popup that will navigate the
+  // popup to about:blank.
+  // We want the initiator to be closed between the time the about:blank OpenURL
+  // IPC is sent and received. This is done in the interceptor by closing the
+  // shell the initiator belongs to. The timing means window.close() is not a
+  // viable option: it would post a task after the OpenURL navigation task, so
+  // we can't ensure the window is closed before OpenURL runs.
+  ExecuteScriptAsync(rfh_a, R"(
+    let input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "my_token");
+    input.setAttribute("value", "my_value");
+
+    // Schedule a form submission navigation (which will occur in a separate
+    // task).
+    let form = document.createElement('form');
+    form.appendChild(input);
+    form.setAttribute("method", "POST");
+    form.setAttribute("action", "about:blank");
+    form.setAttribute("target", "_bpopup");
+    document.body.appendChild(form);
+    form.submit();
+  )");
+  loop.Run();
+
+  // Make sure the about:blank navigation finishes successfully.
+  WaitForLoadStop(web_contents_b);
+  EXPECT_EQ(GURL("about:blank"), web_contents_b->GetLastCommittedURL());
 }
 
 using MediaNavigationBrowserTest = NavigationBaseBrowserTest;

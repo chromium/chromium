@@ -308,7 +308,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   base::SafeRef<RenderFrameProxyHost> GetSafeRef();
 
  private:
-  // These interceptor need access to frame_host_receiver_for_testing().
+  // These interceptors need access to frame_host_receiver_for_testing().
+  friend class InitiatorClosingOpenURLInterceptor;
   friend class RemoteFrameHostInterceptor;
   friend class UpdateViewportIntersectionMessageFilter;
   friend class SynchronizeVisualPropertiesInterceptor;
