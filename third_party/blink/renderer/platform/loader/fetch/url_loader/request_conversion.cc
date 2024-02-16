@@ -390,9 +390,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->original_destination = src.GetOriginalDestination();
 
-  if (dest->load_flags & net::LOAD_PREFETCH)
-    dest->corb_detachable = true;
-
   if (src.GetURLRequestExtraData()) {
     src.GetURLRequestExtraData()->CopyToResourceRequest(dest);
   }

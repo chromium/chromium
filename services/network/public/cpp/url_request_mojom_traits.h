@@ -240,9 +240,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool skip_service_worker(const network::ResourceRequest& request) {
     return request.skip_service_worker;
   }
-  static bool corb_detachable(const network::ResourceRequest& request) {
-    return request.corb_detachable;
-  }
   static network::mojom::RequestMode mode(
       const network::ResourceRequest& request) {
     return request.mode;

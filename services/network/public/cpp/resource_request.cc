@@ -265,7 +265,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          originated_from_service_worker ==
              request.originated_from_service_worker &&
          skip_service_worker == request.skip_service_worker &&
-         corb_detachable == request.corb_detachable && mode == request.mode &&
+         mode == request.mode &&
          required_ip_address_space == request.required_ip_address_space &&
          credentials_mode == request.credentials_mode &&
          redirect_mode == request.redirect_mode &&

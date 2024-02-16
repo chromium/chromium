@@ -596,7 +596,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   DeleteCallback delete_callback_;
 
   int32_t options_;
-  const bool corb_detachable_;
   const int resource_type_;
   const bool is_load_timing_enabled_;
   bool has_received_response_ = false;

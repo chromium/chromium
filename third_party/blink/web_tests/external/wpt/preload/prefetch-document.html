@@ -74,8 +74,10 @@ promise_test(async t => {
 }, "same origin document prefetch without 'as' should be consumed");
 
 promise_test(async t => {
-    assert_equals(await prefetch_document_and_count_fetches({origin: REMOTE_ORIGIN}, t), 1);
-}, "same-site different-origin document prefetch without 'as' should be consumed");
+    // This (pre-)fetch will be blocked by ORB, which will prevent it from
+    // being cached. Thus this prefetch is not consumed.
+    assert_equals(await prefetch_document_and_count_fetches({origin: REMOTE_ORIGIN}, t), 2);
+}, "same-site different-origin document prefetch without 'as' should not be consumed");
 
 promise_test(async t => {
     assert_equals(await prefetch_document_and_count_fetches({origin: HTTP_NOTSAMESITE_ORIGIN}, t), 2);

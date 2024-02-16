@@ -182,7 +182,7 @@ struct URLRequest {
   // not enforce |request_initiator_origin_lock| and instead rely on the
   // factory user to ensure that a valid, non-nullopt |request_initiator| is
   // provided.  Failure to provide a correct, verified |request_initiator| may
-  // lead to bypasses of CORS, CORB, SameSite cookies and other HTTP security
+  // lead to bypasses of CORS, ORB, SameSite cookies and other HTTP security
   // features.  An untrustworthy process (e.g. a renderer or a utility process)
   // should not be able to trigger or influence requests with a absl::nullopt
   // |request_initiator|).
@@ -285,11 +285,8 @@ struct URLRequest {
   // about this.
   bool skip_service_worker;
 
-  // If true then the request continues even if it's blocked by CORB.
-  bool corb_detachable = false;
-
   // https://fetch.spec.whatwg.org/#concept-request-mode
-  // Used mainly by CORS handling (out-of-blink CORS), CORB, Service Worker.
+  // Used mainly by CORS handling (out-of-blink CORS), ORB, Service Worker.
   // CORS handling needs a proper origin (including a unique opaque origin).
   // Hence a request with kSameOrigin, kCors, or kCorsWithForcedPreflight should
   // have a non-null request_initiator.

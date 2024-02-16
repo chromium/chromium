@@ -1076,9 +1076,11 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
   const char* target_path = "/target.html";
-  RegisterResponse(
-      target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Prefetch Target</title></head>",
+                                 // The empty content type prevents this
+                                 // response from being blocked by ORB.
+                                 /*content_types=*/""));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(

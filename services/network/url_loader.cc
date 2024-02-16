@@ -522,7 +522,6 @@ URLLoader::URLLoader(
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
       options_(options),
-      corb_detachable_(request.corb_detachable),
       resource_type_(request.resource_type),
       is_load_timing_enabled_(request.enable_load_timing),
       factory_params_(context.GetFactoryParams()),
@@ -2622,18 +2621,6 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
           ? net::OK
           : net::ERR_BLOCKED_BY_ORB;
 
-  // todo(lukasza/vogelheim): https://crbug.com/827633#c5:
-  // This preserves compatibility with current implementations, which use
-  // net::ERR_ABORTED when the resource is detachable. This is also used for
-  // resources with an empty destination in "ORB v0.2". This behaviour will
-  // no longer be used once kOpaqueResponseBlockingErrorsForAllFetches is
-  // perma-enabled.
-  if (corb_detachable_ && blocked_error_code == net::OK) {
-    CHECK(!base::FeatureList::IsEnabled(
-        features::kOpaqueResponseBlockingErrorsForAllFetches));
-    blocked_error_code = net::ERR_ABORTED;
-  }
-
   // Send empty body to the real URLLoaderClient. This preserves "ORB v0.1"
   // behaviour and will also go away once
   // OpaqueResponseBlockingErrorsForAllFetches is perma-enabled.
@@ -2665,28 +2652,6 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
       corb_analyzer_->ShouldReportBlockedResponse();
   corb_analyzer_.reset();
   CompleteBlockedResponse(blocked_error_code, should_report_blocked_response);
-
-  // If the factory is asking to complete requests of this type, then we need to
-  // continue processing the response to make sure the network cache is
-  // populated.  Otherwise we can cancel the request.
-  //
-  // TODO(lukasza/vogelheim): The `corb_detachable_` logic is meant to ensure a
-  // response is cached (in some cases). With HTTP cache partitioning, this is
-  // likely much less effective than it used to be. Maybe this mechanism should
-  // be retired.
-  if (corb_detachable_) {
-    // Discard any remaining callbacks or data by rerouting the pipes to
-    // EmptyURLLoaderClient.
-    receiver_.reset();
-    EmptyURLLoaderClientWrapper::DrainURLRequest(
-        url_loader_client_.BindNewPipeAndPassReceiver(),
-        receiver_.BindNewPipeAndPassRemote());
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
-
-    // Ask the caller to continue processing the request.
-    return kContinueRequest;
-  }
 
   // Close the socket associated with the request, to prevent leaking
   // information.
