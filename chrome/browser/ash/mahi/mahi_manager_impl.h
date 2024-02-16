@@ -23,9 +23,15 @@ class MahiManagerImpl : public chromeos::MahiManager {
   // chromeos::MahiManager:
   void OpenMahiPanel(int64_t display_id) override;
   void GetSummary(MahiSummaryCallback callback) override;
+  void SetCurrentFocusedPageInfo(crosapi::mojom::MahiPageInfoPtr info) override;
+  void OnContextMenuClicked(
+      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
 
  private:
   friend class MahiManagerImplTest;
+
+  crosapi::mojom::MahiPageInfoPtr current_page_info_ =
+      crosapi::mojom::MahiPageInfo::New();
 
   // The widget contains the Mahi main panel.
   views::UniqueWidgetPtr mahi_panel_widget_;

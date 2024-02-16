@@ -23,6 +23,11 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) FakeMahiManager : public MahiManager {
   // MahiManager:
   void GetSummary(MahiSummaryCallback callback) override;
   void OpenMahiPanel(int64_t display_id) override {}
+  void SetCurrentFocusedPageInfo(
+      crosapi::mojom::MahiPageInfoPtr info) override {}
+  void OnContextMenuClicked(
+      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override {
+  }
 
   void set_summary_text(std::u16string summary_text) {
     summary_text_ = summary_text;

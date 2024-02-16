@@ -14,6 +14,12 @@
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+using crosapi::mojom::MahiContextMenuActionType;
+
+}  // namespace
+
 namespace ash {
 
 class MahiManagerImplTest : public testing::Test {
@@ -66,6 +72,32 @@ TEST_F(MahiManagerImplTest, OpenPanel) {
   // The widget should be in the same display as the given `display_id`.
   EXPECT_EQ(display_id,
             screen->GetDisplayNearestWindow(widget->GetNativeWindow()).id());
+}
+
+TEST_F(MahiManagerImplTest, OnContextMenuClickedSummary) {
+  EXPECT_FALSE(GetMahiPanelWidget());
+
+  auto* screen = display::Screen::GetScreen();
+  auto display_id = screen->GetPrimaryDisplay().id();
+  auto request = crosapi::mojom::MahiContextMenuRequest::New(
+      display_id, MahiContextMenuActionType::kSummary, std::nullopt);
+  mahi_manager_impl_->OnContextMenuClicked(std::move(request));
+
+  // Widget should be created.
+  auto* widget = GetMahiPanelWidget();
+  EXPECT_TRUE(widget);
+}
+
+TEST_F(MahiManagerImplTest, OnContextMenuClickedSettings) {
+  EXPECT_FALSE(GetMahiPanelWidget());
+
+  auto* screen = display::Screen::GetScreen();
+  auto display_id = screen->GetPrimaryDisplay().id();
+  auto request = crosapi::mojom::MahiContextMenuRequest::New(
+      display_id, MahiContextMenuActionType::kSettings, std::nullopt);
+  mahi_manager_impl_->OnContextMenuClicked(std::move(request));
+
+  EXPECT_FALSE(GetMahiPanelWidget());
 }
 
 }  // namespace ash

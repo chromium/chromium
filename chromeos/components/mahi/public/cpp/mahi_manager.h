@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/crosapi/mojom/mahi.mojom.h"
 
 namespace chromeos {
 
@@ -30,6 +31,13 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // corresponding surface.
   using MahiSummaryCallback = base::OnceCallback<void(std::u16string)>;
   virtual void GetSummary(MahiSummaryCallback callback) = 0;
+
+  // Set page info of current focused page
+  virtual void SetCurrentFocusedPageInfo(
+      crosapi::mojom::MahiPageInfoPtr info) = 0;
+
+  virtual void OnContextMenuClicked(
+      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) = 0;
 
  protected:
   MahiManager();
