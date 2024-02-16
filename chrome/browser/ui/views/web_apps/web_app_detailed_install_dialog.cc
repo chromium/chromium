@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_detailed_install_dialog.h"
-
 #include <memory>
 #include <numeric>
 #include <string>
@@ -17,27 +15,21 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -335,10 +327,6 @@ END_METADATA
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
-
-int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
-  return static_cast<int64_t>(web_app_install_status);
-}
 #endif
 
 }  // namespace
@@ -372,10 +360,10 @@ void ShowWebAppDetailedInstallDialog(
       gfx::CHARACTER_BREAK);
   auto manifest_id = install_info->manifest_id;
 
-  auto delegate =
-      std::make_unique<web_app::WebAppDetailedInstallDialogDelegate>(
-          web_contents, std::move(install_info), std::move(install_tracker),
-          std::move(callback), std::move(iph_state), prefs, tracker);
+  auto delegate = std::make_unique<web_app::WebAppInstallDialogDelegate>(
+      web_contents, std::move(install_info), std::move(install_tracker),
+      std::move(callback), std::move(iph_state), prefs, tracker,
+      InstallDialogType::kDetailed);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
@@ -388,24 +376,23 @@ void ShowWebAppDetailedInstallDialog(
               l10n_util::GetStringUTF16(
                   IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
           .AddOkButton(
-              base::BindOnce(
-                  &web_app::WebAppDetailedInstallDialogDelegate::OnAccept,
-                  delegate_weak_ptr),
+              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnAccept,
+                             delegate_weak_ptr),
               ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(IDS_INSTALL)))
-          .AddCancelButton(base::BindOnce(
-              &web_app::WebAppDetailedInstallDialogDelegate::OnCancel,
-              delegate_weak_ptr))
-          .SetCloseActionCallback(base::BindOnce(
-              &web_app::WebAppDetailedInstallDialogDelegate::OnClose,
-              delegate_weak_ptr))
+          .AddCancelButton(
+              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnCancel,
+                             delegate_weak_ptr))
+          .SetCloseActionCallback(
+              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnClose,
+                             delegate_weak_ptr))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::make_unique<ImageCarouselView>(screenshots),
                   views::BubbleDialogModelHost::FieldType::kControl))
-          .SetDialogDestroyingCallback(base::BindOnce(
-              &web_app::WebAppDetailedInstallDialogDelegate::OnClose,
-              delegate_weak_ptr))
+          .SetDialogDestroyingCallback(
+              base::BindOnce(&web_app::WebAppInstallDialogDelegate::OnClose,
+                             delegate_weak_ptr))
           .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
           .Build();
 
@@ -423,155 +410,6 @@ void ShowWebAppDetailedInstallDialog(
             app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-WebAppDetailedInstallDialogDelegate::WebAppDetailedInstallDialogDelegate(
-    content::WebContents* web_contents,
-    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
-    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    AppInstallationAcceptanceCallback callback,
-    PwaInProductHelpState iph_state,
-    PrefService* prefs,
-    feature_engagement::Tracker* tracker)
-    : WebContentsObserver(web_contents),
-      web_contents_(web_contents),
-      install_info_(std::move(web_app_info)),
-      install_tracker_(std::move(install_tracker)),
-      callback_(std::move(callback)),
-      iph_state_(std::move(iph_state)),
-      prefs_(prefs),
-      tracker_(tracker) {
-  CHECK(install_info_);
-  CHECK(install_info_->manifest_id.is_valid());
-  CHECK(install_tracker_);
-  CHECK(prefs_);
-}
-
-WebAppDetailedInstallDialogDelegate::~WebAppDetailedInstallDialogDelegate() {
-  // TODO(crbug.com/1327363): move this to dialog->SetHighlightedButton.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  if (!browser) {
-    return;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-
-  if (browser_view && browser_view->toolbar_button_provider()) {
-    PageActionIconView* install_icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kPwaInstall);
-    if (install_icon) {
-      // Dehighlight the install icon when this dialog is closed.
-      browser_view->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kPwaInstall)
-          ->SetHighlighted(false);
-    }
-  }
-}
-
-void WebAppDetailedInstallDialogDelegate::OnAccept() {
-  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallAccepted"));
-  if (iph_state_ == PwaInProductHelpState::kShown) {
-    webapps::AppId app_id =
-        GenerateAppIdFromManifestId(install_info_->manifest_id);
-    WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordAccept(app_id);
-    tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    const webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    metrics::structured::StructuredMetricsClient::Record(
-        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-            .SetWebAppInstallStatus(
-                ToLong(web_app::WebAppInstallStatus::kAccepted))
-            .SetAppId(app_id));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  CHECK(callback_);
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
-  std::move(callback_).Run(true, std::move(install_info_));
-}
-
-void WebAppDetailedInstallDialogDelegate::OnCancel() {
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
-  MeasureIphOnDialogClose();
-}
-
-void WebAppDetailedInstallDialogDelegate::OnClose() {
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
-  MeasureIphOnDialogClose();
-}
-
-void WebAppDetailedInstallDialogDelegate::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
-    CloseDialogAsIgnored();
-  }
-}
-
-void WebAppDetailedInstallDialogDelegate::WebContentsDestroyed() {
-  CloseDialogAsIgnored();
-}
-
-void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
-  // Close dialog when navigating to a different domain.
-  if (!url::IsSameOriginWith(
-          navigation_handle->GetPreviousPrimaryMainFrameURL(),
-          navigation_handle->GetURL())) {
-    CloseDialogAsIgnored();
-  }
-}
-
-void WebAppDetailedInstallDialogDelegate::CloseDialogAsIgnored() {
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
-  if (dialog_model() && dialog_model()->host()) {
-    dialog_model()->host()->Close();
-  }
-}
-
-void WebAppDetailedInstallDialogDelegate::MeasureIphOnDialogClose() {
-  if (callback_.is_null()) {
-    return;
-  }
-
-  base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
-
-  if (iph_state_ == PwaInProductHelpState::kShown && install_info_) {
-    webapps::AppId app_id =
-        GenerateAppIdFromManifestId(install_info_->manifest_id);
-    WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordIgnore(
-        app_id, base::Time::Now());
-  }
-
-  // If |install_info_| is populated, then the dialog was not accepted.
-  if (install_info_) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            metrics::structured::kAppDiscoveryLogging)) {
-      const webapps::AppId app_id =
-          web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-      metrics::structured::StructuredMetricsClient::Record(
-          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-              .SetWebAppInstallStatus(
-                  ToLong(web_app::WebAppInstallStatus::kCancelled))
-              .SetAppId(app_id));
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    std::move(callback_).Run(false, std::move(install_info_));
-  }
 }
 
 }  // namespace web_app

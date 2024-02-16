@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_DETAILED_INSTALL_DIALOG_H_
-#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_DETAILED_INSTALL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_DIALOG_DELEGATE_H_
 
 #include <memory>
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/widget/widget.h"
 
 class PrefService;
 
@@ -31,26 +32,33 @@ class MlInstallOperationTracker;
 
 namespace web_app {
 
-class WebAppDetailedInstallDialogDelegate
+enum InstallDialogType {
+  kSimple,
+  kDetailed,
+  kMaxValue = kDetailed
+};
+
+class WebAppInstallDialogDelegate
     : public ui::DialogModelDelegate,
       public content::WebContentsObserver {
  public:
-  WebAppDetailedInstallDialogDelegate(
+  WebAppInstallDialogDelegate(
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       AppInstallationAcceptanceCallback callback,
       PwaInProductHelpState iph_state,
       PrefService* prefs,
-      feature_engagement::Tracker* tracker);
+      feature_engagement::Tracker* tracker,
+      InstallDialogType dialog_type);
 
-  ~WebAppDetailedInstallDialogDelegate() override;
+  ~WebAppInstallDialogDelegate() override;
 
   void OnAccept();
   void OnCancel();
   void OnClose();
 
-  base::WeakPtr<WebAppDetailedInstallDialogDelegate> AsWeakPtr() {
+  base::WeakPtr<WebAppInstallDialogDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -71,11 +79,12 @@ class WebAppDetailedInstallDialogDelegate
   PwaInProductHelpState iph_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<feature_engagement::Tracker> tracker_;
+  InstallDialogType dialog_type_;
 
-  base::WeakPtrFactory<WebAppDetailedInstallDialogDelegate> weak_ptr_factory_{
+  base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{
       this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_DETAILED_INSTALL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_DIALOG_DELEGATE_H_
