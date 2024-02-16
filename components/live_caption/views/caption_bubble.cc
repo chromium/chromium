@@ -87,6 +87,7 @@ namespace {
 // Formatting constants
 static constexpr int kLineHeightDip = 24;
 static constexpr int kLiveTranslateLabelLineHeightDip = 18;
+static constexpr int kLiveTranslateImageWidthDip = 16;
 static constexpr int kLanguageButtonImageLabelSpacing = 4;
 static constexpr int kNumLinesCollapsed = 2;
 static constexpr int kNumLinesExpanded = 8;
@@ -1310,7 +1311,8 @@ void CaptionBubble::SetTextColor() {
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, secondary_color));
+            vector_icons::kTranslateChromeRefreshIcon, secondary_color,
+            kLiveTranslateImageWidthDip));
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_HOVERED,
         ui::ImageModel::FromVectorIcon(
