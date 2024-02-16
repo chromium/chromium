@@ -1758,9 +1758,9 @@ bool AutocompleteController::ShouldRunProvider(
           return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
                        .limit_on_device_head_suggestions);
 
-        // Otherwise, all other providers should still run.
+        // Treat all other providers as usual.
         default:
-          return true;
+          break;
       }
     }
   }
