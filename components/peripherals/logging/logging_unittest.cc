@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,6 +45,9 @@ class PeripheralsLoggingTest : public testing::Test {
   PeripheralsLoggingTest() = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnablePeripheralsLogging);
+
     PeripheralsLogBuffer::GetInstance()->Clear();
     GetStandardLogs().clear();
 
@@ -129,10 +133,11 @@ TEST_F(PeripheralsLoggingTest, StandardLogsCreated) {
   PR_LOG(ERROR, Feature::IDS) << kLog3;
   PR_LOG(VERBOSE, Feature::IDS) << kLog4;
 
-  ASSERT_EQ(3u, GetStandardLogs().size());
+  ASSERT_EQ(4u, GetStandardLogs().size());
   EXPECT_NE(std::string::npos, GetStandardLogs()[0].find(kLog1));
   EXPECT_NE(std::string::npos, GetStandardLogs()[1].find(kLog2));
   EXPECT_NE(std::string::npos, GetStandardLogs()[2].find(kLog3));
+  EXPECT_NE(std::string::npos, GetStandardLogs()[3].find(kLog4));
 }
 
 }  // namespace ash

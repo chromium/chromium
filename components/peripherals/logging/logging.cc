@@ -4,7 +4,9 @@
 
 #include "components/peripherals/logging/logging.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 
 PeripheralsScopedLogMessage::PeripheralsScopedLogMessage(
     const char* file,
@@ -14,15 +16,20 @@ PeripheralsScopedLogMessage::PeripheralsScopedLogMessage(
     : file_(file), feature_(feature), line_(line), severity_(severity) {}
 
 PeripheralsScopedLogMessage::~PeripheralsScopedLogMessage() {
+  // For now, only emit logs if they are warning or more severe OR if the flag
+  // is enabled.
   const std::string string_from_stream = stream_.str();
-  PeripheralsLogBuffer::GetInstance()->AddLogMessage(
-      PeripheralsLogBuffer::LogMessage(string_from_stream, feature_,
-                                       base::Time::Now(), file_, line_,
-                                       severity_));
+  if (ash::features::IsPeripheralsLoggingEnabled()) {
+    // TODO(dpad): Utilize the logs in the buffer in feedback reports.
+    PeripheralsLogBuffer::GetInstance()->AddLogMessage(
+        PeripheralsLogBuffer::LogMessage(string_from_stream, feature_,
+                                         base::Time::Now(), file_, line_,
+                                         severity_));
+  }
 
   // Don't emit VERBOSE-level logging to the standard logging system.
-  if (severity_ <= logging::LOGGING_VERBOSE &&
-      logging::GetVlogLevelHelper(file_, strlen(file_) + 1) <= 0) {
+  if (severity_ <= logging::LOGGING_WARNING &&
+      !ash::features::IsPeripheralsLoggingEnabled()) {
     return;
   }
 

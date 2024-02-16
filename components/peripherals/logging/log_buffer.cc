@@ -8,8 +8,9 @@
 
 namespace {
 
+// TODO(dpad): Decide on a reasonable max number of logs here.
 // The maximum number of logs that can be stored in the buffer.
-constexpr size_t kMaxBufferSize = 10000;
+constexpr size_t kMaxBufferSize = 100;
 
 }  // namespace
 
