@@ -3916,9 +3916,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
         EXPECT_EQ(initiator_global_token.child_id,
                   request->GetInitiatorProcessId());
 
-        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+        auto* deleted_initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessId(), frame_token.value());
-        ASSERT_FALSE(initiator_rfh);
+        ASSERT_FALSE(deleted_initiator_rfh);
 
         // Even if the initiator RenderFrameHost is gone, its policy container
         // should still be around since the LocalFrame has not been destroyed
@@ -4022,9 +4022,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         EXPECT_EQ(initiator_global_token.child_id,
                   request->GetInitiatorProcessId());
 
-        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+        auto* deleted_initiator_rfh = RenderFrameHostImpl::FromFrameToken(
             request->GetInitiatorProcessId(), frame_token.value());
-        ASSERT_FALSE(initiator_rfh);
+        ASSERT_FALSE(deleted_initiator_rfh);
 
         // Even if the initiator RenderFrameHost is gone, its policy container
         // should still be around since the LocalFrame has not been destroyed
