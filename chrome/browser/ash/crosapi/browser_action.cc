@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -496,8 +497,9 @@ std::unique_ptr<BrowserAction> BrowserAction::OpenProfileManager() {
 }
 
 // No window will be opened in the following circumstances:
-// 1. Lacros-chrome is initialized in the Kiosk session
+// 1. Lacros-chrome is initialized in the Kiosk session.
 // 2. Full restore is responsible for restoring/launching Lacros.
+// 3. Floating Workspace Service is responsible for restoring/launching lacros.
 // static
 std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
@@ -505,6 +507,7 @@ std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
         /*incognito=*/false, /*should_trigger_session_restore=*/false, -1);
   }
   if (chromeos::IsKioskSession() ||
+      ash::floating_workspace_util::ShouldHandleRestartRestore() ||
       ash::full_restore::MaybeCreateFullRestoreServiceForLacros()) {
     return std::make_unique<NoOpAction>();
   }

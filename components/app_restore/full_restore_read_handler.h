@@ -33,7 +33,7 @@ struct WindowInfo;
 namespace ash {
 class AppLaunchInfoSaveWaiter;
 namespace full_restore {
-class FullRestoreAppLaunchHandlerBrowserTest;
+class FullRestoreAppLaunchHandlerTestBase;
 class FullRestoreServiceTestHavingFullRestoreFile;
 }  // namespace full_restore
 }  // namespace ash
@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
  private:
   friend class ash::AppLaunchInfoSaveWaiter;
-  friend class ash::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerTestBase;
   friend class ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
   friend class FullRestoreReadHandlerTestApi;
 

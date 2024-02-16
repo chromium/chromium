@@ -265,19 +265,16 @@ void ClickTemplateItem(int index) {
 
 }  // namespace
 
-class FullRestoreAppLaunchHandlerBrowserTest
+class FullRestoreAppLaunchHandlerTestBase
     : public extensions::PlatformAppBrowserTest {
  public:
-  FullRestoreAppLaunchHandlerBrowserTest()
+  FullRestoreAppLaunchHandlerTestBase()
       : faster_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesksTemplates},
-        /*disabled_features=*/{features::kDeskTemplateSync});
   }
-  ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
+  ~FullRestoreAppLaunchHandlerTestBase() override = default;
 
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
@@ -376,11 +373,22 @@ class FullRestoreAppLaunchHandlerBrowserTest
 
   void ResetRestoreForTesting() { scoped_restore_for_testing_.reset(); }
 
- private:
+ protected:
   ui::ScopedAnimationDurationScaleMode faster_animations_;
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FullRestoreAppLaunchHandlerBrowserTest
+    : public FullRestoreAppLaunchHandlerTestBase {
+ public:
+  FullRestoreAppLaunchHandlerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDesksTemplates},
+        /*disabled_features=*/{features::kDeskTemplateSync});
+  }
+  ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
@@ -1064,6 +1072,43 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_LT(browser_from_template->window()->GetNativeWindow()->GetProperty(
                 ::app_restore::kRestoreWindowIdKey),
             -1);
+}
+
+class FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest
+    : public FullRestoreAppLaunchHandlerTestBase {
+ public:
+  FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFloatingWorkspaceV2,
+                              features::kDeskTemplateSync},
+        /*disabled_features=*/{});
+  }
+  ~FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest() override =
+      default;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    FullRestoreAppLaunchHandlerWithFloatingWorkspaceBrowserTest,
+    AddAppAndNotRestoreWithFloatingWorkspaceEnabled) {
+  // Add app launch infos.
+  SaveBrowserAppLaunchInfo(kWindowId1);
+  SaveDefaultAppLaunchInfo();
+  AppLaunchInfoSaveWaiter::Wait();
+
+  size_t count = BrowserList::GetInstance()->size();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
+
+  CreateWebApp();
+
+  content::RunAllTasksUntilIdle();
+
+  // Verify there is no new browser launched.
+  EXPECT_EQ(count, BrowserList::GetInstance()->size());
+  EXPECT_FALSE(FindWebAppWindow());
 }
 
 class FullRestoreAppLaunchHandlerChromeAppBrowserTest

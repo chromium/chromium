@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -72,8 +73,14 @@ FullRestoreAppLaunchHandler::FullRestoreAppLaunchHandler(
 
 FullRestoreAppLaunchHandler::~FullRestoreAppLaunchHandler() = default;
 
+// TODO: b/325616600 - Move early returns for floating workspace service checks
+// logic out.
 void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady(
     bool first_run_full_restore) {
+  if (floating_workspace_util::ShouldHandleRestartRestore()) {
+    return;
+  }
+
   if (g_launch_browser_for_testing ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceLaunchBrowser)) {
@@ -181,9 +188,11 @@ void FullRestoreAppLaunchHandler::OnMojoDisconnected() {
 void FullRestoreAppLaunchHandler::OnStateChanged() {
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     observation_.Reset();
-    VLOG(1) << "Full restore opens Lacros";
-    crosapi::BrowserManager::Get()->OpenForFullRestore(
-        /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
+    if (!floating_workspace_util::ShouldHandleRestartRestore()) {
+      VLOG(1) << "Full restore opens Lacros";
+      crosapi::BrowserManager::Get()->OpenForFullRestore(
+          /*skip_crash_restore=*/IsLastSessionExitTypeCrashed());
+    }
   }
 }
 
@@ -239,6 +248,9 @@ void FullRestoreAppLaunchHandler::MaybePostRestore() {
 }
 
 void FullRestoreAppLaunchHandler::MaybeRestore() {
+  if (floating_workspace_util::ShouldHandleRestartRestore()) {
+    return;
+  }
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetStartTimeForProfile(
       profile()->GetPath());
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetCheckRestoreData(

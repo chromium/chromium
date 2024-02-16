@@ -23,12 +23,15 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -125,20 +128,21 @@ class FullRestoreServiceTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName("user.test@gmail.com");
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
-    profile_ = profile_builder.Build();
-    profile_->GetPrefs()->ClearPref(prefs::kRestoreAppsAndPagesPrefName);
-
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+    auto* prefs_ptr = prefs.get();
     account_id_ =
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
-    const auto* user = GetFakeUserManager()->AddUser(account_id_);
+    GetFakeUserManager()->AddUser(account_id_);
     fake_user_manager_->LoginUser(account_id_);
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                            profile_.get());
-
+    profile_ = profile_manager_->CreateTestingProfile(
+        "usertest@gmail.com", TestingProfile::TestingFactories());
+    fake_user_manager_->OnUserProfileCreated(account_id_, prefs_ptr);
     ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,
                                                                  false);
 
@@ -146,7 +150,11 @@ class FullRestoreServiceTest : public testing::Test {
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
   }
 
-  void TearDown() override { profile_.reset(); }
+  void TearDown() override {
+    GetFakeUserManager()->OnUserProfileWillBeDestroyed(account_id_);
+    profile_ = nullptr;
+    profile_manager_ = nullptr;
+  }
 
   FakeChromeUserManager* GetFakeUserManager() const {
     return fake_user_manager_.Get();
@@ -296,13 +304,14 @@ class FullRestoreServiceTest : public testing::Test {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   base::ScopedTempDir temp_dir_;
   AccountId account_id_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
   base::HistogramTester histogram_tester_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 // If the system is crash, and there is no FullRestore file, don't show the
