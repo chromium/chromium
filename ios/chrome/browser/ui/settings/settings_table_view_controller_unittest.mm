@@ -12,6 +12,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
+#import "components/plus_addresses/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -548,4 +549,23 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
   EXPECT_TRUE([controller().tableViewModel
       hasItemForItemType:SettingsItemTypeDownloadsSettings
        sectionIdentifier:section]);
+}
+
+// Verifies that the plus address option isn't shown when disabled.
+TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(plus_addresses::kFeature);
+
+  CreateController();
+  CheckController();
+
+  NSArray* advanced_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAdvanced];
+  NSPredicate* predicate =
+      [NSPredicate predicateWithFormat:@"accessibilityIdentifier == %@",
+                                       kSettingsPlusAddressesId];
+  NSArray* filteredArray =
+      [advanced_items filteredArrayUsingPredicate:predicate];
+  EXPECT_EQ(filteredArray.count, 0U);
 }
