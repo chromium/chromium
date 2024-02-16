@@ -887,7 +887,7 @@ namespace networkingPrivate {
     // properties of the network (read-only and read/write values).
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called with the network properties when received.
-    [supportsPromises] static void getProperties(
+    static void getProperties(
         DOMString networkGuid,
         GetPropertiesCallback callback);
 
@@ -896,7 +896,7 @@ namespace networkingPrivate {
     // the currently active settings.
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called with the managed network properties when received.
-    [supportsPromises] static void getManagedProperties(
+    static void getManagedProperties(
         DOMString networkGuid,
         GetManagedPropertiesCallback callback);
 
@@ -910,7 +910,7 @@ namespace networkingPrivate {
     // Cellular.RoamingState.
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called immediately with the network state properties.
-    [supportsPromises] static void getState(
+    static void getState(
         DOMString networkGuid,
         GetStatePropertiesCallback callback);
 
@@ -920,7 +920,7 @@ namespace networkingPrivate {
     // |networkGuid|: The GUID of the network to set properties for.
     // |properties|: The properties to set.
     // |callback|: Called when the operation has completed.
-    [supportsPromises] static void setProperties(
+    static void setProperties(
         DOMString networkGuid,
         NetworkConfigProperties properties,
         optional VoidCallback callback);
@@ -932,7 +932,7 @@ namespace networkingPrivate {
     // |properties|: The properties to configure the new network with.
     // |callback|: Called with the GUID for the new network configuration once
     //     the network has been created.
-    [supportsPromises] static void createNetwork(
+    static void createNetwork(
         boolean shared,
         NetworkConfigProperties properties,
         optional StringCallback callback);
@@ -944,7 +944,7 @@ namespace networkingPrivate {
     // fail.
     // |networkGuid|: The GUID of the network to forget.
     // |callback|: Called when the operation has completed.
-    [supportsPromises] static void forgetNetwork(
+    static void forgetNetwork(
         DOMString networkGuid,
         optional VoidCallback callback);
 
@@ -956,8 +956,9 @@ namespace networkingPrivate {
     // |filter|: Describes which networks to return.
     // |callback|: Called with a dictionary of networks and their state
     //     properties when received.
-    [supportsPromises] static void getNetworks(NetworkFilter filter,
-                                               GetNetworksCallback callback);
+    static void getNetworks(
+        NetworkFilter filter,
+        GetNetworksCallback callback);
 
     // Deprecated. Please use $(ref:networkingPrivate.getNetworks) with
     // filter.visible = true instead.
@@ -971,7 +972,7 @@ namespace networkingPrivate {
 
     // Returns a list of $(ref:networkingPrivate.DeviceStateProperties) objects.
     // |callback|: Called with a list of devices and their state.
-    [supportsPromises] static void getDeviceStates(
+    static void getDeviceStates(
         GetDeviceStatesCallback callback);
 
     // Enables any devices matching the specified network type. Note, the type
@@ -999,14 +1000,15 @@ namespace networkingPrivate {
     //     to be notified when a network state changes. If the connect request
     //     immediately failed (e.g. the network is unconfigured),
     //     $(ref:runtime.lastError) will be set with a failure reason.
-    [supportsPromises] static void startConnect(DOMString networkGuid,
-                                                optional VoidCallback callback);
+    static void startConnect(
+        DOMString networkGuid,
+        optional VoidCallback callback);
 
     // Starts a disconnect from the network with networkGuid.
     // |networkGuid|: The GUID of the network to disconnect from.
     // |callback|: Called when the disconnect request has been sent. See note
     //     for $(ref:startConnect).
-    [supportsPromises] static void startDisconnect(
+    static void startDisconnect(
         DOMString networkGuid,
         optional VoidCallback callback);
 
@@ -1018,7 +1020,7 @@ namespace networkingPrivate {
     // |carrier|: Optional name of carrier to activate.
     // |callback|: Called when the activation request has been sent. See note
     //     for $(ref:startConnect).
-    [supportsPromises] static void startActivate(
+    static void startActivate(
         DOMString networkGuid,
         optional DOMString carrier,
         optional VoidCallback callback);
@@ -1027,7 +1029,7 @@ namespace networkingPrivate {
     // |networkGuid|: The GUID of the network to get captive portal status for.
     // |callback|: A callback function that returns the results of the query for
     //     network captive portal status.
-    [supportsPromises] static void getCaptivePortalStatus(
+    static void getCaptivePortalStatus(
         DOMString networkGuid,
         CaptivePortalStatusCallback callback);
 
@@ -1042,7 +1044,7 @@ namespace networkingPrivate {
     // |pin|: The current SIM PIN, or the new PIN if PUK is provided.
     // |puk|: The operator provided PUK for unblocking a blocked SIM.
     // |callback|: Called when the operation has completed.
-    [supportsPromises] static void unlockCellularSim(
+    static void unlockCellularSim(
         DOMString networkGuid,
         DOMString pin,
         optional DOMString puk,
@@ -1059,7 +1061,7 @@ namespace networkingPrivate {
     //     If empty, the default cellular device will be used.
     // |simState|: The SIM state to set.
     // |callback|: Called when the operation has completed.
-    [supportsPromises] static void setCellularSimState(
+    static void setCellularSimState(
         DOMString networkGuid,
         CellularSimState simState,
         optional VoidCallback callback);
@@ -1071,18 +1073,18 @@ namespace networkingPrivate {
     //     for. If empty, the default cellular device will be used.
     // |networkId|: The networkId to select.
     // |callback|: Called when the operation has completed.
-    [supportsPromises] static void selectCellularMobileNetwork(
+    static void selectCellularMobileNetwork(
         DOMString networkGuid,
         DOMString networkId,
         optional VoidCallback callback);
 
     // Gets the global policy properties. These properties are not expected to
     // change during a session.
-    [supportsPromises] static void getGlobalPolicy(
+    static void getGlobalPolicy(
         GetGlobalPolicyCallback callback);
 
     // Gets the lists of certificates available for network configuration.
-    [supportsPromises] static void getCertificateLists(
+    static void getCertificateLists(
         GetCertificateListsCallback callback);
   };
 

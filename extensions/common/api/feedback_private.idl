@@ -241,10 +241,11 @@ namespace feedbackPrivate {
     // information is slow.
     // |formOpenTime|: The epoch time when the feedback form was opened. This is
     // used for metrics.
-    [supportsPromises] static void sendFeedback(FeedbackInfo feedback,
-                                                optional boolean loadSystemInfo,
-                                                optional double formOpenTime,
-                                                SendFeedbackCallback callback);
+    static void sendFeedback(
+        FeedbackInfo feedback,
+        optional boolean loadSystemInfo,
+        optional double formOpenTime,
+        SendFeedbackCallback callback);
 
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:
@@ -271,8 +272,9 @@ namespace feedbackPrivate {
     //       </li>
     //   <li>Returns the same <code>readerId</code> value to the callback.</li>
     // </ul>
-    static void readLogSource(ReadLogSourceParams params,
-                              ReadLogSourceCallback callback);
+    static void readLogSource(
+        ReadLogSourceParams params,
+        ReadLogSourceCallback callback);
 
   };
 

@@ -29,7 +29,7 @@ namespace power {
     // Reports a user activity in order to awake the screen from a dimmed or
     // turned off state or from a screensaver. Exits the screensaver if it is
     // currently active.
-    [platforms=("chromeos", "lacros"), supportsPromises]
-    static void reportActivity(optional VoidCallback callback);
+    [platforms=("chromeos", "lacros")] static void reportActivity(
+        optional VoidCallback callback);
   };
 };

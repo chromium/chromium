@@ -129,14 +129,15 @@ namespace bluetooth {
     // Get information about the Bluetooth adapter.
     // |callback| : Called with an AdapterState object describing the adapter
     // state.
-    [supportsPromises] static void getAdapterState(
+    static void getAdapterState(
         AdapterStateCallback callback);
 
     // Get information about a Bluetooth device known to the system.
     // |deviceAddress| : Address of device to get.
     // |callback| : Called with the Device object describing the device.
-    [supportsPromises] static void getDevice(DOMString deviceAddress,
-                                             GetDeviceCallback callback);
+    static void getDevice(
+        DOMString deviceAddress,
+        GetDeviceCallback callback);
 
     // Get a list of Bluetooth devices known to the system, including paired
     // and recently discovered devices.
@@ -145,8 +146,9 @@ namespace bluetooth {
     // will contain all bluetooth devices. Right now this is only supported in
     // ChromeOS, for other platforms, a full list is returned.
     // |callback| : Called when the search is completed.
-    [supportsPromises] static void getDevices(optional BluetoothFilter filter,
-                                              GetDevicesCallback callback);
+    static void getDevices(
+        optional BluetoothFilter filter,
+        GetDevicesCallback callback);
 
     // Start discovery. Newly discovered devices will be returned via the
     // onDeviceAdded event. Previously discovered devices already known to
@@ -157,12 +159,12 @@ namespace bluetooth {
     // startDiscovery.  Discovery can be resource intensive: stopDiscovery
     // should be called as soon as possible.
     // |callback| : Called to indicate success or failure.
-    [supportsPromises] static void startDiscovery(
+    static void startDiscovery(
         optional StartDiscoveryCallback callback);
 
     // Stop discovery.
     // |callback| : Called to indicate success or failure.
-    [supportsPromises] static void stopDiscovery(
+    static void stopDiscovery(
         optional StopDiscoveryCallback callback);
   };
 

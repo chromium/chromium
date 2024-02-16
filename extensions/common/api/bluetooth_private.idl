@@ -130,37 +130,40 @@ namespace bluetoothPrivate {
     // Changes the state of the Bluetooth adapter.
     // |adapterState|: The new state of the adapter.
     // |callback|: Called when all the state changes have been completed.
-    [supportsPromises] static void setAdapterState(
+    static void setAdapterState(
         NewAdapterState adapterState,
         optional VoidCallback callback);
 
-    [supportsPromises] static void setPairingResponse(
+    static void setPairingResponse(
         SetPairingResponseOptions options,
         optional VoidCallback callback);
 
     // Tears down all connections to the given device.
-    [supportsPromises] static void disconnectAll(
+    static void disconnectAll(
         DOMString deviceAddress,
         optional VoidCallback callback);
 
     // Forgets the given device.
-    [supportsPromises] static void forgetDevice(DOMString deviceAddress,
-                                                optional VoidCallback callback);
+    static void forgetDevice(
+        DOMString deviceAddress,
+        optional VoidCallback callback);
 
     // Set or clear discovery filter.
-    [supportsPromises] static void setDiscoveryFilter(
+    static void setDiscoveryFilter(
         DiscoveryFilter discoveryFilter,
         optional VoidCallback callback);
 
     // Connects to the given device. This will only throw an error if the
     // device address is invalid or the device is already connected. Otherwise
     // this will succeed and invoke |callback| with ConnectResultType.
-    [supportsPromises] static void connect(DOMString deviceAddress,
-                                           optional ConnectCallback callback);
+    static void connect(
+        DOMString deviceAddress,
+        optional ConnectCallback callback);
 
     // Pairs the given device.
-    [supportsPromises] static void pair(DOMString deviceAddress,
-                                        optional VoidCallback callback);
+    static void pair(
+        DOMString deviceAddress,
+        optional VoidCallback callback);
 
     // Record that a pairing attempt finished. Ignores cancellations.
     static void recordPairing(bluetooth.Transport transport,

@@ -329,13 +329,14 @@ namespace system.display {
     // Requests the information for all attached display devices.
     // |flags|: Options affecting how the information is returned.
     // |callback|: The callback to invoke with the results.
-    [supportsPromises] static void getInfo(optional GetInfoFlags flags,
-                                           DisplayInfoCallback callback);
+    static void getInfo(
+        optional GetInfoFlags flags,
+        DisplayInfoCallback callback);
 
     // Requests the layout info for all displays.
     // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
     // |callback|: The callback to invoke with the results.
-    [supportsPromises] static void getDisplayLayout(
+    static void getDisplayLayout(
         DisplayLayoutCallback callback);
 
     // Updates the properties for the display specified by |id|, according to
@@ -349,7 +350,7 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    [supportsPromises] static void setDisplayProperties(
+    static void setDisplayProperties(
         DOMString id,
         DisplayProperties info,
         optional SetDisplayUnitInfoCallback callback);
@@ -364,7 +365,7 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    [supportsPromises] static void setDisplayLayout(
+    static void setDisplayLayout(
         DisplayLayout[] layouts,
         optional SetDisplayLayoutCallback callback);
 
@@ -408,7 +409,7 @@ namespace system.display {
     // |callback|: Optional callback to inform the caller that the touch
     //      calibration has ended. The argument of the callback informs if the
     //      calibration was a success or not.
-    [supportsPromises] static void showNativeTouchCalibration(
+    static void showNativeTouchCalibration(
         DOMString id,
         optional NativeTouchCalibrationCallback callback);
 
@@ -444,7 +445,7 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    [supportsPromises] static void setMirrorMode(
+    static void setMirrorMode(
         MirrorModeInfo info,
         optional SetMirrorModeCallback callback);
   };

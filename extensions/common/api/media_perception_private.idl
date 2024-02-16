@@ -557,7 +557,7 @@ namespace mediaPerceptionPrivate {
   interface Functions {
     // Gets the status of the media perception process.
     // |callback| : The current state of the system.
-    [supportsPromises] static void getState(StateCallback callback);
+    static void getState(StateCallback callback);
 
     // Sets the desired state of the system.
     // |state| : A dictionary with the desired new state. The only settable
@@ -565,12 +565,13 @@ namespace mediaPerceptionPrivate {
     // <code>RESTARTING</code>.
     // |callback| : Invoked with the State of the system after setting it. Can
     // be used to verify the state was set as desired.
-    [supportsPromises] static void setState(State state,
-                                            StateCallback callback);
+    static void setState(
+        State state,
+        StateCallback callback);
 
     // Get a diagnostics buffer out of the video analytics process.
     // |callback| : Returns a Diagnostics dictionary object.
-    [supportsPromises] static void getDiagnostics(DiagnosticsCallback callback);
+    static void getDiagnostics(DiagnosticsCallback callback);
 
     // Attempts to download and load the media analytics component. This
     // function should be called every time a client starts using this API. If
@@ -582,7 +583,7 @@ namespace mediaPerceptionPrivate {
     // downloaded and installed.
     // |component| : The desired component to install and load.
     // |callback| : Returns the state of the component.
-    [supportsPromises] static void setAnalyticsComponent(
+    static void setAnalyticsComponent(
         Component component,
         ComponentStateCallback callback);
 
@@ -592,7 +593,7 @@ namespace mediaPerceptionPrivate {
     // |processState| : The desired state for the component process.
     // |callback| : Reports the new state of the process, which is expected to
     // be the same as the desired state, unless something goes wrong.
-    [supportsPromises] static void setComponentProcessState(
+    static void setComponentProcessState(
         ProcessState processState,
         ProcessStateCallback callback);
   };

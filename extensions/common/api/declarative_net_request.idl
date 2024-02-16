@@ -643,7 +643,7 @@ namespace declarativeNetRequest {
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, internal
     // errors, and others.
-    [supportsPromises] static void updateDynamicRules(
+    static void updateDynamicRules(
         UpdateRuleOptions options,
         optional EmptyCallback callback);
 
@@ -653,7 +653,7 @@ namespace declarativeNetRequest {
     // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of dynamic rules. An error might be
     // raised in case of transient internal errors.
-    [supportsPromises] static void getDynamicRules(
+    static void getDynamicRules(
         optional GetRulesFilter filter,
         GetRulesCallback callback);
 
@@ -673,7 +673,7 @@ namespace declarativeNetRequest {
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, and others.
-    [supportsPromises] static void updateSessionRules(
+    static void updateSessionRules(
         UpdateRuleOptions options,
         optional EmptyCallback callback);
 
@@ -682,7 +682,7 @@ namespace declarativeNetRequest {
     // <code>filter</code>.
     // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of session scoped rules.
-    [supportsPromises] static void getSessionRules(
+    static void getSessionRules(
         optional GetRulesFilter filter,
         GetRulesCallback callback);
 
@@ -698,14 +698,14 @@ namespace declarativeNetRequest {
     // $(ref:runtime.lastError) will be set and no change will be made to set of
     // enabled rulesets. This can happen for multiple reasons, such as invalid
     // ruleset IDs, rule count limit exceeded, or internal errors.
-    [supportsPromises] static void updateEnabledRulesets(
+    static void updateEnabledRulesets(
         UpdateRulesetOptions options,
         optional EmptyCallback callback);
 
     // Returns the ids for the current set of enabled static rulesets.
     // |callback|: Called with a list of ids, where each id corresponds to an
     // enabled static $(ref:Ruleset).
-    [supportsPromises] static void getEnabledRulesets(
+    static void getEnabledRulesets(
         GetEnabledRulesetsCallback callback);
 
     // Disables and enables individual static rules in a $(ref:Ruleset).
@@ -714,7 +714,7 @@ namespace declarativeNetRequest {
     // |callback|: Called once the update is complete. In case of an error,
     // $(ref:runtime.lastError) will be set and no change will be made to the
     // enabled static rules.
-    [supportsPromises] static void updateStaticRules(
+    static void updateStaticRules(
         UpdateStaticRulesOptions options,
         optional EmptyCallback callback);
 
@@ -723,7 +723,7 @@ namespace declarativeNetRequest {
     // |options|: Specifies the ruleset to query.
     // |callback|: Called with a list of ids that correspond to the disabled
     // rules in that ruleset.
-    [supportsPromises] static void getDisabledRuleIds(
+    static void getDisabledRuleIds(
         GetDisabledRuleIdsOptions options,
         GetDisabledRuleIdsCallback callback);
 
@@ -740,14 +740,14 @@ namespace declarativeNetRequest {
     // case of an error, $(ref:runtime.lastError) will be set and no rules will
     // be returned. This can happen for multiple reasons, such as insufficient
     // permissions, or exceeding the quota.
-    [supportsPromises] static void getMatchedRules(
+    static void getMatchedRules(
         optional MatchedRulesFilter filter,
         GetMatchedRulesCallback callback);
 
     // Configures if the action count for tabs should be displayed as the
     // extension action's badge text and provides a way for that action count to
     // be incremented.
-    [supportsPromises] static void setExtensionActionOptions(
+    static void setExtensionActionOptions(
         ExtensionActionOptions options,
         optional EmptyCallback callback);
 
@@ -756,14 +756,14 @@ namespace declarativeNetRequest {
     // |regexOptions|: The regular expression to check.
     // |callback|: Called with details consisting of whether the regular
     // expression is supported and the reason if not.
-    [supportsPromises] static void isRegexSupported(
+    static void isRegexSupported(
         RegexOptions regexOptions,
         IsRegexSupportedCallback callback);
 
     // Returns the number of static rules an extension can enable before the
     // <a href="#global-static-rule-limit">global static rule limit</a> is
     // reached.
-    [supportsPromises] static void getAvailableStaticRuleCount(
+    static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
 
     // Checks if any of the extension's declarativeNetRequest rules would match
@@ -772,7 +772,7 @@ namespace declarativeNetRequest {
     // be used during extension development.
     // |requestDetails|: The request details to test.
     // |callback|: Called with the details of matched rules.
-    [supportsPromises] static void testMatchOutcome(
+    static void testMatchOutcome(
         TestMatchRequestDetails request,
         TestMatchOutcomeCallback callback);
   };

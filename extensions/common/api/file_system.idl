@@ -112,7 +112,7 @@ namespace fileSystem {
     // Get the display path of an Entry object. The display path is based on
     // the full path of the file or directory on the local file system, but may
     // be made more readable for display purposes.
-    [supportsPromises] static void getDisplayPath(
+    static void getDisplayPath(
         [instanceOf=Entry] object entry,
         GetDisplayPathCallback callback);
 
@@ -127,7 +127,7 @@ namespace fileSystem {
         EntryCallback callback);
 
     // Gets whether this Entry is writable or not.
-    [supportsPromises] static void isWritableEntry(
+    static void isWritableEntry(
         [instanceOf=Entry] object entry,
         IsWritableCallback callback);
 
@@ -145,8 +145,9 @@ namespace fileSystem {
 
     // Returns whether the app has permission to restore the entry with the
     // given id.
-    [supportsPromises] static void isRestorable(DOMString id,
-                                                IsRestorableCallback callback);
+    static void isRestorable(
+        DOMString id,
+        IsRestorableCallback callback);
 
     // Returns an id that can be passed to restoreEntry to regain access to a
     // given file entry. Only the 500 most recently used entries are retained,
@@ -165,7 +166,7 @@ namespace fileSystem {
     // confirmation dialog will be shown on top of the active app window.
     // In case of an error, <code>fileSystem</code> will be undefined, and
     // <code>chrome.runtime.lastError</code> will be set.
-    [supportsPromises] static void requestFileSystem(
+    static void requestFileSystem(
         RequestFileSystemOptions options,
         RequestFileSystemCallback callback);
 
@@ -174,7 +175,7 @@ namespace fileSystem {
     // is required. Available to kiosk apps running in the kiosk session only.
     // In case of an error, <code>volumes</code> will be undefined, and <code>
     // chrome.runtime.lastError</code> will be set.
-    [supportsPromises] static void getVolumeList(
+    static void getVolumeList(
         GetVolumeListCallback callback);
   };
 

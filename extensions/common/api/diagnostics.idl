@@ -31,7 +31,8 @@ namespace diagnostics {
 
   interface Functions {
     // Send a packet of the given type with the given parameters.
-    [supportsPromises] static void sendPacket(SendPacketOptions options,
-                                              SendPacketCallback callback);
+    static void sendPacket(
+        SendPacketOptions options,
+        SendPacketCallback callback);
   };
 };

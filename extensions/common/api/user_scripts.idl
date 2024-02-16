@@ -101,15 +101,16 @@ namespace userScripts {
     // |scripts|: Contains a list of user scripts to be registered.
     // |callback|: Called once scripts have been fully registered or if an error
     // has ocurred.
-    [supportsPromises] static void register(RegisteredUserScript[] scripts,
-                                            optional RegisterCallback callback);
+    static void register(
+        RegisteredUserScript[] scripts,
+        optional RegisterCallback callback);
 
     // Returns all dynamically-registered user scripts for this extension.
     // |filter|: If specified, this method returns only the user scripts that
     // match it.
     // |callback|: Called once scripts have been fully registered or if an error
     // occurs.
-    [supportsPromises] static void getScripts(
+    static void getScripts(
         optional UserScriptFilter filter,
         GetScriptsCallback callback);
 
@@ -118,7 +119,7 @@ namespace userScripts {
     // that match it.
     // |callback|: Called once scripts have been fully unregistered or if an
     // error ocurs
-    [supportsPromises] static void unregister(
+    static void unregister(
         optional UserScriptFilter filter,
         UnregisterCallback callback);
 
@@ -130,14 +131,14 @@ namespace userScripts {
     // are updated.
     // |callback|: Called once scripts have been fully updated or if an error
     // occurs.
-    [supportsPromises] static void update(
+    static void update(
         RegisteredUserScript[] scripts,
         optional UpdateCallback callback);
 
     // Configures the <code>`USER_SCRIPT`</code> execution environment.
     // |properties|: Contains the user script world configuration.
     // |callback|: Called once world hase been configured.
-    [supportsPromises] static void configureWorld(
+    static void configureWorld(
         WorldProperties properties,
         optional ConfigureWorldCallback callback);
   };

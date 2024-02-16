@@ -25,7 +25,7 @@ namespace system.network {
   interface Functions {
     // Retrieves information about local adapters on this system.
     // |callback| : Called when local adapter information is available.
-    [supportsPromises] static void getNetworkInterfaces(
+    static void getNetworkInterfaces(
         GetNetworkInterfacesCallback callback);
   };
 };
