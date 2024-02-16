@@ -10,10 +10,10 @@ callback LockGrantedCallback = any (Lock? lock);
     SecureContext,
     Exposed=(Window,Worker)
 ] interface LockManager {
-    [CallWith=ScriptState, RaisesException, Measure] Promise<Lock> request(
+    [CallWith=ScriptState, RaisesException, Measure] Promise<any> request(
         DOMString name,
         LockGrantedCallback callback);
-    [CallWith=ScriptState, RaisesException, Measure] Promise<Lock> request(
+    [CallWith=ScriptState, RaisesException, Measure] Promise<any> request(
         DOMString name,
         LockOptions options,
         LockGrantedCallback callback);

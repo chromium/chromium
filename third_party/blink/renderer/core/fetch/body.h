@@ -14,11 +14,13 @@
 
 namespace blink {
 
+class Blob;
 class BodyStreamBuffer;
+class DOMArrayBuffer;
+class FormData;
 class ExceptionState;
 class ExecutionContext;
 class ReadableStream;
-class ScriptPromiseResolver;
 class ScriptState;
 
 // This class represents Body mix-in defined in the fetch spec
@@ -34,11 +36,11 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   Body(const Body&) = delete;
   Body& operator=(const Body&) = delete;
 
-  ScriptPromise arrayBuffer(ScriptState*, ExceptionState&);
-  ScriptPromise blob(ScriptState*, ExceptionState&);
-  ScriptPromise formData(ScriptState*, ExceptionState&);
-  ScriptPromise json(ScriptState*, ExceptionState&);
-  ScriptPromise text(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<DOMArrayBuffer> arrayBuffer(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<Blob> blob(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<FormData> formData(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLAny> json(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUSVString> text(ScriptState*, ExceptionState&);
   ReadableStream* body();
   virtual BodyStreamBuffer* BodyBuffer() = 0;
   virtual const BodyStreamBuffer* BodyBuffer() const = 0;
@@ -66,10 +68,8 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   void RejectInvalidConsumption(ExceptionState& exception_state) const;
 
   // The parts of LoadAndConvertBody() that do not depend on the template
-  // parameters are split into this method to reduce binary size. Returns a
-  // freshly-created ScriptPromiseResolver* on success, or nullptr on error. On
-  // error, LoadAndConvertBody() must not continue.
-  ScriptPromiseResolver* PrepareToLoadBody(ScriptState*, ExceptionState&);
+  // parameters are split into this method to reduce binary size.
+  bool ShouldLoadBody(ScriptState*, ExceptionState&);
 
   // Common implementation for body-reading accessors. To maximise performance
   // at the cost of code size, this is templated on the types of the lambdas
@@ -77,10 +77,11 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   template <class Consumer,
             typename CreateLoaderFunction,
             typename OnNoBodyFunction>
-  ScriptPromise LoadAndConvertBody(ScriptState*,
-                                   CreateLoaderFunction,
-                                   OnNoBodyFunction,
-                                   ExceptionState&);
+  ScriptPromiseTyped<typename Consumer::ResolveType> LoadAndConvertBody(
+      ScriptState*,
+      CreateLoaderFunction,
+      OnNoBodyFunction,
+      ExceptionState&);
 };
 
 }  // namespace blink

@@ -185,7 +185,7 @@ class OperatorForEachInternalObserver final
     abort_algorithm_handle_.Clear();
 
     // "Resolve p with undefined."
-    resolver_->Resolve(ScriptValue());
+    resolver_->Resolve();
   }
 
   void Trace(Visitor* visitor) const override {

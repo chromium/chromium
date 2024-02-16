@@ -395,24 +395,6 @@ class CORE_EXPORT ScriptPromiseResolver
     return v8::Undefined(isolate);
   }
 
-  // Promise
-  static v8::Local<v8::Value> ToV8(const ScriptPromise& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    DCHECK(!value.IsEmpty());
-    return value.V8Value();
-  }
-
-  // ScriptValue
-  static v8::Local<v8::Value> ToV8(const ScriptValue& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    if (value.IsEmpty()) {
-      return v8::Undefined(isolate);
-    }
-    return value.V8Value();
-  }
-
   ResolutionState state_;
   const Member<ScriptState> script_state_;
   TaskHandle deferred_resolve_task_;
@@ -457,6 +439,8 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
   void Resolve(BlinkType value) {
     ResolveOrReject<IDLResolvedType, BlinkType>(value, kResolving);
   }
+
+  void Resolve() { ScriptPromiseResolver::Resolve(); }
 
   ScriptPromiseTyped<IDLResolvedType> Promise() {
 #if DCHECK_IS_ON()

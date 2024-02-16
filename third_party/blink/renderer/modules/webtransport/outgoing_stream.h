@@ -186,13 +186,13 @@ class MODULES_EXPORT OutgoingStream final
 
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
-  Member<ScriptPromiseResolver> write_promise_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLPromise>> write_promise_resolver_;
 
   // If a close() on the underlying sink object is pending, this will be
   // non-null.
-  Member<ScriptPromiseResolver> close_promise_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLPromise>> close_promise_resolver_;
 
-  Member<ScriptPromiseResolver> pending_operation_;
+  Member<ScriptPromiseResolverTyped<IDLPromise>> pending_operation_;
 
   State state_ = State::kOpen;
 };

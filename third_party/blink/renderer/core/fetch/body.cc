@@ -97,12 +97,13 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
 template <>
 void BodyConsumerBase::ResolveNow(
     const Persistent<DisallowNewWrapper<ScriptValue>>& object) {
-  resolver_->Resolve(object->Value());
+  resolver_->DowncastTo<IDLAny>()->Resolve(object->Value());
 }
 
 class BodyBlobConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = Blob;
 
   void DidFetchDataLoadedBlobHandle(
       scoped_refptr<BlobDataHandle> blob_data_handle) override {
@@ -114,6 +115,7 @@ class BodyBlobConsumer final : public BodyConsumerBase {
 class BodyArrayBufferConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = DOMArrayBuffer;
 
   void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
     ResolveLater(WrapPersistent(array_buffer));
@@ -123,6 +125,7 @@ class BodyArrayBufferConsumer final : public BodyConsumerBase {
 class BodyFormDataConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = FormData;
 
   void DidFetchDataLoadedFormData(FormData* form_data) override {
     ResolveLater(WrapPersistent(form_data));
@@ -144,6 +147,7 @@ class BodyFormDataConsumer final : public BodyConsumerBase {
 class BodyTextConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = IDLUSVString;
 
   void DidFetchDataLoadedString(const String& string) override {
     ResolveLater(string);
@@ -153,6 +157,7 @@ class BodyTextConsumer final : public BodyConsumerBase {
 class BodyJsonConsumer final : public BodyConsumerBase {
  public:
   using BodyConsumerBase::BodyConsumerBase;
+  using ResolveType = IDLAny;
 
   void DidFetchDataLoadedString(const String& string) override {
     if (!Resolver()->GetExecutionContext() ||
@@ -180,12 +185,11 @@ FetchDataLoader* CreateLoaderAsStringWithUTF8Decode() {
 
 }  // namespace
 
-ScriptPromiseResolver* Body::PrepareToLoadBody(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+bool Body::ShouldLoadBody(ScriptState* script_state,
+                          ExceptionState& exception_state) {
   RejectInvalidConsumption(exception_state);
   if (exception_state.HadException())
-    return nullptr;
+    return false;
 
   // When the main thread sends a V8::TerminateExecution() signal to a worker
   // thread, any V8 API on the worker thread starts returning an empty
@@ -193,11 +197,7 @@ ScriptPromiseResolver* Body::PrepareToLoadBody(
   // first check the ExecutionContext and return immediately if it's already
   // gone (which means that the V8::TerminateExecution() signal has been sent
   // to this worker thread).
-  if (!ExecutionContext::From(script_state))
-    return nullptr;
-
-  return MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  return ExecutionContext::From(script_state);
 }
 
 // `Consumer` must be a subclass of BodyConsumerBase which takes a
@@ -208,24 +208,26 @@ ScriptPromiseResolver* Body::PrepareToLoadBody(
 template <class Consumer,
           typename CreateLoaderFunction,
           typename OnNoBodyFunction>
-ScriptPromise Body::LoadAndConvertBody(ScriptState* script_state,
-                                       CreateLoaderFunction create_loader,
-                                       OnNoBodyFunction on_no_body,
-                                       ExceptionState& exception_state) {
-  auto* resolver = PrepareToLoadBody(script_state, exception_state);
-  if (!resolver) {
-    return ScriptPromise();
+ScriptPromiseTyped<typename Consumer::ResolveType> Body::LoadAndConvertBody(
+    ScriptState* script_state,
+    CreateLoaderFunction create_loader,
+    OnNoBodyFunction on_no_body,
+    ExceptionState& exception_state) {
+  if (!ShouldLoadBody(script_state, exception_state)) {
+    return ScriptPromiseTyped<typename Consumer::ResolveType>();
   }
 
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<typename Consumer::ResolveType>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
   if (auto* body_buffer = BodyBuffer()) {
     body_buffer->StartLoading(create_loader(),
                               MakeGarbageCollected<Consumer>(resolver),
                               exception_state);
     if (exception_state.HadException()) {
-      // Need to resolve the ScriptPromiseResolver to avoid a DCHECK().
-      resolver->Resolve();
-      return ScriptPromise();
+      resolver->Detach();
+      return ScriptPromiseTyped<typename Consumer::ResolveType>();
     }
   } else {
     on_no_body(resolver);
@@ -233,8 +235,9 @@ ScriptPromise Body::LoadAndConvertBody(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Body::arrayBuffer(ScriptState* script_state,
-                                ExceptionState& exception_state) {
+ScriptPromiseTyped<DOMArrayBuffer> Body::arrayBuffer(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   auto on_no_body = [](ScriptPromiseResolver* resolver) {
     resolver->Resolve(DOMArrayBuffer::Create(size_t{0}, size_t{0}));
   };
@@ -244,8 +247,8 @@ ScriptPromise Body::arrayBuffer(ScriptState* script_state,
       exception_state);
 }
 
-ScriptPromise Body::blob(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+ScriptPromiseTyped<Blob> Body::blob(ScriptState* script_state,
+                                    ExceptionState& exception_state) {
   auto create_loader = [this, script_state]() {
     ExecutionContext* context = ExecutionContext::From(script_state);
     return FetchDataLoader::CreateLoaderAsBlobHandle(
@@ -262,8 +265,8 @@ ScriptPromise Body::blob(ScriptState* script_state,
                                               on_no_body, exception_state);
 }
 
-ScriptPromise Body::formData(ScriptState* script_state,
-                             ExceptionState& exception_state) {
+ScriptPromiseTyped<FormData> Body::formData(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
   auto on_no_body_reject = [script_state](ScriptPromiseResolver* resolver) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "Invalid MIME type"));
@@ -281,12 +284,14 @@ ScriptPromise Body::formData(ScriptState* script_state,
       return LoadAndConvertBody<BodyFormDataConsumer>(
           script_state, create_loader, on_no_body_reject, exception_state);
     }
-    auto* resolver = PrepareToLoadBody(script_state, exception_state);
-    if (!resolver) {
-      return ScriptPromise();
+    if (!ShouldLoadBody(script_state, exception_state)) {
+      return ScriptPromiseTyped<FormData>();
     }
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<FormData>>(
+        script_state, exception_state.GetContext());
+    auto promise = resolver->Promise();
     on_no_body_reject(resolver);
-    return resolver->Promise();
+    return promise;
   } else if (parsed_type == "application/x-www-form-urlencoded") {
     auto on_no_body_resolve = [](ScriptPromiseResolver* resolver) {
       resolver->Resolve(MakeGarbageCollected<FormData>());
@@ -308,8 +313,8 @@ ScriptPromise Body::formData(ScriptState* script_state,
   }
 }
 
-ScriptPromise Body::json(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLAny> Body::json(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
   auto on_no_body = [script_state](ScriptPromiseResolver* resolver) {
     resolver->Reject(V8ThrowException::CreateSyntaxError(
         script_state->GetIsolate(), "Unexpected end of input"));
@@ -319,8 +324,8 @@ ScriptPromise Body::json(ScriptState* script_state,
       exception_state);
 }
 
-ScriptPromise Body::text(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUSVString> Body::text(ScriptState* script_state,
+                                            ExceptionState& exception_state) {
   auto on_no_body = [](ScriptPromiseResolver* resolver) {
     resolver->Resolve(String());
   };

@@ -3450,10 +3450,12 @@ class AddOneFunction : public ScriptFunction::Callable {
 
 }  // namespace
 
-ScriptPromise Internals::createResolvedPromise(ScriptState* script_state,
-                                               ScriptValue value) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLAny> Internals::createResolvedPromise(
+    ScriptState* script_state,
+    ScriptValue value) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+  auto promise = resolver->Promise();
   resolver->Resolve(value);
   return promise;
 }

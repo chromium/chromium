@@ -925,9 +925,7 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
     sk_sp<SkImage> skia_image,
     const ImageOrientationEnum orientation) {
   if (!skia_image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   scoped_refptr<StaticBitmapImage> image =
@@ -939,16 +937,12 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
                                          std::move(image), kUnpremultiplyAlpha);
   }
   if (!image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   image = ApplyColorSpaceConversion(std::move(image), *(parsed_options.get()));
   if (!image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   ImageBitmap* bitmap = MakeGarbageCollected<ImageBitmap>(image);

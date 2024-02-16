@@ -6,7 +6,6 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -127,13 +126,14 @@ void NavigatorManagedData::OnServiceConnectionError() {
   }
 }
 
-ScriptPromise NavigatorManagedData::getManagedConfiguration(
-    ScriptState* script_state,
-    Vector<String> keys) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLRecord<IDLString, IDLAny>>
+NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
+                                              Vector<String> keys) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<IDLRecord<IDLString, IDLAny>>>(script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -222,30 +222,31 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
 }
 
 void NavigatorManagedData::OnConfigurationReceived(
-    ScriptPromiseResolver* scoped_resolver,
+    ScriptPromiseResolverTyped<IDLRecord<IDLString, IDLAny>>* resolver,
     const std::optional<HashMap<String, String>>& configurations) {
-  pending_promises_.erase(scoped_resolver);
+  pending_promises_.erase(resolver);
 
-  ScriptState* script_state = scoped_resolver->GetScriptState();
+  ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
 
   if (!configurations.has_value()) {
-    scoped_resolver->Reject(
+    resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            kNotHighTrustedAppExceptionMessage));
     return;
   }
 
-  V8ObjectBuilder result(script_state);
+  HeapVector<std::pair<String, ScriptValue>> result;
   for (const auto& config_pair : *configurations) {
     v8::Local<v8::Value> v8_object;
     if (v8::JSON::Parse(script_state->GetContext(),
                         V8String(script_state->GetIsolate(), config_pair.value))
             .ToLocal(&v8_object)) {
-      result.AddV8Value(config_pair.key, v8_object);
+      result.emplace_back(config_pair.key,
+                          ScriptValue(script_state->GetIsolate(), v8_object));
     }
   }
-  scoped_resolver->Resolve(result.GetScriptValue());
+  resolver->Resolve(result);
 }
 
 void NavigatorManagedData::OnAttributeReceived(

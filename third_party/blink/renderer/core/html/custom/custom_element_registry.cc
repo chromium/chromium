@@ -224,11 +224,11 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   // 16: when-defined promise processing
   const auto& entry = when_defined_promise_map_.find(name);
   if (entry != when_defined_promise_map_.end()) {
-    ScriptPromiseResolver* resolver = entry->value;
+    auto* resolver = entry->value.Get();
     when_defined_promise_map_.erase(entry);
     // Resolve() may run synchronous JavaScript that invalidates iterators of
     // |when_defined_promise_map_|, so it must be called after erasing |entry|.
-    resolver->Resolve(definition->GetConstructorForScript());
+    resolver->Resolve(definition->GetV8CustomElementConstructor());
   }
 
   return definition;
@@ -328,21 +328,21 @@ void CustomElementRegistry::AddCandidate(Element& candidate) {
 }
 
 // https://html.spec.whatwg.org/C/#dom-customelementsregistry-whendefined
-ScriptPromise CustomElementRegistry::whenDefined(
-    ScriptState* script_state,
-    const AtomicString& name,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<V8CustomElementConstructor>
+CustomElementRegistry::whenDefined(ScriptState* script_state,
+                                   const AtomicString& name,
+                                   ExceptionState& exception_state) {
   if (ThrowIfInvalidName(name, false, exception_state))
-    return ScriptPromise();
-  CustomElementDefinition* definition = DefinitionForName(name);
-  if (definition) {
-    return ScriptPromise::Cast(script_state,
-                               definition->GetConstructorForScript());
+    return ScriptPromiseTyped<V8CustomElementConstructor>();
+  if (CustomElementDefinition* definition = DefinitionForName(name)) {
+    return ScriptPromiseTyped<V8CustomElementConstructor>::Cast(
+        script_state, definition->GetConstructorForScript());
   }
   const auto it = when_defined_promise_map_.find(name);
   if (it != when_defined_promise_map_.end())
     return it->value->Promise();
-  auto* new_resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* new_resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<V8CustomElementConstructor>>(
       script_state, exception_state.GetContext());
   when_defined_promise_map_.insert(name, new_resolver);
   return new_resolver->Promise();

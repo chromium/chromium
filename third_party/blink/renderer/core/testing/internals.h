@@ -477,7 +477,7 @@ class Internals final : public ScriptWrappable {
 
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
 
-  ScriptPromise createResolvedPromise(ScriptState*, ScriptValue);
+  ScriptPromiseTyped<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
   ScriptPromise createRejectedPromise(ScriptState*, ScriptValue);
   ScriptPromise addOneToPromise(ScriptState*, ScriptPromise);
   ScriptPromise promiseCheck(ScriptState*,
