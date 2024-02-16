@@ -125,8 +125,8 @@ auto MakeWGPUOnceCallback(CallbackType&& cb) {
 
 template <typename FunctionType, typename... BoundParameters>
   requires(!base::internal::kIsWeakMethod<
-           base::internal::MakeFunctorTraits<FunctionType,
-                                             BoundParameters...>::is_method,
+           base::internal::FunctorTraits<FunctionType,
+                                         BoundParameters...>::is_method,
            BoundParameters...>)
 auto BindWGPUOnceCallback(FunctionType&& function,
                           BoundParameters&&... bound_parameters) {

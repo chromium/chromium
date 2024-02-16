@@ -64,7 +64,7 @@ class FunctionRef;
 template <typename R, typename... Args>
 class FunctionRef<R(Args...)> {
   template <typename Functor,
-            typename RunType = internal::MakeFunctorTraits<Functor>::RunType>
+            typename RunType = internal::FunctorTraits<Functor>::RunType>
   static constexpr bool kCompatibleFunctor =
       std::convertible_to<internal::ExtractReturnType<RunType>, R> &&
       std::same_as<internal::ExtractArgs<RunType>, internal::TypeList<Args...>>;

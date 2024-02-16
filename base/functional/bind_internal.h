@@ -523,26 +523,19 @@ template <typename Callable,
           typename Signature = decltype(&Callable::operator())>
 struct ExtractCallableRunTypeImpl;
 
-template <typename Callable, typename R, typename... Args>
-struct ExtractCallableRunTypeImpl<Callable, R (Callable::*)(Args...)> {
-  using Type = R(Args...);
-};
+#define BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS(quals)     \
+  template <typename Callable, typename R, typename... Args>          \
+  struct ExtractCallableRunTypeImpl<Callable,                         \
+                                    R (Callable::*)(Args...) quals> { \
+    using Type = R(Args...);                                          \
+  }
 
-template <typename Callable, typename R, typename... Args>
-struct ExtractCallableRunTypeImpl<Callable, R (Callable::*)(Args...) const> {
-  using Type = R(Args...);
-};
+BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS();
+BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS(const);
+BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS(noexcept);
+BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS(const noexcept);
 
-template <typename Callable, typename R, typename... Args>
-struct ExtractCallableRunTypeImpl<Callable, R (Callable::*)(Args...) noexcept> {
-  using Type = R(Args...);
-};
-
-template <typename Callable, typename R, typename... Args>
-struct ExtractCallableRunTypeImpl<Callable,
-                                  R (Callable::*)(Args...) const noexcept> {
-  using Type = R(Args...);
-};
+#undef BIND_INTERNAL_EXTRACT_CALLABLE_RUN_TYPE_WITH_QUALS
 
 // Evaluated to the RunType of the given callable type; e.g.
 // `ExtractCallableRunType<decltype([](int, char*) { return 0.1; })>` ->
@@ -615,9 +608,14 @@ struct ForceVoidReturn<R(Args...)> {
 
 // `FunctorTraits<>`
 //
-// See description at top of file.
+// See description at top of file. This must be declared here so it can be
+// referenced in `DecayedFunctorTraits`.
 template <typename Functor, typename... BoundArgs>
 struct FunctorTraits;
+
+// Provides functor traits for pre-decayed functor types.
+template <typename Functor, typename... BoundArgs>
+struct DecayedFunctorTraits;
 
 // Callable types.
 // This specialization handles lambdas (captureless and capturing) and functors
@@ -639,7 +637,7 @@ struct FunctorTraits;
 // ```
 template <typename Functor, typename... BoundArgs>
   requires HasNonOverloadedCallOp<Functor>
-struct FunctorTraits<Functor, BoundArgs...> {
+struct DecayedFunctorTraits<Functor, BoundArgs...> {
   using RunType = ExtractCallableRunType<Functor>;
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = false;
@@ -655,7 +653,7 @@ struct FunctorTraits<Functor, BoundArgs...> {
 
 template <typename Functor, typename... BoundArgs>
   requires HasOverloadedCallOp<Functor, BoundArgs...>
-struct FunctorTraits<Functor, BoundArgs...> {
+struct DecayedFunctorTraits<Functor, BoundArgs...> {
   // For an overloaded operator()(), it is not possible to resolve the
   // actual declared type. Since it is invocable with the bound args, make up a
   // signature based on their types.
@@ -675,7 +673,7 @@ struct FunctorTraits<Functor, BoundArgs...> {
 
 // Functions.
 template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R (*)(Args...), BoundArgs...> {
+struct DecayedFunctorTraits<R (*)(Args...), BoundArgs...> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
@@ -689,29 +687,23 @@ struct FunctorTraits<R (*)(Args...), BoundArgs...> {
 };
 
 template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R (*)(Args...) noexcept, BoundArgs...>
-    : FunctorTraits<R (*)(Args...), BoundArgs...> {};
+struct DecayedFunctorTraits<R (*)(Args...) noexcept, BoundArgs...>
+    : DecayedFunctorTraits<R (*)(Args...), BoundArgs...> {};
 
 #if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
-// `__stdcall` functions.
-template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R(__stdcall*)(Args...), BoundArgs...>
-    : FunctorTraits<R (*)(Args...), BoundArgs...> {};
+// `__stdcall` and `__fastcall` functions.
+#define BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS(conv, quals) \
+  template <typename R, typename... Args, typename... BoundArgs>              \
+  struct DecayedFunctorTraits<R(conv*)(Args...) quals, BoundArgs...>          \
+      : DecayedFunctorTraits<R (*)(Args...) quals, BoundArgs...> {}
 
-template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R(__stdcall*)(Args...) noexcept, BoundArgs...>
-    : FunctorTraits<R (*)(Args...), BoundArgs...> {};
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS(__stdcall, );
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS(__stdcall, noexcept);
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS(__fastcall, );
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS(__fastcall, noexcept);
 
-// `__fastcall` functions.
-template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R(__fastcall*)(Args...), BoundArgs...>
-    : FunctorTraits<R (*)(Args...), BoundArgs...> {};
-
-template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R(__fastcall*)(Args...) noexcept, BoundArgs...>
-    : FunctorTraits<R (*)(Args...), BoundArgs...> {};
-
+#undef BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONV_AND_QUALS
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 #if __OBJC__ && HAS_FEATURE(objc_arc)
@@ -719,7 +711,7 @@ struct FunctorTraits<R(__fastcall*)(Args...) noexcept, BoundArgs...>
 // Objective-C blocks. Blocks can be bound as the compiler will ensure their
 // lifetimes will be correctly managed.
 template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<R (^)(Args...), BoundArgs...> {
+struct DecayedFunctorTraits<R (^)(Args...), BoundArgs...> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
@@ -746,7 +738,7 @@ template <typename R,
           typename Receiver,
           typename... Args,
           typename... BoundArgs>
-struct FunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {
+struct DecayedFunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {
   using RunType = R(Receiver*, Args...);
   static constexpr bool is_method = true;
   static constexpr bool is_nullable = true;
@@ -765,62 +757,48 @@ template <typename R,
           typename Receiver,
           typename... Args,
           typename... BoundArgs>
-struct FunctorTraits<R (Receiver::*)(Args...) noexcept, BoundArgs...>
-    : FunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {};
-
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (Receiver::*)(Args...) const, BoundArgs...>
-    : FunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {
+struct DecayedFunctorTraits<R (Receiver::*)(Args...) const, BoundArgs...>
+    : DecayedFunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {
   using RunType = R(const Receiver*, Args...);
 };
 
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (Receiver::*)(Args...) const noexcept, BoundArgs...>
-    : FunctorTraits<R (Receiver::*)(Args...) const, BoundArgs...> {};
+#define BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONST_AND_QUALS(constqual, \
+                                                                  quals)     \
+  template <typename R, typename Receiver, typename... Args,                 \
+            typename... BoundArgs>                                           \
+  struct DecayedFunctorTraits<R (Receiver::*)(Args...) constqual quals,      \
+                              BoundArgs...>                                  \
+      : DecayedFunctorTraits<R (Receiver::*)(Args...) constqual,             \
+                             BoundArgs...> {}
+
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONST_AND_QUALS(, noexcept);
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONST_AND_QUALS(const, noexcept);
+
+#undef BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_WITH_CONST_AND_QUALS
 
 #if BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 // `__stdcall` methods.
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...), BoundArgs...>
-    : public FunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {};
+#define BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS(quals)  \
+  template <typename R, typename Receiver, typename... Args,            \
+            typename... BoundArgs>                                      \
+  struct DecayedFunctorTraits<R (__stdcall Receiver::*)(Args...) quals, \
+                              BoundArgs...>                             \
+      : public DecayedFunctorTraits<R (Receiver::*)(Args...) quals,     \
+                                    BoundArgs...> {}
 
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...) noexcept, BoundArgs...>
-    : public FunctorTraits<R (Receiver::*)(Args...), BoundArgs...> {};
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS();
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS(const);
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS(noexcept);
+BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS(const noexcept);
 
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const, BoundArgs...>
-    : public FunctorTraits<R (Receiver::*)(Args...) const, BoundArgs...> {};
-
-template <typename R,
-          typename Receiver,
-          typename... Args,
-          typename... BoundArgs>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const noexcept,
-                     BoundArgs...>
-    : public FunctorTraits<R (Receiver::*)(Args...) const, BoundArgs...> {};
+#undef BIND_INTERNAL_DECAYED_FUNCTOR_TRAITS_STDCALL_WITH_QUALS
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
 // `IgnoreResult`s.
 template <typename T, typename... BoundArgs>
-struct FunctorTraits<IgnoreResultHelper<T>, BoundArgs...>
+struct DecayedFunctorTraits<IgnoreResultHelper<T>, BoundArgs...>
     : FunctorTraits<T, BoundArgs...> {
   using RunType = typename ForceVoidReturn<
       typename FunctorTraits<T, BoundArgs...>::RunType>::RunType;
@@ -836,7 +814,7 @@ struct FunctorTraits<IgnoreResultHelper<T>, BoundArgs...>
 
 // `OnceCallback`s.
 template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<OnceCallback<R(Args...)>, BoundArgs...> {
+struct DecayedFunctorTraits<OnceCallback<R(Args...)>, BoundArgs...> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
@@ -853,7 +831,7 @@ struct FunctorTraits<OnceCallback<R(Args...)>, BoundArgs...> {
 
 // `RepeatingCallback`s.
 template <typename R, typename... Args, typename... BoundArgs>
-struct FunctorTraits<RepeatingCallback<R(Args...)>, BoundArgs...> {
+struct DecayedFunctorTraits<RepeatingCallback<R(Args...)>, BoundArgs...> {
   using RunType = R(Args...);
   static constexpr bool is_method = false;
   static constexpr bool is_nullable = true;
@@ -868,10 +846,16 @@ struct FunctorTraits<RepeatingCallback<R(Args...)>, BoundArgs...> {
   }
 };
 
-// Convenience wrapper for instantiating `FunctorTraits<>`, which decays because
-// the traits should not depend on precisely how a functor is passed.
+// For most functors, the traits should not depend on how the functor is passed,
+// so decay the functor.
 template <typename Functor, typename... BoundArgs>
-using MakeFunctorTraits = FunctorTraits<std::decay_t<Functor>, BoundArgs...>;
+// This requirement avoids "implicit instantiation of undefined template" errors
+// when the underlying `DecayedFunctorTraits<>` cannot be instantiated. Instead,
+// this template will also not be instantiated, and the caller can detect and
+// handle that.
+  requires IsComplete<DecayedFunctorTraits<std::decay_t<Functor>, BoundArgs...>>
+struct FunctorTraits<Functor, BoundArgs...>
+    : DecayedFunctorTraits<std::decay_t<Functor>, BoundArgs...> {};
 
 // `StorageTraits<>`
 //
@@ -1810,8 +1794,7 @@ struct BindHelper {
     //     ...
     // ```
     using Traits =
-        MakeFunctorTraits<Functor,
-                          TransformToUnwrappedType<kIsOnce, Args&&>...>;
+        FunctorTraits<Functor, TransformToUnwrappedType<kIsOnce, Args&&>...>;
     if constexpr (TraitsAreInstantiable<Traits>::value) {
       using ValidatedUnwrappedTypes =
           ValidateUnwrappedTypeList<kIsOnce, Traits::is_method, Args&&...>;
@@ -1988,7 +1971,7 @@ struct CallbackCancellationTraits {
 // Specialization for a weak receiver.
 template <typename Functor, typename... BoundArgs>
   requires internal::kIsWeakMethod<
-      internal::MakeFunctorTraits<Functor, BoundArgs...>::is_method,
+      internal::FunctorTraits<Functor, BoundArgs...>::is_method,
       BoundArgs...>
 struct CallbackCancellationTraits<Functor, std::tuple<BoundArgs...>> {
   static constexpr bool is_cancellable = true;
