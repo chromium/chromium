@@ -387,6 +387,7 @@
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
   X("viz,benchmark,graphics.pipeline")                                        \
+  X("wakeup.flow,toplevel.flow")                                              \
   X("WebCore,benchmark,rail")                                                 \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \
