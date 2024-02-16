@@ -19703,7 +19703,7 @@
             ]
         }
     ],
-    "UPMLocalPasswordsNoMigration": [
+    "UPMLocalPasswords": [
         {
             "platforms": [
                 "android"
