@@ -98,16 +98,9 @@ class AutofillProfile : public AutofillDataModel {
 
   std::u16string GetRawInfo(FieldType type) const override;
 
-  int GetRawInfoAsInt(FieldType type) const override;
-
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-
-  void SetRawInfoAsIntWithVerificationStatus(
-      FieldType type,
-      int value,
-      VerificationStatus status) override;
 
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 

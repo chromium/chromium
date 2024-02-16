@@ -499,13 +499,6 @@ std::u16string AutofillProfile::GetRawInfo(FieldType type) const {
   return form_group->GetRawInfo(type);
 }
 
-int AutofillProfile::GetRawInfoAsInt(FieldType type) const {
-  const FormGroup* form_group = FormGroupForType(AutofillType(type));
-  if (!form_group)
-    return 0;
-  return form_group->GetRawInfoAsInt(type);
-}
-
 void AutofillProfile::SetRawInfoWithVerificationStatus(
     FieldType type,
     const std::u16string& value,
@@ -513,16 +506,6 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
   if (form_group) {
     form_group->SetRawInfoWithVerificationStatus(type, value, status);
-  }
-}
-
-void AutofillProfile::SetRawInfoAsIntWithVerificationStatus(
-    FieldType type,
-    int value,
-    VerificationStatus status) {
-  FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
-  if (form_group) {
-    form_group->SetRawInfoAsIntWithVerificationStatus(type, value, status);
   }
 }
 

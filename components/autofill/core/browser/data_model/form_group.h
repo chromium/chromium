@@ -37,11 +37,6 @@ class FormGroup {
   // returned value. For user-visible strings, use GetInfo() instead.
   virtual std::u16string GetRawInfo(FieldType type) const = 0;
 
-  // Same as |GetRawInfo()|, but as an integer. This is only supported for types
-  // that stores their data as an integer internally to avoid unnecessary
-  // conversions.
-  virtual int GetRawInfoAsInt(FieldType type) const;
-
   // Sets this FormGroup object's data for |type| to |value|, without
   // canonicalizing the |value|.  For data that has not already been
   // canonicalized, use SetInfo() instead.
@@ -49,11 +44,6 @@ class FormGroup {
   virtual void SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) = 0;
-
-  // Convenience wrapper to allow passing the |value| as an integer.
-  virtual void SetRawInfoAsIntWithVerificationStatus(FieldType type,
-                                                     int value,
-                                                     VerificationStatus status);
 
   // Convenience wrapper to allow passing the |status| as an integer.
   void SetRawInfoWithVerificationStatusInt(FieldType type,
@@ -64,9 +54,6 @@ class FormGroup {
   // |VerificationStatus::kNoStatus| to
   // |SetRawInfoWithVerificationStatus|.
   void SetRawInfo(FieldType type, const std::u16string& value);
-
-  // Same as |SetRawInfo()| without a verification status, but with an integer.
-  void SetRawInfoAsInt(FieldType type, int value);
 
   // Returns true iff the string associated with |type| is nonempty (without
   // canonicalizing its value).

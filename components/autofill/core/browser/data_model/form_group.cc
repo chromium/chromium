@@ -49,11 +49,6 @@ void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
   }
 }
 
-int FormGroup::GetRawInfoAsInt(FieldType type) const {
-  NOTREACHED();
-  return 0;
-}
-
 bool FormGroup::HasRawInfo(FieldType type) const {
   return !GetRawInfo(type).empty();
 }
@@ -137,13 +132,6 @@ bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-void FormGroup::SetRawInfoAsIntWithVerificationStatus(
-    FieldType type,
-    int value,
-    VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type, base::NumberToString16(value), status);
-}
-
 void FormGroup::SetRawInfoWithVerificationStatusInt(FieldType type,
                                                     const std::u16string& value,
                                                     int status) {
@@ -153,11 +141,6 @@ void FormGroup::SetRawInfoWithVerificationStatusInt(FieldType type,
 
 void FormGroup::SetRawInfo(FieldType type, const std::u16string& value) {
   SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
-}
-
-void FormGroup::SetRawInfoAsInt(FieldType type, int value) {
-  SetRawInfoAsIntWithVerificationStatus(type, value,
-                                        VerificationStatus::kNoStatus);
 }
 
 VerificationStatus FormGroup::GetVerificationStatusImpl(FieldType type) const {
