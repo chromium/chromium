@@ -814,14 +814,14 @@ void CertBuilder::SetPolicyConstraints(
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
   ASSERT_TRUE(CBB_add_asn1(cbb.get(), &policy_constraints, CBS_ASN1_SEQUENCE));
   if (require_explicit_policy.has_value()) {
-    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(
-        &policy_constraints, *require_explicit_policy,
-        bssl::der::ContextSpecificPrimitive(0)));
+    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(&policy_constraints,
+                                             *require_explicit_policy,
+                                             CBS_ASN1_CONTEXT_SPECIFIC | 0));
   }
   if (inhibit_policy_mapping.has_value()) {
-    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(
-        &policy_constraints, *inhibit_policy_mapping,
-        bssl::der::ContextSpecificPrimitive(1)));
+    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(&policy_constraints,
+                                             *inhibit_policy_mapping,
+                                             CBS_ASN1_CONTEXT_SPECIFIC | 1));
   }
 
   SetExtension(bssl::der::Input(bssl::kPolicyConstraintsOid),
@@ -1174,8 +1174,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   // version
   bool has_version;
   ASSERT_TRUE(tbs_certificate.SkipOptionalTag(
-      bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 0,
-      &has_version));
+      CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0, &has_version));
   if (has_version) {
     // TODO(mattm): could actually parse the version here instead of assuming
     // V3.
@@ -1185,7 +1184,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   }
 
   // serialNumber
-  ASSERT_TRUE(tbs_certificate.SkipTag(bssl::der::kInteger));
+  ASSERT_TRUE(tbs_certificate.SkipTag(CBS_ASN1_INTEGER));
 
   // signature
   bssl::der::Input signature_algorithm_tlv;
@@ -1196,7 +1195,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   signature_algorithm_ = *signature_algorithm;
 
   // issuer
-  ASSERT_TRUE(tbs_certificate.SkipTag(bssl::der::kSequence));
+  ASSERT_TRUE(tbs_certificate.SkipTag(CBS_ASN1_SEQUENCE));
 
   // validity
   bssl::der::Input validity_tlv;
@@ -1204,7 +1203,7 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
   validity_tlv_ = validity_tlv.AsString();
 
   // subject
-  ASSERT_TRUE(tbs_certificate.SkipTag(bssl::der::kSequence));
+  ASSERT_TRUE(tbs_certificate.SkipTag(CBS_ASN1_SEQUENCE));
 
   // subjectPublicKeyInfo
   bssl::der::Input spki_tlv;
@@ -1215,16 +1214,16 @@ void CertBuilder::InitFromCert(const bssl::der::Input& cert) {
 
   // issuerUniqueID
   bool unused;
-  ASSERT_TRUE(tbs_certificate.SkipOptionalTag(
-      bssl::der::ContextSpecificPrimitive(1), &unused));
+  ASSERT_TRUE(
+      tbs_certificate.SkipOptionalTag(CBS_ASN1_CONTEXT_SPECIFIC | 1, &unused));
   // subjectUniqueID
-  ASSERT_TRUE(tbs_certificate.SkipOptionalTag(
-      bssl::der::ContextSpecificPrimitive(2), &unused));
+  ASSERT_TRUE(
+      tbs_certificate.SkipOptionalTag(CBS_ASN1_CONTEXT_SPECIFIC | 2, &unused));
 
   // extensions
   std::optional<bssl::der::Input> extensions_tlv;
   ASSERT_TRUE(tbs_certificate.ReadOptionalTag(
-      bssl::der::ContextSpecificConstructed(3), &extensions_tlv));
+      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 3, &extensions_tlv));
   if (extensions_tlv) {
     std::map<bssl::der::Input, bssl::ParsedExtension> parsed_extensions;
     ASSERT_TRUE(ParseExtensions(extensions_tlv.value(), &parsed_extensions));

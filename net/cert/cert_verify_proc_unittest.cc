@@ -1178,14 +1178,13 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
     bool unused;
     if (!tbs_certificate.SkipOptionalTag(
-            bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 0,
-            &unused)) {
+            CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0, &unused)) {
       return false;
     }
 
     // serialNumber
     bssl::der::Input serial_value_der;
-    if (!tbs_certificate.ReadTag(bssl::der::kInteger, &serial_value_der)) {
+    if (!tbs_certificate.ReadTag(CBS_ASN1_INTEGER, &serial_value_der)) {
       return false;
     }
 

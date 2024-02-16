@@ -80,7 +80,7 @@ void SplitOnChar(std::string_view src,
 [[nodiscard]] bool ParseSequenceValue(const bssl::der::Input& tlv,
                                       bssl::der::Input* value) {
   bssl::der::Parser parser(tlv);
-  return parser.ReadTag(bssl::der::kSequence, value) && !parser.HasMore();
+  return parser.ReadTag(CBS_ASN1_SEQUENCE, value) && !parser.HasMore();
 }
 
 // Normalize |cert|'s Issuer and store it in |out_normalized_issuer|, returning

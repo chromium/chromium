@@ -50,25 +50,24 @@ bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
 
   bool unused;
   if (!tbs_certificate->SkipOptionalTag(
-          bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 0,
-          &unused)) {
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0, &unused)) {
     return false;
   }
 
   // serialNumber
-  if (!tbs_certificate->SkipTag(bssl::der::kInteger)) {
+  if (!tbs_certificate->SkipTag(CBS_ASN1_INTEGER)) {
     return false;
   }
   // signature
-  if (!tbs_certificate->SkipTag(bssl::der::kSequence)) {
+  if (!tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
   }
   // issuer
-  if (!tbs_certificate->SkipTag(bssl::der::kSequence)) {
+  if (!tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
   }
   // validity
-  if (!tbs_certificate->SkipTag(bssl::der::kSequence)) {
+  if (!tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
   }
   return true;
@@ -81,7 +80,7 @@ bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
 bool SeekToSPKI(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
   return SeekToSubject(in, tbs_certificate) &&
          // Skip over Subject.
-         tbs_certificate->SkipTag(bssl::der::kSequence);
+         tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE);
 }
 
 // Parses input |in| which should point to the beginning of a
@@ -109,24 +108,23 @@ bool SeekToExtensions(bssl::der::Input in,
   //      extensions      [3]  EXPLICIT Extensions OPTIONAL }
 
   // subjectPublicKeyInfo
-  if (!tbs_cert_parser.SkipTag(bssl::der::kSequence)) {
+  if (!tbs_cert_parser.SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
   }
   // issuerUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(bssl::der::kTagContextSpecific | 1,
+  if (!tbs_cert_parser.SkipOptionalTag(CBS_ASN1_CONTEXT_SPECIFIC | 1,
                                        &present)) {
     return false;
   }
   // subjectUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(bssl::der::kTagContextSpecific | 2,
+  if (!tbs_cert_parser.SkipOptionalTag(CBS_ASN1_CONTEXT_SPECIFIC | 2,
                                        &present)) {
     return false;
   }
 
   std::optional<bssl::der::Input> extensions;
   if (!tbs_cert_parser.ReadOptionalTag(
-          bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 3,
-          &extensions)) {
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3, &extensions)) {
     return false;
   }
 
@@ -236,13 +234,13 @@ bool ExtractSubjectPublicKeyFromSPKI(std::string_view spki,
     return false;
 
   // Step over algorithm field (a SEQUENCE).
-  if (!spki_parser.SkipTag(bssl::der::kSequence)) {
+  if (!spki_parser.SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
   }
 
   // Extract the subjectPublicKey field.
   bssl::der::Input spk;
-  if (!spki_parser.ReadTag(bssl::der::kBitString, &spk)) {
+  if (!spki_parser.ReadTag(CBS_ASN1_BITSTRING, &spk)) {
     return false;
   }
   *spk_out = spk.AsStringView();
@@ -301,13 +299,12 @@ bool ExtractSignatureAlgorithmsFromDERCert(
 
   bool unused;
   if (!tbs_certificate.SkipOptionalTag(
-          bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 0,
-          &unused)) {
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0, &unused)) {
     return false;
   }
 
   // serialNumber
-  if (!tbs_certificate.SkipTag(bssl::der::kInteger)) {
+  if (!tbs_certificate.SkipTag(CBS_ASN1_INTEGER)) {
     return false;
   }
   // signature

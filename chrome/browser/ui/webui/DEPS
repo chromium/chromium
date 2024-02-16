@@ -1,7 +1,7 @@
 include_rules = [
   "+components/browser_ui/share/android",
   "+extensions/strings/grit/extensions_strings.h",
-  "+third_party/boringssl/src/pki",
+  "+third_party/boringssl/src/include/openssl",
 ]
 
 specific_include_rules = {

@@ -33,7 +33,6 @@
 #include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
-#include "third_party/boringssl/src/pki/tag.h"
 #include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -588,7 +587,7 @@ std::optional<std::string> ProcessIA5String(bssl::der::Input extension_data) {
   bssl::der::Input value;
   bssl::der::Parser parser(extension_data);
   std::string rv;
-  if (!parser.ReadTag(bssl::der::kIA5String, &value) || parser.HasMore() ||
+  if (!parser.ReadTag(CBS_ASN1_IA5STRING, &value) || parser.HasMore() ||
       !bssl::der::ParseIA5String(value, &rv)) {
     return std::nullopt;
   }
@@ -639,7 +638,7 @@ std::optional<std::string> ProcessBitStringExtension(
     char separator) {
   bssl::der::Input value;
   bssl::der::Parser parser(extension_data);
-  if (!parser.ReadTag(bssl::der::kBitString, &value) || parser.HasMore()) {
+  if (!parser.ReadTag(CBS_ASN1_BITSTRING, &value) || parser.HasMore()) {
     return std::nullopt;
   }
 
@@ -763,9 +762,9 @@ bool ParseOtherName(bssl::der::Input other_name,
   //      type-id    OBJECT IDENTIFIER,
   //      value      [0] EXPLICIT ANY DEFINED BY type-id }
   bssl::der::Parser sequence_parser(other_name);
-  return sequence_parser.ReadTag(bssl::der::kOid, type) &&
-         sequence_parser.ReadTag(bssl::der::ContextSpecificConstructed(0),
-                                 value) &&
+  return sequence_parser.ReadTag(CBS_ASN1_OBJECT, type) &&
+         sequence_parser.ReadTag(
+             CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0, value) &&
          !sequence_parser.HasMore();
 }
 
@@ -911,26 +910,26 @@ std::optional<std::string> ProcessAuthorityKeyId(
 }
 
 std::optional<std::string> ProcessUserNoticeDisplayText(
-    bssl::der::Tag tag,
+    CBS_ASN1_TAG tag,
     bssl::der::Input value) {
   std::string display_text;
   switch (tag) {
-    case bssl::der::kIA5String:
+    case CBS_ASN1_IA5STRING:
       if (!bssl::der::ParseIA5String(value, &display_text)) {
         return std::nullopt;
       }
       break;
-    case bssl::der::kVisibleString:
+    case CBS_ASN1_VISIBLESTRING:
       if (!bssl::der::ParseVisibleString(value, &display_text)) {
         return std::nullopt;
       }
       break;
-    case bssl::der::kBmpString:
+    case CBS_ASN1_BMPSTRING:
       if (!bssl::der::ParseBmpString(value, &display_text)) {
         return std::nullopt;
       }
       break;
-    case bssl::der::kUtf8String:
+    case CBS_ASN1_UTF8STRING:
       if (!base::IsStringUTF8AllowingNoncharacters(value.AsStringView())) {
         return std::nullopt;
       }
@@ -966,14 +965,14 @@ std::optional<std::string> ProcessUserNotice(bssl::der::Input qualifier) {
     return std::nullopt;
 
   std::optional<bssl::der::Input> notice_ref_value;
-  if (!parser.ReadOptionalTag(bssl::der::kSequence, &notice_ref_value)) {
+  if (!parser.ReadOptionalTag(CBS_ASN1_SEQUENCE, &notice_ref_value)) {
     return std::nullopt;
   }
 
   std::string rv;
   if (notice_ref_value) {
     bssl::der::Parser notice_ref_parser(*notice_ref_value);
-    bssl::der::Tag organization_tag;
+    CBS_ASN1_TAG organization_tag;
     bssl::der::Input organization_value;
     if (!notice_ref_parser.ReadTagAndValue(&organization_tag,
                                            &organization_value)) {
@@ -992,7 +991,7 @@ std::optional<std::string> ProcessUserNotice(bssl::der::Input qualifier) {
     bool first = true;
     while (notice_numbers_parser.HasMore()) {
       bssl::der::Input notice_number;
-      if (!notice_numbers_parser.ReadTag(bssl::der::kInteger, &notice_number)) {
+      if (!notice_numbers_parser.ReadTag(CBS_ASN1_INTEGER, &notice_number)) {
         return std::nullopt;
       }
       if (!first)
@@ -1009,7 +1008,7 @@ std::optional<std::string> ProcessUserNotice(bssl::der::Input qualifier) {
   }
 
   if (parser.HasMore()) {
-    bssl::der::Tag explicit_text_tag;
+    CBS_ASN1_TAG explicit_text_tag;
     bssl::der::Input explicit_text_value;
     if (!parser.ReadTagAndValue(&explicit_text_tag, &explicit_text_value))
       return std::nullopt;
@@ -1220,8 +1219,7 @@ bool ParseSubjectPublicKeyInfo(bssl::der::Input spki_tlv,
   if (!sequence_parser.ReadRawTLV(algorithm_tlv))
     return false;
 
-  if (!sequence_parser.ReadTag(bssl::der::kBitString,
-                               subject_public_key_value)) {
+  if (!sequence_parser.ReadTag(CBS_ASN1_BITSTRING, subject_public_key_value)) {
     return false;
   }
 
