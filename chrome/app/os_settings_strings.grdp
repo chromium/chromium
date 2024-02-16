@@ -2970,10 +2970,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL" desc="Aria label for the button remapping dropdown in the customize button row.">
     <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> remapped to <ph name="REMAPPING_OPTION">$2<ex>Copy</ex></ph>.
   </message>
-  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_LABEL" translateable="false" desc="The aria label given for the reorder element that can typically be used by dragging. This label gives instructions on how to use with keyboard only.">
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_LABEL" desc="The aria label given for the reorder element that can typically be used by dragging. This label gives instructions on how to use with keyboard only.">
     Reorder <ph name="BUTTON_NAME">$1<ex>Side button</ex></ph> using ctrl plus arrow up or arrow down
   </message>
-  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_ANNOUNCEMENT" translateable="false" desc="The screen reader announcement whenever a user moves a button entry between different rows.">
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_ANNOUNCEMENT" desc="The screen reader announcement whenever a user moves a button entry between different rows.">
     Moved to row <ph name="ROW_NUMBER">$1<ex>1</ex></ph>
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL" desc="The name of the rename button for the pencil icon.">
