@@ -123,4 +123,8 @@ gfx::PointF PlatformWindowDelegate::ConvertScreenPointToLocalDIP(
   return gfx::PointF(screen_in_pixels);
 }
 
+bool PlatformWindowDelegate::IsNativeWindowOcclusionTrackingAlwaysEnabled() {
+  return false;
+}
+
 }  // namespace ui
