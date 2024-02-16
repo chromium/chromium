@@ -531,6 +531,20 @@ TEST_F(WindowTreeHostWithThrottleAndReleaseTest, ToggleHidden) {
   EXPECT_TRUE(test::GetThrottledHosts().empty());
 }
 
+TEST_F(WindowTreeHostWithThrottleAndReleaseTest, DestroyWhileThrottled) {
+  host()->Show();
+  // This test needs to drive native occlusion. If native occlusion is
+  // used, it'll conflict with this test.
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host());
+  ASSERT_TRUE(NativeWindowOcclusionTracker::
+                  IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
+  EXPECT_TRUE(test::GetThrottledHosts().empty());
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
+  EXPECT_FALSE(host()->compositor()->IsVisible());
+  EXPECT_TRUE(base::Contains(test::GetThrottledHosts(), host()));
+  // Expect not to crash after destroying WindowTreeHost after this.
+}
+
 TEST_F(WindowTreeHostWithThrottleAndReleaseTest,
        VideoCaptureLockForcesVisible) {
   ASSERT_TRUE(NativeWindowOcclusionTracker::
