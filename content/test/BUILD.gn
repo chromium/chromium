@@ -967,6 +967,21 @@ group("telemetry_gpu_integration_test_data") {
   data_deps = [ ":telemetry_gpu_common_data" ]
 }
 
+# Instead of implicitly depends on the main function from libbrowsertest_support.a,
+# executables should now depend on 'default_content_test_launcher' if they want to
+# use the main function from content_test_launcher.cc.
+# see b/324126269 for detailes.
+source_set("default_content_test_launcher") {
+  testonly = true
+  sources = [ "content_test_launcher.cc" ]
+
+  deps = [
+    ":browsertest_support",
+    ":test_support",
+    "//content/shell:content_shell_lib",
+  ]
+}
+
 # browsertest_support can be used by targets that run content_shell based
 # browser tests.
 static_library("browsertest_support") {
@@ -999,7 +1014,6 @@ static_library("browsertest_support") {
     "../public/test/resource_load_observer.h",
     "content_browser_test_utils_internal.cc",
     "content_browser_test_utils_internal.h",
-    "content_test_launcher.cc",
   ]
 
   public_deps = [
@@ -1686,6 +1700,7 @@ test("content_browsertests") {
   deps = [
     ":browsertest_support",
     ":content_test_mojo_bindings",
+    ":default_content_test_launcher",
     ":test_support",
     ":web_ui_managed_interface_tests_bindings",
     ":web_ui_ts_test_mojo_bindings",
