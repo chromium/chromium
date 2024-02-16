@@ -244,7 +244,7 @@ void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
                               std::vector<std::string>* dawn_info_list) {
   for (auto* name : toggle_names) {
     const dawn::native::ToggleInfo* info = instance->GetToggleInfo(name);
-    if (!info) {
+    if (info) {
       dawn_info_list->push_back(info->name);
       dawn_info_list->push_back(info->url);
       dawn_info_list->push_back(info->description);
