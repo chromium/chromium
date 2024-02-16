@@ -11,8 +11,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
-#include "components/permissions/permission_uma_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -91,20 +89,6 @@ void OmniboxChipButton::AnimateExpand(base::TimeDelta duration) {
   ForceAnimateExpand();
 }
 
-void OmniboxChipButton::AnimateToFit(base::TimeDelta duration) {
-  animation_->SetSlideDuration(duration);
-  base_width_ = label()->width();
-
-  if (label()->GetPreferredSize().width() < width()) {
-    // As we're collapsing, we need to make sure that the padding is not
-    // animated away.
-    base_width_ += kChipImagePadding + kExtraRightPadding;
-    ForceAnimateCollapse();
-  } else {
-    ForceAnimateExpand();
-  }
-}
-
 void OmniboxChipButton::ResetAnimation(double value) {
   animation_->Reset(value);
   OnAnimationValueMaybeChanged();
@@ -144,17 +128,6 @@ void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
     return;
 
   OnAnimationValueMaybeChanged();
-
-  const double value = animation_->GetCurrentValue();
-  if (value == 1.0) {
-    for (Observer& observer : observers_) {
-      observer.OnExpandAnimationEnded();
-    }
-  } else if (value == 0.0) {
-    for (Observer& observer : observers_) {
-      observer.OnCollapseAnimationEnded();
-    }
-  }
 }
 
 void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
@@ -166,25 +139,8 @@ void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
   PreferredSizeChanged();
 }
 
-void OmniboxChipButton::SetUserDecision(
-    permissions::PermissionAction user_decision) {
-  user_decision_ = user_decision;
-  UpdateIconAndColors();
-}
-
 void OmniboxChipButton::SetTheme(OmniboxChipTheme theme) {
   theme_ = theme;
-  UpdateIconAndColors();
-}
-
-void OmniboxChipButton::SetBlockedIconShowing(bool should_show_blocked_icon) {
-  should_show_blocked_icon_ = should_show_blocked_icon;
-  UpdateIconAndColors();
-}
-
-void OmniboxChipButton::SetPermissionPromptStyle(
-    PermissionPromptStyle prompt_style) {
-  prompt_style_ = prompt_style;
   UpdateIconAndColors();
 }
 
@@ -208,42 +164,9 @@ const gfx::VectorIcon& OmniboxChipButton::GetIcon() const {
 
 SkColor OmniboxChipButton::GetForegroundColor() const {
   if (features::IsChromeRefresh2023()) {
-    // 1. Default to the system primary color.
+    // Default to the system primary color.
     SkColor text_and_icon_color = GetColorProvider()->GetColor(
         kColorOmniboxChipForegroundNormalVisibility);
-
-    // 2. Then update the color if the quiet chip is showing.
-    if (GetPermissionPromptStyle() == PermissionPromptStyle::kQuietChip) {
-      text_and_icon_color = GetColorProvider()->GetColor(
-          kColorOmniboxChipForegroundLowVisibility);
-    }
-
-    // 3. Then update the color based on the user decision.
-    // TODO(dljames): There is potentially a bug here if there exists a case
-    // where a quiet chip can be shown on a GRANTED_ONCE permission action.
-    // In that case the color should stay kColorOmniboxChipTextDefaultCR23.
-    switch (GetUserDecision()) {
-      case permissions::PermissionAction::GRANTED:
-      case permissions::PermissionAction::GRANTED_ONCE:
-        text_and_icon_color = GetColorProvider()->GetColor(
-            kColorOmniboxChipForegroundNormalVisibility);
-        break;
-      case permissions::PermissionAction::DENIED:
-      case permissions::PermissionAction::DISMISSED:
-      case permissions::PermissionAction::IGNORED:
-      case permissions::PermissionAction::REVOKED:
-        text_and_icon_color = GetColorProvider()->GetColor(
-            kColorOmniboxChipForegroundLowVisibility);
-        break;
-      case permissions::PermissionAction::NUM:
-        break;
-    }
-
-    // 4. Then update the color based on if the icon is blocked or not.
-    if (ShouldShowBlockedIcon()) {
-      text_and_icon_color = GetColorProvider()->GetColor(
-          kColorOmniboxChipForegroundLowVisibility);
-    }
 
     return text_and_icon_color;
   }
@@ -307,18 +230,6 @@ int OmniboxChipButton::GetCornerRadius() const {
     return GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS);
   }
   return GetIconSize();
-}
-
-void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
-  icon_ = &icon;
-
-  UpdateIconAndColors();
-}
-
-void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon* icon) {
-  icon_ = icon;
-
-  UpdateIconAndColors();
 }
 
 void OmniboxChipButton::AddObserver(Observer* observer) {

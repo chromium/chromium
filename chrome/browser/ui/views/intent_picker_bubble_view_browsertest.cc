@@ -42,6 +42,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "ui/views/controls/button/checkbox.h"
 #endif
 
 class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
