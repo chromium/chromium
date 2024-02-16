@@ -2129,13 +2129,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL),
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
-  html_source->AddString(
-      "topicsPageDisclaimer",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER,
-          base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL),
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
   html_source->AddString(
