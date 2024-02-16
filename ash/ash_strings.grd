@@ -6852,7 +6852,7 @@ New install
         <ph name="user">$1<ex>John Doe</ex></ph> modified
       </message>
       <message name="IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_SHARED_ACTION" desc="Part of the file suggestion chip UI in Chrome OS launcher. The suggestion chip provides users suggestions for files they may want to open based on the recent activity. The suggestion contains the file name, and a justification describing why the file was suggested (which contains the user action that prompted suggestion, followed by the time the action was taken). The justification is displayed under the file name. This string is the justification action text shown when the file is suggested because another user recently shared the file with the user (file suggestions may be shown for Google Drive files).">
-        Shared
+        Shared with you
       </message>
       <message name="IDS_FILE_SUGGESTION_JUSTIFICATION_USER_SHARED_ACTION" desc="Part of the file suggestion chip UI in Chrome OS launcher. The suggestion chip provides users suggestions for files they may want to open based on the recent activity. The suggestion contains the file name, and a justification describing why the file was suggested (which contains the user action that prompted suggestion, followed by the time the action was taken). The justification is displayed under the file name. This string is the justification action text shown when the file is suggested because another user recently shared the file with the user (file suggestions may be shown for Google Drive files). The string has a placeholder that will be replaced by the name of the user that shared the file with the user seeing the suggestion.">
         <ph name="user">$1<ex>John Doe</ex></ph> shared

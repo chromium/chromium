@@ -156,7 +156,11 @@ class FakeSearchQuery : public drivefs::mojom::SearchQuery {
 
 class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
  public:
-  DriveRecentFileSuggestionProviderTest() = default;
+  DriveRecentFileSuggestionProviderTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLauncherContinueSectionWithRecents},
+        {ash::features::kShowSharingUserInLauncherContinueSection});
+  }
   DriveRecentFileSuggestionProviderTest(
       const DriveRecentFileSuggestionProviderTest&) = delete;
   DriveRecentFileSuggestionProviderTest& operator=(
@@ -265,15 +269,21 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
   raw_ptr<drive::DriveIntegrationService> integration_service_ = nullptr;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kLauncherContinueSectionWithRecents};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class DriveRecentFileSuggestionProviderWithSharingUserTest
     : public DriveRecentFileSuggestionProviderTest {
+ public:
+  DriveRecentFileSuggestionProviderWithSharingUserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLauncherContinueSectionWithRecents,
+         ash::features::kShowSharingUserInLauncherContinueSection},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kShowSharingUserInLauncherContinueSection};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that file suggest service returns empty drive suggestions when drive
@@ -685,12 +695,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
                                        u"You viewed · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
-                            u"Shared · just now"),
+                            u"Shared with you · just now"),
                         SuggestionInfo(root.Append("Shared"),
-                                       u"Shared · Dec 3"),
+                                       u"Shared with you · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
-                            u"Shared · Dec 2")));
+                            u"Shared with you · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -827,9 +837,9 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
                                        u"You viewed · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
-                            u"Shared · just now"),
+                            u"Shared with you · just now"),
                         SuggestionInfo(root.Append("Shared"),
-                                       u"Shared · Dec 3"),
+                                       u"Shared with you · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
                             u"Test User 2 shared · Dec 2")));
@@ -1192,7 +1202,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
                                        u"Modified · Dec 2"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
-                            u"Shared · Dec 2")));
+                            u"Shared with you · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -1300,7 +1310,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifiedTimeSearchFailed) {
                                        u"You viewed · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
-                            u"Shared · Dec 2")));
+                            u"Shared with you · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -1548,7 +1558,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
                             SuggestionInfo(root.Append("Modified last item 1"),
                                            u"Modified · Dec 4"),
                             SuggestionInfo(root.Append("Shared 1"),
-                                           u"Shared · Dec 2")));
+                                           u"Shared with you · Dec 2")));
 
             result_waiter_1.Quit();
           })));
@@ -1574,7 +1584,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
                             SuggestionInfo(root.Append("Modified last item 2"),
                                            u"Modified · Dec 3"),
                             SuggestionInfo(root.Append("Shared 2"),
-                                           u"Shared · Dec 2")));
+                                           u"Shared with you · Dec 2")));
 
             result_waiter_2.Quit();
           })));
@@ -1669,12 +1679,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             const base::FilePath root = GetDriveRoot();
             EXPECT_THAT(
                 actual_suggestions,
-                ElementsAre(
-                    SuggestionInfo(root.Append("Viewed last item"),
-                                   u"You viewed · just now"),
-                    SuggestionInfo(root.Append("Modified last item"),
-                                   u"Modified · Dec 4"),
-                    SuggestionInfo(root.Append("Shared"), u"Shared · Dec 2")));
+                ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
+                                           u"You viewed · just now"),
+                            SuggestionInfo(root.Append("Modified last item"),
+                                           u"Modified · Dec 4"),
+                            SuggestionInfo(root.Append("Shared"),
+                                           u"Shared with you · Dec 2")));
 
             result_waiter_1.Quit();
           })));
@@ -1694,12 +1704,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             const base::FilePath root = GetDriveRoot();
             EXPECT_THAT(
                 actual_suggestions,
-                ElementsAre(
-                    SuggestionInfo(root.Append("Viewed last item"),
-                                   u"You viewed · just now"),
-                    SuggestionInfo(root.Append("Modified last item"),
-                                   u"Modified · Dec 4"),
-                    SuggestionInfo(root.Append("Shared"), u"Shared · Dec 2")));
+                ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
+                                           u"You viewed · just now"),
+                            SuggestionInfo(root.Append("Modified last item"),
+                                           u"Modified · Dec 4"),
+                            SuggestionInfo(root.Append("Shared"),
+                                           u"Shared with you · Dec 2")));
 
             result_waiter_2.Quit();
           })));

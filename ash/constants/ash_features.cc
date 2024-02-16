@@ -2604,7 +2604,7 @@ BASE_FEATURE(kShowPlayInDemoMode,
 // files shown because they have been recently shared with the user.
 BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
              "ShowSharingUserInLauncherContinueSection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Suppresses the first end of life warning shown 180 days before the AUE date.
 BASE_FEATURE(kSuppressFirstEolWarning,
@@ -4296,8 +4296,9 @@ bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {
-  return base::FeatureList::IsEnabled(
-      kShowSharingUserInLauncherContinueSection);
+  return IsLauncherContinueSectionWithRecentsEnabled() &&
+         base::FeatureList::IsEnabled(
+             kShowSharingUserInLauncherContinueSection);
 }
 
 bool IsSmdsSupportEnabled() {
