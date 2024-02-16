@@ -168,9 +168,7 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
       WebViewImpl::CreateTopLevelWebView(id, w3c_compliant, &browser_info_,
                                          std::move(client), mobile_device,
                                          page_load_strategy());
-  DevToolsClientImpl* parent =
-      static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-  status = web_view_tmp->AttachTo(parent);
+  status = web_view_tmp->AttachTo(devtools_websocket_client_.get());
   if (status.IsError()) {
     return status;
   }

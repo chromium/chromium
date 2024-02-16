@@ -146,9 +146,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
               view.id, w3c_compliant, &browser_info_, std::move(client),
               mobile_device_, page_load_strategy_));
         }
-        DevToolsClientImpl* parent =
-            static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-        status = web_views_.back()->AttachTo(parent);
+        status = web_views_.back()->AttachTo(devtools_websocket_client_.get());
         if (status.IsError()) {
           return status;
         }
