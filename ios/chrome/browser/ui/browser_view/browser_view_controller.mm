@@ -686,12 +686,6 @@ enum HeaderBehaviour {
   [self.omniboxCommandsHandler cancelOmniboxEdit];
 }
 
-// TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
-// about model layer objects such as webstates.
-- (void)displayCurrentTab {
-  [self displayTabView];
-}
-
 #pragma mark - browser_view_controller+private.h
 
 - (void)setActive:(BOOL)active {
