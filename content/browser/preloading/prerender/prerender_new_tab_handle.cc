@@ -28,7 +28,7 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
 
   // Create a new WebContents for prerendering in a new tab.
   // TODO(crbug.com/1350676): Pass the same creation parameters as
-  // WebContentsImpl::CreateNewWindow(). Also, set SessionStorageNamespace.
+  // WebContentsImpl::CreateNewWindow().
   web_contents_create_params_.opener_render_process_id =
       initiator_render_frame_host->GetProcess()->GetID();
   web_contents_create_params_.opener_render_frame_id =

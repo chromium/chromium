@@ -7931,6 +7931,88 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
 }
 
+// Tests that prerender whose target_hint is "_blank" is using the same session
+// storage across prerender navigations, and the initiator doesn't share the
+// same storage.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       SessionStorage_TargetBlank_WithTargetHintBlank) {
+  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/session_storage.html?prerendering=");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  int host_id = prerender_helper()->AddPrerender(
+      kPrerenderingUrl, /*eagerness=*/std::nullopt, "_blank");
+  auto* prerender_web_contents =
+      static_cast<WebContentsImpl*>(WebContents::FromFrameTreeNodeId(host_id));
+  ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
+  auto* initiator_web_contents = web_contents_impl();
+  ASSERT_NE(prerender_web_contents, initiator_web_contents);
+
+  std::string prerender_session_storage_id_before_activation =
+      FrameTreeNode::GloballyFindByID(host_id)
+          ->frame_tree()
+          .controller()
+          .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
+                                          ->GetStoragePartitionConfig())
+          ->id();
+  EXPECT_EQ(
+      "prerendering",
+      EvalJs(content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
+                 *prerender_web_contents, host_id),
+             "getSessionStorageKeys()")
+          .ExtractString());
+
+  // Click the link annotated with "target=_blank". This should activate the
+  // prerendered page.
+  TestNavigationObserver activation_observer(kPrerenderingUrl);
+  activation_observer.WatchExistingWebContents();
+  test::PrerenderHostObserver prerender_observer(*prerender_web_contents,
+                                                 host_id);
+  const std::string kLinkClickScript = R"(
+      clickSameSiteNewWindowLink();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  activation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_EQ(activation_observer.last_navigation_url(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  // The initiator's session storage is expected to be different from the
+  // prerender's.
+  EXPECT_EQ("initial", EvalJs(initiator_web_contents->GetPrimaryMainFrame(),
+                              "getSessionStorageKeys()")
+                           .ExtractString());
+  EXPECT_EQ("activated", EvalJs(prerender_web_contents->GetPrimaryMainFrame(),
+                                "getSessionStorageKeys()")
+                             .ExtractString());
+
+  // The prerender session storage is expected to be the same across prerender
+  // activation.
+  EXPECT_EQ(
+      prerender_session_storage_id_before_activation,
+      prerender_web_contents->GetPrimaryFrameTree()
+          .controller()
+          .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
+                                          ->GetStoragePartitionConfig())
+          ->id());
+  EXPECT_NE(
+      prerender_session_storage_id_before_activation,
+      initiator_web_contents->GetPrimaryFrameTree()
+          .controller()
+          .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
+                                          ->GetStoragePartitionConfig())
+          ->id());
+
+  // The navigation occurred in a new WebContents, so the original WebContents
+  // should still be showing the initial trigger page.
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+}
+
 // Test if the host is abandoned when the renderer page crashes.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
   const GURL kInitialUrl = GetUrl("/empty.html");
