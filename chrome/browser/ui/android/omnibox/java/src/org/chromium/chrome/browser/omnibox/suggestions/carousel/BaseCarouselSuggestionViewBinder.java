@@ -40,6 +40,7 @@ public interface BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_WIDTH) {
             view.getItemDecoration()
                     .setItemWidth(model.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
+            view.invalidateItemDecorations();
         } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
             view.setContentDescription(
                     model.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));

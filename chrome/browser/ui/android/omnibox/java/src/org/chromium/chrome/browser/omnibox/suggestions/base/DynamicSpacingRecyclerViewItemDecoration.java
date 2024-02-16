@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import android.content.res.Configuration;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 
 /**
  * RecyclerView ItemDecoration that dynamically calculates preferred element spacing based on
@@ -28,12 +24,12 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
     private final @Px int mMinElementSpace;
     private @Px int mItemWidth;
     private @Px int mContainerWidth;
+    private boolean mIsPortraitOrientation;
 
-    public DynamicSpacingRecyclerViewItemDecoration(
-            @NonNull RecyclerView parent, @Px int leadInSpace, @Px int minElementSpace) {
-        super(parent, leadInSpace, minElementSpace);
+    public DynamicSpacingRecyclerViewItemDecoration(@Px int leadInSpace, @Px int minElementSpace) {
+        super(leadInSpace, minElementSpace);
         mMinElementSpace = minElementSpace;
-        mContainerWidth = parent.getMeasuredWidth();
+        mContainerWidth = 0;
     }
 
     /**
@@ -47,28 +43,16 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
         setElementSpace(computeElementSpacingPx());
     }
 
-    /**
-     * Notify that the RecyclerView container size has changed.
-     *
-     * <p>Calling this method may trigger re-layout of the RecyclerView elements.
-     *
-     * <p>Note that this call should be run either
-     *
-     * <ul>
-     *   <li>(ideally) ahead of the Layout pass (e.g. during onMeasure()), where the spacing could
-     *       be computed before items are laid out, or
-     *   <li>after the Layout pass (which may trigger a secondary Layout pass to update children
-     *       placement).
-     * </ul>
-     *
-     * <p>Calling the method from within onLayout when the Layout pass nears completion may result
-     * with newly computed space and the request to invalidateItemDecorations() being ignored.
-     */
-    public void notifyViewMeasuredSizeChanged() {
-        int measuredSize = mRecyclerView.getMeasuredWidth();
-        if (measuredSize == mContainerWidth) return;
-        mContainerWidth = measuredSize;
-        setElementSpace(computeElementSpacingPx());
+    @Override
+    public boolean notifyViewSizeChanged(
+            boolean isPortraitOrientation, int newWidth, int newHeight) {
+        if (newWidth == mContainerWidth && isPortraitOrientation == mIsPortraitOrientation) {
+            return false;
+        }
+
+        mContainerWidth = newWidth;
+        mIsPortraitOrientation = isPortraitOrientation;
+        return setElementSpace(computeElementSpacingPx());
     }
 
     /**
@@ -78,12 +62,7 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
      */
     @VisibleForTesting
     /* package */ int computeElementSpacingPx() {
-        var context = mRecyclerView.getContext();
-        var resources = context.getResources();
-
-        boolean isPortraitOrientation =
-                resources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-        if (isPortraitOrientation && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+        if (mIsPortraitOrientation) {
             // Compute item spacing, guaranteeing exactly 50% exposure of one item
             // given the carousel width, item width, initial spacing, and base item spacing.
             // Resulting item spacing must be no smaller than base item spacing.

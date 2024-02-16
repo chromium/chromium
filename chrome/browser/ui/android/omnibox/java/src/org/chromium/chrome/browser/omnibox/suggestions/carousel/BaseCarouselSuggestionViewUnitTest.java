@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -160,8 +163,18 @@ public class BaseCarouselSuggestionViewUnitTest {
     }
 
     @Test
-    public void onMeasure_updatesElementSpacingWhenSizeChanges() {
+    public void onMeasure_invalidateItemDecorationsWhenTheyChange() {
+        doReturn(true).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
         mView.onMeasure(0, 0);
-        verify(mDecoration).notifyViewMeasuredSizeChanged();
+        // Must be called if the decorations report changes.
+        verify(mView).invalidateItemDecorations();
+    }
+
+    @Test
+    public void onMeasure_dontInvalidateItemDecorationsWhenTheyDontChange() {
+        doReturn(false).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
+        mView.onMeasure(0, 0);
+        // Must be called if the decorations report changes.
+        verify(mView, never()).invalidateItemDecorations();
     }
 }

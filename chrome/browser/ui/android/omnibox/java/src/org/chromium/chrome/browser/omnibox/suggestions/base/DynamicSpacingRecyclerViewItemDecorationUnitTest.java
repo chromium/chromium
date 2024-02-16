@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -65,9 +64,7 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
         doReturn(CONTAINER_SIZE).when(mRecyclerView).getMeasuredWidth();
 
         mDecoration =
-                spy(
-                        new DynamicSpacingRecyclerViewItemDecoration(
-                                mRecyclerView, LEAD_IN_SPACE, MIN_ELEMENT_SPACE));
+                spy(new DynamicSpacingRecyclerViewItemDecoration(LEAD_IN_SPACE, MIN_ELEMENT_SPACE));
     }
 
     /**
@@ -76,8 +73,7 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
      * @param newWidth new measured width to be reported by the container.
      */
     void resizeContainer(int newWidth) {
-        doReturn(newWidth).when(mRecyclerView).getMeasuredWidth();
-        mDecoration.notifyViewMeasuredSizeChanged();
+        mDecoration.notifyViewSizeChanged(true, newWidth, 100);
     }
 
     // Compares spacing against expected value.
@@ -103,7 +99,6 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw480dp-port")
     public void computeItemOffsets_reportsDefaultsWhenItemWidthNotKnown() {
         verifyItemSpacing(MIN_ELEMENT_SPACE);
 
@@ -118,6 +113,8 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void computeItemOffsets_portrait_exactFit() {
+        resizeContainer(CONTAINER_SIZE);
+
         int adjustedWidth = CONTAINER_SIZE - LEAD_IN_SPACE;
 
         // Find out how wide can our theoretical tile be to fit 4.5 times.
@@ -135,6 +132,8 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void computeItemOffsets_portrait_tightFit() {
+        resizeContainer(CONTAINER_SIZE);
+
         int adjustedWidth = CONTAINER_SIZE - LEAD_IN_SPACE;
 
         // Find out how wide can our theoretical tile be to fit 4.5 times.
@@ -159,6 +158,7 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void computeItemOffsets_portrait_impossibleFit() {
+        resizeContainer(CONTAINER_SIZE);
         // No way to fit in 1.5 tiles on screen.
         mDecoration.setItemWidth(CONTAINER_SIZE);
         verifyItemSpacing(MIN_ELEMENT_SPACE);
@@ -198,13 +198,14 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
         clearInvocations(mDecoration);
 
         // Notify container has resized, observe no update.
-        mDecoration.notifyViewMeasuredSizeChanged();
+        resizeContainer(containerSize);
         verify(mDecoration, times(0)).computeElementSpacingPx();
     }
 
     @Test
-    @Config(qualifiers = "land")
     public void formFactor_itemSpacingPhone_landscape() {
+        mDecoration.notifyViewSizeChanged(false, CONTAINER_SIZE, 100);
+
         // Set the item width to be 1/3 of the carousel.
         int itemWidth = CONTAINER_SIZE / 3;
         mDecoration.setItemWidth(itemWidth);

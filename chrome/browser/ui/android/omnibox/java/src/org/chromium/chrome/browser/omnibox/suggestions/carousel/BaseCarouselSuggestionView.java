@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.KeyEvent;
 
 import androidx.annotation.VisibleForTesting;
@@ -53,8 +54,7 @@ public class BaseCarouselSuggestionView extends RecyclerView {
                 getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
-        mDecoration =
-                new DynamicSpacingRecyclerViewItemDecoration(this, initialSpacing, baseSpacing / 2);
+        mDecoration = new DynamicSpacingRecyclerViewItemDecoration(initialSpacing, baseSpacing / 2);
         addItemDecoration(mDecoration);
 
         setAdapter(adapter);
@@ -105,7 +105,12 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mDecoration.notifyViewMeasuredSizeChanged();
+        if (mDecoration.notifyViewSizeChanged(
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT,
+                getMeasuredWidth(),
+                getMeasuredHeight())) {
+            invalidateItemDecorations();
+        }
     }
 
     /* package */ void setSelectionControllerForTesting(

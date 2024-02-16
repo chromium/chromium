@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -39,10 +38,15 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mDecoration =
-                new SpacingRecyclerViewItemDecoration(mRecyclerView, LEAD_IN_SPACE, ELEMENT_SPACE);
+        mDecoration = new SpacingRecyclerViewItemDecoration(LEAD_IN_SPACE, ELEMENT_SPACE);
         mOffsets = new Rect();
+    }
+
+    @Test
+    public void notifyViewSizeChanged_neverUpdates() {
+        assertFalse(mDecoration.notifyViewSizeChanged(true, 0, 0));
+        assertFalse(mDecoration.notifyViewSizeChanged(false, 10, 10));
+        assertFalse(mDecoration.notifyViewSizeChanged(true, 20, 20));
     }
 
     @Test
@@ -78,50 +82,24 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     }
 
     @Test
-    public void setLeadInSpace_noUpdate() {
-        mDecoration.setLeadInSpace(LEAD_IN_SPACE);
-        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
-        assertEquals(LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
-        assertEquals(0, mOffsets.top);
-        assertEquals(0, mOffsets.bottom);
-        verify(mRecyclerView, times(0)).invalidateItemDecorations();
-        assertEquals(LEAD_IN_SPACE, mDecoration.getLeadInSpace());
-    }
-
-    @Test
     public void setElementSpace_noUpdate() {
-        mDecoration.setElementSpace(ELEMENT_SPACE);
+        assertFalse(mDecoration.setElementSpace(ELEMENT_SPACE));
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
-        verify(mRecyclerView, times(0)).invalidateItemDecorations();
         assertEquals(ELEMENT_SPACE, mDecoration.getElementSpace());
     }
 
     @Test
-    public void setLeadInSpace_changeTriggersInvalidation() {
-        mDecoration.setLeadInSpace(2 * LEAD_IN_SPACE);
-        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
-        assertEquals(2 * LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
-        assertEquals(0, mOffsets.top);
-        assertEquals(0, mOffsets.bottom);
-        verify(mRecyclerView).invalidateItemDecorations();
-        assertEquals(2 * LEAD_IN_SPACE, mDecoration.getLeadInSpace());
-    }
-
-    @Test
     public void setElementSpace_changeTriggersInvalidation() {
-        mDecoration.setElementSpace(2 * ELEMENT_SPACE);
+        assertTrue(mDecoration.setElementSpace(2 * ELEMENT_SPACE));
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
-        verify(mRecyclerView).invalidateItemDecorations();
         assertEquals(2 * ELEMENT_SPACE, mDecoration.getElementSpace());
     }
 }
