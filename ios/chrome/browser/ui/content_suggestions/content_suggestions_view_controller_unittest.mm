@@ -451,7 +451,7 @@ TEST_F(ContentSuggestionsViewControllerTest,
   [view_controller_ setMostVisitedTilesConfig:MVTConfig()];
   ParcelTrackingItem* item = [[ParcelTrackingItem alloc] init];
   item.estimatedDeliveryTime = base::Time();
-  [view_controller_ showParcelTrackingItems:@[ item ]];
+  [view_controller_ showParcelTrackingItem:item];
 
   UIStackView* magicStack = FindMagicStack();
 
@@ -464,54 +464,6 @@ TEST_F(ContentSuggestionsViewControllerTest,
   MagicStackModuleContainer* parcelTrackingModule =
       (MagicStackModuleContainer*)subviews[1];
 
-  EXPECT_EQ(ContentSuggestionsModuleType::kParcelTracking,
-            parcelTrackingModule.type);
-}
-
-// Tests that two Parcel Tracking modules are added to the magic stack after the
-// latter is initially constructed.
-TEST_F(ContentSuggestionsViewControllerTest,
-       TestInsertTwoParcelTrackingModulesIntoMagicStack) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
-  [view_controller_ setMagicStackOrder:@[
-    @(int(ContentSuggestionsModuleType::kMostVisited)),
-    @(int(ContentSuggestionsModuleType::kParcelTracking)),
-    @(int(ContentSuggestionsModuleType::kParcelTracking)),
-    @(int(ContentSuggestionsModuleType::kShortcuts))
-  ]];
-  // Simulate scenario where:
-  // Shortcuts should be inserted at index 0
-  // Safety Check should be inserted at index 1
-  // Most Visited should be inserted at index 0
-  [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
-  // Trigger -viewDidLoad for initial Magic Stack construction.
-  // TODO(crbug.com/1477476): This view get should ideally happen before
-  // setShortcutTilesConfig: to ensure Shortcuts is inserted correctly as
-  // well.
-  [view_controller_ loadViewIfNeeded];
-
-  [view_controller_ setMostVisitedTilesConfig:MVTConfig()];
-  ParcelTrackingItem* item1 = [[ParcelTrackingItem alloc] init];
-  item1.estimatedDeliveryTime = base::Time();
-  ParcelTrackingItem* item2 = [[ParcelTrackingItem alloc] init];
-  item2.estimatedDeliveryTime = base::Time();
-  [view_controller_ showParcelTrackingItems:@[ item1, item2 ]];
-
-  UIStackView* magicStack = FindMagicStack();
-
-  // Assert order is correct.
-  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
-
-  // Four modules and edit button.
-  ASSERT_EQ(5u, [subviews count]);
-
-  MagicStackModuleContainer* parcelTrackingModule =
-      (MagicStackModuleContainer*)subviews[1];
-  EXPECT_EQ(ContentSuggestionsModuleType::kParcelTracking,
-            parcelTrackingModule.type);
-  parcelTrackingModule = (MagicStackModuleContainer*)subviews[2];
   EXPECT_EQ(ContentSuggestionsModuleType::kParcelTracking,
             parcelTrackingModule.type);
 }

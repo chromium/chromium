@@ -59,13 +59,13 @@
 
 #pragma mark - Public
 
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItemsToShow {
-  if ([_parcelTrackingItems count] > 2) {
+- (ParcelTrackingItem*)parcelTrackingItemToShow {
+  if ([_parcelTrackingItems count] > 1) {
     ParcelTrackingItem* itemToShow = _parcelTrackingItems[0];
     itemToShow.shouldShowSeeMore = YES;
-    return @[ itemToShow ];
+    return itemToShow;
   }
-  return _parcelTrackingItems;
+  return _parcelTrackingItems[0];
 }
 
 - (NSArray<ParcelTrackingItem*>*)allParcelTrackingItems {

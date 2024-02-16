@@ -94,8 +94,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 @end
 
 @implementation FakeParcelTrackingMediator
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItemsToShow {
-  return @[ [[ParcelTrackingItem alloc] init] ];
+- (ParcelTrackingItem*)parcelTrackingItemToShow {
+  return [[ParcelTrackingItem alloc] init];
 }
 @end
 

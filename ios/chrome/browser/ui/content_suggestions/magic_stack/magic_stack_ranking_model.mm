@@ -197,7 +197,8 @@
     }
   }
 
-  [self.consumer showParcelTrackingItems:[self parcelTrackingItems]];
+  [self.consumer showParcelTrackingItem:[_parcelTrackingMediator
+                                            parcelTrackingItemToShow]];
 }
 
 - (void)parcelTrackingDisabled {
@@ -365,11 +366,7 @@
         if (IsIOSParcelTrackingEnabled() &&
             !IsParcelTrackingDisabled(
                 GetApplicationContext()->GetLocalState())) {
-          for (NSUInteger i = 0; i < [[self parcelTrackingItems] count]; i++) {
-            // Magic Stack will show up to two modules to match the number of
-            // parcels tracked.
             [magicStackOrder addObject:moduleNumber];
-          }
         }
         break;
       default:
@@ -409,12 +406,8 @@
 
   if (IsIOSParcelTrackingEnabled() &&
       !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
-    for (NSUInteger i = 0; i < [[self parcelTrackingItems] count]; i++) {
-      // Magic Stack will show up to two modules to match the number of
-      // parcels tracked.
       [magicStackModules
           addObject:@(int(ContentSuggestionsModuleType::kParcelTracking))];
-    }
   }
 
   return magicStackModules;
@@ -428,10 +421,6 @@
     return _magicStackOrderFromSegmentationReceived;
   }
   return YES;
-}
-
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItems {
-  return [_parcelTrackingMediator parcelTrackingItemsToShow];
 }
 
 // Shows the tab resumption tile with the given `item` configuration.

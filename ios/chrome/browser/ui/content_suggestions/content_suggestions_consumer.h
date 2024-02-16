@@ -105,9 +105,9 @@ struct MagicStackOrderChange {
 // Hides the tab resumption tile.
 - (void)hideTabResumption;
 
-// Indicates to the consumer to display the parcel tracking module for each
-// given `items` configuration.
-- (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items;
+// Indicates to the consumer to display the parcel tracking module with the
+// `item` configuration.
+- (void)showParcelTrackingItem:(ParcelTrackingItem*)item;
 
 @end
 

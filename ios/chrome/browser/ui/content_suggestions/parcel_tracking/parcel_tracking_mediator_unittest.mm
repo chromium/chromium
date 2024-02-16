@@ -105,8 +105,8 @@ TEST_F(ParcelTrackingMediatorTest, TestParcelTrackingReceived) {
         return [[mediator_ allParcelTrackingItems] count] == 3;
       }));
 
-  NSArray<ParcelTrackingItem*>* items = [mediator_ parcelTrackingItemsToShow];
-  ParcelTrackingItem* outForDeliveryItem = items[0];
+  ParcelTrackingItem* item = [mediator_ parcelTrackingItemToShow];
+  ParcelTrackingItem* outForDeliveryItem = item;
   EXPECT_EQ(outForDeliveryItem.parcelType, ParcelType::kUPS);
   EXPECT_EQ(outForDeliveryItem.status, ParcelState::kOutForDelivery);
   EXPECT_TRUE(outForDeliveryItem.shouldShowSeeMore);

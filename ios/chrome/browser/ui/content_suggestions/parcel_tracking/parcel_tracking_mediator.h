@@ -56,7 +56,7 @@ class UrlLoadingBrowserAgent;
 - (void)disconnect;
 
 // Returns the parcel tracking items to show.
-- (NSArray<ParcelTrackingItem*>*)parcelTrackingItemsToShow;
+- (ParcelTrackingItem*)parcelTrackingItemToShow;
 
 // Returns all parcel tracking items received.
 - (NSArray<ParcelTrackingItem*>*)allParcelTrackingItems;

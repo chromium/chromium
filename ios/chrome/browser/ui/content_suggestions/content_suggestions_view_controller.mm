@@ -182,7 +182,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
-  NSMutableArray<MagicStackModuleContainer*>* _parcelTrackingModuleContainers;
+  MagicStackModuleContainer* _parcelTrackingModuleContainer;
   NSLayoutConstraint* _mostVisitedTilesStackviewHeightAnchor;
   NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
   // The most recently selected MagicStack module's page index.
@@ -843,22 +843,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items {
-  _parcelTrackingModuleContainers = [NSMutableArray array];
-
-    for (ParcelTrackingItem* item in items) {
-      MagicStackModuleContainer* parcelTrackingModuleContainer =
-          [[MagicStackModuleContainer alloc] init];
-      parcelTrackingModuleContainer.delegate = self;
-      [parcelTrackingModuleContainer configureWithConfig:item];
-      [_parcelTrackingModuleContainers addObject:parcelTrackingModuleContainer];
-    }
+- (void)showParcelTrackingItem:(ParcelTrackingItem*)item {
+  _parcelTrackingModuleContainer = [[MagicStackModuleContainer alloc] init];
+  _parcelTrackingModuleContainer.delegate = self;
+  [_parcelTrackingModuleContainer configureWithConfig:item];
 
   if (_magicStackRankReceived) {
-    for (MagicStackModuleContainer* parcelTrackingModuleContainer in
-             _parcelTrackingModuleContainers) {
-      [self insertModuleIntoMagicStack:parcelTrackingModuleContainer];
-    }
+    [self insertModuleIntoMagicStack:_parcelTrackingModuleContainer];
   }
 }
 
@@ -1218,13 +1209,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       }
       case ContentSuggestionsModuleType::kParcelTracking:
         if (IsIOSParcelTrackingEnabled()) {
-          for (MagicStackModuleContainer* parcelModule in
-                   _parcelTrackingModuleContainers) {
-            // Find a parcel tracking module that hasn't been added yet.
-            if (![parcelModule superview]) {
-              moduleContainer = parcelModule;
-              break;
-            }
+          // Add parcel tracking module if it hasn't already been added.
+          if (![_parcelTrackingModuleContainer superview]) {
+            moduleContainer = _parcelTrackingModuleContainer;
+            break;
           }
         }
         break;
