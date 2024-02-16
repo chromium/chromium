@@ -979,7 +979,7 @@ class WebContents : public PageNavigator,
   // the tab in the screen coordinate system.
   virtual gfx::Rect GetContainerBounds() = 0;
 
-  // Get the bounds of the View, relative to the parent.
+  // Get the bounds of the View in the global screen position.
   virtual gfx::Rect GetViewBounds() = 0;
 
   // Resize a WebContents to |new_bounds|.
