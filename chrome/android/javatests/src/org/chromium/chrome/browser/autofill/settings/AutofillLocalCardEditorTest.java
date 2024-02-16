@@ -37,6 +37,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -129,6 +130,33 @@ public class AutofillLocalCardEditorTest {
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "1234");
+
+    private static final CreditCard SAMPLE_MASKED_SERVER_CARD =
+            new CreditCard(
+                    /* guid= */ "1",
+                    /* origin= */ "",
+                    /* isLocal= */ false,
+                    /* isCached= */ true,
+                    /* isVirtual= */ false,
+                    /* name= */ "John Doe",
+                    /* number= */ "4444222211111111",
+                    /* obfuscatedNumber= */ "",
+                    /* month= */ "5",
+                    AutofillTestHelper.nextYear(),
+                    /* basicCardIssuerNetwork= */ "visa",
+                    /* issuerIconDrawableId= */ 0,
+                    /* billingAddressId= */ "",
+                    /* serverId= */ "",
+                    /* instrumentId= */ 123,
+                    /* cardLabel= */ "",
+                    /* nickname= */ "",
+                    /* cardArtUrl= */ null,
+                    /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
+                    /* productDescription= */ "",
+                    /* cardNameForAutofillDisplay= */ "",
+                    /* obfuscatedLastFourDigits= */ "• • • • 1111",
+                    /* cvc= */ "");
+
     private static final String AMEX_CARD_NUMBER = "378282246310005";
     private static final String AMEX_CARD_NUMBER_PREFIX = "37";
     private static final String NON_AMEX_CARD_NUMBER = "4111111111111111";
@@ -721,6 +749,67 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutCvc() throws Exception {
+        // Set 4 existing cards.
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+        mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_MASKED_SERVER_CARD);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationMonthSelectionOnEditor(
+                autofillLocalCardEditorFragment, /* monthSelection= */ 1);
+        setExpirationYearSelectionOnEditor(autofillLocalCardEditorFragment, /* yearSelection= */ 1);
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        saveCardCountHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithCvc() throws Exception {
+        // Set 4 existing cards.
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+        mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_MASKED_SERVER_CARD);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        saveCardCountHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void testRecordUserAction_whenNewCreditCardIsAddedWithCvc() throws Exception {
         String validExpirationYear = AutofillTestHelper.nextYear();
@@ -859,6 +948,31 @@ public class AutofillLocalCardEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     autofillLocalCardEditorFragment.onOptionsItemSelected(deleteButton);
+                });
+    }
+
+    private void setExpirationMonthSelectionOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, int monthSelection) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mExpirationMonth.setSelection(
+                                monthSelection);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the Expiration Month");
+                    }
+                });
+    }
+
+    private void setExpirationYearSelectionOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, int yearSelection) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mExpirationYear.setSelection(yearSelection);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the Expiration Year");
+                    }
                 });
     }
 

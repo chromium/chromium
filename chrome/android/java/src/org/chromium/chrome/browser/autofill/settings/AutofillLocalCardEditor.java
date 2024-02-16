@@ -29,6 +29,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.UsedByReflection;
@@ -52,6 +53,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private static final String EXPIRATION_DATE_REGEX = "^(0[1-9]|1[0-2])\\/(\\d{2})$";
     // TODO(crbug.com/1504662): Leverage the value from C++ code to have a single source of truth.
     private static final String AMEX_NETWORK_NAME = "amex";
+    static final String CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM =
+            "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
 
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
@@ -335,6 +338,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         card.setBillingAddressId(((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
         card.setNickname(mNicknameText.getText().toString().trim());
+
+        // Get the current card count before setting the new card.
+        int currentCardCount = personalDataManager.getCreditCardCountForSettings();
+
         // Set GUID for adding a new card.
         card.setGUID(personalDataManager.setCreditCard(card));
         if (mIsNewEntry) {
@@ -342,6 +349,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             if (!card.getNickname().isEmpty()) {
                 RecordUserAction.record("AutofillCreditCardsAddedWithNickname");
             }
+            RecordHistogram.recordCount100Histogram(
+                    CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM, currentCardCount);
         }
         return true;
     }
