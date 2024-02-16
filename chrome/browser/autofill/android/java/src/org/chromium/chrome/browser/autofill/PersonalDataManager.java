@@ -705,15 +705,6 @@ public class PersonalDataManager {
                         profile.getGUID());
     }
 
-    /** Gets the number of credit cards for the settings page. */
-    public int getCreditCardCountForSettings() {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getCreditCardGUIDsForSettings(
-                        mPersonalDataManagerAndroid, PersonalDataManager.this)
-                .length;
-    }
-
     /**
      * Gets the credit cards to show in the settings page. Returns all the cards without any
      * processing.
