@@ -281,8 +281,6 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
-      {"secureDnsOsSettingsDescription",
-       IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION},
       {"secureDnsWithIdentifiersDescription",
        IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
       {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
@@ -297,6 +295,14 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
 #endif
   };
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::u16string product_os_name =
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
+  html_source->AddString(
+      "secureDnsOsSettingsDescription",
+      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
+                                 product_os_name));
+#endif
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 

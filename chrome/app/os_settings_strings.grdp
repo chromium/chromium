@@ -6503,8 +6503,8 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SECURE_DNS_TITLE" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Use secure connections to look up sites
   </message>
-  <message name="IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Description of secure DNS in Privacy options for ChromeOS">
-    Make it harder for people with access to your internet traffic to see which sites you visit. ChromeOS uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Description of secure DNS in Privacy options">
+    Make it harder for people with access to your internet traffic to see which sites you visit. <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE" desc="Text for secure DNS dialog title in Privacy options for ChromeOS">
     Turn off URL encryption?
@@ -6519,7 +6519,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Turn off
   </message>
   <message name="IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in Network Default mode">
-    Network Default
+    Network default
   </message>
   <message name="IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION" desc="Description when the user selects Network Default resolver from DNS dropdown menu">
     Secure connections might not always be available when using the network default. Consider selecting a different provider to ensure you're always using a secure connection.
