@@ -13178,21 +13178,6 @@
             ]
         }
     ],
-    "OsSettingsRevampWayfindingStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OsSettingsRevampWayfinding"
-                    ]
-                }
-            ]
-        }
-    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
