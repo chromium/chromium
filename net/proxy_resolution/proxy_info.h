@@ -92,12 +92,6 @@ class NET_EXPORT ProxyInfo {
   // Returns true if any of the contained ProxyChains are multi-proxy.
   bool ContainsMultiProxyChain() const;
 
-  // Returns true if the first valid proxy server is a socks server.
-  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
-  // the corresponding property of the relevant proxy server from the next
-  // proxy chain in the proxy list.
-  bool is_socks() const;
-
   // Returns true if this proxy info has no proxies left to try.
   bool is_empty() const {
     return proxy_list_.IsEmpty();
