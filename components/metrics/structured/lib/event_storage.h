@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
-#define COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_EVENT_STORAGE_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_EVENT_STORAGE_H_
 
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -65,4 +65,4 @@ class EventStorage {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_EVENT_STORAGE_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_EVENT_STORAGE_H_

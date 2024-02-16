@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_CHROME_EVENT_STORAGE_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_CHROME_EVENT_STORAGE_H_
 
-#include "components/metrics/structured/event_storage.h"
+#include "components/metrics/structured/lib/event_storage.h"
 #include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "third_party/metrics_proto/structured_data.pb.h"

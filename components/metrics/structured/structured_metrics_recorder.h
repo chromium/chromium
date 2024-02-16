@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_storage.h"
+#include "components/metrics/structured/lib/event_storage.h"
 #include "components/metrics/structured/lib/key_data.h"
 #include "components/metrics/structured/lib/key_data_provider.h"
 #include "components/metrics/structured/project_validator.h"
