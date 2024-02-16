@@ -443,7 +443,8 @@ int HttpNetworkTransaction::Read(IOBuffer* buf,
     // also don't worry about this for an HTTPS Proxy, because the
     // communication with the proxy is secure.
     // See http://crbug.com/8473.
-    DCHECK(proxy_info_.is_http_like());
+    DCHECK(proxy_info_.AnyProxyInChain(
+        [](const ProxyServer& s) { return s.is_http_like(); }));
     DCHECK_EQ(headers->response_code(), HTTP_PROXY_AUTHENTICATION_REQUIRED);
     return ERR_TUNNEL_CONNECTION_FAILED;
   }

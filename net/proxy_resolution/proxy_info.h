@@ -77,14 +77,20 @@ class NET_EXPORT ProxyInfo {
     return is_direct() && proxy_list_.size() == 1 && proxy_retry_info_.empty();
   }
 
+  // Return true if there is at least one proxy chain, and at least one proxy
+  // server in that chain matches the given predicate.
+  template <class Predicate>
+  bool AnyProxyInChain(Predicate p) {
+    if (is_empty()) {
+      return false;
+    }
+    const std::vector<ProxyServer>& proxy_servers =
+        proxy_chain().proxy_servers();
+    return std::any_of(proxy_servers.begin(), proxy_servers.end(), p);
+  }
+
   // Returns true if any of the contained ProxyChains are multi-proxy.
   bool ContainsMultiProxyChain() const;
-
-  // Returns true if the first proxy server is an HTTP compatible proxy.
-  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
-  // the corresponding property of the relevant proxy server from the next
-  // proxy chain in the proxy list.
-  bool is_http_like() const;
 
   // Returns true if the first proxy server is an HTTP compatible proxy over a
   // secure connection.

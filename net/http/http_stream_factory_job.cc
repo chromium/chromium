@@ -865,9 +865,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     }
   }
 
-  if (proxy_info_.is_http_like()) {
-    establishing_tunnel_ = !UsingHttpProxyWithoutTunnel();
-  }
+  establishing_tunnel_ = !UsingHttpProxyWithoutTunnel();
 
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
