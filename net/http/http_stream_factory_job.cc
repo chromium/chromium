@@ -143,11 +143,9 @@ HttpStreamFactory::Job::Job(
           is_websocket_ && origin_url_.SchemeIs(url::kWssScheme) &&
           // TODO(https://crbug.com/1277306): Remove the proxy check.
           proxy_info_.is_direct()),
-      // Don't use IP connection pooling for HTTP over HTTPS proxies. It doesn't
-      // get us much, and testing it is more effort than its worth.
+      // Only support IP-based pooling for non-proxied streams.
       enable_ip_based_pooling_(enable_ip_based_pooling &&
-                               !(proxy_info_.is_secure_http_like() &&
-                                 origin_url_.SchemeIs(url::kHttpScheme))),
+                               proxy_info.is_direct()),
       delegate_(delegate),
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
@@ -1015,8 +1013,12 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       }
     } else if (connection_->socket()->GetNegotiatedProtocol() !=
                kProtoUnknown) {
-      // Only connections that use TLS can negotiate ALPN.
-      DCHECK(using_ssl_ || proxy_info_.is_secure_http_like());
+      // Only connections that use TLS (either to the origin or via a GET to a
+      // secure proxy) can negotiate ALPN.
+      bool get_to_secure_proxy =
+          IsGetToProxy(proxy_info_.proxy_chain(), origin_url_) &&
+          proxy_info_.proxy_chain().Last().is_secure_http_like();
+      DCHECK(using_ssl_ || get_to_secure_proxy);
       negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
       net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
         return NetLogHttpStreamProtoParams(negotiated_protocol_);
