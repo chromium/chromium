@@ -315,5 +315,14 @@ comprise the Transit Layer should be owned by the same team responsible for the
 related production code.
 
 The exception is the core of the Transit Layer, for example `PageStation`, which
-is not owned by specific teams, and will be owned by Clank Code Health and Clank
-EngProd.
+is not owned by specific teams, and will be owned by Clank Build/Code Health.
+
+
+## Specific Cases
+
+
+### Back Button Behavior {#backbutton}
+
+A transition triggered by the back button is just like any other transition
+method declared in the `TransitStation` or `StationFacility`. Use
+`t -> Espresso.pressBack()` as a trigger.
