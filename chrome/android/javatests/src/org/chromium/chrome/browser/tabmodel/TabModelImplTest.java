@@ -18,12 +18,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -151,7 +155,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    public void hasOtherRelatedTabs_detectMergedTabs() throws Exception {
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
+    public void isTabInTabGroup_detectMergedTabs() throws Exception {
         createTabs(3, false, mTestUrl);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -162,15 +167,51 @@ public class TabModelImplTest {
                     final Tab tab2 = tabModel.getTabAt(1);
                     final Tab tab3 = tabModel.getTabAt(2);
 
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab2));
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab2));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab3));
 
                     ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
 
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab2));
-                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab2));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab3));
+
+                    tab1.setTabGroupId(new Token(1L, 2L));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+
+                    tab1.setTabGroupId(null);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
+    public void isTabInTabGroup_detectMergedTabs_Size1() throws Exception {
+        createTabs(3, false, mTestUrl);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    final Tab tab1 = tabModel.getTabAt(0);
+                    final Tab tab2 = tabModel.getTabAt(1);
+                    final Tab tab3 = tabModel.getTabAt(2);
+
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab2));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab3));
+
+                    ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
+
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab2));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab3));
+
+                    tab1.setTabGroupId(new Token(1L, 2L));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab1));
+
+                    tab1.setTabGroupId(null);
                 });
     }
 }

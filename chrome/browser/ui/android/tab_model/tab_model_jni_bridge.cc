@@ -178,13 +178,13 @@ bool TabModelJniBridge::IsActiveModel() const {
 }
 
 // static
-bool TabModelJniBridge::HasOtherRelatedTabs(TabAndroid* tab) {
+bool TabModelJniBridge::IsTabInTabGroup(TabAndroid* tab) {
   // Terminate early if tab is in the process of being destroyed.
   if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate()) {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabModelJniBridge_hasOtherRelatedTabs(env, tab->GetJavaObject());
+  return Java_TabModelJniBridge_isTabInTabGroup(env, tab->GetJavaObject());
 }
 
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {

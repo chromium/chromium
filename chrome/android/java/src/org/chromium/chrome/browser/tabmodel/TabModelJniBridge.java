@@ -156,7 +156,7 @@ public abstract class TabModelJniBridge implements TabModel {
     /** Returns whether supplied Tab instance has been grouped together with other Tabs. */
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static boolean hasOtherRelatedTabs(@NonNull Tab tab) {
+    static boolean isTabInTabGroup(@NonNull Tab tab) {
         assert tab != null;
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return false;
@@ -175,7 +175,7 @@ public abstract class TabModelJniBridge implements TabModel {
 
         assert filter instanceof TabGroupModelFilter;
         final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
-        return groupingFilter.hasOtherRelatedTabs(tab);
+        return groupingFilter.isTabInTabGroup(tab);
     }
 
     @Override
