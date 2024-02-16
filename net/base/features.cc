@@ -493,7 +493,7 @@ BASE_FEATURE(kEnableWebTransportDraft07,
 
 BASE_FEATURE(kZstdContentEncoding,
              "ZstdContentEncoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, partitioned storage will be allowed even if third-party cookies
 // are disabled by default. Partitioned storage will not be allowed if
