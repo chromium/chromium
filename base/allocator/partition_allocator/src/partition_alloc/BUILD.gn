@@ -200,6 +200,8 @@ buildflag_header("partition_alloc_buildflags") {
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 
+    "USE_FULL_MTE=use_full_mte",
+
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
     "GLUE_CORE_POOLS=$_glue_core_pools",

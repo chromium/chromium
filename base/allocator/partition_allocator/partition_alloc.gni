@@ -228,6 +228,16 @@ declare_args() {
   enable_shadow_metadata = false
 }
 
+declare_args() {
+  # Use full MTE protection available by changing the feature flag default
+  # values. So sync mode on all processes. Also disables permissive MTE.
+  #
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
+  # scripts to pass command line arguments.
+  use_full_mte = false
+}
+
 # *Scan is currently only used by Chromium, and supports only 64-bit.
 use_starscan = build_with_chromium && has_64_bit_pointers
 
@@ -258,6 +268,7 @@ if (!use_partition_alloc) {
   backup_ref_ptr_poison_oob_ptr = false
   enable_backup_ref_ptr_instance_tracer = false
   use_starscan = false
+  use_full_mte = false
 }
 
 # enable_backup_ref_ptr_slow_checks can only be used if
@@ -335,6 +346,11 @@ assert(build_with_chromium || !use_asan_backup_ref_ptr,
 
 assert(!use_asan_backup_ref_ptr || use_hookable_raw_ptr,
        "AsanBackupRefPtr requires RawPtrHookableImpl")
+
+# use_full_mte can only be used if has_memory_tagging is true.
+assert(
+    has_memory_tagging || !use_full_mte,
+    "Can't use full MTE protection if memory tagging isn't supported at all.")
 
 declare_args() {
   # pkeys support is explicitly disabled in all Cronet builds, as some test
