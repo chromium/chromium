@@ -64,7 +64,7 @@ ub-risk-4 = "ub-risk-4"
 [policy."aho-corasick:1.1.2"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."anstyle:1.0.4"]
+[policy."anstyle:1.0.6"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."anyhow:1.0.79"]
@@ -88,37 +88,37 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.4.14"]
+[policy."clap:4.5.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."clap_builder:4.4.14"]
+[policy."clap_builder:4.5.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."clap_lex:0.6.0"]
+[policy."clap_lex:0.7.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."codespan-reporting:0.11.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."cxx:1.0.115"]
+[policy."cxx:1.0.116"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.115"]
+[policy."cxxbridge-cmd:1.0.116"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.115"]
+[policy."cxxbridge-flags:1.0.116"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.115"]
+[policy."cxxbridge-macro:1.0.116"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."either:1.9.0"]
+[policy."either:1.10.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."font-types:0.4.2"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."getrandom:0.2.11"]
+[policy."getrandom:0.2.12"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."heck:0.4.1"]
@@ -139,7 +139,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."lazy_static:1.4.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."libc:0.2.152"]
+[policy."libc:0.2.153"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."link-cplusplus:1.0.9"]
@@ -163,7 +163,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."ppv-lite86:0.2.17"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."proc-macro2:1.0.76"]
+[policy."proc-macro2:1.0.78"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."prost-derive:0.12.3"]
@@ -190,16 +190,16 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."read-fonts:0.15.2"]
+[policy."read-fonts:0.15.5"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."regex-automata:0.4.3"]
+[policy."regex-automata:0.4.5"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."regex-syntax:0.8.2"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."regex:1.10.2"]
+[policy."regex:1.10.3"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."rstest:0.17.0"]
@@ -229,19 +229,19 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.21"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."serde:1.0.195"]
+[policy."serde:1.0.196"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.195"]
+[policy."serde_derive:1.0.196"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_json:1.0.111"]
+[policy."serde_json:1.0.113"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."serde_json_lenient:0.1.8"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.15.4"]
+[policy."skrifa:0.15.5"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.1"]
@@ -250,7 +250,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."static_assertions:1.1.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."strsim:0.10.0"]
+[policy."strsim:0.11.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."strum:0.25.0"]
@@ -265,7 +265,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."syn:2.0.48"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."termcolor:1.4.0"]
+[policy."termcolor:1.4.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."tinyvec:1.6.0"]
@@ -304,33 +304,39 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.cxx]]
-version = "1.0.115"
+version = "1.0.116"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
 Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
+
+Exemption updated to 1.0.116 in Feb 2024.
 """
 
 [[exemptions.cxxbridge-flags]]
-version = "1.0.115"
+version = "1.0.116"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
 Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
+
+Exemption updated to 1.0.116 in Feb 2024.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.115"
+version = "1.0.116"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
 Delta audit of 1.0.110 -> 1.0.115 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
+
+Exemption updated to 1.0.116 in Feb 2024.
 """
 
 [[exemptions.font-types]]
@@ -359,7 +365,7 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.libc]]
-version = "0.2.152"
+version = "0.2.153"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -367,6 +373,8 @@ Grandparented-in when setting up `cargo vet` in Jan 2024
 Unsoundness was found in 0.2.152 behind a crate feature (called \"extra_traits\")
 that is unused by Chromium.  https://crbug.com/1524111 tracks ensuring that we
 don't accidentally start depending on this feature.
+
+Exemption updated to 0.2.153 in Feb 2024.
 """
 
 [[exemptions.memchr]]
@@ -387,7 +395,7 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.proc-macro2]]
-version = "1.0.76"
+version = "1.0.78"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -395,6 +403,8 @@ Grandparented-in when setting up `cargo vet` in Jan 2024
 Delta audit of 1.0.9 -> 1.0.10 has been done in Jan 2024 (including an `unsafe`
 review done at https://crrev.com/c/5178771), but because of a lack of a
 fully-audited baseline nothing was recorded in audits.toml
+
+Exemption updated to 1.0.78 in Feb 2024.
 """
 
 [[exemptions.rand_chacha]]
@@ -408,9 +418,13 @@ criteria = "does-not-implement-crypto"
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.read-fonts]]
-version = "0.15.2"
+version = "0.15.5"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+0.15.2 grandparented-in when setting up `cargo vet` in Jan 2024.
+
+Exemption updated to 0.15.5 when updating the crate in Feb 2024.
+"""
 
 [[exemptions.rustversion]]
 version = "1.0.14"
@@ -428,13 +442,15 @@ lack of a fully-audited baseline nothing was recorded in audits.toml
 """
 
 [[exemptions.serde]]
-version = "1.0.195"
+version = "1.0.196"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024.
 
 Delta audit of 1.0.193 -> 1.0.195 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
+
+Exemption updated to 1.0.196 in Feb 2024.
 """
 
 [[exemptions.serde_json_lenient]]
@@ -443,9 +459,13 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.skrifa]]
-version = "0.15.2"
+version = "0.15.5"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
+notes = """
+0.15.2 grandparented-in when setting up `cargo vet` in Jan 2024.
+
+Exemption updated to 0.15.5 when updating the crate in Feb 2024.
+"""
 
 [[exemptions.static_assertions]]
 version = "1.1.0"

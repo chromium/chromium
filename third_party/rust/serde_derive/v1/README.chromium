@@ -1,9 +1,9 @@
 Name: serde_derive
 URL: https://crates.io/crates/serde_derive
 Description: Macros 1.1 implementation of #[derive(Serialize, Deserialize)]
-Version: 1.0.195
+Version: 1.0.196
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.195/LICENSE-APACHE
-Revision: 03eec42c3313b36da416be1486e9ecac345784d5
+License File: //third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.196/LICENSE-APACHE
+Revision: ede9762a583c3cc3b87c10a53551828fad339525

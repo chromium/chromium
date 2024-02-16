@@ -1,9 +1,9 @@
 Name: cxxbridge-macro
 URL: https://crates.io/crates/cxxbridge-macro
 Description: Implementation detail of the `cxx` crate.
-Version: 1.0.115
+Version: 1.0.116
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.115/LICENSE-APACHE
-Revision: 5ceca34a2804552c93c5d7779635bc25af232052
+License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-1.0.116/LICENSE-APACHE
+Revision: d5aed942cf8ade76db4dd2d96143da6acc2fd43f
