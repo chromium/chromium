@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -342,14 +343,14 @@ bool CpuDataCollector::ReadCpuFreqTimeInState(
                             base::TrimPositions::TRIM_TRAILING,
                             &time_in_state_string);
 
-  std::vector<base::StringPiece> lines = base::SplitStringPiece(
+  std::vector<std::string_view> lines = base::SplitStringPiece(
       time_in_state_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t line_num = 0; line_num < lines.size(); ++line_num) {
     int freq_in_khz;
     int64_t occupancy_time_centisecond;
 
     // Occupancy of each state is in the format "<state> <time>"
-    std::vector<base::StringPiece> pair = base::SplitStringPiece(
+    std::vector<std::string_view> pair = base::SplitStringPiece(
         lines[line_num], " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (pair.size() != 2 || !base::StringToInt(pair[0], &freq_in_khz) ||
         !base::StringToInt64(pair[1], &occupancy_time_centisecond)) {
@@ -386,7 +387,7 @@ bool CpuDataCollector::ReadCpuFreqAllTimeInState(
                             base::TrimPositions::TRIM_TRAILING,
                             &all_time_in_state_string);
 
-  std::vector<base::StringPiece> lines =
+  std::vector<std::string_view> lines =
       base::SplitStringPiece(all_time_in_state_string, "\n",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   // The first line is descriptions in the format "freq\t\tcpu0\t\tcpu1...".
@@ -394,7 +395,7 @@ bool CpuDataCollector::ReadCpuFreqAllTimeInState(
   for (size_t line_num = 1; line_num < lines.size(); ++line_num) {
     // Occupancy of each state is in the format "<state>\t\t<time>\t\t<time>
     // ..."
-    std::vector<base::StringPiece> array =
+    std::vector<std::string_view> array =
         base::SplitStringPiece(lines[line_num], "\t", base::TRIM_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
     int freq_in_khz;
