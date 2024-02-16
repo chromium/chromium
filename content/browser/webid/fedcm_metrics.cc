@@ -602,4 +602,18 @@ void RecordLifecycleStateFailureReason(
                                 reason);
 }
 
+void RecordRawAccountsSize(int size) {
+  CHECK_GT(size, 0);
+  base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.Raw", size,
+                                 /*min=*/1,
+                                 /*max=*/10, /*buckets=*/10);
+}
+
+void RecordReadyToShowAccountsSize(int size) {
+  CHECK_GT(size, 0);
+  base::UmaHistogramCustomCounts("Blink.FedCm.AccountsSize.ReadyToShow", size,
+                                 /*min=*/1,
+                                 /*max=*/10, /*buckets=*/10);
+}
+
 }  // namespace content

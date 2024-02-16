@@ -1765,6 +1765,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      RecordRawAccountsSize(accounts.size());
       FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
       if (accounts.empty()) {
         render_frame_host().AddMessageToConsole(
@@ -1795,6 +1796,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           return;
         }
       }
+      RecordReadyToShowAccountsSize(accounts.size());
       ComputeLoginStateAndReorderAccounts(
           url::Origin::Create(idp_info->provider->config->config_url),
           accounts);

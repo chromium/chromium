@@ -371,6 +371,14 @@ void RecordSetLoginStatusIgnoredReason(FedCmSetLoginStatusIgnoredReason reason);
 // being primary.
 void RecordLifecycleStateFailureReason(FedCmLifecycleStateFailureReason reason);
 
+// Records the number of accounts received before applying login/domain hints
+// filter.
+void RecordRawAccountsSize(int size);
+
+// Records the number of accounts received after applying login/domain hints
+// filter. If no account left, nothing will be recorded.
+void RecordReadyToShowAccountsSize(int size);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

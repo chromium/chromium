@@ -1160,6 +1160,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.AccountsSize.Raw" units="accounts"
+    expires_after="2024-10-30">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the size of the accounts received from the IdP before applying any
+    filters. Records one sample per accounts fetch if there's at least one
+    account returned.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.AccountsSize.ReadyToShow" units="accounts"
+    expires_after="2024-10-30">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the size of the accounts received from the IdP after applying the
+    filters. Records one sample per accounts fetch if there's at least one
+    account left after filtering.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.ApprovedClientsExistence" enum="Boolean"
     expires_after="2024-06-14">
   <owner>yigu@chromium.org</owner>
