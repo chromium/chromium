@@ -877,9 +877,10 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kTerrain,
-      title: 'Landscape',
-      text: `<${SeaPenTemplateChip.kTerrainFeature}> in shades of <${
-          SeaPenTemplateChip.kTerrainColor}>`,
+      title: loadTimeData.getString('seaPenTemplateTitleTerrain'),
+      text: loadTimeData.getStringF(
+          'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
+          `<${SeaPenTemplateChip.kTerrainColor}>`),
       preview: [{
         url:
             'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
@@ -890,43 +891,53 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kTerrainFeatureSaltLake,
-              translation: 'salt lake',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSaltLake'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureRiver,
-              translation: 'glacial river',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureRiver'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureNorthernLights,
-              translation: 'northern lights',
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureNorthernLights'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureSandDunes,
-              translation: 'sand dunes',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureSandDunes'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureClayHills,
-              translation: 'clay hills',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureClayHills'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureSandyLagoon,
-              translation: 'sandy lagoon',
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureSandyLagoon'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureMountains,
-              translation: 'mountains',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainFeatureMountains'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureBioluminescentBeach,
-              translation: 'bioluminescent beach',
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureBioluminescentBeach'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureFireflyForest,
-              translation: 'firefly forest',
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureFireflyForest'),
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
-              translation: 'different planet',
+              translation: loadTimeData.getString(
+                  'seaPenOptionTerrainFeatureDifferentPlanet'),
             },
           ],
         ],
@@ -935,43 +946,53 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           [
             {
               value: SeaPenTemplateOption.kTerrainColorPink,
-              translation: 'pink',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPink'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorTeal,
-              translation: 'teal',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorTeal'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorWhite,
-              translation: 'white',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorWhite'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorPurple,
-              translation: 'purple',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPurple'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorBlue,
-              translation: 'blue',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBlue'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorYellow,
-              translation: 'yellow',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorYellow'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorMaroonPink,
-              translation: 'maroon and pink',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorMaroonPink'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorBluePurple,
-              translation: 'blue and purple',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePurple'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorPinkYellow,
-              translation: 'pink and yellow',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorPinkYellow'),
             },
             {
               value: SeaPenTemplateOption.kTerrainColorBluePink,
-              translation: 'blue and pink',
+              translation:
+                  loadTimeData.getString('seaPenOptionTerrainColorBluePink'),
             },
           ],
         ],

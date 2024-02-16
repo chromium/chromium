@@ -3571,6 +3571,73 @@
         <message name="IDS_SEA_PEN_OPTION_CHARACTERS_BACKGROUND_CORAL_PINK" desc="Option to fill in the CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_CHARACTERS.">
           coral pink
         </message>
+        <!-- Wallpaper template terrain -->
+        <message name="IDS_SEA_PEN_TEMPLATE_TITLE_TERRAIN" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          Landscape
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_TERRAIN" desc="Template used to generate an image of TERRAIN. Users can select the variables from a drop-down menu.">
+          <ph name="TERRAIN_FEATURE">$1<ex>salt lake</ex></ph> in shades of <ph name="TERRAIN_COLOR">$2<ex>pink</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SALT_LAKE" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          salt lake
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_RIVER" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          glacial river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_NORTHERN_LIGHTS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          northern lights
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SAND_DUNES" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          sand dunes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_CLAY_HILLS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          clay hills
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_SANDY_LAGOON" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          sandy lagoon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_MOUNTAINS" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          mountains
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_BIOLUMINESCENT_BEACH" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          bioluminescent beach
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_FIREFLY_FOREST" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          firefly forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_DIFFERENT_PLANET" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          different planet
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_TEAL" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          teal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_WHITE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PURPLE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_YELLOW" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_MAROON_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          maroon and pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE_PURPLE" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_PINK_YELLOW" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          pink and yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_TERRAIN_COLOR_BLUE_PINK" desc="Option to fill in the TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
+          blue and pink
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
