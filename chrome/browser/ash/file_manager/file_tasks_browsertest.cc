@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/file_manager/file_tasks.h"
+
 #include <cstring>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "ash/webui/file_manager/url_constants.h"
@@ -35,7 +38,6 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -179,9 +181,9 @@ void ConvertExpectation(const Expectation& test,
                         std::vector<GURL>& file_urls,
                         std::vector<std::string>& dlp_source_urls) {
   const base::FilePath prefix = base::FilePath().AppendASCII("file");
-  std::vector<base::StringPiece> all_extensions = base::SplitStringPiece(
+  std::vector<std::string_view> all_extensions = base::SplitStringPiece(
       test.file_extensions, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (base::StringPiece extension : all_extensions) {
+  for (std::string_view extension : all_extensions) {
     base::FilePath path = prefix.AddExtension(extension);
     std::string mime_type;
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1028,8 +1030,8 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
 class WithEnterpriseFlagAndPrefs
     : public WithEnterpriseFlag,
       public testing::WithParamInterface<
-          std::tuple<base::StringPiece /* google_workspace_cloud_upload */,
-                     base::StringPiece /* microsoft_office_cloud_upload */,
+          std::tuple<std::string_view /* google_workspace_cloud_upload */,
+                     std::string_view /* microsoft_office_cloud_upload */,
                      bool /* odfs_extension_installed */,
                      bool /* is_managed */>> {
  public:

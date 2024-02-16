@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 
 #include <initializer_list>
+#include <string_view>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -38,7 +39,7 @@ namespace {
 // The map with pairs Office file extensions with their corresponding
 // `OfficeOpenExtensions` enum.
 constexpr auto kExtensionToOfficeOpenExtensionsEnum =
-    base::MakeFixedFlatMap<base::StringPiece, OfficeOpenExtensions>(
+    base::MakeFixedFlatMap<std::string_view, OfficeOpenExtensions>(
         {{".doc", OfficeOpenExtensions::kDoc},
          {".docm", OfficeOpenExtensions::kDocm},
          {".docx", OfficeOpenExtensions::kDocx},

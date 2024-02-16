@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 
+#include <string_view>
+
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
@@ -1535,7 +1537,7 @@ base::FilePath VolumeManager::GetDriveMountPointPath() const {
   return drive_integration_service_->GetMountPointPath();
 }
 
-void VolumeManager::DoUnmountEvent(base::StringPiece volume_id,
+void VolumeManager::DoUnmountEvent(std::string_view volume_id,
                                    ash::MountError error) {
   Volumes::const_iterator it = mounted_volumes_.find(volume_id);
   if (it == mounted_volumes_.end()) {

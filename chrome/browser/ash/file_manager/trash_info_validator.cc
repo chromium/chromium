@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 
+#include <string_view>
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -176,8 +177,8 @@ void TrashInfoValidator::OnTrashInfoParsed(
 
   // Remove the leading "/" character to make the restore path relative from the
   // known trash parent path.
-  base::StringPiece relative_path =
-      base::StringPiece(restore_path.value()).substr(1);
+  std::string_view relative_path =
+      std::string_view(restore_path.value()).substr(1);
   base::FilePath absolute_restore_path = mount_point_path.Append(relative_path);
 
   ParsedTrashInfoData parsed_data;

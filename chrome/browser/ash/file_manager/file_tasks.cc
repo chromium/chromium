@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "apps/launcher.h"
@@ -251,7 +252,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   // handler of image files (e.g. Keep, Photos) would take precedence. But we
   // want that only to occur if the user has explicitly set the preference for
   // an app other than kMediaAppId to be the default (b/153387960).
-  constexpr auto kBuiltInApps = base::MakeFixedFlatSet<base::StringPiece>({
+  constexpr auto kBuiltInApps = base::MakeFixedFlatSet<std::string_view>({
       // clang-format off
       kFileManagerAppId,
       kFileManagerSwaAppId,
@@ -372,7 +373,7 @@ void PostProcessFoundTasks(Profile* profile,
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
   constexpr auto kOpenWithBrowserActions =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           // clang-format off
           "view-pdf",
           "view-in-browser",
@@ -510,7 +511,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 // Converts a string to a TaskType. Returns TASK_TYPE_UNKNOWN on error.
 TaskType StringToTaskType(const std::string& str) {
   constexpr auto kStringToTaskTypeMapping =
-      base::MakeFixedFlatMap<base::StringPiece, TaskType>({
+      base::MakeFixedFlatMap<std::string_view, TaskType>({
           // clang-format off
           {kFileBrowserHandlerTaskType, TASK_TYPE_FILE_BROWSER_HANDLER},
           {kFileHandlerTaskType,        TASK_TYPE_FILE_HANDLER},
@@ -565,7 +566,7 @@ std::string ParseFilesAppActionId(const std::string& action_id) {
   return action_id;
 }
 
-std::string ToSwaActionId(base::StringPiece action_id) {
+std::string ToSwaActionId(std::string_view action_id) {
   return base::StrCat(
       {ash::file_manager::kChromeUIFileManagerURL, "?", action_id});
 }

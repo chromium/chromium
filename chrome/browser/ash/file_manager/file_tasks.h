@@ -100,6 +100,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -156,7 +157,7 @@ std::string TaskTypeToString(TaskType task_type);
 std::string ParseFilesAppActionId(const std::string& action_id);
 
 // Turns the provided |action_id| into chrome://file-manager/?ACTION_ID.
-std::string ToSwaActionId(base::StringPiece action_id);
+std::string ToSwaActionId(std::string_view action_id);
 
 // Describes a task.
 // See the comment above for <app-id>, <task-type>, and <action-id>.

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -1224,7 +1225,7 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
 
-  for (const base::StringPiece16& line : base::SplitStringPiece(
+  for (std::u16string_view line : base::SplitStringPiece(
            *maybe_file_system_url_list, kFilesAppSeparator16,
            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     if (line.empty() || line[0] == '#') {

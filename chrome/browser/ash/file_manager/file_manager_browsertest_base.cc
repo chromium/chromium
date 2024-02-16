@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -46,7 +47,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -354,7 +354,7 @@ struct AddEntriesMessage {
   }
 
   // Maps |value| to TargetVolume. Returns true on success.
-  static bool MapStringToTargetVolume(base::StringPiece value,
+  static bool MapStringToTargetVolume(std::string_view value,
                                       TargetVolume* volume) {
     if (value == "local") {
       *volume = LOCAL_VOLUME;
@@ -599,7 +599,7 @@ struct AddEntriesMessage {
     }
 
     // Maps |value| to an EntryType. Returns true on success.
-    static bool MapStringToEntryType(base::StringPiece value, EntryType* type) {
+    static bool MapStringToEntryType(std::string_view value, EntryType* type) {
       if (value == "file") {
         *type = FILE;
       } else if (value == "directory") {
@@ -617,7 +617,7 @@ struct AddEntriesMessage {
     }
 
     // Maps |value| to SharedOption. Returns true on success.
-    static bool MapStringToSharedOption(base::StringPiece value,
+    static bool MapStringToSharedOption(std::string_view value,
                                         SharedOption* option) {
       if (value == "shared") {
         *option = SHARED;
@@ -634,7 +634,7 @@ struct AddEntriesMessage {
     }
 
     // Maps |value| to base::Time. Returns true on success.
-    static bool MapStringToTime(base::StringPiece value, base::Time* time) {
+    static bool MapStringToTime(std::string_view value, base::Time* time) {
       return base::Time::FromString(std::string(value).c_str(), time);
     }
   };
@@ -799,7 +799,7 @@ struct ExpectFileTasksMessage {
   }
 
   static bool MapStringToOpenType(
-      base::StringPiece value,
+      std::string_view value,
       file_tasks::FileTasksObserver::OpenType* open_type) {
     using OpenType = file_tasks::FileTasksObserver::OpenType;
     if (value == "launch") {

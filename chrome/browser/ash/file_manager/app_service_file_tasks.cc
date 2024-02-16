@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -116,7 +117,7 @@ const char kInstallLinuxPackageHandlerId[] =
     "chrome://file-manager/?install-linux-package";
 
 bool MatchPolicyIdAgainstLegacyArcAppFormat(const TaskDescriptor& td,
-                                            base::StringPiece policy_id) {
+                                            std::string_view policy_id) {
   DCHECK_EQ(td.task_type, TASK_TYPE_ARC_APP);
   // Sometimes task descriptors for Android apps are stored in a
   // legacy format (app id: "<package>/<activity>", action id: "view").
@@ -214,7 +215,7 @@ bool IsFilesAppUrlOpener(const std::string& app_id,
          action_id == ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
 }
 
-bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
+bool IsSystemAppIdWithFileHandlers(std::string_view id) {
   return id == web_app::kMediaAppId;
 }
 
@@ -444,7 +445,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
 
   std::vector<FullTaskDescriptor*> filtered_tasks;
   // `app_id` matching is not necessary if the policy points to a virtual task.
-  if (std::optional<base::StringPiece> virtual_task_id =
+  if (std::optional<std::string_view> virtual_task_id =
           apps_util::GetVirtualTaskIdFromPolicyId(policy_id)) {
     std::string full_virtual_task_id = ToSwaActionId(*virtual_task_id);
     for (auto& task : resulting_tasks->tasks) {

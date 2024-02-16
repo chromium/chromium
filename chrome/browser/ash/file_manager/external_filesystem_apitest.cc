@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
@@ -132,8 +133,8 @@ class JSTestStarter : public content::TestNavigationObserver {
 };
 
 bool TouchFile(const base::FilePath& path,
-               base::StringPiece mtime_string,
-               base::StringPiece atime_string) {
+               std::string_view mtime_string,
+               std::string_view atime_string) {
   base::Time mtime, atime;
   auto result =
       base::Time::FromString(std::string(mtime_string).c_str(), &mtime) &&
@@ -516,7 +517,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
     base::CreateTemporaryDirInDir(tmp_dir_.GetPath(),
                                   base::FilePath::StringType(), &drivefs_dir);
     auto profile_name_storage = profile->GetBaseName().value();
-    base::StringPiece profile_name = profile_name_storage;
+    std::string_view profile_name = profile_name_storage;
     if (base::StartsWith(profile_name, "u-")) {
       profile_name = profile_name.substr(2);
     }
