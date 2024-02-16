@@ -43,7 +43,8 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
            net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
            net::CookieInclusionStatus::
                WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE},
-          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial);
+          net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial,
+          /*use_literal=*/true);
 
   net::CookieInclusionStatus copied;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<

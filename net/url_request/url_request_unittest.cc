@@ -2655,12 +2655,10 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
     ASSERT_EQ(2u, req->maybe_sent_cookies().size());
     CookieInclusionStatus expected_strict_status =
         CookieInclusionStatus::MakeFromReasonsForTesting(
-            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT},
-            {} /* warning_reasons */);
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT});
     CookieInclusionStatus expected_lax_status =
         CookieInclusionStatus::MakeFromReasonsForTesting(
-            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
-            {} /* warning_reasons */);
+            {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX});
     EXPECT_EQ(expected_strict_status,
               req->maybe_sent_cookies()[0].access_result.status);
     EXPECT_EQ(expected_lax_status,

@@ -887,8 +887,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
               CookieOrLine("cookie-name=cookie-value",
                            mojom::CookieOrLine::Tag::kCookie),
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
-                  {}))));
+                  {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {

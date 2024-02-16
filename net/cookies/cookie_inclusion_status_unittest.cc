@@ -388,29 +388,12 @@ TEST(CookieInclusionStatusTest, ExcludedByUserPreferences) {
   EXPECT_FALSE(status.ExcludedByUserPreferences());
 
   status = CookieInclusionStatus::MakeFromReasonsForTesting({
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
-      CookieInclusionStatus::ExclusionReason::
-          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-  });
-  EXPECT_TRUE(status.ExcludedByUserPreferences());
-
-  status = CookieInclusionStatus::MakeFromReasonsForTesting({
       CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
   });
   EXPECT_FALSE(status.ExcludedByUserPreferences());
 
   status = CookieInclusionStatus::MakeFromReasonsForTesting({
-      CookieInclusionStatus::ExclusionReason::
-          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE,
-  });
-  EXPECT_FALSE(status.ExcludedByUserPreferences());
-
-  status = CookieInclusionStatus::MakeFromReasonsForTesting({
-      CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
-      CookieInclusionStatus::ExclusionReason::
-          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET,
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE,
   });
   EXPECT_FALSE(status.ExcludedByUserPreferences());

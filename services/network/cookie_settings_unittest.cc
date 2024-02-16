@@ -1168,7 +1168,7 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}},
-      {*MakeCanonicalSameSiteNoneCookie("cookie", kURL), {}}};
+      {*MakeCanonicalCookie("cookie", kURL), {}}};
   net::CookieAccessResultList excluded_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("excluded_other", kURL),
        // The ExclusionReason below is irrelevant, as long as there is
@@ -1230,27 +1230,27 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<
                             net::CookieInclusionStatus::ExclusionReason>{
-                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                                    IsTrackingProtectionEnabledFor3pcd()
-                                ? net::CookieInclusionStatus::
-                                      EXCLUDE_THIRD_PARTY_PHASEOUT
-                                : net::CookieInclusionStatus::
-                                      EXCLUDE_USER_PREFERENCES}),
+                            net::CookieInclusionStatus::
+                                EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
                 net::MatchesCookieWithName("excluded_other"),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                                    IsTrackingProtectionEnabledFor3pcd()
-                                ? net::CookieInclusionStatus::
-                                      EXCLUDE_THIRD_PARTY_PHASEOUT
-                                : net::CookieInclusionStatus::
-                                      EXCLUDE_USER_PREFERENCES}),
+                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                IsTrackingProtectionEnabledFor3pcd()
+                            ? std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{net::CookieInclusionStatus::
+                                                           ExclusionReason::
+                                                               EXCLUDE_SECURE_ONLY}
+                            : std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{net::CookieInclusionStatus::
+                                                           ExclusionReason::
+                                                               EXCLUDE_SECURE_ONLY,
+                                                       net::CookieInclusionStatus::
+                                                           EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
                 net::MatchesCookieWithName("third_party"),
@@ -1462,16 +1462,20 @@ TEST_P(CookieSettingsTest,
                 net::MatchesCookieWithName("excluded_other"),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
-                        std::vector<
-                            net::CookieInclusionStatus::ExclusionReason>{
-                            net::CookieInclusionStatus::ExclusionReason::
-                                EXCLUDE_SECURE_ONLY,
-                            IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                                    IsTrackingProtectionEnabledFor3pcd()
-                                ? net::CookieInclusionStatus::
-                                      EXCLUDE_THIRD_PARTY_PHASEOUT
-                                : net::CookieInclusionStatus::
-                                      EXCLUDE_USER_PREFERENCES}),
+                        IsForceThirdPartyCookieBlockingFlagEnabled() ||
+                                IsTrackingProtectionEnabledFor3pcd()
+                            ? std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{net::CookieInclusionStatus::
+                                                           ExclusionReason::
+                                                               EXCLUDE_SECURE_ONLY}
+                            : std::vector<
+                                  net::CookieInclusionStatus::
+                                      ExclusionReason>{net::CookieInclusionStatus::
+                                                           ExclusionReason::
+                                                               EXCLUDE_SECURE_ONLY,
+                                                       net::CookieInclusionStatus::
+                                                           EXCLUDE_USER_PREFERENCES}),
                     _, _, _))));
   }
 }

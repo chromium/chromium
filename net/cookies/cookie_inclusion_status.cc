@@ -33,6 +33,19 @@ CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
 }
 
 CookieInclusionStatus::CookieInclusionStatus(
+    std::vector<ExclusionReason> exclusions,
+    std::vector<WarningReason> warnings,
+    ExemptionReason exemption) {
+  for (ExclusionReason reason : exclusions) {
+    exclusion_reasons_[reason] = true;
+  }
+  for (WarningReason warning : warnings) {
+    warning_reasons_[warning] = true;
+  }
+  exemption_reason_ = exemption;
+}
+
+CookieInclusionStatus::CookieInclusionStatus(
     const CookieInclusionStatus& other) = default;
 
 CookieInclusionStatus& CookieInclusionStatus::operator=(
@@ -401,7 +414,12 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
     std::vector<ExclusionReason> exclusions,
     std::vector<WarningReason> warnings,
-    ExemptionReason exemption) {
+    ExemptionReason exemption,
+    bool use_literal) {
+  CookieInclusionStatus literal_status(exclusions, warnings, exemption);
+  if (use_literal) {
+    return literal_status;
+  }
   CookieInclusionStatus status;
   for (ExclusionReason reason : exclusions) {
     status.AddExclusionReason(reason);
@@ -410,9 +428,12 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
     status.AddWarningReason(warning);
   }
   status.MaybeSetExemptionReason(exemption);
+
+  CHECK_EQ(status, literal_status);
   return status;
 }
 
+// TODO(shuuran): Consolidate reasons in this method.
 bool CookieInclusionStatus::ExcludedByUserPreferences() const {
   if (HasOnlyExclusionReason(ExclusionReason::EXCLUDE_USER_PREFERENCES) ||
       HasOnlyExclusionReason(ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT)) {

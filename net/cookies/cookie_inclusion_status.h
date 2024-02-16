@@ -408,11 +408,14 @@ class NET_EXPORT CookieInclusionStatus {
   static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
                                                   uint32_t warning_reasons);
 
-  // Makes a status that contains the given reasons.
+  // Makes a status that contains the given reasons. If 'use_literal' is true,
+  // this method permits status to have reason combinations that cannot occur
+  // under normal circumstances; otherwise it can cause a CHECK failure.
   static CookieInclusionStatus MakeFromReasonsForTesting(
       std::vector<ExclusionReason> exclusions,
       std::vector<WarningReason> warnings = std::vector<WarningReason>(),
-      ExemptionReason exemption = ExemptionReason::kNone);
+      ExemptionReason exemption = ExemptionReason::kNone,
+      bool use_literal = false);
 
   // Returns true if the cookie was excluded because of user preferences.
   // HasOnlyExclusionReason(EXCLUDE_USER_PREFERENCES) will not return true for
@@ -427,6 +430,12 @@ class NET_EXPORT CookieInclusionStatus {
   }
 
  private:
+  // Makes a status that contains the exact given exclusion reason and warning
+  // and exemption.
+  CookieInclusionStatus(std::vector<ExclusionReason> exclusions,
+                        std::vector<WarningReason> warnings,
+                        ExemptionReason exemption);
+
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
   ExclusionReasonBitset ExclusionReasonsWithout(
       const std::vector<ExclusionReason>& reasons) const;
