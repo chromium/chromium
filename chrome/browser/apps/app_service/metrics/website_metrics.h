@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
 #include <map>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -35,6 +36,11 @@
 
 class Browser;
 class Profile;
+
+namespace webapps {
+enum class InstallableWebAppCheckResult;
+struct WebAppBannerData;
+}  // namespace webapps
 
 namespace apps {
 
@@ -155,7 +161,9 @@ class WebsiteMetrics : public BrowserListObserver,
     void WebContentsDestroyed() override;
 
     // webapps::AppBannerManager::Observer:
-    void OnInstallableWebAppStatusUpdated() override;
+    void OnInstallableWebAppStatusUpdated(
+        webapps::InstallableWebAppCheckResult result,
+        const std::optional<webapps::WebAppBannerData>& data) override;
 
    private:
     raw_ptr<WebsiteMetrics> owner_;
@@ -213,7 +221,9 @@ class WebsiteMetrics : public BrowserListObserver,
   // Called by |WebsiteMetrics::ActiveTabWebContentsObserver|.
   virtual void OnWebContentsUpdated(content::WebContents* web_contents);
   virtual void OnInstallableWebAppStatusUpdated(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data);
 
   // Adds the url info to `url_infos_`.
   void AddUrlInfo(const GURL& url,

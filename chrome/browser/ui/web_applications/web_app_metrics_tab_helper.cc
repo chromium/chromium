@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -50,13 +52,15 @@ void WebAppMetricsTabHelper::WebContentsDestroyed() {
   app_banner_manager_observer_.Reset();
 }
 
-void WebAppMetricsTabHelper::OnInstallableWebAppStatusUpdated() {
+void WebAppMetricsTabHelper::OnInstallableWebAppStatusUpdated(
+    webapps::InstallableWebAppCheckResult result,
+    const std::optional<webapps::WebAppBannerData>& data) {
   content::WebContents* contents = web_contents();
   DCHECK(contents);
   auto* metrics = WebAppMetrics::Get(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   DCHECK(metrics);
-  metrics->NotifyInstallableWebAppStatusUpdated(contents);
+  metrics->NotifyInstallableWebAppStatusUpdated(contents, result, data);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper);

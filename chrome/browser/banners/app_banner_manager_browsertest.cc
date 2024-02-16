@@ -932,8 +932,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, ShowBanner) {
       std::nullopt);
   EXPECT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+            InstallableWebAppCheckResult::kYes_Promotable);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoServiceWorker) {
@@ -946,8 +946,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoServiceWorker) {
 
   EXPECT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+            InstallableWebAppCheckResult::kYes_Promotable);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoFetchHandler) {
@@ -961,8 +961,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoFetchHandler) {
   EXPECT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
-  EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+            InstallableWebAppCheckResult::kYes_Promotable);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PendingServiceWorker) {
@@ -977,8 +977,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PendingServiceWorker) {
   EXPECT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
-  EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+            InstallableWebAppCheckResult::kYes_Promotable);
 
   EXPECT_EQ(manager->GetAppName(), u"Manifest test app");
 }
@@ -1030,14 +1030,13 @@ class AppBannerInstallCriteriaTest
   void CheckBannerResult(AppBannerManagerTest* manager) {
     if (GetParam() == InstallableCriteriaType::kValidManifestWithIcons) {
       ASSERT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
-      EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-                AppBannerManager::InstallableWebAppCheckResult::kNo);
+      EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+                InstallableWebAppCheckResult::kNo);
     } else {  // InstallableCriteriaType::kImplicitManifestFields
       ASSERT_EQ(manager->state(),
                 AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-      EXPECT_EQ(
-          manager->GetInstallableWebAppCheckResultForTesting(),
-          AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+      EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+                InstallableWebAppCheckResult::kYes_Promotable);
     }
   }
 
@@ -1053,8 +1052,8 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest, ValidManifestShowBanner) {
       std::nullopt);
   EXPECT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
-  EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
+            InstallableWebAppCheckResult::kYes_Promotable);
 }
 
 IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest, ImplicitName) {

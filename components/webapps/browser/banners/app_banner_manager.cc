@@ -25,6 +25,8 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -262,11 +264,6 @@ bool AppBannerManager::TriggeringDisabledForTesting() const {
 
 bool AppBannerManager::IsPromptAvailableForTesting() const {
   return receiver_.is_bound();
-}
-
-AppBannerManager::InstallableWebAppCheckResult
-AppBannerManager::GetInstallableWebAppCheckResultForTesting() {
-  return installable_web_app_check_result_;
 }
 
 AppBannerManager::AppBannerManager(content::WebContents* web_contents)
@@ -531,9 +528,9 @@ void AppBannerManager::ResetCurrentPageData() {
   manifest_id_ = GURL();
   manifest_url_ = GURL();
   validated_url_ = GURL();
+  screenshots_.clear();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
-  screenshots_.clear();
 }
 
 void AppBannerManager::Terminate() {
@@ -583,16 +580,20 @@ InstallableStatusCode AppBannerManager::TerminationCode() const {
 
 void AppBannerManager::SetInstallableWebAppCheckResult(
     InstallableWebAppCheckResult result) {
-  if (installable_web_app_check_result_ == result)
+  if (installable_web_app_check_result_ == result) {
     return;
+  }
 
   installable_web_app_check_result_ = result;
+  std::optional<WebAppBannerData> web_app_data = GetCurrentWebAppBannerData();
 
   switch (result) {
     case InstallableWebAppCheckResult::kUnknown:
+      CHECK(!web_app_data.has_value());
       break;
     case InstallableWebAppCheckResult::kYes_Promotable:
-      last_promotable_web_app_scope_ = manifest().scope;
+      CHECK(web_app_data.has_value());
+      last_promotable_web_app_scope_ = web_app_data->manifest().scope;
       DCHECK(!last_promotable_web_app_scope_.is_empty());
       last_already_installed_web_app_scope_ = GURL();
       install_animation_pending_ =
@@ -600,7 +601,8 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
               web_contents(), last_promotable_web_app_scope_);
       break;
     case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
-      last_already_installed_web_app_scope_ = manifest().scope;
+      CHECK(web_app_data.has_value());
+      last_already_installed_web_app_scope_ = web_app_data->manifest().scope;
       DCHECK(!last_already_installed_web_app_scope_.is_empty());
       last_promotable_web_app_scope_ = GURL();
       install_animation_pending_ = false;
@@ -613,8 +615,9 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
       break;
   }
 
-  for (Observer& observer : observer_list_)
-    observer.OnInstallableWebAppStatusUpdated();
+  for (Observer& observer : observer_list_) {
+    observer.OnInstallableWebAppStatusUpdated(result, web_app_data);
+  }
 }
 
 void AppBannerManager::RecheckInstallabilityForLoadedPage() {
@@ -833,6 +836,26 @@ std::string AppBannerManager::GetInstallableWebAppManifestId(
       return manager->manifest_id_.spec();
   }
 }
+
+InstallableWebAppCheckResult
+AppBannerManager::GetInstallableWebAppCheckResult() {
+  return installable_web_app_check_result_;
+}
+
+std::optional<WebAppBannerData> AppBannerManager::GetCurrentWebAppBannerData()
+    const {
+  if (!manifest_id_.is_valid()) {
+    return std::nullopt;
+  }
+  WebAppBannerData data = WebAppBannerData(manifest_id_, *manifest_,
+                                           *web_page_metadata_, manifest_url_);
+  data.primary_icon_url = primary_icon_url_;
+  data.primary_icon = primary_icon_;
+  data.has_maskable_primary_icon = has_maskable_primary_icon_;
+  data.screenshots = screenshots_;
+  return data;
+}
+
 bool AppBannerManager::IsProbablyPromotableWebApp(
     bool ignore_existing_installations) const {
   bool in_promotable_scope =

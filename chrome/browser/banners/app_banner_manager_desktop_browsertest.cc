@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT_NOT_CANCELED, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
-            manager->GetInstallableWebAppCheckResultForTesting());
+  EXPECT_EQ(InstallableWebAppCheckResult::kYes_Promotable,
+            manager->GetInstallableWebAppCheckResult());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
@@ -364,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT_NOT_CANCELED, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
-            manager->GetInstallableWebAppCheckResultForTesting());
+  EXPECT_EQ(InstallableWebAppCheckResult::kYes_Promotable,
+            manager->GetInstallableWebAppCheckResult());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
@@ -464,8 +464,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT_NOT_CANCELED, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
-            manager->GetInstallableWebAppCheckResultForTesting());
+  EXPECT_EQ(InstallableWebAppCheckResult::kYes_Promotable,
+            manager->GetInstallableWebAppCheckResult());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
@@ -498,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTestForPasswordManagerPage,
     run_loop.Run();
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
-            manager->GetInstallableWebAppCheckResultForTesting());
+  EXPECT_EQ(InstallableWebAppCheckResult::kYes_Promotable,
+            manager->GetInstallableWebAppCheckResult());
 }
 
 }  // namespace webapps

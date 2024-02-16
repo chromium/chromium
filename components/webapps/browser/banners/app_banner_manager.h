@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_BANNERS_APP_BANNER_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,9 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/browser/pwa_install_path_tracker.h"
@@ -63,7 +67,9 @@ class AppBannerManager : public content::WebContentsObserver,
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnInstallableWebAppStatusUpdated() = 0;
+    virtual void OnInstallableWebAppStatusUpdated(
+        InstallableWebAppCheckResult result,
+        const std::optional<WebAppBannerData>& data) = 0;
   };
 
   // A StatusReporter handles the reporting of |InstallableStatusCode|s.
@@ -114,16 +120,6 @@ class AppBannerManager : public content::WebContentsObserver,
     COMPLETE,
   };
 
-  // Installable describes to what degree a site satisifes the installablity
-  // requirements.
-  enum class InstallableWebAppCheckResult {
-    kUnknown,
-    kNo,
-    kNo_AlreadyInstalled,
-    kYes_ByUserRequest,
-    kYes_Promotable,
-  };
-
   // Retrieves the platform specific instance of AppBannerManager from
   // |web_contents|.
   static AppBannerManager* FromWebContents(content::WebContents* web_contents);
@@ -148,6 +144,13 @@ class AppBannerManager : public content::WebContentsObserver,
 
   static std::string GetInstallableWebAppManifestId(
       content::WebContents* web_contents);
+
+  InstallableWebAppCheckResult GetInstallableWebAppCheckResult();
+
+  // Constructs and returns data about the web app on this page. Returns a
+  // std::nullopt if it doesn't exist. This is not guaranteed to have all data,
+  // please use the observer to wait.
+  std::optional<WebAppBannerData> GetCurrentWebAppBannerData() const;
 
   // Returns whether installability checks satisfy promotion requirements
   // (e.g. having a service worker fetch event) or have passed previously within
@@ -209,8 +212,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Returns whether the site can call "event.prompt()" to prompt the user to
   // install the site.
   bool IsPromptAvailableForTesting() const;
-
-  InstallableWebAppCheckResult GetInstallableWebAppCheckResultForTesting();
 
   // Return the name of the app for this page.
   virtual std::u16string GetAppName() const;

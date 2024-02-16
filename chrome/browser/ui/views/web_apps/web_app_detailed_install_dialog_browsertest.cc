@@ -82,7 +82,7 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
             [&](bool result, std::unique_ptr<WebAppInstallInfo>) {
               dialog_accepted_ = result;
             }),
-        screenshots, PwaInProductHelpState::kNotShown);
+        std::move(screenshots), PwaInProductHelpState::kNotShown);
   }
   std::optional<bool> dialog_accepted() { return dialog_accepted_; }
 

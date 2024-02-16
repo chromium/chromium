@@ -27,6 +27,7 @@ source_set("browser") {
     "banners/app_banner_settings_helper.h",
     "banners/install_banner_config.cc",
     "banners/install_banner_config.h",
+    "banners/installable_web_app_check_result.h",
     "banners/native_app_banner_data.cc",
     "banners/native_app_banner_data.h",
     "banners/web_app_banner_data.cc",

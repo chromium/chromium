@@ -4811,7 +4811,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
 
     // If PWA is already loaded, call callback immediately.
     Installable installable =
-        app_banner_manager_->GetInstallableWebAppCheckResultForTesting();
+        app_banner_manager_->GetInstallableWebAppCheckResult();
     if (installable == Installable::kYes_Promotable ||
         installable == Installable::kYes_ByUserRequest) {
       observation_.Reset();
@@ -4824,10 +4824,10 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
 
   ~PWABannerObserver() override {}
 
-  void OnInstallableWebAppStatusUpdated() override {
-    Installable installable =
-        app_banner_manager_->GetInstallableWebAppCheckResultForTesting();
-    switch (installable) {
+  void OnInstallableWebAppStatusUpdated(
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data) override {
+    switch (result) {
       case Installable::kNo:
         [[fallthrough]];
       case Installable::kNo_AlreadyInstalled:
@@ -4847,7 +4847,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
   }
 
  private:
-  using Installable = webapps::AppBannerManager::InstallableWebAppCheckResult;
+  using Installable = webapps::InstallableWebAppCheckResult;
 
   base::ScopedObservation<webapps::AppBannerManager,
                           webapps::AppBannerManager::Observer>

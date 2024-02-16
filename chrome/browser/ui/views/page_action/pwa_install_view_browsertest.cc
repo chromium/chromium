@@ -345,10 +345,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());
 
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
@@ -369,10 +367,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   OpenTabResult result = OpenTab(GetNestedInstallableAppURL());
 
   // The nested PWA should now not be installable.
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
@@ -393,9 +389,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());
 
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kYes_Promotable);
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 }
 
@@ -594,10 +589,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   OpenTabResult result = OpenTab(app_url);
 
   // Validate that state is set to already installed.
-  EXPECT_EQ(
-      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNo_AlreadyInstalled);
+  EXPECT_EQ(result.app_banner_manager->GetInstallableWebAppCheckResult(),
+            webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 
   // Uninstall app and wait for completion.

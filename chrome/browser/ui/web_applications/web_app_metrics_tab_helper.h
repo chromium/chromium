@@ -5,10 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_TAB_HELPER_H_
 
+#include <optional>
+
 #include "base/scoped_observation.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace webapps {
+enum class InstallableWebAppCheckResult;
+struct WebAppBannerData;
+}  // namespace webapps
 
 namespace web_app {
 
@@ -32,7 +39,9 @@ class WebAppMetricsTabHelper
   void WebContentsDestroyed() override;
 
   // webapps::AppBannerManager::Observer:
-  void OnInstallableWebAppStatusUpdated() override;
+  void OnInstallableWebAppStatusUpdated(
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data) override;
 
   base::ScopedObservation<webapps::AppBannerManager,
                           webapps::AppBannerManager::Observer>

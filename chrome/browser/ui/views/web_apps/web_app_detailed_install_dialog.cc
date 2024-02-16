@@ -169,10 +169,9 @@ class ImageCarouselView : public views::View {
   METADATA_HEADER(ImageCarouselView, views::View)
 
  public:
-  explicit ImageCarouselView(
-      const std::vector<webapps::Screenshot>& screenshots)
-      : screenshots_(screenshots) {
-    DCHECK(screenshots.size());
+  explicit ImageCarouselView(std::vector<webapps::Screenshot> screenshots)
+      : screenshots_(std::move(screenshots)) {
+    DCHECK(screenshots_.size());
 
     // Use a fill layout to draw the buttons container on
     // top of the image carousel.
@@ -181,9 +180,9 @@ class ImageCarouselView : public views::View {
     // Screenshots are sanitized by `InstallableManager::OnScreenshotFetched`
     // and should all have the same aspect ratio.
 #if DCHECK_IS_ON()
-    for (const auto& screenshot : screenshots) {
-      DCHECK(screenshot.image.width() * (*screenshots_)[0].image.height() ==
-             screenshot.image.height() * (*screenshots_)[0].image.width());
+    for (const auto& screenshot : screenshots_) {
+      DCHECK(screenshot.image.width() * screenshots_[0].image.height() ==
+             screenshot.image.height() * screenshots_[0].image.width());
     }
 #endif
 
@@ -195,7 +194,7 @@ class ImageCarouselView : public views::View {
         std::make_unique<views::BoxLayoutView>());
     image_inner_container_->SetBetweenChildSpacing(image_padding_);
 
-    for (size_t i = 0; i < screenshots_->size(); i++) {
+    for (size_t i = 0; i < screenshots_.size(); i++) {
       image_views_.push_back(image_inner_container_->AddChildView(
           std::make_unique<views::ImageView>()));
     }
@@ -240,12 +239,12 @@ class ImageCarouselView : public views::View {
     float current_scale =
         screen->GetDisplayNearestView(GetWidget()->GetNativeView())
             .device_scale_factor();
-    for (size_t i = 0; i < screenshots_->size(); i++) {
+    for (size_t i = 0; i < screenshots_.size(); i++) {
       image_views_[i]->SetImage(
           ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
-              (*screenshots_)[i].image, current_scale)));
-      if ((*screenshots_)[i].label) {
-        image_views_[i]->SetAccessibleName((*screenshots_)[i].label.value());
+              screenshots_[i].image, current_scale)));
+      if (screenshots_[i].label) {
+        image_views_[i]->SetAccessibleName(screenshots_[i].label.value());
       }
     }
   }
@@ -262,11 +261,11 @@ class ImageCarouselView : public views::View {
     // container width & max screenshot ratio, the visibility is later updated
     // by `OnScrollButtonClicked` based on image carousel animation.
     if (!trailing_button_visibility_set_up_) {
-      for (size_t i = 0; i < screenshots_->size(); i++) {
+      for (size_t i = 0; i < screenshots_.size(); i++) {
         const int item_width =
-            base::checked_cast<int>((*screenshots_)[i].image.width() *
+            base::checked_cast<int>(screenshots_[i].image.width() *
                                     (base::checked_cast<float>(fixed_height) /
-                                     (*screenshots_)[i].image.height()));
+                                     screenshots_[i].image.height()));
         image_views_[i]->SetImageSize({item_width, fixed_height});
       }
       image_carousel_full_width_ =
@@ -317,7 +316,7 @@ class ImageCarouselView : public views::View {
         gfx::Rect(x, bounds.y(), bounds.width(), bounds.height()));
   }
 
-  const raw_ref<const std::vector<webapps::Screenshot>> screenshots_;
+  std::vector<webapps::Screenshot> screenshots_;
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
   raw_ptr<views::View> image_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> image_inner_container_ = nullptr;
@@ -351,7 +350,7 @@ void ShowWebAppDetailedInstallDialog(
     std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
-    const std::vector<webapps::Screenshot>& screenshots,
+    std::vector<webapps::Screenshot> screenshots,
     PwaInProductHelpState iph_state) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   PrefService* const prefs =

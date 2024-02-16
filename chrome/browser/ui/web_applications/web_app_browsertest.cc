@@ -26,6 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -1147,6 +1148,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
 
   base::Time before_install_time = base::Time::Now();
   NavigateViaLinkClickToURLAndWait(browser(), GetUrlWithScreenshots());
+
+  // Wait until the screenshots are in the app banner manager.
+  webapps::AppBannerManager* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::optional<webapps::WebAppBannerData> banner_data =
+        app_banner_manager->GetCurrentWebAppBannerData();
+    return banner_data.has_value() && !banner_data->screenshots.empty();
+  })) << "Screenshots were never loaded for current tab.";
 
   // Wait for the detailed install dialog to show up post install, and accept
   // it.

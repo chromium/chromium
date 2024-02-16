@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -126,6 +127,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     PwaInProductHelpState iph_state,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    std::vector<webapps::Screenshot> screenshots,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -145,15 +147,11 @@ void OnWebAppInstallShowInstallDialog(
                 .SetAppId(app_id)));
       }
 #endif
-      if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
-              ->screenshots()
-              .size()) {
+      if (!screenshots.empty()) {
         ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
-            webapps::AppBannerManager::FromWebContents(initiator_web_contents)
-                ->screenshots(),
-            iph_state);
+            std::move(screenshots), iph_state);
         return;
       } else {
         ShowPWAInstallBubble(initiator_web_contents, std::move(web_app_info),
@@ -244,6 +242,15 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
     return;
   }
 
+  webapps::AppBannerManager* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(web_contents);
+  if (!app_banner_manager) {
+    return;
+  }
+
+  std::optional<webapps::WebAppBannerData> data =
+      app_banner_manager->GetCurrentWebAppBannerData();
+
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(
           web_contents, flow == WebAppInstallFlow::kCreateShortcut
@@ -276,7 +283,9 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      PwaInProductHelpState::kNotShown,
-                     std::move(install_tracker)),
+                     std::move(install_tracker),
+                     data.has_value() ? std::move(data->screenshots)
+                                      : std::vector<webapps::Screenshot>()),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
       /*use_fallback=*/true);
 }
@@ -298,6 +307,15 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return false;
   }
+
+  webapps::AppBannerManager* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(web_contents);
+  if (!app_banner_manager) {
+    return false;
+  }
+
+  std::optional<webapps::WebAppBannerData> data =
+      app_banner_manager->GetCurrentWebAppBannerData();
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       promoter->RegisterCurrentInstallForWebContents(install_source);
@@ -328,7 +346,9 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite, install_source, iph_state,
-                     std::move(install_tracker)),
+                     std::move(install_tracker),
+                     data.has_value() ? std::move(data->screenshots)
+                                      : std::vector<webapps::Screenshot>()),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
       /*use_fallback=*/use_fallback);
   return true;

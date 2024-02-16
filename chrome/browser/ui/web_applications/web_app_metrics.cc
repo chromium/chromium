@@ -43,6 +43,8 @@
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
@@ -308,7 +310,9 @@ void WebAppMetrics::NotifyOnAssociatedAppChanged(
 }
 
 void WebAppMetrics::NotifyInstallableWebAppStatusUpdated(
-    WebContents* web_contents) {
+    WebContents* web_contents,
+    webapps::InstallableWebAppCheckResult result,
+    const std::optional<webapps::WebAppBannerData>& data) {
   DCHECK(web_contents);
   // Skip recording if app isn't in the foreground.
   if (web_contents != foreground_web_contents_)
@@ -319,10 +323,13 @@ void WebAppMetrics::NotifyInstallableWebAppStatusUpdated(
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(foreground_web_contents_);
   DCHECK(app_banner_manager);
-  if (!app_banner_manager->GetManifestStartUrl().is_valid())
+  if (!data) {
     return;
-  if (app_banner_manager->GetManifestStartUrl() ==
-      last_recorded_web_app_start_url_) {
+  }
+  if (!data->manifest().start_url.is_valid()) {
+    return;
+  }
+  if (data->manifest().start_url == last_recorded_web_app_start_url_) {
     return;
   }
 
@@ -371,6 +378,11 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   if (!provider)
     return;
   DailyInteraction features;
+
+  webapps::InstallableWebAppCheckResult installable =
+      app_banner_manager->GetInstallableWebAppCheckResult();
+  std::optional<webapps::WebAppBannerData> banner_data =
+      app_banner_manager->GetCurrentWebAppBannerData();
 
   const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
   if (app_id && provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
@@ -432,12 +444,15 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
               HasLaunchedAppBeforeExperiment(*app_id, profile_->GetPrefs());
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  } else if (app_banner_manager->IsPromotableWebApp()) {
+  } else if (banner_data &&
+             installable ==
+                 webapps::InstallableWebAppCheckResult::kYes_Promotable) {
     // App is not installed, but is promotable. Record a subset of features.
-    features.start_url = app_banner_manager->GetManifestStartUrl();
+    features.start_url = banner_data->manifest().start_url;
     DCHECK(features.start_url.is_valid());
     features.installed = false;
-    DisplayMode display_mode = app_banner_manager->GetManifestDisplayMode();
+    // TODO(dmurph): Consider display override here too.
+    DisplayMode display_mode = banner_data->manifest().display;
     features.effective_display_mode = static_cast<int>(display_mode);
     features.promotable = true;
   } else {

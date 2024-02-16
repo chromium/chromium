@@ -218,6 +218,8 @@
 #include "components/version_info/channel.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/permission_controller.h"
@@ -5356,7 +5358,9 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, webapps::AppBannerManager::Observer implementation:
-void BrowserView::OnInstallableWebAppStatusUpdated() {
+void BrowserView::OnInstallableWebAppStatusUpdated(
+    webapps::InstallableWebAppCheckResult result,
+    const std::optional<webapps::WebAppBannerData>& data) {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
 

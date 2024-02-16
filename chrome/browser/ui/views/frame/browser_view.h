@@ -105,6 +105,11 @@ class ExternalFocusTracker;
 class WebView;
 }
 
+namespace webapps {
+enum class InstallableWebAppCheckResult;
+struct WebAppBannerData;
+}  // namespace webapps
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -764,7 +769,9 @@ class BrowserView : public BrowserWindow,
   void OnImmersiveModeControllerDestroyed() override;
 
   // webapps::AppBannerManager::Observer:
-  void OnInstallableWebAppStatusUpdated() override;
+  void OnInstallableWebAppStatusUpdated(
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data) override;
 
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of

@@ -36,6 +36,11 @@ namespace site_engagement {
 enum class EngagementType;
 }  // namespace site_engagement
 
+namespace webapps {
+enum class InstallableWebAppCheckResult;
+struct WebAppBannerData;
+}  // namespace webapps
+
 namespace web_app {
 
 // A per-profile keyed service, responsible for all Web Applications-related
@@ -84,7 +89,10 @@ class WebAppMetrics : public KeyedService,
 
   // Notify WebAppMetrics that an installability check has been completed for
   // a WebContents (see AppBannerManager::OnInstallableWebAppStatusUpdated).
-  void NotifyInstallableWebAppStatusUpdated(content::WebContents* web_contents);
+  void NotifyInstallableWebAppStatusUpdated(
+      content::WebContents* web_contents,
+      webapps::InstallableWebAppCheckResult result,
+      const std::optional<webapps::WebAppBannerData>& data);
   // Notify WebAppMetrics that a WebContents is being destroyed.
   void NotifyWebContentsDestroyed(content::WebContents* web_contents);
 
