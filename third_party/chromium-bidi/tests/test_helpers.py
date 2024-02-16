@@ -293,3 +293,18 @@ def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
 
     with open(output_file, 'wb') as f:
         f.write(pdf_bytes)
+
+
+async def create_request_via_fetch(websocket, context_id: str,
+                                   url: str) -> int:
+    return await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"fetch('{url}')",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False
+            }
+        })

@@ -24,8 +24,9 @@ import type {Protocol} from 'devtools-protocol';
 import {
   InvalidArgumentException,
   UnsupportedOperationException,
-} from '../../../protocol/ErrorResponse';
+} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
+import {URLPattern} from '../../../utils/UrlPattern.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
   const requestHeaders = headers.reduce((acc, header) => {
@@ -222,7 +223,7 @@ function sameSiteCdpToBiDi(
   }
 }
 
-function sameSiteBiDiToCdp(
+export function sameSiteBiDiToCdp(
   sameSite: Network.SameSite
 ): Protocol.Network.CookieSameSite {
   switch (sameSite) {
@@ -234,4 +235,100 @@ function sameSiteBiDiToCdp(
       return 'None';
   }
   throw new InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
+}
+
+export function buildUrlPatternString({
+  protocol,
+  hostname,
+  port,
+  pathname,
+  search,
+}: Network.UrlPatternPattern): string {
+  if (!protocol && !hostname && !port && !pathname && !search) {
+    return '*';
+  }
+
+  let url: string = '';
+
+  if (protocol) {
+    url += protocol;
+
+    if (!protocol.endsWith(':')) {
+      url += ':';
+    }
+
+    if (isSpecialScheme(protocol)) {
+      url += '//';
+    }
+  }
+
+  if (hostname) {
+    url += hostname;
+  }
+
+  if (port) {
+    url += `:${port}`;
+  }
+
+  if (pathname) {
+    if (!pathname.startsWith('/')) {
+      url += '/';
+    }
+
+    url += pathname;
+  }
+
+  if (search) {
+    if (!search.startsWith('?')) {
+      url += '?';
+    }
+
+    url += search;
+  }
+
+  return url;
+}
+/**
+ * Returns true if the given protocol is special.
+ * Special protocols are those that have a default port.
+ *
+ * Example inputs: 'http', 'http:'
+ *
+ * @see https://url.spec.whatwg.org/#special-scheme
+ */
+export function isSpecialScheme(protocol: string): boolean {
+  return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(
+    protocol.replace(/:$/, '')
+  );
+}
+/** Matches the given URLPattern against the given URL. */
+export function matchUrlPattern(
+  urlPattern: Network.UrlPattern,
+  url: string | undefined
+): boolean {
+  switch (urlPattern.type) {
+    case 'string':
+      return urlPattern.pattern === url;
+    case 'pattern': {
+      return (
+        new URLPattern({
+          protocol: urlPattern.protocol,
+          hostname: urlPattern.hostname,
+          port: urlPattern.port,
+          pathname: urlPattern.pathname,
+          search: urlPattern.search,
+        }).exec(url) !== null
+      );
+    }
+  }
+}
+
+/** Converts a URL pattern from the spec to a CDP URL pattern. */
+export function cdpFromSpecUrlPattern(urlPattern: Network.UrlPattern): string {
+  switch (urlPattern.type) {
+    case 'string':
+      return urlPattern.pattern;
+    case 'pattern':
+      return buildUrlPatternString(urlPattern);
+  }
 }

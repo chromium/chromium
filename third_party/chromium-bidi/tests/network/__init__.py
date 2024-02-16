@@ -14,11 +14,11 @@
 #  limitations under the License.
 from typing import Literal
 
-from test_helpers import (execute_command, send_JSON_command, subscribe,
+from test_helpers import (create_request_via_fetch, execute_command, subscribe,
                           wait_for_event)
 
 
-async def create_blocked_request(websocket, context_id: str, *, url: str,
+async def create_blocked_request(websocket, context_id: str, url: str,
                                  phase: Literal["beforeRequestSent",
                                                 "responseStarted",
                                                 "authRequired"]):
@@ -26,7 +26,7 @@ async def create_blocked_request(websocket, context_id: str, *, url: str,
 
     event = f"network.{phase}"
 
-    await subscribe(websocket, [event])
+    await subscribe(websocket, [event], context_ids=[context_id])
 
     await execute_command(
         websocket, {
@@ -40,17 +40,7 @@ async def create_blocked_request(websocket, context_id: str, *, url: str,
             },
         })
 
-    await send_JSON_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": f"fetch('{url}')",
-                "target": {
-                    "context": context_id,
-                },
-                "awaitPromise": False
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, url)
 
     event_response = await wait_for_event(websocket, event)
     network_id = event_response["params"]["request"]["request"]

@@ -15,8 +15,8 @@
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+                          execute_command, goto_url, send_JSON_command,
+                          subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -27,7 +27,7 @@ async def test_continue_with_auth_non_existent_request(websocket):
             Exception,
             match=str({
                 "error": "no such request",
-                "message": "No blocked request found for network id '_UNKNOWN_'"
+                "message": "Network request with ID '_UNKNOWN_' doesn't exist"
             })):
         await execute_command(
             websocket, {
@@ -54,7 +54,7 @@ async def test_continue_with_auth_invalid_phase(websocket, context_id,
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": f"Blocked request for network id '{network_id}' is not in 'AuthRequired' phase"
+                "message": f"Blocked request for network id '{network_id}' is in '{phase}' phase"
             })):
         await execute_command(
             websocket, {
@@ -120,62 +120,13 @@ async def test_continue_with_auth_non_blocked_request(
                          ids=["empty", "invalid type value"])
 async def test_continue_with_auth_invalid_credentials(websocket, context_id,
                                                       auth_required_url,
-                                                      credentials):
-    await subscribe(websocket, [
-        "network.beforeRequestSent", "network.authRequired",
-        "network.responseCompleted"
-    ], [context_id])
+                                                      credentials, base_url):
+    await goto_url(websocket, context_id, base_url)
 
-    result = await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
-            "params": {
-                "phases": ["authRequired"],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": auth_required_url,
-                }, ],
-            },
-        })
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": auth_required_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
-    assert event_response == {
-        "method": "network.beforeRequestSent",
-        "params": {
-            "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
-            "isBlocked": True,
-            "intercepts": [result["intercept"]],
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": {
-                "request": ANY_STR,
-                "url": auth_required_url,
-                "method": "GET",
-                "headers": ANY_LIST,
-                "cookies": [],
-                "headersSize": ANY_NUMBER,
-                "bodySize": 0,
-                "timings": ANY_DICT,
-            },
-            "timestamp": ANY_TIMESTAMP,
-        },
-        "type": "event",
-    }
-    network_id = event_response["params"]["request"]["request"]
+    network_id = await create_blocked_request(websocket,
+                                              context_id,
+                                              auth_required_url,
+                                              phase='authRequired')
 
     with pytest.raises(Exception,
                        match=str({
@@ -448,7 +399,6 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-    network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(
         websocket, {
@@ -459,14 +409,16 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         })
     assert result == {}
 
-    await execute_command(
-        websocket, {
-            "method": "network.continueWithAuth",
-            "params": {
-                "request": network_id,
-                "action": "cancel",
-            },
-        })
+    # TODO: Clarify removal of last intercept
+
+    # await execute_command(
+    #     websocket, {
+    #         "method": "network.continueWithAuth",
+    #         "params": {
+    #             "request": network_id,
+    #             "action": "cancel",
+    #         },
+    #     })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")

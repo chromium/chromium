@@ -23,7 +23,6 @@ import {Deferred} from '../../../utils/Deferred.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
 import {LogManager} from '../log/LogManager.js';
-import {NetworkManager} from '../network/NetworkManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {ChannelProxy} from '../script/ChannelProxy.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
@@ -37,11 +36,11 @@ export class CdpTarget {
   readonly #eventManager: EventManager;
 
   readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #networkStorage: NetworkStorage;
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #acceptInsecureCerts: boolean;
   #networkDomainEnabled = false;
+  #fetchDomainEnabled = false;
 
   static create(
     targetId: Protocol.Target.TargetID,
@@ -60,12 +59,10 @@ export class CdpTarget {
       browserCdpClient,
       eventManager,
       preloadScriptStorage,
-      networkStorage,
       acceptInsecureCerts
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
-    NetworkManager.create(cdpTarget, eventManager, networkStorage);
 
     cdpTarget.#setEventListeners();
 
@@ -82,14 +79,12 @@ export class CdpTarget {
     browserCdpClient: CdpClient,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
-    networkStorage: NetworkStorage,
     acceptInsecureCerts: boolean
   ) {
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
-    this.#networkStorage = networkStorage;
     this.#browserCdpClient = browserCdpClient;
     this.#acceptInsecureCerts = acceptInsecureCerts;
   }
@@ -115,19 +110,6 @@ export class CdpTarget {
   get cdpSessionId(): Protocol.Target.SessionID {
     // SAFETY we got the client by it's id for creating
     return this.#cdpClient.sessionId!;
-  }
-
-  /** Calls `Fetch.enable` with the added network intercepts. */
-  async fetchEnable() {
-    await this.#cdpClient.sendCommand(
-      'Fetch.enable',
-      this.#networkStorage.getFetchEnableParams()
-    );
-  }
-
-  /** Calls `Fetch.disable`. */
-  async fetchDisable() {
-    await this.#cdpClient.sendCommand('Fetch.disable');
   }
 
   /**
@@ -156,8 +138,6 @@ export class CdpTarget {
         enabledNetwork
           ? this.#cdpClient.sendCommand('Network.enable')
           : undefined,
-        // XXX: #1080: Do not always enable the fetch domain globally.
-        this.fetchEnable(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -181,6 +161,32 @@ export class CdpTarget {
       kind: 'success',
       value: undefined,
     });
+  }
+
+  async enableFetchIfNeeded(params: Protocol.Fetch.EnableRequest) {
+    if (!this.#networkDomainEnabled || this.#fetchDomainEnabled) {
+      return;
+    }
+
+    this.#fetchDomainEnabled = true;
+    try {
+      await this.#cdpClient.sendCommand('Fetch.enable', params);
+    } catch (err) {
+      this.#fetchDomainEnabled = false;
+    }
+  }
+
+  async disableFetchIfNeeded() {
+    if (!this.#fetchDomainEnabled) {
+      return;
+    }
+
+    this.#fetchDomainEnabled = false;
+    try {
+      await this.#cdpClient.sendCommand('Fetch.disable');
+    } catch (err) {
+      this.#fetchDomainEnabled = true;
+    }
   }
 
   async toggleNetworkIfNeeded(enabled: boolean): Promise<void> {

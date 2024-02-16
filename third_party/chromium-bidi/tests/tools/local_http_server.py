@@ -29,6 +29,7 @@ class LocalHttpServer:
 
     __start_time: datetime
 
+    __path_base = "/"
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
@@ -42,6 +43,12 @@ class LocalHttpServer:
         self.__http_server = http_server
 
         self.__start_time = datetime.now()
+
+        self.__http_server \
+            .expect_request(self.__path_base) \
+            .respond_with_data(
+                "<html><body>I prevent CORS</body></html>",
+                headers={"Content-Type": "text/html"})
 
         # Set up 200 page.
         self.__http_server \
@@ -134,6 +141,11 @@ class LocalHttpServer:
 
         return "{}://{}:{}{}".format(protocol, host, self.__http_server.port,
                                      suffix)
+
+    def url_base(self, host='localhost') -> str:
+        """Returns the url for the base page to navigate and prevent CORS.
+        """
+        return self._url_for(self.__path_base, host)
 
     def url_200(self, host='localhost') -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.

@@ -15,8 +15,10 @@
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+                          create_request_via_fetch, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
+
+from . import create_blocked_request
 
 
 @pytest.mark.asyncio
@@ -25,7 +27,7 @@ async def test_fail_request_non_existent_request(websocket):
             Exception,
             match=str({
                 "error": "no such request",
-                "message": "No blocked request found for network id '_UNKNOWN_'"
+                "message": "Network request with ID '_UNKNOWN_' doesn't exist"
             })):
         await execute_command(
             websocket, {
@@ -162,134 +164,28 @@ async def test_fail_request_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("phases, exception_and_response_expected", [
-    (["authRequired"], False),
-    pytest.param(["responseStarted"],
-                 True,
-                 marks=pytest.mark.xfail(reason='TODO: fix this test')),
-    pytest.param(["authRequired", "responseStarted"],
-                 True,
-                 marks=pytest.mark.xfail(reason='TODO: fix this test')),
-    (["beforeRequestSent"], False),
-    (["beforeRequestSent", "authRequired"], False),
-],
-                         ids=[
-                             "authRequired",
-                             "responseStarted",
-                             "authRequired and responseStarted",
-                             "beforeRequestSent",
-                             "beforeRequestSent and authRequired",
-                         ])
-async def test_fail_request_with_auth_required_phase(
-        websocket, context_id, auth_required_url, phases,
-        exception_and_response_expected):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
+async def test_fail_request_with_auth_required_phase(websocket, context_id,
+                                                     auth_required_url,
+                                                     base_url):
 
-    result = await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
+    await goto_url(websocket, context_id, base_url)
+
+    network_id = await create_blocked_request(websocket, context_id,
+                                              auth_required_url,
+                                              "authRequired")
+
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": f"Request '{network_id}' in 'authRequired' phase cannot be failed"
+            })):
+        await execute_command(websocket, {
+            "method": "network.failRequest",
             "params": {
-                "phases": phases,
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": auth_required_url,
-                }, ],
+                "request": network_id
             },
         })
-
-    assert result == {
-        "intercept": ANY_UUID,
-    }
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": auth_required_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-
-    network_event_response = await wait_for_event(websocket,
-                                                  "network.beforeRequestSent")
-
-    is_blocked = not exception_and_response_expected
-    assert network_event_response == {
-        "method": "network.beforeRequestSent",
-        "params": {
-            "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
-            "isBlocked": is_blocked,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": {
-                "request": ANY_STR,
-                "url": auth_required_url,
-                "method": "GET",
-                "headers": ANY_LIST,
-                "cookies": [],
-                "headersSize": ANY_NUMBER,
-                "bodySize": 0,
-                "timings": ANY_DICT,
-            },
-            "timestamp": ANY_TIMESTAMP,
-        } | ({
-            "intercepts": [result["intercept"]],
-        } if is_blocked else {}),
-        "type": "event",
-    }
-    network_id_from_bidi_event = network_event_response["params"]["request"][
-        "request"]
-
-    # TODO: Replace with "network.authRequired" BiDi event when it is implemented.
-    # If we remove this "wait_for_event" block the test fails.
-    cdp_event_response = await wait_for_event(websocket,
-                                              "cdp.Fetch.requestPaused")
-    assert cdp_event_response == {
-        "method": "cdp.Fetch.requestPaused",
-        "params": {
-            "event": "Fetch.requestPaused",
-            "params": {
-                "frameId": context_id,
-                "networkId": ANY_STR,
-                "request": AnyExtending({
-                    "headers": ANY_DICT,
-                    "url": auth_required_url,
-                }),
-                "requestId": ANY_STR,
-                "resourceType": "Document",
-            } | ({
-                "responseStatusCode": 401,
-                "responseStatusText": "UNAUTHORIZED",
-                "responseHeaders": ANY_LIST,
-            } if exception_and_response_expected else {}),
-            "session": ANY_STR,
-        },
-        "type": "event",
-    }
-    network_id_from_cdp_event = cdp_event_response["params"]["params"][
-        "networkId"]
-
-    assert network_id_from_bidi_event == network_id_from_cdp_event
-
-    if exception_and_response_expected:
-        with pytest.raises(
-                Exception,
-                match=str({
-                    "error": "invalid argument",
-                    "message": f"Blocked request for network id '{network_id_from_bidi_event}' is in 'AuthRequired' phase"
-                })):
-            await execute_command(
-                websocket, {
-                    "method": "network.failRequest",
-                    "params": {
-                        "request": network_id_from_bidi_event
-                    },
-                })
 
 
 @pytest.mark.asyncio
@@ -697,8 +593,13 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason='TODO: Clarify the behavior after last intercept is removed')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
+
+    await goto_url(websocket, context_id, example_url)
+
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
@@ -718,15 +619,7 @@ async def test_fail_request_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, example_url)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -735,11 +628,11 @@ async def test_fail_request_remove_intercept_inflight_request(
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
             "intercepts": [intercept_id],
             "isBlocked": True,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,

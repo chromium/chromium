@@ -470,7 +470,7 @@ export class BrowsingContextProcessor {
   ) {
     this.#setEventListeners(targetCdpClient);
 
-    return CdpTarget.create(
+    const target = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
       this.#browserCdpClient,
@@ -481,6 +481,10 @@ export class BrowsingContextProcessor {
       this.#acceptInsecureCerts,
       this.#logger
     );
+
+    this.#networkStorage.onCdpTargetCreated(target);
+
+    return target;
   }
 
   #workers = new Map<string, Realm>();

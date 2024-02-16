@@ -170,6 +170,12 @@ def url_all_origins(request):
 
 
 @pytest.fixture
+def base_url(local_server: LocalHttpServer):
+    """Return a generic example URL with status code 200."""
+    return local_server.url_base()
+
+
+@pytest.fixture
 def example_url(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200."""
     return local_server.url_200()

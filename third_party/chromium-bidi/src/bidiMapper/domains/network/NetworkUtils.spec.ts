@@ -231,4 +231,225 @@ describe('NetworkUtils', () => {
       ]);
     });
   });
+
+  describe('cdpFromSpecUrlPattern', () => {
+    it('string type', () => {
+      expect(
+        networkUtils.cdpFromSpecUrlPattern({
+          type: 'string',
+          pattern: 'https://example.com',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com');
+    });
+
+    it('pattern type', () => {
+      expect(
+        networkUtils.cdpFromSpecUrlPattern({
+          type: 'pattern',
+          protocol: 'https',
+          hostname: 'example.com',
+          port: '80',
+          pathname: '/foo',
+          search: 'bar=baz',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com:80/foo?bar=baz');
+    });
+  });
+
+  describe('buildUrlPatternString', () => {
+    describe('protocol', () => {
+      it('empty', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: '',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('example.com:80');
+      });
+
+      it('without colon', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('with colon', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https:',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('port', () => {
+      it('empty', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com');
+      });
+
+      it('standard', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('pathname', () => {
+      it('empty', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without slash', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: 'foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+
+      it('with slash', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+    });
+
+    describe('search', () => {
+      it('empty', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without question mark', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: 'bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+
+      it('with question mark', () => {
+        expect(
+          networkUtils.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '?bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+    });
+
+    it('empty', () => {
+      expect(
+        networkUtils.buildUrlPatternString({
+          type: 'pattern',
+        } satisfies Network.UrlPatternPattern)
+      ).to.equal('*');
+    });
+  });
+
+  describe('isSpecialScheme', () => {
+    it('http', () => {
+      expect(networkUtils.isSpecialScheme('http')).to.be.true;
+    });
+
+    it('sftp', () => {
+      expect(networkUtils.isSpecialScheme('sftp')).to.be.false;
+    });
+  });
+
+  describe('matchUrlPattern', () => {
+    it('string type', () => {
+      expect(
+        networkUtils.matchUrlPattern(
+          {
+            type: 'string',
+            pattern: 'https://example.com',
+          } satisfies Network.UrlPattern,
+          'https://example.com'
+        )
+      ).to.be.true;
+    });
+
+    describe('pattern type', () => {
+      it('positive match', () => {
+        expect(
+          networkUtils.matchUrlPattern(
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'example.com',
+            } satisfies Network.UrlPattern,
+            'https://example.com/aa'
+          )
+        ).to.be.true;
+      });
+
+      it('negative match', () => {
+        expect(
+          networkUtils.matchUrlPattern(
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'example.com',
+            } satisfies Network.UrlPattern,
+            'https://example.org/aa'
+          )
+        ).to.be.false;
+      });
+    });
+  });
 });
