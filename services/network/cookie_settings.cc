@@ -161,9 +161,6 @@ void CookieSettings::set_content_settings(
           content_settings::features::kHostIndexedMetadataGrants)) {
     absl::get<EntryIndex>(content_settings_)[type] =
         content_settings::HostIndexedContentSettings::Create(settings);
-    if (type == ContentSettingsType::COOKIES) {
-      cookie_settings_ = settings;
-    }
   } else {
     absl::get<EntryMap>(content_settings_)[type] = settings;
   }
@@ -176,15 +173,11 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard()) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kHostIndexedMetadataGrants)) {
-        absl::get<EntryIndex>(content_settings_)[type].back().SetValue(
-            ContentSettingsPattern::Wildcard(),
-            ContentSettingsPattern::Wildcard(),
-            base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
-        cookie_settings_->emplace_back(ContentSettingsPattern::Wildcard(),
-                                       ContentSettingsPattern::Wildcard(),
-                                       base::Value(CONTENT_SETTING_ALLOW),
-                                       /*source=*/std::string(),
-                                       /*incognito=*/false);
+        auto& index =
+            absl::get<EntryIndex>(content_settings_)[type].emplace_back();
+        index.SetValue(ContentSettingsPattern::Wildcard(),
+                       ContentSettingsPattern::Wildcard(),
+                       base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
       } else {
         absl::get<EntryMap>(content_settings_)[type].emplace_back(
             ContentSettingsPattern::Wildcard(),
@@ -204,7 +197,21 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
   ContentSettingsForOneType settings;
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
-    settings = *cookie_settings_;
+    // TODO(b/316530672): Ideally, clear on exit would work with the index
+    // directly to benefit from faster lookup times instead of iterating over
+    // a vector of content settings.
+    for (const auto& index :
+         GetHostIndexedContentSettings(ContentSettingsType::COOKIES)) {
+      for (const auto& entry : index) {
+        // All settings can be assumed to not be from incognito mode because
+        // clear on exit is not relevant there. Incognito clears all cookies on
+        // exit anyways.
+        settings.emplace_back(entry.first.primary_pattern,
+                              entry.first.secondary_pattern,
+                              entry.second.value.Clone(), *index.source(),
+                              false, entry.second.metadata);
+      }
+    }
   } else {
     settings = GetContentSettings(ContentSettingsType::COOKIES);
   }

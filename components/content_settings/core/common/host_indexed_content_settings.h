@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_HOST_INDEXED_CONTENT_SETTINGS_H_
 
 #include <iterator>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -24,21 +25,22 @@ class HostIndexedContentSettings {
   typedef std::map<std::string, Rules, ContentSettingsPattern::CompareDomains>
       HostToContentSettings;
 
-  HostIndexedContentSettings();
-
   // Returns a vector of indices where each index contains entries from a
   // different |source|. This keeps the order of precedence of
-  // ContentSettingsProviders. Returns at least one index.
+  // ContentSettingsProviders.
   static std::vector<HostIndexedContentSettings> Create(
       const ContentSettingsForOneType& settings);
 
-  ~HostIndexedContentSettings();
+  HostIndexedContentSettings();
+  explicit HostIndexedContentSettings(std::string source);
+
   HostIndexedContentSettings(const HostIndexedContentSettings& other) = delete;
   HostIndexedContentSettings& operator=(const HostIndexedContentSettings&) =
       delete;
-
   HostIndexedContentSettings(HostIndexedContentSettings&& other);
   HostIndexedContentSettings& operator=(HostIndexedContentSettings&&);
+
+  ~HostIndexedContentSettings();
 
   struct Iterator {
     using iterator_category = std::input_iterator_tag;
@@ -92,7 +94,11 @@ class HostIndexedContentSettings {
   Iterator begin() const;
   Iterator end() const;
 
+  // Returns the number of entries in this index.
   size_t size() const;
+
+  // Returns the source of the entries within this index.
+  const std::optional<std::string>& source() const { return source_; }
 
   // Finds the RuleEntry with highest precedence that matches both the primary
   // and secondary urls or returns nullptr if no match is found. The pointer is
@@ -120,6 +126,7 @@ class HostIndexedContentSettings {
   HostToContentSettings primary_host_indexed_;
   HostToContentSettings secondary_host_indexed_;
   Rules wildcard_settings_;
+  std::optional<std::string> source_;
   mutable int iterating_ = 0;
 };
 

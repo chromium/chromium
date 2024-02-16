@@ -366,14 +366,17 @@ TEST_F(FindContentSettingTest, VectorOfIndices) {
   ContentSettingsForOneType expected_0 = {
       CreateSetting("https://example.com:*/*", "*", CONTENT_SETTING_BLOCK),
       CreateSetting("*", "*", CONTENT_SETTING_ALLOW)};
+  EXPECT_EQ(indices[0].source(), "policy");
   EXPECT_EQ(ToVector(indices[0]), expected_0);
 
   ContentSettingsForOneType expected_1 = {CreateSetting(
       "[*.]example.com", "[*.]example.com", CONTENT_SETTING_BLOCK)};
+  EXPECT_EQ(indices[1].source(), "pref");
   EXPECT_EQ(ToVector(indices[1]), expected_1);
 
   ContentSettingsForOneType expected_2 = {
       CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)};
+  EXPECT_EQ(indices[2].source(), "default");
   EXPECT_EQ(ToVector(indices[2]), expected_2);
 }
 

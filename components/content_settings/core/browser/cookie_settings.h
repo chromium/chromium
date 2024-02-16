@@ -158,10 +158,14 @@ class CookieSettings
       const ContentSettingsForOneType settings) {
     base::AutoLock lock(tpcd_lock_);
     if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants)) {
-      auto indices = HostIndexedContentSettings::Create(settings);
-      // All 3pcd metadata grants should use the same source attribute.
-      CHECK_EQ(indices.size(), 1u);
-      settings_for_3pcd_metadata_grants_ = std::move(indices.front());
+      if (settings.empty()) {
+        settings_for_3pcd_metadata_grants_ = HostIndexedContentSettings();
+      } else {
+        auto indices = HostIndexedContentSettings::Create(settings);
+        // All 3pcd metadata grants should use the same source attribute.
+        CHECK_EQ(indices.size(), 1u);
+        settings_for_3pcd_metadata_grants_ = std::move(indices.front());
+      }
     } else {
       settings_for_3pcd_metadata_grants_ = settings;
     }

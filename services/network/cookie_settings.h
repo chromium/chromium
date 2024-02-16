@@ -239,12 +239,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Holds an EntryIndex if kHostIndexedMetadataGrants is enabled.
   // Holds an EntryMap otherwise.
   absl::variant<EntryMap, EntryIndex> content_settings_;
-
-  // TODO(b/316530672): These settings are used to store a copy of COOKIES
-  // settings when kHostIndexedMetadataGrants is enabled. This is only needed
-  // for CreateDeleteCookieOnExitPredicate(). Ideally, clear on exit would work
-  // with the index as well.
-  std::optional<ContentSettingsForOneType> cookie_settings_;
 };
 
 }  // namespace network
