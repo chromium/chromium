@@ -841,7 +841,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
 
   std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
-  if (base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
+  if (params->frame_load_type != WebFrameLoadType::kReplaceCurrentItem &&
+      base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
       if (init->userInitiated() && !init->downloadRequest() &&
           init->canIntercept()) {

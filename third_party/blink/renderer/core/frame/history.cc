@@ -327,7 +327,10 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   KURL full_url = UrlForState(url_string);
-  ReportURLChange(window, full_url);
+  // Don't report replaceState events for soft navigation heuristics.
+  if (type != WebFrameLoadType::kReplaceCurrentItem) {
+    ReportURLChange(window, full_url);
+  }
   bool can_change = CanChangeToUrlForHistoryApi(
       full_url, window->GetSecurityOrigin(), window->Url());
 
