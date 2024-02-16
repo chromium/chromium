@@ -502,7 +502,7 @@ CalendarView::CalendarView(bool for_glanceables_container)
 
   // Focusable nodes must have an accessible name and valid role.
   // TODO(crbug.com/1348930): Review the accessible name and role.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
   GetViewAccessibility().OverrideName(GetClassName());
 
   views::View* calendar_header_view = nullptr;
@@ -568,7 +568,7 @@ CalendarView::CalendarView(bool for_glanceables_container)
 
   // Focusable nodes must have an accessible name and valid role.
   // TODO(crbug.com/1348930): Review the accessible name and role.
-  content_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kPane);
+  content_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
   content_view_->GetViewAccessibility().OverrideName(GetClassName());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
 

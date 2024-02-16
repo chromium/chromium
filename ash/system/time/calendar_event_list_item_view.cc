@@ -219,7 +219,7 @@ CalendarEventListItemView::CalendarEventListItemView(
   const auto [start_time_accessible_name, end_time_accessible_name] =
       event_date_formatter_util::GetStartAndEndTimeAccessibleNames(start_time,
                                                                    end_time);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   const std::u16string event_item_index_in_list_string =
       l10n_util::GetStringFUTF16(
           IDS_ASH_CALENDAR_EVENT_POSITION_ACCESSIBLE_DESCRIPTION,

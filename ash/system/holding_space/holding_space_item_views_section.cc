@@ -181,7 +181,7 @@ void HoldingSpaceItemViewsSection::Init() {
 
   // The `container_`'s children should be announced "List item X of Y", where
   // X is the 1-based child index and Y is the count of children.
-  container_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
+  container_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
   // Placeholder.
   auto placeholder = CreatePlaceholder();
