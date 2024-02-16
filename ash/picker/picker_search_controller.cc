@@ -4,6 +4,8 @@
 
 #include "ash/picker/picker_search_controller.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
@@ -20,6 +22,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -33,6 +36,12 @@ namespace {
 
 // TODO: b/316936687 - Use the icons from real search results.
 const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
+
+base::span<const std::string> FirstNOrLessElements(
+    base::span<const std::string> container,
+    size_t n) {
+  return container.subspan(0, std::min(container.size(), n));
+}
 
 }  // namespace
 
@@ -50,13 +59,18 @@ void PickerSearchController::StartSearch(
   ResetResults();
   current_callback_ = std::move(callback);
   current_query_ = query;
+
   client_->StartCrosSearch(
       query, base::BindRepeating(&PickerSearchController::HandleSearchResults,
                                  weak_ptr_factory_.GetWeakPtr()));
+  std::string utf8_query = base::UTF16ToUTF8(query);
   client_->FetchGifSearch(
-      base::UTF16ToUTF8(query),
+      utf8_query,
       base::BindOnce(&PickerSearchController::HandleGifSearchResults,
                      weak_ptr_factory_.GetWeakPtr(), query));
+
+  // Emoji search is currently synchronous.
+  HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
 
   // Show fake results while we wait for responses.
   // TODO: b/324154537 - Show a loading animation instead.
@@ -122,4 +136,26 @@ void PickerSearchController::HandleGifSearchResults(
     RunCallback();
   }
 }
+
+void PickerSearchController::HandleEmojiSearchResults(
+    emoji::EmojiSearchResult results) {
+  std::vector<PickerSearchResult> picker_emoji_search_results;
+  for (const std::string& result : FirstNOrLessElements(results.emojis, 3)) {
+    picker_emoji_search_results.push_back(
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(result)));
+  }
+  for (const std::string& result : FirstNOrLessElements(results.symbols, 2)) {
+    picker_emoji_search_results.push_back(
+        PickerSearchResult::Symbol(base::UTF8ToUTF16(result)));
+  }
+  for (const std::string& result : FirstNOrLessElements(results.emoticons, 2)) {
+    picker_emoji_search_results.push_back(
+        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result)));
+  }
+  emoji_search_results_ = std::move(picker_emoji_search_results);
+
+  // `RunCallback()` is not called here as this function is synchronously called
+  // from `StartSearch()`.
+}
+
 }  // namespace ash

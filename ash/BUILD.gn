@@ -2994,6 +2994,7 @@ component("ash") {
     "//chromeos/ash/components/dbus/usb",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth",
     "//chromeos/ash/components/early_prefs",
+    "//chromeos/ash/components/emoji",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/geolocation",

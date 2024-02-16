@@ -15,6 +15,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 
 namespace ash {
 
@@ -39,8 +40,10 @@ class ASH_EXPORT PickerSearchController {
                            std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::u16string query,
                               std::vector<PickerSearchResult> results);
+  void HandleEmojiSearchResults(emoji::EmojiSearchResult results);
 
   const raw_ref<PickerClient> client_;
+  emoji::EmojiSearch emoji_search_;
 
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
