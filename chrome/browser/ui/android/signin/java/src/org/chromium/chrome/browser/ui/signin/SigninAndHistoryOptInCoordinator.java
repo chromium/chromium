@@ -13,6 +13,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.OneshotSupplier;
@@ -29,6 +30,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
 public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoordinator.Delegate {
     private final WindowAndroid mWindowAndroid;
@@ -41,12 +45,48 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
+    // TODO(https://crbug.com/1520783): Start different flow according to the modes set.
+    private final @NoAccountSigninMode int mNoAccountSigninMode;
+    private final @HistoryOptInMode int mHistoryOptInMode;
+
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
         /** Called when the whole flow finishes. */
         void onFlowComplete();
+    }
+
+    /** The sign-in step that should be shown to the user when there's no account on the device. */
+    @IntDef({
+        NoAccountSigninMode.BOTTOM_SHEET,
+        NoAccountSigninMode.ADD_ACCOUNT,
+        NoAccountSigninMode.NO_SIGNIN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NoAccountSigninMode {
+        /** Show the 0-account sign-in bottom sheet. */
+        int BOTTOM_SHEET = 0;
+
+        /** Bring the user to GMS Core to add an account, then sign-in with the new account. */
+        int ADD_ACCOUNT = 1;
+
+        /** No sign-in should be done, the entry point should not be visible to the user. */
+        int NO_SIGNIN = 2;
+    }
+
+    /** The visibility rule to apply to the history opt-in step. */
+    @IntDef({HistoryOptInMode.NONE, HistoryOptInMode.OPTIONAL, HistoryOptInMode.REQUIRED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface HistoryOptInMode {
+        /** Never show the history sync opt-in. */
+        int NONE = 0;
+
+        /** The history sync opt-in can be skipped (e.g. if the user declined too recently). */
+        int OPTIONAL = 1;
+
+        /** The history sync opt-in should always be shown. */
+        int REQUIRED = 2;
     }
 
     /**
@@ -68,6 +108,8 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NoAccountSigninMode int noAccountSigninMode,
+            @HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -76,6 +118,8 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
         mProfileSupplier = profileSupplier;
         mProfileSupplier.onAvailable(this::onProfileAvailable);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mNoAccountSigninMode = noAccountSigninMode;
+        mHistoryOptInMode = historyOptInMode;
         mSigninAccessPoint = signinAccessPoint;
         mContainerView =
                 (ViewGroup)

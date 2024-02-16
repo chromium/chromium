@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.identity_disc;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
@@ -28,7 +27,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -379,10 +379,13 @@ public class IdentityDiscController
             if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                     && !BuildInfo.getInstance().isAutomotive) {
-                Intent intent =
-                        SigninAndHistoryOptInActivity.createIntent(
-                                mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
-                mContext.startActivity(intent);
+                SigninAndHistoryOptInActivityLauncherImpl.get()
+                        .launchActivityIfAllowed(
+                                mContext,
+                                mProfileSupplier.get().getOriginalProfile(),
+                                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                                SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
+                                SigninAccessPoint.NTP_SIGNED_OUT_ICON);
             } else {
                 SyncConsentActivityLauncherImpl.get()
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);

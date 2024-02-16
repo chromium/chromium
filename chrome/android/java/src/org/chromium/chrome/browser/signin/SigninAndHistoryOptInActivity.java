@@ -34,12 +34,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  *
  * <p>For most cases, the flow is contains a sign-in bottom sheet, and a history sync opt-in dialog
  * shown after sign-in completion.
- *
- * <p>TODO(https://crbug.com/1520783): Implement flow modes.
  */
 public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
         implements SigninAndHistoryOptInCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
+    private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
+            "SigninAndHistoryOptInActivity.NoAccountSigninMode";
+    private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
+            "SigninAndHistoryOptInActivity.HistoryOptInMode";
 
     private OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     private SigninAndHistoryOptInCoordinator mCoordinator;
@@ -54,9 +56,19 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
 
     @Override
     protected void triggerLayoutInflation() {
-        int signinAccessPoint =
-                getIntent().getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
+        Intent intent = getIntent();
+        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        @SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+        int noAccountSigninMode =
+                intent.getIntExtra(
+                        ARGUMENT_NO_ACCOUNT_SIGNIN_MODE,
+                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT);
+        @SigninAndHistoryOptInCoordinator.HistoryOptInMode
+        int historyOptInMode =
+                intent.getIntExtra(
+                        ARGUMENT_HISTORY_OPT_IN_MODE,
+                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL);
 
         mCoordinator =
                 new SigninAndHistoryOptInCoordinator(
@@ -66,6 +78,8 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
                         DeviceLockActivityLauncherImpl.get(),
                         mProfileSupplier,
                         getModalDialogManagerSupplier(),
+                        noAccountSigninMode,
+                        historyOptInMode,
                         signinAccessPoint);
 
         setContentView(mCoordinator.getView());
@@ -123,9 +137,14 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
     }
 
     public static @NonNull Intent createIntent(
-            Context context, @SigninAccessPoint int accessPoint) {
+            Context context,
+            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAccessPoint int signinAccessPoint) {
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
-        intent.putExtra(ARGUMENT_ACCESS_POINT, accessPoint);
+        intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
+        intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
+        intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
         return intent;
     }
 }
