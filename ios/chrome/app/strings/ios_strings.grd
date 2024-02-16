@@ -5144,6 +5144,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_STRIP_LEAVE_TAB_SWITCHER" desc="The accessibility label of the tab strip button to leave the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
         Leave Tab Switcher
       </message>
+      <message name="IDS_IOS_TAB_STRIP_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
+        You can swipe the tab strip to switch between tabs.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
       </message>
