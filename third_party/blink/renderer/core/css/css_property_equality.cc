@@ -1241,6 +1241,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceContent:
     case CSSPropertyID::kPlaceItems:
     case CSSPropertyID::kPlaceSelf:
+    case CSSPropertyID::kPositionTry:
     case CSSPropertyID::kScrollMargin:
     case CSSPropertyID::kScrollPadding:
     case CSSPropertyID::kScrollStart:

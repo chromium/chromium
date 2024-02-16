@@ -6834,13 +6834,7 @@ const CSSValue* PositionTryOptions::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  // position-try-options: none | [ <dashed-ident> | <try-tactic> ]#
-  // <try-tactic> = flip-block || flip-inline || flip-start
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeSinglePositionTryOption, range, context);
+  return css_parsing_utils::ConsumePositionTryOptions(range, context);
 }
 
 const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
@@ -6915,6 +6909,10 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
   DCHECK(!options.empty());
   state.StyleBuilder().SetPositionTryOptions(
       MakeGarbageCollected<blink::PositionTryOptions>(options));
+}
+
+const CSSValue* PositionTryOrder::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 const CSSValue* PositionTryOrder::CSSValueFromComputedStyleInternal(

@@ -756,6 +756,9 @@ All changes to this list should go through Blink's feature review process: http:
     place-self
         align-self
         justify-self
+    position-try
+        position-try-options
+        position-try-order
     scroll-margin
         scroll-margin-bottom
         scroll-margin-left

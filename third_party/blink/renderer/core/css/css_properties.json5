@@ -4184,7 +4184,7 @@
     },
     {
       name: "position-try-order",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
       field_template: "keyword",
       keywords: ["normal", "most-width", "most-height", "most-block-size", "most-inline-size"],
@@ -7515,6 +7515,12 @@
       name: "page-break-inside",
       longhands: ["break-inside"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+    },
+    {
+      name: "position-try",
+      longhands: ["position-try-order", "position-try-options"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSAnchorPositioning",
     },
     {
       name: "scroll-margin",

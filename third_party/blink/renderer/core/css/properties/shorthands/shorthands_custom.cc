@@ -3073,6 +3073,47 @@ const CSSValue* PlaceSelf::CSSValueFromComputedStyleInternal(
       placeSelfShorthand(), style, layout_object, allow_visited_style);
 }
 
+bool PositionTry::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  const CSSValue* order = css_parsing_utils::ParseLonghand(
+      CSSPropertyID::kPositionTryOrder, CSSPropertyID::kPositionTry, context,
+      range);
+  if (!order) {
+    order = To<Longhand>(&GetCSSPropertyPositionTryOrder())->InitialValue();
+  }
+  AddProperty(CSSPropertyID::kPositionTryOrder, CSSPropertyID::kPositionTry,
+              *order, important,
+              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  if (const CSSValue* options = css_parsing_utils::ParseLonghand(
+          CSSPropertyID::kPositionTryOptions, CSSPropertyID::kPositionTry,
+          context, range)) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kPositionTryOptions, CSSPropertyID::kPositionTry,
+        *options, important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    return range.AtEnd();
+  }
+  return false;
+}
+
+const CSSValue* PositionTry::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (EPositionTryOrder order = style.PositionTryOrder();
+      order != ComputedStyleInitialValues::InitialPositionTryOrder()) {
+    list->Append(*CSSIdentifierValue::Create(order));
+  }
+  list->Append(*CSSIdentifierValue::Create(style.PositionTryOrder()));
+  return list;
+}
+
 bool ScrollMarginBlock::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,

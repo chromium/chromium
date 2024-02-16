@@ -7183,5 +7183,16 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
   return list->length() ? list : nullptr;
 }
 
+CSSValue* ConsumePositionTryOptions(CSSParserTokenRange& range,
+                                    const CSSParserContext& context) {
+  // position-try-options: none | [ <dashed-ident> | <try-tactic> ]#
+  // <try-tactic> = flip-block || flip-inline || flip-start
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return ConsumeIdent(range);
+  }
+  return ConsumeCommaSeparatedList(ConsumeSinglePositionTryOption, range,
+                                   context);
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

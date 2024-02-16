@@ -4140,6 +4140,38 @@ CSSValue* ComputedStyleUtils::ValueForScrollStart(const ComputedStyle& style,
   return CSSIdentifierValue::Create(data.value_type);
 }
 
+CSSValue* ComputedStyleUtils::ValueForPositionTryOptions(
+    const blink::PositionTryOptions* options) {
+  if (!options) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+
+  CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
+  for (const auto& option : options->GetOptions()) {
+    if (option.HasTryTactic()) {
+      CSSValueList* tactic_list = CSSValueList::CreateSpaceSeparated();
+      TryTacticFlags tactic = option.GetTryTactic();
+      if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipBlock)) {
+        tactic_list->Append(
+            *CSSIdentifierValue::Create(CSSValueID::kFlipBlock));
+      }
+      if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipInline)) {
+        tactic_list->Append(
+            *CSSIdentifierValue::Create(CSSValueID::kFlipInline));
+      }
+      if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipStart)) {
+        tactic_list->Append(
+            *CSSIdentifierValue::Create(CSSValueID::kFlipStart));
+      }
+      option_list->Append(*tactic_list);
+    } else {
+      option_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
+          *option.GetPositionTryName()));
+    }
+  }
+  return option_list;
+}
+
 std::unique_ptr<CrossThreadStyleValue>
 ComputedStyleUtils::CrossThreadStyleValueFromCSSStyleValue(
     CSSStyleValue* style_value) {
