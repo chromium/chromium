@@ -164,7 +164,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   // All country specific field requirements have been fulfilled.
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
-      AddressProfileImportCountrySpecificFieldRequirementsMetric::ALL_GOOD);
+      AddressProfileImportCountrySpecificFieldRequirementsMetric::kAllGood);
 }
 
 // Test that the ProfileImportRequirements are counted correctly if only the
@@ -229,7 +229,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
       AddressProfileImportCountrySpecificFieldRequirementsMetric::
-          LINE1_REQUIREMENT_VIOLATED);
+          kLine1RequirementViolated);
 }
 
 // Test that the ProfileImportRequirements are all counted as fulfilled for a
@@ -293,7 +293,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   // All country specific field requirements have been fulfilled.
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
-      AddressProfileImportCountrySpecificFieldRequirementsMetric::ALL_GOOD);
+      AddressProfileImportCountrySpecificFieldRequirementsMetric::kAllGood);
 }
 
 // Test that the ProfileImportRequirements are all counted as fulfilled for a
@@ -353,7 +353,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   // All country specific field requirements have been fulfilled.
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
-      AddressProfileImportCountrySpecificFieldRequirementsMetric::ALL_GOOD);
+      AddressProfileImportCountrySpecificFieldRequirementsMetric::kAllGood);
 }
 
 // Test that the ProfileImportRequirements are all counted as fulfilled for a
@@ -422,7 +422,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   // All country specific field requirements have been fulfilled.
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
-      AddressProfileImportCountrySpecificFieldRequirementsMetric::ALL_GOOD);
+      AddressProfileImportCountrySpecificFieldRequirementsMetric::kAllGood);
 }
 
 // Test the correct ProfileImportRequirements logging if multiple fields are
@@ -488,7 +488,7 @@ TEST_F(AutofillProfileImportMetricsTest,
   TestAddressProfileImportCountrySpecificFieldRequirements(
       &histogram_tester,
       AddressProfileImportCountrySpecificFieldRequirementsMetric::
-          ZIP_STATE_CITY_REQUIREMENT_VIOLATED);
+          kZipStateCityRequirementViolated);
 }
 
 }  // namespace autofill::autofill_metrics
