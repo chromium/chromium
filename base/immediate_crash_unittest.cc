@@ -106,9 +106,6 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 #endif
   helper_library_path = helper_library_path.AppendASCII(
       GetNativeLibraryName("immediate_crash_test_helper"));
-#if BUILDFLAG(IS_ANDROID) && defined(COMPONENT_BUILD)
-  helper_library_path = helper_library_path.ReplaceExtension(".cr.so");
-#endif
   ScopedNativeLibrary helper_library(helper_library_path);
   ASSERT_TRUE(helper_library.is_valid())
       << "shared library load failed: "

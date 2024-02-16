@@ -81,8 +81,6 @@ const char kTestLibraryName[] =
     "test_shared_library.dll";
 #elif BUILDFLAG(IS_MAC)
     "libtest_shared_library.dylib";
-#elif BUILDFLAG(IS_ANDROID) && defined(COMPONENT_BUILD)
-    "libtest_shared_library.cr.so";
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     "libtest_shared_library.so";
 #endif

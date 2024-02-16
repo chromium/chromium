@@ -114,12 +114,7 @@ MAYBE_TEST(ModuleCacheTest, GetDebugBasename) {
   ASSERT_NE(nullptr, module);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("libbase_unittests__library",
-            // Different build configurations varyingly use .so vs. .cr.so for
-            // the module extension. Remove all the extensions in both cases.
-            module->GetDebugBasename()
-                .RemoveFinalExtension()
-                .RemoveFinalExtension()
-                .value());
+            module->GetDebugBasename().RemoveFinalExtension().value());
 #elif BUILDFLAG(IS_POSIX)
   EXPECT_EQ("base_unittests", module->GetDebugBasename().value());
 #elif BUILDFLAG(IS_WIN)
