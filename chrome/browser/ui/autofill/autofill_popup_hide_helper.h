@@ -7,12 +7,16 @@
 
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/zoom/zoom_observer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
+class NavigationHandle;
+class RenderFrameHost;
 class RenderWidgetHost;
 enum class Visibility;
 class WebContents;
@@ -45,20 +49,31 @@ class AutofillPopupHideHelper : public content::WebContentsObserver
     // TODO(b/320632147): Add parameters.
   };
 
-  AutofillPopupHideHelper(content::WebContents* web_contents,
-                          HidingParams hiding_params,
-                          HidingCallback hiding_callback);
+  // Creates an `AutofillPopupHideHelper` if there is a frame which has focus.
+  // Otherwise, returns nullptr. The caller has to handle this scenario.
+  static std::unique_ptr<AutofillPopupHideHelper> CreateAutofillPopupHideHelper(
+      content::WebContents* web_contents,
+      HidingParams hiding_params,
+      HidingCallback hiding_callback);
+
   AutofillPopupHideHelper(const AutofillPopupHideHelper&) = delete;
   AutofillPopupHideHelper& operator=(const AutofillPopupHideHelper&) = delete;
   ~AutofillPopupHideHelper() override;
 
  private:
+  AutofillPopupHideHelper(content::WebContents* web_contents,
+                          HidingParams hiding_params,
+                          HidingCallback hiding_callback);
+
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void OnWebContentsLostFocus(
       content::RenderWidgetHost* render_widget_host) override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver:
@@ -67,8 +82,10 @@ class AutofillPopupHideHelper : public content::WebContentsObserver
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif
 
-  HidingCallback hiding_callback_;
-  HidingParams hiding_params_;
+  const HidingParams hiding_params_;
+  const HidingCallback hiding_callback_;
+  // ID for the focused frame.
+  content::GlobalRenderFrameHostId rfh_id_;
 
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>

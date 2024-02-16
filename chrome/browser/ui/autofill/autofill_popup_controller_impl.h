@@ -24,12 +24,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/zoom/zoom_observer.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class Profile;
 
@@ -76,7 +71,6 @@ class ExpandablePopupParentControllerImpl {
 // other, public functions are available to its instantiator.
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
-      public content::WebContentsObserver,
       public AutofillManager::Observer,
       public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
@@ -183,10 +177,6 @@ class AutofillPopupControllerImpl
       std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent);
   ~AutofillPopupControllerImpl() override;
 
-  void CreatePopupHideHelper(
-      content::WebContents* web_contents,
-      AutofillPopupHideHelper::HidingCallback hiding_callback);
-
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
@@ -215,11 +205,6 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
   // AutofillManager::Observer:
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                   FormGlobalId form,
@@ -242,6 +227,7 @@ class AutofillPopupControllerImpl
   // Returns `true` if this popup has no parent, and `false` for sub-popups.
   bool IsRootPopup() const;
 
+  raw_ptr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
   base::WeakPtr<AutofillPopupView> view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
@@ -253,7 +239,6 @@ class AutofillPopupControllerImpl
     explicit KeyPressObserver(AutofillPopupControllerImpl* observer);
     ~KeyPressObserver();
 
-    bool IsObserving(content::GlobalRenderFrameHostId rfh) const;
     void Observe(content::RenderFrameHost* rfh);
     void Reset();
 

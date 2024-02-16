@@ -197,15 +197,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
             element_bounds,
             base::i18n::UNKNOWN_DIRECTION,
             std::move(show_pwd_migration_warning_callback),
-            parent) {
-    // This is done in order to set the callback to
-    // `TestAutofillPopupController::Hide` (which is mocked below). Otherwise,
-    // it would be set to `AutofillPopupController::Hide()`, which is not
-    // mocked.
-    CreatePopupHideHelper(
-        web_contents, base::BindRepeating(&TestAutofillPopupController::Hide,
-                                          base::Unretained(this)));
-  }
+            parent) {}
   ~TestAutofillPopupController() override = default;
 
   // Making protected functions public for testing

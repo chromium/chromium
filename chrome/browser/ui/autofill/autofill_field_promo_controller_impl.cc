@@ -23,15 +23,22 @@ AutofillFieldPromoControllerImpl::~AutofillFieldPromoControllerImpl() {
 
 void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   Hide();
-  promo_view_ = AutofillFieldPromoView::CreateAndShow(
-      web_contents_, bounds, promo_element_identifier_);
   // The hide helper is destroyed on hide, so it cannot outlive the popup
   // controller.
-  promo_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+  promo_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
       web_contents_, AutofillPopupHideHelper::HidingParams{},
       base::BindRepeating([](AutofillFieldPromoControllerImpl& controller,
                              PopupHidingReason) { controller.Hide(); },
                           std::ref(*this)));
+
+  // If the hide helper is null, then no frame has focus.
+  if (!promo_hide_helper_) {
+    Hide();
+    return;
+  }
+
+  promo_view_ = AutofillFieldPromoView::CreateAndShow(
+      web_contents_, bounds, promo_element_identifier_);
 }
 
 void AutofillFieldPromoControllerImpl::Hide() {

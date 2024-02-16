@@ -4,20 +4,40 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
 
+// static
+std::unique_ptr<AutofillPopupHideHelper>
+AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
+    content::WebContents* web_contents,
+    HidingParams hiding_params,
+    HidingCallback hiding_callback) {
+  if (!web_contents->GetFocusedFrame()) {
+    return nullptr;
+  }
+  return base::WrapUnique(new AutofillPopupHideHelper(
+      web_contents, std::move(hiding_params), std::move(hiding_callback)));
+}
+
 AutofillPopupHideHelper::AutofillPopupHideHelper(
     content::WebContents* web_contents,
     HidingParams hiding_params,
     HidingCallback hiding_callback)
     : content::WebContentsObserver(web_contents),
-      hiding_params_(hiding_params) {
-  hiding_callback_ = std::move(hiding_callback);
+      hiding_params_(hiding_params),
+      hiding_callback_(std::move(hiding_callback)) {
+  content::RenderFrameHost* rfh = web_contents->GetFocusedFrame();
+  CHECK(rfh);
+  rfh_id_ = rfh->GetGlobalId();
+
 #if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g., in tests.
   if (auto* zoom_controller =
@@ -52,6 +72,26 @@ void AutofillPopupHideHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     hiding_callback_.Run(PopupHidingReason::kTabGone);
+  }
+}
+
+void AutofillPopupHideHelper::RenderFrameDeleted(
+    content::RenderFrameHost* rfh) {
+  // If the popup menu has been triggered from within an iframe and that frame
+  // is deleted, hide the popup. This is necessary because the popup may
+  // actually be shown by the `AutofillExternalDelegate` of an ancestor frame,
+  // which is not notified about `rfh`'s destruction and therefore won't close
+  // the popup.
+  if (rfh_id_ == rfh->GetGlobalId()) {
+    hiding_callback_.Run(PopupHidingReason::kRendererEvent);
+  }
+}
+
+void AutofillPopupHideHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (rfh_id_ == navigation_handle->GetPreviousRenderFrameHostId() &&
+      !navigation_handle->IsSameDocument()) {
+    hiding_callback_.Run(PopupHidingReason::kNavigation);
   }
 }
 

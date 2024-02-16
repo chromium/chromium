@@ -62,6 +62,9 @@ class AutofillFieldPromoControllerImplTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    FocusWebContentsOnMainFrame();
+    ASSERT_TRUE(web_contents()->GetFocusedFrame());
+
     promo_view_ = std::make_unique<MockAutofillFieldPromoView>();
     PromoControllerWrapper::CreateForWebContents(web_contents());
 
