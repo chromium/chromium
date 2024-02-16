@@ -14,10 +14,12 @@ namespace blink {
 ShapingLineBreaker::ShapingLineBreaker(
     const ShapeResult* result,
     const LazyLineBreakIterator* break_iterator,
-    const Hyphenation* hyphenation)
+    const Hyphenation* hyphenation,
+    const Font* font)
     : result_(result),
       break_iterator_(break_iterator),
-      hyphenation_(hyphenation) {
+      hyphenation_(hyphenation),
+      font_(font) {
   // Line breaking performance relies on high-performance x-position to
   // character offset lookup. Ensure that the desired cache has been computed.
   DCHECK(result_);
@@ -310,8 +312,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       UNLIKELY(result_->HasAutoSpacingAfter(candidate_break))) {
     // If there's an auto-space after the `candidate_break`, check if it can fit
     // without the auto-space.
-    candidate_break =
-        result_->AdjustOffsetForAutoSpacing(candidate_break, end_position);
+    candidate_break = result_->AdjustOffsetForAutoSpacing(
+        TextAutoSpace::GetSpacingWidth(font_), candidate_break, end_position);
   }
 
   // Extend the `candidate_break` if the next character can fit by applying the
@@ -560,7 +562,8 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
       last_safe = result_->CachedPreviousSafeToBreakOffset(last_safe - 1);
       DCHECK_LT(last_safe, break_opportunity.offset);
       line_end_result =
-          result_->UnapplyAutoSpacing(last_safe, break_opportunity.offset);
+          result_->UnapplyAutoSpacing(TextAutoSpace::GetSpacingWidth(font_),
+                                      last_safe, break_opportunity.offset);
     }
   }
 

@@ -1165,6 +1165,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
 }
 
 const ShapeResult* ShapeResult::UnapplyAutoSpacing(
+    float spacing_width,
     unsigned start_offset,
     unsigned break_offset) const {
   DCHECK_GE(start_offset, StartIndex());
@@ -1181,31 +1182,28 @@ const ShapeResult* ShapeResult::UnapplyAutoSpacing(
       continue;
     }
     HarfBuzzRunGlyphData& last_glyph = run->glyph_data_.back();
-    DCHECK(PrimaryFont());
-    const float width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
-    DCHECK_GE(last_glyph.advance, width);
-    last_glyph.advance -= width;
-    run->width_ -= width;
-    sub_range->width_ -= width;
+    DCHECK_GE(last_glyph.advance, spacing_width);
+    last_glyph.advance -= spacing_width;
+    run->width_ -= spacing_width;
+    sub_range->width_ -= spacing_width;
     break;
   }
   return sub_range;
 }
 
-unsigned ShapeResult::AdjustOffsetForAutoSpacing(unsigned offset,
+unsigned ShapeResult::AdjustOffsetForAutoSpacing(float spacing_width,
+                                                 unsigned offset,
                                                  float position) const {
   DCHECK(!character_position_.empty());
   DCHECK(HasAutoSpacingAfter(offset));
-  DCHECK(PrimaryFont());
-  const float autospace_width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
   DCHECK_GE(offset, StartIndex());
   offset -= StartIndex();
   DCHECK_LT(offset, NumCharacters());
-  // If the next character fits in `position + autospace_width`, then advance
+  // If the next character fits in `position + spacing_width`, then advance
   // the break offset. The auto-spacing at line edges will be removed by
   // `UnapplyAutoSpacing`.
   if (IsLtr()) {
-    position += autospace_width;
+    position += spacing_width;
     if (offset + 1 < NumCharacters()) {
       const ShapeResultCharacterData& data = character_position_[offset + 1];
       if (data.x_position <= position) {
@@ -1217,7 +1215,7 @@ unsigned ShapeResult::AdjustOffsetForAutoSpacing(unsigned offset,
       }
     }
   } else {
-    position -= autospace_width;
+    position -= spacing_width;
     if (offset + 1 < NumCharacters()) {
       const ShapeResultCharacterData& data = character_position_[offset + 1];
       if (data.x_position >= position) {

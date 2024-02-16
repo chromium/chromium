@@ -77,7 +77,7 @@ TEST_F(TextAutoSpaceTest, Unapply) {
   EXPECT_THAT(GetAdvances(*result), ElementsAre(size, size, size, size, size));
 
   // Apply auto-spacing.
-  const float spacing = TextAutoSpace::GetSpacingWidth(font);
+  const float spacing = TextAutoSpace::GetSpacingWidth(&font);
   result->ApplyTextAutoSpacing({{2, spacing}, {5, spacing}});
   const float with_spacing = size + spacing;
   EXPECT_THAT(GetAdvances(*result),
@@ -86,7 +86,7 @@ TEST_F(TextAutoSpaceTest, Unapply) {
   // Compute the line-end by unapplying the spacing.
   for (unsigned end_offset : {2u, 5u}) {
     const ShapeResult* line_end =
-        result->UnapplyAutoSpacing(end_offset - 1, end_offset);
+        result->UnapplyAutoSpacing(spacing, end_offset - 1, end_offset);
     DCHECK_EQ(line_end->Width(), size);
 
     // Check the original `result` is unchanged; i.e., still has auto-spacing.

@@ -308,12 +308,15 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Returns a line-end `ShapeResult` when breaking at `break_offset`, and the
   // glyph before `break_offset` has auto-spacing.
-  const ShapeResult* UnapplyAutoSpacing(unsigned start_offset,
+  const ShapeResult* UnapplyAutoSpacing(float spacing_width,
+                                        unsigned start_offset,
                                         unsigned break_offset) const;
 
   // Adjust the offset from `OffsetForPosition` when the offset has
   // `HasAutoSpacingAfter`.
-  unsigned AdjustOffsetForAutoSpacing(unsigned offset, float position) const;
+  unsigned AdjustOffsetForAutoSpacing(float spacing_width,
+                                      unsigned offset,
+                                      float position) const;
 
   // Append a copy of a range within an existing result to another result.
   //

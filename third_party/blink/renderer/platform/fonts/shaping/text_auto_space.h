@@ -15,7 +15,6 @@
 namespace blink {
 
 class Font;
-class SimpleFontData;
 
 class PLATFORM_EXPORT TextAutoSpace {
   STACK_ALLOCATED();
@@ -39,8 +38,7 @@ class PLATFORM_EXPORT TextAutoSpace {
 
   // Get the inter-script auto-spacing width.
   // https://drafts.csswg.org/css-text-4/#inter-script-spacing
-  static float GetSpacingWidth(const Font& font);
-  static float GetSpacingWidth(const SimpleFontData& font);
+  static float GetSpacingWidth(const Font* font);
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream& ostream,

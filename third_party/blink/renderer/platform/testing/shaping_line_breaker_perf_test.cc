@@ -45,7 +45,7 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
                              const ShapeResult* result,
                              const LazyLineBreakIterator* break_iterator,
                              const Hyphenation* hyphenation)
-      : ShapingLineBreaker(result, break_iterator, hyphenation),
+      : ShapingLineBreaker(result, break_iterator, hyphenation, font),
         shaper_(shaper),
         font_(font) {}
 

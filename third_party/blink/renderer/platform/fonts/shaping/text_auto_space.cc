@@ -14,15 +14,11 @@
 
 namespace blink {
 
-float TextAutoSpace::GetSpacingWidth(const SimpleFontData& font_data) {
-  return font_data.IdeographicInlineSize().value_or(
-             font_data.PlatformData().size()) /
-         8;
-}
-
-float TextAutoSpace::GetSpacingWidth(const Font& font) {
-  if (const SimpleFontData* font_data = font.PrimaryFont()) {
-    return GetSpacingWidth(*font_data);
+float TextAutoSpace::GetSpacingWidth(const Font* font) {
+  if (const SimpleFontData* font_data = font->PrimaryFont()) {
+    return font_data->IdeographicInlineSize().value_or(
+               font_data->PlatformData().size()) /
+           8;
   }
   NOTREACHED();
   return 0;

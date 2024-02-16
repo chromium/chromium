@@ -1380,7 +1380,8 @@ LineBreaker::BreakResult LineBreaker::BreakText(
                            const ShapeResult* result)
         : ShapingLineBreaker(result,
                              &line_breaker->break_iterator_,
-                             line_breaker->hyphenation_),
+                             line_breaker->hyphenation_,
+                             &item->Style()->GetFont()),
           line_breaker_(line_breaker),
           item_(item) {}
 
