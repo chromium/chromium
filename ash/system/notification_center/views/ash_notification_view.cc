@@ -285,7 +285,7 @@ using CrossAxisAlignment = views::BoxLayout::CrossAxisAlignment;
 using MainAxisAlignment = views::BoxLayout::MainAxisAlignment;
 using Orientation = views::BoxLayout::Orientation;
 
-BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
+BEGIN_METADATA(AshNotificationView, NotificationTitleRow)
 END_METADATA
 
 void AshNotificationView::AddedToWidget() {
@@ -321,9 +321,7 @@ void AshNotificationView::GroupedNotificationsContainer::
   parent_notification_view_ = parent_notification_view;
 }
 
-BEGIN_METADATA(AshNotificationView,
-               GroupedNotificationsContainer,
-               views::BoxLayoutView)
+BEGIN_METADATA(AshNotificationView, GroupedNotificationsContainer)
 END_METADATA
 
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(

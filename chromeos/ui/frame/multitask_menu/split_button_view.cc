@@ -141,7 +141,7 @@ class SplitButtonView::SplitButton : public views::Button {
   base::RepeatingClosure hovered_pressed_callback_;
 };
 
-BEGIN_METADATA(SplitButtonView, SplitButton, views::Button)
+BEGIN_METADATA(SplitButtonView, SplitButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------

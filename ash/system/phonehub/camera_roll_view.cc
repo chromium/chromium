@@ -163,7 +163,7 @@ void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
   }
 }
 
-BEGIN_METADATA(CameraRollView, CameraRollItemsView, views::View)
+BEGIN_METADATA(CameraRollView, CameraRollItemsView)
 END_METADATA
 
 void CameraRollView::Update() {

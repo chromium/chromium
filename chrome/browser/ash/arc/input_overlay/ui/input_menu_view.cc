@@ -160,7 +160,7 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   ~FeedbackButton() override = default;
 };
 
-BEGIN_METADATA(InputMenuView, FeedbackButton, views::LabelButton)
+BEGIN_METADATA(InputMenuView, FeedbackButton)
 END_METADATA
 
 // static

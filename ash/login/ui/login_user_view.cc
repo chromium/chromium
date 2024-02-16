@@ -266,7 +266,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
   base::WeakPtrFactory<UserImage> weak_factory_{this};
 };
 
-BEGIN_METADATA(LoginUserView, UserImage, NonAccessibleView)
+BEGIN_METADATA(LoginUserView, UserImage)
 END_METADATA
 
 // Shows the user's name.
@@ -335,7 +335,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
   const int label_width_;
 };
 
-BEGIN_METADATA(LoginUserView, UserLabel, NonAccessibleView)
+BEGIN_METADATA(LoginUserView, UserLabel)
 END_METADATA
 
 // A button embedded inside of LoginUserView, which is activated whenever the
@@ -373,7 +373,7 @@ class LoginUserView::TapButton : public views::Button {
   const raw_ptr<LoginUserView> parent_;
 };
 
-BEGIN_METADATA(LoginUserView, TapButton, views::Button)
+BEGIN_METADATA(LoginUserView, TapButton)
 END_METADATA
 
 // LoginUserView is defined after LoginUserView::UserLabel so it can access the

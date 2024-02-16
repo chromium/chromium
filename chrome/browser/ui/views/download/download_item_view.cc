@@ -267,7 +267,7 @@ class DownloadItemView::ContextMenuButton : public views::ImageButton {
   bool suppress_button_release_ = false;
 };
 
-BEGIN_METADATA(DownloadItemView, ContextMenuButton, views::ImageButton)
+BEGIN_METADATA(DownloadItemView, ContextMenuButton)
 END_METADATA
 
 DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,

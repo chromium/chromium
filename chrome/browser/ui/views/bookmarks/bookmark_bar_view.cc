@@ -379,7 +379,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
   int separator_thickness_;
 };
 
-BEGIN_METADATA(BookmarkBarView, ButtonSeparatorView, views::Separator)
+BEGIN_METADATA(BookmarkBarView, ButtonSeparatorView)
 END_METADATA
 
 // BookmarkBarView ------------------------------------------------------------

@@ -179,7 +179,7 @@ class EditFinishView::ChildButton : public views::LabelButton {
   OnMouseReleasedCallback on_mouse_released_callback_;
 };
 
-BEGIN_METADATA(EditFinishView, ChildButton, views::LabelButton)
+BEGIN_METADATA(EditFinishView, ChildButton)
 END_METADATA
 
 // static

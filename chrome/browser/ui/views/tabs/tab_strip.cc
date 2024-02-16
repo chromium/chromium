@@ -949,7 +949,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   base::WeakPtrFactory<TabDragContext> weak_factory_{this};
 };
 
-BEGIN_METADATA(TabStrip, TabDragContextImpl, views::View);
+BEGIN_METADATA(TabStrip, TabDragContextImpl);
 END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////

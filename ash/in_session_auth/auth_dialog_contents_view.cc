@@ -298,12 +298,10 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   base::OneShotTimer reset_state_;
 };
 
-BEGIN_METADATA(AuthDialogContentsView, FingerprintView, views::View)
+BEGIN_METADATA(AuthDialogContentsView, FingerprintView)
 END_METADATA
 
-BEGIN_METADATA(AuthDialogContentsView::FingerprintView,
-               FingerprintLabel,
-               views::Label)
+BEGIN_METADATA(AuthDialogContentsView::FingerprintView, FingerprintLabel)
 END_METADATA
 
 class AuthDialogContentsView::TitleLabel : public views::Label {
@@ -358,7 +356,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
   bool is_showing_error_ = false;
 };
 
-BEGIN_METADATA(AuthDialogContentsView, TitleLabel, views::Label)
+BEGIN_METADATA(AuthDialogContentsView, TitleLabel)
 END_METADATA
 
 AuthDialogContentsView::AuthDialogContentsView(

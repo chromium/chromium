@@ -74,7 +74,7 @@ class MediaItemUIView::DismissButton : public views::ImageButton {
   ~DismissButton() override = default;
 };
 
-BEGIN_METADATA(MediaItemUIView, DismissButton, views::ImageButton)
+BEGIN_METADATA(MediaItemUIView, DismissButton)
 END_METADATA
 
 MediaItemUIView::MediaItemUIView(

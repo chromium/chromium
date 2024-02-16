@@ -136,7 +136,7 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
   SetVectorIcon(GetVectorIconForMediaAction(action));
 }
 
-BEGIN_METADATA(UnifiedMediaControlsView, MediaActionButton, IconButton)
+BEGIN_METADATA(UnifiedMediaControlsView, MediaActionButton)
 END_METADATA
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(

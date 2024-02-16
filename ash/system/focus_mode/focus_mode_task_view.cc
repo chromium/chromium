@@ -122,7 +122,7 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
   bool show_selected_state_ = false;
 };
 
-BEGIN_METADATA(FocusModeTaskView, TaskTextfield, SystemTextfield)
+BEGIN_METADATA(FocusModeTaskView, TaskTextfield)
 END_METADATA
 
 //---------------------------------------------------------------------

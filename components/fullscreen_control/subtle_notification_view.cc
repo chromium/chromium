@@ -179,7 +179,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
-BEGIN_METADATA(SubtleNotificationView, InstructionView, views::View)
+BEGIN_METADATA(SubtleNotificationView, InstructionView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
 

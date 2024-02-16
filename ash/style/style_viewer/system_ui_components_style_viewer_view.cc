@@ -144,9 +144,7 @@ class SystemUIComponentsStyleViewerView::ComponentButton
   ui::ColorId text_color_id_ = kInactiveButtonTextColorId;
 };
 
-BEGIN_METADATA(SystemUIComponentsStyleViewerView,
-               ComponentButton,
-               views::LabelButton)
+BEGIN_METADATA(SystemUIComponentsStyleViewerView, ComponentButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------

@@ -219,7 +219,7 @@ void MediaTray::PinButton::ButtonPressed() {
           : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT));
 }
 
-BEGIN_METADATA(MediaTray, PinButton, IconButton)
+BEGIN_METADATA(MediaTray, PinButton)
 END_METADATA
 
 MediaTray::MediaTray(Shelf* shelf)

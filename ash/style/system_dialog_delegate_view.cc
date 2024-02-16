@@ -205,7 +205,7 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
   raw_ptr<views::View> place_holder_view_ = nullptr;
 };
 
-BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer, views::FlexLayoutView)
+BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer)
 END_METADATA
 
 //------------------------------------------------------------------------------

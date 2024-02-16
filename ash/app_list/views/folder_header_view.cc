@@ -267,7 +267,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
-BEGIN_METADATA(FolderHeaderView, FolderNameView, views::Textfield)
+BEGIN_METADATA(FolderHeaderView, FolderNameView)
 END_METADATA
 
 class FolderHeaderView::FolderNameJellyView
@@ -352,7 +352,7 @@ class FolderHeaderView::FolderNameJellyView
   std::u16string starting_name_;
 };
 
-BEGIN_METADATA(FolderHeaderView, FolderNameJellyView, ash::SystemTextfield)
+BEGIN_METADATA(FolderHeaderView, FolderNameJellyView)
 END_METADATA
 
 class FolderHeaderView::FolderNameViewController

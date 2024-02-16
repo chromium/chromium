@@ -379,12 +379,10 @@ class BackGestureContextualNudge::ContextualNudgeView
   base::OnceCallback<void(bool)> callback_;
 };
 
-BEGIN_METADATA(BackGestureContextualNudge, ContextualNudgeView, views::View)
+BEGIN_METADATA(BackGestureContextualNudge, ContextualNudgeView)
 END_METADATA
 
-BEGIN_METADATA(BackGestureContextualNudge::ContextualNudgeView,
-               SuggestionView,
-               views::View)
+BEGIN_METADATA(BackGestureContextualNudge::ContextualNudgeView, SuggestionView)
 END_METADATA
 
 BackGestureContextualNudge::BackGestureContextualNudge(

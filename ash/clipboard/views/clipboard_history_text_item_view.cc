@@ -135,7 +135,7 @@ class ClipboardHistoryTextItemView::TextContentsView
   }
 };
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView, ContentsView)
+BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   return std::make_unique<TextContentsView>(this);
 }
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, ClipboardHistoryItemView)
+BEGIN_METADATA(ClipboardHistoryTextItemView)
 END_METADATA
 
 }  // namespace ash

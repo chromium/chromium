@@ -543,7 +543,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
   DeprecatedLayoutImmediately();
 }
 
-BEGIN_METADATA(NotifierSettingsView, NotifierButton, views::Button)
+BEGIN_METADATA(NotifierSettingsView, NotifierButton)
 END_METADATA
 
 // NotifierSettingsView -------------------------------------------------------

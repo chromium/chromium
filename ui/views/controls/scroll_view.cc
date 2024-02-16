@@ -274,7 +274,7 @@ class ScrollView::Viewport : public View {
   raw_ptr<ScrollView> scroll_view_;
 };
 
-BEGIN_METADATA(ScrollView, Viewport, View)
+BEGIN_METADATA(ScrollView, Viewport)
 ADD_READONLY_PROPERTY_METADATA(bool, IsContentsViewport)
 END_METADATA
 

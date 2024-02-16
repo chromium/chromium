@@ -346,7 +346,7 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   base::OneShotTimer reset_state_timer_;
 };
 
-BEGIN_METADATA(LoginAuthUserView, ChallengeResponseView, views::View)
+BEGIN_METADATA(LoginAuthUserView, ChallengeResponseView)
 END_METADATA
 
 LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;

@@ -117,9 +117,7 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   base::RepeatingClosure show_animation_done_;
 };
 
-BEGIN_METADATA(PowerButtonMenuScreenView,
-               PowerButtonMenuBackgroundView,
-               views::View)
+BEGIN_METADATA(PowerButtonMenuScreenView, PowerButtonMenuBackgroundView)
 END_METADATA
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(

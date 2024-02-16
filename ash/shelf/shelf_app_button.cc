@@ -230,9 +230,9 @@ class ShelfAppButton::AppStatusIndicatorView
     : public gfx::AnimationDelegate,
       public views::View,
       public ShelfAppButtonAnimation::Observer {
- public:
-  METADATA_HEADER(AppStatusIndicatorView);
+  METADATA_HEADER(AppStatusIndicatorView, views::View)
 
+ public:
   AppStatusIndicatorView()
       : jelly_enabled_(chromeos::features::IsJellyEnabled()) {
     // Make sure the events reach the parent view for handling.
@@ -413,7 +413,7 @@ class ShelfAppButton::AppStatusIndicatorView
   base::TimeTicks animation_end_time_;  // For attention throbbing underline.
 };
 
-BEGIN_METADATA(ShelfAppButton, AppStatusIndicatorView, views::View)
+BEGIN_METADATA(ShelfAppButton, AppStatusIndicatorView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////

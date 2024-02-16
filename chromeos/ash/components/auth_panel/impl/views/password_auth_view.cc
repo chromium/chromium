@@ -88,7 +88,7 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
   }
 };
 
-BEGIN_METADATA(PasswordAuthView, LoginPasswordRow, views::View)
+BEGIN_METADATA(PasswordAuthView, LoginPasswordRow)
 END_METADATA
 
 void PasswordAuthView::ConfigureRootLayout() {

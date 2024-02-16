@@ -73,7 +73,7 @@ class LockScreenActionBackgroundView::NoteBackground : public views::View {
   raw_ptr<views::InkDropObserver> observer_;
 };
 
-BEGIN_METADATA(LockScreenActionBackgroundView, NoteBackground, views::View)
+BEGIN_METADATA(LockScreenActionBackgroundView, NoteBackground)
 END_METADATA
 
 LockScreenActionBackgroundView::LockScreenActionBackgroundView() {

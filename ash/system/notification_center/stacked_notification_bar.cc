@@ -37,9 +37,9 @@ namespace {
 // The label button in the stacked notification bar, used for the "Clear All"
 // button.
 class StackingBarLabelButton : public PillButton {
- public:
-  METADATA_HEADER(StackingBarLabelButton);
+  METADATA_HEADER(StackingBarLabelButton, PillButton)
 
+ public:
   StackingBarLabelButton(PressedCallback callback,
                          const std::u16string& text,
                          NotificationCenterView* notification_center_view)
@@ -59,7 +59,7 @@ class StackingBarLabelButton : public PillButton {
   ~StackingBarLabelButton() override = default;
 };
 
-BEGIN_METADATA(StackingBarLabelButton, PillButton)
+BEGIN_METADATA(StackingBarLabelButton)
 END_METADATA
 
 }  // namespace
@@ -209,9 +209,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
   AnimationCompleteCallback animation_complete_callback_;
 };
 
-BEGIN_METADATA(StackedNotificationBar,
-               StackedNotificationBarIcon,
-               views::ImageView)
+BEGIN_METADATA(StackedNotificationBar, StackedNotificationBarIcon)
 END_METADATA
 
 StackedNotificationBar::StackedNotificationBar(

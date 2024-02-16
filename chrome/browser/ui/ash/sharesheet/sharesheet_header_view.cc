@@ -241,7 +241,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   std::vector<raw_ptr<RoundedImageView, VectorExperimental>> image_views_;
 };
 
-BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview, views::View)
+BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview)
 END_METADATA
 
 // SharesheetHeaderView --------------------------------------------------------

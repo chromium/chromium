@@ -56,7 +56,7 @@ bool NonClientFrameViewBase::OverlayView::DoesIntersectRect(
   return header_view_->HitTestRect(rect);
 }
 
-BEGIN_METADATA(NonClientFrameViewBase, OverlayView, views::View)
+BEGIN_METADATA(NonClientFrameViewBase, OverlayView)
 END_METADATA
 
 NonClientFrameViewBase::NonClientFrameViewBase(views::Widget* frame)

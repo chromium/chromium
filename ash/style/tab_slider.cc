@@ -94,7 +94,7 @@ class TabSlider::SelectorView : public views::View {
   raw_ptr<TabSliderButton> button_ = nullptr;
 };
 
-BEGIN_METADATA(TabSlider, SelectorView, views::View)
+BEGIN_METADATA(TabSlider, SelectorView)
 END_METADATA
 
 //------------------------------------------------------------------------------

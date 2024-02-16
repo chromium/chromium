@@ -74,9 +74,7 @@ class PaletteWelcomeBubble::WelcomeBubbleView
   }
 };
 
-BEGIN_METADATA(PaletteWelcomeBubble,
-               WelcomeBubbleView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(PaletteWelcomeBubble, WelcomeBubbleView)
 END_METADATA
 
 PaletteWelcomeBubble::PaletteWelcomeBubble(PaletteTray* tray) : tray_(tray) {

@@ -182,7 +182,7 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
   raw_ref<SavedTabGroupBar> parent_bar_;
 };
 
-BEGIN_METADATA(SavedTabGroupBar, OverflowMenu, views::View)
+BEGIN_METADATA(SavedTabGroupBar, OverflowMenu)
 END_METADATA
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,

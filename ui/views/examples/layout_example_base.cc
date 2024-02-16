@@ -179,7 +179,7 @@ Textfield* LayoutExampleBase::ChildPanel::CreateTextfield(
   return AddChildView(CreateCommonTextfieldWithAXName(this, name));
 }
 
-BEGIN_METADATA(LayoutExampleBase, ChildPanel, View)
+BEGIN_METADATA(LayoutExampleBase, ChildPanel)
 END_METADATA
 
 LayoutExampleBase::LayoutExampleBase(const char* title) : ExampleBase(title) {}

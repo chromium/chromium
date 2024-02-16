@@ -190,7 +190,7 @@ class FrameSizeButton::PieAnimationView : public views::View,
   const raw_ptr<FrameSizeButton> button_;
 };
 
-BEGIN_METADATA(FrameSizeButton, PieAnimationView, views::View)
+BEGIN_METADATA(FrameSizeButton, PieAnimationView)
 END_METADATA
 
 // The class to observe the to-be-snapped window during the waiting-for-snap

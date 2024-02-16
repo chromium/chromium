@@ -65,7 +65,7 @@ class HeaderView::HeaderContentView : public views::View {
       views::PaintInfo::ScaleType::kScaleWithEdgeSnapping;
 };
 
-BEGIN_METADATA(HeaderView, HeaderContentView, views::View)
+BEGIN_METADATA(HeaderView, HeaderContentView)
 END_METADATA
 
 HeaderView::HeaderView(views::Widget* target_widget,

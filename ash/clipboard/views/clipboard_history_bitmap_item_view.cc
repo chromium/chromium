@@ -150,7 +150,7 @@ class FadeImageView : public views::ImageView,
   base::CallbackListSubscription display_image_updated_subscription_;
 };
 
-BEGIN_METADATA(FadeImageView, views::ImageView)
+BEGIN_METADATA(FadeImageView)
 END_METADATA
 
 }  // namespace
@@ -315,7 +315,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   raw_ptr<views::ImageView> image_view_ = nullptr;
 };
 
-BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)
+BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -348,7 +348,7 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
 }
 
-BEGIN_METADATA(ClipboardHistoryBitmapItemView, ClipboardHistoryItemView)
+BEGIN_METADATA(ClipboardHistoryBitmapItemView)
 END_METADATA
 
 }  // namespace ash

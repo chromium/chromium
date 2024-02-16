@@ -30,7 +30,7 @@ bool ShouldAutoAcceptThisTabCapture() {
 
 }  // namespace
 
-BEGIN_METADATA(DesktopMediaListController, ListView, views::View)
+BEGIN_METADATA(DesktopMediaListController, ListView)
 END_METADATA
 
 DesktopMediaListController::DesktopMediaListController(

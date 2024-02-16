@@ -413,7 +413,7 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   raw_ptr<MessageView> message_view_;
 };
 
-BEGIN_METADATA(NotificationListView, MessageViewContainer, views::View)
+BEGIN_METADATA(NotificationListView, MessageViewContainer)
 END_METADATA
 
 NotificationListView::NotificationListView(

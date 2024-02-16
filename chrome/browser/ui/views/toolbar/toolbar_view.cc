@@ -215,7 +215,7 @@ class ToolbarView::ContainerView : public views::View {
   }
 };
 
-BEGIN_METADATA(ToolbarView, ContainerView, views::View)
+BEGIN_METADATA(ToolbarView, ContainerView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////

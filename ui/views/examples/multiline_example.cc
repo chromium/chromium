@@ -161,7 +161,7 @@ class MultilineExample::RenderTextView : public View {
   std::unique_ptr<gfx::RenderText> render_text_;
 };
 
-BEGIN_METADATA(MultilineExample, RenderTextView, View)
+BEGIN_METADATA(MultilineExample, RenderTextView)
 END_METADATA
 
 MultilineExample::MultilineExample()

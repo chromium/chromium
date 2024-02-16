@@ -166,7 +166,7 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 };
 
-BEGIN_METADATA(LoginPasswordView, LoginPasswordRow, views::View)
+BEGIN_METADATA(LoginPasswordView, LoginPasswordRow)
 END_METADATA
 
 // A textfield that selects all text on focus and allows to switch between
@@ -254,7 +254,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   base::RepeatingClosure on_tab_focus_closure_;
 };
 
-BEGIN_METADATA(LoginPasswordView, LoginTextfield, views::Textfield)
+BEGIN_METADATA(LoginPasswordView, LoginTextfield)
 END_METADATA
 
 class LoginPasswordView::DisplayPasswordButton
@@ -298,9 +298,7 @@ class LoginPasswordView::DisplayPasswordButton
   ~DisplayPasswordButton() override = default;
 };
 
-BEGIN_METADATA(LoginPasswordView,
-               DisplayPasswordButton,
-               views::ToggleImageButton)
+BEGIN_METADATA(LoginPasswordView, DisplayPasswordButton)
 END_METADATA
 
 LoginPasswordView::TestApi::TestApi(LoginPasswordView* view) : view_(view) {}

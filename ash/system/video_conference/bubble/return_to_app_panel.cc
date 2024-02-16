@@ -425,7 +425,7 @@ gfx::Size ReturnToAppPanel::ReturnToAppContainer::CalculatePreferredSize()
   return size;
 }
 
-BEGIN_METADATA(ReturnToAppPanel, ReturnToAppContainer, views::View)
+BEGIN_METADATA(ReturnToAppPanel, ReturnToAppContainer)
 END_METADATA
 
 // -----------------------------------------------------------------------------

@@ -405,7 +405,7 @@ void AppListToastView::ToastPillButton::OnBlur() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(AppListToastView, ToastPillButton, PillButton)
+BEGIN_METADATA(AppListToastView, ToastPillButton)
 END_METADATA
 
 void AppListToastView::UpdateIconImage() {

@@ -255,7 +255,7 @@ class GlanceablesTaskViewV2::CheckButton : public views::ImageButton {
   bool checked_ = false;
 };
 
-BEGIN_METADATA(GlanceablesTaskViewV2, CheckButton, views::ImageButton)
+BEGIN_METADATA(GlanceablesTaskViewV2, CheckButton)
 END_METADATA
 
 class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
@@ -284,7 +284,7 @@ class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
   }
 };
 
-BEGIN_METADATA(GlanceablesTaskViewV2, TaskTitleButton, views::LabelButton)
+BEGIN_METADATA(GlanceablesTaskViewV2, TaskTitleButton)
 END_METADATA
 
 GlanceablesTaskViewV2::GlanceablesTaskViewV2(

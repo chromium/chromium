@@ -261,7 +261,7 @@ class LoginPinView::DigitPinButton : public BasePinButton {
   raw_ptr<views::Label> sub_label_ = nullptr;
 };
 
-BEGIN_METADATA(LoginPinView, DigitPinButton, BasePinButton)
+BEGIN_METADATA(LoginPinView, DigitPinButton)
 END_METADATA
 
 // A PIN button that displays backspace icon.
@@ -407,7 +407,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
           base::Unretained(this)));
 };
 
-BEGIN_METADATA(LoginPinView, BackspacePinButton, BasePinButton)
+BEGIN_METADATA(LoginPinView, BackspacePinButton)
 END_METADATA
 
 // A PIN button to press to submit the PIN / password.
@@ -443,7 +443,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
                               base::Unretained(this)));
 };
 
-BEGIN_METADATA(LoginPinView, SubmitPinButton, BasePinButton)
+BEGIN_METADATA(LoginPinView, SubmitPinButton)
 END_METADATA
 
 // static

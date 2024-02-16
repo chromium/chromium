@@ -315,9 +315,7 @@ class ExtensionInstallDialogView::ExtensionJustificationView
   raw_ptr<views::Label> justification_text_length_;
 };
 
-BEGIN_METADATA(ExtensionInstallDialogView,
-               ExtensionJustificationView,
-               views::View)
+BEGIN_METADATA(ExtensionInstallDialogView, ExtensionJustificationView)
 END_METADATA
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
@@ -721,7 +719,7 @@ void ExtensionInstallDialogView::EnableInstallButton() {
   DialogModelChanged();
 }
 
-BEGIN_METADATA(ExtensionInstallDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ExtensionInstallDialogView)
 END_METADATA
 
 // static

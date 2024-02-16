@@ -189,7 +189,7 @@ class PaginationView::SelectorDotView : public views::View {
   std::vector<DeformInterval> deform_intervals_;
 };
 
-BEGIN_METADATA(PaginationView, SelectorDotView, views::View)
+BEGIN_METADATA(PaginationView, SelectorDotView)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
   std::optional<InterpolationInterval<int>> scroll_interval_;
 };
 
-BEGIN_METADATA(PaginationView, IndicatorContainer, views::BoxLayoutView)
+BEGIN_METADATA(PaginationView, IndicatorContainer)
 END_METADATA
 
 //------------------------------------------------------------------------------

@@ -149,7 +149,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
   const raw_ptr<Shelf> shelf_;
 };
 
-BEGIN_METADATA(ScrollableShelfView, ScrollableShelfArrowView, ScrollArrowView)
+BEGIN_METADATA(ScrollableShelfView, ScrollableShelfArrowView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////

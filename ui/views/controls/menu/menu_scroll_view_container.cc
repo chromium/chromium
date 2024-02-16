@@ -214,7 +214,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   raw_ptr<MenuScrollViewContainer> owner_;
 };
 
-BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
+BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView)
 END_METADATA
 
 // MenuScrollViewContainer ----------------------------------------------------

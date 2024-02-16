@@ -173,7 +173,7 @@ void FrameHeader::FrameAnimatorView::StopAnimation() {
   }
 }
 
-BEGIN_METADATA(FrameHeader, FrameAnimatorView, views::View)
+BEGIN_METADATA(FrameHeader, FrameAnimatorView)
 END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////

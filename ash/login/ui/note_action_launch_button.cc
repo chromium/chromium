@@ -165,7 +165,7 @@ class NoteActionLaunchButton::BackgroundView : public NonAccessibleView {
   BubbleLayerDelegate background_layer_delegate_;
 };
 
-BEGIN_METADATA(NoteActionLaunchButton, BackgroundView, NonAccessibleView)
+BEGIN_METADATA(NoteActionLaunchButton, BackgroundView)
 END_METADATA
 
 // The event target delegate used for the note action view. It matches the
@@ -351,7 +351,7 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   bool tracking_activation_gesture_ = false;
 };
 
-BEGIN_METADATA(NoteActionLaunchButton, ActionButton, views::ImageButton)
+BEGIN_METADATA(NoteActionLaunchButton, ActionButton)
 END_METADATA
 
 NoteActionLaunchButton::TestApi::TestApi(NoteActionLaunchButton* launch_button)

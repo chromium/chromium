@@ -446,7 +446,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool is_dragging_ = false;
 };
 
-BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
+BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDragging)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, HandleImageSize)

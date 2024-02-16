@@ -133,7 +133,7 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(OverlayScrollBar, Thumb, BaseScrollBarThumb)
+BEGIN_METADATA(OverlayScrollBar, Thumb)
 END_METADATA
 
 OverlayScrollBar::OverlayScrollBar(Orientation orientation)

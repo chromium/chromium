@@ -73,7 +73,7 @@ class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
   const raw_ptr<FeatureTilesContainerView> container_;
 };
 
-BEGIN_METADATA(FeatureTilesContainerView, RowContainer, views::FlexLayoutView)
+BEGIN_METADATA(FeatureTilesContainerView, RowContainer)
 END_METADATA
 
 // The page container that holds `RowContainer` elements. Can hold from one up
@@ -95,7 +95,7 @@ class FeatureTilesContainerView::PageContainer : public views::FlexLayoutView {
   ~PageContainer() override = default;
 };
 
-BEGIN_METADATA(FeatureTilesContainerView, PageContainer, views::FlexLayoutView)
+BEGIN_METADATA(FeatureTilesContainerView, PageContainer)
 END_METADATA
 
 FeatureTilesContainerView::FeatureTilesContainerView(

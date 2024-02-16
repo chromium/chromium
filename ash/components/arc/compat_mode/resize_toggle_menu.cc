@@ -214,7 +214,7 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   GetBorder()->set_color(border_color);
 }
 
-BEGIN_METADATA(ResizeToggleMenu, MenuButtonView, views::Button)
+BEGIN_METADATA(ResizeToggleMenu, MenuButtonView)
 END_METADATA
 
 ResizeToggleMenu::ResizeToggleMenu(

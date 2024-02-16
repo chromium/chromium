@@ -203,7 +203,7 @@ class EditingList::AddContainerButton : public views::Button {
   base::CallbackListSubscription title_changed_callback_;
 };
 
-BEGIN_METADATA(EditingList, AddContainerButton, views::Button)
+BEGIN_METADATA(EditingList, AddContainerButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------

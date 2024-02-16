@@ -515,9 +515,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnGestureEvent(
   }
 }
 
-BEGIN_METADATA(PasswordGenerationPopupViewViews,
-               GeneratedPasswordBox,
-               views::View)
+BEGIN_METADATA(PasswordGenerationPopupViewViews, GeneratedPasswordBox)
 END_METADATA
 
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(

@@ -176,7 +176,7 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
   const raw_ref<const gfx::VectorIcon> icon_;
 };
 
-BEGIN_METADATA(QuickSettingsHeader, ManagedStateView, views::Button)
+BEGIN_METADATA(QuickSettingsHeader, ManagedStateView)
 END_METADATA
 
 class QuickSettingsHeader::EnterpriseManagedView
@@ -277,7 +277,7 @@ class QuickSettingsHeader::EnterpriseManagedView
   bool narrow_layout_ = false;
 };
 
-BEGIN_METADATA(QuickSettingsHeader, EnterpriseManagedView, ManagedStateView)
+BEGIN_METADATA(QuickSettingsHeader, EnterpriseManagedView)
 END_METADATA
 
 QuickSettingsHeader::QuickSettingsHeader(

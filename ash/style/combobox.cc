@@ -251,7 +251,7 @@ class Combobox::ComboboxMenuView : public views::View {
   raw_ptr<views::ScrollView> scroll_view_;
 };
 
-BEGIN_METADATA(Combobox, ComboboxMenuView, views::View)
+BEGIN_METADATA(Combobox, ComboboxMenuView)
 END_METADATA
 
 //------------------------------------------------------------------------------

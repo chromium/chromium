@@ -155,7 +155,7 @@ void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
   }
 }
 
-BEGIN_METADATA(TaskContinuationView, TaskChipsView, views::View)
+BEGIN_METADATA(TaskContinuationView, TaskChipsView)
 END_METADATA
 
 void TaskContinuationView::Update() {

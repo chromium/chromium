@@ -423,7 +423,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
       view_bounds_changed_observers_by_view_;
 };
 
-BEGIN_METADATA(HoldingSpaceTrayBubble, ChildBubbleContainer, views::View)
+BEGIN_METADATA(HoldingSpaceTrayBubble, ChildBubbleContainer)
 END_METADATA
 
 // HoldingSpaceTrayBubble ------------------------------------------------------

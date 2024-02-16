@@ -100,7 +100,7 @@ class QuickSettingsView::SystemTrayContainer : public views::View {
   const raw_ptr<views::BoxLayout> layout_manager_;
 };
 
-BEGIN_METADATA(QuickSettingsView, SystemTrayContainer, views::View)
+BEGIN_METADATA(QuickSettingsView, SystemTrayContainer)
 END_METADATA
 
 QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)

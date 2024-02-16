@@ -110,7 +110,7 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
   ~FocusableLabelButton() override = default;
 };
 
-BEGIN_METADATA(PinRequestView, FocusableLabelButton, views::LabelButton)
+BEGIN_METADATA(PinRequestView, FocusableLabelButton)
 END_METADATA
 
 PinRequestView::TestApi::TestApi(PinRequestView* view) : view_(view) {

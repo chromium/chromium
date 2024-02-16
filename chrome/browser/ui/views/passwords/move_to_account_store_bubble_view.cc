@@ -251,7 +251,7 @@ void MoveToAccountStoreBubbleView::MovingBannerView::UpdateFavicon(
   to_view->UpdateBadge(favicon);
 }
 
-BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView, views::View)
+BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView)
 END_METADATA
 
 MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(

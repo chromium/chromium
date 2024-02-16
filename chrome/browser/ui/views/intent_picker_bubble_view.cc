@@ -810,5 +810,5 @@ void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
 BEGIN_METADATA(IntentPickerBubbleView)
 END_METADATA
 
-BEGIN_METADATA(IntentPickerBubbleView, IntentPickerAppsView, views::ScrollView)
+BEGIN_METADATA(IntentPickerBubbleView, IntentPickerAppsView)
 END_METADATA

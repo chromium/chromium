@@ -128,7 +128,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   raw_ptr<Browser> browser_;
 };
 
-BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)
+BEGIN_METADATA(HatsNextWebDialog, HatsWebView)
 END_METADATA
 
 HatsNextWebDialog::HatsNextWebDialog(

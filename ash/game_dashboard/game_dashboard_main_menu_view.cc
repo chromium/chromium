@@ -255,7 +255,7 @@ class FeatureHeader : public views::View {
   raw_ptr<views::Label> sub_title_ = nullptr;
 };
 
-BEGIN_METADATA(FeatureHeader, views::View)
+BEGIN_METADATA(FeatureHeader)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -266,7 +266,7 @@ END_METADATA
 // | |feature header|                           |>| |
 // +------------------------------------------------+
 class ScreenSizeRow : public views::Button {
-  METADATA_HEADER(ScreenSizeRow, views::View)
+  METADATA_HEADER(ScreenSizeRow, views::Button)
 
  public:
   ScreenSizeRow(PressedCallback callback,
@@ -317,7 +317,7 @@ class ScreenSizeRow : public views::Button {
   ~ScreenSizeRow() override = default;
 };
 
-BEGIN_METADATA(ScreenSizeRow, views::Button)
+BEGIN_METADATA(ScreenSizeRow)
 END_METADATA
 
 }  // namespace
@@ -493,7 +493,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   std::string app_name_;
 };
 
-BEGIN_METADATA(GameDashboardMainMenuView, GameControlsDetailsRow, views::Button)
+BEGIN_METADATA(GameDashboardMainMenuView, GameControlsDetailsRow)
 END_METADATA
 
 // -----------------------------------------------------------------------------

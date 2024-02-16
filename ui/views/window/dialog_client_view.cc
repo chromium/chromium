@@ -95,7 +95,7 @@ class DialogClientView::ButtonRowContainer : public View {
   const raw_ptr<DialogClientView> owner_;
 };
 
-BEGIN_METADATA(DialogClientView, ButtonRowContainer, View)
+BEGIN_METADATA(DialogClientView, ButtonRowContainer)
 END_METADATA
 
 DialogClientView::DialogClientView(Widget* owner, View* contents_view)

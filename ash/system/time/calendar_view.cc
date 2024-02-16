@@ -376,7 +376,7 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   const raw_ptr<views::Label> month_label_ = nullptr;
 };
 
-BEGIN_METADATA(CalendarView, MonthHeaderLabelView, views::View)
+BEGIN_METADATA(CalendarView, MonthHeaderLabelView)
 END_METADATA
 
 CalendarView::ScrollContentsView::ScrollContentsView(
@@ -441,7 +441,7 @@ void CalendarView::ScrollContentsView::StylusEventHandler::OnTouchEvent(
   }
 }
 
-BEGIN_METADATA(CalendarView, ScrollContentsView, views::View)
+BEGIN_METADATA(CalendarView, ScrollContentsView)
 END_METADATA
 
 CalendarHeaderView::CalendarHeaderView(const std::u16string& month,

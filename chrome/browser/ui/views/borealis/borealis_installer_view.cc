@@ -129,7 +129,7 @@ class BorealisInstallerView::TitleLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(BorealisInstallerView, TitleLabel, views::Label)
+BEGIN_METADATA(BorealisInstallerView, TitleLabel)
 END_METADATA
 
 BorealisInstallerView::BorealisInstallerView(Profile* profile)

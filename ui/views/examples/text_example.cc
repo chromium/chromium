@@ -116,7 +116,7 @@ class TextExample::TextExampleView : public View {
   gfx::ElideBehavior elide_ = gfx::NO_ELIDE;
 };
 
-BEGIN_METADATA(TextExample, TextExampleView, View)
+BEGIN_METADATA(TextExample, TextExampleView)
 END_METADATA
 
 TextExample::TextExample()

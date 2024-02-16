@@ -138,7 +138,7 @@ void MessageBox::Core::OnMessageBoxDestroyed() {
   result_callback_.Reset();
 }
 
-BEGIN_METADATA(MessageBox, Core, views::DialogDelegateView)
+BEGIN_METADATA(MessageBox, Core)
 END_METADATA
 
 MessageBox::MessageBox(const std::u16string& title_label,

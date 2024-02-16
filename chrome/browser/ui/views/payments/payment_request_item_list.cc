@@ -167,7 +167,7 @@ void PaymentRequestItemList::Item::ButtonPressed() {
   }
 }
 
-BEGIN_METADATA(PaymentRequestItemList, Item, PaymentRequestRowView)
+BEGIN_METADATA(PaymentRequestItemList, Item)
 END_METADATA
 
 PaymentRequestItemList::PaymentRequestItemList(

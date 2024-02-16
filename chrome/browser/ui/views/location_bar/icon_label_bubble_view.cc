@@ -130,7 +130,7 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   layer()->SetOpacity(opacity);
 }
 
-BEGIN_METADATA(IconLabelBubbleView, SeparatorView, views::View)
+BEGIN_METADATA(IconLabelBubbleView, SeparatorView)
 END_METADATA
 
 class IconLabelBubbleView::HighlightPathGenerator

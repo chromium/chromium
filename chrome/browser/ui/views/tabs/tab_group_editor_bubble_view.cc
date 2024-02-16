@@ -632,5 +632,5 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
   views::Textfield::ShowContextMenu(p, source_type);
 }
 
-BEGIN_METADATA(TabGroupEditorBubbleView, TitleField, views::Textfield)
+BEGIN_METADATA(TabGroupEditorBubbleView, TitleField)
 END_METADATA

@@ -160,7 +160,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   raw_ptr<views::Label> task_title_ = nullptr;
 };
 
-BEGIN_METADATA(FocusModeTray, TaskItemView, views::BoxLayoutView)
+BEGIN_METADATA(FocusModeTray, TaskItemView)
 END_METADATA
 
 FocusModeTray::FocusModeTray(Shelf* shelf)

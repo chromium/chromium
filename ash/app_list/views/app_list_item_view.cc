@@ -529,7 +529,7 @@ class AppListItemView::FolderIconView : public views::View,
   std::string dragged_item_id_;
 };
 
-BEGIN_METADATA(AppListItemView, FolderIconView, views::View)
+BEGIN_METADATA(AppListItemView, FolderIconView)
 END_METADATA
 
 AppListItemView::AppListItemView(const AppListConfig* app_list_config,

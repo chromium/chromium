@@ -1874,7 +1874,7 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
   raw_ptr<TestViewForMenuExit, DanglingUntriaged> test_view_ = nullptr;
 };
 
-BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit, views::View)
+BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit)
 END_METADATA
 
 // TODO(https://crbug.com/1506808): Flaky on Windows.

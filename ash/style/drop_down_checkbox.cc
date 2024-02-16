@@ -189,7 +189,7 @@ class DropDownCheckbox::MenuView : public views::View {
   raw_ptr<CheckboxMenuOptionGroup> menu_item_group_;
 };
 
-BEGIN_METADATA(DropDownCheckbox, MenuView, views::View)
+BEGIN_METADATA(DropDownCheckbox, MenuView)
 END_METADATA
 
 //------------------------------------------------------------------------------

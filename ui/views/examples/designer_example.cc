@@ -437,7 +437,7 @@ bool DesignerExample::GrabHandle::IsRight(GrabHandlePosition position) {
   return (position & GrabHandlePosition::kRight);
 }
 
-BEGIN_METADATA(DesignerExample, GrabHandle, View)
+BEGIN_METADATA(DesignerExample, GrabHandle)
 END_METADATA
 
 DesignerExample::GrabHandles::GrabHandles() = default;

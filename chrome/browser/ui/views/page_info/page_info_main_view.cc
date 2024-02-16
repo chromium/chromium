@@ -84,7 +84,7 @@ void PageInfoMainView::ContainerView::Update() {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(PageInfoMainView, ContainerView, views::View)
+BEGIN_METADATA(PageInfoMainView, ContainerView)
 END_METADATA
 
 PageInfoMainView::PageInfoMainView(

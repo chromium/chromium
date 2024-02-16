@@ -603,7 +603,7 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
   Button::AnimationProgressed(animation);
 }
 
-BEGIN_METADATA(ToggleButton, ThumbView, View)
+BEGIN_METADATA(ToggleButton, ThumbView)
 END_METADATA
 
 BEGIN_METADATA(ToggleButton)

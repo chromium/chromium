@@ -169,7 +169,7 @@ void PhoneHubRecentAppsView::HeaderView::SetErrorButtonVisible(
   }
 }
 
-BEGIN_METADATA(PhoneHubRecentAppsView, HeaderView, views::View)
+BEGIN_METADATA(PhoneHubRecentAppsView, HeaderView)
 END_METADATA
 
 class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
@@ -197,7 +197,7 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
   PlaceholderView operator=(PlaceholderView&) = delete;
 };
 
-BEGIN_METADATA(PhoneHubRecentAppsView, PlaceholderView, views::Label)
+BEGIN_METADATA(PhoneHubRecentAppsView, PlaceholderView)
 END_METADATA
 
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
@@ -302,7 +302,7 @@ PhoneHubRecentAppsView::RecentAppButtonsView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(PhoneHubRecentAppsView, RecentAppButtonsView, views::View)
+BEGIN_METADATA(PhoneHubRecentAppsView, RecentAppButtonsView)
 END_METADATA
 
 PhoneHubRecentAppsView::LoadingView::LoadingView() {
@@ -363,7 +363,7 @@ void PhoneHubRecentAppsView::LoadingView::StopLoadingAnimation() {
   more_apps_button_->StopLoadingAnimation();
 }
 
-BEGIN_METADATA(PhoneHubRecentAppsView, LoadingView, views::BoxLayoutView)
+BEGIN_METADATA(PhoneHubRecentAppsView, LoadingView)
 END_METADATA
 
 void PhoneHubRecentAppsView::Update() {

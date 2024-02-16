@@ -89,7 +89,7 @@ class BruschettaInstallerView::TitleLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(BruschettaInstallerView, TitleLabel, views::Label)
+BEGIN_METADATA(BruschettaInstallerView, TitleLabel)
 END_METADATA
 
 BruschettaInstallerView::BruschettaInstallerView(Profile* profile,

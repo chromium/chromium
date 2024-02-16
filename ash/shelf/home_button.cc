@@ -313,7 +313,7 @@ class HomeButton::ButtonImageView : public views::View {
   bool toggled_ = false;
 };
 
-BEGIN_METADATA(HomeButton, ButtonImageView, views::View)
+BEGIN_METADATA(HomeButton, ButtonImageView)
 END_METADATA
 
 // HomeButton::ScopedNoClipRect ------------------------------------------------

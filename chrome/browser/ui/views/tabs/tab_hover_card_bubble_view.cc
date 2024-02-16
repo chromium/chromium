@@ -340,7 +340,7 @@ class TabHoverCardBubbleView::ThumbnailView
   ImageType image_type_ = ImageType::kNone;
 };
 
-BEGIN_METADATA(TabHoverCardBubbleView, ThumbnailView, views::View)
+BEGIN_METADATA(TabHoverCardBubbleView, ThumbnailView)
 END_METADATA
 
 // TabHoverCardBubbleView:

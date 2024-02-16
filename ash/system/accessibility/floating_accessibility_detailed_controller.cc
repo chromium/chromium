@@ -36,6 +36,7 @@ constexpr int kDetailedViewHeightDip = 350;
 class FloatingAccessibilityDetailedController::DetailedBubbleView
     : public TrayBubbleView {
   METADATA_HEADER(DetailedBubbleView, TrayBubbleView)
+
  public:
   explicit DetailedBubbleView(TrayBubbleView::InitParams init_params)
       : TrayBubbleView(init_params) {}
@@ -184,9 +185,7 @@ void FloatingAccessibilityDetailedController::OnWindowActivated(
   bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
-BEGIN_METADATA(FloatingAccessibilityDetailedController,
-               DetailedBubbleView,
-               TrayBubbleView)
+BEGIN_METADATA(FloatingAccessibilityDetailedController, DetailedBubbleView)
 END_METADATA
 
 }  // namespace ash

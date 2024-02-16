@@ -232,7 +232,7 @@ class AppsContainerView::ContinueContainer : public views::View {
   raw_ptr<views::Separator, DanglingUntriaged> separator_ = nullptr;
 };
 
-BEGIN_METADATA(AppsContainerView, ContinueContainer, views::View)
+BEGIN_METADATA(AppsContainerView, ContinueContainer)
 END_METADATA
 
 const int AppsContainerView::kHorizontalMargin = 24;

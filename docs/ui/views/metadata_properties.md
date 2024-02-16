@@ -53,7 +53,7 @@ parameter to define the outer class or scope:
 
 
 ```
-BEGIN_METADATA(MyViewClass, MyNestedView, views::View)
+BEGIN_METADATA(MyViewClass, MyNestedView)
 END_METADATA
 ```
 
