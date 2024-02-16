@@ -189,7 +189,8 @@ unsigned CSSKeyframesRule::length() const {
   return keyframes_rule_->Keyframes().size();
 }
 
-CSSKeyframeRule* CSSKeyframesRule::Item(unsigned index) const {
+CSSKeyframeRule* CSSKeyframesRule::Item(unsigned index,
+                                        bool trigger_use_counters) const {
   if (index >= length()) {
     return nullptr;
   }

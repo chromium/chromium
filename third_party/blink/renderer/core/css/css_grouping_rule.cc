@@ -235,11 +235,12 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   //    and the first rule is a CSSStyleRule with a single selector
   //    that would serialize to exactly “&”, and that rule has no children:
   unsigned size = length();
-  if (size > 0 && IsImplicitlyInsertedParentRule(Item(0))) {
+  if (size > 0 && IsImplicitlyInsertedParentRule(ItemInternal(0))) {
     // 4.1. Let decls be the result of performing serialize a CSS declaration
     // block on the first rule’s associated declarations.
+    CSSRule* rule = ItemInternal(0);
     String decls =
-        DynamicTo<CSSStyleRule>(Item(0))->GetStyleRule()->Properties().AsText();
+        DynamicTo<CSSStyleRule>(rule)->GetStyleRule()->Properties().AsText();
 
     // 4.2. Let rules be the result of performing serialize a CSS
     //      rule on each rule in the rule’s cssRules list except the first,
@@ -248,7 +249,7 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
     for (unsigned i = 1; i < size; ++i) {
       // Step 4.4.2 for rules.
       rules.Append("\n  ");
-      rules.Append(Item(i)->cssText());
+      rules.Append(ItemInternal(i)->cssText());
     }
 
     // 4.3. If rules is null:
@@ -294,7 +295,7 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   //   5.3. Append a newline to s, followed by the string "}", i.e., RIGHT CURLY
   //        BRACKET (U+007D)
   for (unsigned i = 0; i < size; ++i) {
-    CSSRule* child = Item(i);
+    CSSRule* child = ItemInternal(i);
     result.Append("  ");
     result.Append(child->cssText());
     result.Append('\n');
@@ -306,7 +307,8 @@ unsigned CSSGroupingRule::length() const {
   return group_rule_->ChildRules().size();
 }
 
-CSSRule* CSSGroupingRule::Item(unsigned index) const {
+CSSRule* CSSGroupingRule::Item(unsigned index,
+                               bool trigger_use_counters) const {
   if (index >= length()) {
     return nullptr;
   }
@@ -315,7 +317,7 @@ CSSRule* CSSGroupingRule::Item(unsigned index) const {
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
   if (!rule) {
     rule = group_rule_->ChildRules()[index]->CreateCSSOMWrapper(
-        index, const_cast<CSSGroupingRule*>(this));
+        index, const_cast<CSSGroupingRule*>(this), trigger_use_counters);
   }
   return rule.Get();
 }

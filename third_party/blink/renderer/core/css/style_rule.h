@@ -125,9 +125,11 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   // FIXME: There shouldn't be any need for the null parent version.
   CSSRule* CreateCSSOMWrapper(
       wtf_size_t position_hint = std::numeric_limits<wtf_size_t>::max(),
-      CSSStyleSheet* parent_sheet = nullptr) const;
+      CSSStyleSheet* parent_sheet = nullptr,
+      bool trigger_use_counters = false) const;
   CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
-                              CSSRule* parent_rule) const;
+                              CSSRule* parent_rule,
+                              bool trigger_use_counters = false) const;
 
   // Move this rule from being a child of old_parent (which is only given for
   // sake of DCHECK) to being a child of new_parent, updating parent pointers
@@ -228,7 +230,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  private:
   CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
                               CSSStyleSheet* parent_sheet,
-                              CSSRule* parent_rule) const;
+                              CSSRule* parent_rule,
+                              bool trigger_use_counters) const;
 
   const uint8_t type_;
   // See CSSSelector::Signal.

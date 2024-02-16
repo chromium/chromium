@@ -60,6 +60,9 @@
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -73,13 +76,17 @@ struct SameSizeAsStyleRuleBase final
 ASSERT_SIZE(StyleRuleBase, SameSizeAsStyleRuleBase);
 
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
-                                           CSSStyleSheet* parent_sheet) const {
-  return CreateCSSOMWrapper(position_hint, parent_sheet, nullptr);
+                                           CSSStyleSheet* parent_sheet,
+                                           bool trigger_use_counters) const {
+  return CreateCSSOMWrapper(position_hint, parent_sheet, nullptr,
+                            trigger_use_counters);
 }
 
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
-                                           CSSRule* parent_rule) const {
-  return CreateCSSOMWrapper(position_hint, nullptr, parent_rule);
+                                           CSSRule* parent_rule,
+                                           bool trigger_use_counters) const {
+  return CreateCSSOMWrapper(position_hint, nullptr, parent_rule,
+                            trigger_use_counters);
 }
 
 bool StyleRuleBase::IsInvisible() const {
@@ -315,7 +322,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
 
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                            CSSStyleSheet* parent_sheet,
-                                           CSSRule* parent_rule) const {
+                                           CSSRule* parent_rule,
+                                           bool trigger_use_counters) const {
   CSSRule* rule = nullptr;
   StyleRuleBase* self = const_cast<StyleRuleBase*>(this);
   switch (GetType()) {
@@ -324,6 +332,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                                 parent_sheet, position_hint);
       break;
     case kPage:
+      if (trigger_use_counters && parent_sheet) {
+        UseCounter::Count(parent_sheet->OwnerDocument(),
+                          WebFeature::kCSSPageRule);
+      }
       rule = MakeGarbageCollected<CSSPageRule>(To<StyleRulePage>(self),
                                                parent_sheet);
       break;

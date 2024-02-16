@@ -126,7 +126,13 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
 
   // For CSSRuleList.
   unsigned length() const;
-  CSSRule* item(unsigned index);
+  CSSRule* item(unsigned index, bool trigger_use_counters = true);
+
+  // Get an item, but signal that it's been requested internally from the
+  // engine, and not directly from a script.
+  CSSRule* ItemInternal(unsigned index) {
+    return item(index, /*trigger_use_counters=*/false);
+  }
 
   void ClearOwnerNode() override;
 

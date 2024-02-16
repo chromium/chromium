@@ -4222,6 +4222,7 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use = 4858,
   kV8PointerEvent_GetCoalescedEvents_Method = 4859,
   kCSSFunctions = 4861,
+  kCSSPageRule = 4862,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

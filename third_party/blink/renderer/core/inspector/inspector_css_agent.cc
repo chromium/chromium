@@ -177,7 +177,7 @@ String CreateShorthandValue(Document& document,
                         style_sheet_contents, text);
 
   auto* style_sheet = MakeGarbageCollected<CSSStyleSheet>(style_sheet_contents);
-  auto* rule = To<CSSStyleRule>(style_sheet->item(0));
+  auto* rule = To<CSSStyleRule>(style_sheet->ItemInternal(0));
   CSSStyleDeclaration* style = rule->style();
   DummyExceptionStateForTesting exception_state;
   style->setProperty(document.GetExecutionContext(), longhand, new_value,
@@ -1282,7 +1282,7 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
     InspectorStyleSheet* inspector_style_sheet =
         BindStyleSheet(css_position_fallback_rule->parentStyleSheet());
     try_rules->emplace_back(inspector_style_sheet->BuildObjectForTryRule(
-        To<CSSTryRule>(css_position_fallback_rule->Item(j))));
+        To<CSSTryRule>(css_position_fallback_rule->ItemInternal(j))));
   }
 
   InspectorStyleSheet* inspector_style_sheet =
@@ -1484,7 +1484,7 @@ InspectorCSSAgent::FindKeyframesRuleFromUAViewTransitionStylesheet(
        i++) {
     CSSKeyframesRule* css_keyframes_rule_from_stylesheet =
         DynamicTo<CSSKeyframesRule>(
-            user_agent_view_transition_style_sheet_->item(i));
+            user_agent_view_transition_style_sheet_->ItemInternal(i));
     if (css_keyframes_rule_from_stylesheet &&
         css_keyframes_rule_from_stylesheet->name() ==
             keyframes_style_rule->GetName()) {
@@ -2807,7 +2807,7 @@ void InspectorCSSAgent::CollectStyleSheets(
     HeapVector<Member<CSSStyleSheet>>& result) {
   result.push_back(style_sheet);
   for (unsigned i = 0, size = style_sheet->length(); i < size; ++i) {
-    CSSRule* rule = style_sheet->item(i);
+    CSSRule* rule = style_sheet->ItemInternal(i);
     if (auto* import_rule = DynamicTo<CSSImportRule>(rule)) {
       CSSStyleSheet* imported_style_sheet = import_rule->styleSheet();
       if (imported_style_sheet)

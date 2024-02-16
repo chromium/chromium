@@ -972,7 +972,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
     return;
 
   for (unsigned i = 0, size = rule_list->length(); i < size; ++i) {
-    CSSRule* rule = rule_list->item(i);
+    CSSRule* rule = rule_list->ItemInternal(i);
 
     // The result->append()'ed types should be exactly the same as in
     // flattenSourceData().
@@ -1849,13 +1849,13 @@ CSSStyleRule* InspectorStyleSheet::InsertCSSOMRuleInStyleSheet(
     ExceptionState& exception_state) {
   unsigned index = 0;
   for (; index < page_style_sheet_->length(); ++index) {
-    CSSRule* rule = page_style_sheet_->item(index);
+    CSSRule* rule = page_style_sheet_->ItemInternal(index);
     if (rule == insert_before)
       break;
   }
 
   page_style_sheet_->insertRule(rule_text, index, exception_state);
-  CSSRule* rule = page_style_sheet_->item(index);
+  CSSRule* rule = page_style_sheet_->ItemInternal(index);
   CSSStyleRule* style_rule = InspectorCSSAgent::AsCSSStyleRule(rule);
   if (!style_rule) {
     page_style_sheet_->deleteRule(index, ASSERT_NO_EXCEPTION);
@@ -1874,7 +1874,7 @@ CSSStyleRule* InspectorStyleSheet::InsertCSSOMRuleInMediaRule(
     ExceptionState& exception_state) {
   unsigned index = 0;
   for (; index < media_rule->length(); ++index) {
-    CSSRule* rule = media_rule->Item(index);
+    CSSRule* rule = media_rule->ItemInternal(index);
     if (rule == insert_before)
       break;
   }
@@ -1882,7 +1882,7 @@ CSSStyleRule* InspectorStyleSheet::InsertCSSOMRuleInMediaRule(
   media_rule->insertRule(
       page_style_sheet_->OwnerDocument()->GetExecutionContext(), rule_text,
       index, exception_state);
-  CSSRule* rule = media_rule->Item(index);
+  CSSRule* rule = media_rule->ItemInternal(index);
   CSSStyleRule* style_rule = InspectorCSSAgent::AsCSSStyleRule(rule);
   if (!style_rule) {
     media_rule->deleteRule(index, ASSERT_NO_EXCEPTION);
@@ -2020,14 +2020,17 @@ bool InspectorStyleSheet::DeleteRule(const SourceRange& range,
     CSSMediaRule* parent_media_rule = To<CSSMediaRule>(parent_rule);
     wtf_size_t index = 0;
     while (index < parent_media_rule->length() &&
-           parent_media_rule->Item(index) != rule)
+           parent_media_rule->ItemInternal(index) != rule) {
       ++index;
+    }
     DCHECK_LT(index, parent_media_rule->length());
     parent_media_rule->deleteRule(index, exception_state);
   } else {
     wtf_size_t index = 0;
-    while (index < style_sheet->length() && style_sheet->item(index) != rule)
+    while (index < style_sheet->length() &&
+           style_sheet->ItemInternal(index) != rule) {
       ++index;
+    }
     DCHECK_LT(index, style_sheet->length());
     style_sheet->deleteRule(index, exception_state);
   }
@@ -2164,12 +2167,12 @@ String InspectorStyleSheet::MergeCSSOMRulesWithText(const String& text) {
   unsigned inserted_count = 0;
   for (unsigned i = 0; i < page_style_sheet_->length(); i++) {
     CSSRuleSourceData* source_data =
-        SourceDataForRule(page_style_sheet_->item(i));
+        SourceDataForRule(page_style_sheet_->ItemInternal(i));
     if (source_data) {
       original_insert_pos = source_data->rule_body_range.end + 1;
       continue;
     }
-    String rule_text = page_style_sheet_->item(i)->cssText();
+    String rule_text = page_style_sheet_->ItemInternal(i)->cssText();
     merged_text.replace(original_insert_pos + inserted_count, 0, rule_text);
     inserted_count += rule_text.length();
   }
@@ -2800,7 +2803,7 @@ Element* InspectorStyleSheet::OwnerStyleElement() {
 String InspectorStyleSheet::CollectStyleSheetRules() {
   StringBuilder builder;
   for (unsigned i = 0; i < page_style_sheet_->length(); i++) {
-    builder.Append(page_style_sheet_->item(i)->cssText());
+    builder.Append(page_style_sheet_->ItemInternal(i)->cssText());
     builder.Append('\n');
   }
   return builder.ToString();

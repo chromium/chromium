@@ -985,7 +985,7 @@ static CSSRule* FindStyleRule(CSSRuleCollection* css_rules,
   }
 
   for (unsigned i = 0; i < css_rules->length(); ++i) {
-    CSSRule* css_rule = css_rules->item(i);
+    CSSRule* css_rule = css_rules->ItemInternal(i);
     if (auto* css_style_rule = DynamicTo<CSSStyleRule>(css_rule)) {
       if (css_style_rule->GetStyleRule() == style_rule) {
         return css_rule;
