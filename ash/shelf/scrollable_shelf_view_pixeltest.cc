@@ -91,10 +91,11 @@ class ScrollableShelfViewWithGuestModePixelTest
     set_start_session(false);
 
     ShelfTestBase::SetUp();
-    if (GetParam())
+    if (GetParam()) {
       SimulateGuestLogin();
-    else
+    } else {
       SimulateUserLogin("user@gmail.com");
+    }
   }
 
  private:
@@ -116,7 +117,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/18,
+      /*revision_number=*/17,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

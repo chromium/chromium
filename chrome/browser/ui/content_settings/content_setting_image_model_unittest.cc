@@ -48,6 +48,7 @@
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -661,8 +662,12 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://example.com")), CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  }
 
   // Add a blocked permission.
   content_settings->OnTwoSitePermissionChanged(
@@ -670,8 +675,13 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://foo.com")), CONTENT_SETTING_BLOCK);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessOffIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessOffIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(),
+              &vector_icons::kBlockedBadgeIcon);
+  }
 
   // Change permission to be allowed. E.g. through PageInfo.
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -680,8 +690,12 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->icon(),
-            &vector_icons::kStorageAccessIcon);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_EQ(content_setting_image_model->icon(),
+              &vector_icons::kStorageAccessIcon);
+  } else {
+    EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  }
 
   // Reset permissions.
   map->SetContentSettingDefaultScope(

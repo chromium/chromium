@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
 class TabGroupViewsTest : public ChromeViewsTestBase {
@@ -126,8 +127,18 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsWhenTabsAreNotVisible) {
   tab_2->SetVisible(false);
   group_views_->UpdateBounds();
 
-  EXPECT_FALSE(group_views_->underline()->GetVisible());
-  EXPECT_GT(group_views_->underline()->width(), 0);
+  if (features::IsChromeRefresh2023()) {
+    EXPECT_FALSE(group_views_->underline()->GetVisible());
+    EXPECT_GT(group_views_->underline()->width(), 0);
+  } else {
+    EXPECT_TRUE(group_views_->underline()->GetVisible());
+    const gfx::Rect underline_bounds = group_views_->underline()->bounds();
+    // Underline should begin from the header.
+    EXPECT_GT(underline_bounds.x(), header->bounds().x());
+    // Underline should end within the last tab.
+    EXPECT_LT(underline_bounds.right(), tab_2->bounds().right());
+    EXPECT_FALSE(group_views_->drag_underline()->GetVisible());
+  }
 }
 
 // Drag_underline should underline the group when the group is being dragged,

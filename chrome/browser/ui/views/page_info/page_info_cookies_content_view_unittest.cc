@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/vector_icons.h"
 
@@ -198,7 +199,9 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest, ThirdPartyCookiesBlocked) {
           IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -234,8 +237,10 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -271,8 +276,10 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION));
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -300,7 +307,9 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -335,8 +344,10 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -371,7 +382,9 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -406,8 +419,10 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -444,7 +459,9 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
@@ -480,8 +497,10 @@ TEST_F(PageInfoCookiesContentViewPre3pcdTest,
 
   // Third-party cookies section:
   EXPECT_TRUE(third_party_cookies_container()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
@@ -686,7 +705,9 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -705,7 +726,9 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -725,7 +748,9 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
   EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeCrossedRefreshIcon));
+            GetImageModel(features::IsChromeRefresh2023()
+                              ? views::kEyeCrossedRefreshIcon
+                              : views::kEyeCrossedIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_FALSE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -745,8 +770,10 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -765,8 +792,10 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_TRUE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_toggle()->GetIsOn());
   EXPECT_FALSE(third_party_cookies_enforced_icon()->GetVisible());
@@ -786,8 +815,10 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_TRUE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 
@@ -813,8 +844,10 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 
@@ -833,8 +866,10 @@ TEST_P(PageInfoCookiesContentView3pcdCookieToggleTest,
   content_view()->SetCookieInfo(cookie_info);
 
   EXPECT_FALSE(third_party_cookies_label_wrapper()->GetVisible());
-  EXPECT_EQ(third_party_cookies_row()->GetIconImageModelForTesting(),
-            GetImageModel(views::kEyeRefreshIcon));
+  EXPECT_EQ(
+      third_party_cookies_row()->GetIconImageModelForTesting(),
+      GetImageModel(features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
+                                                    : views::kEyeIcon));
   EXPECT_FALSE(third_party_cookies_toggle()->GetVisible());
   EXPECT_TRUE(third_party_cookies_enforced_icon()->GetVisible());
 

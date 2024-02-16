@@ -30,6 +30,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -128,14 +129,18 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
       EXPECT_EQ(icon_view->GetIconLabelForTesting(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
       EXPECT_STREQ(icon_view->GetVectorIcon().name,
-                   omnibox::kPriceTrackingEnabledRefreshIcon.name);
+                   features::IsChromeRefresh2023()
+                       ? omnibox::kPriceTrackingEnabledRefreshIcon.name
+                       : omnibox::kPriceTrackingEnabledFilledIcon.name);
       EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
     } else {
       EXPECT_EQ(icon_view->GetIconLabelForTesting(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
       EXPECT_STREQ(icon_view->GetVectorIcon().name,
-                   omnibox::kPriceTrackingDisabledRefreshIcon.name);
+                   features::IsChromeRefresh2023()
+                       ? omnibox::kPriceTrackingDisabledRefreshIcon.name
+                       : omnibox::kPriceTrackingDisabledIcon.name);
       EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
     }
