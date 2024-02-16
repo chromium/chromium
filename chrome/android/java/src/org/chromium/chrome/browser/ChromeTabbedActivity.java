@@ -1419,6 +1419,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void handleMhtmlFileOrContentIntent(final String url, final Intent intent) {
+        if (!getProfileProviderSupplier().hasValue()) {
+            getProfileProviderSupplier()
+                    .onAvailable((unused) -> handleMhtmlFileOrContentIntent(url, intent));
+            return;
+        }
+        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
         OfflinePageUtils.getLoadUrlParamsForOpeningMhtmlFileOrContent(
                 url,
                 (loadUrlParams) -> {
@@ -1432,7 +1438,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             Tab.INVALID_TAB_ID,
                             intent);
                 },
-                Profile.getLastUsedRegularProfile());
+                profile);
     }
 
     @Override
@@ -1633,12 +1639,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
             }
 
-            mAuxiliarySearchController =
-                    AuxiliarySearchControllerFactory.createAuxiliarySearchController(
-                            Profile.getLastUsedRegularProfile(), mTabModelSelector);
-            if (mAuxiliarySearchController != null) {
-                mAuxiliarySearchController.register(this.getLifecycleDispatcher());
-            }
+            getProfileProviderSupplier()
+                    .onAvailable(
+                            (profileProvider) -> {
+                                if (isActivityFinishingOrDestroyed()) return;
+                                mAuxiliarySearchController =
+                                        AuxiliarySearchControllerFactory
+                                                .createAuxiliarySearchController(
+                                                        profileProvider.getOriginalProfile(),
+                                                        mTabModelSelector);
+                                if (mAuxiliarySearchController != null) {
+                                    mAuxiliarySearchController.register(
+                                            this.getLifecycleDispatcher());
+                                }
+                            });
+
             mInactivityTracker.register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
@@ -2850,7 +2865,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (fromMenu) RecordUserAction.record("MobileMenuNewIncognitoTab.AppMenu");
                 getTabCreator(true).launchNtp();
                 Tracker tracker =
-                        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+                        TrackerFactory.getTrackerForProfile(
+                                mTabModelSelector.getCurrentModel().getProfile());
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
         } else if (id == R.id.all_bookmarks_menu_id) {
