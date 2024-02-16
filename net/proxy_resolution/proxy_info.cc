@@ -68,17 +68,6 @@ std::string ProxyInfo::ToPacString() const {
   return proxy_list_.ToPacString();
 }
 
-bool ProxyInfo::is_https() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return true;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_https();
-}
-
 bool ProxyInfo::is_http_like() const {
   if (is_empty() || is_direct()) {
     return false;

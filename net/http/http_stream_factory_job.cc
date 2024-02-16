@@ -498,9 +498,19 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   // We need to make sure that if a HTTP/2 session was created for
   // https://somehost/ then we do not use that session for http://somehost:443/.
   // The only time we can use an existing session is if the request URL is
-  // https (the normal case) or if we are connecting to a HTTP/2 proxy.
-  // https://crbug.com/133176
-  return origin_url_.SchemeIs(url::kHttpsScheme) || (proxy_info_.is_https());
+  // https (the normal case) or if we are connecting to an HTTPS proxy to make
+  // a GET request for an HTTP destination. https://crbug.com/133176
+  if (origin_url_.SchemeIs(url::kHttpsScheme)) {
+    return true;
+  }
+  if (!proxy_info_.is_empty()) {
+    const ProxyChain& proxy_chain = proxy_info_.proxy_chain();
+    if (!proxy_chain.is_direct() && proxy_chain.is_get_to_proxy_allowed() &&
+        proxy_chain.Last().is_https()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void HttpStreamFactory::Job::OnStreamReadyCallback() {

@@ -80,12 +80,6 @@ class NET_EXPORT ProxyInfo {
   // Returns true if any of the contained ProxyChains are multi-proxy.
   bool ContainsMultiProxyChain() const;
 
-  // Returns true if the first valid proxy server is an https proxy.
-  // TODO(https://crbug.com/1491092): Remove this method in favor of checking
-  // the corresponding property of the relevant proxy server from the next
-  // proxy chain in the proxy list.
-  bool is_https() const;
-
   // Returns true if the first proxy server is an HTTP compatible proxy.
   // TODO(https://crbug.com/1491092): Remove this method in favor of checking
   // the corresponding property of the relevant proxy server from the next
