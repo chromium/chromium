@@ -145,6 +145,8 @@ static_library("browser") {
     "accessibility/accessibility_labels_service_factory.h",
     "accessibility/accessibility_state_utils.cc",
     "accessibility/accessibility_state_utils.h",
+    "accessibility/embedded_a11y_extension_loader.cc",
+    "accessibility/embedded_a11y_extension_loader.h",
     "accessibility/page_colors.cc",
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",

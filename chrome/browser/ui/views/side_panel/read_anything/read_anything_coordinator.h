@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class EmbeddedA11yExtensionLoader;
 class Browser;
 class ReadAnythingController;
 class SidePanelRegistry;
@@ -117,6 +118,8 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   const base::flat_set<std::string> distillable_urls_;
 
   base::ObserverList<Observer> observers_;
+
+  raw_ptr<EmbeddedA11yExtensionLoader> extension_loader_;
 
   bool post_tab_change_delay_complete_ = true;
   base::RetainingOneShotTimer delay_timer_;

@@ -2817,7 +2817,6 @@ if (!is_android) {
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_read_aloud_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_toolbar_browsertest.cc",
-      "../browser/ui/webui/side_panel/read_anything/read_anything_app_views_toolbar_browsertest.cc",
       "../browser/ui/webui/support_tool/support_tool_ui_browsertest.cc",
       "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
@@ -5494,6 +5493,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
@@ -5595,6 +5595,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
+      "../browser/ui/webui/side_panel/read_anything/read_anything_app_views_toolbar_browsertest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
       "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",

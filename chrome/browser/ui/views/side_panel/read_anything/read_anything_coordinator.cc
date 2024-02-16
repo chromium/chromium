@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -94,6 +95,8 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
   }
+
+  extension_loader_ = EmbeddedA11yExtensionLoader::GetInstance();
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
@@ -148,6 +151,8 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
+  extension_loader_->RemoveA11yHelperExtensionForReadingMode();
+
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   for (Observer& obs : observers_) {
     obs.OnCoordinatorDestroyed();
@@ -250,11 +255,23 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
   for (Observer& obs : observers_) {
     obs.Activate(true);
   }
+
+  // TODO(crbug.com/324143642): Handle the installation of a11y helper extension
+  // for local side panels.
+  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+    extension_loader_->InstallA11yHelperExtensionForReadingMode();
+  }
 }
 
 void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
   for (Observer& obs : observers_) {
     obs.Activate(false);
+  }
+
+  // TODO(crbug.com/324143642): Handle the uninstallation of a11y helper
+  // extension for local side panels.
+  if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+    extension_loader_->RemoveA11yHelperExtensionForReadingMode();
   }
 }
 

@@ -196,6 +196,17 @@ void EmbeddedA11yManagerLacros::AddFocusChangedCallbackForTest(
   focus_changed_callback_for_test_ = std::move(callback);
 }
 
+void EmbeddedA11yManagerLacros::SetReadingModeEnabled(bool enabled) {
+  if (reading_mode_enabled_ != enabled) {
+    reading_mode_enabled_ = enabled;
+    UpdateAllProfiles();
+  }
+}
+
+bool EmbeddedA11yManagerLacros::IsReadingModeEnabled() {
+  return reading_mode_enabled_;
+}
+
 void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
 }
@@ -230,9 +241,11 @@ void EmbeddedA11yManagerLacros::UpdateAllProfiles() {
 }
 
 void EmbeddedA11yManagerLacros::UpdateProfile(Profile* profile) {
-  // Switch Access and Select to Speak share a helper extension which has a
-  // manifest content script to tell Google Docs to annotate the HTML canvas.
-  if (select_to_speak_enabled_ || switch_access_enabled_) {
+  // Switch Access, Select to Speak, and Reading Mode share a helper extension
+  // which has a manifest content script to tell Google Docs to annotate the
+  // HTML canvas.
+  if (select_to_speak_enabled_ || switch_access_enabled_ ||
+      reading_mode_enabled_) {
     MaybeInstallExtension(profile,
                           extension_misc::kEmbeddedA11yHelperExtensionId,
                           extension_misc::kEmbeddedA11yHelperExtensionPath,

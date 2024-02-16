@@ -307,6 +307,23 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
+                       AddsAndRemovesHelperForReadingMode) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const auto& profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GT(profiles.size(), 0u);
+  Profile* profile = profiles[0];
+
+  auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
+  embedded_a11y_manager->SetReadingModeEnabled(true);
+  WaitForExtensionLoaded(profile,
+                         extension_misc::kEmbeddedA11yHelperExtensionId);
+
+  embedded_a11y_manager->SetReadingModeEnabled(false);
+  WaitForExtensionUnloaded(profile,
+                           extension_misc::kEmbeddedA11yHelperExtensionId);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
                        SwitchAccessAndSelectToSpeak) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const auto& profiles = profile_manager->GetLoadedProfiles();

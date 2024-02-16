@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -30,50 +32,33 @@ class MockReadAnythingCoordinatorObserver
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
+class MockEmbeddedA11yExtensionLoader : public EmbeddedA11yExtensionLoader {
+ public:
+  MockEmbeddedA11yExtensionLoader() : EmbeddedA11yExtensionLoader() {}
+  MOCK_METHOD(void, InstallA11yHelperExtensionForReadingMode, (), (override));
+  MOCK_METHOD(void, RemoveA11yHelperExtensionForReadingMode, (), (override));
+};
+
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingLocalSidePanel,
-         features::kReadAnythingWebUIToolbar},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
         SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    side_panel_registry_ =
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+    mock_extension_loader_ =
+        std::make_unique<MockEmbeddedA11yExtensionLoader>();
+    read_anything_coordinator_->extension_loader_ =
+        mock_extension_loader_.get();
 
-    // Ensure a kReadAnything entry is added to the contextual registry for the
-    // first tab.
-    AddTabToBrowser(GURL("http://foo1.com"));
-    auto* tab_one_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
-    contextual_registries_.push_back(tab_one_registry);
-
-    // Ensure a kReadAnything entry is added to the contextual registry for the
-    // second tab.
-    AddTabToBrowser(GURL("http://foo2.com"));
-    auto* tab_two_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
-    contextual_registries_.push_back(tab_two_registry);
-
-    // Verify the first tab has one entry, kReadAnything.
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-    SidePanelRegistry* contextual_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
-    ASSERT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kReadAnything);
-
-    // Verify the second tab has one entry, kReadAnything.
-    browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-    contextual_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
-    ASSERT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kReadAnything);
   }
 
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
@@ -119,13 +104,13 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  protected:
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
-  std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
-      contextual_registries_;
+  raw_ptr<SidePanelRegistry, DanglingUntriaged> side_panel_registry_ = nullptr;
   raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
       read_anything_coordinator_ = nullptr;
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<MockEmbeddedA11yExtensionLoader> mock_extension_loader_;
 };
 
 // TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
@@ -162,14 +147,27 @@ TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
 TEST_F(ReadAnythingCoordinatorTest,
        ActivateCalled_ShowAndHideReadAnythingEntry) {
   AddObserver(&coordinator_observer_);
-  ASSERT_EQ(contextual_registries_.size(), 2u);
-  SidePanelEntry* entry = contextual_registries_[0]->GetEntryForKey(
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(coordinator_observer_, Activate(true)).Times(1);
   entry->OnEntryShown();
 
   EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
+  entry->OnEntryHidden();
+}
+
+TEST_F(ReadAnythingCoordinatorTest, EmbeddedA11yExtensionLoaderCalled) {
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+
+  EXPECT_CALL(*mock_extension_loader_, InstallA11yHelperExtensionForReadingMode)
+      .Times(1);
+  entry->OnEntryShown();
+
+  // Called once when calling OnEntryHidden and once on destruction.
+  EXPECT_CALL(*mock_extension_loader_, RemoveA11yHelperExtensionForReadingMode)
+      .Times(2);
   entry->OnEntryHidden();
 }
 
