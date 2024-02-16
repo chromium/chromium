@@ -136,12 +136,12 @@ INSTANTIATE_TEST_SUITE_P(
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
             .expect_study_enabled = false,
-            .expect_feature_enabled = true},
+            .expect_feature_enabled = false},
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::STABLE,
             .expect_study_enabled = false,
-            .expect_feature_enabled = true}
+            .expect_feature_enabled = false}
 #elif BUILDFLAG(IS_CHROMEOS)
         // Did not have a client-side field trial, so it's not bundled with the
         // group above, but it's being enabled on a different schedule than the
@@ -150,12 +150,12 @@ INSTANTIATE_TEST_SUITE_P(
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,
             .expect_study_enabled = false,
-            .expect_feature_enabled = true},
+            .expect_feature_enabled = false},
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::STABLE,
             .expect_study_enabled = false,
-            .expect_feature_enabled = true}
+            .expect_feature_enabled = false}
 #else
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
