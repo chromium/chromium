@@ -112,7 +112,13 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, CrossSite) {
   EXPECT_GE(timer.Elapsed(), response_delay());
 }
 
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameOrigin) {
+// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_IgnoresSameOrigin DISABLED_IgnoresSameOrigin
+#else
+#define MAYBE_IgnoresSameOrigin IgnoresSameOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameOrigin) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
@@ -125,7 +131,13 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameOrigin) {
   EXPECT_LT(timer.Elapsed(), response_delay());
 }
 
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameSite) {
+// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_IgnoresSameSite DISABLED_IgnoresSameSite
+#else
+#define MAYBE_IgnoresSameSite IgnoresSameSite
+#endif
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameSite) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
@@ -138,7 +150,13 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameSite) {
   EXPECT_LT(timer.Elapsed(), response_delay());
 }
 
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
+// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_IgnoresIfExempt DISABLED_IgnoresIfExempt
+#else
+#define MAYBE_IgnoresIfExempt IgnoresIfExempt
+#endif
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresIfExempt) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
