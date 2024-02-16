@@ -10,8 +10,6 @@
 #include "base/no_destructor.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -26,11 +24,6 @@ LevelDBFactory* GetLevelDBFactory() {
       IndexedDBClassFactory::GetLevelDBOptions(), "indexed-db");
   return leveldb_factory.get();
 }
-DefaultTransactionalLevelDBFactory* GetDefaultTransactionalLevelDBFactory() {
-  static base::NoDestructor<DefaultTransactionalLevelDBFactory>
-      transactional_leveldb_factory;
-  return transactional_leveldb_factory.get();
-}
 }  // namespace
 
 static ::base::LazyInstance<IndexedDBClassFactory>::Leaky s_factory =
@@ -42,8 +35,7 @@ IndexedDBClassFactory* IndexedDBClassFactory::Get() {
 }
 
 IndexedDBClassFactory::IndexedDBClassFactory()
-    : leveldb_factory_(GetLevelDBFactory()),
-      transactional_leveldb_factory_(GetDefaultTransactionalLevelDBFactory()) {}
+    : leveldb_factory_(GetLevelDBFactory()) {}
 
 // static
 leveldb_env::Options IndexedDBClassFactory::GetLevelDBOptions() {
@@ -72,19 +64,6 @@ leveldb_env::Options IndexedDBClassFactory::GetLevelDBOptions() {
 
 LevelDBFactory& IndexedDBClassFactory::leveldb_factory() {
   return *leveldb_factory_;
-}
-TransactionalLevelDBFactory&
-IndexedDBClassFactory::transactional_leveldb_factory() {
-  return *transactional_leveldb_factory_;
-}
-
-void IndexedDBClassFactory::SetTransactionalLevelDBFactoryForTesting(
-    TransactionalLevelDBFactory* factory) {
-  if (factory) {
-    transactional_leveldb_factory_ = factory;
-  } else {
-    transactional_leveldb_factory_ = GetDefaultTransactionalLevelDBFactory();
-  }
 }
 
 }  // namespace content

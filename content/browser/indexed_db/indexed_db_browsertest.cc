@@ -92,7 +92,10 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     static storage::QuotaSettings quota_settings =
         storage::GetHardCodedSettings(100 * 1024 * 1024);
     StoragePartition::SetDefaultQuotaSettingsForTesting(&quota_settings);
+    SetUpMockFailureInjector();
+  }
 
+  virtual void SetUpMockFailureInjector() {
     GetControlTest()->BindMockFailureSingletonForTesting(
         failure_injector_.BindNewPipeAndPassReceiver());
   }
@@ -116,29 +119,14 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
                      FailMethod failure_method,
                      int fail_on_instance_num,
                      int fail_on_call_num) {
-    base::RunLoop loop;
-    FailOperationWithCallback(failure_class, failure_method,
-                              fail_on_instance_num, fail_on_call_num,
-                              loop.QuitClosure());
-    loop.Run();
-  }
-
-  void FailOperationWithCallback(FailClass failure_class,
-                                 FailMethod failure_method,
-                                 int fail_on_instance_num,
-                                 int fail_on_call_num,
-                                 base::OnceClosure callback) {
     failure_injector_->FailOperation(failure_class, failure_method,
-                                     fail_on_instance_num, fail_on_call_num,
-                                     std::move(callback));
+                                     fail_on_instance_num, fail_on_call_num);
   }
 
-  void SimpleTest(const GURL& test_url,
-                  bool incognito = false,
-                  Shell** shell_out = nullptr) {
+  void SimpleTest(const GURL& test_url, Shell* shell = nullptr) {
     // The test page will perform tests on IndexedDB, then navigate to either
     // a #pass or #fail ref.
-    Shell* the_browser = incognito ? CreateOffTheRecordBrowser() : shell();
+    Shell* the_browser = shell ? shell : this->shell();
 
     VLOG(0) << "Navigating to URL and blocking.";
     NavigateToURLBlockUntilNavigationsComplete(the_browser, test_url, 2);
@@ -149,8 +137,6 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
       std::string js_result = EvalJs(the_browser, "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
     }
-    if (shell_out)
-      *shell_out = the_browser;
   }
 
   void NavigateAndWaitForTitle(Shell* shell,
@@ -294,7 +280,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     return future.Take();
   }
 
- private:
+ protected:
   mojo::Remote<storage::mojom::MockFailureInjector> failure_injector_;
 };
 
@@ -303,11 +289,29 @@ class IndexedDBIncognitoTest : public IndexedDBBrowserTest,
  public:
   IndexedDBIncognitoTest() = default;
 
+  void SetUpMockFailureInjector() override {
+    if (IsIncognito()) {
+      shell_ = CreateOffTheRecordBrowser();
+      GetControlTest(shell_)->BindMockFailureSingletonForTesting(
+          failure_injector_.BindNewPipeAndPassReceiver());
+    } else {
+      IndexedDBBrowserTest::SetUpMockFailureInjector();
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    shell_ = nullptr;
+    IndexedDBBrowserTest::TearDownOnMainThread();
+  }
+
   bool IsIncognito() { return GetParam(); }
+
+ protected:
+  raw_ptr<Shell> shell_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, CursorTest) {
-  SimpleTest(GetTestUrl("indexeddb", "cursor_test.html"), IsIncognito());
+  SimpleTest(GetTestUrl("indexeddb", "cursor_test.html"), shell_);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorPrefetch) {
@@ -431,14 +435,14 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug109187Test) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug941965Test) {
   // Double-open an incognito window to test that saving & reading a blob from
   // indexeddb works.
-  Shell* incognito_browser = nullptr;
-  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"), true,
-             &incognito_browser);
+  Shell* incognito_browser = CreateOffTheRecordBrowser();
+  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
+             incognito_browser);
   ASSERT_TRUE(incognito_browser);
   incognito_browser->Close();
-  incognito_browser = nullptr;
-  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"), true,
-             &incognito_browser);
+  incognito_browser = CreateOffTheRecordBrowser();
+  SimpleTest(GetTestUrl("indexeddb", "simple_blob_read.html"),
+             incognito_browser);
   ASSERT_TRUE(incognito_browser);
   incognito_browser->Close();
 }
@@ -819,8 +823,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
 
-  Shell* browser = nullptr;
-  SimpleTest(test_url, /*incognito=*/true, &browser);
+  Shell* browser = CreateOffTheRecordBrowser();
+  SimpleTest(test_url, browser);
 
   EXPECT_GT(RequestUsage(browser), 5 * 1024);
 
@@ -1011,13 +1015,10 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     DCHECK_GE(instance_num, 1);
     DCHECK_GE(call_num, 1);
 
-    base::RunLoop loop;
     task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IndexedDBBrowserTest::FailOperationWithCallback,
-                       base::Unretained(test), failure_class, failure_method,
-                       instance_num, call_num, loop.QuitClosure()));
-    loop.Run();
+        FROM_HERE, base::BindOnce(&IndexedDBBrowserTest::FailOperation,
+                                  base::Unretained(test), failure_class,
+                                  failure_method, instance_num, call_num));
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -1281,20 +1282,18 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityStrict) {
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
-  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_strict.html"),
-             IsIncognito());
+  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_strict.html"), shell_);
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityRelaxed) {
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
-  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_relaxed.html"),
-             IsIncognito());
+  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_relaxed.html"), shell_);
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityOverride) {
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
   SimpleTest(GetTestUrl("indexeddb", "bucket_durability_override.html"),
-             IsIncognito());
+             shell_);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, IndexedDBIncognitoTest, testing::Bool());

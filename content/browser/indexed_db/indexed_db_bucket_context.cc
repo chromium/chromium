@@ -58,6 +58,7 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -930,6 +931,14 @@ void IndexedDBBucketContext::WriteToIndexedDBForTesting(
   std::move(callback).Run();
 }
 
+void IndexedDBBucketContext::BindMockFailureSingletonForTesting(
+    mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
+  CHECK(!backing_store_);
+  transactional_leveldb_factory_ =
+      std::make_unique<MockBrowserTestIndexedDBClassFactory>(
+          std::move(receiver));
+}
+
 // static
 void IndexedDBBucketContext::SetInternalState(
     base::Time earliest_global_sweep_time,
@@ -1093,9 +1102,8 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
       &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
       earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(backing_store_->db());
+      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
+          backing_store_->db());
   s = indexed_db::SetEarliestSweepTime(txn.get(),
                                        GenerateNextBucketSweepTime(now));
   // TODO(dmurph): Log this or report to UMA.
@@ -1142,9 +1150,8 @@ bool IndexedDBBucketContext::ShouldRunCompaction() {
       &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
       earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(backing_store_->db());
+      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
+          backing_store_->db());
   s = indexed_db::SetEarliestCompactionTime(
       txn.get(), GenerateNextBucketCompactionTime(now));
   // TODO(dmurph): Log this or report to UMA.
@@ -1263,7 +1270,8 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
     base::FilePath blob_path,
     PartitionedLockManager* lock_manager,
     bool is_first_attempt,
-    bool create_if_missing) {
+    bool create_if_missing,
+    TransactionalLevelDBFactory& leveldb_factory) {
   // Please see docs/open_and_verify_leveldb_database.code2flow, and the
   // generated pdf (from https://code2flow.com).
   // The intended strategy here is to have this function match that flowchart,
@@ -1351,12 +1359,10 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
 
   // Create the TransactionalLevelDBDatabase wrapper.
   std::unique_ptr<TransactionalLevelDBDatabase> database =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDatabase(std::move(database_state), std::move(scopes),
-                                 base::SequencedTaskRunner::GetCurrentDefault(),
-                                 TransactionalLevelDBDatabase::
-                                     kDefaultMaxOpenIteratorsPerDatabase);
+      leveldb_factory.CreateLevelDBDatabase(
+          std::move(database_state), std::move(scopes),
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
 
   bool are_schemas_known = false;
   std::tie(are_schemas_known, status) = AreSchemasKnown(database.get());
@@ -1384,7 +1390,8 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
                 : IndexedDBBackingStore::Mode::kOnDisk;
 
   auto backing_store = std::make_unique<IndexedDBBackingStore>(
-      backing_store_mode, bucket_locator(), blob_path, std::move(database),
+      backing_store_mode, bucket_locator(), blob_path, leveldb_factory,
+      std::move(database),
       base::BindRepeating(delegate_.on_files_written,
                           /*flushed=*/true),
       base::BindRepeating(&IndexedDBBucketContext::ReportOutstandingBlobs,
@@ -1423,6 +1430,11 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     }
   }
 
+  if (!transactional_leveldb_factory_) {
+    transactional_leveldb_factory_ =
+        std::make_unique<DefaultTransactionalLevelDBFactory>();
+  }
+
   auto lock_manager = std::make_unique<PartitionedLockManager>();
   IndexedDBDataLossInfo data_loss_info;
   std::unique_ptr<IndexedDBBackingStore> backing_store;
@@ -1435,7 +1447,8 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     std::tie(backing_store, status, data_loss_info, disk_full) =
         OpenAndVerifyIndexedDBBackingStore(data_path_, database_path, blob_path,
                                            lock_manager.get(), is_first_attempt,
-                                           create_if_missing);
+                                           create_if_missing,
+                                           *transactional_leveldb_factory_);
     if (LIKELY(is_first_attempt)) {
       first_try_status = status;
     }

@@ -40,10 +40,8 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
-#include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -61,12 +59,6 @@ namespace content {
 using storage::BucketLocator;
 
 namespace {
-
-static MockBrowserTestIndexedDBClassFactory* GetTestClassFactory() {
-  static ::base::LazyInstance<MockBrowserTestIndexedDBClassFactory>::Leaky
-      s_factory = LAZY_INSTANCE_INITIALIZER;
-  return s_factory.Pointer();
-}
 
 bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
                    const base::FilePath& candidate_path) {
@@ -522,19 +514,7 @@ void IndexedDBContextImpl::GetUsageForTesting(
 
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
-  IndexedDBTransaction::DisableInactivityTimeoutForTesting();  // IN-TEST
-  // Lazily instantiate the GetTestClassFactory.
-  if (!mock_failure_injector_.has_value())
-    mock_failure_injector_.emplace(GetTestClassFactory());
-
-  // TODO(enne): this should really not be a static setter.
-  CHECK(!mock_failure_injector_->is_bound());
-  GetTestClassFactory()->Reset();
-  IndexedDBClassFactory::Get()
-      ->SetTransactionalLevelDBFactoryForTesting(  // IN-TEST
-          GetTestClassFactory());
-
-  mock_failure_injector_->Bind(std::move(receiver));
+  pending_failure_injector_ = std::move(receiver);
 }
 
 void IndexedDBContextImpl::GetDatabaseKeysForTesting(
@@ -1038,6 +1018,10 @@ IndexedDBBucketContext& IndexedDBContextImpl::GetOrCreateBucketContext(
 
   it = bucket_contexts_.emplace(bucket_locator.id, std::move(bucket_context))
            .first;
+  if (pending_failure_injector_) {
+    it->second->BindMockFailureSingletonForTesting(  // IN-TEST
+        std::move(pending_failure_injector_));
+  }
   return *it->second;
 }
 

@@ -18,7 +18,6 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -40,20 +39,17 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
 
+  DefaultTransactionalLevelDBFactory factory;
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  std::unique_ptr<IndexedDBBackingStore> backing_store =
-      std::make_unique<IndexedDBBackingStore>(
-          IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path,
-          IndexedDBClassFactory::Get()
-              ->transactional_leveldb_factory()
-              .CreateLevelDBDatabase(
-                  FakeLevelDBFactory::GetBrokenLevelDB(
-                      leveldb::Status::IOError("It's broken!"), path),
-                  nullptr, task_runner.get(),
-                  TransactionalLevelDBDatabase::
-                      kDefaultMaxOpenIteratorsPerDatabase),
-          IndexedDBBackingStore::BlobFilesCleanedCallback(),
-          IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
+  auto backing_store = std::make_unique<IndexedDBBackingStore>(
+      IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path, factory,
+      factory.CreateLevelDBDatabase(
+          FakeLevelDBFactory::GetBrokenLevelDB(
+              leveldb::Status::IOError("It's broken!"), path),
+          nullptr, task_runner.get(),
+          TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
+      IndexedDBBackingStore::BlobFilesCleanedCallback(),
+      IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
   leveldb::Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
@@ -80,19 +76,15 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
       MakeIOError("some filename", "some message", leveldb_env::kNewLogger,
                   base::File::FILE_ERROR_FAILED)};
   for (leveldb::Status error_status : errors) {
-    std::unique_ptr<IndexedDBBackingStore> backing_store =
-        std::make_unique<IndexedDBBackingStore>(
-            IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path,
-            IndexedDBClassFactory::Get()
-                ->transactional_leveldb_factory()
-                .CreateLevelDBDatabase(
-                    FakeLevelDBFactory::GetBrokenLevelDB(error_status, path),
-                    nullptr, task_runner.get(),
-                    TransactionalLevelDBDatabase::
-                        kDefaultMaxOpenIteratorsPerDatabase),
-            IndexedDBBackingStore::BlobFilesCleanedCallback(),
-            IndexedDBBackingStore::ReportOutstandingBlobsCallback(),
-            task_runner);
+    DefaultTransactionalLevelDBFactory factory;
+    auto backing_store = std::make_unique<IndexedDBBackingStore>(
+        IndexedDBBackingStore::Mode::kInMemory, bucket_locator, path, factory,
+        factory.CreateLevelDBDatabase(
+            FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
+            task_runner.get(),
+            TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
+        IndexedDBBackingStore::BlobFilesCleanedCallback(),
+        IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
     leveldb::Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }

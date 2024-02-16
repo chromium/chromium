@@ -946,6 +946,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     Mode backing_store_mode,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
+    TransactionalLevelDBFactory& transactional_leveldb_factory,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -956,6 +957,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
                                                        : blob_path),
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
       idb_task_runner_(std::move(idb_task_runner)),
+      transactional_leveldb_factory_(transactional_leveldb_factory),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)) {
   DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
@@ -1397,9 +1399,7 @@ Status IndexedDBBackingStore::CreateDatabase(
     blink::IndexedDBDatabaseMetadata& metadata) {
   // TODO(jsbell): Don't persist metadata if open fails. http://crbug.com/395472
   std::unique_ptr<LevelDBDirectTransaction> transaction =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(db_.get());
+      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
 
   int64_t row_id = 0;
   Status s = indexed_db::GetNewDatabaseId(transaction.get(), &row_id);
@@ -2263,9 +2263,7 @@ void IndexedDBBackingStore::ReportBlobUnused(int64_t database_id,
   bool all_blobs = blob_number == DatabaseMetaDataKey::kAllBlobsNumber;
   DCHECK(all_blobs || DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
   std::unique_ptr<LevelDBDirectTransaction> transaction =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(db_.get());
+      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
 
   BlobJournalType active_blob_journal, recovery_journal;
   if (!GetActiveBlobJournal(transaction.get(), &active_blob_journal).ok())
@@ -2397,9 +2395,7 @@ Status IndexedDBBackingStore::CleanUpBlobJournal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!committing_transaction_count_);
   std::unique_ptr<LevelDBDirectTransaction> journal_transaction =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(db_.get());
+      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
   BlobJournalType journal;
 
   Status s = GetBlobJournal(level_db_key, journal_transaction.get(), &journal);
@@ -3819,11 +3815,9 @@ void IndexedDBBackingStore::Transaction::Begin(
   TRACE_EVENT0("IndexedDB", "IndexedDBBackingStore::Transaction::Begin");
 
   transaction_ =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
-          .CreateLevelDBTransaction(
-              backing_store_->db_.get(),
-              backing_store_->db_->scopes()->CreateScope(std::move(locks)));
+      backing_store_->transactional_leveldb_factory().CreateLevelDBTransaction(
+          backing_store_->db_.get(),
+          backing_store_->db_->scopes()->CreateScope(std::move(locks)));
 
   // If in_memory, this snapshots blobs just as the above transaction_
   // constructor snapshots the leveldb.
@@ -3892,8 +3886,7 @@ Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {
     return Status::OK();
 
   std::unique_ptr<LevelDBDirectTransaction> direct_txn =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
+      backing_store_->transactional_leveldb_factory()
           .CreateLevelDBDirectTransaction(backing_store_->db_.get());
 
   int64_t next_blob_number = -1;
@@ -4096,8 +4089,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     // Read the persisted states of the recovery/live blob journals,
     // so that they can be updated correctly by the transaction.
     std::unique_ptr<LevelDBDirectTransaction> journal_transaction =
-        IndexedDBClassFactory::Get()
-            ->transactional_leveldb_factory()
+        backing_store_->transactional_leveldb_factory()
             .CreateLevelDBDirectTransaction(backing_store_->db_.get());
     s = GetRecoveryBlobJournal(journal_transaction.get(), &recovery_journal);
     if (!s.ok())
@@ -4173,8 +4165,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
   }
 
   std::unique_ptr<LevelDBDirectTransaction> update_journal_transaction =
-      IndexedDBClassFactory::Get()
-          ->transactional_leveldb_factory()
+      backing_store_->transactional_leveldb_factory()
           .CreateLevelDBDirectTransaction(backing_store_->db_.get());
   UpdateRecoveryBlobJournal(update_journal_transaction.get(),
                             saved_recovery_journal);

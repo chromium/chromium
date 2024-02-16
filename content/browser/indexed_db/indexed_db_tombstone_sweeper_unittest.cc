@@ -144,12 +144,9 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
             base::FilePath(), indexed_db::GetDefaultLevelDBComparator(),
             /* create_if_missing=*/true);
     ASSERT_TRUE(s.ok());
-    in_memory_db_ =
-        IndexedDBClassFactory::Get()
-            ->transactional_leveldb_factory()
-            .CreateLevelDBDatabase(std::move(level_db_state), nullptr, nullptr,
-                                   TransactionalLevelDBDatabase::
-                                       kDefaultMaxOpenIteratorsPerDatabase);
+    in_memory_db_ = DefaultTransactionalLevelDBFactory().CreateLevelDBDatabase(
+        std::move(level_db_state), nullptr, nullptr,
+        TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
     sweeper_ = std::make_unique<IndexedDBTombstoneSweeper>(
         kRoundIterations, kMaxIterations, in_memory_db_->db());
     sweeper_->SetStartSeedsForTesting(0, 0, 0);

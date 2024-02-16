@@ -12,7 +12,6 @@
 
 namespace content {
 class LevelDBFactory;
-class TransactionalLevelDBFactory;
 
 // This singleton holds onto LevelDB factories which can be replaced with
 // testing versions to facilitate mocking out of LevelDB objects and operations.
@@ -26,10 +25,6 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   static leveldb_env::Options GetLevelDBOptions();
 
   LevelDBFactory& leveldb_factory();
-  TransactionalLevelDBFactory& transactional_leveldb_factory();
-
-  void SetTransactionalLevelDBFactoryForTesting(
-      TransactionalLevelDBFactory* factory);
   void SetLevelDBFactoryForTesting(LevelDBFactory* leveldb_factory);
 
  protected:
@@ -38,7 +33,6 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   friend struct base::LazyInstanceTraitsBase<IndexedDBClassFactory>;
 
   raw_ptr<LevelDBFactory> leveldb_factory_;
-  raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
 };
 
 }  // namespace content

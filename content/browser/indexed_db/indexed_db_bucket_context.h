@@ -22,8 +22,10 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -300,6 +302,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   void WriteToIndexedDBForTesting(const std::string& key,
                                   const std::string& value,
                                   base::OnceClosure callback);
+  void BindMockFailureSingletonForTesting(
+      mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
 
   // Called when a fatal error has occurred that should result in tearing down
   // the backing store. `IndexedDBBucketContext` *may* be synchronously
@@ -315,6 +319,10 @@ class CONTENT_EXPORT IndexedDBBucketContext
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   bool force_close_called_for_testing() const { return skip_closing_sequence_; }
+
+  TransactionalLevelDBFactory& transactional_leveldb_factory() const {
+    return *transactional_leveldb_factory_;
+  }
 
  private:
   friend IndexedDBBucketContextHandle;
@@ -404,12 +412,14 @@ class CONTENT_EXPORT IndexedDBBucketContext
              leveldb::Status,
              IndexedDBDataLossInfo,
              bool /* is_disk_full */>
-  OpenAndVerifyIndexedDBBackingStore(base::FilePath data_directory,
-                                     base::FilePath database_path,
-                                     base::FilePath blob_path,
-                                     PartitionedLockManager* lock_manager,
-                                     bool is_first_attempt,
-                                     bool create_if_missing);
+  OpenAndVerifyIndexedDBBackingStore(
+      base::FilePath data_directory,
+      base::FilePath database_path,
+      base::FilePath blob_path,
+      PartitionedLockManager* lock_manager,
+      bool is_first_attempt,
+      bool create_if_missing,
+      TransactionalLevelDBFactory& leveldb_factory);
 
   std::tuple<leveldb::Status, IndexedDBDatabaseError, IndexedDBDataLossInfo>
   InitBackingStoreIfNeeded(bool create_if_missing);
@@ -443,6 +453,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
+  std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

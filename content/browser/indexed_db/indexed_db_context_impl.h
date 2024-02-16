@@ -353,6 +353,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   mojo::RemoteSet<storage::mojom::IndexedDBObserver> observers_;
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;
 
+  // For testing: when non-null, this receiver will be passed off to the next
+  // bucket context that's created.
+  mojo::PendingReceiver<storage::mojom::MockFailureInjector>
+      pending_failure_injector_;
+
   // TODO(crbug.com/1474996): these bucket contexts need to be `SequenceBound`.
   std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
       bucket_contexts_;
