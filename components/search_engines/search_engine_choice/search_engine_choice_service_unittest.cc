@@ -29,6 +29,7 @@
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -103,7 +104,9 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
-  PrefService* pref_service() { return &pref_service_; }
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &pref_service_;
+  }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   TemplateURLService& template_url_service() {
     if (!template_url_service_) {
@@ -216,9 +219,27 @@ TEST_F(SearchEngineChoiceServiceTest, DoNotShowChoiceScreenIfPolicySetToFalse) {
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
 
+  base::Value::Dict dict;
+  dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
+  pref_service()->SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(dict));
+
+  // Based on these policies, no DSE should be available.
+  ASSERT_FALSE(template_url_service().GetDefaultSearchProvider());
+
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kControlledByPolicy
+#endif
+  );
+  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
@@ -268,9 +289,31 @@ TEST_F(SearchEngineChoiceServiceTest,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value("test"), nullptr);
 
+  TemplateURLData data_from_policies;
+  data_from_policies.SetURL("test");
+  base::Value::Dict dict = TemplateURLDataToDictionary(data_from_policies);
+  dict.Set(DefaultSearchManager::kCreatedByPolicy,
+           static_cast<int>(
+               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+  pref_service()->SetManagedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(dict));
+
+  ASSERT_TRUE(template_url_service().GetDefaultSearchProvider());
+  ASSERT_EQ("test", template_url_service().GetDefaultSearchProvider()->url());
+
   EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
   EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
                 policy_service(), /*is_regular_profile=*/true,
+                template_url_service()),
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
+            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType
+#else
+            SearchEngineChoiceScreenConditions::kControlledByPolicy
+#endif
+  );
+  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
                 template_url_service()),
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(CHROME_FOR_TESTING)
