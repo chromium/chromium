@@ -89,6 +89,10 @@ const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>
         AlignFontDisplayAutoTimeoutWithLCPGoalMode::kToSwapPeriod,
         &align_font_display_auto_timeout_with_lcp_goal_modes};
 
+BASE_FEATURE(kAllowDatapipeDrainedAsBytesConsumerInBFCache,
+             "AllowDatapipeDrainedAsBytesConsumerInBFCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMultipleMainFrames,
              "AllowDevToolsMainThreadDebuggerForMultipleMainFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);

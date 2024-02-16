@@ -86,6 +86,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);
 // back/forward cache.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBTransactionInBFCache);
 
+// Feature for allowing page into back/forward cache when datapipe has been
+// drained as bytes consumer for fetch requests.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAllowDatapipeDrainedAsBytesConsumerInBFCache);
+
 // If enabled, allows MediaStreamVideoSource objects to be restarted by a
 // successful source switch. Normally, switching the source would only allowed
 // on streams that are in started state. However, changing the source also first

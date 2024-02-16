@@ -45,7 +45,9 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     if (loader_->IsAborted()) {
       return Result::kError;
     }
-    if (loader_->IsSuspended()) {
+    // When the loader is suspended for non back/forward cache reason, return
+    // with kShouldWait.
+    if (IsSuspendedButNotForBackForwardCache()) {
       return Result::kShouldWait;
     }
     if (state_ == State::kCancelled) {
@@ -178,10 +180,14 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     base::AutoReset<bool> auto_reset_for_waiting_for_lookahead_bytes(
         &waiting_for_lookahead_bytes_, false);
 
-    if (loader_->IsAborted() || loader_->IsSuspended() ||
+    // Do not proceed to read the data if loader is aborted, suspended for non
+    // back/forward cache reason, or the state is cancelled.
+    if (loader_->IsAborted() || IsSuspendedButNotForBackForwardCache() ||
         state_ == State::kCancelled) {
       return;
     }
+
+    // Proceed to read the data, even if in back/forward cache.
     while (state_ == State::kLoading) {
       // Peek available bytes from |bytes_consumer_| and report them to
       // |loader_|.
@@ -289,6 +295,10 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
                                       WrapWeakPersistent(loader_.Get())));
       }
     }
+  }
+
+  bool IsSuspendedButNotForBackForwardCache() {
+    return loader_->IsSuspended() && !loader_->IsSuspendedForBackForwardCache();
   }
 
   const Member<BytesConsumer> bytes_consumer_;
@@ -536,9 +546,12 @@ void ResponseBodyLoader::Suspend(LoaderFreezeMode mode) {
 
 void ResponseBodyLoader::EvictFromBackForwardCacheIfDrainedAsBytesConsumer() {
   if (drained_as_bytes_consumer_) {
-    EvictFromBackForwardCache(
-        mojom::blink::RendererEvictionReason::
-            kNetworkRequestDatapipeDrainedAsBytesConsumer);
+    if (!base::FeatureList::IsEnabled(
+            features::kAllowDatapipeDrainedAsBytesConsumerInBFCache)) {
+      EvictFromBackForwardCache(
+          mojom::blink::RendererEvictionReason::
+              kNetworkRequestDatapipeDrainedAsBytesConsumer);
+    }
   }
 }
 
