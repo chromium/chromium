@@ -168,7 +168,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
       {CarrierLockResult::kUnknownError, "org.error"},
       {CarrierLockResult::kInvalidSignature, "org.InvalidSignature"},
       {CarrierLockResult::kInvalidImei, "org.InvalidImei"},
-      {CarrierLockResult::kInvalidTimeStamp, "org.InvalidTimeStamp"},
+      {CarrierLockResult::kInvalidTimeStamp, "org.InvalidTimestamp"},
       {CarrierLockResult::kNetworkListTooLarge, "org.NetworkListTooLarge"},
       {CarrierLockResult::kAlgorithmNotSupported, "org.AlgorithmNotSupported"},
       {CarrierLockResult::kFeatureNotSupported, "org.FeatureNotSupported"},
