@@ -18,6 +18,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 suite('<customize-buttons-subsection>', () => {
   let customizeButtonsSubsection: CustomizeButtonsSubsectionElement;
   let buttonRemappingChangedEventCount: number = 0;
+  let reorderButtonEventCount: number = 0;
   setup(() => {
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
@@ -28,6 +29,7 @@ suite('<customize-buttons-subsection>', () => {
       return;
     }
     buttonRemappingChangedEventCount = 0;
+    reorderButtonEventCount = 0;
     customizeButtonsSubsection.remove();
     await flushTasks();
   });
@@ -39,14 +41,39 @@ suite('<customize-buttons-subsection>', () => {
         'button-remapping-changed', function() {
           buttonRemappingChangedEventCount++;
         });
+    customizeButtonsSubsection.addEventListener('reorder-button', function() {
+      reorderButtonEventCount++;
+    });
     customizeButtonsSubsection.set(
-        'actionList', fakeGraphicsTabletButtonActions);
+        'actionList', [...fakeGraphicsTabletButtonActions]);
     customizeButtonsSubsection.set(
         'buttonRemappingList',
-        fakeGraphicsTablets[0]!.settings!.penButtonRemappings);
+        [...fakeGraphicsTablets[0]!.settings!.penButtonRemappings]);
     document.body.appendChild(customizeButtonsSubsection);
     return await flushTasks();
   }
+
+  test(
+      'Drag move icon via keyboard triggers reorder button event', async () => {
+        await initializeCustomizeButtonsSubsection();
+        assertTrue(!!customizeButtonsSubsection);
+        assertTrue(!!customizeButtonsSubsection.get('buttonRemappingList'));
+
+        // Drag move icon via keyboard triggers reorder button event.
+        const moveIcon =
+            customizeButtonsSubsection.shadowRoot!.querySelector('#row-0')!
+                .shadowRoot!.querySelector<CrIconButtonElement>(
+                    '#reorderButton');
+        assertTrue(!!moveIcon);
+        assertEquals(reorderButtonEventCount, 0);
+        moveIcon.dispatchEvent(new KeyboardEvent('keydown', {
+          ctrlKey: true,
+          key: 'ArrowDown',
+        }));
+
+        await flushTasks();
+        assertEquals(reorderButtonEventCount, 1);
+      });
 
   test('Initialize customize buttons subsection', async () => {
     await initializeCustomizeButtonsSubsection();
