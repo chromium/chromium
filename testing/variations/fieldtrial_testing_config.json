@@ -13655,7 +13655,8 @@
                 "chromeos_lacros",
                 "fuchsia",
                 "linux",
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
