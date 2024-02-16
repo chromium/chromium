@@ -1141,7 +1141,15 @@ TEST_F(TraceEventDataSourceTest, InstantTraceEvent) {
   ExpectInternedEventNames(e_packet, {{1u, "bar"}});
 }
 
-TEST_F(TraceEventDataSourceTest, InstantTraceEventOnOtherThread) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_InstantTraceEventOnOtherThread \
+  DISABLED_InstantTraceEventOnOtherThread
+#else
+#define MAYBE_InstantTraceEventOnOtherThread InstantTraceEventOnOtherThread
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_InstantTraceEventOnOtherThread) {
   StartTraceEventDataSource();
 
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(
@@ -1565,7 +1573,15 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEventWithoutFunction) {
   EXPECT_FALSE(locations[0].has_function_name());
 }
 
-TEST_F(TraceEventDataSourceTest, UpdateDurationOfCompleteEvent) {
+// The test fails on fuchsia during thread pool initialization because
+// base::SysInfo::NumberOfEfficientProcessorsImpl() is not implemented.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_UpdateDurationOfCompleteEvent \
+  DISABLED_UpdateDurationOfCompleteEvent
+#else
+#define MAYBE_UpdateDurationOfCompleteEvent UpdateDurationOfCompleteEvent
+#endif
+TEST_F(TraceEventDataSourceTest, MAYBE_UpdateDurationOfCompleteEvent) {
   StartTraceEventDataSource();
 
   static const char kEventName[] = "bar";
