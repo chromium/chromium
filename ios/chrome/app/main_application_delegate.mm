@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -240,6 +241,8 @@ const int kMainIntentCheckDelay = 1;
                             true);
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
+        // TODO(b/325287919): Add separate call to register with Chime for
+        // Content notifications.
         [self.pushNotificationDelegate
             applicationDidRegisterWithAPNS:deviceToken];
       }));
@@ -367,6 +370,9 @@ const int kMainIntentCheckDelay = 1;
       });
 
   if (_startupInformation.isColdStart) {
+    [PushNotificationUtil registerDeviceWithAPNS];
+  } else if (IsContentPushNotificationsEnabled()) {
+    // Register on every foreground for Content Push Notifications.
     [PushNotificationUtil registerDeviceWithAPNS];
   }
 
