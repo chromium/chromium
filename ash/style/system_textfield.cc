@@ -4,6 +4,8 @@
 
 #include "ash/style/system_textfield.h"
 
+#include <optional>
+
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
@@ -142,7 +144,9 @@ class SystemTextfield::EventHandler : public ui::EventHandler {
 //------------------------------------------------------------------------------
 // SystemTextfield::SystemTextfield:
 SystemTextfield::SystemTextfield(Type type)
-    : type_(type), event_handler_(std::make_unique<EventHandler>(this)) {
+    : type_(type),
+      event_handler_(std::make_unique<EventHandler>(this)),
+      corner_radius_(kCornerRadius) {
   SetFontList(GetFontListFromType(type_));
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   // Remove the default hover effect, since the hover effect of system textfield
@@ -151,7 +155,7 @@ SystemTextfield::SystemTextfield(Type type)
 
   // Override the very round highlight path set in `views::Textfield`.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kCornerRadius);
+                                                corner_radius_);
 
   // Configure focus ring.
   auto* focus_ring = views::FocusRing::Get(this);
@@ -198,6 +202,14 @@ void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
 void SystemTextfield::SetActiveStateChangedCallback(
     base::RepeatingClosure callback) {
   active_state_changed_callback_ = std::move(callback);
+}
+
+void SystemTextfield::SetCornerRadius(int corner_radius) {
+  corner_radius_ = corner_radius;
+
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                corner_radius_);
+  UpdateBackground();
 }
 
 void SystemTextfield::SetActive(bool active) {
@@ -264,7 +276,7 @@ void SystemTextfield::UpdateBackground() {
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
-      kCornerRadius));
+      corner_radius_));
 }
 
 gfx::Size SystemTextfield::CalculatePreferredSize() const {
