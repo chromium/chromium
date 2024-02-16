@@ -422,7 +422,7 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
   }
   // If a QUIC proxy is being used then a tunnel will be needed, and those are
   // handled by the socket pools, using an HttpProxyConnectJob.
-  if (proxy_info.is_quic()) {
+  if (!proxy_info.is_direct() && proxy_info.proxy_chain().Last().is_quic()) {
     return false;
   }
   return OriginToForceQuicOn(*session->context().quic_context->params(),
@@ -786,7 +786,8 @@ int HttpStreamFactory::Job::DoInitConnection() {
 int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(!connection_->is_initialized());
 
-  if (using_quic_ && !proxy_info_.is_quic() && !proxy_info_.is_direct()) {
+  if (using_quic_ && !proxy_info_.is_direct() &&
+      !proxy_info_.proxy_chain().Last().is_quic()) {
     // QUIC can not be spoken to non-QUIC proxies.  This error should not be
     // user visible, because the non-alternative Job should be resumed.
     return ERR_NO_SUPPORTED_PROXIES;
@@ -1041,7 +1042,8 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     }
   }
 
-  if (proxy_info_.is_quic() && using_quic_ && result < 0) {
+  if (using_quic_ && result < 0 && !proxy_info_.is_direct() &&
+      proxy_info_.proxy_chain().Last().is_quic()) {
     return ReconsiderProxyAfterError(result);
   }
 

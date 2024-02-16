@@ -273,7 +273,8 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
 int ProxyResolvingClientSocket::DoInitConnection() {
   DCHECK(!socket_);
   // QUIC proxies are currently not supported.
-  DCHECK(!proxy_info_.is_quic());
+  DCHECK(proxy_info_.is_direct() ||
+         !proxy_info_.proxy_chain().Last().is_quic());
 
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
