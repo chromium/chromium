@@ -257,8 +257,8 @@ export class HidDetectionScreen extends HidDetectionScreenBase {
    * @param state Connection state (one of Connection).
    */
   private tickIsVisible(state: Connection): boolean {
-    return (state == Connection.USB) || (state == Connection.CONNECTED) ||
-        (state == Connection.PAIRED);
+    return (state === Connection.USB) || (state === Connection.CONNECTED) ||
+        (state === Connection.PAIRED);
   }
 
   /**
@@ -266,7 +266,7 @@ export class HidDetectionScreen extends HidDetectionScreenBase {
    * @param state Connection state (one of Connection).
    */
   private spinnerIsVisible(state: Connection): boolean {
-    return state == Connection.SEARCHING;
+    return state === Connection.SEARCHING;
   }
 
   /**
@@ -314,7 +314,7 @@ export class HidDetectionScreen extends HidDetectionScreenBase {
       const pincodeSymbol =
           this.shadowRoot?.querySelector('#hid-pincode-sym-' + (i + 1));
       assert(pincodeSymbol instanceof HTMLDivElement);
-      pincodeSymbol.classList.toggle('key-next', i == keysEntered);
+      pincodeSymbol.classList.toggle('key-next', i === keysEntered);
       if (i < PINCODE_LENGTH) {
         pincodeSymbol.textContent = this.pinCode[i] ? this.pinCode[i] : '';
       }
@@ -402,7 +402,7 @@ export class HidDetectionScreen extends HidDetectionScreenBase {
         hidContinueButton.focus();
       }
     });
-    if (oldContinueButtonEnabled != enabled) {
+    if (oldContinueButtonEnabled !== enabled) {
       this.announceContinueButtonUpdates();
     }
   }

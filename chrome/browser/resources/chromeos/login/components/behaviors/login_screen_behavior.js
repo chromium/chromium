@@ -28,7 +28,7 @@ export const LoginScreenBehavior = {
   initializeLoginScreen(screenName) {
     const api = {};
 
-    if (this.EXTERNAL_API.length != 0) {
+    if (this.EXTERNAL_API.length !== 0) {
       for (let i = 0; i < this.EXTERNAL_API.length; ++i) {
         const methodName = this.EXTERNAL_API[i];
         if (typeof this[methodName] !== 'function') {
@@ -116,7 +116,7 @@ export const LoginScreenBehavior = {
    */
   registerScreenApi_(name, api) {
     // TODO(crbug.com/1229130) - Improve this.
-    if (globalThis.login == undefined) {
+    if (globalThis.login === undefined) {
       globalThis.login = {};
     }
     globalThis.login[name] = api;

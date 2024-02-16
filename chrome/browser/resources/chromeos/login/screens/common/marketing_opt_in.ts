@@ -205,7 +205,7 @@ export class MarketingOptIn extends MarketingScreenElementBase {
    * and for the back button on the accessibility page.
    */
   private onToggleAccessibilityPage(): void {
-    if (this.uiStep == MarketingOptInStep.OVERVIEW) {
+    if (this.uiStep === MarketingOptInStep.OVERVIEW) {
       this.setUIStep(MarketingOptInStep.ACCESSIBILITY);
       this.setAnimationPlay(false);
     } else {

@@ -166,7 +166,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
         return;
       }
 
-      if (confirmPasswordInput.value != passwordInput.value) {
+      if (confirmPasswordInput.value !== passwordInput.value) {
         passwordInput.invalid = true;
         confirmPasswordInput.invalid = true;
         return;

@@ -277,7 +277,7 @@ export class UpdateRequired extends UpdateRequiredBase {
   }
 
   private isEmpty(eolAdminMessage: string): boolean {
-    return !eolAdminMessage || eolAdminMessage.trim().length == 0;
+    return !eolAdminMessage || eolAdminMessage.trim().length === 0;
   }
 
   private updateEolDeleteUsersDataMessage(): void {

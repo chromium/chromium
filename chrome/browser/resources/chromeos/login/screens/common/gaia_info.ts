@@ -128,7 +128,7 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
 
   private onNextClicked(): void {
     if (this.isQuickStartVisible &&
-        this.selectedFlowType == UserCreationFlowType.QUICKSTART) {
+        this.selectedFlowType === UserCreationFlowType.QUICKSTART) {
       this.userActed(UserAction.QUICKSTART);
     } else {
       this.userActed(UserAction.MANUAL);

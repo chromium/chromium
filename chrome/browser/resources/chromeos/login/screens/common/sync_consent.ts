@@ -295,7 +295,7 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
       // Search down in case of click on a button with description below.
       const labels = element.querySelectorAll('[consent-confirmation]');
       if (labels && labels.length > 0) {
-        assert(labels.length == 1);
+        assert(labels.length === 1);
 
         let result = '';
         for (const label of labels) {

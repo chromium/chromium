@@ -64,7 +64,7 @@ export function invokePolymerMethod(element, name, ...args) {
     if (!behaviorMethod || typeof behaviorMethod !== 'function') {
       continue;
     }
-    if (behaviorMethod == method) {
+    if (behaviorMethod === method) {
       continue;
     }
     behaviorMethod.apply(element, args);
@@ -262,7 +262,7 @@ export function invokePolymerMethod(element, name, ...args) {
       // Default control to be focused (if specified).
       const defaultControl = newStep.defaultControl;
 
-      if (this.currentStep_ != nextStepIndex &&
+      if (this.currentStep_ !== nextStepIndex &&
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
         oldStep.hidden = true;
@@ -316,7 +316,7 @@ export function invokePolymerMethod(element, name, ...args) {
      */
     showScreen(screen) {
       // Do not allow any other screen to clobber the device disabled screen.
-      if (this.currentScreen.id == SCREEN_DEVICE_DISABLED) {
+      if (this.currentScreen.id === SCREEN_DEVICE_DISABLED) {
         return;
       }
 
@@ -336,7 +336,7 @@ export function invokePolymerMethod(element, name, ...args) {
      */
     getScreenIndex_(screenId) {
       for (let i = 0; i < this.screens_.length; ++i) {
-        if (this.screens_[i] == screenId) {
+        if (this.screens_[i] === screenId) {
           return i;
         }
       }
@@ -444,7 +444,7 @@ export function invokePolymerMethod(element, name, ...args) {
      * TODO(crbug.com/1229130) - Remove this suppression.
      */
     initializeDemoModeMultiTapListener() {
-      if (this.displayType_ == DISPLAY_TYPE.OOBE) {
+      if (this.displayType_ === DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
               const currentScreen = this.currentScreen;
@@ -486,11 +486,11 @@ export function invokePolymerMethod(element, name, ...args) {
         givenDisplayType = window.location.pathname.substr(1);
       }
       Object.getOwnPropertyNames(DISPLAY_TYPE).forEach( type => {
-        if (DISPLAY_TYPE[type] == givenDisplayType) {
+        if (DISPLAY_TYPE[type] === givenDisplayType) {
           this.displayType = givenDisplayType;
         }
       });
-      if (this.displayType == DISPLAY_TYPE.UNKNOWN) {
+      if (this.displayType === DISPLAY_TYPE.UNKNOWN) {
         console.error(
             'Unknown display type "' + givenDisplayType +
             '". Setting default.');

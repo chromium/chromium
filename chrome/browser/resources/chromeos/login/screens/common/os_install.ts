@@ -200,7 +200,7 @@ export class OsInstall extends OsInstallScreenElementBase {
   }
 
   private focusLogsLink(): void {
-    if (this.uiStep == OsInstallScreenSteps.NO_DESTINATION_DEVICE_FOUND) {
+    if (this.uiStep === OsInstallScreenSteps.NO_DESTINATION_DEVICE_FOUND) {
       afterNextRender(this, () => {
         const noDestLogsLink =
             this.shadowRoot?.querySelector<HTMLAnchorElement>(
@@ -209,7 +209,7 @@ export class OsInstall extends OsInstallScreenElementBase {
           noDestLogsLink.focus();
         }
       });
-    } else if (this.uiStep == OsInstallScreenSteps.FAILED) {
+    } else if (this.uiStep === OsInstallScreenSteps.FAILED) {
       afterNextRender(this, () => {
         const serviceLogsLink =
             this.shadowRoot?.querySelector<HTMLAnchorElement>(

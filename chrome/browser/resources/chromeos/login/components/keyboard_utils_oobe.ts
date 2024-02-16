@@ -22,7 +22,7 @@ export const KEYBOARD_UTILS_FOR_INJECTION = {
 };
 
 function prepareKeyboardUtilsForInjection(sourceCode: string): void {
-  assert(typeof sourceCode.replaceAll == 'function');
+  assert(typeof sourceCode.replaceAll === 'function');
 
   // Remove exports. 'export class' -> 'class'
   const srcWithoutExports = sourceCode.replaceAll('export class', 'class');

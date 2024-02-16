@@ -195,7 +195,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   private setCountryList_(countries: OobeTypes.DemoCountryDsc[]): void {
     this.countries = countries;
     this.shadowRoot!.getElementById('countryDropdownContainer')!.hidden =
-        countries.length == 0;
+        countries.length === 0;
     for (let i = 0; i < countries.length; ++i) {
       const country = countries[i];
       if (country.selected && country.value !== this.countryNotSelectedId) {
@@ -255,7 +255,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   }
 
   private onInputKeyDown_(e: KeyboardEvent): void {
-    if (e.key == 'Enter' &&
+    if (e.key === 'Enter' &&
         this.userCanContinue_(
             this.retailerNameInput, this.storeNumberInput,
             this.isCountrySelected)) {

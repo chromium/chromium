@@ -189,7 +189,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
         value: function() {
           return (
               loadTimeData.valueExists('deviceFlowType') &&
-              loadTimeData.getString('deviceFlowType') == 'meet');
+              loadTimeData.getString('deviceFlowType') === 'meet');
         },
         readOnly: true,
       },
@@ -311,7 +311,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     // was fully resolved.
     const configuration = Oobe.getInstance().getOobeConfiguration();
     if (configuration && configuration.language &&
-        configuration.language == currentLanguage) {
+        configuration.language === currentLanguage) {
       window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
     }
   }
@@ -342,7 +342,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
     if (configuration.language) {
       const currentLanguage = loadTimeData.getString('language');
-      if (currentLanguage != configuration.language) {
+      if (currentLanguage !== configuration.language) {
         this.applySelectedLanguage_(configuration.language);
         // Trigger language change without marking it as applied.
         // applyOobeConfiguration will be called again once language change
@@ -494,7 +494,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   onInputMethodIdSetFromBackend(keyboard_id) {
     let found = false;
     for (let i = 0; i < this.keyboards.length; ++i) {
-      if (this.keyboards[i].value != keyboard_id) {
+      if (this.keyboards[i].value !== keyboard_id) {
         this.keyboards[i].selected = false;
         continue;
       }

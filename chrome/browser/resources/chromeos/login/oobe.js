@@ -42,13 +42,13 @@ function prepareGlobalValues() {
   window.MultiTapDetector = MultiTapDetector;
 
   // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
-  if (window.cr == undefined) {
+  if (window.cr === undefined) {
     window.cr = {};
   }
-  if (window.cr.ui == undefined) {
+  if (window.cr.ui === undefined) {
     window.cr.ui = {};
   }
-  if (window.cr.ui.login == undefined) {
+  if (window.cr.ui.login === undefined) {
     window.cr.ui.login = {};
   }
 

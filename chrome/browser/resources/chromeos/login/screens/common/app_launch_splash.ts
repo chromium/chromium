@@ -125,7 +125,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     const currVisible =
         !this.shadowRoot!.getElementById('configNetworkContainer')!.classList
              .contains('faded');
-    if (currVisible == visible) {
+    if (currVisible === visible) {
       return;
     }
 

@@ -378,17 +378,17 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
     // errorState.
     this.errorStateLocked = true;
     this.machineNameInvalid =
-        this.errorState == ActiveDirectoryErrorState.MACHINE_NAME_INVALID ||
-        this.errorState == ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
+        this.errorState === ActiveDirectoryErrorState.MACHINE_NAME_INVALID ||
+        this.errorState === ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
     this.userInvalid =
-        this.errorState == ActiveDirectoryErrorState.BAD_USERNAME;
+        this.errorState === ActiveDirectoryErrorState.BAD_USERNAME;
     this.authPasswordInvalid =
-        this.errorState == ActiveDirectoryErrorState.BAD_AUTH_PASSWORD;
+        this.errorState === ActiveDirectoryErrorState.BAD_AUTH_PASSWORD;
     this.unlockPasswordInvalid =
-        this.errorState == ActiveDirectoryErrorState.BAD_UNLOCK_PASSWORD;
+        this.errorState === ActiveDirectoryErrorState.BAD_UNLOCK_PASSWORD;
 
     // Clear password.
-    if (this.errorState == ActiveDirectoryErrorState.NONE) {
+    if (this.errorState === ActiveDirectoryErrorState.NONE) {
       this.getPasswordInput().value = '';
     }
     this.errorStateLocked = false;
@@ -399,7 +399,7 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   isEncryptionStrong(): boolean {
-    return this.encryptionValue == this.defaultEncryption;
+    return this.encryptionValue === this.defaultEncryption;
   }
 
   setJoinConfigurationOptions(options: JoinConfigType[]): void {
@@ -527,7 +527,7 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   private onJoinConfigSelected(value: any): void {
-    if (this.selectedConfigOption == this.joinConfigOptions![value]) {
+    if (this.selectedConfigOption === this.joinConfigOptions![value]) {
       return;
     }
     this.errorState = ActiveDirectoryErrorState.NONE;
@@ -605,15 +605,15 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
    * Returns true if "Machine name is invalid" error should be displayed.
    */
   isMachineNameInvalid(errorState: ActiveDirectoryErrorState): boolean {
-    return errorState != ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
+    return errorState !== ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
   }
 
   getMachineNameError(locale: string, errorState: ActiveDirectoryErrorState):
       string {
-    if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG) {
+    if (errorState === ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG) {
       return this.i18nDynamic(locale, 'adJoinErrorMachineNameTooLong');
     }
-    if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_INVALID) {
+    if (errorState === ActiveDirectoryErrorState.MACHINE_NAME_INVALID) {
       if (this.machineNameInputPattern) {
         return this.i18nDynamic(locale, 'adJoinErrorMachineNameInvalidFormat');
       }
@@ -622,8 +622,8 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   onKeydownUnlockPassword(e: KeyboardEvent): void {
-    if (e.key == 'Enter') {
-      if (this.getUnlockPasswordInput().value.length == 0) {
+    if (e.key === 'Enter') {
+      if (this.getUnlockPasswordInput().value.length === 0) {
         this.onSkipClicked();
       } else {
         this.onUnlockPasswordEntered();
@@ -634,7 +634,7 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
 
   onKeydownMachineNameInput(e: KeyboardEvent): void {
     this.errorState = ActiveDirectoryErrorState.NONE;
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       this.switchTo('userInput') || this.switchTo('passwordInput') ||
           this.onSubmit();
     }
@@ -642,7 +642,7 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
 
   onKeydownUserInput(e: KeyboardEvent): void {
     this.errorState = ActiveDirectoryErrorState.NONE;
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       this.switchTo('passwordInput') || this.onSubmit();
     }
   }
@@ -660,14 +660,14 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
 
   onKeydownAuthPasswordInput(e: KeyboardEvent): void {
     this.errorState = ActiveDirectoryErrorState.NONE;
-    if (e.key == 'Enter') {
+    if (e.key === 'Enter') {
       this.onSubmit();
     }
   }
 
   switchTo(inputId: string): boolean {
     const inputElement = this.getInputElementById(inputId);
-    if (!inputElement.disabled && inputElement.value.length == 0) {
+    if (!inputElement.disabled && inputElement.value.length === 0) {
       inputElement.focus();
       return true;
     }

@@ -83,7 +83,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         value: function() {
           return (
               loadTimeData.valueExists('deviceFlowType') &&
-              loadTimeData.getString('deviceFlowType') == 'meet');
+              loadTimeData.getString('deviceFlowType') === 'meet');
         },
         readOnly: true,
       },

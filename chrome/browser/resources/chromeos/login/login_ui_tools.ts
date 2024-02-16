@@ -15,7 +15,7 @@ export function addSubmitListener(
     element: HTMLElement, callback: () => void): void {
   element.addEventListener(
       'keydown', (function(callback: () => void, e: KeyboardEvent) {
-                   if (e.code != 'Enter') {
+                   if (e.code !== 'Enter') {
                      return;
                    }
                    callback();

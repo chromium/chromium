@@ -59,7 +59,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
   if (isNativeIcons) {
     if (type === 'WAA') {
       zippy['nativeIconType'] = AssistantNativeIconType.WAA;
-    } else if (type == 'DA') {
+    } else if (type === 'DA') {
       zippy['nativeIconType'] = AssistantNativeIconType.DA;
     } else {
       console.error('### Uknown zippy type ' + type);
@@ -2242,7 +2242,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
 
     toggleGameMode() {
       KNOWN_SCREENS.forEach((screen, index) => {
-        if (screen.id == 'marketing-opt-in') {
+        if (screen.id === 'marketing-opt-in') {
           for (const state of screen.states) {
             if (state.data) {
               state.data.cloudGamingDevice = !state.data.cloudGamingDevice;
@@ -2453,12 +2453,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             this.statesPanel.content, state.id,
             this.triggerScreenState.bind(
                 this, this.currentScreenId_, state.id));
-        if (state.id == this.lastScreenState_) {
+        if (state.id === this.lastScreenState_) {
           button.element.classList.add('debug-button-selected');
         }
       }
 
-      if (this.currentScreenId_ == 'marketing-opt-in') {
+      if (this.currentScreenId_ === 'marketing-opt-in') {
         document.getElementsByClassName('gametoggle-button')[0].removeAttribute(
             'hidden');
       } else {

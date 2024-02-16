@@ -73,7 +73,7 @@ function addScreensAsync(): void {
     }
     window.scheduler.postTask(addScreensAsync);
 
-    if (commonScreensList.length == 0) {
+    if (commonScreensList.length === 0) {
       traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
     }
   } else if (flowSpecificScreensList.length > 0) {

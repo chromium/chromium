@@ -477,7 +477,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Handler for Gaia loading timeout.
    */
   private onLoadingTimeOut(): void {
-    if (Oobe.getInstance().currentScreen.id != 'gaia-signin') {
+    if (Oobe.getInstance().currentScreen.id !== 'gaia-signin') {
       return;
     }
     this.clearLoadingTimer();
@@ -610,8 +610,8 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     });
 
     this.isDefaultSsoProviderConfigured =
-        data.screenMode == ScreenAuthMode.SAML_REDIRECT;
-    params.doSamlRedirect = data.screenMode == ScreenAuthMode.SAML_REDIRECT;
+        data.screenMode === ScreenAuthMode.SAML_REDIRECT;
+    params.doSamlRedirect = data.screenMode === ScreenAuthMode.SAML_REDIRECT;
     params.menuEnterpriseEnrollment =
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
@@ -627,7 +627,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Whether the current auth flow is SAML.
    */
   isSamlAuthFlowForTesting(): boolean {
-    return this.isSaml && this.authFlow == AuthFlow.SAML;
+    return this.isSaml && this.authFlow === AuthFlow.SAML;
   }
 
   /**
@@ -666,7 +666,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Invoked when the authFlow property is changed on the authenticator.
    */
   private onAuthFlowChange(): void {
-    this.isSaml = this.authFlow == AuthFlow.SAML;
+    this.isSaml = this.authFlow === AuthFlow.SAML;
   }
 
   /**

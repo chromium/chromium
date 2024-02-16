@@ -201,9 +201,9 @@ class QuickStartDebugger extends PolymerElement {
 
   onFrontendActionReceived(data) {
     assert(data.action_name);
-    if (data.action_name == FrontendActions.ABOUT_TO_START_ADVERTISING) {
+    if (data.action_name === FrontendActions.ABOUT_TO_START_ADVERTISING) {
       this.startAdvertisingPending = true;
-    } else if (data.action_name == FrontendActions.ABOUT_TO_STOP_ADVERTISING) {
+    } else if (data.action_name === FrontendActions.ABOUT_TO_STOP_ADVERTISING) {
       this.stopAdvertisingPending = true;
     }
   }

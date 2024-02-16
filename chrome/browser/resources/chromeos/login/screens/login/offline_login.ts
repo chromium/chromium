@@ -240,7 +240,7 @@ export class OfflineLogin extends OfflineLoginBase {
   }
 
   private isEmailSectionActive(): boolean {
-    return this.activeSection == LoginSection.EMAIL;
+    return this.activeSection === LoginSection.EMAIL;
   }
 
   private switchToEmailCard(animated: boolean): void {
@@ -342,7 +342,7 @@ export class OfflineLogin extends OfflineLoginBase {
   }
 
   private onKeyDown(e: KeyboardEvent): void {
-    if (e.keyCode != 13 || this.disabled) {
+    if (e.keyCode !== 13 || this.disabled) {
       return;
     }
     this.onNextButtonClicked();

@@ -302,13 +302,13 @@ export class OobeReset extends ResetScreenElementBase {
   }
 
   private onScreenStateChanged(): void {
-    if (this.uiStep == ResetScreenUiState.REVERT_PROMISE) {
+    if (this.uiStep === ResetScreenUiState.REVERT_PROMISE) {
       getAnnouncerInstance().announce(this.i18n('resetRevertSpinnerMessage'));
       this.classList.add('revert-promise-view');
     } else {
       this.classList.remove('revert-promise-view');
     }
-    this.inRevertState_ = this.uiStep == ResetScreenUiState.REVERT_PROMISE;
+    this.inRevertState_ = this.uiStep === ResetScreenUiState.REVERT_PROMISE;
   }
 
   /**
@@ -340,7 +340,7 @@ export class OobeReset extends ResetScreenElementBase {
   private isPowerwashDisabled(
       _mode: PowerwashMode, _tpmUpdateChecked: boolean): boolean {
     return this.tpmUpdateChecked_ &&
-        (this.powerwashMode_ == PowerwashMode.POWERWASH_WITH_ROLLBACK);
+        (this.powerwashMode_ === PowerwashMode.POWERWASH_WITH_ROLLBACK);
   }
 
   /* ---------- CONFIRMATION DIALOG ---------- */

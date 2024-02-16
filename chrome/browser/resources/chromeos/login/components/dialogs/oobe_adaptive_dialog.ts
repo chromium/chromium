@@ -155,7 +155,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
     this.maybeUpgradeReadMoreState(false /* readMoreClicked */);
 
     // Apply scroll tags when `Read more` button is hidden.
-    if (this.readMoreState == ReadMoreState.HIDDEN) {
+    if (this.readMoreState === ReadMoreState.HIDDEN) {
       this.applyScrollClassTags();
     }
   }
@@ -191,7 +191,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
   private maybeUpgradeReadMoreState(readMoreClicked: boolean): void {
     // HIDDEN is the final state. We cannot move from HIDDEN state to SHOWN or
     // UNKNOWN state.
-    if (this.readMoreState == ReadMoreState.HIDDEN) {
+    if (this.readMoreState === ReadMoreState.HIDDEN) {
       return;
     }
 
@@ -202,14 +202,14 @@ export class OobeAdaptiveDialog extends PolymerElement {
     }
     const content = this.getContentContainer();
     assert(content instanceof HTMLDivElement);
-    if (this.readMoreState == ReadMoreState.UNKNOWN) {
+    if (this.readMoreState === ReadMoreState.UNKNOWN) {
       if (content.clientHeight < content.scrollHeight) {
         this.readMoreState = ReadMoreState.SHOWN;
         this.addReadMoreButton();
       } else {
         this.readMoreState = ReadMoreState.HIDDEN;
       }
-    } else if (this.readMoreState == ReadMoreState.SHOWN) {
+    } else if (this.readMoreState === ReadMoreState.SHOWN) {
       if (content.clientHeight >= content.scrollHeight ||
           content.scrollTop > 0) {
         this.readMoreState = ReadMoreState.HIDDEN;
@@ -309,7 +309,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
     // If `read more` button is focused after it was removed, move focus to the
     // 'focus-on-show' element.
-    if (this.shadowRoot?.activeElement == this.getReadMoreButton()) {
+    if (this.shadowRoot?.activeElement === this.getReadMoreButton()) {
       this.focusOnShow();
     }
 

@@ -133,7 +133,7 @@ export const MultiStepBehavior = {
 
   setUIStep(step) {
     if (this.uiStep) {
-      if (this.uiStep == step) {
+      if (this.uiStep === step) {
         return;
       }
       this.hideUIStep_(this.uiStep);

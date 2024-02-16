@@ -82,7 +82,7 @@ export class OsTrial extends OsTrialScreenElementBase {
    * This is the 'on-click' event handler for the 'next' button.
    */
   private onNextButtonClick(): void {
-    if (this.selectedTrialOption == TrialOption.TRY) {
+    if (this.selectedTrialOption === TrialOption.TRY) {
       this.userActed('os-trial-try');
     } else {
       this.userActed('os-trial-install');

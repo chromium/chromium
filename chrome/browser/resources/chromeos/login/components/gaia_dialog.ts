@@ -280,7 +280,7 @@ export class GaiaDialog extends GaiaDialogBase {
             new CustomEvent('showview', {bubbles: true, composed: true}));
       },
       'menuItemClicked': (e: CustomEvent) => {
-        if (e.detail == 'ee') {
+        if (e.detail === 'ee') {
           this.dispatchEvent(new CustomEvent(
               'startenrollment', {bubbles: true, composed: true}));
         }
@@ -530,7 +530,7 @@ export class GaiaDialog extends GaiaDialogBase {
       canGoBack: boolean,
       gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return !canGoBack ||
-        gaiaDialogButtonsType == OobeTypes.GaiaDialogButtonsType.DEFAULT;
+        gaiaDialogButtonsType === OobeTypes.GaiaDialogButtonsType.DEFAULT;
   }
 
   /**

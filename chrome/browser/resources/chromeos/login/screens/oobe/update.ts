@@ -336,7 +336,7 @@ export class Update extends UpdateBase {
    */
   private getAutoTransition(step: UpdateUiState,
       autoTransition: boolean): boolean {
-    return step == UpdateUiState.UPDATE && autoTransition;
+    return step === UpdateUiState.UPDATE && autoTransition;
   }
 
   /**

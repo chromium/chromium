@@ -187,7 +187,7 @@ export class OobeCarousel extends OobeCarouselBase {
 
   private hideNonActiveSlides(): void {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
-      if (idx != this.slideIndex) {
+      if (idx !== this.slideIndex) {
         OobeCarousel.hideSlide(this.slides[idx]);
       }
     }
@@ -227,11 +227,11 @@ export class OobeCarousel extends OobeCarouselBase {
    * Method which moves slides to show active one.
    */
   private animateSlides(toIndex: number, fromIndex: number): void {
-    if (fromIndex == 0 && toIndex == this.totalSlides - 1) {
+    if (fromIndex === 0 && toIndex === this.totalSlides - 1) {
       this.animateInternal(toIndex, fromIndex, false);
       return;
     }
-    if (fromIndex == this.totalSlides - 1 && toIndex == 0) {
+    if (fromIndex === this.totalSlides - 1 && toIndex === 0) {
       this.animateInternal(toIndex, fromIndex, true);
       return;
     }
@@ -320,7 +320,7 @@ export class OobeCarousel extends OobeCarouselBase {
       slide.removeEventListener(
           'transitionend', OobeCarousel.removeAnimateFrom);
       slide.removeEventListener('transitionend', OobeCarousel.removeAnimateTo);
-      if (idx != fromIndex) {
+      if (idx !== fromIndex) {
         OobeCarousel.hideSlide(slide);
       }
       OobeCarousel.cleanStyles(slide);
@@ -371,7 +371,7 @@ export class OobeCarousel extends OobeCarouselBase {
   }
 
   private onKeypress(e: DomRepeatEvent< number, KeyboardEvent >): void {
-    if (e.key == 'Space' || e.key == 'Enter') {
+    if (e.key === 'Space' || e.key === 'Enter') {
       this.slideIndex = e.model.item;
     }
   }
@@ -389,14 +389,14 @@ export class OobeCarousel extends OobeCarouselBase {
    * Returns whether a dot is active.
    */
   private isActive(index: number): boolean {
-    return index == this.slideIndex;
+    return index === this.slideIndex;
   }
 
   /**
    * Returns string label for dot.
    */
   private getDotLabel(index: number): string {
-    if (index == this.slideIndex) {
+    if (index === this.slideIndex) {
       return loadTimeData.getStringF(
           this.selectedButtonLabel, index + 1, this.totalSlides);
     }

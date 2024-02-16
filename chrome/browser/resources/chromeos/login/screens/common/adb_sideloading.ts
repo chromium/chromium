@@ -97,9 +97,9 @@ export class AdbSideloading extends AdbSideloadingBase {
    * Sets UI state for the dialog to show corresponding content.
    */
   setScreenState(state: AdbsideloadingScreenState): void {
-    if (state == AdbsideloadingScreenState.ERROR) {
+    if (state === AdbsideloadingScreenState.ERROR) {
       this.setUIStep(AdbSideloadingState.ERROR);
-    } else if (state == AdbsideloadingScreenState.SETUP) {
+    } else if (state === AdbsideloadingScreenState.SETUP) {
       this.setUIStep(AdbSideloadingState.SETUP);
     }
   }

@@ -70,7 +70,7 @@ export class OobeIconButton extends OobeBaseButton {
   icon2x: string;
 
   private updateIconVisibility(): void {
-    this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length == 0);
+    this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length === 0);
   }
 }
 

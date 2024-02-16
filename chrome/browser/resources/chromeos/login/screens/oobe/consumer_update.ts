@@ -290,7 +290,7 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    */
   private getAutoTransition(step: ConsumerUpdateStep,
       autoTransition: boolean): boolean {
-    return step == ConsumerUpdateStep.UPDATE && autoTransition;
+    return step === ConsumerUpdateStep.UPDATE && autoTransition;
   }
 
   private onBackClicked(): void {

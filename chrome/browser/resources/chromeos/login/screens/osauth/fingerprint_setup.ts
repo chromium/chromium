@@ -273,8 +273,8 @@ export class FingerprintSetup extends FingerprintSetupBase {
    * Check whether fingerprint scan problem is other than IMMOBILE.
    */
   private isProblemOther(scanResult: number): boolean {
-    return scanResult != FingerprintResultType.SUCCESS &&
-      scanResult != FingerprintResultType.IMMOBILE;
+    return scanResult !== FingerprintResultType.SUCCESS &&
+      scanResult !== FingerprintResultType.IMMOBILE;
   }
 
   /**

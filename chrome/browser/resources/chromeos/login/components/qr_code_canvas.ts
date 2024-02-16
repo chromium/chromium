@@ -93,7 +93,7 @@ export class QrCodeCanvas {
     }
     this.dotRadiusPx = (this.cellSizePx / 2) * RADIUS_PERCENTAGE;
     this.fiducialCellCount = this.determineFiducialSize();
-    if (this.fiducialCellCount == 0) {
+    if (this.fiducialCellCount === 0) {
       // Could not determine. Default to drawing squares.
       this.useCircles = false;
     }

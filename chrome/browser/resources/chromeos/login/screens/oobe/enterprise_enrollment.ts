@@ -215,7 +215,7 @@ export class EnterpriseEnrollmentElement extends
         type: Boolean,
         value() {
           return loadTimeData.valueExists('deviceFlowType') &&
-              (loadTimeData.getString('deviceFlowType') == 'meet');
+              (loadTimeData.getString('deviceFlowType') === 'meet');
         },
         readOnly: true,
       },
@@ -634,11 +634,11 @@ export class EnterpriseEnrollmentElement extends
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
       return;
     }
-    if (this.licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+    if (this.licenseType === OobeTypes.LicenseType.ENTERPRISE) {
       chrome.send(
           'oauthEnrollCompleteLogin',
           [detail.email, OobeTypes.LicenseType.ENTERPRISE]);
-    } else if (this.licenseType == OobeTypes.LicenseType.EDUCATION) {
+    } else if (this.licenseType === OobeTypes.LicenseType.EDUCATION) {
       chrome.send(
           'oauthEnrollCompleteLogin',
           [detail.email, OobeTypes.LicenseType.EDUCATION]);
@@ -649,10 +649,10 @@ export class EnterpriseEnrollmentElement extends
   }
 
   private onReady(): void {
-    if (this.uiStep == OobeTypes.EnrollmentStep.LOADING) {
+    if (this.uiStep === OobeTypes.EnrollmentStep.LOADING) {
       this.showStep(OobeTypes.EnrollmentStep.SIGNIN);
     }
-    if (this.uiStep != OobeTypes.EnrollmentStep.SIGNIN) {
+    if (this.uiStep !== OobeTypes.EnrollmentStep.SIGNIN) {
       return;
     }
     this.isCancelDisabled = false;
@@ -749,10 +749,10 @@ export class EnterpriseEnrollmentElement extends
    * Return title for enrollment in progress screen.
    */
   private getWorkingTitleKey(licenseType: OobeTypes.LicenseType): string {
-    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+    if (licenseType === OobeTypes.LicenseType.ENTERPRISE) {
       return 'oauthEnrollScreenTitle';
     }
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return 'oauthEducationEnrollScreenTitle';
     }
     return 'oauthEnrollKioskEnrollmentWorkingTitle';
@@ -762,10 +762,10 @@ export class EnterpriseEnrollmentElement extends
    * Returns icon for enrollment steps.
    */
   private getIcon(licenseType: OobeTypes.LicenseType): string {
-    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+    if (licenseType === OobeTypes.LicenseType.ENTERPRISE) {
       return 'oobe-32:enterprise';
     }
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return 'oobe-32:enterprise';
     }
     return 'oobe-32:kiosk';
@@ -776,10 +776,10 @@ export class EnterpriseEnrollmentElement extends
    */
   private getSuccessTitle(locale: string, licenseType: OobeTypes.LicenseType):
       string {
-    if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+    if (licenseType === OobeTypes.LicenseType.ENTERPRISE) {
       return this.i18nDynamic(locale, 'oauthEnrollSuccessTitle');
     }
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return this.i18nDynamic(locale, 'oauthEnrollEducationSuccessTitle');
     }
     return this.i18nDynamic(locale, 'oauthEnrollKioskEnrollmentSuccessTitle');
@@ -790,7 +790,7 @@ export class EnterpriseEnrollmentElement extends
    */
   private getErrorTitle(locale: string, licenseType: OobeTypes.LicenseType):
       string {
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return this.i18nDynamic(locale, 'oauthEducationEnrollErrorTitle');
     }
     return this.i18nDynamic(locale, 'oauthEnrollErrorTitle');
@@ -847,7 +847,7 @@ export class EnterpriseEnrollmentElement extends
    */
   private getSkipConfirmationTitle(
       locale: string, licenseType: OobeTypes.LicenseType): string {
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return this.i18nDynamic(locale, 'skipConfirmationDialogEducationTitle');
     }
     return this.i18nDynamic(locale, 'skipConfirmationDialogTitle');
@@ -858,7 +858,7 @@ export class EnterpriseEnrollmentElement extends
    */
   private getSkipConfirmationText(
       locale: string, licenseType: OobeTypes.LicenseType): string {
-    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+    if (licenseType === OobeTypes.LicenseType.EDUCATION) {
       return this.i18nDynamic(locale, 'skipConfirmationDialogEducationText');
     }
     return this.i18nDynamic(locale, 'skipConfirmationDialogText');

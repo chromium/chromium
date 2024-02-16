@@ -167,7 +167,7 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
   }
 
   private isChildTransition(arcTransition: number): boolean {
-    return arcTransition != ArcSupervisionTransition.UNMANAGED_TO_MANAGED;
+    return arcTransition !== ArcSupervisionTransition.UNMANAGED_TO_MANAGED;
   }
 
   /**
