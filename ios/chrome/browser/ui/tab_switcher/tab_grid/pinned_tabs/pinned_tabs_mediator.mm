@@ -161,7 +161,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     case WebStateListChange::Type::kStatusOnly: {
       const WebStateListChangeStatusOnly& selectionOnlyChange =
           change.As<WebStateListChangeStatusOnly>();
-      if (status.pinned_state_change) {
+      if (selectionOnlyChange.pinned_state_changed()) {
         [self changePinnedStateForWebState:selectionOnlyChange.web_state()
                                    atIndex:selectionOnlyChange.index()];
         break;
@@ -184,7 +184,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
       }
 
       // The pinned state can be updated when a tab is moved.
-      if (status.pinned_state_change) {
+      if (moveChange.pinned_state_changed()) {
         [self changePinnedStateForWebState:moveChange.moved_web_state()
                                    atIndex:moveChange.moved_to_index()];
       }

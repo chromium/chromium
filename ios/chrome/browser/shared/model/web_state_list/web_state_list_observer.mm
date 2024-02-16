@@ -11,10 +11,12 @@
 WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
     raw_ptr<web::WebState> web_state,
     int index,
+    bool pinned_state_changed,
     raw_ptr<const TabGroup> old_group,
     raw_ptr<const TabGroup> new_group)
     : web_state_(web_state),
       index_(index),
+      pinned_state_changed_(pinned_state_changed),
       old_group_(old_group),
       new_group_(new_group) {}
 
@@ -42,11 +44,13 @@ WebStateListChangeMove::WebStateListChangeMove(
     raw_ptr<web::WebState> moved_web_state,
     int moved_from_index,
     int moved_to_index,
+    bool pinned_state_changed,
     raw_ptr<const TabGroup> old_group,
     raw_ptr<const TabGroup> new_group)
     : moved_web_state_(moved_web_state),
       moved_from_index_(moved_from_index),
       moved_to_index_(moved_to_index),
+      pinned_state_changed_(pinned_state_changed),
       old_group_(old_group),
       new_group_(new_group) {}
 

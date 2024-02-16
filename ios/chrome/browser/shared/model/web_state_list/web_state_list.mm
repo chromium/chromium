@@ -278,7 +278,7 @@ void WebStateList::MoveWebStateAt(int from_index, int to_index) {
   auto lock = LockForMutation();
   to_index = ConstrainMoveIndex(to_index, IsWebStatePinnedAt(from_index));
   return MoveWebStateAtImpl(from_index, to_index,
-                            /*pinned_state_change=*/false);
+                            /*pinned_state_changed=*/false);
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAt(
@@ -451,7 +451,6 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   const WebStateListChangeInsert insert_change(web_state_ptr, index,
                                                /*group=*/nullptr);
   const WebStateListStatus status = {
-      .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
@@ -463,23 +462,22 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
 
 void WebStateList::MoveWebStateAtImpl(int from_index,
                                       int to_index,
-                                      bool pinned_state_change) {
+                                      bool pinned_state_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
   DCHECK(ContainsIndex(from_index));
   DCHECK(ContainsIndex(to_index));
 
   if (from_index == to_index) {
-    if (pinned_state_change) {
+    if (pinned_state_changed) {
       // Notify the event to the observers that the pinned state is updated but
       // the layout in WebStateList isn't updated.
       // TODO(b/325423267): Support Tab Groups when updating the pinned state.
       const WebStateListChangeStatusOnly status_only_change(
           web_state_wrappers_[to_index]->web_state(), to_index,
-          /*old_group=*/nullptr,
+          /*pinned_state_changed=*/true, /*old_group=*/nullptr,
           /*new_group=*/nullptr);
       const WebStateListStatus status = {
-          .pinned_state_change = true,
           // An active WebState doesn't change when a pinned state is updated.
           .old_active_web_state = GetActiveWebState(),
           .new_active_web_state = GetActiveWebState()};
@@ -495,10 +493,10 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
   web::WebState* web_state = GetWebStateAt(to_index);
   // TODO(b/325422914): Support Tab Groups when moving.
   const WebStateListChangeMove move_change(web_state, from_index, to_index,
+                                           pinned_state_changed,
                                            /*old_group=*/nullptr,
                                            /*new_group=*/nullptr);
   const WebStateListStatus status = {
-      .pinned_state_change = pinned_state_change,
       // The move operation doesn't insert/delete a WebState and doesn't change
       // an active WebState.
       .old_active_web_state = GetActiveWebState(),
@@ -530,7 +528,6 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   const WebStateListChangeReplace replace_change(replaced_web_state.get(),
                                                  web_state_ptr, index);
   const WebStateListStatus status = {
-      .pinned_state_change = false,
       .old_active_web_state = (index == active_index_)
                                   ? replaced_web_state.get()
                                   : GetActiveWebState(),
@@ -565,7 +562,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   {
     const WebStateListStatus status = {
-        .pinned_state_change = false,
         .old_active_web_state = old_active_web_state,
         .new_active_web_state = new_active_web_state};
     for (auto& observer : observers_) {
@@ -606,7 +602,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   }
 
   const WebStateListStatus status = {
-      .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = new_active_web_state};
   for (auto& observer : observers_) {
@@ -675,10 +670,10 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
 
   const TabGroup* group =
       index != kInvalidIndex ? GetGroupOfWebStateAt(index) : nullptr;
-  const WebStateListChangeStatusOnly status_only_change(old_active_web_state,
-                                                        index, group, group);
+  const WebStateListChangeStatusOnly status_only_change(
+      old_active_web_state, index, /*pinned_state_changed=*/false, group,
+      group);
   const WebStateListStatus status = {
-      .pinned_state_change = false,
       .old_active_web_state = old_active_web_state,
       .new_active_web_state = GetActiveWebState()};
   for (auto& observer : observers_) {
@@ -710,7 +705,7 @@ int WebStateList::SetWebStatePinnedAtImpl(int index, bool pinned) {
   // The pinned state update is notified in `MoveWebStateAtImpl()` with the type
   // of `kMove` when a WebState is moved or `kStatusOnly` when a WebState is
   // not moved.
-  MoveWebStateAtImpl(index, new_index, /*pinned_state_change=*/true);
+  MoveWebStateAtImpl(index, new_index, /*pinned_state_changed=*/true);
 
   return new_index;
 }
@@ -770,11 +765,11 @@ const TabGroup* WebStateList::CreateGroupImpl(
   for (int index : before_pivot) {
     if (index == to_index) {
       // Unpin if needed.
-      bool pinned_state_change = false;
+      bool pinned_state_changed = false;
       if (index < pinned_tabs_count_) {
         CHECK_GT(pinned_tabs_count_, 0);
         --pinned_tabs_count_;
-        pinned_state_change = true;
+        pinned_state_changed = true;
       }
 
       // Update the group tag.
@@ -801,9 +796,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
 
       // Notify the changes to the observers.
       const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), index, old_group, new_group);
+          GetWebStateAt(index), index, pinned_state_changed, old_group,
+          new_group);
       const WebStateListStatus status = {
-          .pinned_state_change = pinned_state_change,
           // The active WebState doesn't change.
           .old_active_web_state = active_web_state,
           .new_active_web_state = active_web_state};
@@ -816,11 +811,11 @@ const TabGroup* WebStateList::CreateGroupImpl(
     }
 
     // Unpin if needed.
-    bool pinned_state_change = false;
+    bool pinned_state_changed = false;
     if (index < pinned_tabs_count_) {
       CHECK_GT(pinned_tabs_count_, 0);
       --pinned_tabs_count_;
-      pinned_state_change = true;
+      pinned_state_changed = true;
     }
 
     // Update the group tag.
@@ -848,10 +843,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
     }
 
     web::WebState* web_state = GetWebStateAt(to_index);
-    const WebStateListChangeMove move_change(web_state, index, to_index,
-                                             old_group, new_group);
+    const WebStateListChangeMove move_change(
+        web_state, index, to_index, pinned_state_changed, old_group, new_group);
     const WebStateListStatus status = {
-        .pinned_state_change = pinned_state_change,
         // The move doesn't change the active WebState.
         .old_active_web_state = active_web_state,
         .new_active_web_state = active_web_state};
@@ -890,9 +884,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
 
       // Notify the changes to the observers.
       const WebStateListChangeStatusOnly status_only_change(
-          GetWebStateAt(index), index, old_group, new_group);
+          GetWebStateAt(index), index, /*pinned_state_changed=*/false,
+          old_group, new_group);
       const WebStateListStatus status = {
-          .pinned_state_change = false,
           // The active WebState doesn't change.
           .old_active_web_state = active_web_state,
           .new_active_web_state = active_web_state};
@@ -931,9 +925,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
     // Notify the changes to the observers.
     web::WebState* web_state = GetWebStateAt(to_index);
     const WebStateListChangeMove move_change(web_state, index, to_index,
+                                             /*pinned_state_changed=*/false,
                                              old_group, new_group);
     const WebStateListStatus status = {
-        .pinned_state_change = false,
         // The move doesn't change the active WebState.
         .old_active_web_state = active_web_state,
         .new_active_web_state = active_web_state};

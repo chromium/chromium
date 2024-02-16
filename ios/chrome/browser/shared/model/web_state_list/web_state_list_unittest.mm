@@ -130,7 +130,9 @@ class WebStateListTestObserver : public WebStateListObserver {
                              const WebStateListStatus& status) override {
     switch (change.type()) {
       case WebStateListChange::Type::kStatusOnly: {
-        if (status.pinned_state_change) {
+        const WebStateListChangeStatusOnly& statusOnlyChange =
+            change.As<WebStateListChangeStatusOnly>();
+        if (statusOnlyChange.pinned_state_changed()) {
           ++pinned_state_changed_count_;
         }
         // The activation is handled after this switch statement.

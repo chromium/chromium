@@ -70,6 +70,7 @@ class WebStateListChangeStatusOnly final : public WebStateListChange {
 
   explicit WebStateListChangeStatusOnly(raw_ptr<web::WebState> web_state,
                                         int index,
+                                        bool pinned_state_changed,
                                         raw_ptr<const TabGroup> old_group,
                                         raw_ptr<const TabGroup> new_group);
   ~WebStateListChangeStatusOnly() final = default;
@@ -86,6 +87,9 @@ class WebStateListChangeStatusOnly final : public WebStateListChange {
   // Returns the current index of the WebState.
   int index() const { return index_; }
 
+  // Returns whether the pinned state of the WebState changed.
+  bool pinned_state_changed() const { return pinned_state_changed_; }
+
   // The group the WebState was in prior to the change.
   raw_ptr<const TabGroup> old_group() const { return old_group_; }
 
@@ -95,6 +99,7 @@ class WebStateListChangeStatusOnly final : public WebStateListChange {
  private:
   raw_ptr<web::WebState> web_state_;
   const int index_;
+  const bool pinned_state_changed_;
   raw_ptr<const TabGroup> old_group_;
   raw_ptr<const TabGroup> new_group_;
 };
@@ -151,6 +156,7 @@ class WebStateListChangeMove final : public WebStateListChange {
   WebStateListChangeMove(raw_ptr<web::WebState> moved_web_state,
                          int moved_from_index,
                          int moved_to_index,
+                         bool pinned_state_changed,
                          raw_ptr<const TabGroup> old_group,
                          raw_ptr<const TabGroup> new_group);
   ~WebStateListChangeMove() final = default;
@@ -169,6 +175,9 @@ class WebStateListChangeMove final : public WebStateListChange {
   // The index of the current position of the WebState.
   int moved_to_index() const { return moved_to_index_; }
 
+  // Returns whether the pinned state of the WebState changed.
+  bool pinned_state_changed() const { return pinned_state_changed_; }
+
   // The group the WebState was in prior to the change.
   raw_ptr<const TabGroup> old_group() const { return old_group_; }
 
@@ -179,6 +188,7 @@ class WebStateListChangeMove final : public WebStateListChange {
   raw_ptr<web::WebState> moved_web_state_;
   const int moved_from_index_;
   const int moved_to_index_;
+  const bool pinned_state_changed_;
   raw_ptr<const TabGroup> old_group_;
   raw_ptr<const TabGroup> new_group_;
 };
@@ -253,11 +263,6 @@ class WebStateListChangeInsert final : public WebStateListChange {
 
 // Represents what changed during a WebStateListChange for a given WebState.
 struct WebStateListStatus {
-  // True when the pinned state of the WebState at `index` in WebStateList is
-  // updated.
-  // TODO(b/325449353): Move to relevant WebStateListChange subclasses.
-  const bool pinned_state_change;
-
   // WebState that used to be active before the change in WebStateList is
   // finished.
   const raw_ptr<web::WebState> old_active_web_state;
