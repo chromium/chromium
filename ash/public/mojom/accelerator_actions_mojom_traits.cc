@@ -172,6 +172,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kShowEmojiPicker;
     case ash::AcceleratorAction::kToggleImeMenuBubble:
       return mojom_accelerator_action::kToggleImeMenuBubble;
+    case ash::AcceleratorAction::kTogglePicker:
+      return mojom_accelerator_action::kTogglePicker;
     case ash::AcceleratorAction::kShowShortcutViewer:
       return mojom_accelerator_action::kShowShortcutViewer;
     case ash::AcceleratorAction::kToggleStylusTools:
@@ -574,6 +576,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kToggleImeMenuBubble:
       *out = ash::AcceleratorAction::kToggleImeMenuBubble;
+      return true;
+    case mojom_accelerator_action::kTogglePicker:
+      *out = ash::AcceleratorAction::kTogglePicker;
       return true;
     case mojom_accelerator_action::kShowShortcutViewer:
       *out = ash::AcceleratorAction::kShowShortcutViewer;

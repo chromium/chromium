@@ -99,6 +99,8 @@ ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
 
+ASH_EXPORT bool CanTogglePicker();
+
 ASH_EXPORT bool CanTogglePrivacyScreen();
 
 ASH_EXPORT bool CanToggleProjectorMarker();
@@ -316,6 +318,11 @@ ASH_EXPORT void ToggleCapsLock();
 
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
+
+// Toggles Picker.
+// `accelerator_timestamp` is the timestamp associated with the accelerator that
+// triggered Picker.
+ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
 
 // Enables Dictation if the feature is currently disabled. Toggles (either
 // starts or stops) Dictation if the feature is currently enabled.

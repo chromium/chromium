@@ -157,6 +157,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ToggleMirrorMode"/>
   <variant name="ToggleMultitaskMenu"/>
   <variant name="ToggleOverview"/>
+  <variant name="TogglePicker"/>
   <variant name="ToggleProjectorMarker"/>
   <variant name="ToggleResizeLockMenu"/>
   <variant name="ToggleSnapGroupWindowsGroupAndUngroup"/>

@@ -628,6 +628,11 @@ bool CanToggleOverview() {
   return true;
 }
 
+bool CanTogglePicker() {
+  CHECK(Shell::HasInstance());
+  return features::IsPickerUpdateEnabled() && Shell::Get()->picker_controller();
+}
+
 bool CanTogglePrivacyScreen() {
   CHECK(Shell::HasInstance());
   return Shell::Get()->privacy_screen_controller()->IsSupported();
@@ -1105,11 +1110,7 @@ void ShiftPrimaryDisplay() {
 }
 
 void ShowEmojiPicker(const base::TimeTicks accelerator_timestamp) {
-  if (auto* picker_controller = Shell::Get()->picker_controller()) {
-    picker_controller->ToggleWidget(accelerator_timestamp);
-  } else {
-    ui::ShowEmojiPanel();
-  }
+  ui::ShowEmojiPanel();
 }
 
 void ShowKeyboardShortcutViewer() {
@@ -1308,6 +1309,13 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
   DCHECK(Shell::Get()->clipboard_history_controller());
   Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator(
       is_plain_text_paste);
+}
+
+void TogglePicker(base::TimeTicks accelerator_timestamp) {
+  CHECK(Shell::Get()->picker_controller());
+  if (auto* picker_controller = Shell::Get()->picker_controller()) {
+    picker_controller->ToggleWidget(accelerator_timestamp);
+  }
 }
 
 void EnableOrToggleDictation() {

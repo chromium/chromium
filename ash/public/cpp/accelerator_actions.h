@@ -162,6 +162,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(WindowMinimize)                             \
   ACCELERATOR_ACTION_ENTRY(MinimizeTopWindowOnBack)                    \
   ACCELERATOR_ACTION_ENTRY(VolumeMuteToggle)                           \
+  ACCELERATOR_ACTION_ENTRY(TogglePicker)                               \
   /* Debug actions are kept at an offset.*/                            \
   /* This offset should be kept consistent with the enum*/             \
   /* `AcceleratorAction` in*/                                          \

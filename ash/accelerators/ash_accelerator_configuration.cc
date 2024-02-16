@@ -157,6 +157,12 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
                         ash::kToggleGameDashboardAcceleratorDataLength));
   }
 
+  if (ash::features::IsPickerUpdateEnabled()) {
+    AppendAcceleratorData(
+        accelerators, base::make_span(ash::kTogglePickerAcceleratorData,
+                                      ash::kTogglePickerAcceleratorDataLength));
+  }
+
   // Debug accelerators.
   if (ash::debug::DebugAcceleratorsEnabled()) {
     AppendAcceleratorData(accelerators,

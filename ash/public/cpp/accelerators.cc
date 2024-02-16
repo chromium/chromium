@@ -396,6 +396,12 @@ const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
 const size_t kToggleGameDashboardAcceleratorDataLength =
     std::size(kToggleGameDashboardAcceleratorData);
 
+const AcceleratorData kTogglePickerAcceleratorData[] = {
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker}};
+
+const size_t kTogglePickerAcceleratorDataLength =
+    std::size(kTogglePickerAcceleratorData);
+
 // static
 AcceleratorController* AcceleratorController::Get() {
   return g_instance;

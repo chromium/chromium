@@ -55,8 +55,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewFocusObserver,
                                     kSearchFieldFocusedState);
 
 void TogglePickerByAccelerator() {
-  ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_SPACE,
-                            /*control=*/false, /*shift=*/true,
+  ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_S,
+                            /*control=*/false, /*shift=*/false,
                             /*alt=*/false, /*command=*/true);
 }
 
