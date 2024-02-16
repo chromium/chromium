@@ -453,7 +453,7 @@ void AccountConsistencyService::OnDeleteCookiesFinished(
 }
 
 void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
-    const std::vector<const GURL>& urls) {
+    const std::vector<GURL>& urls) {
   for (const GURL& url : urls) {
     SetChromeConnectedCookieWithUrl(url);
   }

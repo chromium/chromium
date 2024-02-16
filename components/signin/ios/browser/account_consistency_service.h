@@ -65,7 +65,7 @@ class AccountConsistencyService : public KeyedService,
 
   // Enqueues a request to set the CHROME_CONNECTED cookie for the domain of the
   // |url|. The cookie is set if it is not already on the domain.
-  void SetChromeConnectedCookieWithUrls(const std::vector<const GURL>& urls);
+  void SetChromeConnectedCookieWithUrls(const std::vector<GURL>& urls);
 
   // Removes CHROME_CONNECTED cookies on all the Google domains where it was
   // set. Calls callback once all cookies were removed.

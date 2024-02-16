@@ -441,7 +441,7 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   network::SCTAuditingCache* cache = network_service->sct_auditing_cache();
   EXPECT_TRUE(cache->IsPopularSCT(*base::Base64Decode(kPopularSCT1)));
   EXPECT_TRUE(cache->IsPopularSCT(*base::Base64Decode(kPopularSCT2)));
-  EXPECT_FALSE(cache->IsPopularSCT(std::vector<const uint8_t>{1, 2, 3, 4}));
+  EXPECT_FALSE(cache->IsPopularSCT(std::vector<uint8_t>{1, 2, 3, 4}));
 
   EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
 

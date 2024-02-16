@@ -16,12 +16,10 @@
 #import "url/gurl.h"
 
 void StoreURLInPasteboard(const GURL& url) {
-  std::vector<const GURL> urls;
-  urls.push_back(url);
-  StoreURLsInPasteboard(urls);
+  StoreURLsInPasteboard({url});
 }
 
-void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
+void StoreURLsInPasteboard(const std::vector<GURL>& urls) {
   NSMutableArray* pasteboard_items = [[NSMutableArray alloc] init];
   for (const GURL& URL : urls) {
     // Invalid URLs arrive here in production. Prevent crashing by continuing
