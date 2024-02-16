@@ -22,6 +22,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -792,4 +793,19 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                    .ExtractBool());
   ASSERT_TRUE(
       EvalJs(web_contents, match_media_picture_in_picture).ExtractBool());
+}
+
+// Make sure that inner bounds of document PiP windows match the requested size.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       InnerBoundsMatchRequest) {
+  constexpr auto size = gfx::Size(400, 450);
+  LoadTabAndEnterPictureInPicture(browser(), size);
+
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+
+  auto* pip_browser = chrome::FindBrowserWithTab(pip_web_contents);
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
+  EXPECT_EQ(size, browser_view->GetContentsSize());
 }

@@ -1965,7 +1965,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Give both an aspect ratio and a width/height that don't match. The
   // width/height should take precedence.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
-  pip_options->width = 600;
+  pip_options->width = 500;
   pip_options->height = 500;
   pip_options->initial_aspect_ratio = 0.5;
   WebContents::CreateParams web_contents_params(browser()->profile());
@@ -1987,9 +1987,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   Navigate(&params);
 
   // The window should use the width and height and ignore the aspect ratio.
+  //
+  // The bounds may have small adjustments for window decorations, since the
+  // requested size is the inner size.  We can't get the inner size easily here,
+  // so just verify that the aspect ratio is closer to 1.0 than 0.5.
   const gfx::Rect override_bounds = params.browser->override_bounds();
-  EXPECT_EQ(600, override_bounds.width());
-  EXPECT_EQ(500, override_bounds.height());
+  float expected_aspect_ratio =
+      static_cast<float>(override_bounds.width()) / override_bounds.height();
+  EXPECT_NEAR(expected_aspect_ratio, 1.0f, 0.2);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
