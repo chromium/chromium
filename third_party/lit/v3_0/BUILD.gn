@@ -16,6 +16,7 @@ ts_library("build_ts") {
     # initial experimentation phase. Update when the migration enters its next
     # phase.
     "//chrome/test/data/webui/cr_elements:build_ts",
+    "//chrome/test/data/webui/extensions:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
   composite = true
