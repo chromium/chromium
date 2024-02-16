@@ -15,6 +15,8 @@
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/functional/bind.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
@@ -41,6 +43,8 @@ using testing::Not;
 using testing::Property;
 using testing::SaveArg;
 using testing::VariantWith;
+
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(100);
 
 class MockPickerClient : public PickerClient {
  public:
@@ -106,11 +110,20 @@ class MockPickerClient : public PickerClient {
 using MockSearchResultsCallback =
     testing::MockFunction<PickerViewDelegate::SearchResultsCallback>;
 
-using PickerSearchControllerTest = testing::Test;
+class PickerSearchControllerTest : public testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
 
@@ -120,9 +133,9 @@ TEST_F(PickerSearchControllerTest, DoesNotPublishResultsWhileSearching) {
                           base::Unretained(&search_results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearch) {
+TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
 
@@ -132,9 +145,28 @@ TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearch) {
                           base::Unretained(&search_results_callback)));
 }
 
+TEST_F(PickerSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client,
+                                    /*burn_in_period=*/base::Milliseconds(100));
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback, Call).Times(0);
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+  task_environment().FastForwardBy(base::Milliseconds(99));
+}
+
 TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   // Catch-all to prevent unexpected gMock call errors. See
   // https://google.github.io/googletest/gmock_cook_book.html#uninteresting-vs-unexpected
@@ -169,11 +201,12 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromCrosSearch) {
       {ash::PickerSearchResult::BrowsingHistory(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
+  task_environment().FastForwardBy(kBurnInPeriod);
 }
 
 TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> first_search_results_callback;
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
   // CrOS search calls `StopSearch()` automatically on starting a search.
@@ -243,9 +276,9 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
                           base::Unretained(&second_search_results_callback)));
 }
 
-TEST_F(PickerSearchControllerTest, SendsQueryToGifSearch) {
+TEST_F(PickerSearchControllerTest, SendsQueryToGifSearchImmediately) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client, FetchGifSearch(Eq("cat"), _)).Times(1);
 
@@ -257,7 +290,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToGifSearch) {
 
 TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -293,11 +326,12 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
+  task_environment().FastForwardBy(kBurnInPeriod);
 }
 
 TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -338,11 +372,12 @@ TEST_F(PickerSearchControllerTest, DoesNotShowOldGifSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
+  task_environment().FastForwardBy(kBurnInPeriod);
 }
 
 TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -399,11 +434,12 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
+  task_environment().FastForwardBy(kBurnInPeriod);
 }
 
 TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
   NiceMock<MockPickerClient> client;
-  PickerSearchController controller(&client);
+  PickerSearchController controller(&client, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
@@ -426,6 +462,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySections) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(480, 480), u"cat blink")});
+  task_environment().FastForwardBy(kBurnInPeriod);
 }
 
 }  // namespace

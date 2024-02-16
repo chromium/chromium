@@ -15,6 +15,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
 namespace ash {
@@ -24,7 +25,8 @@ class PickerClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
-  explicit PickerSearchController(PickerClient* client);
+  explicit PickerSearchController(PickerClient* client,
+                                  base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
@@ -35,7 +37,7 @@ class ASH_EXPORT PickerSearchController {
 
  private:
   void ResetResults();
-  void RunCallback();
+  void PublishResults();
   void HandleSearchResults(ash::AppListSearchResultType type,
                            std::vector<PickerSearchResult> results);
   void HandleGifSearchResults(std::u16string query,
@@ -44,12 +46,14 @@ class ASH_EXPORT PickerSearchController {
 
   const raw_ref<PickerClient> client_;
   emoji::EmojiSearch emoji_search_;
+  base::TimeDelta burn_in_period_;
 
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
   std::vector<PickerSearchResult> emoji_search_results_;
   std::u16string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
+  base::OneShotTimer burn_in_timer_;
   base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
 };
 

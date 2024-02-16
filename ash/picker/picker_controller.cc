@@ -59,6 +59,10 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
 // Time from when the insert is issued and when we give up inserting.
 constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
 
+// Time from when a start starts to when the first set of results are published.
+// TODO: b/325195938 - Lower this to 200ms without affecting results.
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
+
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
@@ -177,7 +181,8 @@ void PickerController::SetClient(PickerClient* client) {
   if (client_ == nullptr) {
     search_controller_ = nullptr;
   } else {
-    search_controller_ = std::make_unique<PickerSearchController>(client_);
+    search_controller_ =
+        std::make_unique<PickerSearchController>(client_, kBurnInPeriod);
   }
 }
 

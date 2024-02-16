@@ -202,7 +202,6 @@ TEST_F(PickerViewTest, NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
   PickerView* view = GetPickerViewFromWidget(*widget);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  task_environment()->FastForwardBy(PickerView::kSearchFieldDebouncingDelay);
 
   EXPECT_THAT(view->zero_state_view_for_testing(),
               Property(&views::View::GetVisible, false));
@@ -220,7 +219,6 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  task_environment()->FastForwardBy(PickerView::kSearchFieldDebouncingDelay);
 
   EXPECT_THAT(view->zero_state_view_for_testing(),
               Property(&views::View::GetVisible, true));
@@ -313,7 +311,6 @@ TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   LeftClickOn(category_item_view);
   // Type something into the search field.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  task_environment()->FastForwardBy(PickerView::kSearchFieldDebouncingDelay);
 
   EXPECT_FALSE(picker_view->category_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
@@ -383,11 +380,9 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   widget->Show();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  task_environment()->FastForwardBy(PickerView::kSearchFieldDebouncingDelay);
 
-  histogram.ExpectUniqueTimeSample(
-      "Ash.Picker.Session.SearchLatency",
-      base::Seconds(1) + PickerView::kSearchFieldDebouncingDelay, 1);
+  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
+                                   base::Seconds(1), 1);
 }
 
 TEST_F(PickerViewTest, BoundsDefaultAlignedWithCaret) {

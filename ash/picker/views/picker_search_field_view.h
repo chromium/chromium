@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
-#include "ash/picker/picker_search_debouncer.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -39,8 +38,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   // `delay` is the time to wait before calling `search_callback` for
   // debouncing.
   explicit PickerSearchFieldView(SearchCallback search_callback,
-                                 PickerSessionMetrics* session_metrics,
-                                 base::TimeDelta delay);
+                                 PickerSessionMetrics* session_metrics);
   PickerSearchFieldView(const PickerSearchFieldView&) = delete;
   PickerSearchFieldView& operator=(const PickerSearchFieldView&) = delete;
   ~PickerSearchFieldView() override;
@@ -64,7 +62,6 @@ class ASH_EXPORT PickerSearchFieldView : public views::View,
   const views::Textfield& textfield_for_testing() const { return *textfield_; }
 
  private:
-  PickerSearchDebouncer search_debouncer_;
   SearchCallback search_callback_;
   raw_ptr<PickerSessionMetrics> session_metrics_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;

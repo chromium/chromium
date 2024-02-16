@@ -47,9 +47,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
     kResultsAboveSearchField,
   };
 
-  static constexpr base::TimeDelta kSearchFieldDebouncingDelay =
-      base::Milliseconds(200);
-
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
                       base::TimeTicks trigger_event_timestamp,

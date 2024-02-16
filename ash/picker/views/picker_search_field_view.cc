@@ -34,10 +34,8 @@ constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
 
 PickerSearchFieldView::PickerSearchFieldView(
     SearchCallback search_callback,
-    PickerSessionMetrics* session_metrics,
-    base::TimeDelta delay)
-    : search_debouncer_(delay),
-      search_callback_(std::move(search_callback)),
+    PickerSessionMetrics* session_metrics)
+    : search_callback_(std::move(search_callback)),
       session_metrics_(session_metrics) {
   views::Builder<PickerSearchFieldView>(this)
       .SetUseDefaultFillLayout(true)
@@ -78,8 +76,7 @@ void PickerSearchFieldView::ContentsChanged(
     const std::u16string& new_contents) {
   session_metrics_->MarkContentsChanged();
 
-  search_debouncer_.RequestSearch(
-      base::BindOnce(search_callback_, new_contents));
+  search_callback_.Run(new_contents);
 }
 
 void PickerSearchFieldView::OnWillChangeFocus(View* focused_before,

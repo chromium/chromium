@@ -18,15 +18,12 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kDebouncingDelay = base::Milliseconds(100);
-
 using PickerSearchFieldViewTest = AshTestBase;
 
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerSessionMetrics metrics;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), &metrics,
-                             kDebouncingDelay);
+  PickerSearchFieldView view(future.GetRepeatingCallback(), &metrics);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -36,7 +33,7 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   base::test::TestFuture<const std::u16string&> future;
   PickerSessionMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), &metrics, kDebouncingDelay));
+      future.GetRepeatingCallback(), &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -46,7 +43,7 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
 
 TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
   PickerSessionMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), &metrics, kDebouncingDelay);
+  PickerSearchFieldView view(base::DoNothing(), &metrics);
 
   view.SetPlaceholderText(u"hello");
 

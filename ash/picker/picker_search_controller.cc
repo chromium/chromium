@@ -42,8 +42,9 @@ base::span<const std::string> FirstNOrLessElements(
 
 }  // namespace
 
-PickerSearchController::PickerSearchController(PickerClient* client)
-    : client_(CHECK_DEREF(client)) {}
+PickerSearchController::PickerSearchController(PickerClient* client,
+                                               base::TimeDelta burn_in_period)
+    : client_(CHECK_DEREF(client)), burn_in_period_(burn_in_period) {}
 
 PickerSearchController::~PickerSearchController() = default;
 
@@ -70,6 +71,8 @@ void PickerSearchController::StartSearch(
   HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
 
   // TODO: b/324154537 - Show a loading animation while waiting for results.
+  burn_in_timer_.Start(FROM_HERE, burn_in_period_, this,
+                       &PickerSearchController::PublishResults);
 }
 
 void PickerSearchController::ResetResults() {
@@ -78,7 +81,7 @@ void PickerSearchController::ResetResults() {
   emoji_search_results_.clear();
 }
 
-void PickerSearchController::RunCallback() {
+void PickerSearchController::PublishResults() {
   if (!current_callback_) {
     return;
   }
@@ -108,7 +111,6 @@ void PickerSearchController::HandleSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
   omnibox_results_ = std::move(results);
-  RunCallback();
 }
 
 void PickerSearchController::HandleGifSearchResults(
@@ -120,7 +122,6 @@ void PickerSearchController::HandleGifSearchResults(
   // TODO: b/324992789 - Allow stopping GIF search results.
   if (query == current_query_) {
     gif_results_ = std::move(results);
-    RunCallback();
   }
 }
 
@@ -140,9 +141,6 @@ void PickerSearchController::HandleEmojiSearchResults(
         PickerSearchResult::Emoticon(base::UTF8ToUTF16(result)));
   }
   emoji_search_results_ = std::move(picker_emoji_search_results);
-
-  // `RunCallback()` is not called here as this function is synchronously called
-  // from `StartSearch()`.
 }
 
 }  // namespace ash
