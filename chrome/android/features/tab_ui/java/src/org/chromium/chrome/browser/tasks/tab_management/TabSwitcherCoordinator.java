@@ -44,9 +44,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -197,12 +199,19 @@ public class TabSwitcherCoordinator
                             currentTabModelFilterSupplier);
 
             PseudoTab.TitleProvider titleProvider =
-                    (context, tab) -> {
-                        int numRelatedTabs =
-                                PseudoTab.getRelatedTabs(context, tab, tabModelSelector).size();
-                        if (numRelatedTabs == 1) return tab.getTitle();
+                    (context, pseudoTab) -> {
+                        TabGroupModelFilter filter =
+                                (TabGroupModelFilter)
+                                        tabModelSelector
+                                                .getTabModelFilterProvider()
+                                                .getCurrentTabModelFilterSupplier()
+                                                .get();
+                        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
+                        assert tab != null;
+                        if (!filter.isTabInTabGroup(tab)) return tab.getTitle();
 
-                        return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
+                        return TabGroupTitleEditor.getDefaultTitle(
+                                context, filter.getRelatedTabCountForRootId(tab.getRootId()));
                     };
 
             long startTimeMs = SystemClock.uptimeMillis();

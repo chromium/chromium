@@ -27,7 +27,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -328,13 +330,14 @@ class TabListEditorCoordinator {
         }
     }
 
-    private String getTitle(Context context, PseudoTab tab) {
-        int numRelatedTabs =
-                PseudoTab.getRelatedTabs(context, tab, mCurrentTabModelFilterSupplier.get()).size();
+    private String getTitle(Context context, PseudoTab pseudoTab) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
+        assert tab != null;
+        if (!filter.isTabInTabGroup(tab)) return tab.getTitle();
 
-        if (numRelatedTabs == 1) return tab.getTitle();
-
-        return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
+        return TabGroupTitleEditor.getDefaultTitle(
+                context, filter.getRelatedTabCountForRootId(tab.getRootId()));
     }
 
     private ThumbnailProvider initThumbnailProvider(
