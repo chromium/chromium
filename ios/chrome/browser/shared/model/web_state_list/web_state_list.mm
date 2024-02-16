@@ -439,7 +439,9 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
     SetOpenerOfWebStateAt(index, opener);
   }
 
-  const WebStateListChangeInsert insert_change(web_state_ptr);
+  // TODO(b/325422014): Support Tab Groups when inserting.
+  const WebStateListChangeInsert insert_change(web_state_ptr,
+                                               /*group=*/nullptr);
   const WebStateListStatus status = {
       .index = index,
       .pinned_state_change = false,
@@ -464,8 +466,10 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
     if (pinned_state_change) {
       // Notify the event to the observers that the pinned state is updated but
       // the layout in WebStateList isn't updated.
+      // TODO(b/325423267): Support Tab Groups when updating the pinned state.
       const WebStateListChangeStatusOnly status_only_change(
-          web_state_wrappers_[to_index]->web_state());
+          web_state_wrappers_[to_index]->web_state(), /*old_group=*/nullptr,
+          /*new_group=*/nullptr);
       const WebStateListStatus status = {
           .index = to_index,
           .pinned_state_change = true,
@@ -482,7 +486,9 @@ void WebStateList::MoveWebStateAtImpl(int from_index,
   MoveWebStateWrapperAt(from_index, to_index);
 
   web::WebState* web_state = GetWebStateAt(to_index);
-  const WebStateListChangeMove move_change(web_state, from_index);
+  // TODO(b/325422914): Support Tab Groups when moving.
+  const WebStateListChangeMove move_change(
+      web_state, from_index, /*old_group=*/nullptr, /*new_group=*/nullptr);
   const WebStateListStatus status = {
       .index = to_index,
       .pinned_state_change = pinned_state_change,
@@ -540,8 +546,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   const bool is_active_web_state_detached = (index == active_index_);
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
+  const TabGroup* group = web_state_wrappers_[index]->group();
   const WebStateListChangeDetach detach_change(web_state, params.is_closing,
-                                               params.is_user_action);
+                                               params.is_user_action, group);
 
   // `new_active_index` may be invalid e.g. when closing all the WebStates,
   // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
@@ -571,6 +578,8 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     CHECK_GT(pinned_tabs_count_, 0);
     --pinned_tabs_count_;
   }
+
+  // TODO(b/325423309): Update Tab Groups ranges when detaching.
 
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
@@ -660,7 +669,10 @@ void WebStateList::ActivateWebStateAtImpl(int index) {
   web::WebState* old_active_web_state = GetActiveWebState();
   SetActiveIndex(index);
 
-  const WebStateListChangeStatusOnly status_only_change(old_active_web_state);
+  const TabGroup* group =
+      index != kInvalidIndex ? GetGroupOfWebStateAt(index) : nullptr;
+  const WebStateListChangeStatusOnly status_only_change(old_active_web_state,
+                                                        group, group);
   const WebStateListStatus status = {
       .index = index,
       .pinned_state_change = false,

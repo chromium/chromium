@@ -9,8 +9,10 @@
 #import "base/check.h"
 
 WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
-    raw_ptr<web::WebState> web_state)
-    : web_state_(web_state) {}
+    raw_ptr<web::WebState> web_state,
+    raw_ptr<const TabGroup> old_group,
+    raw_ptr<const TabGroup> new_group)
+    : web_state_(web_state), old_group_(old_group), new_group_(new_group) {}
 
 WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
   return kType;
@@ -19,10 +21,12 @@ WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
 WebStateListChangeDetach::WebStateListChangeDetach(
     raw_ptr<web::WebState> detached_web_state,
     bool is_closing,
-    bool is_user_action)
+    bool is_user_action,
+    raw_ptr<const TabGroup> group)
     : detached_web_state_(detached_web_state),
       is_closing_(is_closing),
-      is_user_action_(is_user_action) {}
+      is_user_action_(is_user_action),
+      group_(group) {}
 
 WebStateListChange::Type WebStateListChangeDetach::type() const {
   return kType;
@@ -30,8 +34,13 @@ WebStateListChange::Type WebStateListChangeDetach::type() const {
 
 WebStateListChangeMove::WebStateListChangeMove(
     raw_ptr<web::WebState> moved_web_state,
-    int moved_from_index)
-    : moved_web_state_(moved_web_state), moved_from_index_(moved_from_index) {}
+    int moved_from_index,
+    raw_ptr<const TabGroup> old_group,
+    raw_ptr<const TabGroup> new_group)
+    : moved_web_state_(moved_web_state),
+      moved_from_index_(moved_from_index),
+      old_group_(old_group),
+      new_group_(new_group) {}
 
 WebStateListChange::Type WebStateListChangeMove::type() const {
   return kType;
@@ -48,8 +57,9 @@ WebStateListChange::Type WebStateListChangeReplace::type() const {
 }
 
 WebStateListChangeInsert::WebStateListChangeInsert(
-    raw_ptr<web::WebState> inserted_web_state)
-    : inserted_web_state_(inserted_web_state) {}
+    raw_ptr<web::WebState> inserted_web_state,
+    raw_ptr<const TabGroup> group)
+    : inserted_web_state_(inserted_web_state), group_(group) {}
 
 WebStateListChange::Type WebStateListChangeInsert::type() const {
   return kType;
