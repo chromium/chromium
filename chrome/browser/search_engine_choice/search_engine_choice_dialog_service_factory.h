@@ -28,12 +28,6 @@ class SearchEngineChoiceDialogServiceFactory
 
   static SearchEngineChoiceDialogServiceFactory* GetInstance();
 
-  // Checks that the profile is the chosen one to display the choice dialog.
-  // If none is chosen yet and `try_claim` is `true`, then `profile` will be
-  // marked as the chosen one.
-  // TODO(b/309936758): Deprecated, currently always returns `true`.
-  static bool IsSelectedChoiceProfile(Profile& profile, bool try_claim);
-
   // Overrides the check for branded build. This allows bots that run on
   // non-branded builds to test the code.
   static base::AutoReset<bool> ScopedChromeBuildOverrideForTesting(

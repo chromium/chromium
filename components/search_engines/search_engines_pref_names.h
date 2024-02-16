@@ -83,12 +83,6 @@ inline constexpr char kSearchProviderOverrides[] = "search_provider_overrides";
 inline constexpr char kSearchProviderOverridesVersion[] =
     "search_provider_overrides_version";
 
-// Path to the profile selected to show the search engine choice prompt.
-// NOTE: Unlike most of the other preferences here, this one is stored in the
-// local state, not the profile prefs.
-inline constexpr char kSearchEnginesChoiceProfile[] =
-    "search_engines.choice_profile";
-
 // String that refers to the study group in which this install was enrolled.
 // Used to implement the first run experiment tracking.
 // NOTE: Unlike most of the other preferences here, this one is stored in the

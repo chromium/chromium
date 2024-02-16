@@ -993,6 +993,9 @@ constexpr std::array<const char*, 6u>
 };
 #endif
 
+// Deprecated 02/2024
+constexpr char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1106,6 +1109,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kScreenTimeEnabled, true);
 #endif
+
+  // Deprecated 02/2024.
+  registry->RegisterFilePathPref(kSearchEnginesChoiceProfile, base::FilePath());
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1520,7 +1526,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   metrics::TabStatsTracker::RegisterPrefs(registry);
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(registry);
   RegisterBrowserPrefs(registry);
-  SearchEngineChoiceDialogService::RegisterLocalStatePrefs(registry);
   SearchEngineChoiceClientSideTrial::RegisterLocalStatePrefs(registry);
   speech::SodaInstaller::RegisterLocalStatePrefs(registry);
   StartupBrowserCreator::RegisterLocalStatePrefs(registry);
@@ -2263,6 +2268,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_MAC)
   local_state->ClearPref(kScreenTimeEnabled);
 #endif
+
+  // Added 02/2024
+  local_state->ClearPref(kSearchEnginesChoiceProfile);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 

@@ -204,13 +204,6 @@ void SearchEngineChoiceDialogService::SetDialogDisabledForTests(
 }
 
 // static
-void SearchEngineChoiceDialogService::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterFilePathPref(prefs::kSearchEnginesChoiceProfile,
-                                 base::FilePath());
-}
-
-// static
 search_engines::ChoiceData
 SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
   if (!search_engines::IsChoiceScreenFlagEnabled(
@@ -324,15 +317,6 @@ SearchEngineChoiceDialogService::ComputeDialogConditions(Browser& browser) {
   if (dynamic_conditions !=
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     return dynamic_conditions;
-  }
-
-  // Lastly, we check if this profile can be the selected one for showing the
-  // dialogs. We check it last to make sure we don't mark to eagerly this one
-  // as the choice profile if one of the other conditions is not met.
-  if (!SearchEngineChoiceDialogServiceFactory::IsSelectedChoiceProfile(
-          profile_.get(), /*try_claim=*/true)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kProfileOutOfScope;
   }
 
   return search_engines::SearchEngineChoiceScreenConditions::kEligible;

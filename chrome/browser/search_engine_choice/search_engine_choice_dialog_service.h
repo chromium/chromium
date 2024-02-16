@@ -118,10 +118,6 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // ensure it is reset at the end of your test.
   static void SetDialogDisabledForTests(bool dialog_disabled);
 
-  // Registers the local state preferences used by the search engine choice
-  // screen.
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
   // Returns a copy of the `ChoiceData` specific to `profile`.
   static search_engines::ChoiceData GetChoiceDataFromProfile(Profile& profile);
 

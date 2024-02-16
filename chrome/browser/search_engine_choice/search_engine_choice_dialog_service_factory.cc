@@ -41,12 +41,6 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
         kFeatureSuppressed;
   }
 
-  if (!SearchEngineChoiceDialogServiceFactory::IsSelectedChoiceProfile(
-          profile, /*try_claim=*/false)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kProfileOutOfScope;
-  }
-
   bool is_regular_or_guest_profile =
       profile.IsRegularProfile() || profile.IsGuestSession();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -120,15 +114,6 @@ SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting(
     bool force_chrome_build) {
   CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_is_chrome_build, force_chrome_build);
-}
-
-// static
-bool SearchEngineChoiceDialogServiceFactory::IsSelectedChoiceProfile(
-    Profile& profile,
-    bool try_claim) {
-  // TODO(b/309936758): Remove this method and deprecate
-  // prefs::kSearchEnginesChoiceProfile
-  return true;
 }
 
 // static
