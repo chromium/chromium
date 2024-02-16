@@ -524,12 +524,14 @@ class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
     // If there is a newer browser available return the version of lacros-chrome
     // maintained by the component manager. Otherwise return the current version
     // loaded by the manager.
-    const auto component_version_number =
-        browser_util::GetInstalledLacrosComponentVersion(
-            component_update_service_);
-    return IsNewerBrowserAvailable() && component_version_number.IsValid()
-               ? component_version_number
-               : browser_version_loaded_;
+    if (IsNewerBrowserAvailable()) {
+      const auto component_version_number =
+          browser_util::GetInstalledLacrosComponentVersion(
+              component_update_service_);
+      CHECK(component_version_number.IsValid());
+      return component_version_number;
+    }
+    return browser_version_loaded_;
   }
 
   bool IsNewerBrowserAvailable() const override {
