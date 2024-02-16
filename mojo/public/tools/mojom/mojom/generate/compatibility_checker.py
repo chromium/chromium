@@ -55,8 +55,8 @@ class BackwardCompatibilityChecker:
 
   @_CheckCompat.register(mojom.Struct)
   def _(self, new: mojom.Struct, old: mojom.Struct):
-    """This struct is backward-compatible with the older_struct if they are
-    layout compatible or semantically compatible.
+    """This struct is backward-compatible with the older_struct if it has an
+    identical field layout or is semantically compatible.
     A struct is semantically compatible if and only if all the following
     conditions hold:
       - Any newly added field is tagged with a [MinVersion] attribute specifying
@@ -70,66 +70,50 @@ class BackwardCompatibilityChecker:
       - All reference-typed (string, array, map, struct, or union) fields tagged
         with a [MinVersion] greater than zero must be optional.
     """
-    # Check for layout compatibility first. If they are layout compatible, we
-    # are done.
-    new_packed_fields = pack.PackedStruct(new).packed_fields_in_ordinal_order
-    old_packed_fields = pack.PackedStruct(old).packed_fields_in_ordinal_order
 
-    if len(new_packed_fields) == len(old_packed_fields):
-      layout_compatible = True
-      for pair in zip(new_packed_fields, old_packed_fields):
-        (new_field, old_field) = (pair[0].field, pair[1].field)
-        if not self.IsBackwardCompatible(new_field, old_field):
-          layout_compatible = False
-          break
+    # The generator will ensure that ordinal ordering is correct.
+    new_fields = [
+        p.field for p in pack.PackedStruct(new).packed_fields_in_ordinal_order
+    ]
+    old_fields = [
+        p.field for p in pack.PackedStruct(old).packed_fields_in_ordinal_order
+    ]
+    # The fields are in ordinal order, so new fields must be at the end.
+    added_fields = new_fields[len(old_fields):]
 
-      if layout_compatible:
-        return True
-
-    def buildOrdinalFieldMap(struct):
-      fields_by_ordinal = {}
-      for field in struct.fields:
-        fields_by_ordinal[field.ordinal] = field
-      return fields_by_ordinal
-
-    new_fields = buildOrdinalFieldMap(new)
-    old_fields = buildOrdinalFieldMap(old)
     if len(new_fields) < len(old_fields):
       # At least one field was removed, which is not OK.
       raise CompatibilityError(
           'Removing struct fields from struct %s is not allowed.' %
           (new.mojom_name))
 
-    num_old_ordinals = len(old_fields)
-    max_old_min_version = 0
-    for ordinal in range(num_old_ordinals):
-      new_field = new_fields[ordinal]
-      old_field = old_fields[ordinal]
-      if (old_field.min_version or 0) > max_old_min_version:
-        max_old_min_version = old_field.min_version
+    for pair in zip(new_fields, old_fields):
+      (new_field, old_field) = pair
       if not self.IsBackwardCompatible(new_field, old_field):
         # Type or min-version mismatch between old and new versions of the same
         # ordinal field.
         raise CompatibilityError(
             'Struct %s field with ordinal value %d have different type'
             ' or min version, old name %s, new name %s.' %
-            (new.mojom_name, ordinal, old_field.mojom_name,
+            (new.mojom_name, new_field.ordinal, old_field.mojom_name,
              new_field.mojom_name))
 
-    # At this point we know all old fields are intact in the new struct
-    # definition. Now verify that all new fields have a high enough min version
-    # and are appropriately optional where required.
-    num_new_ordinals = len(new_fields)
-    last_min_version = max_old_min_version
-    for ordinal in range(num_old_ordinals, num_new_ordinals):
-      new_field = new_fields[ordinal]
-      min_version = new_field.min_version or 0
-      if min_version <= max_old_min_version:
+    old_version = 0
+    if len(old_fields):
+      old_version = max([f.min_version or 0 for f in old_fields])
+
+    # The new version ratchets up with each field. Because versions can only
+    # increase with ordinal order, we should end up with the max [MinVersion]
+    # in the end.
+    new_version = 0
+    for new_field in added_fields:
+      field_version = new_field.min_version or 0
+      if field_version <= old_version:
         # A new field is being added to an existing version, which is not OK.
         raise CompatibilityError(
             'Adding new fields to an existing MinVersion is not allowed'
             ' for struct %s' % (new.mojom_name))
-      if min_version < last_min_version:
+      if field_version < new_version:
         # The [MinVersion] of a field cannot be lower than the [MinVersion] of
         # a field with lower ordinal value.
         raise CompatibilityError(
@@ -140,6 +124,7 @@ class BackwardCompatibilityChecker:
         # New fields whose type can be nullable MUST be nullable.
         raise CompatibilityError('New struct %s field %s must be nullable' %
                                  (new.mojom_name, new_field))
+      new_version = field_version
 
     return True
 

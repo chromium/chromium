@@ -500,3 +500,12 @@ class VersionCompatibilityTest(MojomParserTestCase):
     self.assertNotBackwardCompatible(
         'struct S { bool has_foo; double gap; float foo; };',
         'struct S { float? foo; double gap; };')
+
+    # Tests layout compat + adding a new field.
+    self.assertBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; [MinVersion=1] int32 foobear;};')
+    # No min version specified, not compatible.
+    self.assertNotBackwardCompatible(
+        'struct S { bool has_foo@0; double gap@2; float foo@1; };',
+        'struct S { float? foo; double gap; int32 foobear;};')
