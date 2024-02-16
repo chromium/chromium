@@ -109,6 +109,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/web",

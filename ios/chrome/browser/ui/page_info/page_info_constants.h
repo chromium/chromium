@@ -31,4 +31,7 @@ extern const CGFloat kPageInfoTableViewSeparatorInset;
 // of page info.
 extern const CGFloat kPageInfoPaddingFirstSectionHeader;
 
+// The size of icons in the left hand side of page info.
+extern const CGFloat kPageInfoSymbolPointSize;
+
 #endif  // IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_CONSTANTS_H_

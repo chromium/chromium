@@ -172,13 +172,18 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       break;
     case ItemIdentifierAboutThisSiteHeader:
       if (IsRevampPageInfoIosEnabled()) {
-        // TODO(crbug.com/1512580): Open the AboutThisSite diner url in a new
-        // tap.
+        [self.pageInfoPresentationHandler
+            showAboutThisSitePage:_aboutThisSiteInfo.moreAboutURL];
       }
       break;
     default:
       break;
   }
+
+  // Deselect the row so the UI seems responsive when the action triggered by
+  // the selection (e.g. opening a new tab, opening a subpage) takes a bit
+  // longer to happen.
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -344,8 +349,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
           l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
       cell.detailText = _aboutThisSiteInfo.summary;
       cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-      // TODO(crbug.com/1512580): Add AboutThisSite icon and an external arrow
-      // icon on the RHS.
+      // TODO(crbug.com/1512580): Change to the AboutThisSite branded icon.
+      [cell setIconImage:DefaultSymbolTemplateWithPointSize(
+                             kInfoCircleSymbol, kPageInfoSymbolPointSize)
+                tintColor:UIColor.whiteColor
+          backgroundColor:[UIColor colorNamed:kPurple500Color]
+             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+
+      cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
       return cell;
     }
   }

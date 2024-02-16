@@ -22,3 +22,5 @@ NSString* const kPageInfoSecurityViewNavigationBarAccessibilityIdentifier =
 const CGFloat kPageInfoTableViewSeparatorInset = 16.0f;
 
 const CGFloat kPageInfoPaddingFirstSectionHeader = 28.0f;
+
+const CGFloat kPageInfoSymbolPointSize = 18.0f;

@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
 @interface PageInfoCoordinator () <PageInfoPresentationCommands>
@@ -61,8 +63,8 @@
       self.viewController;
 
   self.dispatcher = self.browser->GetCommandDispatcher();
-  self.viewController.pageInfoCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PageInfoCommands);
+  self.viewController.pageInfoCommandsHandler =
+      HandlerForProtocol(self.dispatcher, PageInfoCommands);
 
   self.permissionsMediator =
       [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
@@ -101,6 +103,15 @@
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser];
   [_securityCoordinator start];
+}
+
+- (void)showAboutThisSitePage:(GURL)URL {
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  id<PageInfoCommands> pageInfoCommandsHandler =
+      HandlerForProtocol(self.dispatcher, PageInfoCommands);
+  [pageInfoCommandsHandler hidePageInfo];
 }
 
 @end

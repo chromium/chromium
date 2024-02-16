@@ -90,14 +90,6 @@ static const syncer::UserSelectableType kAccountSwitchItems[] = {
     syncer::UserSelectableType::kPayments,
     syncer::UserSelectableType::kPreferences};
 
-// Returns the configuration to be used for the accessory.
-UIImageConfiguration* AccessoryConfiguration() {
-  return [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolAccessoryPointSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-}
-
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 constexpr CGFloat kErrorSymbolPointSize = 22.;
@@ -456,8 +448,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                    kNeedsTrustedVaultKeyForEverything;
   if (hasDisclosureIndicator) {
     self.encryptionItem.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithConfiguration(kChevronForwardSymbol,
-                                                     AccessoryConfiguration())];
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kChevronForwardSymbol)];
     self.encryptionItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
   } else {
@@ -472,8 +464,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   TableViewImageItem* googleActivityControlsItem =
       [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
   googleActivityControlsItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
-                                                   AccessoryConfiguration())];
+      initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                        kExternalLinkSymbol)];
   googleActivityControlsItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   googleActivityControlsItem.title =
@@ -488,8 +480,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   TableViewImageItem* dataFromChromeSyncItem =
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
   dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
-                                                   AccessoryConfiguration())];
+      initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                        kExternalLinkSymbol)];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   dataFromChromeSyncItem.accessibilityIdentifier =

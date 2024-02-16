@@ -5,12 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PRESENTATION_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PRESENTATION_COMMANDS_H_
 
+#import "url/gurl.h"
+
 // Commands related to actions within the PageInfo UI.
 @protocol PageInfoPresentationCommands
 
 // Method invoked when the user requests more details about a page's security.
 - (void)showSecurityPage;
 
+// Method invoked when the user requests more details about a page, i.e.
+// taps on AboutThisSite.
+- (void)showAboutThisSitePage:(GURL)URL;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PRESENTATION_COMMANDS_H_
