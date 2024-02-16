@@ -125,6 +125,7 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertEmoji) {
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"thumbs up"),
       WaitForShow(ash::kPickerSearchResultsEmojiItemElementId),
+      WaitForShow(ash::kPickerSearchResultsPageElementId),
       NameDescendantView(
           ash::kPickerSearchResultsPageElementId, kFirstEmojiResultName,
           base::BindLambdaForTesting(
