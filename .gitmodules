@@ -759,10 +759,6 @@
 	path = third_party/gles2_conform
 	url = https://chrome-internal.googlesource.com/chrome/deps/gles2_conform
 	gclient-condition = checkout_src_internal
-[submodule "third_party/googlemac"]
-	path = third_party/googlemac
-	url = https://chrome-internal.googlesource.com/chrome/deps/googlemac
-	gclient-condition = checkout_mac and checkout_src_internal
 [submodule "third_party/khronos_glcts"]
 	path = third_party/khronos_glcts
 	url = https://chrome-internal.googlesource.com/chrome/deps/khronos_glcts
