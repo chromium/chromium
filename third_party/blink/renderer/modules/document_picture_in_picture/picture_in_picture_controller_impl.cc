@@ -350,7 +350,8 @@ LocalDOMWindow* PictureInPictureControllerImpl::documentPictureInPictureWindow()
   return document_picture_in_picture_window_.Get();
 }
 
-bool PictureInPictureControllerImpl::HasDocumentPictureInPictureWindow() const {
+LocalDOMWindow*
+PictureInPictureControllerImpl::GetDocumentPictureInPictureWindow() const {
   return document_picture_in_picture_window_;
 }
 

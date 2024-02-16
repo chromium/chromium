@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -549,20 +550,46 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   // https://html.spec.whatwg.org/C/#dom-window-focus
   // https://html.spec.whatwg.org/C/#focusing-steps
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
+  LocalFrame* originating_frame = incumbent_window->GetFrame();
 
   // TODO(mustaq): Use of |allow_focus| and consuming the activation here seems
   // suspicious (https://crbug.com/959815).
   bool allow_focus = incumbent_window->IsWindowInteractionAllowed();
+  bool is_focused_from_pip_window = false;
   if (allow_focus) {
     incumbent_window->ConsumeWindowInteraction();
   } else {
     DCHECK(IsMainThread());
+
+    // Allow focus if the request is coming from our opener window.
     allow_focus = opener() && opener() != this && incumbent_window == opener();
+
+    // Also allow focus from a user activation on a document picture-in-picture
+    // window opened by this window. In this case, we determine the originating
+    // frame to be the picture-in-picture window regardless of whether or not
+    // it's also the incumbent frame. `frame` will also always be an outermost
+    // main frame in this case since only outermost main frames can open a
+    // document picture-in-picture window.
+    auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
+    if (local_dom_window) {
+      Document* document = local_dom_window->document();
+      LocalDOMWindow* pip_window =
+          document
+              ? PictureInPictureController::GetDocumentPictureInPictureWindow(
+                    *document)
+              : nullptr;
+      if (pip_window &&
+          LocalFrame::HasTransientUserActivation(pip_window->GetFrame())) {
+        allow_focus = true;
+        is_focused_from_pip_window = true;
+        originating_frame = pip_window->GetFrame();
+      }
+    }
   }
 
   // If we're a top level window, bring the window to the front.
   if (frame->IsOutermostMainFrame() && allow_focus) {
-    frame->FocusPage(incumbent_window->GetFrame());
+    frame->FocusPage(originating_frame);
   } else if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
@@ -582,6 +609,12 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     // Fenced frames should consume user activation when attempting to pull
     // focus across a fenced boundary into itself.
     LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
+  }
+
+  // When the focus comes from the document picture-in-picture frame, we consume
+  // a user gesture from the picture-in-picture frame.
+  if (is_focused_from_pip_window) {
+    LocalFrame::ConsumeTransientUserActivation(originating_frame);
   }
 }
 

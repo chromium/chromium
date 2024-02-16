@@ -4920,7 +4920,7 @@ bool Document::IsHttpRefreshScheduledWithin(base::TimeDelta interval) {
 }
 
 bool Document::HasDocumentPictureInPictureWindow() const {
-  return PictureInPictureController::HasDocumentPictureInPictureWindow(*this);
+  return PictureInPictureController::GetDocumentPictureInPictureWindow(*this);
 }
 
 network::mojom::ReferrerPolicy Document::GetReferrerPolicy() const {

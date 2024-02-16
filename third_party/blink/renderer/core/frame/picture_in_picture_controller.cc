@@ -42,14 +42,14 @@ bool PictureInPictureController::IsElementInPictureInPicture(
 }
 
 // static
-bool PictureInPictureController::HasDocumentPictureInPictureWindow(
+LocalDOMWindow* PictureInPictureController::GetDocumentPictureInPictureWindow(
     const Document& document) {
 #if !BUILDFLAG(IS_ANDROID)
   PictureInPictureController* controller =
       Supplement<Document>::From<PictureInPictureController>(document);
-  return controller && controller->HasDocumentPictureInPictureWindow();
+  return controller ? controller->GetDocumentPictureInPictureWindow() : nullptr;
 #else
-  return false;
+  return nullptr;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

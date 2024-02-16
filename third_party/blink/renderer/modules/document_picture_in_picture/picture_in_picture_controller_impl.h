@@ -85,7 +85,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   Status IsElementAllowed(const HTMLVideoElement&,
                           bool report_failure) const override;
 #if !BUILDFLAG(IS_ANDROID)
-  bool HasDocumentPictureInPictureWindow() const override;
+  LocalDOMWindow* GetDocumentPictureInPictureWindow() const override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Implementation of PictureInPictureSessionObserver.
