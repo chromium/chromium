@@ -7931,6 +7931,9 @@
 
     'lacros_skylab_tests_amd64_generic_rel_gtest': {
       'chromeos_integration_tests': {
+        'mixins': [
+          'ci_only',
+        ],
         'variants': [
           'CROS_VOLTEER_PUBLIC_LKGM',
         ],
@@ -7939,6 +7942,9 @@
 
     'lacros_skylab_tests_amd64_generic_rel_tast': {
       'lacros_skylab_tests': {
+        'mixins': [
+          'ci_only',
+        ],
         'variants': [
           'CROS_VOLTEER_PUBLIC_LKGM',
         ],

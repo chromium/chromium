@@ -1177,6 +1177,9 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic_rel_gtest",
     basic_suites = {
         "chromeos_integration_tests": targets.legacy_matrix_config(
+            mixins = [
+                "ci_only",
+            ],
             variants = [
                 "CROS_VOLTEER_PUBLIC_LKGM",
             ],
@@ -1188,6 +1191,9 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic_rel_tast",
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
+            mixins = [
+                "ci_only",
+            ],
             variants = [
                 "CROS_VOLTEER_PUBLIC_LKGM",
             ],
