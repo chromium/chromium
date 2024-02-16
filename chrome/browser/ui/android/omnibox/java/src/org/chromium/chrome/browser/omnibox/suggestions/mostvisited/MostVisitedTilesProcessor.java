@@ -12,12 +12,15 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -38,8 +41,10 @@ import java.util.List;
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
-    private final int mCarouselItemViewWidth;
-    private final int mCarouselItemViewHeight;
+    private final @Px int mCarouselItemViewWidth;
+    private final @Px int mCarouselItemViewHeight;
+    private final @Px int mInitialSpacing;
+    private final @Px int mElementSpacing;
 
     /**
      * Constructor.
@@ -59,6 +64,17 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width);
         mCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
+
+        mInitialSpacing =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                        ? OmniboxResourceProvider.getHeaderStartPadding(context)
+                                - context.getResources()
+                                        .getDimensionPixelSize(R.dimen.tile_view_padding)
+                        : OmniboxResourceProvider.getSideSpacing(context);
+        mElementSpacing =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
     }
 
     @Override
@@ -93,12 +109,11 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         BaseCarouselSuggestionViewProperties.BOTTOM_PADDING,
                         OmniboxResourceProvider.getMostVisitedCarouselBottomPadding(mContext))
                 .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, false)
+                .with(
+                        BaseCarouselSuggestionViewProperties.ITEM_DECORATION,
+                        new DynamicSpacingRecyclerViewItemDecoration(
+                                mInitialSpacing, mElementSpacing / 2, mCarouselItemViewWidth))
                 .build();
-    }
-
-    @Override
-    public int getCarouselItemViewWidth() {
-        return mCarouselItemViewWidth;
     }
 
     @Override

@@ -110,7 +110,6 @@ public class QueryTilesProcessorUnitTest {
                 View.MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE, View.MeasureSpec.AT_MOST));
 
         assertEquals(view.getMeasuredHeight(), mProcessor.getCarouselItemViewHeight());
-        assertEquals(view.getMeasuredWidth(), mProcessor.getCarouselItemViewWidth());
     }
 
     @Test

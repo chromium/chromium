@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -33,12 +34,15 @@ public class BaseCarouselSuggestionProcessorUnitTest {
     private static final int ITEM_VIEW_WIDTH = 12345;
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
-    // Stores PropertyModel for the suggestion.
+    private Context mContext;
     private PropertyModel mModel;
     private BaseCarouselSuggestionProcessorTestClass mProcessor;
 
     /** Test class to instantiate BaseCarouselSuggestionProcessor class */
-    public class BaseCarouselSuggestionProcessorTestClass extends BaseCarouselSuggestionProcessor {
+    public static class BaseCarouselSuggestionProcessorTestClass
+            extends BaseCarouselSuggestionProcessor {
+        public static int sReportedItemViewHeight;
+
         /**
          * Constructs a new BaseCarouselSuggestionProcessor.
          *
@@ -65,19 +69,14 @@ public class BaseCarouselSuggestionProcessorUnitTest {
 
         @Override
         public int getCarouselItemViewHeight() {
-            return 0;
-        }
-
-        @Override
-        public int getCarouselItemViewWidth() {
-            return ITEM_VIEW_WIDTH;
+            return sReportedItemViewHeight;
         }
     }
 
     @Before
     public void setUp() {
-        mProcessor =
-                new BaseCarouselSuggestionProcessorTestClass(ContextUtils.getApplicationContext());
+        mContext = ContextUtils.getApplicationContext();
+        mProcessor = new BaseCarouselSuggestionProcessorTestClass(mContext);
         mModel = mProcessor.createModel();
     }
 
@@ -109,10 +108,20 @@ public class BaseCarouselSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void testPopulateItemViewWidth() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertEquals(
-                ITEM_VIEW_WIDTH, mModel.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
+    public void getMinimumViewHeight_includesDecorations() {
+        int baseHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
+
+        BaseCarouselSuggestionProcessorTestClass.sReportedItemViewHeight = 0;
+        Assert.assertEquals(baseHeight, mProcessor.getMinimumViewHeight());
+
+        BaseCarouselSuggestionProcessorTestClass.sReportedItemViewHeight = 100;
+        Assert.assertEquals(100 + baseHeight, mProcessor.getMinimumViewHeight());
+    }
+
+    @Test
+    public void allowBackgroundRounding_disallowedAsCarouselHandlesThisInternally() {
+        Assert.assertFalse(mProcessor.allowBackgroundRounding());
     }
 }

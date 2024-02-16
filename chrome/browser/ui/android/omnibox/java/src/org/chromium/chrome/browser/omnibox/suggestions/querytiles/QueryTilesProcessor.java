@@ -9,11 +9,13 @@ import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
@@ -30,8 +32,10 @@ import java.util.List;
 public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
-    private final int mCarouselItemViewWidth;
-    private final int mCarouselItemViewHeight;
+    private final @Px int mCarouselItemViewWidth;
+    private final @Px int mCarouselItemViewHeight;
+    private final @Px int mInitialSpacing;
+    private final @Px int mElementSpacing;
 
     /**
      * Constructor.
@@ -51,6 +55,15 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
                 mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_width);
         mCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.query_tile_view_height);
+
+        mInitialSpacing =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_horizontal_leadin);
+        mElementSpacing =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_horizontal_space);
     }
 
     @Override
@@ -82,12 +95,11 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
                 .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, padding)
                 .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, padding)
                 .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
+                .with(
+                        BaseCarouselSuggestionViewProperties.ITEM_DECORATION,
+                        new DynamicSpacingRecyclerViewItemDecoration(
+                                mInitialSpacing, mElementSpacing, mCarouselItemViewWidth))
                 .build();
-    }
-
-    @Override
-    public int getCarouselItemViewWidth() {
-        return mCarouselItemViewWidth;
     }
 
     @Override

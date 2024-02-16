@@ -22,25 +22,16 @@ import org.chromium.build.annotations.MockedInTests;
 @MockedInTests
 public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerViewItemDecoration {
     private final @Px int mMinElementSpace;
-    private @Px int mItemWidth;
+    private final @Px int mItemWidth;
     private @Px int mContainerWidth;
     private boolean mIsPortraitOrientation;
 
-    public DynamicSpacingRecyclerViewItemDecoration(@Px int leadInSpace, @Px int minElementSpace) {
+    public DynamicSpacingRecyclerViewItemDecoration(
+            @Px int leadInSpace, @Px int minElementSpace, @Px int itemWidth) {
         super(leadInSpace, minElementSpace);
         mMinElementSpace = minElementSpace;
-        mContainerWidth = 0;
-    }
-
-    /**
-     * Set the new itemWidth to be used for computing dynamic element spacing.
-     *
-     * <p>Calling this method may trigger re-layout of the RecyclerView elements.
-     */
-    public void setItemWidth(@Px int itemWidth) {
-        if (mItemWidth == itemWidth) return;
         mItemWidth = itemWidth;
-        setElementSpace(computeElementSpacingPx());
+        mContainerWidth = 0;
     }
 
     @Override
@@ -102,10 +93,5 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
         } else {
             return mMinElementSpace;
         }
-    }
-
-    @VisibleForTesting
-    public int getItemWidthForTesting() {
-        return mItemWidth;
     }
 }

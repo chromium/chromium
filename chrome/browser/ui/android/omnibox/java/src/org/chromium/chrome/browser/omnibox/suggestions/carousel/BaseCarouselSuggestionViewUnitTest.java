@@ -50,9 +50,7 @@ public class BaseCarouselSuggestionViewUnitTest {
     @Before
     public void setUp() {
         mView.setSelectionControllerForTesting(mController);
-        mView.setItemDecorationForTesting(mDecoration);
-
-        assertEquals(mDecoration, mView.getItemDecoration());
+        mView.setItemDecoration(mDecoration);
         clearInvocations(mView, mAdapter, mController, mChild);
     }
 
@@ -67,6 +65,20 @@ public class BaseCarouselSuggestionViewUnitTest {
         verify(mController).selectNextItem();
 
         verifyNoMoreInteractions(mController);
+    }
+
+    @Test
+    public void setItemDecoration_nullDecorations() {
+        // One decoration installed by the setUp routine.
+        assertEquals(1, mView.getItemDecorationCount());
+
+        // Reset current decoration to null.
+        mView.setItemDecoration(null);
+        assertEquals(0, mView.getItemDecorationCount());
+
+        // One decoration re-installed.
+        mView.setItemDecoration(mDecoration);
+        assertEquals(1, mView.getItemDecorationCount());
     }
 
     @Test

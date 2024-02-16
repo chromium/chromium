@@ -37,9 +37,6 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
         return mCarouselViewDecorationHeightPx + getCarouselItemViewHeight();
     }
 
-    /** Returns the width of an element hosted by the carousel. */
-    public abstract int getCarouselItemViewWidth();
-
     /** Returns the height of an element hosted by the carousel. */
     public abstract int getCarouselItemViewHeight();
 
@@ -50,7 +47,6 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
         model.set(
                 BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE,
                 isTablet && !OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
-        model.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, getCarouselItemViewWidth());
     }
 
     @Override

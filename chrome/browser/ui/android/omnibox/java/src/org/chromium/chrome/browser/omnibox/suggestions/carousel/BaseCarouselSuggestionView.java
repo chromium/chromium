@@ -14,11 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
-import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -26,7 +23,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @MockedInTests
 public class BaseCarouselSuggestionView extends RecyclerView {
     private RecyclerViewSelectionController mSelectionController;
-    private DynamicSpacingRecyclerViewItemDecoration mDecoration;
+    private SpacingRecyclerViewItemDecoration mDecoration;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -44,18 +41,6 @@ public class BaseCarouselSuggestionView extends RecyclerView {
 
         mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
         addOnChildAttachStateChangeListener(mSelectionController);
-
-        int initialSpacing =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        ? OmniboxResourceProvider.getHeaderStartPadding(context)
-                                - getResources().getDimensionPixelSize(R.dimen.tile_view_padding)
-                        : OmniboxResourceProvider.getSideSpacing(context);
-        int baseSpacing =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
-        mDecoration = new DynamicSpacingRecyclerViewItemDecoration(initialSpacing, baseSpacing / 2);
-        addItemDecoration(mDecoration);
 
         setAdapter(adapter);
     }
@@ -120,14 +105,13 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         addOnChildAttachStateChangeListener(mSelectionController);
     }
 
-    /* package */ DynamicSpacingRecyclerViewItemDecoration getItemDecoration() {
-        return mDecoration;
-    }
-
-    /* package */ void setItemDecorationForTesting(
-            DynamicSpacingRecyclerViewItemDecoration decoration) {
-        removeItemDecoration(mDecoration);
+    /* package */ void setItemDecoration(SpacingRecyclerViewItemDecoration decoration) {
+        if (mDecoration != null) {
+            removeItemDecoration(mDecoration);
+        }
         mDecoration = decoration;
-        addItemDecoration(mDecoration);
+        if (mDecoration != null) {
+            addItemDecoration(mDecoration);
+        }
     }
 }
