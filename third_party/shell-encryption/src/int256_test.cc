@@ -41,7 +41,7 @@ TEST(Int256, AllTests) {
   uint256 bigger(2001, 1);
   uint256 biggest(kuint256max);
   uint256 high_low(1, 0);
-  uint256 low_high(0, absl::kuint128max);
+  uint256 low_high(0, absl::Uint128Max());
   EXPECT_LT(one, two);
   EXPECT_GT(two, one);
   EXPECT_LT(one, big);
@@ -120,8 +120,8 @@ TEST(Int256, AllTests) {
   big_copy = big;
   EXPECT_EQ(big >> 256, big_copy >>= 256);
 
-  EXPECT_EQ(Uint256High128(biggest), absl::kuint128max);
-  EXPECT_EQ(Uint256Low128(biggest), absl::kuint128max);
+  EXPECT_EQ(Uint256High128(biggest), absl::Uint128Max());
+  EXPECT_EQ(Uint256Low128(biggest), absl::Uint128Max());
   EXPECT_EQ(zero + one, one);
   EXPECT_EQ(zero + minus_one, minus_one);
   EXPECT_EQ(one + minus_one, zero);
@@ -141,7 +141,7 @@ TEST(Int256, AllTests) {
   EXPECT_EQ(high_low - one, low_high);
   EXPECT_EQ(low_high + one, high_low);
   EXPECT_EQ(Uint256High128((uint256(1) << 128) - 1), 0);
-  EXPECT_EQ(Uint256Low128((uint256(1) << 128) - 1), absl::kuint128max);
+  EXPECT_EQ(Uint256Low128((uint256(1) << 128) - 1), absl::Uint128Max());
   EXPECT_TRUE(!!one);
   EXPECT_TRUE(!!high_low);
   EXPECT_FALSE(!!zero);
