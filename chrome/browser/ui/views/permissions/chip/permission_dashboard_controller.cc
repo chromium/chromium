@@ -139,7 +139,9 @@ bool PermissionDashboardController::Update(
   permission_dashboard_view_->SetVisible(true);
 
   indicator_chip->SetChipIcon(indicator_model->icon());
-  indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  indicator_chip->SetTheme(indicator_model->is_blocked()
+                               ? PermissionChipTheme::kBlockedActivityIndicator
+                               : PermissionChipTheme::kInUseActivityIndicator);
   indicator_chip->GetViewAccessibility().OverrideIsIgnored(false);
   indicator_chip->SetTooltipText(indicator_model->get_tooltip());
 

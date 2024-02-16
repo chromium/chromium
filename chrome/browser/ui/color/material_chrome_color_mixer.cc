@@ -247,10 +247,15 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       kColorNewTabButtonInkDropFrameActive};
 
   // Omnibox chip colors.
-  mixer[kColorOmniboxChipActivityIndicatorBackground] = {ui::kColorSysPrimary};
-  mixer[kColorOmniboxChipActivityIndicatorForeground] = {
+  mixer[kColorOmniboxChipInUseActivityIndicatorBackground] = {
+      ui::kColorSysPrimary};
+  mixer[kColorOmniboxChipInUseActivityIndicatorForeground] = {
       ui::kColorSysOnPrimary};
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
+      ui::kColorSysSurface};
+  mixer[kColorOmniboxChipBlockedActivityIndicatorForeground] = {
+      ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysPrimary};
   mixer[kColorOmniboxChipInkDropHover] = {

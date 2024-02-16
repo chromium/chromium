@@ -200,7 +200,13 @@ SkColor PermissionChipView::GetForegroundColor() const {
   if (GetPermissionChipTheme() ==
       PermissionChipTheme::kInUseActivityIndicator) {
     return GetColorProvider()->GetColor(
-        kColorOmniboxChipActivityIndicatorForeground);
+        kColorOmniboxChipInUseActivityIndicatorForeground);
+  }
+
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kBlockedActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipBlockedActivityIndicatorForeground);
   }
 
   if (features::IsChromeRefresh2023()) {
@@ -254,7 +260,13 @@ SkColor PermissionChipView::GetBackgroundColor() const {
   if (GetPermissionChipTheme() ==
       PermissionChipTheme::kInUseActivityIndicator) {
     return GetColorProvider()->GetColor(
-        kColorOmniboxChipActivityIndicatorBackground);
+        kColorOmniboxChipInUseActivityIndicatorBackground);
+  }
+
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kBlockedActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipBlockedActivityIndicatorBackground);
   }
 
   return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
