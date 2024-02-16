@@ -648,7 +648,6 @@ TEST_F(SequencedSocketDataTest, SingleSyncWriteTooSmall) {
   }
 
   static const char* kExpectedFailures[] = {
-      "Expected: (data.length()) >= (expected_data.length())",
       "Value of: actual_data == expected_data\n  Actual: false\nExpected: true",
       "Expected equality of these values:\n  rv"};
   ASSERT_EQ(std::size(kExpectedFailures),

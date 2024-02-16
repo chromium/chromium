@@ -46,7 +46,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnRetryPacket\n";
   }
   bool OnUnauthenticatedPublicHeader(const QuicPacketHeader& header) override {
-    *output_ << "OnUnauthenticatedPublicHeader: " << header << "\n";
+    *output_ << "OnUnauthenticatedPublicHeader: " << header;
     return true;
   }
   bool OnUnauthenticatedHeader(const QuicPacketHeader& header) override {
