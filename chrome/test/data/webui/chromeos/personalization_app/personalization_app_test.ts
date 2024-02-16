@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenRouterElement, SeaPenTemplateQueryElement, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * @fileoverview E2E test suite for chrome://personalization.
@@ -272,6 +272,65 @@ suite('wallpaper subpage', () => {
     assertGT(
         collections.offsetHeight, 0,
         'wallpaper-collections grid should have visible height');
+  });
+
+  suite('sea pen', function() {
+    test('has selected wallpaper on root page', async () => {
+      const subpage = getWallpaperSubpage();
+
+      const seaPenTile = await waitUntil(
+          () => subpage.shadowRoot?.querySelector('wallpaper-collections')
+                    ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                        `wallpaper-grid-item[aria-disabled='false']` +
+                        `[data-sea-pen]`),
+          'waiting for sea-pen-tile');
+      seaPenTile.click();
+
+      const wallpaperSelected = await waitUntil(
+          () => getRouter().shadowRoot?.getElementById('wallpaperSelected')!,
+          'waiting for sea-pen-router wallpaper-selected');
+      assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+    });
+
+    test('hides selected wallpaper on non root page', async () => {
+      const subpage = getWallpaperSubpage();
+
+      const seaPenTile = await waitUntil(
+          () => subpage.shadowRoot?.querySelector('wallpaper-collections')
+                    ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                        `wallpaper-grid-item[aria-disabled='false']` +
+                        `[data-sea-pen]`),
+          'waiting for sea-pen-tile');
+      seaPenTile.click();
+
+      const seaPenRouter = await waitUntil(
+          () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
+              'sea-pen-router')!,
+          'waiting for sea-pen-router');
+
+      let wallpaperSelected =
+          getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
+      assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+      assertNotEquals(getComputedStyle(wallpaperSelected).display, 'none');
+
+      const templates = await waitUntil(
+          () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
+                    ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
+                        `wallpaper-grid-item[data-sea-pen-image]`),
+          'waiting for sea-pen-tile');
+      templates[0]!.click();
+
+      const seaPenTemplateQuery = await waitUntil(
+          () => seaPenRouter.shadowRoot
+                    ?.querySelector<SeaPenTemplateQueryElement>(
+                        'sea-pen-template-query')!,
+          'waiting for sea-pen-template-query');
+      assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query should exist');
+
+      wallpaperSelected =
+          getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
+      assertFalse(!!wallpaperSelected, 'wallpaper-selected should not exist');
+    });
   });
 
   suite('backdrop', function() {

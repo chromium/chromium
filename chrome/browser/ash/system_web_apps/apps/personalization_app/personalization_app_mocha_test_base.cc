@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/shell.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
@@ -19,14 +19,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/manta/features.h"
 
 namespace ash::personalization_app {
 
 PersonalizationAppMochaTestBase::PersonalizationAppMochaTestBase() {
-scoped_feature_list_.InitWithFeatures(
+  scoped_feature_list_.InitWithFeatures(
       {
           ::ash::features::kFeatureManagementTimeOfDayScreenSaver,
           ::ash::features::kFeatureManagementTimeOfDayWallpaper,
+          ::manta::features::kMantaService,
+          ::ash::features::kSeaPen,
+          ::ash::features::kFeatureManagementSeaPen,
       },
       {});
   set_test_loader_host(

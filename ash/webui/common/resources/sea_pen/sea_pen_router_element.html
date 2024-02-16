@@ -13,7 +13,8 @@
   }
 
   sea-pen-input-query,
-  sea-pen-template-query {
+  sea-pen-template-query,
+  ::slotted(wallpaper-selected) {
     background-color: var(--cros-sys-app_base_shaded);
     grid-area: selected;
     height: 172px;
@@ -66,6 +67,7 @@
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
   <div class="leftspacertop"></div>
   <div class="leftspacerbottom"></div>
+  <slot></slot>
   <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
     <sea-pen-input-query path="[[relativePath_]]"></sea-pen-input-query>
   </template>

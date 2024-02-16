@@ -77,7 +77,11 @@
     </wallpaper-subpage>
   </template>
   <template is="dom-if" if="[[shouldShowSeaPen_(path_)]]" restamp>
-    <sea-pen-router base-path="[[seaPenBasePath_]]" on-sea-pen-terms-dialog-refuse="onRefuseSeaPenTermsOfService_"></sea-pen-router>
+    <sea-pen-router base-path="[[seaPenBasePath_]]" on-sea-pen-terms-dialog-refuse="onRefuseSeaPenTermsOfService_">
+      <template is="dom-if" if="[[shouldShowWallpaperSelected_(queryParams_.seaPenTemplateId)]]" restamp>
+        <wallpaper-selected id="wallpaperSelected"></wallpaper-selected>
+      </template>
+    </sea-pen-router>
   </template>
   <personalization-toast></personalization-toast>
 </div>

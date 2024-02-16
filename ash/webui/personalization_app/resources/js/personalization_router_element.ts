@@ -197,6 +197,10 @@ export class PersonalizationRouterElement extends PolymerElement {
     return isSeaPenEnabled() && isSeaPenPath(path);
   }
 
+  private shouldShowWallpaperSelected_(templateId: string|null): boolean {
+    return !templateId;
+  }
+
   private shouldShowBreadcrumb_(path: string|null): boolean {
     return path !== Paths.ROOT;
   }
