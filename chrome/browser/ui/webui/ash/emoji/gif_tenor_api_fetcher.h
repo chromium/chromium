@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_GIF_TENOR_API_FETCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -50,7 +51,8 @@ class GifTenorApiFetcher {
       TenorGifsApiCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& query,
-      const std::optional<std::string>& pos);
+      const std::optional<std::string>& pos,
+      std::optional<int> limit = std::nullopt);
 
   // Fetch tenor API Posts endpoint
   void FetchGifsByIds(

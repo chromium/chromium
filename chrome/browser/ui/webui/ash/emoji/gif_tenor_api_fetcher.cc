@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -363,7 +365,8 @@ void GifTenorApiFetcher::FetchGifSearch(
     TenorGifsApiCallback callback,
     const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& query,
-    const std::optional<std::string>& pos) {
+    const std::optional<std::string>& pos,
+    std::optional<int> limit) {
   constexpr char kSearchApi[] = "/v2/search";
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       net::DefineNetworkTrafficAnnotation(
@@ -397,6 +400,9 @@ void GifTenorApiFetcher::FetchGifSearch(
   GURL url = GetUrl(kSearchApi, pos);
   url = net::AppendQueryParameter(url, "q", query);
   url = net::AppendQueryParameter(url, kClientKeyName, kClientKeyValue);
+  if (limit.has_value()) {
+    url = net::AppendQueryParameter(url, "limit", base::NumberToString(*limit));
+  }
 
   auto endpoint_fetcher = endpoint_fetcher_creator_.Run(url_loader_factory, url,
                                                         kTrafficAnnotation);

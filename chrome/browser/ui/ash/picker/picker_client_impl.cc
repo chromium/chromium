@@ -48,6 +48,8 @@ enum class AppListSearchResultType;
 
 namespace {
 
+constexpr int kMaxGifsToSearch = 4;
+
 void OnGifDownloaded(PickerClientImpl::DownloadGifToStringCallback callback,
                      std::unique_ptr<network::SimpleURLLoader> simple_loader,
                      std::unique_ptr<std::string> response_body) {
@@ -166,7 +168,7 @@ void PickerClientImpl::FetchGifSearch(const std::string& query,
   gif_tenor_api_fetcher_.FetchGifSearch(
       base::BindOnce(&OnGifSearchResponse, std::move(callback)),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(), query,
-      std::nullopt);
+      std::nullopt, kMaxGifsToSearch);
 }
 
 void PickerClientImpl::StartCrosSearch(const std::u16string& query,
