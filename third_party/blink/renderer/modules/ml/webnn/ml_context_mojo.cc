@@ -31,10 +31,10 @@ PowerPreference ConvertBlinkPowerPreferenceToMojo(
 }  // namespace
 
 // static
-void MLContextMojo::ValidateAndCreate(ScriptPromiseResolver* resolver,
-                                      MLContextOptions* options,
-                                      ML* ml) {
-  ScopedMLTrace scoped_trace("MLContextMojo::ValidateAndCreate");
+void MLContextMojo::ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
+                                           MLContextOptions* options,
+                                           ML* ml) {
+  ScopedMLTrace scoped_trace("MLContextMojo::ValidateAndCreateAsync");
   CHECK_EQ(options->deviceType(), V8MLDeviceType::Enum::kGpu);
   // TODO(crbug.com/1273291): Remove unsupported options (ex. model_format)
   // once the context gets implemented for non-mojo too.
@@ -42,12 +42,25 @@ void MLContextMojo::ValidateAndCreate(ScriptPromiseResolver* resolver,
       options->devicePreference(), options->deviceType(),
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
-  context->Create(std::move(scoped_trace), resolver, options);
+  context->CreateAsync(std::move(scoped_trace), resolver, options);
 }
 
-void MLContextMojo::CreateImpl(ScopedMLTrace scoped_trace,
-                               ScriptPromiseResolver* resolver,
-                               MLContextOptions* options) {
+// static
+MLContext* MLContextMojo::ValidateAndCreateSync(ScriptState* script_state,
+                                                ExceptionState& exception_state,
+                                                MLContextOptions* options,
+                                                ML* ml) {
+  CHECK_EQ(options->deviceType(), V8MLDeviceType::Enum::kGpu);
+  auto* context = MakeGarbageCollected<MLContextMojo>(
+      options->devicePreference(), options->deviceType(),
+      options->powerPreference(), options->modelFormat(), options->numThreads(),
+      ml);
+  return context->CreateSync(script_state, options, exception_state);
+}
+
+void MLContextMojo::CreateAsyncImpl(ScopedMLTrace scoped_trace,
+                                    ScriptPromiseResolver* resolver,
+                                    MLContextOptions* options) {
   auto options_mojo = webnn::mojom::blink::CreateContextOptions::New();
   options_mojo->power_preference =
       ConvertBlinkPowerPreferenceToMojo(options->powerPreference());
@@ -55,6 +68,35 @@ void MLContextMojo::CreateImpl(ScopedMLTrace scoped_trace,
       std::move(options_mojo),
       WTF::BindOnce(&MLContextMojo::OnCreateWebNNContext, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver)));
+}
+
+MLContext* MLContextMojo::CreateSyncImpl(ScriptState* script_state,
+                                         MLContextOptions* options,
+                                         ExceptionState& exception_state) {
+  // Ensures that sync methods are only called from worker threads.
+  CHECK(!IsMainThread());
+  auto options_mojo = webnn::mojom::blink::CreateContextOptions::New();
+  options_mojo->power_preference =
+      ConvertBlinkPowerPreferenceToMojo(options->powerPreference());
+  blink_mojom::CreateContextResultPtr result;
+  if (!GetML()->CreateWebNNContextSync(std::move(options_mojo), &result)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to create WebNN context.");
+    return nullptr;
+  }
+  if (result->is_error()) {
+    const auto& create_context_error = result->get_error();
+    exception_state.ThrowDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_context_error->code),
+        create_context_error->message);
+    return nullptr;
+  }
+  auto* execution_context = ExecutionContext::From(script_state);
+  // Bind the end point of `WebNNContext` mojo interface in the blink side.
+  remote_context_.Bind(
+      std::move(result->get_context_remote()),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+  return this;
 }
 
 MLContextMojo::MLContextMojo(const V8MLDevicePreference device_preference,
@@ -86,6 +128,17 @@ void MLContextMojo::CreateWebNNGraph(
   // Use `WebNNContext` to create `WebNNGraph` message pipe.
   remote_context_->CreateGraph(std::move(graph_info),
                                WTF::BindOnce(std::move(callback)));
+}
+
+bool MLContextMojo::CreateWebNNGraphSync(
+    webnn::mojom::blink::GraphInfoPtr graph_info,
+    webnn::mojom::blink::CreateGraphResultPtr* out_result) {
+  // Ensures that sync methods are only called from worker threads.
+  CHECK(!IsMainThread());
+  CHECK(remote_context_.is_bound());
+
+  // Use `WebNNContext` to create `WebNNGraph` message pipe.
+  return remote_context_->CreateGraph(std::move(graph_info), out_result);
 }
 
 void MLContextMojo::OnCreateWebNNContext(

@@ -32,13 +32,12 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
   // Create and build an MLGraphModelLoader object. Resolve the promise with
   // this concrete object if the underlying TF-Lite model converted from WebNN
   // graph builds successfully.
-  // The caller must call `Promise()` on `resolver` before calling this method.
-  static void ValidateAndBuild(ScopedMLTrace scoped_trace,
-                               MLContext* context,
-                               const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver);
+  static void ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
+                                    MLContext* context,
+                                    const MLNamedOperands& named_outputs,
+                                    ScriptPromiseResolver* resolver);
 
-  // The constructor shouldn't be called directly, use ValidateAndBuild()
+  // The constructor shouldn't be called directly, use ValidateAndBuildAsync()
   // method instead, and the declaration must be public to be called by
   // MakeGarbageCollected.
   MLGraphModelLoader(ExecutionContext* execution_context, MLContext* context);
@@ -64,16 +63,21 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
   // Load a WebNN graph in `MLService` with `ModelLoader` message pipe, the
   // operations of WebNN need to be converted into a TF-Lite model in
   // FlatBuffers.
-  void BuildImpl(ScopedMLTrace scoped_trace,
-                 const MLNamedOperands& named_outputs,
-                 ScriptPromiseResolver* resolver) override;
+  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                      const MLNamedOperands& named_outputs,
+                      ScriptPromiseResolver* resolver) override;
+
+  // Load the converted model with synchronous call of `ModelLoader` interface.
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
+                         ExceptionState& exception_state) override;
 
   // Compute the converted model with asynchronous call of `Model` interface.
-  void ComputeImpl(ScopedMLTrace scoped_trace,
-                   const MLNamedArrayBufferViews& inputs,
-                   const MLNamedArrayBufferViews& outputs,
-                   ScriptPromiseResolver* resolver,
-                   ExceptionState& exception_state) override;
+  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                        const MLNamedArrayBufferViews& inputs,
+                        const MLNamedArrayBufferViews& outputs,
+                        ScriptPromiseResolver* resolver,
+                        ExceptionState& exception_state) override;
 
   // Resolve the promise with an MLComputeResult that contains input and output
   // ArrayBufferViews. The `inputs_info` and `outputs_info` carry the backing
@@ -88,6 +92,11 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
           outputs_info,
       ml::model_loader::mojom::blink::ComputeResult mojo_result,
       const std::optional<HashMap<String, Vector<uint8_t>>>& mojo_outputs);
+
+  // Compute the converted model with synchronous call of `Model` interface.
+  void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+                       const MLNamedArrayBufferViews& outputs,
+                       ExceptionState& exception_state) override;
 
   HeapMojoRemote<ml::model_loader::mojom::blink::Model> remote_model_;
 };

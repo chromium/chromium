@@ -33,11 +33,12 @@ namespace {
 // against it.
 const TestVariety kGraphTestVariety[] = {
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-    {BackendType::kXnnpack},
+    {BackendType::kXnnpack, ExecutionMode::kAsync},
+    {BackendType::kXnnpack, ExecutionMode::kSync},
 #endif
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-    {BackendType::kModelLoader},
+    {BackendType::kModelLoader, ExecutionMode::kAsync},
 #endif
 };
 

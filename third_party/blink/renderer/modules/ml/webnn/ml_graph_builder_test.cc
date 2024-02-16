@@ -7224,15 +7224,24 @@ class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with
   // this concrete object if no errors.
-  static void ValidateAndBuild(MLContext* context,
-                               const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver) {
+  static void ValidateAndBuildAsync(MLContext* context,
+                                    const MLNamedOperands& named_outputs,
+                                    ScriptPromiseResolver* resolver) {
     auto* graph = MakeGarbageCollected<FakeMLGraphBackend>(context);
-    graph->Build(ScopedMLTrace("Build"), named_outputs, resolver);
+    graph->BuildAsync(ScopedMLTrace("BuildAsync"), named_outputs, resolver);
+  }
+
+  // Create and build a FakeMLGraphBackend object synchronously.
+  static MLGraph* ValidateAndBuildSync(ScriptState* script_state,
+                                       MLContext* context,
+                                       const MLNamedOperands& named_outputs,
+                                       ExceptionState& exception_state) {
+    return MakeGarbageCollected<FakeMLGraphBackend>(context)->BuildSync(
+        script_state, named_outputs, exception_state);
   }
 
   // The constructor shouldn't be called directly. The callers should use
-  // ValidateAndBuild() method instead.
+  // ValidateAndBuildAsync() method instead.
   explicit FakeMLGraphBackend(MLContext* context) : MLGraph(context) {}
 
   ~FakeMLGraphBackend() override = default;
@@ -7240,20 +7249,36 @@ class FakeMLGraphBackend final : public MLGraph {
  private:
   // Resolve the promise with this FakeMLGraphBackend object for testing the
   // input and output resources info.
-  void BuildImpl(ScopedMLTrace scoped_trace,
-                 const MLNamedOperands& named_outputs,
-                 ScriptPromiseResolver* resolver) override {
+  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                      const MLNamedOperands& named_outputs,
+                      ScriptPromiseResolver* resolver) override {
     resolver->Resolve(this);
   }
 
+  // Return this FakeMLGraphBackend object for testing the input and output
+  // resources info.
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
+                         ExceptionState& exception_state) override {
+    return this;
+  }
+
   // Resolve the promise for testing the validation of inputs and outputs in
-  // MLGraph::Compute().
-  void ComputeImpl(ScopedMLTrace scoped_trace,
-                   const MLNamedArrayBufferViews& inputs,
-                   const MLNamedArrayBufferViews& outputs,
-                   ScriptPromiseResolver* resolver,
-                   ExceptionState& exception_state) override {
+  // MLGraph::ComputeAsync().
+  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                        const MLNamedArrayBufferViews& inputs,
+                        const MLNamedArrayBufferViews& outputs,
+                        ScriptPromiseResolver* resolver,
+                        ExceptionState& exception_state) override {
     resolver->Resolve();
+  }
+
+  // Just return for testing the validation of inputs and outputs in
+  // MLGraph::ComputeSync().
+  void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
+                       const MLNamedArrayBufferViews& outputs,
+                       ExceptionState& exception_state) override {
+    return;
   }
 };
 
@@ -7269,10 +7294,18 @@ namespace {
 // the GraphBuilder validation steps.
 class FakeMLGraphBuilderBackend : public MLGraphBuilder::BackendForTesting {
  public:
-  void BuildGraphImpl(MLContext* context,
-                      const MLNamedOperands& named_outputs,
-                      ScriptPromiseResolver* resolver) override {
-    FakeMLGraphBackend::ValidateAndBuild(context, named_outputs, resolver);
+  void BuildGraphAsyncImpl(MLContext* context,
+                           const MLNamedOperands& named_outputs,
+                           ScriptPromiseResolver* resolver) override {
+    FakeMLGraphBackend::ValidateAndBuildAsync(context, named_outputs, resolver);
+  }
+
+  MLGraph* BuildGraphSyncImpl(ScriptState* script_state,
+                              MLContext* context,
+                              const MLNamedOperands& named_outputs,
+                              ExceptionState& exception_state) override {
+    return FakeMLGraphBackend::ValidateAndBuildSync(
+        script_state, context, named_outputs, exception_state);
   }
 };
 
@@ -7762,7 +7795,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
   }
 }
 
-const TestVariety kFakeGraphTestVariety[] = {{BackendType::kFake}};
+const TestVariety kFakeGraphTestVariety[] = {
+    {BackendType::kFake, ExecutionMode::kAsync},
+    {BackendType::kFake, ExecutionMode::kSync},
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FakeMLGraphTest,

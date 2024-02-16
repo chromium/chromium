@@ -89,7 +89,7 @@ std::optional<ArrayBufferViewInfo> TransferArrayBufferView(
     NotShared<DOMArrayBufferView> source_view,
     ExceptionState& exception_state) {
   // A detached ArrayBufferView should be caught by
-  // `ValidateNamedArrayBufferViews()` called in `MLGraph::Compute()`.
+  // `ValidateNamedArrayBufferViews()` called in `MLGraph::ComputeAsync()`.
   CHECK(!source_view->IsDetached());
 
   // Avoid transferring a non-detachable ArrayBuffer.

@@ -534,7 +534,7 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
   }
 }
 
-TEST_F(MLGraphXnnpackTest, ComputeTest) {
+TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -573,9 +573,10 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_FALSE(tester.IsFulfilled());
     auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
@@ -600,9 +601,10 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_FALSE(tester.IsFulfilled());
     auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
@@ -627,9 +629,10 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_FALSE(tester.IsFulfilled());
     auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
@@ -646,16 +649,17 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
   }
   {
     // Test the input and output ArrayBufferViews are detached if
-    // Compute() call succeeds.
+    // ComputeAsync() call succeeds.
     auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
     auto b_buffer_view = CreateArrayBufferViewForOperand(b_operand);
     auto output_buffer_view = CreateArrayBufferViewForOperand(output_operand);
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
     EXPECT_TRUE(a_buffer_view->IsDetached());
     EXPECT_TRUE(b_buffer_view->IsDetached());
     EXPECT_TRUE(output_buffer_view->IsDetached());
@@ -665,7 +669,7 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
   {
     // Test the input and output ArrayBufferViews of MLComputeResult have the
     // same type, byte offset, byte length and base address of those passed to
-    // Compute().
+    // ComputeAsync().
     auto a_buffer_view = CreateArrayBufferViewForOperand(a_operand);
     auto a_buffer_view_type = a_buffer_view->GetType();
     size_t a_buffer_view_byte_offset = a_buffer_view->byteOffset();
@@ -694,9 +698,10 @@ TEST_F(MLGraphXnnpackTest, ComputeTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->Compute(
-        ScopedMLTrace("Compute"), {{"a", a_buffer_view}, {"b", b_buffer_view}},
-        {{"output", output_buffer_view}}, resolver, scope.GetExceptionState());
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
+                        {{"output", output_buffer_view}}, resolver,
+                        scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
     auto* compute_result = NativeValueTraits<MLComputeResult>::NativeValue(
@@ -1242,7 +1247,8 @@ TEST_P(MLGraphXnnpackTest, ThreadPoolTest) {
 }
 
 const TestVariety kXnnpackGraphTestVariety[] = {
-    {BackendType::kXnnpack},
+    {BackendType::kXnnpack, ExecutionMode::kAsync},
+    {BackendType::kXnnpack, ExecutionMode::kSync},
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

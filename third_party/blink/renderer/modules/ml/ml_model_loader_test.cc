@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model.h"
@@ -168,16 +167,8 @@ class MLModelLoaderTest : public testing::Test {
     options->setPowerPreference(V8MLPowerPreference::Enum::kAuto);
     options->setModelFormat(V8MLModelFormat::Enum::kTflite);
 
-    ScriptPromise promise = ml->createContext(scope.GetScriptState(), options,
-                                              scope.GetExceptionState());
-    EXPECT_FALSE(scope.GetExceptionState().HadException());
-    ScriptPromiseTester tester(scope.GetScriptState(), promise);
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsFulfilled());
-
-    MLContext* ml_context = V8MLContext::ToWrappable(
-        tester.Value().GetIsolate(), tester.Value().V8Value());
-
+    MLContext* ml_context = ml->createContextSync(
+        scope.GetScriptState(), options, scope.GetExceptionState());
     return MLModelLoader::Create(scope.GetScriptState(), ml_context,
                                  scope.GetExceptionState());
   }

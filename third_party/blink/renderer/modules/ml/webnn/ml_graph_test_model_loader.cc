@@ -596,7 +596,7 @@ TEST_P(MLGraphTestTfLite, Conv2dTest) {
 }
 
 const TestVariety kGraphTestModelLoaderVariety[] = {
-    {BackendType::kModelLoader},
+    {BackendType::kModelLoader, ExecutionMode::kAsync},
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
