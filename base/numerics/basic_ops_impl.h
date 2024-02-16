@@ -7,6 +7,7 @@
 
 #include <bit>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <span>
 #include <type_traits>

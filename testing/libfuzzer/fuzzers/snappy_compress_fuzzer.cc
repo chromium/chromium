@@ -4,6 +4,8 @@
 
 #include "third_party/snappy/src/snappy.h"
 
+#include <cstdlib>
+
 #define FUZZING_ASSERT(condition)                                      \
   if (!(condition)) {                                                  \
     fprintf(stderr, "%s\n", "Fuzzing Assertion Failure: " #condition); \
