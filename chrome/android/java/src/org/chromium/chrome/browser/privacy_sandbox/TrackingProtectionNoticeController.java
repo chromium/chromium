@@ -232,6 +232,10 @@ public class TrackingProtectionNoticeController {
                     // No need to report these actions: they are already recorded in their
                     // respective handlers.
                     break;
+                case DismissReason.SCOPE_DESTROYED:
+                    // When the scope is destroyed, we do nothing as we want the user to be
+                    // shown the notice again.
+                    break;
                 default:
                     TrackingProtectionBridge.noticeActionTaken(getNoticeType(), NoticeAction.OTHER);
             }
