@@ -1059,9 +1059,9 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   watcher.Wait();
 }
 
-// Tests that OnDialogComplete() opens the specified fake file task.
+// Tests that OnSetupDialogComplete() opens the specified fake file task.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
-                       OnDialogCompleteOpensFileTasks) {
+                       OnSetupDialogCompleteOpensFileTasks) {
   auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
       CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
       navigation_observer_task.StartWatchingNewWebContents();
 
       // Simulate user selecting this task.
-      cloud_open_task->OnDialogComplete(user_response);
+      cloud_open_task->OnSetupDialogComplete(user_response);
 
       // Wait for the selected task to open.
       navigation_observer_task.Wait();
@@ -1096,9 +1096,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   ASSERT_TRUE(cloud_open_metrics_weak_ptr.WasInvalidated());
 }
 
-// Tests that OnDialogComplete() doesn't crash when the specified selected task
-// doesn't exist.
-IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
+// Tests that OnSetupDialogComplete() doesn't crash when the specified selected
+// task doesn't exist.
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
+                       OnSetupDialogCompleteNoCrash) {
   auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
       CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
@@ -1112,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
     std::string user_response = base::NumberToString(out_of_range_task);
 
     // Simulate user selecting a nonexistent selected task.
-    cloud_open_task->OnDialogComplete(user_response);
+    cloud_open_task->OnSetupDialogComplete(user_response);
   }
   // cloud_open_metrics should have been destroyed by the end of the test.
   ASSERT_TRUE(cloud_open_metrics_weak_ptr.WasInvalidated());
@@ -1532,8 +1533,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
     return upload_task_->ShouldShowConfirmationDialog();
   }
 
-  void OnDialogComplete(const std::string& user_response) {
-    upload_task_->OnDialogComplete(user_response);
+  void OnMoveConfirmationComplete(const std::string& user_response) {
+    upload_task_->OnMoveConfirmationComplete(user_response);
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -1812,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForLocalToDrive(
           profile()));
 
-  OnDialogComplete(kUserActionUploadToGoogleDrive);
+  OnMoveConfirmationComplete(kUserActionUploadToGoogleDrive);
 
   ASSERT_TRUE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
       profile()));
@@ -1833,7 +1834,7 @@ IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForCloudToDrive(
           profile()));
 
-  OnDialogComplete(kUserActionUploadToGoogleDrive);
+  OnMoveConfirmationComplete(kUserActionUploadToGoogleDrive);
 
   ASSERT_TRUE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
       profile()));
@@ -1854,7 +1855,7 @@ IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
   ASSERT_FALSE(file_manager::file_tasks::
                    GetOfficeMoveConfirmationShownForLocalToOneDrive(profile()));
 
-  OnDialogComplete(kUserActionUploadToOneDrive);
+  OnMoveConfirmationComplete(kUserActionUploadToOneDrive);
 
   ASSERT_TRUE(
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
@@ -1875,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
   ASSERT_FALSE(file_manager::file_tasks::
                    GetOfficeMoveConfirmationShownForCloudToOneDrive(profile()));
 
-  OnDialogComplete(kUserActionUploadToOneDrive);
+  OnMoveConfirmationComplete(kUserActionUploadToOneDrive);
 
   ASSERT_TRUE(
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(

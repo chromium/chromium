@@ -120,9 +120,9 @@ class CloudOpenTask : public BrowserListObserver,
   void OnBrowserAdded(Browser* browser) override;
 
   FRIEND_TEST_ALL_PREFIXES(FileHandlerDialogBrowserTest,
-                           OnDialogCompleteOpensFileTasks);
+                           OnSetupDialogCompleteOpensFileTasks);
   FRIEND_TEST_ALL_PREFIXES(FileHandlerDialogBrowserTest,
-                           OnDialogCompleteNoCrash);
+                           OnSetupDialogCompleteNoCrash);
   FRIEND_TEST_ALL_PREFIXES(FixUpFlowBrowserTest,
                            OneDriveSetUpChangesDefaultTaskWhenSetUpIncomplete);
   FRIEND_TEST_ALL_PREFIXES(
@@ -203,14 +203,16 @@ class CloudOpenTask : public BrowserListObserver,
 
   bool InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage dialog_page);
   mojom::DialogArgsPtr CreateDialogArgs(SetupOrMoveDialogPage dialog_page);
-  void ShowDialog(mojom::DialogArgsPtr args,
+  void ShowDialog(SetupOrMoveDialogPage dialog_page,
+                  mojom::DialogArgsPtr args,
                   std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                       resulting_tasks);
   void SetTaskArgs(mojom::DialogArgsPtr& args,
                    std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                        resulting_tasks);
 
-  void OnDialogComplete(const std::string& user_response);
+  void OnSetupDialogComplete(const std::string& user_response);
+  void OnMoveConfirmationComplete(const std::string& user_response);
   void LaunchLocalFileTask(const std::string& string_task_position);
 
   void LocalTaskExecuted(

@@ -896,12 +896,13 @@ bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
   if (dialog_page == SetupOrMoveDialogPage::kFileHandlerDialog) {
     // Callback to show the dialog after the tasks have been found.
     fm_tasks::FindTasksCallback find_all_types_of_tasks_callback =
-        base::BindOnce(&CloudOpenTask::ShowDialog, this, std::move(args));
+        base::BindOnce(&CloudOpenTask::ShowDialog, this, dialog_page,
+                       std::move(args));
     // Find the file tasks that can open the `file_urls_` and then run
     // `ShowDialog`.
     FindTasksForDialog(std::move(find_all_types_of_tasks_callback));
   } else {
-    ShowDialog(std::move(args), nullptr);
+    ShowDialog(dialog_page, std::move(args), nullptr);
   }
   return true;
 }
@@ -964,6 +965,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
 // open to use as a modal parent for the dialog, first launches a new Files app
 // window, which we listen for in OnBrowserAdded().
 void CloudOpenTask::ShowDialog(
+    SetupOrMoveDialogPage dialog_page,
     mojom::DialogArgsPtr args,
     std::unique_ptr<fm_tasks::ResultingTasks> resulting_tasks) {
   if (resulting_tasks) {
@@ -994,12 +996,25 @@ void CloudOpenTask::ShowDialog(
       cloud_provider_ == CloudProvider::kGoogleDrive
           ? fm_tasks::GetOfficeMoveConfirmationShownForDrive(profile_)
           : fm_tasks::GetOfficeMoveConfirmationShownForOneDrive(profile_);
+  base::OnceCallback<void(const std::string&)> dialog_callback;
+  switch (dialog_page) {
+    case SetupOrMoveDialogPage::kFileHandlerDialog:
+    case SetupOrMoveDialogPage::kOneDriveSetup:
+      dialog_callback =
+          base::BindOnce(&CloudOpenTask::OnSetupDialogComplete, this);
+      break;
+    case SetupOrMoveDialogPage::kMoveConfirmationOneDrive:
+    case SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive:
+      dialog_callback =
+          base::BindOnce(&CloudOpenTask::OnMoveConfirmationComplete, this);
+      break;
+  }
   // This CloudUploadDialog pointer is managed by an instance of
   // `views::WebDialogView` and deleted in
   // `SystemWebDialogDelegate::OnDialogClosed`.
-  CloudUploadDialog* dialog = new CloudUploadDialog(
-      std::move(args), base::BindOnce(&CloudOpenTask::OnDialogComplete, this),
-      office_move_confirmation_shown);
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), std::move(dialog_callback),
+                            office_move_confirmation_shown);
 
   // Get Files App window, if it exists.
   Browser* browser =
@@ -1068,13 +1083,11 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
   pending_dialog_ = nullptr;
 }
 
-// Receive user's dialog response and acts accordingly. `user_response` is
-// either an ash::cloud_upload::mojom::UserAction or the id (position) of the
-// task in `local_tasks_` to launch. We never use the return value but it's
-// necessary to make sure that we delete CloudOpenTask when we're done.
-void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
-  // TODO(petermarshall): Don't need separate actions for drive/onedrive now
-  // (and for StartUpload?).
+// Receive user's setup dialog response and acts accordingly. `user_response` is
+// either a particular ash::cloud_upload::mojom::UserAction or the id (position)
+// of the task in `local_tasks_` to launch. We never use the return value but
+// it's necessary to make sure that we delete CloudOpenTask when we're done.
+void CloudOpenTask::OnSetupDialogComplete(const std::string& user_response) {
   if (user_response == kUserActionConfirmOrUploadToGoogleDrive) {
     cloud_provider_ = CloudProvider::kGoogleDrive;
     cloud_open_metrics_->set_cloud_provider(cloud_provider_);
@@ -1106,7 +1119,32 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     // Default handlers have already been set by this point for
     // Office/OneDrive.
     OpenOrMoveFiles();
-  } else if (user_response == kUserActionUploadToGoogleDrive) {
+  } else if (user_response == kUserActionSetUpOneDrive) {
+    UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                              OfficeSetupFileHandler::kMicrosoft365);
+    cloud_provider_ = CloudProvider::kOneDrive;
+    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
+    InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage::kOneDriveSetup);
+  } else if (user_response == kUserActionCancel) {
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
+    // Do nothing.
+  } else if (!user_response.empty()) {
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
+    LaunchLocalFileTask(user_response);
+  } else {
+    LOG(ERROR) << "Empty user response";
+  }
+}
+
+// Receive user's move confirmation response and acts accordingly.
+// `user_response` is a particular ash::cloud_upload::mojom::UserAction. We
+// never use the return value but it's necessary to make sure that we delete
+// CloudOpenTask when we're done.
+void CloudOpenTask::OnMoveConfirmationComplete(
+    const std::string& user_response) {
+  // TODO(petermarshall): Don't need separate actions for drive/onedrive now
+  // (and for StartUpload?).
+  if (user_response == kUserActionUploadToGoogleDrive) {
     fm_tasks::SetOfficeMoveConfirmationShownForDrive(profile_, true);
     SourceType source_type = GetSourceType(profile_, file_urls_[0]);
     switch (source_type) {
@@ -1138,26 +1176,14 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
         break;
     }
     StartUpload();
-  } else if (user_response == kUserActionSetUpOneDrive) {
-    UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
-                              OfficeSetupFileHandler::kMicrosoft365);
-    cloud_provider_ = CloudProvider::kOneDrive;
-    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
-    InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage::kOneDriveSetup);
-  } else if (user_response == kUserActionCancel) {
-    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
-    // Do nothing.
-  } else if (user_response == kUserActionCancelGoogleDrive) {
+  } else if (user_response == kUserActionCancelGoogleDrive ||
+             user_response == kUserActionCancelOneDrive) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
-  } else if (user_response == kUserActionCancelOneDrive) {
-    cloud_open_metrics_->LogTaskResult(
-        OfficeTaskResult::kCancelledAtConfirmation);
-  } else if (!user_response.empty()) {
-    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
-    LaunchLocalFileTask(user_response);
-  } else {
+  } else if (user_response.empty()) {
     LOG(ERROR) << "Empty user response";
+  } else {
+    LOG(ERROR) << "Unhandled response: " << user_response;
   }
 }
 
