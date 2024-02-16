@@ -70,17 +70,17 @@ found in the LICENSE file.
   for-step="greeting"
   aria-label$="[[i18nDynamic(locale, 'welcomeScreenGreeting')]]"
   current-language="[[currentLanguage]]"
-  on-language-button-clicked="onWelcomeSelectLanguageButtonClicked_"
-  on-accessibility-button-clicked="onWelcomeAccessibilityButtonClicked_"
-  on-timezone-button-clicked="onWelcomeTimezoneButtonClicked_"
-  on-next-button-clicked="onWelcomeNextButtonClicked_"
-  on-activate-quick-start="onActivateQuickStart_"
-  on-enable-debugging-clicked="onEnableDebuggingClicked_"
-  on-launch-advanced-options="onWelcomeLaunchAdvancedOptions_"
-  on-chromevox-hint-accepted="onChromeVoxHintAccepted_"
-  on-chromevox-hint-dismissed="onChromeVoxHintDismissed_"
-  timezone-button-visible="[[isTimezoneButtonVisible_(highlightStrength)]]"
-  debugging-link-visible="[[debuggingLinkVisible_]]"
+  on-language-button-clicked="onWelcomeSelectLanguageButtonClicked"
+  on-accessibility-button-clicked="onWelcomeAccessibilityButtonClicked"
+  on-timezone-button-clicked="onWelcomeTimezoneButtonClicked"
+  on-next-button-clicked="onWelcomeNextButtonClicked"
+  on-activate-quick-start="onActivateQuickStart"
+  on-enable-debugging-clicked="onEnableDebuggingClicked"
+  on-launch-advanced-options="onWelcomeLaunchAdvancedOptions"
+  on-chromevox-hint-accepted="onChromeVoxHintAccepted"
+  on-chromevox-hint-dismissed="onChromeVoxHintDismissed"
+  timezone-button-visible="[[isTimezoneButtonVisible(highlightStrength)]]"
+  debugging-link-visible="[[debuggingLinkVisible]]"
 >
 </oobe-welcome-dialog>
 <oobe-adaptive-dialog
@@ -97,7 +97,7 @@ found in the LICENSE file.
       id="languagesLearnMore"
       class="oobe-local-link"
       is="action-link"
-      on-click="onLanguageLearnMoreLinkClicked_"
+      on-click="onLanguageLearnMoreLinkClicked"
     >
       [[i18nDynamic(locale, 'learnMore')]]
     </a>
@@ -113,7 +113,7 @@ found in the LICENSE file.
       <oobe-i18n-dropdown
         id="languageSelect"
         items="[[languages]]"
-        on-select-item="onLanguageSelected_"
+        on-select-item="onLanguageSelected"
         class="focus-on-show"
         label-for-aria="[[i18nDynamic(locale, 'languageDropdownLabel')]]"
       >
@@ -129,7 +129,7 @@ found in the LICENSE file.
       <oobe-i18n-dropdown
         id="keyboardSelect"
         items="[[keyboards]]"
-        on-select-item="onKeyboardSelected_"
+        on-select-item="onKeyboardSelected"
         label-for-aria="[[i18nDynamic(locale, 'keyboardDropdownLabel')]]"
       >
       </oobe-i18n-dropdown>
@@ -140,7 +140,7 @@ found in the LICENSE file.
       id="ok-button-language"
       text-key="oobeOKButtonText"
       inverse
-      on-click="closeLanguageSection_"
+      on-click="closeLanguageSection"
     ></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -157,7 +157,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-spoken-feedback"
       checked="[[a11yStatus.spokenFeedbackEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'spokenFeedbackOption')]]"
       class="focus-on-show"
     >
@@ -174,7 +174,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-large-cursor"
       checked="[[a11yStatus.largeCursorEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'largeCursorOption')]]"
     >
       <span slot="title"> [[i18nDynamic(locale, 'largeCursorOption')]] </span>
@@ -188,7 +188,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-high-contrast"
       checked="[[a11yStatus.highContrastEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'highContrastOption')]]"
     >
       <span slot="title"> [[i18nDynamic(locale, 'highContrastOption')]] </span>
@@ -202,7 +202,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-screen-magnifier"
       checked="[[a11yStatus.screenMagnifierEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'screenMagnifierOption')]]"
     >
       <span slot="title">
@@ -218,7 +218,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-select-to-speak"
       checked="[[a11yStatus.selectToSpeakEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'selectToSpeakOption')]]"
       id="selectToSpeakOobeOption"
     >
@@ -233,7 +233,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-docked-magnifier"
       checked="[[a11yStatus.dockedMagnifierEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'dockedMagnifierOption')]]"
     >
       <span slot="title">
@@ -249,7 +249,7 @@ found in the LICENSE file.
     <oobe-a11y-option
       id="accessibility-virtual-keyboard"
       checked="[[a11yStatus.virtualKeyboardEnabled]]"
-      on-change="onA11yOptionChanged_"
+      on-change="onA11yOptionChanged"
       label-for-aria="[[i18nDynamic(locale, 'virtualKeyboardOption')]]"
     >
       <span slot="title">
@@ -268,7 +268,7 @@ found in the LICENSE file.
       id="ok-button-accessibility"
       text-key="oobeOKButtonText"
       inverse
-      on-click="closeAccessibilitySection_"
+      on-click="closeAccessibilitySection"
     ></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -288,7 +288,7 @@ found in the LICENSE file.
       <oobe-i18n-dropdown
         id="timezoneSelect"
         items="[[timezones]]"
-        on-select-item="onTimezoneSelected_"
+        on-select-item="onTimezoneSelected"
         label-for-aria="[[i18nDynamic(locale, 'timezoneDropdownLabel')]]"
         class="focus-on-show"
       >
@@ -300,7 +300,7 @@ found in the LICENSE file.
       id="ok-button-timezone"
       text-key="oobeOKButtonText"
       inverse
-      on-click="closeTimezoneSection_"
+      on-click="closeTimezoneSection"
     ></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -316,9 +316,9 @@ found in the LICENSE file.
   <h1 slot="title">[[i18nDynamic(locale, 'advancedOptionsSectionTitle')]]</h1>
   <div slot="content" class="landscape-header-aligned">
     <div class="flex layout vertical center-justified advanced-options-entry"
-        hidden="[[hideCFMSetupButton_(isDeviceRequisitionConfigurable_,
-                                     isMeet_)]]">
-      <button on-click="onCFMBootstrappingClicked_">
+        hidden="[[hideCfmSetupButton(isDeviceRequisitionConfigurable,
+                                     isMeet)]]">
+      <button on-click="onCfmBootstrappingClicked">
         <div>[[i18nDynamic(locale, 'advancedOptionsCFMSetupTitle')]]</div>
         <div class="advanced-option-subtitle">
           [[i18nDynamic(locale, 'advancedOptionsCFMSetupSubtitle')]]
@@ -326,8 +326,8 @@ found in the LICENSE file.
       </button>
     </div>
     <div class="flex layout vertical center-justified advanced-options-entry"
-        hidden="[[!isDeviceRequisitionConfigurable_]]">
-      <button on-click="onDeviceRequisitionClicked_">
+        hidden="[[!isDeviceRequisitionConfigurable]]">
+      <button on-click="onDeviceRequisitionClicked">
         <div>
           [[i18nDynamic(locale, 'advancedOptionsDeviceRequisitionTitle')]]
         </div>
@@ -342,7 +342,7 @@ found in the LICENSE file.
       id="ok-button-advanced-options"
       text-key="oobeOKButtonText"
       inverse
-      on-click="closeAdvancedOptionsSection_"
+      on-click="closeAdvancedOptionsSection"
     ></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
@@ -355,14 +355,14 @@ found in the LICENSE file.
     <oobe-text-button
       id="cancelButton"
       border
-      on-click="onDemoModeDialogCancelTap_"
+      on-click="onDemoModeDialogCancel"
       text-key="enableDemoModeDialogCancel"
     ></oobe-text-button>
     <oobe-text-button
       inverse
       id="okButton"
       class="focus-on-show"
-      on-click="onDemoModeDialogConfirmTap_"
+      on-click="onDemoModeDialogConfirm"
       text-key="enableDemoModeDialogConfirm"
     ></oobe-text-button>
   </div>
@@ -376,13 +376,13 @@ found in the LICENSE file.
   <div slot="buttons">
     <oobe-text-button
       border
-      on-click="onRemoraCancel_"
+      on-click="onRemoraCancel"
       text-key="deviceRequisitionRemoraPromptCancel"
     ></oobe-text-button>
     <oobe-text-button
       inverse
       class="focus-on-show"
-      on-click="onRemoraConfirm_"
+      on-click="onRemoraConfirm"
       text-key="deviceRequisitionRemoraPromptOk"
     ></oobe-text-button>
   </div>
@@ -401,13 +401,13 @@ found in the LICENSE file.
   <div slot="buttons">
     <oobe-text-button
       border
-      on-click="onEditRequisitionCancel_"
+      on-click="onEditRequisitionCancel"
       text-key="deviceRequisitionPromptCancel"
     ></oobe-text-button>
     <oobe-text-button
       inverse
       class="focus-on-show"
-      on-click="onEditRequisitionConfirm_"
+      on-click="onEditRequisitionConfirm"
       text-key="deviceRequisitionPromptOk"
     ></oobe-text-button>
   </div>

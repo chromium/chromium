@@ -5,39 +5,39 @@
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './oobe_i18n_dropdown.html.js';
+import {OobeTypes} from './oobe_types.js';
 import {setupSelect} from './oobe_select.js';
-
 
 /**
  * Languages/keyboard descriptor to display
- * @typedef {!OobeTypes.LanguageDsc|!OobeTypes.IMEDsc|!OobeTypes.DemoCountryDsc}
  */
-let I18nMenuItem;
+export type I18nMenuItem = OobeTypes.LanguageDsc|OobeTypes.IMEDsc|OobeTypes.DemoCountryDsc;
 
 /**
  * Polymer class definition for 'oobe-i18n-dropdown'.
- * @polymer
  */
 class OobeI18nDropdown extends PolymerElement {
   static get is() {
-    return 'oobe-i18n-dropdown';
+    return 'oobe-i18n-dropdown' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * List of languages/keyboards to display
-       * @type {!Array<I18nMenuItem>}
        */
       items: {
         type: Array,
-        observer: 'onItemsChanged_',
+        observer: 'onItemsChanged',
       },
 
       /**
@@ -51,42 +51,54 @@ class OobeI18nDropdown extends PolymerElement {
     };
   }
 
+  private items: I18nMenuItem[];
+  private labelforAria: string;
+  private idToItem: Map<string,I18nMenuItem>|null;
+
   constructor() {
     super();
     /**
      * Mapping from item id to item.
-     * @type {Map<string,I18nMenuItem>}
      */
-     this.idToItem_ = null;
+     this.idToItem = null;
   }
 
-  focus() {
-    this.$.select.focus();
+  override focus(): void {
+    const select = this.shadowRoot?.querySelector('#select');
+    assert(select instanceof HTMLElement);
+    select.focus();
   }
 
   /**
-   * @param {string} value Option value.
-   * @private
+   * @param value Option value.
    */
-  onSelected_(value) {
-    const eventDetail = this.idToItem_.get(value);
+  private onSelected(value: string): void {
+    const eventDetail = this.idToItem?.get(value);
     this.dispatchEvent(new CustomEvent('select-item',
         { detail: eventDetail, bubbles: true, composed: true }));
   }
 
-  onItemsChanged_(items) {
+  private onItemsChanged(items: I18nMenuItem[]): void {
     // Pass selection handler to setupSelect only during initial setup -
     // Otherwise, given that setupSelect does not remove previously registered
     // listeners, each new item list change would cause additional 'select-item'
     // events when selection changes.
     const selectionCallback =
-        !this.idToItem_ ? this.onSelected_.bind(this) : null;
-    this.idToItem_ = new Map();
+        !this.idToItem ? this.onSelected.bind(this) : null;
+    this.idToItem = new Map();
     for (let i = 0; i < items.length; ++i) {
       const item = items[i];
-      this.idToItem_.set(item.value, item);
+      this.idToItem.set(item.value, item);
     }
-    setupSelect(this.$.select, items, selectionCallback);
+    const select = this.shadowRoot?.querySelector('#select');
+    assert(select instanceof HTMLSelectElement);
+    setupSelect(select, items, selectionCallback);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeI18nDropdown.is]: OobeI18nDropdown;
   }
 }
 

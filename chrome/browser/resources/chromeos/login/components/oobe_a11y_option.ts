@@ -7,19 +7,22 @@ import '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './oobe_a11y_option.html.js';
+
 export class OobeA11yOption extends PolymerElement {
   static get is() {
-    return 'oobe-a11y-option';
+    return 'oobe-a11y-option' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * If cr-toggle is checked.
@@ -48,8 +51,20 @@ export class OobeA11yOption extends PolymerElement {
     };
   }
 
-  focus() {
-    this.$.button.focus();
+  checked: boolean;
+  private labelForAria: string;
+  chromeMessage: string;
+
+  override focus(): void {
+    const button = this.shadowRoot?.querySelector('#button');
+    assert(button instanceof HTMLElement);
+    button.focus();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeA11yOption.is]: OobeA11yOption;
   }
 }
 

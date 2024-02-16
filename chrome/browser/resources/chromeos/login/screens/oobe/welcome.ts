@@ -7,24 +7,26 @@
  */
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
-import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/oobe_a11y_option.js';
+import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_i18n_dropdown.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {getSelectedTitle, SelectListType} from '../../components/oobe_select.js';
+import {getSelectedTitle} from '../../components/oobe_select.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {traceWelcomeAnimationPlay} from '../../oobe_trace.js';
@@ -32,15 +34,13 @@ import {traceWelcomeAnimationPlay} from '../../oobe_trace.js';
 import {getTemplate} from './welcome.html.js';
 import {OobeWelcomeDialog} from './welcome_dialog.js';
 
-/** @const {string} */
-const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';
+const DEFAULT_CHROMEVOX_HINT_LOCALE: string = 'en-US';
 
 /**
  * The extension ID of the speech engine (Google Speech Synthesis) used to
  * give the default ChromeVox hint.
- * @const {string}
  */
-const DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID =
+const DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID: string =
     'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 
 // The help topic regarding language packs.
@@ -48,58 +48,48 @@ const HELP_LANGUAGE_PACKS = 11383012;
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const WelcomeScreenState = {
-  GREETING: 'greeting',
-  LANGUAGE: 'language',
-  ACCESSIBILITY: 'accessibility',
-  TIMEZONE: 'timezone',
-  ADVANCED_OPTIONS: 'advanced-options',
-};
+enum WelcomeScreenState {
+  GREETING = 'greeting',
+  LANGUAGE = 'language',
+  ACCESSIBILITY = 'accessibility',
+  TIMEZONE = 'timezone',
+  ADVANCED_OPTIONS = 'advanced-options',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
+export interface A11yStatuses {
+  highContrastEnabled: boolean;
+  spokenFeedbackEnabled: boolean;
+  screenMagnifierEnabled: boolean;
+  largeCursorEnabled: boolean;
+  virtualKeyboardEnabled: boolean;
+}
+
 const OobeWelcomeScreenBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
-
-/**
- * @typedef {{
- *   welcomeScreen:  OobeWelcomeDialog,
- *   demoModeConfirmationDialog:  OobeModalDialog,
- *   editRequisitionDialog:  OobeModalDialog,
- *   editRequisitionInput: CrInputElement,
- *   remoraRequisitionDialog: OobeModalDialog,
- * }}
- */
-OobeWelcomeScreenBase.$;
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    PolymerElement) as { new (): PolymerElement
+      & OobeI18nBehaviorInterface
+      & LoginScreenBehaviorInterface
+      & MultiStepBehaviorInterface,
+    };
 
 /**
  * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   isDeveloperMode: boolean,
- * }}
  */
-let WelcomeScreenData;
+export interface WelcomeScreenData {
+  isDeveloperMode: boolean;
+}
 
-/**
- * @polymer
- */
-class OobeWelcomeScreen extends OobeWelcomeScreenBase {
+export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   static get is() {
-    return 'oobe-welcome-element';
+    return 'oobe-welcome-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Currently selected system language (display name).
@@ -113,78 +103,88 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
       /**
        * List of languages for language selector dropdown.
-       * @type {!Array<OobeTypes.LanguageDsc>}
        */
       languages: {
         type: Array,
-        observer: 'onLanguagesChanged_',
+        observer: 'onLanguagesChanged',
       },
 
       /**
        * List of keyboards for keyboard selector dropdown.
-       * @type {!Array<OobeTypes.IMEDsc>}
        */
       keyboards: {
         type: Array,
-        observer: 'onKeyboardsChanged_',
+        observer: 'onKeyboardsChanged',
       },
 
       /**
        * Accessibility options status.
-       * @type {!OobeTypes.A11yStatuses}
        */
-      a11yStatus: Object,
+      a11yStatus: {
+        type: Object,
+      },
 
       /**
        * A list of timezones for Timezone Selection screen.
-       * @type {!Array<OobeTypes.TimezoneDsc>}
        */
-      timezones: Object,
+      timezones: {
+        type: Object,
+      },
 
       /**
        * If UI uses forced keyboard navigation.
        */
-      highlightStrength: String,
+      highlightStrength: {
+        type: String,
+      },
 
       /**
        * Controls displaying of "Enable debugging features" link.
        */
-      debuggingLinkVisible_: Boolean,
+      debuggingLinkVisible: {
+        type: Boolean,
+      },
 
       /**
        * Used to save the function instance created when for binded
        * maybeGiveChromeVoxHint.
-       * @private {function(this:SpeechSynthesis, Event): *|null|undefined}
+       *  {function(this:SpeechSynthesis, Event): *|null|undefined}
        */
-      voicesChangedListenerMaybeGiveChromeVoxHint_: Function,
+      voicesChangedListenerMaybeGiveChromeVoxHint: {
+        type: Function,
+      },
 
       /**
        * The id of the timer that's set when setting a timeout on
        * giveChromeVoxHint.
        * Only gets set if the initial call to maybeGiveChromeVoxHint fails.
-       * @private {number|undefined}
+       *  {number|undefined}
        */
-      defaultChromeVoxHintTimeoutId_: Number,
+      defaultChromeVoxHintTimeoutId: {
+        type: Number,
+      },
 
       /**
        * The time in MS to wait before giving the ChromeVox hint in English.
        * Declared as a property so it can be modified in a test.
-       * @private {number}
+       *  {number}
        * @const
        */
-      DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: Number,
+      DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS: {
+        type: Number,
+      },
 
       /**
        * Tracks if we've given the ChromeVox hint yet.
-       * @private
        */
-      chromeVoxHintGiven_: Boolean,
+      chromeVoxHintGiven: {
+        type: Boolean,
+      },
 
       /**
        * If it is a meet device.
-       * @private
        */
-      isMeet_: {
+      isMeet: {
         type: Boolean,
         value: function() {
           return (
@@ -196,9 +196,8 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
       /**
        * If device requisition is configurable.
-       * @private
        */
-      isDeviceRequisitionConfigurable_: {
+      isDeviceRequisitionConfigurable: {
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('isDeviceRequisitionConfigurable');
@@ -208,27 +207,39 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     };
   }
 
+  private currentLanguage: string;
+  private currentKeyboard: string;
+  private languages: OobeTypes.LanguageDsc[];
+  private keyboards: OobeTypes.IMEDsc[];
+  private a11yStatus: A11yStatuses;
+  private timezones: OobeTypes.TimezoneDsc[];
+  private highlightStrength: string;
+  private debuggingLinkVisible: boolean;
+  private voicesChangedListenerMaybeGiveChromeVoxHint: (() => void)|undefined;
+  private defaultChromeVoxHintTimeoutId: number|undefined;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS: number;
+  private chromeVoxHintGiven: boolean;
+  private isMeet: boolean;
+  private isDeviceRequisitionConfigurable: boolean;
+  private configurationApplied: boolean;
+
   constructor() {
     super();
-    this.UI_STEPS = WelcomeScreenState;
 
-    // -- Properties --
     this.currentLanguage = '';
     this.currentKeyboard = '';
     this.highlightStrength = '';
-    this.debuggingLinkVisible_ = false;
-    this.voicesChangedListenerMaybeGiveChromeVoxHint_ = undefined;
-    this.defaultChromeVoxHintTimeoutId_ = undefined;
-    this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_ = 40 * 1000;
-    this.chromeVoxHintGiven_ = false;
+    this.debuggingLinkVisible = false;
+    this.voicesChangedListenerMaybeGiveChromeVoxHint = undefined;
+    this.defaultChromeVoxHintTimeoutId = undefined;
+    this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS = 40 * 1000;
+    this.chromeVoxHintGiven = false;
 
-    // -- Member Variables --
-    // Flag that ensures that OOBE configuration is applied only once.
-    this.configuration_applied_ = false;
+    this.configurationApplied = false;
   }
 
-  /** Overridden from LoginScreenBehavior. */
-  get EXTERNAL_API() {
+  override get EXTERNAL_API() {
     return [
       'onInputMethodIdSetFromBackend',
       'refreshA11yInfo',
@@ -240,30 +251,40 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     ];
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
     return WelcomeScreenState.GREETING;
   }
 
-  /** @override */
-  ready() {
+  override get UI_STEPS() {
+    return WelcomeScreenState;
+  }
+
+  override ready() {
     super.ready();
-    this.addEventListener('cr-lottie-playing', this.measureAnimationPlayDelay_);
+    this.addEventListener('cr-lottie-playing', this.measureAnimationPlayDelay);
     this.initializeLoginScreen('WelcomeScreen');
     this.updateLocalizedContent();
   }
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {WelcomeScreenData} data Screen init payload.
+   * @param data Screen init payload.
    */
-  onBeforeShow(data) {
-    this.debuggingLinkVisible_ =
+  onBeforeShow(data: WelcomeScreenData): void {
+    this.debuggingLinkVisible =
         data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
-    window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
+    window.setTimeout(() => void this.applyOobeConfiguration(), 0);
   }
 
-  measureAnimationPlayDelay_(e) {
+  private getWelcomeScreenDialog(): OobeWelcomeDialog {
+    const dialog = this.shadowRoot?.querySelector('#welcomeScreen');
+    assert(dialog instanceof OobeWelcomeDialog);
+    return dialog;
+  }
+
+  private measureAnimationPlayDelay(e: Event): void {
     e.stopPropagation();
     traceWelcomeAnimationPlay();
   }
@@ -271,18 +292,18 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
-  onBeforeHide() {
-    this.cleanupChromeVoxHint_();
+  onBeforeHide(): void {
+    this.cleanupChromeVoxHint();
   }
 
-  cancel() {
+  private cancel(): void {
     if (this.uiStep === WelcomeScreenState.LANGUAGE) {
-      this.closeLanguageSection_();
+      this.closeLanguageSection();
       return;
     }
 
     if (this.uiStep === WelcomeScreenState.ACCESSIBILITY) {
-      this.closeAccessibilitySection_();
+      this.closeAccessibilitySection();
       return;
     }
   }
@@ -291,17 +312,13 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * This is called when UI strings are changed.
    * Overridden from LoginScreenBehavior.
    */
-  updateLocalizedContent() {
-    this.languages = /** @type {!Array<OobeTypes.LanguageDsc>} */ (
-        loadTimeData.getValue('languageList'));
-    this.keyboards = /** @type {!Array<OobeTypes.IMEDsc>} */ (
-        loadTimeData.getValue('inputMethodsList'));
-    this.timezones = /** @type {!Array<OobeTypes.TimezoneDsc>} */ (
-        loadTimeData.getValue('timezoneList'));
-    this.highlightStrength =
-        /** @type {string} */ (loadTimeData.getValue('highlightStrength'));
+  override updateLocalizedContent(): void {
+    this.languages = loadTimeData.getValue('languageList');
+    this.keyboards = loadTimeData.getValue('inputMethodsList');
+    this.timezones = loadTimeData.getValue('timezoneList');
+    this.highlightStrength = loadTimeData.getValue('highlightStrength');
 
-    this.$.welcomeScreen.i18nUpdateLocale();
+    this.getWelcomeScreenDialog().i18nUpdateLocale();
     this.i18nUpdateLocale();
 
     const currentLanguage = loadTimeData.getString('language');
@@ -312,27 +329,25 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     const configuration = Oobe.getInstance().getOobeConfiguration();
     if (configuration && configuration.language &&
         configuration.language === currentLanguage) {
-      window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
+      window.setTimeout(() => void this.applyOobeConfiguration(), 0);
     }
   }
 
   /**
    * Called when OOBE configuration is loaded.
    * Overridden from LoginScreenBehavior.
-   * @param {!OobeTypes.OobeConfiguration} configuration
    */
-  updateOobeConfiguration(configuration) {
-    if (!this.configuration_applied_) {
-      window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
+  override updateOobeConfiguration(): void {
+    if (!this.configurationApplied) {
+      window.setTimeout(() => void this.applyOobeConfiguration(), 0);
     }
   }
 
   /**
    * Called when dialog is shown for the first time.
-   * @private
    */
-  applyOobeConfiguration_() {
-    if (this.configuration_applied_) {
+  private applyOobeConfiguration(): void {
+    if (this.configurationApplied) {
       return;
     }
     const configuration = Oobe.getInstance().getOobeConfiguration();
@@ -343,7 +358,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     if (configuration.language) {
       const currentLanguage = loadTimeData.getString('language');
       if (currentLanguage !== configuration.language) {
-        this.applySelectedLanguage_(configuration.language);
+        this.applySelectedLanguage(configuration.language);
         // Trigger language change without marking it as applied.
         // applyOobeConfiguration will be called again once language change
         // was applied.
@@ -351,150 +366,135 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       }
     }
     if (configuration.inputMethod) {
-      this.applySelectedLkeyboard_(configuration.inputMethod);
+      this.applySelectedLkeyboard(configuration.inputMethod);
     }
 
     if (configuration.welcomeNext) {
-      this.onWelcomeNextButtonClicked_();
+      this.onWelcomeNextButtonClicked();
     }
 
     if (configuration.enableDemoMode) {
       this.userActed('setupDemoModeGesture');
     }
 
-    this.configuration_applied_ = true;
+    this.configurationApplied = true;
   }
 
   /**
    * Updates "device in tablet mode" state when tablet mode is changed.
    * Overridden from LoginScreenBehavior.
-   * @param {boolean} isInTabletMode True when in tablet mode.
+   * @param isInTabletMode True when in tablet mode.
    */
-  setTabletModeState(isInTabletMode) {
-    this.$.welcomeScreen.isInTabletMode = isInTabletMode;
+  override setTabletModeState(isInTabletMode: boolean): void {
+    this.getWelcomeScreenDialog().isInTabletMode = isInTabletMode;
   }
 
   /**
    * Returns true if timezone button should be visible.
-   * @private
    */
-  isTimezoneButtonVisible_(highlightStrength) {
+  private isTimezoneButtonVisible(highlightStrength: string): boolean {
     return highlightStrength === 'strong';
   }
 
   /**
    * Handle "Next" button for "Welcome" screen.
    *
-   * @private
    */
-  onWelcomeNextButtonClicked_() {
+  private onWelcomeNextButtonClicked(): void {
     this.userActed('continue');
   }
 
   /**
    * Handles "enable-debugging" link for "Welcome" screen.
    *
-   * @private
    */
-  onEnableDebuggingClicked_() {
+  private onEnableDebuggingClicked(): void {
     this.userActed('enableDebugging');
   }
 
   /**
    * Handle "launch-advanced-options" button for "Welcome" screen.
    *
-   * @private
    */
-  onWelcomeLaunchAdvancedOptions_() {
-    this.cancelChromeVoxHint_();
+  private onWelcomeLaunchAdvancedOptions(): void {
+    this.cancelChromeVoxHint();
     this.setUIStep(WelcomeScreenState.ADVANCED_OPTIONS);
   }
 
   /**
    * Handle "Language" button for "Welcome" screen.
    *
-   * @private
    */
-  onWelcomeSelectLanguageButtonClicked_() {
-    this.cancelChromeVoxHint_();
+  private onWelcomeSelectLanguageButtonClicked(): void {
+    this.cancelChromeVoxHint();
     this.setUIStep(WelcomeScreenState.LANGUAGE);
   }
 
   /**
    * Handle "Accessibility" button for "Welcome" screen.
    *
-   * @private
    */
-  onWelcomeAccessibilityButtonClicked_() {
-    this.cancelChromeVoxHint_();
+  private onWelcomeAccessibilityButtonClicked(): void {
+    this.cancelChromeVoxHint();
     this.setUIStep(WelcomeScreenState.ACCESSIBILITY);
   }
 
   /**
    * Handle "Timezone" button for "Welcome" screen.
    *
-   * @private
    */
-  onWelcomeTimezoneButtonClicked_() {
-    this.cancelChromeVoxHint_();
+  private onWelcomeTimezoneButtonClicked(): void {
+    this.cancelChromeVoxHint();
     this.setUIStep(WelcomeScreenState.TIMEZONE);
   }
 
   /**
    * Handle language selection.
    *
-   * @param {!CustomEvent<!OobeTypes.LanguageDsc>} event
-   * @private
    */
-  onLanguageSelected_(event) {
+  private onLanguageSelected(event: CustomEvent<OobeTypes.LanguageDsc>): void {
     const item = event.detail;
     const languageId = item.value;
     this.currentLanguage = item.title;
-    this.applySelectedLanguage_(languageId);
+    this.applySelectedLanguage(languageId);
   }
 
   /**
    * Switch UI language.
    *
-   * @param {string} languageId
-   * @private
    */
-  applySelectedLanguage_(languageId) {
+  private applySelectedLanguage(languageId: string): void {
     this.userActed(['setLocaleId', languageId]);
   }
 
   /**
    * Handle keyboard layout selection.
    *
-   * @param {!CustomEvent<!OobeTypes.IMEDsc>} event
-   * @private
    */
-  onKeyboardSelected_(event) {
+  private onKeyboardSelected(event: CustomEvent<OobeTypes.IMEDsc>): void {
     const item = event.detail;
     const inputMethodId = item.value;
     this.currentKeyboard = item.title;
-    this.applySelectedLkeyboard_(inputMethodId);
+    this.applySelectedLkeyboard(inputMethodId);
   }
 
   /**
    * Switch keyboard layout.
    *
-   * @param {string} inputMethodId
-   * @private
    */
-  applySelectedLkeyboard_(inputMethodId) {
+  private applySelectedLkeyboard(inputMethodId: string): void {
     this.userActed(['setInputMethodId', inputMethodId]);
   }
 
-  onLanguagesChanged_() {
+  private onLanguagesChanged(): void {
     this.currentLanguage = getSelectedTitle(
         /** @type {!SelectListType} */ (this.languages));
   }
 
-  onInputMethodIdSetFromBackend(keyboard_id) {
+  onInputMethodIdSetFromBackend(keyboardId: string): void {
     let found = false;
     for (let i = 0; i < this.keyboards.length; ++i) {
-      if (this.keyboards[i].value !== keyboard_id) {
+      if (this.keyboards[i].value !== keyboardId) {
         this.keyboards[i].selected = false;
         continue;
       }
@@ -507,94 +507,116 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
     // Force i18n-dropdown to refresh.
     this.keyboards = this.keyboards.slice();
-    this.onKeyboardsChanged_();
+    this.onKeyboardsChanged();
   }
 
   /**
    * Refreshes a11y menu state.
-   * @param {!OobeTypes.A11yStatuses} data New dictionary with a11y features
+   * @param data New dictionary with a11y features
    *     state.
    */
-  refreshA11yInfo(data) {
+  refreshA11yInfo(data: A11yStatuses): void {
     this.a11yStatus = data;
     if (data.spokenFeedbackEnabled) {
-      this.closeChromeVoxHint_();
+      this.closeChromeVoxHint();
     }
+  }
+
+  private getDemoModeConfirmationDialog(): OobeModalDialog {
+    const dialog = this.shadowRoot?.querySelector('#demoModeConfirmationDialog');
+    assert(dialog instanceof OobeModalDialog);
+    return dialog;
   }
 
   /**
    * On-tap event handler for demo mode confirmation dialog cancel button.
-   * @private
    */
-  onDemoModeDialogCancelTap_() {
-    this.$.demoModeConfirmationDialog.hideDialog();
+  private onDemoModeDialogCancel(): void {
+    this.getDemoModeConfirmationDialog().hideDialog();
   }
 
   /**
    * On-tap event handler for demo mode confirmation dialog confirm button.
-   * @private
    */
-  onDemoModeDialogConfirmTap_() {
+  private onDemoModeDialogConfirm(): void {
     this.userActed('setupDemoMode');
-    this.$.demoModeConfirmationDialog.hideDialog();
+    this.getDemoModeConfirmationDialog().hideDialog();
   }
 
   /**
    * Shows confirmation dialog for starting Demo mode
    */
-  showDemoModeConfirmationDialog() {
+  showDemoModeConfirmationDialog(): void {
     // Ensure the ChromeVox hint dialog is closed.
-    this.closeChromeVoxHint_();
-    this.$.demoModeConfirmationDialog.showDialog();
+    this.closeChromeVoxHint();
+    this.getDemoModeConfirmationDialog().showDialog();
   }
 
-  onSetupDemoModeGesture() {
+  private onSetupDemoModeGesture(): void {
     this.userActed('setupDemoModeGesture');
+  }
+
+  private getEditRequisitionDialog(): OobeModalDialog {
+    const dialog = this.shadowRoot?.querySelector('#editRequisitionDialog');
+    assert(dialog instanceof OobeModalDialog);
+    return dialog;
+  }
+
+  private getEditRequisitionInput(): CrInputElement {
+    const input = this.shadowRoot?.querySelector('#editRequisitioninput');
+    assert(input instanceof CrInputElement);
+    return input;
   }
 
   /**
    * Shows the device requisition prompt.
    */
-  showEditRequisitionDialog(requisition) {
-    this.$.editRequisitionDialog.showDialog();
-    this.$.editRequisitionInput.focus();
+  showEditRequisitionDialog(): void {
+    this.getEditRequisitionDialog().showDialog();
+    this.getEditRequisitionInput().focus();
   }
 
-  onEditRequisitionCancel_() {
+  private onEditRequisitionCancel(): void {
     this.userActed(['setDeviceRequisition', 'none']);
-    this.$.editRequisitionDialog.hideDialog();
+    this.getEditRequisitionDialog().hideDialog();
   }
 
-  onEditRequisitionConfirm_() {
-    const requisition = this.$.editRequisitionInput.value;
+  private onEditRequisitionConfirm(): void {
+    const requisition = this.getEditRequisitionInput().value;
     this.userActed(['setDeviceRequisition', requisition]);
-    this.$.editRequisitionDialog.hideDialog();
+    this.getEditRequisitionDialog().hideDialog();
+  }
+
+  private getRemoraRequisitionDialog(): OobeModalDialog {
+    const dialog = this.shadowRoot?.querySelector('#remoraRequisitionDialog');
+    assert(dialog instanceof OobeModalDialog);
+    return dialog;
   }
 
   /**
    * Shows the special remora/shark device requisition prompt.
    */
-  showRemoraRequisitionDialog() {
-    this.$.remoraRequisitionDialog.showDialog();
+  showRemoraRequisitionDialog(): void {
+    this.getRemoraRequisitionDialog().showDialog();
   }
 
   /**
    * Shows the special remora/shark device requisition prompt.
    */
-  onRemoraCancel_() {
+  private onRemoraCancel(): void {
     this.userActed(['setDeviceRequisition', 'none']);
-    this.$.remoraRequisitionDialog.hideDialog();
+    this.getRemoraRequisitionDialog().hideDialog();
   }
 
   /**
    * Shows the special remora/shark device requisition prompt.
    */
-  onRemoraConfirm_() {
+  private onRemoraConfirm(): void {
     this.userActed(['setDeviceRequisition', 'remora']);
-    this.$.remoraRequisitionDialog.hideDialog();
+    this.getRemoraRequisitionDialog().hideDialog();
   }
 
-  onKeyboardsChanged_() {
+  private onKeyboardsChanged(): void {
     this.currentKeyboard = getSelectedTitle(this.keyboards);
   }
 
@@ -603,22 +625,21 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Handle "OK" button for "LanguageSelection" screen.
    *
-   * @private
    */
-  closeLanguageSection_() {
+  private closeLanguageSection(): void {
     this.setUIStep(WelcomeScreenState.GREETING);
   }
 
   /**
    * On-tap event handler for "learn more" link about language packs.
    *
-   * @private
    */
-  onLanguageLearnMoreLinkClicked_(e) {
+  private onLanguageLearnMoreLinkClicked(e: Event): void {
     chrome.send('launchHelpApp', [HELP_LANGUAGE_PACKS]);
 
-    // Can't use this.$.languagesLearnMore here as the element is in a <dom-if>.
-    this.shadowRoot.querySelector('#languagesLearnMore').focus();
+    const elem = this.shadowRoot?.querySelector('#languagesLearnMore');
+    assert(elem instanceof HTMLAnchorElement);
+    elem.focus();
     e.stopPropagation();
   }
 
@@ -627,9 +648,8 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Handle "OK" button for "Accessibility Options" screen.
    *
-   * @private
    */
-  closeAccessibilitySection_() {
+  private closeAccessibilitySection(): void {
     this.setUIStep(WelcomeScreenState.GREETING);
   }
 
@@ -638,13 +658,10 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Note that each <oobe-a11y-option> has chromeMessage attribute
    * containing Chromium callback name.
    *
-   * @private
-   * @param {!Event} event
    */
-  onA11yOptionChanged_(event) {
-    const a11ytarget =
-        /** @type {{chromeMessage: string, checked: boolean}} */ (
-            event.currentTarget);
+  private onA11yOptionChanged(event: CustomEvent<OobeA11yOption>): void {
+    assert(event.currentTarget instanceof OobeA11yOption);
+    const a11ytarget: OobeA11yOption = event.currentTarget;
     if (a11ytarget.checked) {
       this.userActed(a11ytarget.id + '-enable');
     } else {
@@ -657,19 +674,16 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Handle "OK" button for "Timezone Selection" screen.
    *
-   * @private
    */
-  closeTimezoneSection_() {
+  private closeTimezoneSection(): void {
     this.setUIStep(WelcomeScreenState.GREETING);
   }
 
   /**
    * Handle timezone selection.
    *
-   * @param {!CustomEvent<!OobeTypes.TimezoneDsc>} event
-   * @private
    */
-  onTimezoneSelected_(event) {
+  private onTimezoneSelected(event: CustomEvent<OobeTypes.TimezoneDsc>): void {
     const item = event.detail;
     if (!item) {
       return;
@@ -683,39 +697,34 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * Handle "OK" button for "AdvancedOptions Selection" screen.
    *
-   * @private
    */
-  closeAdvancedOptionsSection_() {
+  private closeAdvancedOptionsSection(): void {
     this.setUIStep(WelcomeScreenState.GREETING);
   }
 
   /**
    * Handle click on "Set up as CFM device" option.
    *
-   * @private
    */
-  onCFMBootstrappingClicked_() {
+  private onCfmBootstrappingClicked(): void {
     this.userActed('activateRemoraRequisition');
   }
 
   /**
    * Handle click on "Device requisition" option.
    *
-   * @private
    */
-  onDeviceRequisitionClicked_() {
+  private onDeviceRequisitionClicked(): void {
     this.userActed('editDeviceRequisition');
   }
 
   /** ******************** ChromeVox hint section ******************* */
 
-  /** @private */
-  onChromeVoxHintAccepted_() {
+  private onChromeVoxHintAccepted(): void {
     this.userActed('activateChromeVoxFromHint');
   }
 
-  /** @private */
-  onChromeVoxHintDismissed_() {
+  private onChromeVoxHintDismissed(): void {
     this.userActed('dismissChromeVoxHint');
     chrome.tts.isSpeaking((speaking) => {
       if (speaking) {
@@ -724,23 +733,17 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     });
   }
 
-  /**
-   */
-  showChromeVoxHint_() {
-    this.$.welcomeScreen.showChromeVoxHint();
+  private showChromeVoxHint(): void {
+    this.getWelcomeScreenDialog().showChromeVoxHint();
   }
 
-  /**
-   * @private
-   */
-  closeChromeVoxHint_() {
-    this.$.welcomeScreen.closeChromeVoxHint();
+  private closeChromeVoxHint(): void {
+    this.getWelcomeScreenDialog().closeChromeVoxHint();
   }
 
-  /** @private */
-  cancelChromeVoxHint_() {
+  private cancelChromeVoxHint(): void {
     this.userActed('cancelChromeVoxHint');
-    this.cleanupChromeVoxHint_();
+    this.cleanupChromeVoxHint();
   }
 
   /**
@@ -750,20 +753,20 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * ChromeVox. If we can't find a matching voice, call this function again
    * whenever a SpeechSynthesis voiceschanged event fires.
    */
-  maybeGiveChromeVoxHint() {
+  maybeGiveChromeVoxHint(): void {
     chrome.tts.getVoices((voices) => {
       const locale = loadTimeData.getString('language');
-      const voiceName = this.findVoiceForLocale_(voices, locale);
+      const voiceName = this.findVoiceForLocale(voices, locale);
       if (!voiceName) {
-        this.onVoiceNotLoaded_();
+        this.onVoiceNotLoaded();
         return;
       }
 
-      const ttsOptions = /** @type {!chrome.tts.TtsOptions} */ ({
+      const ttsOptions: chrome.tts.TtsOptions = ({
         lang: locale,
         voiceName,
       });
-      this.giveChromeVoxHint_(locale, ttsOptions, false);
+      this.giveChromeVoxHint(locale, ttsOptions, false);
     });
   }
 
@@ -773,12 +776,9 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Returns undefined if no voice can be found.
    * Both |locale| and |voice.lang| will be in the form 'language-region'.
    * Examples include 'en', 'en-US', 'fr', and 'fr-CA'.
-   * @param {Array<!chrome.tts.TtsVoice>} voices
-   * @param {string} locale
-   * @return {string|undefined}
-   * @private
    */
-  findVoiceForLocale_(voices, locale) {
+  private findVoiceForLocale(voices: chrome.tts.TtsVoice[],
+      locale: string): string | undefined {
     const language = locale.toLowerCase().split('-')[0];
     const voice = voices.find((voice) => {
       return !!(
@@ -793,103 +793,105 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Registers a voiceschanged listener that tries to give the hint when new
    * voices are loaded. Also sets a timeout that gives the hint in the default
    * locale as a last resort.
-   * @private
    */
-  onVoiceNotLoaded_() {
-    if (this.voicesChangedListenerMaybeGiveChromeVoxHint_ === undefined) {
+  private onVoiceNotLoaded(): void {
+    if (this.voicesChangedListenerMaybeGiveChromeVoxHint === undefined) {
       // Add voiceschanged listener that tries to give the hint when new voices
       // are loaded.
-      this.voicesChangedListenerMaybeGiveChromeVoxHint_ = () =>
+      this.voicesChangedListenerMaybeGiveChromeVoxHint = () =>
           this.maybeGiveChromeVoxHint();
       window.speechSynthesis.addEventListener(
-          'voiceschanged', this.voicesChangedListenerMaybeGiveChromeVoxHint_,
+          'voiceschanged', this.voicesChangedListenerMaybeGiveChromeVoxHint,
           false);
     }
 
-    if (!this.defaultChromeVoxHintTimeoutId_) {
+    if (!this.defaultChromeVoxHintTimeoutId) {
       // Set a timeout that gives the ChromeVox hint in the default locale.
-      const ttsOptions = /** @type {!chrome.tts.TtsOptions} */ ({
+      const ttsOptions: chrome.tts.TtsOptions = ({
         lang: DEFAULT_CHROMEVOX_HINT_LOCALE,
         extensionId: DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID,
       });
-      this.defaultChromeVoxHintTimeoutId_ = window.setTimeout(
-          () => this.giveChromeVoxHint_(
+      this.defaultChromeVoxHintTimeoutId = window.setTimeout(
+          () => this.giveChromeVoxHint(
               DEFAULT_CHROMEVOX_HINT_LOCALE, ttsOptions, true),
-          this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_);
+          this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS);
     }
   }
 
   /**
    * Shows the ChromeVox hint dialog and plays the spoken announcement. Gives
    * the spoken announcement with the provided options.
-   * @param {string} locale
-   * @param {!chrome.tts.TtsOptions} options
-   * @param {boolean} isDefaultHint
-   * @private
    */
-  giveChromeVoxHint_(locale, options, isDefaultHint) {
-    if (this.chromeVoxHintGiven_) {
+  private giveChromeVoxHint(_locale: string, options: chrome.tts.TtsOptions,
+      isDefaultHint: boolean): void {
+    if (this.chromeVoxHintGiven) {
       // Only give the hint once.
       // Due to event listeners/timeouts, there is the chance that this gets
       // called multiple times.
       return;
     }
 
-    this.chromeVoxHintGiven_ = true;
+    this.chromeVoxHintGiven = true;
     if (isDefaultHint) {
       console.warn(
           'No voice available for ' + loadTimeData.getString('language') +
           ', giving default hint in English.');
     }
-    this.cleanupChromeVoxHint_();
+    this.cleanupChromeVoxHint();
     // |msgId| depends on both feature enabled status and tablet mode.
-    const msgId = this.$.welcomeScreen.isInTabletMode ?
+    const msgId = this.getWelcomeScreenDialog().isInTabletMode ?
         'chromeVoxHintAnnouncementTextTabletExpanded' :
         'chromeVoxHintAnnouncementTextLaptopExpanded';
 
     const message = this.i18n(msgId);
     chrome.tts.speak(message, options, () => {
-      this.showChromeVoxHint_();
+      this.showChromeVoxHint();
       chrome.send('WelcomeScreen.recordChromeVoxHintSpokenSuccess');
     });
   }
 
   /**
    * Clear timeout and remove voiceschanged listener.
-   * @private
    */
-  cleanupChromeVoxHint_() {
-    if (this.defaultChromeVoxHintTimeoutId_) {
-      window.clearTimeout(this.defaultChromeVoxHintTimeoutId_);
+  private cleanupChromeVoxHint(): void {
+    if (this.defaultChromeVoxHintTimeoutId) {
+      window.clearTimeout(this.defaultChromeVoxHintTimeoutId);
     }
-    window.speechSynthesis.removeEventListener(
-        'voiceschanged',
-        /** @type {function(this:SpeechSynthesis, Event): *} */
-        (this.voicesChangedListenerMaybeGiveChromeVoxHint_),
-        /* useCapture */ false);
-    this.voicesChangedListenerMaybeGiveChromeVoxHint_ = null;
+    if (this.voicesChangedListenerMaybeGiveChromeVoxHint !== undefined) {
+      window.speechSynthesis.removeEventListener(
+          'voiceschanged',
+          (this.voicesChangedListenerMaybeGiveChromeVoxHint),
+          /* useCapture */ false);
+      this.voicesChangedListenerMaybeGiveChromeVoxHint = undefined;
+    }
   }
 
   /**
    * If it is possible to set up CFM.
    */
-  hideCFMSetupButton_(isDeviceRequisitionConfigurable, isMeet) {
+  private hideCfmSetupButton(isDeviceRequisitionConfigurable: boolean,
+      isMeet: boolean): boolean {
     return !isDeviceRequisitionConfigurable && !isMeet;
   }
 
   /** ******************** Quick Start section ******************* */
 
-  setQuickStartEnabled() {
-    this.$.welcomeScreen.isQuickStartEnabled = true;
+  setQuickStartEnabled(): void {
+    this.getWelcomeScreenDialog().isQuickStartEnabled = true;
   }
 
   /**
    * Handle "Quick Start" button for "Welcome" screen.
    *
-   * @private
    */
-  onActivateQuickStart_(e) {
+  private onActivateQuickStart(): void {
     this.userActed('quickStartClicked');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeWelcomeScreen.is]: OobeWelcomeScreen;
   }
 }
 

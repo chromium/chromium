@@ -9,17 +9,16 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 
 group("web_components") {
   public_deps = [
-    ":copy_js",
+    ":copy_ts",
     ":generate_web_component_html_wrapper_files",
   ]
 }
 
-html_to_wrapper("generate_web_component_html_wrapper_files") {
-  in_files = rebase_path(common_screens_html_files, "./screens/common", ".")
-  use_js = true
+copy("copy_ts") {
+  sources = rebase_path(common_screens_ts_files, "./screens/common", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-copy("copy_js") {
-  sources = rebase_path(common_screens_js_files, "./screens/common", ".")
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(common_screens_html_files, "./screens/common", ".")
 }

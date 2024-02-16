@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_VoicesChanged) {
   test::OobeJS()
       .CreateWaiter(
           "document.getElementById('connect')."
-          "voicesChangedListenerMaybeGiveChromeVoxHint_ !== undefined")
+          "voicesChangedListenerMaybeGiveChromeVoxHint !== undefined")
       ->Wait();
   const std::string load_english_voice = R"(
     chrome.tts.getVoices = function(callback) {
@@ -1122,7 +1122,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
       callback([{'lang': 'en-US', 'voiceName': 'ChromeOS US English'}]);
     };)";
   const std::string set_default_hint_timeout_ms = R"(
-    document.getElementById('connect').DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_ = 0;
+    document.getElementById('connect').DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS = 0;
     )";
   test::ExecuteOobeJS(set_default_hint_timeout_ms);
   test::ExecuteOobeJS(set_no_french_voice);

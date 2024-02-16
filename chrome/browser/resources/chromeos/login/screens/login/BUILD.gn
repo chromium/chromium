@@ -7,17 +7,16 @@ import("../../login.gni")
 
 group("web_components") {
   public_deps = [
-    ":copy_js",
+    ":copy_ts",
     ":generate_web_component_html_wrapper_files",
   ]
 }
 
-html_to_wrapper("generate_web_component_html_wrapper_files") {
-  in_files = rebase_path(login_screens_html_files, "./screens/login", ".")
-  use_js = true
+copy("copy_ts") {
+  sources = rebase_path(login_screens_ts_files, "./screens/login", ".")
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
-copy("copy_js") {
-  sources = rebase_path(login_screens_js_files, "./screens/login", ".")
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(login_screens_html_files, "./screens/login", ".")
 }

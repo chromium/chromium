@@ -6,35 +6,31 @@
  * @fileoverview Helper functions to manage select UI elements.
  */
 
-/**
- * @typedef {
- *   Iterable<{
- *       optionGroupName: (string|undefined),
- *       selected: boolean,
- *       title: string,
- *       value: string,
- *   }>
- * }
- */
-export let SelectListType;
+export interface SelectListTypeItem {
+  optionGroupName?: string;
+  selected: boolean|undefined;
+  title: string;
+  value: string;
+}
+export type SelectListType = SelectListTypeItem[];
 
 /**
  * Sets up given "select" element using the list and adds callback.
  * Creates option groups if needed.
- * @param {!Element} select Select object to be updated.
- * @param {!SelectListType} list List of the options to be added. Elements with
+ * @param select Select object to be updated.
+ * @param list List of the options to be added. Elements with
  *     optionGroupName are considered option group.
- * @param {?function(string)} callback Callback which should be called, or null
+ * @param callback Callback which should be called, or null
  *     if the event listener shouldn't be added.
  *
  * Note: do not forget to update getSelectedTitle() below if this is
  * updated!
  */
-export function setupSelect(select, list, callback) {
-  select.innerHTML = window.trustedTypes.emptyHTML;
-  let optgroup = select;
-  for (let i = 0; i < list.length; ++i) {
-    const item = list[i];
+export function setupSelect(select: HTMLSelectElement, list: SelectListType,
+    callback: ((arg0: string) => void)|null): void {
+  select.innerHTML = window.trustedTypes ? window.trustedTypes.emptyHTML : '';
+  let optgroup: HTMLOptGroupElement|null = null;
+  for (const item of list) {
     if (item.optionGroupName) {
       optgroup = document.createElement('optgroup');
       optgroup.label = item.optionGroupName;
@@ -42,7 +38,11 @@ export function setupSelect(select, list, callback) {
     } else {
       const option =
           new Option(item.title, item.value, item.selected, item.selected);
-      optgroup.appendChild(option);
+      if (optgroup instanceof HTMLOptGroupElement) {
+        optgroup.appendChild(option);
+      } else {
+        select.appendChild(option);
+      }
     }
   }
   if (callback) {
@@ -55,13 +55,11 @@ export function setupSelect(select, list, callback) {
 
 /**
  * Returns title of the selected option (see setupSelect() above).
- * @param {!SelectListType} list The same as in setupSelect() above.
- * @return {string}
+ * @param list The same as in setupSelect() above.
  */
-export function getSelectedTitle(list) {
+export function getSelectedTitle(list: SelectListType): string {
   let firstTitle = '';
-  for (let i = 0; i < list.length; ++i) {
-    const item = list[i];
+  for (const item of list) {
     if (item.optionGroupName) {
       continue;
     }
@@ -79,12 +77,10 @@ export function getSelectedTitle(list) {
 
 /**
  * Returns value of the selected option (see setupSelect() above).
- * @param {!SelectListType} list The same as in setupSelect() above.
- * @return {?string}
+ * @param list The same as in setupSelect() above.
  */
-export function getSelectedValue(list) {
-  for (let i = 0; i < list.length; ++i) {
-    const item = list[i];
+export function getSelectedValue(list: SelectListType): string|null {
+  for (const item of list) {
     if (item.optionGroupName) {
       continue;
     }

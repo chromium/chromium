@@ -2,16 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("../login.gni")
 
 group("web_components") {
   public_deps = [
     ":copy_ts",
-    ":generate_web_component_html_wrapper_files",
     ":html_wrapper_files",
-    ":web_components_local",
     "./behaviors:copy_js",
     "./buttons:web_components",
     "./common_styles:css_wrapper_files",
@@ -20,27 +17,11 @@ group("web_components") {
   ]
 }
 
-html_to_wrapper("generate_web_component_html_wrapper_files") {
-  in_files = rebase_path(components_html_files, "./components", ".")
-}
-
 copy("copy_ts") {
   sources = rebase_path(components_ts_files, "./components", ".")
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = [
-               "oobe_icons.html",
-               "oobe_illo_icons.html",
-               "oobe_network_icons.html",
-             ] + rebase_path(components_html_files, "./components", ".")
-  use_js = true
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "oobe_a11y_option.js",
-    "oobe_i18n_dropdown.js",
-  ]
+  in_files = rebase_path(components_html_files, "./components", ".")
 }

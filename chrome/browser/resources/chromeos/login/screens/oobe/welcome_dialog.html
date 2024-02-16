@@ -197,7 +197,7 @@ found in the LICENSE file.
   <h1 id="title" class="welcome-header-text">
     [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
   </h1>
-  <template is="dom-if" if="[[!isBootAnimation_]]">
+  <template is="dom-if" if="[[!isBootAnimation]]">
     <div id="subtitle" class="welcome-header-text">
       [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
     </div>
@@ -209,7 +209,7 @@ found in the LICENSE file.
         id="languageSelectionButton"
         icon1x="oobe-20:welcome-language"
         icon2x="oobe-40:welcome-language"
-        on-click="onLanguageClicked_"
+        on-click="onLanguageClicked"
         label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
                   currentLanguage)]]"
       >
@@ -221,7 +221,7 @@ found in the LICENSE file.
         text-key="accessibilityLink"
         icon1x="oobe-20:welcome-accessibility"
         icon2x="oobe-40:welcome-accessibility"
-        on-click="onAccessibilityClicked_"
+        on-click="onAccessibilityClicked"
       >
       </oobe-icon-button>
       <oobe-icon-button
@@ -230,7 +230,7 @@ found in the LICENSE file.
         text-key="timezoneButtonText"
         icon1x="oobe-32:timezone"
         icon2x="oobe-32:timezone"
-        on-click="onTimezoneClicked_"
+        on-click="onTimezoneClicked"
         hidden="[[!timezoneButtonVisible]]"
       >
       </oobe-icon-button>
@@ -240,7 +240,7 @@ found in the LICENSE file.
         text-key="debuggingFeaturesLink"
         icon1x="oobe-32:chromebook"
         icon2x="oobe-32:chromebook"
-        on-click="onDebuggingLinkClicked_"
+        on-click="onDebuggingLinkClicked"
         hidden="[[!debuggingLinkVisible]]"
       >
       </oobe-icon-button>
@@ -255,16 +255,16 @@ found in the LICENSE file.
       <oobe-text-button
         id="getStarted"
         inverse
-        on-click="onNextClicked_"
+        on-click="onNextClicked"
         text-key="welcomeScreenGetStarted"
       >
       </oobe-text-button>
     </div>
     <template is="dom-if" if="[[showAnimationSlot()]]">
       <div id="welcomeAnimationSlot">
-        <template is="dom-if" if="[[!isMeet_]]">
+        <template is="dom-if" if="[[!isMeet]]">
           <iron-icon id="welcomeAnimationFirstFrame" icon="oobe-illos:connect-illo"
-              class="illustration-jelly stacked-animations" hidden="[[isOobeLoaded_]]">
+              class="illustration-jelly stacked-animations" hidden="[[isOobeLoaded]]">
           </iron-icon>
           <oobe-cr-lottie
             id="welcomeAnimation" preload
@@ -273,7 +273,7 @@ found in the LICENSE file.
           >
           </oobe-cr-lottie>
         </template>
-        <template is="dom-if" if="[[isMeet_]]">
+        <template is="dom-if" if="[[isMeet]]">
           <img
             src="/images/cfm/welcome.svg"
             class="oobe-illustration"
@@ -297,7 +297,7 @@ found in the LICENSE file.
   <div slot="buttons">
     <oobe-text-button
       id="dismissChromeVoxButton"
-      on-click="dismissChromeVoxHint_"
+      on-click="dismissChromeVoxHint"
       text-key="chromevoxHintClose"
     >
     </oobe-text-button>

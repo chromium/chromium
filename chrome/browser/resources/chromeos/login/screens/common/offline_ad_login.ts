@@ -70,7 +70,7 @@ const DEFAULT_ENCRYPTION_TYPES = 'strong';
 
 interface EncryptionSelectListItem {
   value: string;
-  label: string;
+  title: string;
   selected: boolean;
   subtitle?: string;
 }
@@ -343,16 +343,16 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   setupEncList(): void {
-    let list = loadTimeData.getValue('encryptionTypesList') as
+    const list = loadTimeData.getValue('encryptionTypesList') as
         EncryptionSelectListType;
     for (const item of list) {
       this.encryptionValueToSubtitleMap[item.value] = item.subtitle!;
       delete item.subtitle;
     }
-    list = list as typeof SelectListType;
+    const selectList: SelectListType = list;
     setupSelect(
-        this.getEncryptionList(), list, this.onEncryptionSelected.bind(this));
-    this.defaultEncryption = getSelectedValue(list)!;
+        this.getEncryptionList(), selectList, this.onEncryptionSelected.bind(this));
+    this.defaultEncryption = getSelectedValue(selectList)!;
     this.encryptionValue = this.defaultEncryption;
     this.machineNameError =
         loadTimeData.getString('adJoinErrorMachineNameInvalid');
@@ -409,9 +409,13 @@ export class OfflineAdLogin extends OfflineAdLoginBase {
       return;
     }
     this.joinConfigOptions = options;
-    const selectList = [];
+    const selectList: SelectListType = [];
     for (let i = 0; i < options.length; ++i) {
-      selectList.push({title: options[i].name, value: i});
+      selectList.push({
+        title: options[i].name,
+        value: i.toString(),
+        selected: false,
+      });
     }
     setupSelect(
         this.getJoinConfigSelect(), selectList,

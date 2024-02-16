@@ -40,23 +40,11 @@ OobeTypes.IMEDsc;
  * ChromeOS OOBE demo country descriptor.
  * @typedef {{
  *   value: !string,
- *   title: (string|undefined),
- *   selected: (boolean|undefined),
+ *   title: (string),
+ *   selected: (boolean),
  * }}
  */
 OobeTypes.DemoCountryDsc;
-
-/**
- * A set of flags of accessibility options for ChromeOS OOBE.
- * @typedef {{
- *   highContrastEnabled: boolean,
- *   spokenFeedbackEnabled: boolean,
- *   screenMagnifierEnabled: boolean,
- *   largeCursorEnabled: boolean,
- *   virtualKeyboardEnabled: boolean,
- * }}
- */
-OobeTypes.A11yStatuses;
 
 /**
  * Timezone ID.
