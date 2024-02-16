@@ -117,7 +117,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   }
   bool use_separate_gl_texture() const { return use_separate_gl_texture_; }
   bool need_synchronization() const {
-    if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
+    if (usage() &
+        (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
       return true;
     }
 

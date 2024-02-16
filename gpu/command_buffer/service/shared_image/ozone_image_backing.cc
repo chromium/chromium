@@ -472,7 +472,8 @@ OzoneImageBacking::OzoneImageBacking(
       (used_by_skia && context_state_->gr_context_type() == GrContextType::kGL);
   bool used_by_vulkan = used_by_skia && context_state_->gr_context_type() ==
                                             GrContextType::kVulkan;
-  bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  bool used_by_webgpu = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   write_streams_count_ = 0;
   if (used_by_gl)
     write_streams_count_++;  // gl can write

@@ -278,7 +278,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     GLenum texture_target,
     size_t array_slice,
     size_t plane_index) {
-  const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
+  const bool has_webgpu_usage = !!(usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
   auto backing = base::WrapUnique(new D3DImageBacking(
@@ -304,7 +305,8 @@ D3DImageBacking::CreateFromVideoTexture(
   CHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
 
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
-  const bool has_webgpu_usage = usage & gpu::SHARED_IMAGE_USAGE_WEBGPU;
+  const bool has_webgpu_usage = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                         SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_images(

@@ -140,7 +140,8 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) &&
+  if ((usage &
+       (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) &&
       (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES)) {
     return false;
   }

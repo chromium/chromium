@@ -1642,7 +1642,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     return true;
   }
 
-  if (usage() & SHARED_IMAGE_USAGE_WEBGPU &&
+  if (usage() &
+          (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE) &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     // If this image could potentially be shared with WebGPU's Metal
     // device, it's necessary to synchronize between the two devices.
@@ -1730,7 +1731,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
 
   // If this image could potentially be shared with Metal via WebGPU, then flush
   // the GL context to ensure Metal will see it.
-  if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
+  if (usage() &
+      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
     gl::GLApi* api = gl::g_current_gl_context;
     api->glFlushFn();
   }

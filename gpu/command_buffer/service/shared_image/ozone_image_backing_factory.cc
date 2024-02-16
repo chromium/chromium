@@ -40,7 +40,8 @@ namespace gpu {
 namespace {
 
 gfx::BufferUsage GetBufferUsage(uint32_t usage) {
-  if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
+  if (usage &
+      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
     return gfx::BufferUsage::SCANOUT;
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
@@ -283,7 +284,8 @@ bool OzoneImageBackingFactory::IsSupported(
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_vulkan =
       used_by_skia && gr_context_type == GrContextType::kVulkan;
-  bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  bool used_by_webgpu = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
   if (used_by_vulkan && !CanImportNativePixmapToVulkan()) {
