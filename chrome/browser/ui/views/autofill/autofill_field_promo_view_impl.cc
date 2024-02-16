@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -61,6 +62,10 @@ AutofillFieldPromoViewImpl::AutofillFieldPromoViewImpl(
 }
 
 AutofillFieldPromoViewImpl::~AutofillFieldPromoViewImpl() = default;
+
+bool AutofillFieldPromoViewImpl::OverlapsWithPictureInPictureWindow() const {
+  return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
+}
 
 void AutofillFieldPromoViewImpl::Close() {
   views::View* contents_web_view = GetContentsWebView(web_contents_);

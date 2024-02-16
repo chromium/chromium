@@ -19,21 +19,25 @@ std::unique_ptr<AutofillPopupHideHelper>
 AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
     content::WebContents* web_contents,
     HidingParams hiding_params,
-    HidingCallback hiding_callback) {
+    HidingCallback hiding_callback,
+    PictureInPictureDetectionCallback pip_detection_callback) {
   if (!web_contents->GetFocusedFrame()) {
     return nullptr;
   }
   return base::WrapUnique(new AutofillPopupHideHelper(
-      web_contents, std::move(hiding_params), std::move(hiding_callback)));
+      web_contents, std::move(hiding_params), std::move(hiding_callback),
+      std::move(pip_detection_callback)));
 }
 
 AutofillPopupHideHelper::AutofillPopupHideHelper(
     content::WebContents* web_contents,
     HidingParams hiding_params,
-    HidingCallback hiding_callback)
+    HidingCallback hiding_callback,
+    PictureInPictureDetectionCallback pip_detection_callback)
     : content::WebContentsObserver(web_contents),
-      hiding_params_(hiding_params),
-      hiding_callback_(std::move(hiding_callback)) {
+      hiding_params_(std::move(hiding_params)),
+      hiding_callback_(std::move(hiding_callback)),
+      pip_detection_callback_(std::move(pip_detection_callback)) {
   content::RenderFrameHost* rfh = web_contents->GetFocusedFrame();
   CHECK(rfh);
   rfh_id_ = rfh->GetGlobalId();
@@ -45,6 +49,12 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
     zoom_observation_.Observe(zoom_controller);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  CHECK(picture_in_picture_window_manager);
+  picture_in_picture_window_observation_.Observe(
+      picture_in_picture_window_manager);
 }
 
 AutofillPopupHideHelper::~AutofillPopupHideHelper() = default;
@@ -106,5 +116,12 @@ void AutofillPopupHideHelper::OnZoomChanged(
   hiding_callback_.Run(PopupHidingReason::kContentAreaMoved);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void AutofillPopupHideHelper::OnEnterPictureInPicture() {
+  if (pip_detection_callback_.Run()) {
+    hiding_callback_.Run(
+        PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+  }
+}
 
 }  // namespace autofill

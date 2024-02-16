@@ -23,7 +23,6 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -138,11 +137,6 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
-  PictureInPictureWindowManager* picture_in_picture_window_manager =
-      PictureInPictureWindowManager::GetInstance();
-  CHECK(picture_in_picture_window_manager);
-  picture_in_picture_window_observation_.Observe(
-      picture_in_picture_window_manager);
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
@@ -172,12 +166,21 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
+  AutofillPopupHideHelper::HidingParams hiding_params = {};
+  AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
+      &AutofillPopupControllerImpl::Hide, base::Unretained(this));
+  AutofillPopupHideHelper::PictureInPictureDetectionCallback
+      pip_detection_callback = base::BindRepeating(
+          [](base::WeakPtr<AutofillPopupView> view) {
+            return view && view->OverlapsWithPictureInPictureWindow();
+          },
+          view_);
+
   // The hide helper is destroyed on hide, so it cannot outlive the popup
   // controller.
   popup_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
-      web_contents_, AutofillPopupHideHelper::HidingParams{},
-      base::BindRepeating(&AutofillPopupControllerImpl::Hide,
-                          base::Unretained(this)));
+      web_contents_, std::move(hiding_params), std::move(hiding_callback),
+      std::move(pip_detection_callback));
 
   // If the hide helper is null, then no frame has focus.
   if (!popup_hide_helper_) {
@@ -506,12 +509,6 @@ void AutofillPopupControllerImpl::HideSubPopup() {
 
 bool AutofillPopupControllerImpl::IsRootPopup() const {
   return !parent_controller_;
-}
-
-void AutofillPopupControllerImpl::OnEnterPictureInPicture() {
-  if (view_ && view_->OverlapsWithPictureInPictureWindow()) {
-    Hide(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
-  }
 }
 
 int AutofillPopupControllerImpl::GetLineCount() const {

@@ -22,6 +22,8 @@ class MockAutofillFieldPromoView : public AutofillFieldPromoView {
  public:
   MOCK_METHOD(void, Close, (), (override));
 
+  bool OverlapsWithPictureInPictureWindow() const override { return false; }
+
   base::WeakPtr<AutofillFieldPromoView> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

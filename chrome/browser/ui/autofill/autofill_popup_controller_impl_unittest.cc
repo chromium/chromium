@@ -1053,9 +1053,8 @@ TEST_F(AutofillPopupControllerImplTest,
 // picture-in-picture window.
 TEST_F(AutofillPopupControllerImplTest,
        CheckBoundsOverlapWithPictureInPicture) {
-  client().popup_controller(manager());  // Creates the controller.
-  EXPECT_CALL(client().popup_view(), OverlapsWithPictureInPictureWindow)
-      .Times(1);
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  EXPECT_CALL(client().popup_view(), OverlapsWithPictureInPictureWindow);
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
   picture_in_picture_window_manager->EnterVideoPictureInPicture(web_contents());

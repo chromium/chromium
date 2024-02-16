@@ -11,9 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
@@ -72,7 +70,6 @@ class ExpandablePopupParentControllerImpl {
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public AutofillManager::Observer,
-      public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
@@ -144,9 +141,6 @@ class AutofillPopupControllerImpl
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
   void HideSubPopup() override;
-
-  // PictureInPictureWindowManager::Observer
-  void OnEnterPictureInPicture() override;
 
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
@@ -272,14 +266,6 @@ class AutofillPopupControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
-
-  // Observer needed to check autofill popup overlap with picture-in-picture
-  // window. It is guaranteed that there can only be one
-  // PictureInPictureWindowManager per Chrome instance, therefore, it is also
-  // guaranteed that PictureInPictureWindowManager would outlive its observers.
-  base::ScopedObservation<PictureInPictureWindowManager,
-                          PictureInPictureWindowManager::Observer>
-      picture_in_picture_window_observation_{this};
 
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
 

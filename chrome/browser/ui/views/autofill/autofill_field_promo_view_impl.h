@@ -34,6 +34,8 @@ class AutofillFieldPromoViewImpl : public AutofillFieldPromoView,
       delete;
   ~AutofillFieldPromoViewImpl() override;
 
+  bool OverlapsWithPictureInPictureWindow() const override;
+
   void Close() override;
 
   base::WeakPtr<AutofillFieldPromoView> GetWeakPtr() override;

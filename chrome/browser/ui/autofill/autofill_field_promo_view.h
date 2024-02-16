@@ -36,6 +36,8 @@ class AutofillFieldPromoView {
 
   virtual ~AutofillFieldPromoView() = default;
 
+  virtual bool OverlapsWithPictureInPictureWindow() const = 0;
+
   // Destroys the view. As a consequence, the IPH is also hidden.
   virtual void Close() = 0;
 
