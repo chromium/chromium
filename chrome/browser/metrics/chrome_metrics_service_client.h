@@ -91,6 +91,7 @@ class ChromeMetricsServiceClient
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry() override;
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  IdentifiabilityStudyState* GetIdentifiabilityStudyState() override;
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService()
       override;
   void SetMetricsClientId(const std::string& client_id) override;

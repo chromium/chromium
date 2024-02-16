@@ -43,8 +43,6 @@ class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
   using IdentifiabilityStudyState::AdjustForDroppedOffsets;
   using IdentifiabilityStudyState::kMaxSelectedSurfaceOffset;
   using IdentifiabilityStudyState::StripDisallowedSurfaces;
-
-  using IdentifiabilityStudyState::InitializeGlobalStudySettings;
 };
 
 }  // namespace test_utils

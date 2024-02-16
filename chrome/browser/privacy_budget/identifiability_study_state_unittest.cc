@@ -525,8 +525,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, ClearsPrefsIfStudyIsDisabled) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Empty) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces;
   EXPECT_TRUE(
@@ -537,8 +536,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Empty) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_SingleBad) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kBlockedSurface1, kRegularSurface1};
   EXPECT_TRUE(
@@ -549,8 +547,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_SingleBad) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_BadSuffix) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kRegularSurface1, kBlockedSurface1};
   EXPECT_TRUE(
@@ -561,8 +558,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_BadSuffix) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Duplicates) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{kRegularSurface1, kRegularSurface1};
   EXPECT_FALSE(
@@ -571,8 +567,7 @@ TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_Duplicates) {
 }
 
 TEST_F(IdentifiabilityStudyStateTest, StripDisallowedSurfaces_InternalSurface) {
-  test_utils::InspectableIdentifiabilityStudyState::
-      InitializeGlobalStudySettings();
+  test_utils::InspectableIdentifiabilityStudyState state(pref_service());
   std::vector<IdentifiabilityStudyState::OffsetType> dropped;
   IdentifiableSurfaceList surfaces{
       kRegularSurface1,

@@ -1809,7 +1809,12 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
       std::make_unique<CrashMemoryMetricsCollector>(host));
 #endif
 
-  IdentifiabilityStudyState::InitializeRenderer(host);
+  IdentifiabilityStudyState* identifiability_study_state =
+      g_browser_process->GetMetricsServicesManager()
+          ->GetIdentifiabilityStudyState();
+  if (identifiability_study_state) {
+    identifiability_study_state->InitializeRenderer(host);
+  }
 
   // The RendereUpdater might be null for some irregular profiles, e.g. the
   // System Profile.
