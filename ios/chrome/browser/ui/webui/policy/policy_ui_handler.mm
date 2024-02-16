@@ -137,9 +137,10 @@ void PolicyUIHandler::RegisterMessages() {
 
   policy::UserCloudPolicyManager* user_cloud_policy_manager =
       browser_state->GetUserCloudPolicyManager();
-  if (user_cloud_policy_manager && user_cloud_policy_manager->core()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
+  if (user_cloud_policy_manager && user_cloud_policy_manager->core() &&
+      identity_manager) {
     user_policy_status_provider_ =
         std::make_unique<UserCloudPolicyStatusProvider>(
             this, user_cloud_policy_manager->core(), identity_manager);
