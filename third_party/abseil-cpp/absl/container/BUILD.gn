@@ -203,11 +203,27 @@ absl_source_set("hash_function_defaults") {
   public = [ "internal/hash_function_defaults.h" ]
   visibility = [ "//third_party/abseil-cpp/absl/container:*" ]
   deps = [
+    ":common",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/hash",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
+}
+
+absl_test("hash_function_defaults_test") {
+  sources = [ "internal/hash_function_defaults_test.cc" ]
+  deps = [
+    ":flat_hash_map",
+    ":flat_hash_set",
+    ":hash_function_defaults",
+    "//third_party/abseil-cpp/absl/hash",
+    "//third_party/abseil-cpp/absl/random",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:cord",
+    "//third_party/abseil-cpp/absl/strings:cord_test_helpers",
   ]
 }
 

@@ -890,4 +890,32 @@
 #define ABSL_ATTRIBUTE_UNINITIALIZED
 #endif
 
+// ABSL_ATTRIBUTE_WARN_UNUSED
+//
+// Compilers routinely warn about trivial variables that are unused.  For
+// non-trivial types, this warning is suppressed since the
+// constructor/destructor may be intentional and load-bearing, for example, with
+// a RAII scoped lock.
+//
+// For example:
+//
+// class ABSL_ATTRIBUTE_WARN_UNUSED MyType {
+//  public:
+//   MyType();
+//   ~MyType();
+// };
+//
+// void foo() {
+//   // Warns with ABSL_ATTRIBUTE_WARN_UNUSED attribute present.
+//   MyType unused;
+// }
+//
+// See https://clang.llvm.org/docs/AttributeReference.html#warn-unused and
+// https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Attributes.html#index-warn_005funused-type-attribute
+#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::warn_unused)
+#define ABSL_ATTRIBUTE_WARN_UNUSED [[gnu::warn_unused]]
+#else
+#define ABSL_ATTRIBUTE_WARN_UNUSED
+#endif
+
 #endif  // ABSL_BASE_ATTRIBUTES_H_

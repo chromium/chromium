@@ -352,18 +352,19 @@ struct CordRepExternal : public CordRep {
   static void Delete(CordRep* rep);
 };
 
-struct Rank1 {};
-struct Rank0 : Rank1 {};
+// Use go/ranked-overloads for dispatching.
+struct Rank0 {};
+struct Rank1 : Rank0 {};
 
 template <typename Releaser, typename = ::absl::base_internal::invoke_result_t<
                                  Releaser, absl::string_view>>
-void InvokeReleaser(Rank0, Releaser&& releaser, absl::string_view data) {
+void InvokeReleaser(Rank1, Releaser&& releaser, absl::string_view data) {
   ::absl::base_internal::invoke(std::forward<Releaser>(releaser), data);
 }
 
 template <typename Releaser,
           typename = ::absl::base_internal::invoke_result_t<Releaser>>
-void InvokeReleaser(Rank1, Releaser&& releaser, absl::string_view) {
+void InvokeReleaser(Rank0, Releaser&& releaser, absl::string_view) {
   ::absl::base_internal::invoke(std::forward<Releaser>(releaser));
 }
 
@@ -381,7 +382,7 @@ struct CordRepExternalImpl
   }
 
   ~CordRepExternalImpl() {
-    InvokeReleaser(Rank0{}, std::move(this->template get<0>()),
+    InvokeReleaser(Rank1{}, std::move(this->template get<0>()),
                    absl::string_view(base, length));
   }
 

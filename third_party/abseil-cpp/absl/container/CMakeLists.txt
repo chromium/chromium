@@ -471,9 +471,11 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    absl::container_common
     absl::cord
     absl::hash
     absl::strings
+    absl::type_traits
   PUBLIC
 )
 
@@ -487,6 +489,8 @@ absl_cc_test(
   DEPS
     absl::cord
     absl::cord_test_helpers
+    absl::flat_hash_map
+    absl::flat_hash_set
     absl::hash_function_defaults
     absl::hash
     absl::random_random

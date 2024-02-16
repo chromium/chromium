@@ -60,7 +60,7 @@ struct FlatHashSetPolicy;
 // * Requires keys that are CopyConstructible
 // * Supports heterogeneous lookup, through `find()` and `insert()`, provided
 //   that the set is provided a compatible heterogeneous hashing function and
-//   equality operator.
+//   equality operator. See below for details.
 // * Invalidates any references and pointers to elements within the table after
 //   `rehash()` and when the table is moved.
 // * Contains a `capacity()` member function indicating the number of element
@@ -77,6 +77,19 @@ struct FlatHashSetPolicy;
 // Using `absl::flat_hash_set` at interface boundaries in dynamically loaded
 // libraries (e.g. .dll, .so) is unsupported due to way `absl::Hash` values may
 // be randomized across dynamically loaded libraries.
+//
+// To achieve heterogeneous lookup for custom types either `Hash` and `Eq` type
+// parameters can be used or `T` should have public inner types
+// `absl_container_hash` and (optionally) `absl_container_eq`. In either case,
+// `typename Hash::is_transparent` and `typename Eq::is_transparent` should be
+// well-formed. Both types are basically functors:
+// * `Hash` should support `size_t operator()(U val) const` that returns a hash
+// for the given `val`.
+// * `Eq` should support `bool operator()(U lhs, V rhs) const` that returns true
+// if `lhs` is equal to `rhs`.
+//
+// In most cases `T` needs only to provide the `absl_container_hash`. In this
+// case `std::equal_to<void>` will be used instead of `eq` part.
 //
 // NOTE: A `flat_hash_set` stores its keys directly inside its implementation
 // array to avoid memory indirection. Because a `flat_hash_set` is designed to

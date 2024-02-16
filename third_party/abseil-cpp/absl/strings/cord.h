@@ -1120,7 +1120,7 @@ Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
   } else {
     using ReleaserType = absl::decay_t<Releaser>;
     cord_internal::InvokeReleaser(
-        cord_internal::Rank0{}, ReleaserType(std::forward<Releaser>(releaser)),
+        cord_internal::Rank1{}, ReleaserType(std::forward<Releaser>(releaser)),
         data);
   }
   return cord;

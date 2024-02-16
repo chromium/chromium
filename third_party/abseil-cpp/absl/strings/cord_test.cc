@@ -1513,12 +1513,11 @@ TEST_P(CordTest, CompareAfterAssign) {
 // comparison methods from basic_string.
 static void TestCompare(const absl::Cord& c, const absl::Cord& d,
                         RandomEngine* rng) {
-  typedef std::basic_string<uint8_t> ustring;
-  ustring cs(reinterpret_cast<const uint8_t*>(std::string(c).data()), c.size());
-  ustring ds(reinterpret_cast<const uint8_t*>(std::string(d).data()), d.size());
-  // ustring comparison is ideal because we expect Cord comparisons to be
-  // based on unsigned byte comparisons regardless of whether char is signed.
-  int expected = sign(cs.compare(ds));
+  // char_traits<char>::lt is guaranteed to do an unsigned comparison:
+  // https://en.cppreference.com/w/cpp/string/char_traits/cmp. We also expect
+  // Cord comparisons to be based on unsigned byte comparisons regardless of
+  // whether char is signed.
+  int expected = sign(std::string(c).compare(std::string(d)));
   EXPECT_EQ(expected, sign(c.Compare(d))) << c << ", " << d;
 }
 

@@ -169,9 +169,10 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteExternal) {
 }
 
 #if defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 // Test disabled on Windows due to
 // https://github.com/llvm/llvm-project/issues/69394
+// Test disabled on Apple due to b/324278148
 
 TEST(SequenceLocalStorageMapTest, DestructorInline) {
   bool set_on_destruction = false;

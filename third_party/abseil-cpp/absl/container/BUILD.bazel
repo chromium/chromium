@@ -423,8 +423,10 @@ cc_library(
         "//visibility:private",
     ],
     deps = [
+        ":common",
         "//absl/base:config",
         "//absl/hash",
+        "//absl/meta:type_traits",
         "//absl/strings",
         "//absl/strings:cord",
     ],
@@ -437,6 +439,8 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = NOTEST_TAGS_MOBILE + ["no_test_loonix"],
     deps = [
+        ":flat_hash_map",
+        ":flat_hash_set",
         ":hash_function_defaults",
         "//absl/hash",
         "//absl/random",

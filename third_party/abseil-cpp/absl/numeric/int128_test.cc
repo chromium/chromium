@@ -231,8 +231,6 @@ TEST(Uint128, AllTests) {
   EXPECT_EQ(two, -((-one) - 1));
   EXPECT_EQ(absl::Uint128Max(), -one);
   EXPECT_EQ(zero, -zero);
-
-  EXPECT_EQ(absl::Uint128Max(), absl::kuint128max);
 }
 
 TEST(Int128, RightShiftOfNegativeNumbers) {
