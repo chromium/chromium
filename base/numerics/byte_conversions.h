@@ -237,6 +237,201 @@ inline constexpr double DoubleFromBigEndian(
   return std::bit_cast<double>(U64FromBigEndian(bytes));
 }
 
+// Returns a byte array holding the value of a uint8_t encoded as the native
+// endian encoding of the integer for the machine.
+//
+// This is suitable for encoding integers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 1u> U8ToNativeEndian(uint8_t val) {
+  return {val};
+}
+// Returns a byte array holding the value of a uint16_t encoded as the native
+// endian encoding of the integer for the machine.
+//
+// This is suitable for encoding integers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 2u> U16ToNativeEndian(uint16_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a uint32_t encoded as the native
+// endian encoding of the integer for the machine.
+//
+// This is suitable for encoding integers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 4u> U32ToNativeEndian(uint32_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a uint64_t encoded as the native
+// endian encoding of the integer for the machine.
+//
+// This is suitable for encoding integers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 8u> U64ToNativeEndian(uint64_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a float encoded as the native
+// endian encoding of the number for the machine.
+//
+// This is suitable for encoding numbers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 4u> FloatToNativeEndian(float val) {
+  return U32ToNativeEndian(std::bit_cast<uint32_t>(val));
+}
+// Returns a byte array holding the value of a double encoded as the native
+// endian encoding of the number for the machine.
+//
+// This is suitable for encoding numbers that will always be kept in native
+// encoding, such as for storing in shared-memory (or sending through IPC) as a
+// byte buffer. Prefer an explicit little endian when storing data into external
+// storage, and explicit big endian for network order.
+inline constexpr std::array<uint8_t, 8u> DoubleToNativeEndian(double val) {
+  return U64ToNativeEndian(std::bit_cast<uint64_t>(val));
+}
+
+// Returns a byte array holding the value of a uint8_t encoded as the
+// little-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 1u> U8ToLittleEndian(uint8_t val) {
+  return {val};
+}
+// Returns a byte array holding the value of a uint16_t encoded as the
+// little-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 2u> U16ToLittleEndian(uint16_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a uint32_t encoded as the
+// little-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 4u> U32ToLittleEndian(uint32_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a uint64_t encoded as the
+// little-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 8u> U64ToLittleEndian(uint64_t val) {
+  return internal::ToLittleEndian(val);
+}
+// Returns a byte array holding the value of a float encoded as the
+// little-endian encoding of the number.
+//
+// This is suitable for encoding numbers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 4u> FloatToLittleEndian(float val) {
+  return internal::ToLittleEndian(std::bit_cast<uint32_t>(val));
+}
+// Returns a byte array holding the value of a double encoded as the
+// little-endian encoding of the number.
+//
+// This is suitable for encoding numbers explicitly in little endian, which is
+// a good practice with storing and reading data from storage. Use the
+// native-endian versions when working with values that will always be in
+// memory, such as when stored in shared-memory (or passed through IPC) as a
+// byte buffer.
+inline constexpr std::array<uint8_t, 8u> DoubleToLittleEndian(double val) {
+  return internal::ToLittleEndian(std::bit_cast<uint64_t>(val));
+}
+
+// Returns a byte array holding the value of a uint8_t encoded as the big-endian
+// encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 1u> U8ToBigEndian(uint8_t val) {
+  return {val};
+}
+// Returns a byte array holding the value of a uint16_t encoded as the
+// big-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 2u> U16ToBigEndian(uint16_t val) {
+  return internal::ToLittleEndian(ByteSwap(val));
+}
+// Returns a byte array holding the value of a uint32_t encoded as the
+// big-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 4u> U32ToBigEndian(uint32_t val) {
+  return internal::ToLittleEndian(ByteSwap(val));
+}
+// Returns a byte array holding the value of a uint64_t encoded as the
+// big-endian encoding of the integer.
+//
+// This is suitable for encoding integers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 8u> U64ToBigEndian(uint64_t val) {
+  return internal::ToLittleEndian(ByteSwap(val));
+}
+// Returns a byte array holding the value of a float encoded as the big-endian
+// encoding of the number.
+//
+// This is suitable for encoding numbers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 4u> FloatToBigEndian(float val) {
+  return internal::ToLittleEndian(ByteSwap(std::bit_cast<uint32_t>(val)));
+}
+// Returns a byte array holding the value of a double encoded as the big-endian
+// encoding of the number.
+//
+// This is suitable for encoding numbers explicitly in big endian, such as for
+// network order. Use the native-endian versions when working with values that
+// are always in memory, such as when stored in shared-memory (or passed through
+// IPC) as a byte buffer. Use the little-endian encoding for storing and reading
+// from storage.
+inline constexpr std::array<uint8_t, 8u> DoubleToBigEndian(double val) {
+  return internal::ToLittleEndian(ByteSwap(std::bit_cast<uint64_t>(val)));
+}
+
 }  // namespace base::numerics
 
 #endif  //  BASE_NUMERICS_BYTE_CONVERSIONS_H_

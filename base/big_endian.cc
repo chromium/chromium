@@ -144,30 +144,24 @@ bool BigEndianWriter::WriteBytes(const void* buf, size_t len) {
   return true;
 }
 
-template <typename T>
-bool BigEndianWriter::Write(T value) {
-  if (sizeof(T) > remaining()) {
-    return false;
-  }
-  WriteBigEndian<T>(ptr_, value);
-  ptr_ += sizeof(T);
-  return true;
-}
-
 bool BigEndianWriter::WriteU8(uint8_t value) {
-  return Write(value);
+  // TODO(danakj) this span constructor should be implicit.
+  return WriteFixedSpan(base::span(numerics::U8ToBigEndian(value)));
 }
 
 bool BigEndianWriter::WriteU16(uint16_t value) {
-  return Write(value);
+  // TODO(danakj) this span constructor should be implicit.
+  return WriteFixedSpan(base::span(numerics::U16ToBigEndian(value)));
 }
 
 bool BigEndianWriter::WriteU32(uint32_t value) {
-  return Write(value);
+  // TODO(danakj) this span constructor should be implicit.
+  return WriteFixedSpan(base::span(numerics::U32ToBigEndian(value)));
 }
 
 bool BigEndianWriter::WriteU64(uint64_t value) {
-  return Write(value);
+  // TODO(danakj) this span constructor should be implicit.
+  return WriteFixedSpan(base::span(numerics::U64ToBigEndian(value)));
 }
 
 }  // namespace base

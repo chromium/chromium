@@ -73,6 +73,9 @@ inline void ReadBigEndian(const uint8_t buf[], T* out) {
 
 // Write an integer (signed or unsigned) |val| to |buf| in Big Endian order.
 // Note: this loop is unrolled with -O1 and above.
+//
+// DEPRECATED: Use base::numerics::*ToBeBytes to convert primitives to big-
+// endian byte encoding.
 template <typename T>
 inline void WriteBigEndian(char buf[], T val) {
   static_assert(std::is_integral_v<T>, "T has to be an integral type.");
@@ -115,13 +118,14 @@ class BASE_EXPORT BigEndianReader {
   // not `N` bytes remaining in the buffer.
   template <size_t N>
   std::optional<span<const uint8_t, N>> ReadFixedSpan() {
-    std::optional<span<const uint8_t, N>> out;
     if (remaining() < N) {
-      return out;
+      return std::nullopt;
     }
-    out.emplace(ptr_, N);
-    ptr_ += N;
-    return out;
+    // TODO(danakj): Convert ptr_/end_ into a span.
+    auto s = UNSAFE_BUFFERS(base::span(&*ptr_, &*end_));
+    auto [consume, remain] = s.split_at<N>();
+    ptr_ = remain.data();
+    return {consume};
   }
 
   bool ReadU8(uint8_t* value);
@@ -164,11 +168,23 @@ class BASE_EXPORT BigEndianWriter {
   bool WriteU32(uint32_t value);
   bool WriteU64(uint64_t value);
 
- private:
-  // Hidden to promote type safety.
-  template <typename T>
-  bool Write(T v);
+  // Writes `N` bytes to the backing buffer. If there is not enough room, it
+  // writes nothing and returns false.
+  template <size_t N>
+  bool WriteFixedSpan(base::span<const uint8_t, N> bytes) {
+    if (remaining() < N) {
+      return false;
+    }
+    // TODO(danakj): Convert ptr_/end_ into a span.
+    auto s = UNSAFE_BUFFERS(base::span(&*ptr_, &*end_));
+    auto [write, remain] = s.split_at<N>();
+    base::as_writable_bytes(write).copy_from(bytes);
+    // TODO(danakj): Convert ptr_/end_ into a span.
+    ptr_ = remain.data();
+    return true;
+  }
 
+ private:
   raw_ptr<char, DanglingUntriaged | AllowPtrArithmetic> ptr_;
   raw_ptr<char, DanglingUntriaged | AllowPtrArithmetic> end_;
 };

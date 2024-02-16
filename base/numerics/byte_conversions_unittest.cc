@@ -181,4 +181,184 @@ TEST(NumericsTest, FromBigEndian) {
   }
 }
 
+TEST(NumericsTest, ToNativeEndian) {
+  // The implementation of ToNativeEndian and ToLittleEndian assumes the native
+  // endian is little. If support of big endian is desired, compile-time
+  // branches will need to be added to the implementation, and the test results
+  // will differ there (they would match ToBigEndian in this test).
+  static_assert(std::endian::native == std::endian::little);
+  {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = uint8_t{0x12u};
+    EXPECT_EQ(U8ToNativeEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToNativeEndian(val))>);
+    static_assert(U8ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = uint16_t{0x34'12u};
+    EXPECT_EQ(U16ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 2u>,
+                               decltype(U16ToNativeEndian(val))>);
+    static_assert(U16ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = uint32_t{0x78'56'34'12u};
+    EXPECT_EQ(U32ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(U32ToNativeEndian(val))>);
+    static_assert(U32ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = uint64_t{0x56'34'12'90'78'56'34'12u};
+    EXPECT_EQ(U64ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(U64ToNativeEndian(val))>);
+    static_assert(U64ToNativeEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr float val = 1.73782443614e+34f;
+    EXPECT_EQ(FloatToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(FloatToNativeEndian(val))>);
+    static_assert(FloatToNativeEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr double val = 1.84145159269283616391989849435e107;
+    EXPECT_EQ(DoubleToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(DoubleToNativeEndian(val))>);
+    static_assert(DoubleToNativeEndian(val) == bytes);
+  }
+}
+
+TEST(NumericsTest, ToLittleEndian) {
+  // The implementation of ToNativeEndian and ToLittleEndian assumes the native
+  // endian is little. If support of big endian is desired, compile-time
+  // branches will need to be added to the implementation, and the test results
+  // will differ there (they would match ToBigEndian in this test).
+  static_assert(std::endian::native == std::endian::little);
+  {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = uint8_t{0x12u};
+    EXPECT_EQ(U8ToLittleEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToLittleEndian(val))>);
+    static_assert(U8ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = uint16_t{0x34'12u};
+    EXPECT_EQ(U16ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 2u>,
+                               decltype(U16ToLittleEndian(val))>);
+    static_assert(U16ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = uint32_t{0x78'56'34'12u};
+    EXPECT_EQ(U32ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(U32ToLittleEndian(val))>);
+    static_assert(U32ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = uint64_t{0x56'34'12'90'78'56'34'12u};
+    EXPECT_EQ(U64ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(U64ToLittleEndian(val))>);
+    static_assert(U64ToLittleEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr float val = 1.73782443614e+34f;
+    EXPECT_EQ(FloatToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(FloatToLittleEndian(val))>);
+    static_assert(FloatToLittleEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr double val = 1.84145159269283616391989849435e107;
+    EXPECT_EQ(DoubleToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(DoubleToLittleEndian(val))>);
+    static_assert(DoubleToLittleEndian(val) == bytes);
+  }
+}
+
+TEST(NumericsTest, ToBigEndian) {
+  // The implementation of ToBigEndian assumes the native endian is little. If
+  // support of big endian is desired, compile-time branches will need to be
+  // added to the implementation, and the test results will differ there (they
+  // would match ToLittleEndian in this test).
+  static_assert(std::endian::native == std::endian::little);
+  {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = uint8_t{0x12u};
+    EXPECT_EQ(U8ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToBigEndian(val))>);
+    static_assert(U8ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = uint16_t{0x12'34u};
+    EXPECT_EQ(U16ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 2u>, decltype(U16ToBigEndian(val))>);
+    static_assert(U16ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = uint32_t{0x12'34'56'78u};
+    EXPECT_EQ(U32ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 4u>, decltype(U32ToBigEndian(val))>);
+    static_assert(U32ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = uint64_t{0x12'34'56'78'90'12'34'56u};
+    EXPECT_EQ(U64ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 8u>, decltype(U64ToBigEndian(val))>);
+    static_assert(U64ToBigEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr float val = 5.6904566139e-28f;
+    EXPECT_EQ(FloatToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 4u>, decltype(FloatToBigEndian(val))>);
+    static_assert(FloatToBigEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr double val = 5.62634909901491201382066931077e-221;
+    EXPECT_EQ(DoubleToBigEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(DoubleToBigEndian(val))>);
+    static_assert(DoubleToBigEndian(val) == bytes);
+  }
+}
+
 }  // namespace base::numerics

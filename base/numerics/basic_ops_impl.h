@@ -106,6 +106,30 @@ inline constexpr T FromLittleEndian(std::span<const uint8_t, sizeof(T)> bytes) {
   return val;
 }
 
+// Converts to a byte array from an integer.
+template <class T>
+  requires(std::is_unsigned_v<T> && std::is_integral_v<T>)
+inline constexpr std::array<uint8_t, sizeof(T)> ToLittleEndian(T val) {
+  auto bytes = std::array<uint8_t, sizeof(T)>();
+  if (std::is_constant_evaluated()) {
+    for (size_t i = 0u; i < sizeof(T); i += 1u) {
+      const auto last_byte = static_cast<uint8_t>(val & 0xff);
+      // The low bytes go to the front of the array in little endian.
+      bytes[i] = last_byte;
+      // If `val` is one byte, this shift would be UB. But it's also not needed
+      // since the loop will not run again.
+      if constexpr (sizeof(T) > 1u) {
+        val >>= 8u;
+      }
+    }
+  } else {
+    // SAFETY: `bytes` has sizeof(T) bytes, and `val` is of type `T` so has
+    // sizeof(T) bytes, and the two can not alias as `val` is a stack variable.
+    memcpy(bytes.data(), &val, sizeof(T));
+  }
+  return bytes;
+}
+
 }  // namespace base::numerics::internal
 
 #endif  //  BASE_NUMERICS_BASIC_OPS_IMPL_H_
