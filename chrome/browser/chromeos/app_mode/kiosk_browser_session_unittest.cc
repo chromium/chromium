@@ -7,19 +7,14 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
@@ -89,7 +84,6 @@ constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
 constexpr char kTestWebAppName1[] = "test_web_app_name1";
 constexpr char kTestWebAppName2[] = "test_web_app_name2";
 constexpr char kTestUrl[] = "www.test.com";
-constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kTestWebAppUrl[] = "https://install.url";
@@ -104,32 +98,6 @@ constexpr char kPepperPluginFilePath2[] = "/path/to/pepper_plugin2";
 constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
 constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-// By default death tests that run in the "threadsafe" mode (the default for
-// chromium test suites) fork and re-run the test, when
-// ASSERT_DEATH/EXPECT_DEATH is invoked. However, test event listeners are not
-// notified of this. Currently the chrome unit test suite uses a test event
-// listener to set up a `TestingBrowserProcess` that unit tests can rely on.
-// This means that the "main process" of the death test will have a non-null
-// TestingBrowserProcess instance but the forked "child process" will have a
-// null TestingBrowserProcess. As the test actually depends on a
-// TestingBrowserProcess beign present, ensure that it is present in any case.
-class DeathTestBase {
- public:
-  DeathTestBase() {
-    if (!TestingBrowserProcess::GetGlobal()) {
-      // The child process doesn not have a `TestingBrowserProcess`, so create
-      // it here.
-      TestingBrowserProcess::CreateInstance();
-    }
-
-    // Setting the timezone to a well-known timezone to prevent the child
-    // process from crashing.
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    env->SetVar("TZ", "UTC");
-  }
-  ~DeathTestBase() { TestingBrowserProcess::TearDownAndDeleteInstance(); }
-};
 
 // This class constructs and owns the `Browser` object. It assumes that the
 // `Browser` uses a `TestBrowserWindow`. The class adds a default tab to the
@@ -167,11 +135,6 @@ class FakeBrowser {
     return browser_->exclusive_access_manager()
         ->fullscreen_controller()
         ->IsFullscreenForBrowser();
-  }
-
-  void BlockBrowserFromClosing() {
-    static_cast<TestBrowserWindow*>(browser_->window())
-        ->SetCloseCallback(base::OnceClosure());
   }
 
  private:
@@ -335,8 +298,11 @@ template <typename KioskBrowserSessionParamType = KioskSessionRestartTestCase>
 class KioskBrowserSessionBaseTest
     : public ::testing::TestWithParam<KioskBrowserSessionParamType> {
  public:
-  KioskBrowserSessionBaseTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
+  explicit KioskBrowserSessionBaseTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_{time_source},
+        local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())),
         testing_profile_manager_(TestingBrowserProcess::GetGlobal(),
                                  local_state_.get()) {}
@@ -363,6 +329,10 @@ class KioskBrowserSessionBaseTest
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
   TestingProfile* profile() { return profile_; }
+
+  TestingProfileManager& testing_profile_manager() {
+    return testing_profile_manager_;
+  }
 
   base::HistogramTester* histogram() { return &histogram_; }
 
@@ -459,8 +429,7 @@ class KioskBrowserSessionBaseTest
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -646,14 +615,6 @@ TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
 
   EXPECT_TRUE(
       DidSessionCloseNewWindow(*CreateBrowserForWebApp(kTestWebAppName1)));
-}
-
-TEST_F(KioskBrowserSessionTest, DoNotCrashIfBrowserClosedSuccessfully) {
-  StartWebKioskSession(kTestWebAppName1);
-
-  auto browser = CreateBrowserForWebApp(kTestWebAppName1);
-
-  task_environment()->FastForwardBy(kCloseBrowserTimeout);
 }
 
 TEST_F(KioskBrowserSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
@@ -1513,20 +1474,6 @@ TEST_F(KioskBrowserSessionTest, OnPluginHung) {
   EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-class KioskBrowserSessionDeathTest : public DeathTestBase,
-                                     public KioskBrowserSessionTest {};
-
-TEST_F(KioskBrowserSessionDeathTest, CrashIfBrowserDidNotClose) {
-  StartWebKioskSession(kTestWebAppName1);
-
-  auto browser = CreateBrowserForWebApp(kTestWebAppName1);
-  browser->BlockBrowserFromClosing();
-
-  EXPECT_CHECK_DEATH_WITH(
-      task_environment()->FastForwardBy(kCloseBrowserTimeout),
-      "Failed to close unexpected browser window.");
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
