@@ -179,4 +179,9 @@ public class TabUiFeatureUtilities {
         }
         return sTabDragNonSplitManufacturerAllowlist;
     }
+
+    /** Returns if the tab group pane should be displayed in the hub. */
+    public static boolean isTabGroupPaneEnabled() {
+        return ChromeFeatureList.sTabGroupPaneAndroid.isEnabled();
+    }
 }

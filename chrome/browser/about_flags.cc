@@ -9848,6 +9848,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDataSharingAndroid)},
 
+    {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
+     flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupPaneAndroid)},
+
     {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},

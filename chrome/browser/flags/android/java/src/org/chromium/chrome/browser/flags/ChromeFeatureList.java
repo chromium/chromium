@@ -455,6 +455,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS =
             "SyncShowIdentityErrorsForSignedInUsers";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
+    public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
     public static final String TAB_GROUP_PARITY_ANDROID = "TabGroupParityAndroid";
     public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
@@ -627,6 +628,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
+    public static final CachedFlag sTabGroupPaneAndroid =
+            newCachedFlag(TAB_GROUP_PANE_ANDROID, false);
     public static final CachedFlag sTabGroupParityAndroid =
             newCachedFlag(TAB_GROUP_PARITY_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
@@ -728,6 +731,7 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceWithAccessibility,
                     sSurfacePolish,
                     sTabDragDropAsWindowAndroid,
+                    sTabGroupPaneAndroid,
                     sTabGroupParityAndroid,
                     sTabLinkDragDropAndroid,
                     sTabResumptionModuleAndroid,
