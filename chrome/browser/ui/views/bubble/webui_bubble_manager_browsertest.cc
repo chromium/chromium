@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 }
 
 // Verifies that the warm-up levels are correctly recorded.
-IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, WarmupLevel) {
+// TODO(crbug.com/325316150): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   // Use the spare renderer if there is one.
   EXPECT_NE(content::RenderProcessHost::GetSpareRenderProcessHostForTesting(),
             nullptr);
