@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "base/functional/bind.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -31,6 +31,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
@@ -72,6 +73,16 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
       if (views::Button::AsButton(child)) {
         PinnedActionToolbarButton* button =
             static_cast<PinnedActionToolbarButton*>(child);
+#if BUILDFLAG(IS_MAC)
+        // TODO(crbug.com/1045212): Query the model on whether this button
+        // should be visible since buttons in the toolbar are only removed after
+        // animations finish running, which is not reliable in unit tests on
+        // Mac.
+        if (!container()->IsActionPinned(button->GetActionId()) &&
+            !container()->IsActionPoppedOutForTesting(button->GetActionId())) {
+          continue;
+        }
+#endif
         result.push_back(button);
       }
     }
@@ -140,6 +151,15 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     }
   }
 
+  void WaitForAnimations() {
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
+    // of support in unit tests. Therefore this is a no-op.
+#else
+    views::test::WaitForAnimatingLayoutManager(container());
+#endif
+  }
+
   PinnedToolbarActionsContainer* container() {
     return browser_view()->toolbar()->pinned_toolbar_actions_container();
   }
@@ -159,6 +179,20 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 };
+
+TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
+  // Verify margins are correctly set.
+  ASSERT_EQ(container()
+                ->GetTargetLayoutManager()
+                ->GetDefaultForTesting(views::kMarginsKey)
+                ->left(),
+            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+  ASSERT_EQ(container()
+                ->GetTargetLayoutManager()
+                ->GetDefaultForTesting(views::kMarginsKey)
+                ->right(),
+            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+}
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
   actions::ActionItem* browser_action_item =
@@ -191,6 +225,7 @@ TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
             1);
   // Verify unpinning an action removes a button.
   model()->UpdatePinnedState(actions::kActionCut, false);
+  WaitForAnimations();
   pinned_buttons = GetChildToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 0u);
 }
@@ -218,6 +253,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
   ASSERT_EQ(toolbar_buttons.size(), 1u);
   // Verify deactivating a button removes it from popped out buttons.
   container()->UpdateActionState(actions::kActionCut, false);
+  WaitForAnimations();
   CheckIsPoppedOut(actions::kActionCut, false);
   CheckIsPinned(actions::kActionCut, false);
   toolbar_buttons = GetChildToolbarButtons();
@@ -249,6 +285,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
   ASSERT_EQ(toolbar_buttons.size(), 1u);
   // Unpin active button and verify state.
   model()->UpdatePinnedState(actions::kActionCut, false);
+  WaitForAnimations();
   CheckIsPoppedOut(actions::kActionCut, true);
   CheckIsPinned(actions::kActionCut, false);
   toolbar_buttons = GetChildToolbarButtons();
@@ -276,6 +313,7 @@ TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
   // Make kActionCut popped out instead of pinned and verify order.
   container()->UpdateActionState(actions::kActionCut, true);
   model()->UpdatePinnedState(actions::kActionCut, false);
+  WaitForAnimations();
   CheckIsPoppedOut(actions::kActionCut, true);
   CheckIsPinned(actions::kActionCut, false);
   toolbar_buttons = GetChildToolbarButtons();
@@ -356,6 +394,7 @@ TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(drop_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
+  WaitForAnimations();
 
   // Verify the order gets updated in the ui.
   toolbar_buttons = GetChildToolbarButtons();
@@ -384,6 +423,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContextMenuTest) {
       pinned_buttons[0]->menu_model()->GetLabelAt(0),
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
   pinned_buttons[0]->ExecuteCommand(IDC_UPDATE_SIDE_PANEL_PIN_STATE, 0);
+  WaitForAnimations();
   pinned_buttons = GetChildToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 0u);
   // Callback for pop out button should pin the action.
@@ -429,6 +469,7 @@ TEST_F(PinnedToolbarActionsContainerTest, UpdatesFromSyncUpdateContainer) {
 
   // Simulate an update where an action is removed from the pinned actions list.
   UpdatePref({actions::kActionPaste, actions::kActionCopy});
+  WaitForAnimations();
   toolbar_buttons = GetChildToolbarButtons();
   ASSERT_EQ(toolbar_buttons.size(), 2u);
   ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionPaste);
@@ -436,6 +477,7 @@ TEST_F(PinnedToolbarActionsContainerTest, UpdatesFromSyncUpdateContainer) {
 
   // Simulate an update where an action is moved in the pinned actions list.
   UpdatePref({actions::kActionCopy, actions::kActionPaste});
+  WaitForAnimations();
   toolbar_buttons = GetChildToolbarButtons();
   ASSERT_EQ(toolbar_buttons.size(), 2u);
   ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCopy);

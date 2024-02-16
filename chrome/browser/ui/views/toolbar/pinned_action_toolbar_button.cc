@@ -32,6 +32,8 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
       browser_(browser),
       action_id_(action_id),
       container_(container) {
+  SetProperty(views::kElementIdentifierKey,
+              kPinnedActionToolbarButtonElementId);
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(container);

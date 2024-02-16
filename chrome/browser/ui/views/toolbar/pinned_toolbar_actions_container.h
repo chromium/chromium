@@ -27,14 +27,12 @@ class ActionViewController;
 }
 
 // Container for pinned actions shown in the toolbar.
-// TODO(crbug.com/1514477): Re-enable animation after the race condition issue
-// is addressed.
 class PinnedToolbarActionsContainer
-    : public views::View,
+    : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
       public views::DragController,
       public ToolbarController::PinnedActionsDelegate {
-  METADATA_HEADER(PinnedToolbarActionsContainer, views::View)
+  METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
   explicit PinnedToolbarActionsContainer(BrowserView* browser_view);
@@ -46,10 +44,11 @@ class PinnedToolbarActionsContainer
   void UpdateActionState(actions::ActionId id, bool is_active);
   void UpdateDividerFlexSpecification();
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
-
-  void UpdateAllIcons();
   gfx::Size CustomFlexRule(const views::View* view,
                            const views::SizeBounds& size_bounds);
+
+  // ToolbarIconContainerView:
+  void UpdateAllIcons() override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -87,6 +86,7 @@ class PinnedToolbarActionsContainer
   bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override;
 
   bool IsActionPinned(const actions::ActionId& id);
+  bool IsActionPoppedOutForTesting(const actions::ActionId& id);
 
  private:
   friend class PinnedSidePanelInteractiveTest;
@@ -114,6 +114,7 @@ class PinnedToolbarActionsContainer
   void UpdateViews();
 
   void RemoveButton(PinnedActionToolbarButton* button);
+  void SetActionButtonIconVisibility(actions::ActionId id, bool visible);
 
   // Moves the dragged action `action_id`.
   void MovePinnedAction(
