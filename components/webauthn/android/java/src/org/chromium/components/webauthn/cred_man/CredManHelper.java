@@ -64,7 +64,7 @@ public class CredManHelper {
     private boolean mIsCrossOrigin;
     private boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
-    private BridgeProvider mBridgeProvider;
+    private WebauthnBrowserBridge.Provider mBridgeProvider;
     private byte[] mClientDataJson;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
     private Context mContext;
@@ -73,11 +73,8 @@ public class CredManHelper {
     private RenderFrameHost mFrameHost;
     private Runnable mNoCredentialsFallback;
 
-    public interface BridgeProvider {
-        WebauthnBrowserBridge getBridge();
-    }
-
-    public CredManHelper(BridgeProvider bridgeProvider, boolean playServicesAvailable) {
+    public CredManHelper(
+            WebauthnBrowserBridge.Provider bridgeProvider, boolean playServicesAvailable) {
         mMetricsHelper = new CredManMetricsHelper();
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;

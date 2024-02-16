@@ -105,8 +105,8 @@ public class CredManHelperRobolectricTest {
     @Mock private CredManGetCredentialRequestHelper mCredManGetCredentialRequestHelper;
     @Mock private GetCredentialRequest mGetCredentialRequest;
 
-    private CredManHelper.BridgeProvider mBridgeProvider =
-            new CredManHelper.BridgeProvider() {
+    private WebauthnBrowserBridge.Provider mBridgeProvider =
+            new WebauthnBrowserBridge.Provider() {
                 @Override
                 public WebauthnBrowserBridge getBridge() {
                     return mBrowserBridge;

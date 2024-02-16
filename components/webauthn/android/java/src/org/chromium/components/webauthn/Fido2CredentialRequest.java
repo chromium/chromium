@@ -58,7 +58,7 @@ import java.util.List;
 /** Uses the Google Play Services Fido2 APIs. Holds the logic of each request. */
 @JNINamespace("webauthn")
 public class Fido2CredentialRequest
-        implements Callback<Pair<Integer, Intent>>, CredManHelper.BridgeProvider {
+        implements Callback<Pair<Integer, Intent>>, WebauthnBrowserBridge.Provider {
     private static final String TAG = "Fido2Request";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
@@ -537,7 +537,7 @@ public class Fido2CredentialRequest
                 mBarrier.onFido2ApiCancelled();
                 break;
             case WAITING_FOR_SELECTION:
-                mBrowserBridge.cleanupRequest(frameHost);
+                getBridge().cleanupRequest(frameHost);
                 mConditionalUiState = ConditionalUiState.NONE;
                 mBarrier.onFido2ApiCancelled();
                 break;
@@ -707,10 +707,6 @@ public class Fido2CredentialRequest
             return;
         }
 
-        if (mBrowserBridge == null) {
-            mBrowserBridge = new WebauthnBrowserBridge();
-        }
-
         Runnable hybridCallback = null;
         if (GmsCoreUtils.isHybridClientApiSupported()) {
             hybridCallback =
@@ -720,14 +716,18 @@ public class Fido2CredentialRequest
         }
 
         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
-        mBrowserBridge.onCredentialsDetailsListReceived(
-                mFrameHost,
-                discoverableCredentials,
-                isConditionalRequest,
-                (selectedCredentialId) ->
-                        maybeDispatchGetAssertionRequest(
-                                options, callerOriginString, clientDataHash, selectedCredentialId),
-                hybridCallback);
+        getBridge()
+                .onCredentialsDetailsListReceived(
+                        mFrameHost,
+                        discoverableCredentials,
+                        isConditionalRequest,
+                        (selectedCredentialId) ->
+                                maybeDispatchGetAssertionRequest(
+                                        options,
+                                        callerOriginString,
+                                        clientDataHash,
+                                        selectedCredentialId),
+                        hybridCallback);
     }
 
     /**
@@ -866,7 +866,7 @@ public class Fido2CredentialRequest
                     // An empty credential ID means an error from native code, which can happen if
                     // the embedder does not support Conditional UI.
                     Log.e(TAG, "Empty credential ID from account selection.");
-                    mBrowserBridge.cleanupRequest(mFrameHost);
+                    getBridge().cleanupRequest(mFrameHost);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -1037,7 +1037,7 @@ public class Fido2CredentialRequest
 
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     mConditionalUiState = ConditionalUiState.NONE;
-                    mBrowserBridge.cleanupRequest(mFrameHost);
+                    getBridge().cleanupRequest(mFrameHost);
                     mBarrier.onFido2ApiCancelled();
                 } else {
                     // The user can try again by selecting another conditional UI credential.
@@ -1046,7 +1046,7 @@ public class Fido2CredentialRequest
                 return;
             }
             mConditionalUiState = ConditionalUiState.NONE;
-            mBrowserBridge.cleanupRequest(mFrameHost);
+            getBridge().cleanupRequest(mFrameHost);
         }
 
         if (response == null) {
@@ -1189,6 +1189,9 @@ public class Fido2CredentialRequest
 
     @Override
     public WebauthnBrowserBridge getBridge() {
+        if (!isChrome()) {
+            return null;
+        }
         if (mBrowserBridge == null) {
             mBrowserBridge = new WebauthnBrowserBridge();
         }
