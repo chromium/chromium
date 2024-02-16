@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.HashSet;
@@ -63,6 +65,21 @@ public interface ReadAloudReadabilityHooks {
      * @param callback callback to get result
      */
     default void isPageReadable(Tab tab, String url, ReadabilityCallback callback) {}
+
+    /**
+     * Checks whether a given page is readable.
+     *
+     * @param tab tab of a page to check
+     * @param url url of a page to check
+     * @param translateLanguage Target language for translation, or null if the page is not
+     *     translated.
+     * @param callback callback to get result
+     */
+    default void isPageReadable(
+            Tab tab,
+            String url,
+            @Nullable String translateLanguage,
+            ReadabilityCallback callback) {}
 
     /**
      * Get the languages that are compatible with the voices.
