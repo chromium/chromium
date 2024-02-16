@@ -433,6 +433,66 @@ class FrameSchedulerImplTest : public testing::Test {
       task_environment_.FastForwardBy(aligned - now);
   }
 
+  // Post and run tasks with delays of 0ms, 50ms, 100ms, 150ms and 200ms. Stores
+  // run times in `run_times`.
+  void PostAndRunTasks50MsInterval(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      std::vector<base::TimeTicks>* run_times) {
+    for (int i = 0; i < 5; i++) {
+      task_runner->PostDelayedTask(FROM_HERE,
+                                   base::BindOnce(&RecordRunTime, run_times),
+                                   base::Milliseconds(50) * i);
+    }
+    task_environment_.FastForwardBy(base::Seconds(5));
+  }
+
+  // Post and run tasks. Expect no alignment.
+  void PostTasks_ExpectNoAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Seconds(1));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(start, start + base::Milliseconds(50),
+                                     start + base::Milliseconds(100),
+                                     start + base::Milliseconds(150),
+                                     start + base::Milliseconds(200)));
+  }
+
+  // Post and run tasks. Expect 32ms alignment.
+  void PostTasks_Expect32msAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Milliseconds(32));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times,
+                testing::ElementsAre(start, start + base::Milliseconds(64),
+                                     start + base::Milliseconds(128),
+                                     start + base::Milliseconds(160),
+                                     start + base::Milliseconds(224)));
+  }
+
+  // Post and run tasks. Expect 1 second alignment.
+  void PostTasks_Expect1sAlignment(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    FastForwardToAlignedTime(base::Seconds(1));
+    const base::TimeTicks start = base::TimeTicks::Now();
+
+    std::vector<base::TimeTicks> run_times;
+    PostAndRunTasks50MsInterval(task_runner, &run_times);
+
+    EXPECT_THAT(run_times, testing::ElementsAre(start, start + base::Seconds(1),
+                                                start + base::Seconds(1),
+                                                start + base::Seconds(1),
+                                                start + base::Seconds(1)));
+  }
+
  protected:
   scoped_refptr<MainThreadTaskQueue> throttleable_task_queue() {
     return throttleable_task_queue_;
@@ -533,8 +593,6 @@ class FrameSchedulerImplTest : public testing::Test {
         /*is_web_history_inert_commit=*/false, navigation_type,
         {GetUnreportedTaskTime()});
   }
-
-  base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
 
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -3038,25 +3096,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   frame_scheduler_->SetVisibleAreaLarge(false);
   frame_scheduler_->SetHadUserActivation(false);
 
-  // Snap the time to a multiple of 32ms.
-  FastForwardToAlignedTime(base::Milliseconds(32));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(64),
-                                   start + base::Milliseconds(128),
-                                   start + base::Milliseconds(160),
-                                   start + base::Milliseconds(224)));
+  PostTasks_Expect32msAlignment(task_runner);
 }
 
 TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
@@ -3070,25 +3110,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   frame_scheduler_->SetVisibleAreaLarge(false);
   frame_scheduler_->SetHadUserActivation(false);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000)));
+  PostTasks_Expect1sAlignment(task_runner);
 }
 
 TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
@@ -3103,25 +3125,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   frame_scheduler_->SetVisibleAreaLarge(true);
   frame_scheduler_->SetHadUserActivation(false);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000),
-                                   start + base::Milliseconds(1000)));
+  PostTasks_Expect1sAlignment(task_runner);
 }
 
 TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
@@ -3135,26 +3139,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   frame_scheduler_->SetVisibleAreaLarge(true);
   frame_scheduler_->SetHadUserActivation(false);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  // No throttling for tasks in large cross-origin frame.
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(50),
-                                   start + base::Milliseconds(100),
-                                   start + base::Milliseconds(150),
-                                   start + base::Milliseconds(200)));
+  PostTasks_ExpectNoAlignment(task_runner);
 }
 
 TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
@@ -3168,26 +3153,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   frame_scheduler_->SetVisibleAreaLarge(false);
   frame_scheduler_->SetHadUserActivation(true);
 
-  // Snap the time to a multiple of 1 second.
-  FastForwardToAlignedTime(base::Seconds(1));
-  const base::TimeTicks start = base::TimeTicks::Now();
-
-  std::vector<base::TimeTicks> run_times;
-  for (int i = 0; i < 5; i++) {
-    task_runner->PostDelayedTask(FROM_HERE,
-                                 base::BindOnce(&RecordRunTime, &run_times),
-                                 base::Milliseconds(50) * i);
-  }
-
-  // Make posted tasks run.
-  task_environment_.FastForwardBy(base::Seconds(5));
-
-  // No throttling for tasks in cross-origin frame with user activation.
-  EXPECT_THAT(run_times,
-              testing::ElementsAre(start, start + base::Milliseconds(50),
-                                   start + base::Milliseconds(100),
-                                   start + base::Milliseconds(150),
-                                   start + base::Milliseconds(200)));
+  PostTasks_ExpectNoAlignment(task_runner);
 }
 
 TEST_F(FrameSchedulerImplTest, DeleteSoonUsesBackupTaskRunner) {
