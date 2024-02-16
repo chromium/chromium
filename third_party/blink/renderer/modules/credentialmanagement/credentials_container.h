@@ -13,7 +13,6 @@ namespace blink {
 class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
-class IdentityRequestOptions;
 class ExceptionState;
 class ScriptPromise;
 class ScriptState;
@@ -34,9 +33,6 @@ class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
                                ExceptionState&) = 0;
   virtual ScriptPromise preventSilentAccess(ScriptState*) = 0;
 
-  virtual ScriptPromise requestIdentity(ScriptState*,
-                                        const blink::IdentityRequestOptions*,
-                                        ExceptionState&) = 0;
   void Trace(Visitor*) const override;
 };
 

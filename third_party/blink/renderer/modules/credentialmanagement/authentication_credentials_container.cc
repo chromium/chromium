@@ -1962,28 +1962,6 @@ ScriptPromise AuthenticationCredentialsContainer::create(
   return promise;
 }
 
-ScriptPromise AuthenticationCredentialsContainer::requestIdentity(
-    ScriptState* script_state,
-    const blink::IdentityRequestOptions* options,
-    ExceptionState& exception_state) {
-  auto* request = CredentialRequestOptions::Create();
-  if (options->hasSignal()) {
-    request->setSignal(options->signal());
-  }
-  auto* identity = IdentityCredentialRequestOptions::Create();
-  request->setIdentity(identity);
-  HeapVector<Member<IdentityProviderRequestOptions>> providers;
-
-  for (const auto& provider : options->providers()) {
-    auto* idp = IdentityProviderRequestOptions::Create();
-    idp->setHolder(provider);
-    providers.emplace_back(idp);
-  }
-
-  identity->setProviders(providers);
-  return get(script_state, request, exception_state);
-}
-
 ScriptPromise AuthenticationCredentialsContainer::preventSilentAccess(
     ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);

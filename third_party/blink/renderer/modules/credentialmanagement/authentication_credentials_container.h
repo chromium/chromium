@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_options.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -43,10 +42,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
                        const CredentialCreationOptions*,
                        ExceptionState&) override;
   ScriptPromise preventSilentAccess(ScriptState*) override;
-
-  ScriptPromise requestIdentity(ScriptState*,
-                                const blink::IdentityRequestOptions*,
-                                ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 
