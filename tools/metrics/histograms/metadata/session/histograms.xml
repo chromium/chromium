@@ -1047,7 +1047,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
     expires_after="2024-07-14">
-  <owner>chrisha@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -1063,13 +1063,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2022-10-23">
-  <owner>chrisha@chromium.org</owner>
+    enum="SessionRestoreFinishReason" expires_after="2024-07-14">
+  <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The reason for which attempt to record
     SessionRestore.ForegroundTabFirstPaint4 was deemed complete. Logged once per
     session restore.
+
+    Warning: this histogram was expired from 2022-10-23 to 2024-02-15; data may
+    be missing.
   </summary>
 </histogram>
 
