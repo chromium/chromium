@@ -75,7 +75,7 @@ testSetAttributeDirectly('true', undefined, 'true', 'true', 'Test setting the `w
 testSetAttributeDirectly(undefined, 'true', 'true', 'true', 'Test setting the `writingsuggestions` content attribute to `true` directly on the target element.');
 testSetAttributeDirectly(true, undefined, 'true', 'true', 'Test setting the `writingsuggestions` IDL attribute to boolean `true` directly on the target element.');
 testSetAttributeDirectly(undefined, true, 'true', 'true', 'Test setting the `writingsuggestions` content attribute to boolean `true` directly on the target element.');
-testSetAttributeDirectly('TrUe', undefined, 'true', 'true', 'Test setting the `writingsuggestions` IDL attribute to `TrUe` directly on the target element.');
+testSetAttributeDirectly('TrUe', undefined, 'true', 'TrUe', 'Test setting the `writingsuggestions` IDL attribute to `TrUe` directly on the target element.');
 testSetAttributeDirectly(undefined, 'TrUe', 'true', 'TrUe', 'Test setting the `writingsuggestions` content attribute to `TrUe` directly on the target element.');
 
 // Test setting either the `writingsuggestions` IDL or content attribute to some variation of 'false' directly on the target element.
@@ -83,15 +83,15 @@ testSetAttributeDirectly('false', undefined, 'false', 'false', 'Test setting the
 testSetAttributeDirectly(undefined, 'false', 'false', 'false', 'Test setting the `writingsuggestions` content attribute to `false` directly on the target element.');
 testSetAttributeDirectly(false, undefined, 'false', 'false', 'Test setting the `writingsuggestions` IDL attribute to boolean `false` directly on the target element.');
 testSetAttributeDirectly(undefined, false, 'false', 'false', 'Test setting the `writingsuggestions` content attribute to boolean `false` directly on the target element.');
-testSetAttributeDirectly('FaLsE', undefined, 'false', 'false', 'Test setting the `writingsuggestions` IDL attribute to `FaLsE` directly on the target element.');
+testSetAttributeDirectly('FaLsE', undefined, 'false', 'FaLsE', 'Test setting the `writingsuggestions` IDL attribute to `FaLsE` directly on the target element.');
 testSetAttributeDirectly(undefined, 'FaLsE', 'false', 'FaLsE', 'Test setting the `writingsuggestions` content attribute to `FaLsE` directly on the target element.');
 
 // Test setting either the `writingsuggestions` IDL or content attribute to the empty string directly on the target element.
-testSetAttributeDirectly('', undefined, 'true', 'true', 'Test setting the `writingsuggestions` IDL attribute to the empty string directly on the target element.');
+testSetAttributeDirectly('', undefined, 'true', '', 'Test setting the `writingsuggestions` IDL attribute to the empty string directly on the target element.');
 testSetAttributeDirectly(undefined, '', 'true', '', 'Test setting the `writingsuggestions` content attribute to the empty string directly on the target element.');
 
 // Test setting either the `writingsuggestions` IDL or content attribute to an invalid value directly on the target element.
-testSetAttributeDirectly('foo', undefined, 'true', 'true', 'Test setting the `writingsuggestions` IDL attribute to an invalid value directly on the target element.');
+testSetAttributeDirectly('foo', undefined, 'true', 'foo', 'Test setting the `writingsuggestions` IDL attribute to an invalid value directly on the target element.');
 testSetAttributeDirectly(undefined, 'foo', 'true', 'foo', 'Test setting the `writingsuggestions` content attribute to an invalid value directly on the target element.');
 
 // Test setting neither the `writingsuggestions` IDL nor content attribute directly on the target element.

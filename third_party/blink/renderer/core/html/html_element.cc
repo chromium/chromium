@@ -3210,10 +3210,7 @@ AtomicString HTMLElement::writingSuggestions() const {
 
 void HTMLElement::setWritingSuggestions(const AtomicString& value) {
   CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
-  setAttribute(html_names::kWritingsuggestionsAttr,
-               EqualIgnoringASCIICase(value, keywords::kFalse)
-                   ? keywords::kFalse
-                   : keywords::kTrue);
+  setAttribute(html_names::kWritingsuggestionsAttr, value);
 }
 
 }  // namespace blink
