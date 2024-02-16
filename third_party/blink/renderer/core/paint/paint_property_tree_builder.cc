@@ -809,7 +809,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *To<Element>(box.GetNode())->GetAnchorPositionScrollData();
       gfx::Vector2dF translation_offset =
-          -anchor_position_scroll_data.AccumulatedScrollOffset();
+          -anchor_position_scroll_data.AccumulatedOffset();
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -832,17 +832,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      state.anchor_position_scrollers_data =
-          std::make_unique<cc::AnchorPositionScrollersData>();
-      state.anchor_position_scrollers_data->scroll_container_ids =
+      state.anchor_position_scroll_data =
+          std::make_unique<cc::AnchorPositionScrollData>();
+      state.anchor_position_scroll_data->adjustment_container_ids =
           std::vector<CompositorElementId>(
-              anchor_position_scroll_data.ScrollContainerIds().begin(),
-              anchor_position_scroll_data.ScrollContainerIds().end());
-      state.anchor_position_scrollers_data->accumulated_scroll_origin =
+              anchor_position_scroll_data.AdjustmentContainerIds().begin(),
+              anchor_position_scroll_data.AdjustmentContainerIds().end());
+      state.anchor_position_scroll_data->accumulated_scroll_origin =
           anchor_position_scroll_data.AccumulatedScrollOrigin();
-      state.anchor_position_scrollers_data->needs_scroll_adjustment_in_x =
+      state.anchor_position_scroll_data->needs_scroll_adjustment_in_x =
           anchor_position_scroll_data.NeedsScrollAdjustmentInX();
-      state.anchor_position_scrollers_data->needs_scroll_adjustment_in_y =
+      state.anchor_position_scroll_data->needs_scroll_adjustment_in_y =
           anchor_position_scroll_data.NeedsScrollAdjustmentInY();
 
       OnUpdateTransform(properties_->UpdateAnchorPositionScrollTranslation(

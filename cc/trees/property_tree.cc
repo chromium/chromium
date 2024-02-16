@@ -40,23 +40,13 @@ void AnimationUpdateOnMissingPropertyNodeUMALog(bool missing_property_node) {
       missing_property_node);
 }
 
-AnchorPositionScrollersData::AnchorPositionScrollersData() = default;
-AnchorPositionScrollersData::~AnchorPositionScrollersData() = default;
-AnchorPositionScrollersData::AnchorPositionScrollersData(
-    const AnchorPositionScrollersData&) = default;
+AnchorPositionScrollData::AnchorPositionScrollData() = default;
+AnchorPositionScrollData::~AnchorPositionScrollData() = default;
+AnchorPositionScrollData::AnchorPositionScrollData(
+    const AnchorPositionScrollData&) = default;
 
-bool AnchorPositionScrollersData::operator==(
-    const AnchorPositionScrollersData& other) const {
-  return accumulated_scroll_origin == other.accumulated_scroll_origin &&
-         scroll_container_ids == other.scroll_container_ids &&
-         needs_scroll_adjustment_in_x == other.needs_scroll_adjustment_in_x &&
-         needs_scroll_adjustment_in_y == other.needs_scroll_adjustment_in_y;
-}
-
-bool AnchorPositionScrollersData::operator!=(
-    const AnchorPositionScrollersData& other) const {
-  return !operator==(other);
-}
+bool AnchorPositionScrollData::operator==(
+    const AnchorPositionScrollData& other) const = default;
 
 template <typename T>
 PropertyTree<T>::PropertyTree(PropertyTrees* property_trees)
@@ -160,7 +150,7 @@ void TransformTree::clear() {
   cached_data_.clear();
   cached_data_.push_back(TransformCachedNodeData());
   sticky_position_data_.clear();
-  anchor_position_scrollers_data_.clear();
+  anchor_position_scroll_data_.clear();
 
 #if DCHECK_IS_ON()
   DCHECK(TransformTree() == *this);
@@ -209,7 +199,7 @@ void TransformTree::UpdateTransforms(
   DCHECK(parent_node);
   // TODO(flackr): Only dirty when scroll offset changes.
   if (node->sticky_position_constraint_id >= 0 ||
-      node->anchor_position_scrollers_data_id >= 0 ||
+      node->anchor_position_scroll_data_id >= 0 ||
       node->needs_local_transform_update || node->should_undo_overscroll) {
     UpdateLocalTransform(node, viewport_property_ids);
   } else {
@@ -475,37 +465,33 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   return gfx::ToRoundedVector2d(sticky_offset);
 }
 
-AnchorPositionScrollersData& TransformTree::EnsureAnchorPositionScrollersData(
+AnchorPositionScrollData& TransformTree::EnsureAnchorPositionScrollData(
     int node_id) {
   TransformNode* node = Node(node_id);
-  if (node->anchor_position_scrollers_data_id == -1) {
-    node->anchor_position_scrollers_data_id =
-        anchor_position_scrollers_data_.size();
-    anchor_position_scrollers_data_.push_back(AnchorPositionScrollersData());
+  if (node->anchor_position_scroll_data_id == -1) {
+    node->anchor_position_scroll_data_id = anchor_position_scroll_data_.size();
+    anchor_position_scroll_data_.emplace_back();
   }
-  return anchor_position_scrollers_data_
-      [node->anchor_position_scrollers_data_id];
+  return anchor_position_scroll_data_[node->anchor_position_scroll_data_id];
 }
 
-const AnchorPositionScrollersData*
-TransformTree::GetAnchorPositionScrollersData(int node_id) const {
+const AnchorPositionScrollData* TransformTree::GetAnchorPositionScrollData(
+    int node_id) const {
   const TransformNode* node = Node(node_id);
-  if (node->anchor_position_scrollers_data_id == -1) {
+  if (node->anchor_position_scroll_data_id == -1) {
     return nullptr;
   }
-  return &anchor_position_scrollers_data_
-      [node->anchor_position_scrollers_data_id];
+  return &anchor_position_scroll_data_[node->anchor_position_scroll_data_id];
 }
 
-gfx::Vector2dF TransformTree::AnchorPositionScrollOffset(TransformNode* node) {
-  const AnchorPositionScrollersData* data =
-      GetAnchorPositionScrollersData(node->id);
+gfx::Vector2dF TransformTree::AnchorPositionOffset(TransformNode* node) {
+  const AnchorPositionScrollData* data = GetAnchorPositionScrollData(node->id);
   if (!data)
     return gfx::Vector2dF();
-  gfx::Vector2dF accumulated_scroll_offset(0, 0);
-  for (ElementId scroller_id : data->scroll_container_ids) {
+  gfx::Vector2dF accumulated_offset(0, 0);
+  for (ElementId container_id : data->adjustment_container_ids) {
     const ScrollNode* scroll_node =
-        property_trees()->scroll_tree().FindNodeFromElementId(scroller_id);
+        property_trees()->scroll_tree().FindNodeFromElementId(container_id);
     if (!scroll_node) {
       continue;
     }
@@ -513,11 +499,11 @@ gfx::Vector2dF TransformTree::AnchorPositionScrollOffset(TransformNode* node) {
     // We don't ever expect that an anchor node or any of its scrolling
     // containers should have an invalid transform_id.
     DCHECK(scroll_node->transform_id != kInvalidPropertyNodeId);
-    accumulated_scroll_offset +=
-        transform_node->scroll_offset.OffsetFromOrigin();
+    accumulated_offset += transform_node->scroll_offset.OffsetFromOrigin();
+    // TODO(crbug.com/40947467): Adjust for sticky and chained anchored
+    // containers.
   }
-  gfx::Vector2dF result =
-      data->accumulated_scroll_origin - accumulated_scroll_offset;
+  gfx::Vector2dF result = data->accumulated_scroll_origin - accumulated_offset;
   if (!data->needs_scroll_adjustment_in_x) {
     result.set_x(0);
   }
@@ -586,8 +572,8 @@ void TransformTree::UpdateLocalTransform(
   transform.Translate(position_adjustment -
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
-  if (node->anchor_position_scrollers_data_id >= 0) {
-    transform.Translate(AnchorPositionScrollOffset(node));
+  if (node->anchor_position_scroll_data_id >= 0) {
+    transform.Translate(AnchorPositionOffset(node));
     // Make sure the damage rect is tracked.
     node->transform_changed = true;
   }

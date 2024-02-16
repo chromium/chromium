@@ -5672,16 +5672,21 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
     return std::make_pair(std::move(container), std::move(scroller));
   }
 
-  scoped_refptr<Layer> CreateAnchored(Layer* parent,
-                                      Layer* inner_most_scroller,
-                                      Layer* outer_most_scroller) {
+  scoped_refptr<Layer> CreateAnchored(
+      Layer* parent,
+      std::vector<ElementId> adjustment_container_ids) {
     scoped_refptr<Layer> anchored = Layer::Create();
+    anchored->SetElementId(LayerIdToElementIdForTesting(anchored->id()));
     anchored->SetBounds(gfx::Size(10, 10));
     CopyProperties(parent, anchored.get());
     CreateTransformNode(anchored.get());
-    SetAnchorPositionScrollers(anchored.get(),
-                               inner_most_scroller->scroll_tree_index(),
-                               outer_most_scroller->scroll_tree_index());
+    auto& data =
+        GetPropertyTrees(anchored.get())
+            ->transform_tree_mutable()
+            .EnsureAnchorPositionScrollData(anchored->transform_tree_index());
+    data.needs_scroll_adjustment_in_x = true;
+    data.needs_scroll_adjustment_in_y = true;
+    data.adjustment_container_ids = std::move(adjustment_container_ids);
     root_->AddChild(anchored);
     return anchored;
   }
@@ -5696,28 +5701,6 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
   LayerImpl* GetImpl(Layer* layer) {
     LayerTreeImpl* layer_tree_impl = host_impl()->active_tree();
     return layer_tree_impl->LayerById(layer->id());
-  }
-
-  void SetAnchorPositionScrollers(Layer* anchored,
-                                  int inner_most_scroll_container_id,
-                                  int outer_most_scroll_container_id) {
-    auto& data = GetPropertyTrees(anchored)
-                     ->transform_tree_mutable()
-                     .EnsureAnchorPositionScrollersData(
-                         anchored->transform_tree_index());
-    data.needs_scroll_adjustment_in_x = true;
-    data.needs_scroll_adjustment_in_y = true;
-    for (int scroller_id = inner_most_scroll_container_id;
-         scroller_id != kInvalidPropertyNodeId;) {
-      const ScrollNode* scroll_node =
-          GetPropertyTrees(anchored)->scroll_tree().Node(scroller_id);
-      data.scroll_container_ids.push_back(scroll_node->element_id);
-
-      if (scroller_id == outer_most_scroll_container_id) {
-        break;
-      }
-      scroller_id = scroll_node->parent_id;
-    }
   }
 
   scoped_refptr<Layer> root_;
@@ -5736,7 +5719,7 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, Basics) {
   std::tie(container, scroller) = CreateScroller(root_.get());
 
   scoped_refptr<Layer> anchored =
-      CreateAnchored(root_.get(), scroller.get(), scroller.get());
+      CreateAnchored(root_.get(), {scroller->element_id()});
 
   SetPostTranslation(anchored.get(), gfx::Vector2dF(10, 20));
   Commit();
@@ -5786,8 +5769,8 @@ TEST_F(DrawPropertiesAnchorPositionScrollTest, NestedScrollers) {
   scoped_refptr<Layer> scroller3;
   std::tie(container3, scroller3) = CreateScroller(scroller2.get());
 
-  scoped_refptr<Layer> anchored =
-      CreateAnchored(scroller1.get(), scroller3.get(), scroller2.get());
+  scoped_refptr<Layer> anchored = CreateAnchored(
+      scroller1.get(), {scroller3->element_id(), scroller2->element_id()});
 
   SetPostTranslation(anchored.get(), gfx::Vector2dF(10, 20));
   Commit();

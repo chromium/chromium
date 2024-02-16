@@ -62,7 +62,7 @@ static void UpdateCcTransformLocalMatrix(
     cc::TransformNode& compositor_node,
     const TransformPaintPropertyNode& transform_node) {
   if (transform_node.GetStickyConstraint() ||
-      transform_node.GetAnchorPositionScrollersData()) {
+      transform_node.GetAnchorPositionScrollData()) {
     // The sticky offset on the blink transform node is pre-computed and stored
     // to the local matrix. Cc applies sticky offset dynamically on top of the
     // local matrix. We should not set the local matrix on cc node if it is a
@@ -475,10 +475,8 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     }
   }
 
-  if (const auto* data = transform_node.GetAnchorPositionScrollersData()) {
-    cc::AnchorPositionScrollersData& compositor_data =
-        transform_tree_->EnsureAnchorPositionScrollersData(id);
-    compositor_data = *data;
+  if (const auto* data = transform_node.GetAnchorPositionScrollData()) {
+    transform_tree_->EnsureAnchorPositionScrollData(id) = *data;
   }
 
   auto compositor_element_id = transform_node.GetCompositorElementId();

@@ -151,7 +151,7 @@ class CC_EXPORT PropertyTree {
   base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
-struct AnchorPositionScrollersData;
+struct AnchorPositionScrollData;
 struct StickyPositionNodeData;
 
 class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
@@ -244,9 +244,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   StickyPositionNodeData& EnsureStickyPositionData(int node_id);
 
-  const AnchorPositionScrollersData* GetAnchorPositionScrollersData(
+  const AnchorPositionScrollData* GetAnchorPositionScrollData(
       int node_id) const;
-  AnchorPositionScrollersData& EnsureAnchorPositionScrollersData(int node_id);
+  AnchorPositionScrollData& EnsureAnchorPositionScrollData(int node_id);
 
   // Computes the combined transform between |source_id| and |dest_id|. These
   // two nodes must be on the same ancestor chain.
@@ -268,7 +268,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  gfx::Vector2dF AnchorPositionScrollOffset(TransformNode* node);
+  gfx::Vector2dF AnchorPositionOffset(TransformNode* node);
   void UpdateLocalTransform(TransformNode* node,
                             const ViewportPropertyIds* viewport_property_ids);
   void UpdateScreenSpaceTransform(TransformNode* node,
@@ -290,18 +290,19 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
-  std::vector<AnchorPositionScrollersData> anchor_position_scrollers_data_;
+  std::vector<AnchorPositionScrollData> anchor_position_scroll_data_;
 };
 
-struct CC_EXPORT AnchorPositionScrollersData {
-  AnchorPositionScrollersData();
-  ~AnchorPositionScrollersData();
-  AnchorPositionScrollersData(const AnchorPositionScrollersData&);
+struct CC_EXPORT AnchorPositionScrollData {
+  AnchorPositionScrollData();
+  ~AnchorPositionScrollData();
+  AnchorPositionScrollData(const AnchorPositionScrollData&);
 
-  bool operator==(const AnchorPositionScrollersData&) const;
-  bool operator!=(const AnchorPositionScrollersData&) const;
+  bool operator==(const AnchorPositionScrollData&) const;
 
-  std::vector<ElementId> scroll_container_ids;
+  // See blink::AnchorPositionScrollData for the definition of adjustment
+  // containers.
+  std::vector<ElementId> adjustment_container_ids;
   gfx::Vector2d accumulated_scroll_origin;
   bool needs_scroll_adjustment_in_x = false;
   bool needs_scroll_adjustment_in_y = false;

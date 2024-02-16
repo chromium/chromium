@@ -166,8 +166,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
 
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 300),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   GetElementById("scroller")->classList().Add(AtomicString("changed"));
 
@@ -175,8 +175,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   // yet.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 300),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
@@ -189,8 +189,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollerSizeChange) {
   // Snapshot is updated in the next frame.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 200),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 200),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   // Should not schedule another frame after all updates are done.
   UnsetAnimationScheduled();
@@ -229,8 +229,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
 
   Element* anchored = GetElementById("anchored");
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 300),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   GetElementById("spacer")->classList().Add(AtomicString("changed"));
 
@@ -238,8 +238,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   // yet.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 300),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 300),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
@@ -252,8 +252,8 @@ TEST_F(AnchorPositionScrollDataTest, ScrollContentSizeChange) {
   // Snapshot is updated in the next frame.
   SimulateFrame();
   EXPECT_TRUE(anchored->GetAnchorPositionScrollData());
-  EXPECT_EQ(ScrollOffset(0, 200),
-            anchored->GetAnchorPositionScrollData()->AccumulatedScrollOffset());
+  EXPECT_EQ(gfx::Vector2dF(0, 200),
+            anchored->GetAnchorPositionScrollData()->AccumulatedOffset());
 
   // Should not schedule another frame after all updates are done.
   UnsetAnimationScheduled();

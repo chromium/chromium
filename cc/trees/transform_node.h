@@ -53,9 +53,9 @@ struct CC_EXPORT TransformNode {
   // transform node.
   int sticky_position_constraint_id = kInvalidPropertyNodeId;
 
-  // This is the data of the scroll container of the default anchor of an
-  // anchor positioned element. -1 indicates there is no such node.
-  int anchor_position_scrollers_data_id = kInvalidPropertyNodeId;
+  // This is the data of the scroll adjustment containers of the default anchor
+  // of an anchor positioned element. -1 indicates there is no such node.
+  int anchor_position_scroll_data_id = kInvalidPropertyNodeId;
 
   // This id determines which 3d rendering context the node is in. 0 is a
   // special value and indicates that the node is not in any 3d rendering

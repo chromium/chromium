@@ -1774,13 +1774,13 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     bool is_first_run,
     const LogicalAnchorQueryMap* anchor_queries) {
   const LayoutObject* implicit_anchor = nullptr;
-  gfx::Vector2dF anchor_scroll_offset;
-  gfx::Vector2dF additional_bounds_scroll_offset;
+  gfx::Vector2dF anchor_offset;
+  gfx::Vector2dF additional_bounds_offset;
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
     if (const AnchorPositionScrollData* data =
             element->GetAnchorPositionScrollData()) {
-      anchor_scroll_offset = data->AccumulatedScrollOffset();
-      additional_bounds_scroll_offset = data->AdditionalBoundsScrollOffset();
+      anchor_offset = data->AccumulatedOffset();
+      additional_bounds_offset = data->AdditionalBoundsOffset();
     }
     if (element->ImplicitAnchorElement()) {
       implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
@@ -1820,8 +1820,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && has_next_fallback_style) {
       non_overflowing_ranges.push_back(non_overflowing_range);
-      if (!non_overflowing_range.Contains(anchor_scroll_offset,
-                                          additional_bounds_scroll_offset)) {
+      if (!non_overflowing_range.Contains(anchor_offset,
+                                          additional_bounds_offset)) {
         offset_info = std::nullopt;
       }
     }
