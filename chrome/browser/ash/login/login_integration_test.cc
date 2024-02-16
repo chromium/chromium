@@ -52,7 +52,8 @@ class GaiaLoginIntegrationTest : public AshIntegrationTest {
   ~GaiaLoginIntegrationTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, GaiaLogin) {
+// Flaky tests disabled crbug.com/318616623.
+IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, DISABLED_GaiaLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.
