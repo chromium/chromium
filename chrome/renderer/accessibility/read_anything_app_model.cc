@@ -1328,7 +1328,7 @@ ReadAnythingAppModel::GetNextNodes() {
 
 // Returns either the node or the lowest platform ancestor of the node, if it's
 // a leaf.
-ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() {
+ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() const {
   if (ax_position_->GetAnchor()->IsChildOfLeaf()) {
     return ax_position_->GetAnchor()->GetLowestPlatformAncestor();
   }
@@ -1343,7 +1343,7 @@ ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() {
 // Some of the checks here right now are probably unneeded.
 ui::AXNodePosition::AXPositionInstance
 ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity) {
+    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity) {
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
@@ -1414,8 +1414,8 @@ int ReadAnythingAppModel::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
 }
 
 bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-    ui::AXNodeID id) {
+    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity,
+    ui::AXNodeID id) const {
   if (base::Contains(current_granularity.segments, id)) {
     return true;
   }
@@ -1452,7 +1452,7 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
   return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
 }
 
-bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
+bool ReadAnythingAppModel::IsOpeningPunctuation(char& c) const {
   return (c == '(' || c == '{' || c == '[' || c == '<');
 }
 
@@ -1461,13 +1461,13 @@ bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
 // our current granularity segment.
 bool ReadAnythingAppModel::ShouldSplitAtParagraph(
     ui::AXNodePosition::AXPositionInstance& position,
-    ReadAloudCurrentGranularity& current_granularity) {
+    ReadAloudCurrentGranularity& current_granularity) const {
   return position->AtStartOfParagraph() &&
          (current_granularity.node_ids.size() > 0);
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
-    ui::AXNodePosition::AXPositionInstance& position) {
+    ui::AXNodePosition::AXPositionInstance& position) const {
   bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
   // If the node is a leaf, use the parent node instead.
   return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
@@ -1476,7 +1476,8 @@ ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
 
 bool ReadAnythingAppModel::IsValidAXPosition(
     ui::AXNodePosition::AXPositionInstance& position,
-    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity) {
+    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity)
+    const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());

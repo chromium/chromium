@@ -7,6 +7,7 @@
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "read_anything_app_model.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 
@@ -255,8 +256,9 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
-    return model_->GetNextValidPositionFromCurrentPosition(
-        ReadAnythingAppModel::ReadAloudCurrentGranularity());
+    ReadAnythingAppModel::ReadAloudCurrentGranularity granularity =
+        ReadAnythingAppModel::ReadAloudCurrentGranularity();
+    return model_->GetNextValidPositionFromCurrentPosition(granularity);
   }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition(

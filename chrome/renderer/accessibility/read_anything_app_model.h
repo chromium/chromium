@@ -248,7 +248,7 @@ class ReadAnythingAppModel {
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
   GetNextValidPositionFromCurrentPosition(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
+      ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity);
 
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
@@ -327,14 +327,15 @@ class ReadAnythingAppModel {
 
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
-  ui::AXNode* GetNodeFromCurrentPosition();
+  ui::AXNode* GetNodeFromCurrentPosition() const;
 
   void ResetReadAloudState();
 
   bool IsTextForReadAnything(ui::AXNodeID ax_node_id) const;
 
-  bool ShouldSplitAtParagraph(ui::AXNodePosition::AXPositionInstance& position,
-                              ReadAloudCurrentGranularity& current_granularity);
+  bool ShouldSplitAtParagraph(
+      ui::AXNodePosition::AXPositionInstance& position,
+      ReadAloudCurrentGranularity& current_granularity) const;
 
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called
@@ -352,21 +353,22 @@ class ReadAnythingAppModel {
   // process them as 5, 10. Without checking for previously spoken nodes,
   // id 5 will be spoken twice.
   bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-      ui::AXNodeID id);
+      ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity,
+      ui::AXNodeID id) const;
 
   // Helper method to get the correct anchor node from an AXPositionInstance
   // that should be used by Read Aloud. AXPosition can sometimes return
   // leaf nodes that don't actually correspond to the AXNodes we're using
   // in Reading Mode, so we need to get a parent node from the AXPosition's
   // returned anchor when this happens.
-  ui::AXNode* GetAnchorNode(ui::AXNodePosition::AXPositionInstance& position);
+  ui::AXNode* GetAnchorNode(
+      ui::AXNodePosition::AXPositionInstance& position) const;
 
-  bool IsOpeningPunctuation(char c);
+  bool IsOpeningPunctuation(char& c) const;
 
-  bool IsValidAXPosition(
-      ui::AXNodePosition::AXPositionInstance& positin,
-      ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity);
+  bool IsValidAXPosition(ui::AXNodePosition::AXPositionInstance& positin,
+                         ReadAnythingAppModel::ReadAloudCurrentGranularity&
+                             current_granularity) const;
 
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
