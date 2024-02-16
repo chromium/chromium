@@ -1146,10 +1146,10 @@ void UkmRecorderImpl::NotifyObserversWithNewEntry(
 }
 
 template <typename Method, typename... Params>
-void UkmRecorderImpl::NotifyAllObservers(Method m, Params&&... params) {
+void UkmRecorderImpl::NotifyAllObservers(Method m, const Params&... params) {
   base::AutoLock auto_lock(lock_);
   for (const auto& observer : observers_) {
-    observer.second->Notify(FROM_HERE, m, std::forward<Params>(params)...);
+    observer.second->Notify(FROM_HERE, m, params...);
   }
 }
 

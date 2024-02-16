@@ -293,7 +293,7 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Helper method to notify all observers on UKM events.
   template <typename Method, typename... Params>
-  void NotifyAllObservers(Method m, Params&&... params);
+  void NotifyAllObservers(Method m, const Params&... params);
 
   // Whether recording new data is currently allowed.
   bool recording_enabled_ = false;
