@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64url.h"
-#include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -19,64 +17,17 @@ namespace device {
 
 namespace {
 
-// Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
-// key isn't present or decoding failed.
-std::optional<std::string> Base64UrlDecodeStringKey(
-    const base::Value::Dict& dict,
-    const std::string& key) {
-  const std::string* b64url_data = dict.FindString(key);
-  if (!b64url_data) {
-    return std::nullopt;
-  }
-  std::string decoded;
-  if (!base::Base64UrlDecode(*b64url_data,
-                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             &decoded)) {
-    FIDO_LOG(ERROR) << "Failed to decode key " << key;
-    return std::nullopt;
-  }
-  return decoded;
-}
-
-// Variant of the above helper used for optional fields. It returns a boolean
-// which is true when the field is present and correctly parsed, or when the
-// field is absent. The boolean is false when the field is present but does
-// not correctly parse.
-std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
-    const base::Value::Dict& dict,
-    const std::string& key) {
-  const base::Value* value = dict.Find(key);
-  if (!value) {
-    return {true, std::nullopt};
-  }
-  std::string decoded;
-  if (!value->is_string() ||
-      !base::Base64UrlDecode(value->GetString(),
-                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             &decoded)) {
-    return {false, std::nullopt};
-  }
-  return {true, decoded};
-}
-
-std::vector<uint8_t> ToByteVector(const std::string& in) {
-  const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
-  return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
-}
-
 std::optional<AuthenticatorData> ReadAuthenticatorData(
     const base::Value::Dict& dict) {
-  std::optional<std::string> authenticator_data_opt =
-      Base64UrlDecodeStringKey(dict, "authenticatorData");
-  if (!authenticator_data_opt) {
+  const std::vector<uint8_t>* serialized_auth_data =
+      dict.FindBlob("authenticatorData");
+  if (!serialized_auth_data) {
     FIDO_LOG(ERROR) << "Response missing required authenticatorData field.";
     return std::nullopt;
   }
 
-  std::vector<uint8_t> authenticator_data_bytes =
-      ToByteVector(*authenticator_data_opt);
   auto authenticator_data =
-      AuthenticatorData::DecodeAuthenticatorData(authenticator_data_bytes);
+      AuthenticatorData::DecodeAuthenticatorData(*serialized_auth_data);
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Response contained invalid authenticatorData.";
     return std::nullopt;
@@ -104,28 +55,21 @@ AuthenticatorGetAssertionResponseFromValue(const base::Value& value) {
     return std::nullopt;
   }
 
-  std::optional<std::string> signature_opt =
-      Base64UrlDecodeStringKey(response_dict, "signature");
-  if (!signature_opt) {
+  const std::vector<uint8_t>* signature = response_dict.FindBlob("signature");
+  if (!signature) {
     FIDO_LOG(ERROR) << "Assertion response missing required signature field.";
     return std::nullopt;
   }
-  std::vector<uint8_t> signature = ToByteVector(*signature_opt);
 
-  auto [success, user_handle_opt] =
-      Base64UrlDecodeOptionalStringKey(response_dict, "userHandle");
-  if (!success) {
-    FIDO_LOG(ERROR) << "Assertion response contained invalid user handle.";
-    return std::nullopt;
-  }
+  const std::vector<uint8_t>* user_handle =
+      response_dict.FindBlob("userHandle");
 
   AuthenticatorGetAssertionResponse response(std::move(*authenticator_data),
-                                             std::move(signature),
+                                             std::move(*signature),
                                              /*transport_used=*/std::nullopt);
-  if (user_handle_opt) {
-    std::vector<uint8_t> user_handle = ToByteVector(*user_handle_opt);
+  if (user_handle) {
     response.user_entity =
-        PublicKeyCredentialUserEntity(std::move(user_handle));
+        PublicKeyCredentialUserEntity(std::move(*user_handle));
   }
 
   return std::move(response);

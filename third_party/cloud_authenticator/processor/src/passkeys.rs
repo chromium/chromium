@@ -75,10 +75,6 @@ fn key(k: &str) -> MapKey {
     MapKey::String(String::from(k))
 }
 
-fn b64url(bytes: &[u8]) -> Value {
-    Value::String(base64url::base64url_encode(bytes))
-}
-
 pub(crate) fn do_assert(
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
@@ -142,9 +138,9 @@ pub(crate) fn do_assert(
     // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
     let assertion_response_json = BTreeMap::<MapKey, Value>::from([
         (key("clientDataJSON"), Value::String(client_data_json.clone())),
-        (key("authenticatorData"), b64url(&authenticator_data)),
-        (key("signature"), b64url(signature.as_ref())),
-        (key("userHandle"), b64url(user_id)),
+        (key("authenticatorData"), Value::from(authenticator_data)),
+        (key("signature"), Value::from(signature.as_ref())),
+        (key("userHandle"), Value::from(user_id.to_vec())),
     ]);
     let response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
 

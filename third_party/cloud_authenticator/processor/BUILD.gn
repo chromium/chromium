@@ -7,16 +7,18 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("processor") {
   crate_name = "processor"
   sources = [
+    "src/der.rs",
     "src/lib.rs",
     "src/macros.rs",
     "src/passkeys.rs",
+    "src/recoverable_key_store.rs",
     "src/spki.rs",
   ]
   deps = [
-    "//third_party/cloud_authenticator/base64url",
     "//third_party/cloud_authenticator/cbor",
     "//third_party/cloud_authenticator/chromesync",
     "//third_party/cloud_authenticator/crypto",
+    "//third_party/rust/base64/v0_13:lib",
     "//third_party/rust/bytes/v1:lib",
     "//third_party/rust/lazy_static/v1:lib",
     "//third_party/rust/prost/v0_12:lib",

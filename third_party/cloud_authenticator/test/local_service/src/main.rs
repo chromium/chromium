@@ -17,7 +17,7 @@
 //! local machine. It keeps state in two files in the working directory:
 //! "state.transparent" and "state.confidential".
 
-extern crate base64url;
+extern crate base64;
 extern crate crypto;
 extern crate handshake;
 extern crate hex;
@@ -177,11 +177,7 @@ fn write_msg(conn: &TcpStream, msg: &[u8]) -> bool {
 /// connection. See https://datatracker.ietf.org/doc/html/rfc6455#section-1.3
 fn calculate_websocket_accept(key: &[u8]) -> String {
     let digest = crypto::sha1_two_part(key, b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    let mut encoded = base64url::base64url_encode(&digest).replace('-', "+").replace('_', "/");
-    while encoded.len() % 4 != 0 {
-        encoded.push('=');
-    }
-    encoded
+    base64::encode(&digest)
 }
 
 struct EnclaveServer {
@@ -283,7 +279,9 @@ impl EnclaveServer {
 
         let (result_array, state_update) = match processor::process_client_msg(
             client_state,
-            /* current_time= */ 100,
+            // This timestamp is fixed so that any XML files submitted by tests will be considered
+            // unexpired.
+            1707344402,
             &handshake_response.handshake_hash,
             commands,
         ) {

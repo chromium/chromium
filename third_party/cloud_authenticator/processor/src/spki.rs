@@ -14,71 +14,7 @@
 
 //! spki implements minimal parsing of SubjectPublicKeyInfo structures.
 
-/// Get a byte from the front of a slice.
-///
-/// (This is the same as `split_first`, but returns the value rather than a
-/// reference to it.)
-fn u8_next(input: &[u8]) -> Option<(u8, &[u8])> {
-    let (first, rest) = input.split_first()?;
-    Some((*first, rest))
-}
-
-/// Treats the input as a series of big-endian bytes and returns a usize of
-/// them. Since usize might only be 32 bits, the input must not be longer than
-/// four bytes.
-fn bytes_to_usize(bytes: &[u8]) -> usize {
-    assert!(bytes.len() <= 4);
-    let mut ret = 0;
-    for &byte in bytes {
-        ret <<= 8;
-        ret |= byte as usize
-    }
-    ret
-}
-
-/// Returns the tag and payload of the next ASN.1 DER element from `input`, as
-/// well as the remainder of the input.
-fn der_next(input: &[u8]) -> Option<(u8, &[u8], &[u8])> {
-    let (tag_byte, input) = u8_next(input)?;
-    if tag_byte & 0x1f == 0x1f {
-        // large-format tags are not supported.
-        return None;
-    }
-    let (length_byte, input) = u8_next(input)?;
-
-    let (length, input) = if (length_byte & 0x80) == 0 {
-        (length_byte as usize, input)
-    } else {
-        // The high bit indicate that this is the long form, while the next 7 bits
-        // encode the number of subsequent octets used to encode the length (ITU-T
-        // X.690 clause 8.1.3.5.b).
-        let num_bytes = (length_byte & 0x7f) as usize;
-        if num_bytes == 0 || num_bytes > 4 {
-            return None;
-        }
-        if input.len() < num_bytes {
-            return None;
-        }
-        let (length_bytes, input) = input.split_at(num_bytes);
-        let length = bytes_to_usize(length_bytes);
-        if length < 128 {
-            // Should have used short-form encoding.
-            return None;
-        }
-        if length >> ((num_bytes - 1) * 8) == 0 {
-            // Should have used fewer bytes to encode the length.
-            return None;
-        }
-        (length, input)
-    };
-
-    if input.len() < length {
-        return None;
-    }
-    let (payload, input) = input.split_at(length);
-
-    Some((tag_byte, payload, input))
-}
+use crate::der;
 
 #[derive(Debug, PartialEq)]
 pub enum PublicKeyType {
@@ -89,10 +25,6 @@ pub enum PublicKeyType {
 /// Parses a SubjectPublicKeyInfo, returning the type of the key and the public
 /// key itself in a type-specific format.
 pub fn parse(input: &[u8]) -> Option<(PublicKeyType, &[u8])> {
-    const BIT_STRING: u8 = 3;
-    const NONE: u8 = 5;
-    const OBJECT_IDENTIFER: u8 = 6;
-    const SEQUENCE: u8 = 0x30;
     const EC_KEY: &[u8] = b"\x2A\x86\x48\xCE\x3D\x02\x01";
     const RSA: &[u8] = b"\x2A\x86\x48\x86\xF7\x0D\x01\x01\x01";
     const P256: &[u8] = b"\x2A\x86\x48\xCE\x3D\x03\x01\x07";
@@ -104,15 +36,12 @@ pub fn parse(input: &[u8]) -> Option<(PublicKeyType, &[u8])> {
     //    subjectPublicKey     BIT STRING
     // }
 
-    let (top_level_tag, top_level, input) = der_next(input)?;
-    if top_level_tag != SEQUENCE || !input.is_empty() {
+    let (top_level, input) = der::next_tagged(input, der::SEQUENCE)?;
+    if !input.is_empty() {
         return None;
     }
 
-    let (algo_id_tag, algo_id, top_level) = der_next(top_level)?;
-    if algo_id_tag != SEQUENCE {
-        return None;
-    }
+    let (algo_id, top_level) = der::next_tagged(top_level, der::SEQUENCE)?;
 
     // https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.1.2
     //
@@ -121,20 +50,16 @@ pub fn parse(input: &[u8]) -> Option<(PublicKeyType, &[u8])> {
     //    parameters              ANY DEFINED BY algorithm OPTIONAL
     // }
 
-    let (oid_tag, oid, algo_id) = der_next(algo_id)?;
-    if oid_tag != OBJECT_IDENTIFER {
-        return None;
-    }
-
+    let (oid, algo_id) = der::next_tagged(algo_id, der::OBJECT_IDENTIFER)?;
     let key_type = if oid == EC_KEY {
-        let (curve_tag, curve, algo_id) = der_next(algo_id)?;
-        if curve_tag != OBJECT_IDENTIFER || curve != P256 || !algo_id.is_empty() {
+        let (curve, algo_id) = der::next_tagged(algo_id, der::OBJECT_IDENTIFER)?;
+        if curve != P256 || !algo_id.is_empty() {
             return None;
         }
         PublicKeyType::P256
     } else if oid == RSA {
-        let (none_tag, none_body, algo_id) = der_next(algo_id)?;
-        if none_tag != NONE || !none_body.is_empty() || !algo_id.is_empty() {
+        let (none_body, algo_id) = der::next_tagged(algo_id, der::NONE)?;
+        if !none_body.is_empty() || !algo_id.is_empty() {
             return None;
         }
         PublicKeyType::RSA
@@ -142,14 +67,14 @@ pub fn parse(input: &[u8]) -> Option<(PublicKeyType, &[u8])> {
         return None;
     };
 
-    let (pubkey_tag, pubkey, top_level) = der_next(top_level)?;
-    if pubkey_tag != BIT_STRING || pubkey.is_empty() || !top_level.is_empty() {
+    let (pubkey, top_level) = der::next_tagged(top_level, der::BIT_STRING)?;
+    if pubkey.is_empty() || !top_level.is_empty() {
         return None;
     }
 
     // The first byte of a BIT STRING is the number of unused bits. This is
     // always zero for the key types that we deal with.
-    let (unused_bits, pubkey) = u8_next(pubkey)?;
+    let (unused_bits, pubkey) = der::u8_next(pubkey)?;
     if unused_bits != 0 {
         return None;
     }

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/value_response_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,26 +34,21 @@ std::vector<uint8_t> ToByteVector(const std::string& in) {
 TEST(ValueResponseConversionTest,
      AuthenticatorGetAssertionResponseFromValueSuccess) {
   static const std::vector<uint8_t> kSignature = ToByteVector("test signature");
-  constexpr char kJson[] = R"({
-      "authenticatorData": "EZQijaj9ve79JhvXtllc_XClDXDGQHvPAT3pbU77F94BAAAAAA",
-      "signature": "dGVzdCBzaWduYXR1cmU"
-      })";
+  const std::vector<uint8_t> authenticator_data(
+      kTestAuthenticatorData,
+      kTestAuthenticatorData + sizeof(kTestAuthenticatorData));
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set("authenticatorData", base::Value(authenticator_data));
+  dict.GetDict().Set("signature", base::Value(kSignature));
 
   std::optional<AuthenticatorGetAssertionResponse> response =
-      AuthenticatorGetAssertionResponseFromValue(*value);
+      AuthenticatorGetAssertionResponseFromValue(dict);
   ASSERT_TRUE(response);
 
   EXPECT_EQ(response->signature, kSignature);
   EXPECT_EQ(response->authenticator_data.SerializeToByteArray(),
-            std::vector<uint8_t>(
-                kTestAuthenticatorData,
-                kTestAuthenticatorData + sizeof(kTestAuthenticatorData)));
+            authenticator_data);
 }
 
 // Convert JSON to an AuthenticatorGetAssertionResponse successfully with all
@@ -62,27 +57,22 @@ TEST(ValueResponseConversionTest,
      AuthenticatorGetAssertionResponseFromValueSuccessAllFields) {
   static const std::vector<uint8_t> kSignature = ToByteVector("test signature");
   static const std::vector<uint8_t> kUserId = ToByteVector("userid1");
-  constexpr char kJson[] = R"({
-      "authenticatorData": "EZQijaj9ve79JhvXtllc_XClDXDGQHvPAT3pbU77F94BAAAAAA",
-      "signature": "dGVzdCBzaWduYXR1cmU",
-      "userHandle": "dXNlcmlkMQ"
-      })";
+  const std::vector<uint8_t> authenticator_data(
+      kTestAuthenticatorData,
+      kTestAuthenticatorData + sizeof(kTestAuthenticatorData));
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::Value dict(base::Value::Type::DICT);
+  dict.GetDict().Set("authenticatorData", base::Value(authenticator_data));
+  dict.GetDict().Set("signature", base::Value(kSignature));
+  dict.GetDict().Set("userHandle", base::Value(kUserId));
 
   std::optional<AuthenticatorGetAssertionResponse> response =
-      AuthenticatorGetAssertionResponseFromValue(*value);
+      AuthenticatorGetAssertionResponseFromValue(dict);
   ASSERT_TRUE(response);
 
   EXPECT_EQ(response->signature, kSignature);
   EXPECT_EQ(response->authenticator_data.SerializeToByteArray(),
-            std::vector<uint8_t>(
-                kTestAuthenticatorData,
-                kTestAuthenticatorData + sizeof(kTestAuthenticatorData)));
+            authenticator_data);
   EXPECT_TRUE(response->user_entity);
   EXPECT_EQ(response->user_entity->id, kUserId);
 }
@@ -90,35 +80,26 @@ TEST(ValueResponseConversionTest,
 // Test converting assertion response JSON with missing required fields.
 TEST(ValueResponseConversionTest,
      AuthenticatorGetAssertionResponseFromValueFailure) {
-  constexpr char kJsonNoAuthenticatorData[] = R"({
-      "signature": "dGVzdCBzaWduYXR1cmU"
-      })";
-  constexpr char kJsonSignature[] = R"({
-      "authenticatorData": "EZQijaj9ve79JhvXtllc_XClDXDGQHvPAT3pbU77F94BAAAAAA"
-      })";
-
+  static const std::vector<uint8_t> kSignature = ToByteVector("test signature");
+  const std::vector<uint8_t> authenticator_data(
+      kTestAuthenticatorData,
+      kTestAuthenticatorData + sizeof(kTestAuthenticatorData));
   {
-    JSONStringValueDeserializer deserializer(kJsonNoAuthenticatorData);
-    std::string deserialize_error;
-    std::unique_ptr<base::Value> value =
-        deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-    ASSERT_TRUE(value) << deserialize_error;
+    base::Value dict(base::Value::Type::DICT);
+    dict.GetDict().Set("signature", base::Value(kSignature));
 
     std::optional<AuthenticatorGetAssertionResponse> response =
-        AuthenticatorGetAssertionResponseFromValue(*value);
+        AuthenticatorGetAssertionResponseFromValue(dict);
     ASSERT_FALSE(response)
         << "Parsing incorrectly succeeded with no authenticatorData.";
   }
 
   {
-    JSONStringValueDeserializer deserializer(kJsonSignature);
-    std::string deserialize_error;
-    std::unique_ptr<base::Value> value =
-        deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-    ASSERT_TRUE(value) << deserialize_error;
+    base::Value dict(base::Value::Type::DICT);
+    dict.GetDict().Set("authenticatorData", base::Value(authenticator_data));
 
     std::optional<AuthenticatorGetAssertionResponse> response =
-        AuthenticatorGetAssertionResponseFromValue(*value);
+        AuthenticatorGetAssertionResponseFromValue(dict);
     ASSERT_FALSE(response)
         << "Parsing incorrectly succeeded with no signature.";
   }

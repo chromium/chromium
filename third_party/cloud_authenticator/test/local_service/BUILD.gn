@@ -7,11 +7,11 @@ import("//build/rust/rust_executable.gni")
 rust_executable("cloud_authenticator_test_service") {
   sources = [ "src/main.rs" ]
   deps = [
-    "//third_party/cloud_authenticator/base64url",
     "//third_party/cloud_authenticator/cbor",
     "//third_party/cloud_authenticator/crypto",
     "//third_party/cloud_authenticator/handshake",
     "//third_party/cloud_authenticator/processor",
+    "//third_party/rust/base64/v0_13:lib",
     "//third_party/rust/hex/v0_4:lib",
   ]
   testonly = true
