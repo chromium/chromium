@@ -637,24 +637,18 @@ void Surface::OnSubSurfaceCommit() {
 }
 
 void Surface::SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
-                                bool is_root_coordinates,
                                 bool commit_override) {
   TRACE_EVENT1("exo", "Surface::SetRoundedCorner", "corners",
                rounded_corners_bounds.ToString());
 
-  if (rounded_corners_bounds != pending_state_.rounded_corners_bounds ||
-      is_root_coordinates !=
-          pending_state_.rounded_corners_is_root_coordinates) {
+  if (rounded_corners_bounds != pending_state_.rounded_corners_bounds) {
     has_pending_contents_ = true;
     pending_state_.rounded_corners_bounds = rounded_corners_bounds;
-    pending_state_.rounded_corners_is_root_coordinates = is_root_coordinates;
   }
 
   if (commit_override &&
-      (rounded_corners_bounds != state_.rounded_corners_bounds ||
-       is_root_coordinates != state_.rounded_corners_is_root_coordinates)) {
+      rounded_corners_bounds != state_.rounded_corners_bounds) {
     state_.rounded_corners_bounds = rounded_corners_bounds;
-    state_.rounded_corners_is_root_coordinates = is_root_coordinates;
   }
 }
 
@@ -956,8 +950,6 @@ void Surface::Commit() {
     pending_state_.buffer.reset();
   }
   cached_state_.rounded_corners_bounds = pending_state_.rounded_corners_bounds;
-  cached_state_.rounded_corners_is_root_coordinates =
-      pending_state_.rounded_corners_is_root_coordinates;
   cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
   cached_state_.clip_rect = pending_state_.clip_rect;
   cached_state_.clip_rect_is_parent_coordinates =
@@ -1123,8 +1115,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         }
       }
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
-      state_.rounded_corners_is_root_coordinates =
-          cached_state_.rounded_corners_is_root_coordinates;
       state_.clip_rect = cached_state_.clip_rect;
       state_.clip_rect_is_parent_coordinates =
           cached_state_.clip_rect_is_parent_coordinates;
@@ -1672,19 +1662,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
   gfx::MaskFilterInfo msk;
   if (!state_.rounded_corners_bounds.IsEmpty()) {
-    // `state_.rounded_corners_bounds` should be on local surface coordinates
-    // but the deprecated implementation still uses root surface coordinates.
-    // If so, we skip translating into the root surface coordinates to keep the
-    // old behavior.
-    // TODO(crbug.com/1470955): Remove this.
-    auto rounded_corners_rect_offset =
-        state_.rounded_corners_is_root_coordinates
-            ? parent_to_root_dp.OffsetFromOrigin()
-            : to_root_dp.OffsetFromOrigin();
-
     // Set the mask.
     msk = gfx::MaskFilterInfo(state_.rounded_corners_bounds +
-                              rounded_corners_rect_offset);
+                              to_root_dp.OffsetFromOrigin());
 
     if (device_scale_factor.has_value()) {
       msk.ApplyTransform(

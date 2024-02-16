@@ -1673,11 +1673,11 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
 
   // # Rounded occlusion not matching
   child_surface_a->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 30, 15), 6.0),
-                                     false, false);
+                                     false);
   child_surface_a->Commit();
 
   child_surface_b->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 30, 15), 1.0),
-                                     false, false);
+                                     false);
   child_surface_b->Commit();
 
   surface->Commit();
@@ -1692,11 +1692,11 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
 
   // # Rounded occlusion matching
   child_surface_a->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 20, 10), 6.0),
-                                     false, false);
+                                     false);
   child_surface_a->Commit();
 
   child_surface_b->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 20, 10), 6.0),
-                                     false, false);
+                                     false);
   child_surface_b->Commit();
 
   surface->Commit();

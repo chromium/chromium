@@ -794,7 +794,6 @@ void SurfaceTreeHost::ApplyAndPropagateRoundedCornersToSurfaceTree(
     Surface* surface,
     const gfx::RRectF& rounded_corners_bounds) {
   surface->SetRoundedCorners(rounded_corners_bounds,
-                             /*is_root_coordinates=*/false,
                              /*commit_override=*/true);
   for (auto& sub_surface_entry : surface->sub_surfaces()) {
     // Convert the rounded corners bounds to sub_surface local coordinates by
