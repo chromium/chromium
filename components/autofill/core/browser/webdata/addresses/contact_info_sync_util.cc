@@ -74,17 +74,6 @@ class EntryTokenDeleter {
     return token->ByteSize() == 0;
   }
 
-  bool Delete(ContactInfoSpecifics::IntegerToken* token) {
-    // Delete the supported metadata from the token and delete the complete
-    // metadata message when there are no fields left.
-    if (DeleteMetadata(token->mutable_metadata())) {
-      token->clear_metadata();
-    }
-
-    token->clear_value();
-    return token->ByteSize() == 0;
-  }
-
  private:
   bool DeleteMetadata(ContactInfoSpecifics::TokenMetadata* metadata) {
     metadata->clear_status();
@@ -106,7 +95,7 @@ uint32_t GetProfileValueHash(const AutofillProfile& profile, FieldType type) {
 }  // namespace
 
 // Helper class to simplify setting the value and metadata of
-// ContactInfoSpecifics String- and IntegerTokens from an AutofillProfile.
+// ContactInfoSpecifics StringTokens from an AutofillProfile.
 // Outside of the anonymous namespace to be befriended by `ProfileTokenQuality`.
 class ContactInfoEntryDataSetter {
  public:
@@ -115,11 +104,6 @@ class ContactInfoEntryDataSetter {
 
   void Set(ContactInfoSpecifics::StringToken* token, FieldType type) const {
     token->set_value(base::UTF16ToUTF8(profile_->GetRawInfo(type)));
-    SetMetadata(token->mutable_metadata(), type);
-  }
-
-  void Set(ContactInfoSpecifics::IntegerToken* token, FieldType type) const {
-    token->set_value(profile_->GetRawInfoAsInt(type));
     SetMetadata(token->mutable_metadata(), type);
   }
 
@@ -149,7 +133,7 @@ class ContactInfoEntryDataSetter {
 };
 
 // Helper class to set the info and verification status of an AutofillProfile
-// from ContactInfoSpecifics String- and Integer tokens.
+// from ContactInfoSpecifics StringTokens.
 // Outside of the anonymous namespace to be befriended by `ProfileTokenQuality`.
 class ContactInfoProfileSetter {
  public:
@@ -159,13 +143,6 @@ class ContactInfoProfileSetter {
   void Set(const ContactInfoSpecifics::StringToken& token, FieldType type) {
     profile_->SetRawInfoWithVerificationStatus(
         type, base::UTF8ToUTF16(token.value()),
-        ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
-    SetObservations(token.metadata(), type);
-  }
-
-  void Set(const ContactInfoSpecifics::IntegerToken& token, FieldType type) {
-    profile_->SetRawInfoAsIntWithVerificationStatus(
-        type, token.value(),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
     SetObservations(token.metadata(), type);
   }

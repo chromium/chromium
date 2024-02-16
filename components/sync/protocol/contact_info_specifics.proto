@@ -67,12 +67,6 @@ message ContactInfoSpecifics {
     optional TokenMetadata metadata = 2;
   }
 
-  // A token with an integer interpretation of the value.
-  message IntegerToken {
-    optional int64 value = 1;
-    optional TokenMetadata metadata = 2;
-  }
-
   // A globally unique, immutable UUID represented in lowercase.
   optional string guid = 1;
   reserved 2;
@@ -100,8 +94,7 @@ message ContactInfoSpecifics {
   // Tracks the application that applied the last modification to the
   // non-metadata content of the profile. It represents a value in the same
   // `BillableService` enum.
-  // All String- and IntegerToken, and the `profile_label` are considered
-  // non-metadata.
+  // All StringTokens, and the `profile_label` are considered non-metadata.
   optional int32 last_modifier_id = 40;
 
   // Contact info name fields.

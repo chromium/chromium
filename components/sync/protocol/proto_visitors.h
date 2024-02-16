@@ -397,11 +397,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::StringToken& proto) {
   VISIT(metadata);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::IntegerToken& proto) {
-  VISIT(value);
-  VISIT(metadata);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::CustomNudgeDelay& proto) {
   VISIT(datatype_id);
   VISIT(delay_ms);
