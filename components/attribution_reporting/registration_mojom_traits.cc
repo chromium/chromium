@@ -252,6 +252,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   out->trigger_data_matching = data.trigger_data_matching();
+  out->source_epoch = data.source_epoch();
   return out->IsValid();
 }
 

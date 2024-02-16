@@ -2123,6 +2123,7 @@ void StorageHandler::OnSourceHandled(
               registration.aggregatable_report_window.InSeconds())
           .SetTriggerDataMatching(
               ToTriggerDataMatching(registration.trigger_data_matching))
+          .SetEpoch(base::NumberToString(registration.source_epoch))
           .Build();
 
   if (registration.debug_key.has_value()) {

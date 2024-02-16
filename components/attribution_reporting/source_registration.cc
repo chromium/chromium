@@ -46,6 +46,7 @@ constexpr char kDestination[] = "destination";
 constexpr char kExpiry[] = "expiry";
 constexpr char kFilterData[] = "filter_data";
 constexpr char kSourceEventId[] = "source_event_id";
+constexpr char kSourceEpoch[] = "epoch";
 
 base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
   switch (source_type) {
@@ -61,7 +62,7 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kEventLevelEpsilonValueInvalid,
+          SourceRegistrationError::kSourceEpochValueInvalid,
       "Bump version of Conversions.SourceRegistrationError10 histogram.");
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError10", error);
 }
@@ -148,6 +149,13 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.event_level_epsilon,
                    EventLevelEpsilon::Parse(registration));
 
+  ASSIGN_OR_RETURN(result.source_epoch,
+                   ParseUint64(registration, kSourceEpoch)
+                       .transform(&ValueOrZero<uint64_t>),
+                   [](absl::monostate) {
+                     return SourceRegistrationError::kSourceEpochValueInvalid;
+                   });             
+
   result.debug_key = ParseDebugKey(registration);
 
   result.debug_reporting = ParseDebugReporting(registration);
@@ -212,6 +220,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
   Serialize(dict, trigger_data_matching);
 
   event_level_epsilon.Serialize(dict);
+
+  SerializeUint64(dict, kSourceEpoch, source_epoch);
 
   return dict;
 }

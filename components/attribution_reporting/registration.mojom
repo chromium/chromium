@@ -134,6 +134,8 @@ struct SourceRegistration {
   // the containing source registration. Must be greater than or equal to 0.
   // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
   double event_level_epsilon;
+
+  uint64 source_epoch;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting

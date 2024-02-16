@@ -78,6 +78,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   mojom::TriggerDataMatching trigger_data_matching =
       mojom::TriggerDataMatching::kModulus;
   EventLevelEpsilon event_level_epsilon;
+  uint64_t source_epoch;
 };
 
 }  // namespace attribution_reporting

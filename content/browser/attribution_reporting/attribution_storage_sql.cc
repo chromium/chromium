@@ -509,10 +509,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     const StorableSource& source,
     bool debug_cookie_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(INFO) << "STORING SOURCE" ;
 
   CHECK(!source.registration().debug_key.has_value() || debug_cookie_set);
-
+  LOG(INFO) << "STORING SOURCE" ;
+  LOG(INFO) << source.registration().ToJson() ;
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {

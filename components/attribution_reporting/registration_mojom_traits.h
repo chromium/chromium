@@ -232,6 +232,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.event_level_epsilon;
   }
 
+  static uint64_t source_epoch(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.source_epoch;
+  }
+
   static bool Read(
       attribution_reporting::mojom::SourceRegistrationDataView data,
       attribution_reporting::SourceRegistration* out);
