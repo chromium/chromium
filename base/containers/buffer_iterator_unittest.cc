@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
