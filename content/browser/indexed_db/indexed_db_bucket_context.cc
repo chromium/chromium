@@ -41,7 +41,6 @@
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -63,6 +62,7 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/leveldatabase/leveldb_chrome.h"
 
 namespace content {
 namespace {
@@ -139,6 +139,32 @@ IndexedDBDatabaseError CreateDefaultError() {
   return IndexedDBDatabaseError(
       blink::mojom::IDBException::kUnknownError,
       u"Internal error opening backing store for indexedDB.open.");
+}
+
+// TODO(crbug.com/40279485): some shared/singleton objects may not be
+// thread-safe.
+leveldb_env::Options GetLevelDBOptions() {
+  static const leveldb::FilterPolicy* kIDBFilterPolicy =
+      leveldb::NewBloomFilterPolicy(10);
+  leveldb_env::Options options;
+  options.comparator = indexed_db::GetDefaultLevelDBComparator();
+  options.paranoid_checks = true;
+  options.filter_policy = kIDBFilterPolicy;
+  options.compression = leveldb::kSnappyCompression;
+  // For info about the troubles we've run into with this parameter, see:
+  // https://crbug.com/227313#c11
+  options.max_open_files = 80;
+  options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
+  options.on_get_error = base::BindRepeating(
+      indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBReadErrors");
+  options.on_write_error = base::BindRepeating(
+      indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBWriteErrors");
+
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
+      "LevelDBEnv.IDB");
+  options.env = g_leveldb_env.get();
+
+  return options;
 }
 
 // Creates the leveldb and blob storage directories for IndexedDB.
@@ -378,6 +404,9 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     InstanceClosure initialize_closure)
     : bucket_info_(std::move(bucket_info)),
       data_path_(data_path),
+      leveldb_factory_(GetLevelDBOptions(),
+                       base::StringPrintf("indexedDB-bucket-%" PRId64,
+                                          bucket_info_.id.GetUnsafeValue())),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       file_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
@@ -1215,8 +1244,7 @@ void IndexedDBBucketContext::HandleBackingStoreCorruption(
   ForceClose(/*will_be_deleted=*/false);
   // `this` may be deleted.
 
-  leveldb::Status s =
-      IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(file_path);
+  leveldb::Status s = leveldb_factory_.DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
@@ -1270,8 +1298,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
     base::FilePath blob_path,
     PartitionedLockManager* lock_manager,
     bool is_first_attempt,
-    bool create_if_missing,
-    TransactionalLevelDBFactory& leveldb_factory) {
+    bool create_if_missing) {
   // Please see docs/open_and_verify_leveldb_database.code2flow, and the
   // generated pdf (from https://code2flow.com).
   // The intended strategy here is to have this function match that flowchart,
@@ -1303,8 +1330,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
           {"IndexedDB (database was corrupt): ", corruption_message});
       // This is a special case where we want to make sure the database is
       // deleted, so we try to delete again.
-      status = IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(
-          database_path);
+      status = leveldb_factory_.DestroyLevelDB(database_path);
 
       if (UNLIKELY(!status.ok())) {
         LOG(ERROR) << "Unable to delete backing store: " << status.ToString();
@@ -1322,8 +1348,8 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
     size_t write_buffer_size = leveldb_env::WriteBufferSize(
         base::SysInfo::AmountOfTotalDiskSpace(database_path));
     std::tie(database_state, status, is_disk_full) =
-        IndexedDBClassFactory::Get()->leveldb_factory().OpenLevelDBState(
-            database_path, create_if_missing, write_buffer_size);
+        leveldb_factory_.OpenLevelDBState(database_path, create_if_missing,
+                                          write_buffer_size);
     if (UNLIKELY(!status.ok())) {
       if (!status.IsNotFound()) {
         indexed_db::ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors",
@@ -1359,7 +1385,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
 
   // Create the TransactionalLevelDBDatabase wrapper.
   std::unique_ptr<TransactionalLevelDBDatabase> database =
-      leveldb_factory.CreateLevelDBDatabase(
+      transactional_leveldb_factory_->CreateLevelDBDatabase(
           std::move(database_state), std::move(scopes),
           base::SequencedTaskRunner::GetCurrentDefault(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
@@ -1390,8 +1416,8 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
                 : IndexedDBBackingStore::Mode::kOnDisk;
 
   auto backing_store = std::make_unique<IndexedDBBackingStore>(
-      backing_store_mode, bucket_locator(), blob_path, leveldb_factory,
-      std::move(database),
+      backing_store_mode, bucket_locator(), blob_path,
+      *transactional_leveldb_factory_, std::move(database),
       base::BindRepeating(delegate_.on_files_written,
                           /*flushed=*/true),
       base::BindRepeating(&IndexedDBBucketContext::ReportOutstandingBlobs,
@@ -1447,8 +1473,7 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     std::tie(backing_store, status, data_loss_info, disk_full) =
         OpenAndVerifyIndexedDBBackingStore(data_path_, database_path, blob_path,
                                            lock_manager.get(), is_first_attempt,
-                                           create_if_missing,
-                                           *transactional_leveldb_factory_);
+                                           create_if_missing);
     if (LIKELY(is_first_attempt)) {
       first_try_status = status;
     }

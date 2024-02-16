@@ -19,7 +19,6 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +69,18 @@ MATCHER_P(SliceEq,
               base::HexEncode(str.data(), str.size())) {
   *result_listener << "which is " << base::HexEncode(arg.data(), arg.size());
   return std::string(arg.data(), arg.size()) == str;
+}
+
+leveldb_env::Options GetLevelDBOptions() {
+  leveldb_env::Options options;
+  options.comparator = indexed_db::GetDefaultLevelDBComparator();
+  options.paranoid_checks = true;
+
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
+      "LevelDBEnv.IDB");
+  options.env = g_leveldb_env.get();
+
+  return options;
 }
 
 class MockTickClock : public base::TickClock {
@@ -137,10 +148,12 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   }
 
   void SetupRealDB() {
+    leveldb_factory_ =
+        std::make_unique<LevelDBFactory>(GetLevelDBOptions(), "indexedDB-test");
     scoped_refptr<LevelDBState> level_db_state;
     leveldb::Status s;
     std::tie(level_db_state, s, std::ignore) =
-        IndexedDBClassFactory::Get()->leveldb_factory().OpenLevelDBState(
+        leveldb_factory_->OpenLevelDBState(
             base::FilePath(), indexed_db::GetDefaultLevelDBComparator(),
             /* create_if_missing=*/true);
     ASSERT_TRUE(s.ok());
@@ -238,6 +251,7 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
+  std::unique_ptr<LevelDBFactory> leveldb_factory_;
   base::test::TaskEnvironment task_environment_;
 };
 

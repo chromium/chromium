@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
@@ -412,14 +413,12 @@ class CONTENT_EXPORT IndexedDBBucketContext
              leveldb::Status,
              IndexedDBDataLossInfo,
              bool /* is_disk_full */>
-  OpenAndVerifyIndexedDBBackingStore(
-      base::FilePath data_directory,
-      base::FilePath database_path,
-      base::FilePath blob_path,
-      PartitionedLockManager* lock_manager,
-      bool is_first_attempt,
-      bool create_if_missing,
-      TransactionalLevelDBFactory& leveldb_factory);
+  OpenAndVerifyIndexedDBBackingStore(base::FilePath data_directory,
+                                     base::FilePath database_path,
+                                     base::FilePath blob_path,
+                                     PartitionedLockManager* lock_manager,
+                                     bool is_first_attempt,
+                                     bool create_if_missing);
 
   std::tuple<leveldb::Status, IndexedDBDatabaseError, IndexedDBDataLossInfo>
   InitBackingStoreIfNeeded(bool create_if_missing);
@@ -454,6 +453,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
+  LevelDBFactory leveldb_factory_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
