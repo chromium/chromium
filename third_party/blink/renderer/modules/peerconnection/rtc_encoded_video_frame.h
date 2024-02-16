@@ -34,12 +34,6 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RTCEncodedVideoFrame* Create(RTCEncodedVideoFrame* original_frame,
-                                      ExceptionState& exception_state);
-  static RTCEncodedVideoFrame* Create(
-      RTCEncodedVideoFrame* original_frame,
-      RTCEncodedVideoFrameMetadata* new_metadata,
-      ExceptionState& exception_state);
   explicit RTCEncodedVideoFrame(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);
   explicit RTCEncodedVideoFrame(
