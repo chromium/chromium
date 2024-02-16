@@ -480,15 +480,19 @@ export class FlagsAppElement extends CustomElement {
 
     this.flagSearch.init();
 
-    const ownerWarningDiv = this.$<HTMLParagraphElement>('owner-warning');
+    // <if expr="chromeos_ash">
+    const ownerWarningDiv = this.$<HTMLParagraphElement>('#owner-warning');
     if (ownerWarningDiv) {
       ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
     }
+    // </if>
 
-    const systemFlagsLinkDiv = this.$<HTMLElement>('os-link-container');
+    // <if expr="chromeos_lacros or chromeos_ash">
+    const systemFlagsLinkDiv = this.$<HTMLElement>('#os-link-container');
     if (systemFlagsLinkDiv && !experimentalFeaturesData.showSystemFlagsLink) {
       systemFlagsLinkDiv.style.display = 'none';
     }
+    // </if>
 
     this.featuresResolver.resolve();
   }
