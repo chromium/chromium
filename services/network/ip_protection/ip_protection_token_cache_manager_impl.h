@@ -80,7 +80,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
   void MeasureTokenRates();
   void MaybeRefillCache();
   void ScheduleMaybeRefillCache();
-  base::Time FuzzTokenExpiration(base::Time expiration);
 
   // Batch size and cache low-water mark as determined from feature params at
   // construction time.

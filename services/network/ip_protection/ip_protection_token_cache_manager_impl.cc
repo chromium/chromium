@@ -132,16 +132,6 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::Time IpProtectionTokenCacheManagerImpl::FuzzTokenExpiration(
-    base::Time expiration) {
-  if (!enable_token_expiration_fuzzing_for_testing_) {
-    return expiration;
-  }
-
-  base::TimeDelta fuzz_limit = net::features::kIpPrivacyExpirationFuzz.Get();
-  return expiration - base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
-}
-
 void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
     std::optional<base::Time> try_again_after) {
@@ -151,9 +141,16 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
     try_get_auth_tokens_after_ = base::Time();
 
-    // Randomize the expiration time of the tokens.
-    for (auto& token : *tokens) {
-      token->expiration = FuzzTokenExpiration(token->expiration);
+    // Randomize the expiration time of the tokens, applying the same "fuzz" to
+    // all tokens in the batch.
+    if (enable_token_expiration_fuzzing_for_testing_) {
+      base::TimeDelta fuzz_limit =
+          net::features::kIpPrivacyExpirationFuzz.Get();
+      base::TimeDelta fuzz =
+          base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
+      for (auto& token : *tokens) {
+        token->expiration -= fuzz;
+      }
     }
 
     cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
