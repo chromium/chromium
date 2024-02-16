@@ -38,6 +38,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -678,6 +679,11 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 }
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
+  // This test counts configures, so pause occlusion tracking to avoid unrelated
+  // configure messages.
+  // TODO(crbug.com/325548651): Try to reduce configures, so we can remove
+  // this pause.
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
   UpdateDisplay("400x300,800x600");
   // The window where the extendd drag originates.
   auto origin_shell_surface =

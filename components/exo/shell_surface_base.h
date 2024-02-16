@@ -377,6 +377,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     return window_corners_radii_dp_;
   }
 
+  // Returns true if the shell surface has completed its initial configure
+  // and commit sequence (i.e. is ready and initialized).
+  bool IsReady() const;
+
  protected:
   bool has_frame_colors() const { return has_frame_colors_; }
 

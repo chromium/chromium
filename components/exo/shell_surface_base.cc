@@ -1288,6 +1288,10 @@ void ShellSurfaceBase::OnSetServerStartResize() {
   server_side_resize_ = true;
 }
 
+bool ShellSurfaceBase::IsReady() const {
+  return !pending_show_widget_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceObserver overrides:
 
