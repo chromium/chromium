@@ -1787,6 +1787,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Mouse.InvalidRegistration" units="Vkey"
+    expires_after="2024-08-04">
+  <owner>dpad@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records everytime a mouse attempts to register a button for peripheral
+    customization and it is blocked by the customization restriction.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
     units="ms" expires_after="2024-08-04">

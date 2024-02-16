@@ -71,6 +71,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       DeviceId id) override;
   const mojom::GraphicsTabletSettings* GetGraphicsTabletSettings(
       DeviceId id) override;
+  const mojom::Keyboard* GetKeyboard(DeviceId id) override;
+  const mojom::Mouse* GetMouse(DeviceId id) override;
+  const mojom::Touchpad* GetTouchpad(DeviceId id) override;
+  const mojom::PointingStick* GetPointingStick(DeviceId id) override;
+  const mojom::GraphicsTablet* GetGraphicsTablet(DeviceId id) override;
   const mojom::KeyboardPolicies& GetKeyboardPolicies() override;
   const mojom::MousePolicies& GetMousePolicies() override;
   bool SetKeyboardSettings(DeviceId id,

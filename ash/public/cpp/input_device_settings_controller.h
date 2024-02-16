@@ -103,6 +103,22 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual const mojom::GraphicsTabletSettings* GetGraphicsTabletSettings(
       DeviceId id) = 0;
 
+  // Returns the keyboard that maps to the given id. Returns nullptr if no
+  // keyboard exists.
+  virtual const mojom::Keyboard* GetKeyboard(DeviceId id) = 0;
+  // Returns the touchpad that maps to the given id. Returns nullptr if no
+  // touchpad exists.
+  virtual const mojom::Touchpad* GetTouchpad(DeviceId id) = 0;
+  // Returns the mouse that maps to the given id. Returns nullptr if no
+  // mouse exists.
+  virtual const mojom::Mouse* GetMouse(DeviceId id) = 0;
+  // Returns the pointing stick that maps to the given id. Returns nullptr if no
+  // pointing stick exists.
+  virtual const mojom::PointingStick* GetPointingStick(DeviceId id) = 0;
+  // Returns the graphics tablet that maps to the given id. Returns nullptr if
+  // no graphics tablet exists.
+  virtual const mojom::GraphicsTablet* GetGraphicsTablet(DeviceId id) = 0;
+
   // Returns the current set of enterprise policies which control keyboard
   // settings.
   virtual const mojom::KeyboardPolicies& GetKeyboardPolicies() = 0;

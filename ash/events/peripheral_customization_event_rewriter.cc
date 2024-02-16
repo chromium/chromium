@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -22,9 +23,11 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -632,6 +635,25 @@ bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
   return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
 }
 
+void RecordMouseInvalidKeyPressed(InputDeviceSettingsController* controller,
+                                  const ui::KeyEvent& key_event) {
+  if (key_event.type() == ui::ET_KEY_RELEASED || key_event.is_repeat()) {
+    return;
+  }
+
+  auto* mouse = controller->GetMouse(key_event.source_device_id());
+  if (!mouse) {
+    return;
+  }
+
+  LOG(WARNING) << base::StringPrintf(
+      "Mouse '%s' with identifier '%s' attempted to register keyboard code "
+      "'%04x'.",
+      mouse->name.c_str(), mouse->device_key.c_str(), key_event.key_code());
+  base::UmaHistogramSparse("ChromeOS.Inputs.Mouse.InvalidRegistration",
+                           key_event.key_code());
+}
+
 }  // namespace
 
 // Compares the `DeviceIdButton` struct based on first the device id, and then
@@ -841,6 +863,7 @@ bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
     const ui::KeyEvent& key_event,
     DeviceType device_type) {
   if (device_type == DeviceType::kMouse && !IsButtonCustomizable(key_event)) {
+    RecordMouseInvalidKeyPressed(input_device_settings_controller_, key_event);
     return false;
   }
 

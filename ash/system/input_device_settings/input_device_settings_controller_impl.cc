@@ -1780,6 +1780,30 @@ void InputDeviceSettingsControllerImpl::InitializeTouchpadSettings(
       local_state_, active_account_id_.value(), touchpad);
 }
 
+const mojom::Mouse* InputDeviceSettingsControllerImpl::GetMouse(DeviceId id) {
+  return FindMouse(id);
+}
+
+const mojom::Touchpad* InputDeviceSettingsControllerImpl::GetTouchpad(
+    DeviceId id) {
+  return FindTouchpad(id);
+}
+
+const mojom::Keyboard* InputDeviceSettingsControllerImpl::GetKeyboard(
+    DeviceId id) {
+  return FindKeyboard(id);
+}
+
+const mojom::GraphicsTablet*
+InputDeviceSettingsControllerImpl::GetGraphicsTablet(DeviceId id) {
+  return FindGraphicsTablet(id);
+}
+
+const mojom::PointingStick* InputDeviceSettingsControllerImpl::GetPointingStick(
+    DeviceId id) {
+  return FindPointingStick(id);
+}
+
 mojom::Mouse* InputDeviceSettingsControllerImpl::FindMouse(DeviceId id) {
   return FindDevice(id, duplicate_id_finder_.get(), mice_);
 }

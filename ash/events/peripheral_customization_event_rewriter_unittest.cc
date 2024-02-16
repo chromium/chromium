@@ -1003,6 +1003,26 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
             RunRewriter(KeyA::Typed(), ui::EF_NONE, kRandomKeyboardDeviceId));
 }
 
+TEST_F(PeripheralCustomizationEventRewriterTest, InvalidRegistrationMetric) {
+  mojom::Mouse test_mouse;
+  ON_CALL(*controller_, GetMouse(testing::_))
+      .WillByDefault(testing::Return(&test_mouse));
+
+  base::HistogramTester histogram_tester;
+
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      mojom::CustomizationRestriction::kDisableKeyEventRewrites);
+
+  EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration", KeyA::Pressed().keycode, 1);
+
+  EXPECT_EQ(KeyB::Typed(), RunRewriter(KeyB::Typed()));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration", KeyB::Pressed().keycode, 1);
+}
+
 class MouseButtonObserverTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<EventRewriterTestData> {};
