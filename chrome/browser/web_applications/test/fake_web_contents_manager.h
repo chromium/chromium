@@ -126,6 +126,7 @@ class FakeWebContentsManager : public WebContentsManager {
   void SetPageState(const GURL& gurl, FakePageState page_state);
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);
+  bool HasPageState(const GURL& gurl);
 
   using LoadUrlTracker = base::RepeatingCallback<void(
       content::NavigationController::LoadURLParams& load_url_params,

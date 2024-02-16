@@ -14,9 +14,11 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -49,15 +51,23 @@
 namespace web_app {
 namespace {
 
+constexpr char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
 constexpr char kManifestPath[] = "/manifest.webmanifest";
 
 using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                      InstallIsolatedWebAppCommandError>;
 
+FakeWebAppProvider* GetFakeWebAppProvider(Profile* profile) {
+  // We can't use FakeWebAppProvider::Get here because we don't want it to
+  // CHECK that FakeWebAppProvider is non-null.
+  return WebAppProvider::GetForWebApps(profile)
+      ->AsFakeWebAppProviderForTesting();
+}
+
 void FakeInstallPageState(Profile* profile,
                           const IsolatedWebAppUrlInfo& url_info,
                           blink::mojom::ManifestPtr blink_manifest) {
-  auto* fake_web_app_provider = FakeWebAppProvider::Get(profile);
+  FakeWebAppProvider* fake_web_app_provider = GetFakeWebAppProvider(profile);
   CHECK(fake_web_app_provider) << "WebAppProvider isn't faked";
   auto& fake_web_contents_manager = static_cast<FakeWebContentsManager&>(
       fake_web_app_provider->web_contents_manager());
@@ -71,8 +81,7 @@ void FakeInstallPageState(Profile* profile,
     icon_state.bitmaps = {CreateSquareIcon(256, SK_ColorWHITE)};
   }
 
-  GURL install_url =
-      base_url.Resolve("/.well-known/_generated_install_page.html");
+  GURL install_url = base_url.Resolve(kInstallPagePath);
   FakeWebContentsManager::FakePageState& install_page_state =
       fake_web_contents_manager.GetOrCreatePageState(install_url);
   install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
@@ -87,9 +96,28 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolatedWebAppLocation& location) {
-  base::test::TestFuture<InstallResult> future;
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+  if (FakeWebAppProvider* fake_provider = GetFakeWebAppProvider(profile)) {
+    if (!fake_provider->on_registry_ready().is_signaled() ||
+        !fake_provider->on_external_managers_synchronized().is_signaled()) {
+      LOG(WARNING)
+          << "FakeWebAppProvider is not initialized. Try adding a call to "
+          << "web_app::test::AwaitStartWebAppProviderAndSubsystems(Profile*) "
+          << "during test setup.";
+    }
+
+    GURL install_url = url_info.origin().GetURL().Resolve(kInstallPagePath);
+    auto& web_contents_manager = static_cast<FakeWebContentsManager&>(
+        fake_provider->web_contents_manager());
+    if (!web_contents_manager.HasPageState(install_url)) {
+      LOG(WARNING) << "The install page for this IWA has not been faked. "
+                   << "You likely need to call FakeInstallPageState before "
+                   << "Install.";
+    }
+  }
+
+  base::test::TestFuture<InstallResult> future;
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info, location,
       /*expected_version=*/std::nullopt,
@@ -111,6 +139,7 @@ ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
     const std::vector<uint8_t> serialized_bundle,
     std::optional<ManifestBuilder> manifest_builder)
     : web_bundle_id_(web_bundle_id), manifest_builder_(manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(bundle_file_.Create());
   CHECK(base::WriteFile(bundle_file_.path(), serialized_bundle));
 }
@@ -345,7 +374,7 @@ std::string IsolatedWebAppBuilder::Resource::body() const {
 IsolatedWebAppBuilder::IsolatedWebAppBuilder(
     const ManifestBuilder& manifest_builder)
     : manifest_builder_(manifest_builder) {
-  AddHtml("/", "Test html");
+  AddHtml("/", "Test Isolated Web App");
   AddImageAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
 }
 

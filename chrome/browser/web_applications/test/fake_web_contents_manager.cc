@@ -416,6 +416,10 @@ void FakeWebContentsManager::DeletePageState(const GURL& gurl) {
   page_state_.erase(gurl);
 }
 
+bool FakeWebContentsManager::HasPageState(const GURL& gurl) {
+  return page_state_.find(gurl) != page_state_.end();
+}
+
 void FakeWebContentsManager::TrackLoadUrlCalls(
     LoadUrlTracker load_url_tracker) {
   load_url_tracker_ = std::move(load_url_tracker);
