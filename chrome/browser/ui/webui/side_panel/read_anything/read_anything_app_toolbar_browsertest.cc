@@ -80,11 +80,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, SupportedFonts_Correct) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
-                       FontSizeCallback_ChangesFontSize) {
-  ASSERT_TRUE(RunTest("font_size_callback_changes_font_size.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
                        FontNameCallback_ChangesFont) {
   ASSERT_TRUE(RunTest("font_name_callback_changes_font.js"));
 }
@@ -112,15 +107,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, FontSelectionShows) {
   ASSERT_TRUE(RunTest("font_select_without_read_aloud.js"));
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, FontSizeButtonsOnToolbar) {
-  ASSERT_TRUE(RunTest("font_size_buttons_without_read_aloud.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, LinksToggleButtonOnToolbar) {
   ASSERT_TRUE(RunTest("links_toggle_button.js"));
-}
-
-// TODO(crbug.com/1474951): Remove this test once Read Aloud flag is removed.
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, ReadAloud_Hidden) {
-  ASSERT_TRUE(RunTest("toolbar_without_flag_hides_read_aloud.js"));
 }

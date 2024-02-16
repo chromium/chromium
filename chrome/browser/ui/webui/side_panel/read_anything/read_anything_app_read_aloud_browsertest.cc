@@ -78,10 +78,6 @@ class ReadAnythingAppReadAloudTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_Visible) {
-  ASSERT_TRUE(RunTest("read_aloud_visible_with_flag.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        ReadAloud_HighlightWhileReading) {
   ASSERT_TRUE(RunTest("read_aloud_highlight_while_reading.js"));
@@ -122,11 +118,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        HighlightCallback_TogglesHighlight) {
   ASSERT_TRUE(RunTest("highlight_callback_toggles_highlight.js"));
 }
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_FontSizeMenu) {
-  ASSERT_TRUE(RunTest("font_size_menu_with_read_aloud.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_FontMenu) {
   ASSERT_TRUE(RunTest("font_menu_with_read_aloud.js"));
 }

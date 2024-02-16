@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "read_anything_app_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "url/gurl.h"
@@ -349,6 +351,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsGoogleDocs() { return controller_->IsGoogleDocs(); }
 
+  bool IsReadAloudEnabled() { return controller_->IsReadAloudEnabled(); }
+
   bool IsLeafNode(ui::AXNodeID ax_node_id) {
     return controller_->IsLeafNode(ax_node_id);
   }
@@ -392,12 +396,20 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
   // not accessible by std::make_unique.
   raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
 };
+
+TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
+  EXPECT_FALSE(IsReadAloudEnabled());
+
+  scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  EXPECT_TRUE(IsReadAloudEnabled());
+}
 
 TEST_F(ReadAnythingAppControllerTest, Theme) {
   std::string font_name = "Roboto";

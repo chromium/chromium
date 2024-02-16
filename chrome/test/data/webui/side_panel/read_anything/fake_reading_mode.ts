@@ -127,8 +127,12 @@ export class FakeReadingMode {
   onVeryLooseLineSpacing() {}
 
   // Called when a user makes a font size change via the webui toolbar.
-  onFontSizeChanged(_increase: boolean) {}
-  onFontSizeReset() {}
+  onFontSizeChanged(_increase: boolean) {
+    this.fontSize = this.fontSize + (_increase ? 1 : -1);
+  }
+  onFontSizeReset() {
+    this.fontSize = 0;
+  }
 
   // Called when a user toggles links via the webui toolbar.
   onLinksEnabledToggled() {}

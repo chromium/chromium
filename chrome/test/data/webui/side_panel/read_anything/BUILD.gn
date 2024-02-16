@@ -11,6 +11,8 @@ build_webui_tests("build") {
   files = [
     "checkmark_visible_on_selected.ts",
     "voice_selection_menu_test.ts",
+    "read_aloud_flag_test.ts",
+    "font_size_test.ts",
     "fake_reading_mode.ts",
   ]
 
