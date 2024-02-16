@@ -32,8 +32,33 @@ message VaultParameters {
   bytes vault_handle = 4;
 }
 
+message VaultMetadata {
+  // Lock screen type.
+  enum LskfType {
+    LSKF_TYPE_UNSPECIFIED = 0;
+    PIN = 1;
+    PASSWORD = 2;
+  }
+  optional LskfType lskf_type = 1;
+
+  reserved 2, 3;
+
+  enum HashType {
+    HASH_TYPE_UNSPECIFIED = 0;
+    SCRYPT = 3;
+
+    reserved 1, 2;
+  }
+  optional HashType hash_type = 4;
+  optional bytes hash_salt = 5;
+  optional int32 hash_difficulty = 6;
+  optional bytes cert_path = 7;
+}
+
 message Vault {
+  string name = 1;
   VaultParameters vault_parameters = 2;
+  // This contains a serialized VaultMetadata proto.
   bytes vault_metadata = 3;
   bytes recovery_key = 4;
   repeated ApplicationKey application_keys = 5;
