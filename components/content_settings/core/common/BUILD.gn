@@ -42,6 +42,7 @@ static_library("common") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":content_settings_enums",
     ":content_settings_types",
     ":features",
     "//base",
@@ -95,11 +96,22 @@ mojom("content_settings_types") {
   generate_legacy_js_bindings = true
 }
 
+mojom("content_settings_enums") {
+  generate_java = true
+  sources = [ "content_settings_enums.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+}
+
 mojom("mojo_bindings") {
   generate_java = true
   sources = [ "content_settings.mojom" ]
 
   public_deps = [
+    ":content_settings_enums",
     ":content_settings_types",
     "//mojo/public/mojom/base",
   ]

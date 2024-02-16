@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom.h"
 
 namespace mojo {
 template <typename DataViewType, typename T>
@@ -14,7 +15,6 @@ struct StructTraits;
 }  // namespace mojo
 namespace content_settings::mojom {
 class RuleMetaDataDataView;
-enum class TpcdMetadataRuleSource;
 }  // namespace content_settings::mojom
 
 namespace content_settings {
@@ -100,7 +100,7 @@ class RuleMetaData {
   // Metadata Source and is expected to be cleaned up with the mitigation
   // cleanup.
   mojom::TpcdMetadataRuleSource tpcd_metadata_rule_source_ =
-      static_cast<mojom::TpcdMetadataRuleSource>(0);
+      mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED;
 };
 
 }  // namespace content_settings

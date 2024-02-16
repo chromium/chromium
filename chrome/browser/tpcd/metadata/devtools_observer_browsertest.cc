@@ -64,7 +64,11 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                                 first_party_pattern_spec);
     metadata_pairs.emplace_back(third_party_pattern_spec_2,
                                 first_party_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, third_party_pattern_spec_1,
+                       first_party_pattern_spec);
+    AddEntryToMetadata(metadata, third_party_pattern_spec_2,
+                       first_party_pattern_spec);
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(
         metadata.SerializeAsString());
 

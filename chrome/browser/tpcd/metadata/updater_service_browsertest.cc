@@ -210,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
 
-  std::vector<MetadataPair> metadata_pairs;
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
   ASSERT_EQ(metadata.metadata_entries_size(), 0);
 
   MockComponentInstallation(metadata);
@@ -228,12 +227,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 
-  const std::string primary_pattern_spec = "[*.]bar.com";
-  const std::string secondary_pattern_spec = "[*.]foo.com";
-
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, "[*.]bar.com", "[*.]foo.com");
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   MockComponentInstallation(metadata);
@@ -260,12 +255,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
       url::Origin::Create(GURL("http://www.daz.com"));
 
   {
-    const std::string primary_pattern_spec = "[*.]bar.com";
-    const std::string secondary_pattern_spec = "[*.]foo.com";
-
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, "[*.]bar.com", "[*.]foo.com");
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
@@ -280,12 +271,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   }
 
   {
-    const std::string primary_pattern_spec = "[*.]baz.com";
-    const std::string secondary_pattern_spec = "[*.]daz.com";
-
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, "[*.]baz.com", "[*.]daz.com");
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
@@ -370,8 +357,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
             ContentSetting::CONTENT_SETTING_BLOCK);
 
   const std::string wildcard_spec = "*";
-  Metadata metadata =
-      MakeMetadataProtoFromVectorOfPair({{wildcard_spec, wildcard_spec}});
+  Metadata metadata;
+  AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
   EXPECT_THAT(
@@ -406,8 +393,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
         ContentSettingsPattern::FromURLNoWildcard(third_party_url).ToString();
     const std::string secondary_pattern_spec =
         ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(
-        {{primary_pattern_spec, secondary_pattern_spec}});
+    Metadata metadata;
+    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
 
@@ -443,8 +430,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
         ContentSettingsPattern::FromURLNoWildcard(third_party_url).ToString();
     const std::string secondary_pattern_spec =
         ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(
-        {{primary_pattern_spec, secondary_pattern_spec}});
+    Metadata metadata;
+    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
 
@@ -482,9 +469,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
       ContentSettingsPattern::FromURLNoWildcard(third_party_url).ToString();
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 
@@ -558,9 +544,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
       ContentSettingsPattern::FromURLNoWildcard(third_party_url).ToString();
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 
@@ -632,9 +617,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
       ContentSettingsPattern::FromURLNoWildcard(third_party_url).ToString();
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 

@@ -9,16 +9,18 @@
 #include <vector>
 
 #include "components/tpcd/metadata/metadata.pb.h"
+#include "components/tpcd/metadata/parser.h"
 
 namespace tpcd::metadata {
 
 using MetadataPair = std::pair<std::string, std::string>;
 
-Metadata MakeMetadataProtoFromVectorOfPair(
-    const std::vector<MetadataPair>& metadata_pairs);
+void AddEntryToMetadata(Metadata& metadata,
+                        const std::string& primary_pattern_spec,
+                        const std::string& secondary_pattern_spec,
+                        const std::string& source = Parser::kSourceTest);
 
-std::string MakeBase64EncodedMetadata(
-    const std::vector<MetadataPair>& metadata_pairs);
+std::string MakeBase64EncodedMetadata(const Metadata& metadata);
 
 }  // namespace tpcd::metadata
 

@@ -168,11 +168,10 @@ class AdHeuristicTPCDBrowserTestBase
     // trigger the calls, it only works for cases when matching the first
     // primary pattern.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    const std::string primary_pattern_spec =
-        ContentSettingsPattern::FromURL(third_party_url).ToString();
-    tpcd::metadata::Metadata metadata =
-        tpcd::metadata::MakeMetadataProtoFromVectorOfPair(
-            {{primary_pattern_spec, "*"}});
+    tpcd::metadata::Metadata metadata;
+    tpcd::metadata::AddEntryToMetadata(
+        metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
+        "*");
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
     EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())

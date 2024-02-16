@@ -187,8 +187,7 @@ TEST_F(ParserTest, GetMetadata_MissingMetadata) {
 }
 
 TEST_F(ParserTest, ParseMetadata_EmptyList) {
-  std::vector<MetadataPair> metadata_pairs;
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
   parser()->ParseMetadata(GetFakeComponent());
@@ -199,9 +198,8 @@ TEST_F(ParserTest, ParseMetadata_NonEmptyList) {
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -220,9 +218,8 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterOnly) {
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-  Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -238,11 +235,10 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsOnly) {
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  std::vector<MetadataPair> metadata_pairs;
-  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-
+  Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
-                            MakeBase64EncodedMetadata(metadata_pairs)}});
+                            MakeBase64EncodedMetadata(metadata)}});
 
   MetadataEntries me = parser()->GetMetadata();
   ASSERT_EQ(me.size(), 1u);
@@ -258,9 +254,8 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterThenFeatureParams) {
   {
     EnableFeature();
 
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -275,11 +270,11 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterThenFeatureParams) {
   ResetFeature();
 
   {
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(wildcard_spec, wildcard_spec);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
-                              MakeBase64EncodedMetadata(metadata_pairs)}});
+                              MakeBase64EncodedMetadata(metadata)}});
 
     MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     ASSERT_EQ(me.size(), 1u);
@@ -299,11 +294,11 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_1) {
   const std::string wildcard_spec = "*";
 
   {
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(wildcard_spec, wildcard_spec);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
-                              MakeBase64EncodedMetadata(metadata_pairs)}});
+                              MakeBase64EncodedMetadata(metadata)}});
 
     MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     EXPECT_THAT(me, IsEmpty());
@@ -319,9 +314,8 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_1) {
   {
     EnableFeature();
 
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -340,11 +334,11 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
   const std::string wildcard_spec = "*";
 
   {
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(wildcard_spec, wildcard_spec);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
-                              MakeBase64EncodedMetadata(metadata_pairs)}});
+                              MakeBase64EncodedMetadata(metadata)}});
 
     MetadataEntries me = parser()->GetInstalledMetadataForTesting();
     EXPECT_THAT(me, IsEmpty());
@@ -356,9 +350,8 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
   }
 
   {
-    std::vector<MetadataPair> metadata_pairs;
-    metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
-    Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+    Metadata metadata;
+    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());

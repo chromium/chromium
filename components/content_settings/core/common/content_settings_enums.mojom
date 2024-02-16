@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.components.content_settings"]
+module content_settings.mojom;
+
+// TODO(http://b/324406007): The enum is currently specific to the TPCD
+// Metadata Source and is expected to be cleaned up with the mitigation cleanup.
+enum TpcdMetadataRuleSource {
+  SOURCE_UNSPECIFIED = 0,
+  SOURCE_TEST,
+  SOURCE_1P_DT,
+  SOURCE_3P_DT,
+  SOURCE_DOGFOOD,
+  SOURCE_CRITICAL_SECTOR,
+  SOURCE_CUJ,
+  SOURCE_GOV_EDU_TLD,
+ };

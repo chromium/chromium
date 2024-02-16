@@ -15,6 +15,8 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
@@ -56,7 +58,15 @@ constexpr StorageAccessResult GetStorageAccessResult(
     case ThirdPartyCookieAllowMechanism::
         kAllowByEnterprisePolicyCookieAllowedForUrls:
       return StorageAccessResult::ACCESS_ALLOWED;
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCriticalSector:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_METADATA_GRANT;
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL;
@@ -77,7 +87,15 @@ constexpr std::optional<SettingSource> GetSettingSource(
     ThirdPartyCookieAllowMechanism mechanism) {
   switch (mechanism) {
     // 3PCD-related mechanisms all map to `SETTING_SOURCE_TPCD_GRANT`.
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCriticalSector:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
@@ -155,6 +173,62 @@ GURL CookieSettingsBase::GetFirstPartyURL(
     const url::Origin* top_frame_origin) {
   return top_frame_origin != nullptr ? top_frame_origin->GetURL()
                                      : site_for_cookies.RepresentativeUrl();
+}
+
+// static
+bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
+    const ThirdPartyCookieAllowMechanism& mechanism) {
+  switch (mechanism) {
+    case ThirdPartyCookieAllowMechanism::kNone:
+    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
+    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
+    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowByEnterprisePolicyCookieAllowedForUrls:
+      return false;
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCriticalSector:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+      return true;
+  }
+}
+
+// static
+ThirdPartyCookieAllowMechanism
+CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
+    const mojom::TpcdMetadataRuleSource& source) {
+  switch (source) {
+    case mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
+      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt;
+    case mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
+      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt;
+    case mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
+      return ThirdPartyCookieAllowMechanism::
+          kAllowBy3PCDMetadataSourceUnspecified;
+    case mojom::TpcdMetadataRuleSource::SOURCE_TEST:
+      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest;
+    case mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
+      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood;
+    case mojom::TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR:
+      return ThirdPartyCookieAllowMechanism::
+          kAllowBy3PCDMetadataSourceCriticalSector;
+    case mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
+      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj;
+    case mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
+      return ThirdPartyCookieAllowMechanism::
+          kAllowBy3PCDMetadataSourceGovEduTld;
+  }
 }
 
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
@@ -325,11 +399,12 @@ bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
 bool CookieSettingsBase::IsAllowedBy3pcdMetadataGrantsSettings(
     const GURL& url,
     const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
+    net::CookieSettingOverrides overrides,
+    SettingInfo* out_info) const {
   return ShouldConsider3pcdMetadataGrantsSettings(overrides) &&
          IsAllowed(GetContentSetting(url, first_party_url,
                                      ContentSettingsType::TPCD_METADATA_GRANTS,
-                                     /*info=*/nullptr));
+                                     out_info));
 }
 
 bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
@@ -429,11 +504,13 @@ CookieSettingsBase::DecideAccess(const GURL& url,
         ThirdPartyCookieAllowMechanism::kAllowByStorageAccess};
   }
 
+  SettingInfo info;
   // Sets the 3PCD Metadata Grants last, to prioritize grants from other
   // mitigations and access protocols.
-  if (IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata};
+  if (IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides,
+                                            &info)) {
+    return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
+        info.metadata.tpcd_metadata_rule_source())};
   }
 
   return AllowPartitionedCookies{};

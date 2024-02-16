@@ -119,10 +119,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string primary_pattern_spec = "[*]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  const std::vector<tpcd::metadata::MetadataPair> metadata_pairs{
-      {primary_pattern_spec, secondary_pattern_spec}};
-  tpcd::metadata::Metadata metadata =
-      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  tpcd::metadata::Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -144,10 +142,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*]foo.com";
 
-  const std::vector<tpcd::metadata::MetadataPair> metadata_pairs{
-      {primary_pattern_spec, secondary_pattern_spec}};
-  tpcd::metadata::Metadata metadata =
-      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  tpcd::metadata::Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -169,10 +165,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  const std::vector<tpcd::metadata::MetadataPair> metadata_pairs{
-      {primary_pattern_spec, secondary_pattern_spec}};
-  tpcd::metadata::Metadata metadata =
-      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  tpcd::metadata::Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -206,10 +200,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
-  const std::vector<tpcd::metadata::MetadataPair> metadata_pairs{
-      {primary_pattern_spec, secondary_pattern_spec}};
-  tpcd::metadata::Metadata metadata =
-      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  tpcd::metadata::Metadata metadata;
+  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());

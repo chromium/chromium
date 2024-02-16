@@ -63,7 +63,22 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
       return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
       return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceUnspecified:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceTest:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSource1pDt:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSource3pDt:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceDogFood:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCriticalSector:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceCuj:
+    case CookieSettings::ThirdPartyCookieAllowMechanism::
+        kAllowBy3PCDMetadataSourceGovEduTld:
       return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
     case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:

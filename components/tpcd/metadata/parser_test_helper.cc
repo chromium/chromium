@@ -11,24 +11,19 @@
 
 namespace tpcd::metadata {
 
-Metadata MakeMetadataProtoFromVectorOfPair(
-    const std::vector<MetadataPair>& metadata_pairs) {
-  Metadata metadata;
-  for (const MetadataPair& metadata_pair : metadata_pairs) {
-    MetadataEntry* me = metadata.add_metadata_entries();
-    me->set_primary_pattern_spec(metadata_pair.first);
-    me->set_secondary_pattern_spec(metadata_pair.second);
-    me->set_source(Parser::kSourceTest);
-  }
-  return metadata;
+void AddEntryToMetadata(Metadata& metadata,
+                        const std::string& primary_pattern_spec,
+                        const std::string& secondary_pattern_spec,
+                        const std::string& source) {
+  MetadataEntry* me = metadata.add_metadata_entries();
+  me->set_primary_pattern_spec(primary_pattern_spec);
+  me->set_secondary_pattern_spec(secondary_pattern_spec);
+  me->set_source(source);
 }
 
-std::string MakeBase64EncodedMetadata(
-    const std::vector<MetadataPair>& metadata_pairs) {
+std::string MakeBase64EncodedMetadata(const Metadata& metadata) {
   std::string compressed;
-  compression::GzipCompress(
-      MakeMetadataProtoFromVectorOfPair(metadata_pairs).SerializeAsString(),
-      &compressed);
+  compression::GzipCompress(metadata.SerializeAsString(), &compressed);
 
   return base::Base64Encode(compressed);
 }

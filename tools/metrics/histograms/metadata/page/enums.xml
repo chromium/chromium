@@ -311,21 +311,61 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ThirdPartyCookieAllowMechanism">
-  <int value="0" label="No allow mechanism apply (Not recorded)"/>
+  <int value="0" label="kNone: No allow mechanism applied (Not recorded)."/>
   <int value="1"
-      label="Allow by explicit cookie content setting (e.g. UserBypass)"/>
+      label="kAllowByExplicitSetting: Allowed by explicit cookie content
+             setting (e.g. UserBypass)."/>
   <int value="2"
-      label="Allow by global 3p cookie setting setting (e.g. Enterprise
-             Policy: BlockThirdPartyCookies, UX, Default allow)"/>
+      label="kAllowByGlobalSetting: Allowed by global 3p cookie setting
+             setting (e.g. Enterprise Policy: BlockThirdPartyCookies, UX,
+             Default allow)."/>
   <int value="3"
-      label="Allow by 3PCD metadata grants content settings (Global
-             Allowlist)"/>
-  <int value="4" label="Allow by third-party deprecation trial"/>
-  <int value="5" label="Allow by 3PCD heuristics"/>
-  <int value="6" label="Allow by Storage access API"/>
-  <int value="7" label="Allow by top-level Storage access API"/>
-  <int value="8" label="Allow by opting into CORS protections"/>
-  <int value="9" label="Allow by Enterprise Policy: CookiesAllowedForUrls"/>
+      label="kAllowBy3PCDMetadata: (Deprecated) Allowed by 3PCD metadata
+             grants content settings (Global Allowlist)."/>
+  <int value="4"
+      label="kAllowBy3PCD: Allowed by third-party deprecation trial."/>
+  <int value="5" label="kAllowBy3PCDHeuristics: Allowed by 3PCD heuristics."/>
+  <int value="6" label="kAllowByStorageAccess: Allowed by Storage access API."/>
+  <int value="7"
+      label="kAllowByTopLevelStorageAccess: Allowed by top-level Storage
+             access API."/>
+  <int value="8"
+      label="kAllowByCORSException: Allowed by opting into CORS protections."/>
+  <int value="9"
+      label="kAllowByTopLevel3PCD: Allowed by top-level third-party
+             deprecation trial."/>
+  <int value="10"
+      label="kAllowByEnterprisePolicyCookieAllowedForUrls: Allowed by
+             CookiesAllowedForUrls Enterprise Policy."/>
+  <int value="11"
+      label="kAllowBy3PCDMetadataSourceUnspecified: Allowed by entries with
+             unspecified source within the 3PCD metadata grants content
+             settings (Global Allowlist)."/>
+  <int value="12"
+      label="kAllowBy3PCDMetadataSourceTest: Allowed by test entries within
+             the 3PCD metadata grants content settings (Global Allowlist)."/>
+  <int value="13"
+      label="kAllowBy3PCDMetadataSource1pDt: Allowed by 1P DT entries within
+             the 3PCD metadata grants content settings (Global Allowlist)."/>
+  <int value="14"
+      label="kAllowBy3PCDMetadataSource3pDt: Allowed by 3P DT entries within
+             the 3PCD metadata grants content settings (Global Allowlist)"/>
+  <int value="15"
+      label="kAllowBy3PCDMetadataSourceDogFood: Allowed by dogfood entries
+             within the 3PCD metadata grants content settings (Global
+             Allowlist)."/>
+  <int value="16"
+      label="kAllowBy3PCDMetadataSourceCriticalSector: Allowed by critical
+             sector entries within the 3PCD metadata grants content settings
+             (Global Allowlist)."/>
+  <int value="17"
+      label="kAllowBy3PCDMetadataSourceCuj: Allowed by critical user journey
+             entries within the 3PCD metadata grants content settings (Global
+             Allowlist)."/>
+  <int value="18"
+      label="kAllowBy3PCDMetadataSourceGovEduTld: Allowed by government and
+             education TLD entries within the 3PCD metadata grants content
+             settings (Global Allowlist)."/>
 </enum>
 
 </enums>
