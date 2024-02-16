@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 
-#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace autofill {
 
@@ -85,6 +85,44 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
   iban_specifics->set_suffix("0189");
   iban_specifics->set_length(27);
   iban_specifics->set_nickname("My IBAN");
+  return wallet_specifics;
+}
+
+sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
+    const std::string_view client_tag,
+    std::string nickname,
+    const GURL& display_icon_url,
+    std::string bank_name,
+    std::string account_number_suffix,
+    sync_pb::BankAccountDetails::AccountType account_type) {
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  wallet_specifics.set_type(
+      sync_pb::AutofillWalletSpecifics_WalletInfoType::
+          AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT);
+
+  sync_pb::PaymentInstrument* payment_instrument_specifics =
+      wallet_specifics.mutable_payment_instrument();
+
+  int64_t instrument_id;
+  // The client tag is expected to of the format:
+  // 'payment_instrument:<instrument_id>', so we first find the index of ':' and
+  // then convert the succeeding characters to a number.
+  size_t index = client_tag.find(":");
+  if (index != std::string::npos &&
+      base::StringToInt64(client_tag.substr(index + 1), &instrument_id)) {
+    payment_instrument_specifics->set_instrument_id(instrument_id);
+  }
+  payment_instrument_specifics->set_nickname(nickname);
+  payment_instrument_specifics->set_display_icon_url(display_icon_url.spec());
+  payment_instrument_specifics->add_supported_rails(
+      sync_pb::PaymentInstrument_SupportedRail::
+          PaymentInstrument_SupportedRail_PIX);
+  sync_pb::BankAccountDetails* bank_account_details =
+      payment_instrument_specifics->mutable_bank_account();
+  bank_account_details->set_bank_name(bank_name);
+  bank_account_details->set_account_number_suffix(account_number_suffix);
+  bank_account_details->set_account_type(account_type);
+
   return wallet_specifics;
 }
 

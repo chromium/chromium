@@ -12,16 +12,18 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -56,6 +58,11 @@ std::string GetClientTagFromCreditCardCloudTokenData(
 
 std::string GetClientTagFromIban(const Iban& iban) {
   return base::NumberToString(iban.instrument_id());
+}
+
+std::string GetClientTagFromBankAccount(const BankAccount& bank_account) {
+  return base::NumberToString(
+      bank_account.payment_instrument().instrument_id());
 }
 
 // Returns the storage key to be used for wallet data for the specified wallet
@@ -127,6 +134,20 @@ std::unique_ptr<EntityData> CreateEntityDataFromIban(const Iban& iban,
       entity_data->specifics.mutable_autofill_wallet();
   SetAutofillWalletSpecificsFromMaskedIban(iban, wallet_specifics,
                                            enforce_utf8);
+  return entity_data;
+}
+
+// Creates a EntityData object corresponding to the specified `bank_account`.
+std::unique_ptr<EntityData> CreateEntityDataFromBankAccount(
+    const BankAccount& bank_account) {
+  auto entity_data = std::make_unique<EntityData>();
+  entity_data->name =
+      "Bank Account " +
+      base::Base64Encode(GetClientTagFromBankAccount(bank_account));
+
+  AutofillWalletSpecifics* wallet_specifics =
+      entity_data->specifics.mutable_autofill_wallet();
+  SetAutofillWalletSpecificsFromBankAccount(bank_account, wallet_specifics);
   return entity_data;
 }
 
@@ -255,10 +276,13 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
   std::vector<std::unique_ptr<Iban>> ibans;
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
   std::unique_ptr<PaymentsCustomerData> customer_data;
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
   if (!GetAutofillTable()->GetServerCreditCards(cards) ||
       !GetAutofillTable()->GetServerIbans(ibans) ||
       !GetAutofillTable()->GetCreditCardCloudTokenData(cloud_token_data) ||
-      !GetAutofillTable()->GetPaymentsCustomerData(customer_data)) {
+      !GetAutofillTable()->GetPaymentsCustomerData(customer_data) ||
+      (AreMaskedBankAccountSupported() &&
+       !GetAutofillTable()->GetMaskedBankAccounts(bank_accounts))) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -288,6 +312,14 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
         GetStorageKeyForWalletDataClientTag(GetClientTagFromIban(*entry)),
         CreateEntityDataFromIban(*entry, enforce_utf8));
   }
+  if (AreMaskedBankAccountSupported()) {
+    for (const std::unique_ptr<BankAccount>& entry : bank_accounts) {
+      batch->Put(GetStorageKeyForWalletDataClientTag(
+                     GetClientTagFromBankAccount(*entry)),
+                 CreateEntityDataFromBankAccount(*entry));
+    }
+  }
+
   std::move(callback).Run(std::move(batch));
 }
 
@@ -301,8 +333,10 @@ void AutofillWalletSyncBridge::SetSyncData(
   std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data);
+                                  customer_data, cloud_token_data,
+                                  bank_accounts);
 
   wallet_data_changed |=
       SetWalletCards(std::move(wallet_cards), notify_webdata_backend);
@@ -311,7 +345,9 @@ void AutofillWalletSyncBridge::SetSyncData(
   wallet_data_changed |= SetPaymentsCustomerData(std::move(customer_data));
   wallet_data_changed |=
       SetCreditCardCloudTokenData(std::move(cloud_token_data));
-
+  if (AreMaskedBankAccountSupported()) {
+    wallet_data_changed |= SetBankAccountsData(std::move(bank_accounts));
+  }
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on commiting transactions on shutdown). We need to commit
@@ -459,6 +495,18 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
     table->SetCreditCardCloudTokenData(cloud_token_data);
     return true;
   }
+  return false;
+}
+
+bool AutofillWalletSyncBridge::SetBankAccountsData(
+    const std::vector<BankAccount>& bank_accounts) {
+  PaymentsAutofillTable* table = GetAutofillTable();
+  std::vector<std::unique_ptr<BankAccount>> existing_data;
+  table->GetMaskedBankAccounts(existing_data);
+  if (AreAnyItemsDifferent(existing_data, bank_accounts)) {
+    return table->SetMaskedBankAccounts(bank_accounts);
+  }
+
   return false;
 }
 

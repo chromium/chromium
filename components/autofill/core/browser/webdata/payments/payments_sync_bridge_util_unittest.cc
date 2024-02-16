@@ -8,18 +8,21 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -122,9 +125,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
       CreateAutofillWalletSpecificsForIban(
           /*client_tag=*/iban_id);
+
   entity_data.push_back(EntityChange::CreateAdd(
-      credit_card_id_1,
-      SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
+      credit_card_id_1, SpecificsToEntity(wallet_specifics_card1,
+                                          /*client_tag=*/"card-card1")));
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_2,
       SpecificsToEntity(wallet_specifics_card2, /*client_tag=*/"card-card2")));
@@ -148,8 +152,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data);
+                                  customer_data, cloud_token_data,
+                                  bank_accounts);
 
   ASSERT_EQ(2U, wallet_cards.size());
 
@@ -611,6 +617,98 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_EQ(server_cvc_from_conversion.last_updated_timestamp,
             server_cvc->last_updated_timestamp);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that PopulateWalletTypesFromSyncData populates BankAccounts.
+TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string bank_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/bank_account_id, /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  entity_data.push_back(EntityChange::CreateAdd(
+      bank_account_id,
+      SpecificsToEntity(payment_instrument_bank_account_specifics,
+                        /*client_tag=*/"bank_account")));
+  BankAccount expected_bank_account(
+      /*instrument_id=*/123545, /*nickname=*/u"Pix bank account",
+      /*display_icon_url=*/GURL("http://www.google.com"),
+      /*bank_name=*/u"ABC Bank",
+      /*account_number_suffix=*/u"1234", BankAccount::AccountType::kChecking);
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts);
+
+  ASSERT_EQ(1u, bank_accounts.size());
+  EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
+}
+
+// Tests that PopulateWalletTypesFromSyncData does not BankAccounts if Pix
+// experiment flag is disabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulateBankAccountFromSyncDataExperimentOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string bank_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/bank_account_id, /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  entity_data.push_back(EntityChange::CreateAdd(
+      bank_account_id,
+      SpecificsToEntity(payment_instrument_bank_account_specifics,
+                        /*client_tag=*/"bank_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts);
+
+  EXPECT_EQ(0u, bank_accounts.size());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/"payment_instrument:123545",
+          /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  BankAccount expected_bank_account(
+      /*instrument_id=*/123545, /*nickname=*/u"Pix bank account",
+      /*display_icon_url=*/GURL("http://www.google.com"),
+      /*bank_name=*/u"ABC Bank",
+      /*account_number_suffix=*/u"1234", BankAccount::AccountType::kChecking);
+
+  EXPECT_EQ(
+      expected_bank_account,
+      BankAccountFromWalletSpecifics(
+          payment_instrument_bank_account_specifics.payment_instrument()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

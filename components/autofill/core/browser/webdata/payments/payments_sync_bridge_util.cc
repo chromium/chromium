@@ -17,11 +17,14 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -189,6 +192,54 @@ Iban IbanFromSpecifics(const sync_pb::WalletMaskedIban& iban) {
   result.set_length(iban.length());
   result.set_nickname(base::UTF8ToUTF16(iban.nickname()));
   return result;
+}
+
+BankAccount::AccountType ConvertSyncAccountTypeToBankAccountType(
+    sync_pb::BankAccountDetails::AccountType account_type) {
+  switch (account_type) {
+    case sync_pb::BankAccountDetails_AccountType_CHECKING:
+      return BankAccount::AccountType::kChecking;
+    case sync_pb::BankAccountDetails_AccountType_SAVINGS:
+      return BankAccount::AccountType::kSavings;
+    case sync_pb::BankAccountDetails_AccountType_CURRENT:
+      return BankAccount::AccountType::kCurrent;
+    case sync_pb::BankAccountDetails_AccountType_SALARY:
+      return BankAccount::AccountType::kSalary;
+    case sync_pb::BankAccountDetails_AccountType_TRANSACTING_ACCOUNT:
+      return BankAccount::AccountType::kTransactingAccount;
+    case sync_pb::BankAccountDetails_AccountType_ACCOUNT_TYPE_UNSPECIFIED:
+      return BankAccount::AccountType::kUnknown;
+  }
+}
+
+sync_pb::BankAccountDetails::AccountType
+ConvertBankAccountTypeToSyncBankAccountType(
+    BankAccount::AccountType account_type) {
+  switch (account_type) {
+    case BankAccount::AccountType::kChecking:
+      return sync_pb::BankAccountDetails_AccountType_CHECKING;
+    case BankAccount::AccountType::kSavings:
+      return sync_pb::BankAccountDetails_AccountType_SAVINGS;
+    case BankAccount::AccountType::kCurrent:
+      return sync_pb::BankAccountDetails_AccountType_CURRENT;
+    case BankAccount::AccountType::kSalary:
+      return sync_pb::BankAccountDetails_AccountType_SALARY;
+    case BankAccount::AccountType::kTransactingAccount:
+      return sync_pb::BankAccountDetails_AccountType_TRANSACTING_ACCOUNT;
+    case BankAccount::AccountType::kUnknown:
+      return sync_pb::BankAccountDetails_AccountType_ACCOUNT_TYPE_UNSPECIFIED;
+  }
+}
+
+sync_pb::PaymentInstrument::SupportedRail
+ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
+    PaymentInstrument::PaymentRail payment_rail) {
+  switch (payment_rail) {
+    case PaymentInstrument::PaymentRail::kPix:
+      return sync_pb::PaymentInstrument_SupportedRail_PIX;
+    case PaymentInstrument::PaymentRail::kUnknown:
+      return sync_pb::PaymentInstrument_SupportedRail_SUPPORTED_RAIL_UNKNOWN;
+  }
 }
 
 }  // namespace
@@ -543,6 +594,47 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
           GURL(virtual_card_usage_data_specifics.merchant_url())));
 }
 
+BankAccount BankAccountFromWalletSpecifics(
+    const sync_pb::PaymentInstrument& payment_instrument) {
+  return BankAccount(
+      payment_instrument.instrument_id(),
+      base::UTF8ToUTF16(payment_instrument.nickname()),
+      GURL(payment_instrument.display_icon_url()),
+      base::UTF8ToUTF16(payment_instrument.bank_account().bank_name()),
+      base::UTF8ToUTF16(
+          payment_instrument.bank_account().account_number_suffix()),
+      ConvertSyncAccountTypeToBankAccountType(
+          payment_instrument.bank_account().account_type()));
+}
+
+void SetAutofillWalletSpecificsFromBankAccount(
+    const BankAccount& bank_account,
+    sync_pb::AutofillWalletSpecifics* wallet_specifics) {
+  wallet_specifics->set_type(AutofillWalletSpecifics::PAYMENT_INSTRUMENT);
+  sync_pb::PaymentInstrument* wallet_payment_instrument =
+      wallet_specifics->mutable_payment_instrument();
+  wallet_payment_instrument->set_instrument_id(
+      bank_account.payment_instrument().instrument_id());
+  wallet_payment_instrument->set_nickname(
+      base::UTF16ToUTF8(bank_account.payment_instrument().nickname()));
+  wallet_payment_instrument->set_display_icon_url(
+      bank_account.payment_instrument().display_icon_url().spec());
+  for (PaymentInstrument::PaymentRail supported_payment_rail :
+       bank_account.payment_instrument().supported_rails()) {
+    wallet_payment_instrument->add_supported_rails(
+        ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
+            supported_payment_rail));
+  }
+  sync_pb::BankAccountDetails* bank_account_details =
+      wallet_payment_instrument->mutable_bank_account();
+  bank_account_details->set_bank_name(
+      base::UTF16ToUTF8(bank_account.bank_name()));
+  bank_account_details->set_account_number_suffix(
+      base::UTF16ToUTF8(bank_account.account_number_suffix()));
+  bank_account_details->set_account_type(
+      ConvertBankAccountTypeToSyncBankAccountType(bank_account.account_type()));
+}
+
 void CopyRelevantWalletMetadataAndCvc(
     const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -580,7 +672,8 @@ void PopulateWalletTypesFromSyncData(
     std::vector<CreditCard>& wallet_cards,
     std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>& customer_data,
-    std::vector<CreditCardCloudTokenData>& cloud_token_data) {
+    std::vector<CreditCardCloudTokenData>& cloud_token_data,
+    std::vector<BankAccount>& bank_accounts) {
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill_wallet());
 
@@ -604,7 +697,16 @@ void PopulateWalletTypesFromSyncData(
             CloudTokenDataFromSpecifics(autofill_specifics.cloud_token_data()));
         break;
       case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT:
-        // TODO(crbug.com/1472125) Support syncing of payment instruments.
+        // Only payment instruments of type bank account are supported. This
+        // support is also only available on Android. For other platforms, we'd
+        // ignore this type.
+        if (AreMaskedBankAccountSupported() &&
+            autofill_specifics.payment_instrument().instrument_details_case() ==
+                sync_pb::PaymentInstrument::InstrumentDetailsCase::
+                    kBankAccount) {
+          bank_accounts.push_back(BankAccountFromWalletSpecifics(
+              autofill_specifics.payment_instrument()));
+        }
         break;
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
         wallet_ibans.push_back(
@@ -652,6 +754,10 @@ template bool AreAnyItemsDifferent<>(
 template bool AreAnyItemsDifferent<>(
     const std::vector<std::unique_ptr<CreditCardCloudTokenData>>&,
     const std::vector<CreditCardCloudTokenData>&);
+
+template bool AreAnyItemsDifferent<>(
+    const std::vector<std::unique_ptr<BankAccount>>&,
+    const std::vector<BankAccount>&);
 
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
@@ -722,6 +828,15 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
          wallet_credential_specifics
              .has_last_updated_time_unix_epoch_millis() &&
          wallet_credential_specifics.last_updated_time_unix_epoch_millis() != 0;
+}
+
+bool AreMaskedBankAccountSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill

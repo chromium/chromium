@@ -111,6 +111,10 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   bool SetCreditCardCloudTokenData(
       const std::vector<CreditCardCloudTokenData>& cloud_token_data);
 
+  // Checks whether `bank_accounts` returned by the server are different from
+  // local data and if so, writes the server data to the local database.
+  bool SetBankAccountsData(const std::vector<BankAccount>& bank_accounts);
+
   // Returns the table associated with the |web_data_backend_|.
   PaymentsAutofillTable* GetAutofillTable();
 

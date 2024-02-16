@@ -24,17 +24,19 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -84,6 +86,7 @@ const char kCustomerDataId2[] = "deadcafe";
 const char kCard1ClientTag[] = "Y2FyZDHvv74=";
 const char kCustomerDataClientTag[] = "deadbeef";
 const char kCloudTokenDataClientTag[] = "token";
+const char kBankAccountClientTag[] = "payment_instrument:1234";
 
 const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
@@ -403,6 +406,20 @@ TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForCreditCardCloudTokenData) {
             kCloudTokenDataClientTag);
 }
 
+TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForBankAccount) {
+  AutofillWalletSpecifics specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          kBankAccountClientTag,
+          /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+
+  EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
+            kBankAccountClientTag);
+}
+
 // The following 3 tests make sure storage keys stay stable.
 TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForCard) {
   AutofillWalletSpecifics specifics2 =
@@ -425,6 +442,20 @@ TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForCreditCardCloudTokenData) {
           kCloudTokenDataClientTag);
   EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics4)),
             kCloudTokenDataClientTag);
+}
+
+TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForBankAccount) {
+  AutofillWalletSpecifics specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          kBankAccountClientTag,
+          /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+
+  EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
+            kBankAccountClientTag);
 }
 
 TEST_F(AutofillWalletSyncBridgeTest,
@@ -1132,5 +1163,166 @@ TEST_F(AutofillWalletSyncBridgeTest, SetWalletCards_LogVirtualMetadataSynced) {
   histogram_tester.ExpectBucketCount("Autofill.VirtualCard.MetadataSynced",
                                      /*existing_card*/ true, 2);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges_BankAccount) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create one bank account on the client.
+  table()->SetMaskedBankAccounts(
+      {test::CreatePixBankAccount(/*instrument_id=*/1234)});
+
+  EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_CALL(*backend(), NotifyOfIbanChanged).Times(0);
+
+  // ApplyDisableSyncChanges indicates to the bridge that sync is stopping
+  // because it was disabled.
+  bridge()->ApplyDisableSyncChanges(
+      std::make_unique<syncer::InMemoryMetadataChangeList>());
+
+  EXPECT_TRUE(GetAllLocalData().empty());
+}
+
+// Tests that when the server sends the same data as the client has, nothing
+// changes on the client.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SameBankAccountData) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create one bank account on the client.
+  BankAccount existing_bank_account =
+      test::CreatePixBankAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  table()->GetMaskedBankAccounts(bank_accounts);
+  ASSERT_EQ(1U, bank_accounts.size());
+
+  // Create the bank account on the server.
+  AutofillWalletSpecifics bank_account_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(existing_bank_account,
+                                            &bank_account_specifics);
+
+  StartSyncing({bank_account_specifics});
+
+  table()->GetMaskedBankAccounts(bank_accounts);
+  EXPECT_EQ(1U, bank_accounts.size());
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(bank_account_specifics)));
+}
+
+// Tests that when the server sends a new bank account, it gets added to the
+// database.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create one bank account on the client.
+  BankAccount existing_bank_account =
+      test::CreatePixBankAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  table()->GetMaskedBankAccounts(bank_accounts);
+  ASSERT_EQ(1U, bank_accounts.size());
+  AutofillWalletSpecifics existing_bank_account_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(existing_bank_account,
+                                            &existing_bank_account_specifics);
+
+  // Create the bank account on the server.
+  BankAccount new_bank_account =
+      test::CreatePixBankAccount(/*instrument_id=*/9999);
+  AutofillWalletSpecifics new_bank_account_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(new_bank_account,
+                                            &new_bank_account_specifics);
+
+  StartSyncing({new_bank_account_specifics, existing_bank_account_specifics});
+
+  table()->GetMaskedBankAccounts(bank_accounts);
+  EXPECT_EQ(2U, bank_accounts.size());
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(EqualsSpecifics(existing_bank_account_specifics),
+                           EqualsSpecifics(new_bank_account_specifics)));
+}
+
+// Tests that when the server sends an updated bank account, it gets updated in
+// the database.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_UpdatedBankAccount) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create one bank account on the client.
+  BankAccount existing_bank_account =
+      test::CreatePixBankAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(table()->SetMaskedBankAccounts({existing_bank_account}));
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  table()->GetMaskedBankAccounts(bank_accounts);
+  ASSERT_EQ(1U, bank_accounts.size());
+
+  // Update the bank account on the server. Only the instrument id is the same
+  // as the existing bank account.
+  BankAccount udpated_bank_account(
+      existing_bank_account.payment_instrument().instrument_id(),
+      u"updated_nickname", GURL("http://www.example-updated.com"),
+      u"updated_bank_name", u"account_number_suffix_updated",
+      BankAccount::AccountType::kSavings);
+
+  AutofillWalletSpecifics updated_bank_account_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(udpated_bank_account,
+                                            &updated_bank_account_specifics);
+
+  StartSyncing({updated_bank_account_specifics});
+
+  table()->GetMaskedBankAccounts(bank_accounts);
+  EXPECT_EQ(1U, bank_accounts.size());
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(EqualsSpecifics(updated_bank_account_specifics)));
+}
+
+// Tests that when the server deletes a bank account, it gets removed from the
+// database.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_RemoveBankAccount) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create one bank account on the client.
+  BankAccount bank_account_1 =
+      test::CreatePixBankAccount(/*instrument_id=*/1234);
+  BankAccount bank_account_2 =
+      test::CreatePixBankAccount(/*instrument_id=*/9999);
+  EXPECT_TRUE(table()->SetMaskedBankAccounts({bank_account_1, bank_account_2}));
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  table()->GetMaskedBankAccounts(bank_accounts);
+  ASSERT_EQ(2U, bank_accounts.size());
+  AutofillWalletSpecifics bank_account_1_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(bank_account_1,
+                                            &bank_account_1_specifics);
+
+  // Remove bank account 2 on the server.
+  StartSyncing({bank_account_1_specifics});
+
+  table()->GetMaskedBankAccounts(bank_accounts);
+  EXPECT_EQ(1U, bank_accounts.size());
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(bank_account_1_specifics)));
+}
+
+// Tests that when the server sends a new bank account, it does not get added to
+// the database if the experiment is off.
+TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  // Create a bank account on the server.
+  BankAccount bank_account = test::CreatePixBankAccount(/*instrument_id=*/1234);
+  std::vector<std::unique_ptr<BankAccount>> bank_accounts;
+  AutofillWalletSpecifics bank_account_specifics;
+  SetAutofillWalletSpecificsFromBankAccount(bank_account,
+                                            &bank_account_specifics);
+
+  StartSyncing({bank_account_specifics});
+
+  table()->GetMaskedBankAccounts(bank_accounts);
+  EXPECT_EQ(0U, bank_accounts.size());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

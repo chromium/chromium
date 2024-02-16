@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 
 namespace sync_pb {
 class AutofillWalletSpecifics;
@@ -35,6 +36,14 @@ CreateAutofillWalletSpecificsForCreditCardCloudTokenData(
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForIban(
     const std::string& client_tag);
+
+sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForBankAccount(
+    const std::string_view client_tag,
+    std::string nickname,
+    const GURL& display_icon_url,
+    std::string bank_name,
+    std::string account_number_suffix,
+    sync_pb::BankAccountDetails::AccountType account_type);
 
 }  // namespace autofill
 
