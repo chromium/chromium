@@ -379,11 +379,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
                              bool* has_actual_break_inside,
                              SimplifiedOofLayoutAlgorithm* algorithm,
                              HeapVector<NodeToLayout>* fragmented_descendants);
-  LogicalOffset UpdatedFragmentainerOffset(
-      LogicalOffset offset,
-      wtf_size_t index,
-      LogicalOffset fragmentainer_progression,
-      bool create_new_fragment);
   ConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
   void ComputeStartFragmentIndexAndRelativeOffset(
       WritingMode default_writing_mode,
@@ -427,10 +422,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // will affect column balancing, if any, without actually adding the OOFs to
   // the associated columns.
   ColumnBalancingInfo* column_balancing_info_ = nullptr;
-  // The block size of the multi-column (before adjustment for spanners, etc.)
-  // This is used to calculate the column size of any newly added proxy
-  // fragments when handling fragmentation for abspos elements.
-  LayoutUnit original_column_block_size_ = kIndefiniteSize;
   // The consumed block size of previous fragmentainers. This is accumulated and
   // used as we add OOF elements to fragmentainers.
   LayoutUnit fragmentainer_consumed_block_size_;

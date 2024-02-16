@@ -1263,11 +1263,6 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   outer_context_has_fixedpos_container_ = outer_context_has_fixedpos_container;
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
 
-  original_column_block_size_ =
-      ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
-                        container_builder_->BorderScrollbarPadding())
-          .block_size;
-
   BoxFragmentBuilder* builder_for_anchor_query = container_builder_;
   if (outer_container_builder_) {
     // If this is an inner layout of the nested block fragmentation, and if this
@@ -2329,8 +2324,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     return;
   }
 
-  const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
-
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
   wtf_size_t original_index = index;
   while (index >= num_children ||
@@ -2339,14 +2332,17 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     index--;
   }
 
+  const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
   const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const BlockNode& node = container_builder_->Node();
   const auto* fragment = To<PhysicalBoxFragment>(fragmentainer.fragment.Get());
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
-  LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
-      fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
+  LogicalOffset fragmentainer_offset = fragmentainer.offset;
+  if (is_new_fragment) {
+    fragmentainer_offset += fragmentainer_progression;
+  }
 
   const BlockBreakToken* previous_break_token = nullptr;
   if (!column_balancing_info_) {
@@ -2564,65 +2560,17 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   }
 }
 
-LogicalOffset OutOfFlowLayoutPart::UpdatedFragmentainerOffset(
-    LogicalOffset offset,
-    wtf_size_t index,
-    LogicalOffset fragmentainer_progression,
-    bool create_new_fragment) {
-  if (create_new_fragment) {
-    auto& children = FragmentationContextChildren();
-    wtf_size_t num_children = children.size();
-    if (index != num_children - 1 &&
-        !children[index + 1].fragment->IsFragmentainerBox()) {
-      // If we are a new fragment and are separated from other columns by a
-      // spanner, compute the correct column offset to use.
-      const auto& spanner = children[index + 1];
-      DCHECK(spanner.fragment->IsColumnSpanAll());
-
-      offset = spanner.offset;
-      LogicalSize spanner_size = spanner.fragment->Size().ConvertToLogical(
-          container_builder_->Style().GetWritingMode());
-      // TODO(almaher): Include trailing spanner margin.
-      offset.block_offset += spanner_size.block_size;
-    } else {
-      offset += fragmentainer_progression;
-    }
-  }
-  return offset;
-}
-
 ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     wtf_size_t index) {
   auto& children = FragmentationContextChildren();
   wtf_size_t num_children = children.size();
-  bool is_new_fragment = index >= num_children;
-  // If we are a new fragment, find a non-spanner fragmentainer to base our
-  // constraint space off of.
-  while (index >= num_children ||
-         !children[index].fragment->IsFragmentainerBox()) {
-    DCHECK_GT(num_children, 0u);
-    index--;
-  }
-
-  const auto& fragmentainer = children[index];
-  DCHECK(fragmentainer.fragment->IsFragmentainerBox());
-  const auto& fragment = To<PhysicalBoxFragment>(*fragmentainer.fragment);
+  DCHECK_LT(index, num_children);
+  const auto& fragment = To<PhysicalBoxFragment>(*children[index].fragment);
+  DCHECK(fragment.IsFragmentainerBox());
   const WritingMode container_writing_mode =
       container_builder_->Style().GetWritingMode();
   LogicalSize column_size =
       fragment.Size().ConvertToLogical(container_writing_mode);
-
-  // If we are a new fragment and are separated from other columns by a
-  // spanner, compute the correct column block size to use.
-  if (is_new_fragment && index != num_children - 1 &&
-      original_column_block_size_ != kIndefiniteSize &&
-      !children[index + 1].fragment->IsFragmentainerBox()) {
-    column_size.block_size =
-        original_column_block_size_ -
-        container_builder_->BlockOffsetForAdditionalColumns();
-    column_size.block_size = column_size.block_size.ClampNegativeToZero();
-  }
-
   LogicalSize percentage_resolution_size =
       LogicalSize(column_size.inline_size,
                   container_builder_->ChildAvailableSize().block_size);
@@ -2705,18 +2653,6 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   // If the right fragmentainer hasn't been found yet, the OOF element will
   // start its layout in a proxy fragment.
   LayoutUnit remaining_block_offset = offset->block_offset - used_block_size;
-
-  // If we are a new fragment and are separated from other columns by a
-  // spanner, compute the correct fragmentainer_block_size.
-  if (original_column_block_size_ != kIndefiniteSize &&
-      !children[child_index - 1].fragment->IsFragmentainerBox()) {
-    fragmentainer_block_size =
-        original_column_block_size_ -
-        container_builder_->BlockOffsetForAdditionalColumns();
-    fragmentainer_block_size =
-        ClampedToValidFragmentainerCapacity(fragmentainer_block_size);
-  }
-
   wtf_size_t additional_fragment_count =
       int(floorf(remaining_block_offset / fragmentainer_block_size));
   *start_index = child_index + additional_fragment_count;
