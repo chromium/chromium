@@ -76,8 +76,8 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   int top_corner_radius_dip_ = 0;
   bool top_frame_is_translucent_ = false;
 
-  // Cached bitmaps and metrics.  The scale is rounded to percent.
-  base::flat_map<int, Asset> assets_;
+  // Cached bitmaps and metrics.
+  base::flat_map<float, Asset> assets_;
 
   // These signals invalidate the cache on change.
   ScopedGSignal theme_name_signal_;
