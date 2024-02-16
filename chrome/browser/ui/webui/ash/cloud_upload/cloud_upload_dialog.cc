@@ -416,7 +416,8 @@ bool CloudOpenTask::ExecuteInternal() {
   if (!HaveExplicitFileHandlers(profile_, file_urls_)) {
     RecordMicrosoft365Availability(kFirstTimeMicrosoft365AvailabilityMetric,
                                    profile_);
-    return InitAndShowDialog(DialogPage::kFileHandlerDialog);
+    return InitAndShowSetupOrMoveDialog(
+        SetupOrMoveDialogPage::kFileHandlerDialog);
   }
 
   return MaybeRunFixupFlow();
@@ -428,7 +429,7 @@ bool CloudOpenTask::ExecuteInternal() {
 bool CloudOpenTask::MaybeRunFixupFlow() {
   if (ShouldFixUpOffice(profile_, cloud_provider_)) {
     // TODO(cassycc): Use page specifically for fix up.
-    return InitAndShowDialog(DialogPage::kOneDriveSetup);
+    return InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage::kOneDriveSetup);
   }
   OpenOrMoveFiles();
   return true;
@@ -613,10 +614,11 @@ bool CloudOpenTask::ShouldShowConfirmationDialog() {
 void CloudOpenTask::ConfirmMoveOrStartUpload() {
   bool show_confirmation_dialog = ShouldShowConfirmationDialog();
   if (show_confirmation_dialog) {
-    DialogPage dialog_page = cloud_provider_ == CloudProvider::kGoogleDrive
-                                 ? DialogPage::kMoveConfirmationGoogleDrive
-                                 : DialogPage::kMoveConfirmationOneDrive;
-    InitAndShowDialog(dialog_page);
+    SetupOrMoveDialogPage dialog_page =
+        cloud_provider_ == CloudProvider::kGoogleDrive
+            ? SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive
+            : SetupOrMoveDialogPage::kMoveConfirmationOneDrive;
+    InitAndShowSetupOrMoveDialog(dialog_page);
   } else {
     StartUpload();
   }
@@ -870,14 +872,15 @@ void CloudOpenTask::RecordUploadLatencyUMA() {
 // Create the arguments necessary for showing the dialog. We first need to
 // collect local file tasks, if we are trying to show the kFileHandlerDialog
 // page.
-bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
+bool CloudOpenTask::InitAndShowSetupOrMoveDialog(
+    SetupOrMoveDialogPage dialog_page) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
   if (SystemWebDialogDelegate::HasInstance(
           GURL(chrome::kChromeUICloudUploadURL))) {
     LOG(WARNING) << "Another cloud upload dialog is already being shown";
-    if (dialog_page == DialogPage::kMoveConfirmationGoogleDrive ||
-        dialog_page == DialogPage::kMoveConfirmationOneDrive) {
+    if (dialog_page == SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive ||
+        dialog_page == SetupOrMoveDialogPage::kMoveConfirmationOneDrive) {
       cloud_open_metrics_->LogTaskResult(
           OfficeTaskResult::kCannotShowMoveConfirmation);
     } else {
@@ -890,7 +893,7 @@ bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
   mojom::DialogArgsPtr args = CreateDialogArgs(dialog_page);
 
   // Display local file handlers (tasks) only for the file handler dialog.
-  if (dialog_page == DialogPage::kFileHandlerDialog) {
+  if (dialog_page == SetupOrMoveDialogPage::kFileHandlerDialog) {
     // Callback to show the dialog after the tasks have been found.
     fm_tasks::FindTasksCallback find_all_types_of_tasks_callback =
         base::BindOnce(&CloudOpenTask::ShowDialog, this, std::move(args));
@@ -903,13 +906,14 @@ bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
   return true;
 }
 
-mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
+mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
+    SetupOrMoveDialogPage dialog_page) {
   mojom::DialogArgsPtr args = mojom::DialogArgs::New();
   for (const auto& file_url : file_urls_) {
     args->file_names.push_back(file_url.path().BaseName().value());
   }
   switch (dialog_page) {
-    case DialogPage::kFileHandlerDialog: {
+    case SetupOrMoveDialogPage::kFileHandlerDialog: {
       auto file_handler_dialog_args = mojom::FileHandlerDialogArgs::New();
       file_handler_dialog_args->show_google_workspace_task =
           chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile_);
@@ -920,7 +924,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
               std::move(file_handler_dialog_args));
       break;
     }
-    case DialogPage::kOneDriveSetup: {
+    case SetupOrMoveDialogPage::kOneDriveSetup: {
       auto one_drive_setup_dialog_args = mojom::OneDriveSetupDialogArgs::New();
       one_drive_setup_dialog_args->set_office_as_default_handler =
           !HaveExplicitFileHandlers(profile_, file_urls_);
@@ -929,7 +933,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
               std::move(one_drive_setup_dialog_args));
       break;
     }
-    case DialogPage::kMoveConfirmationOneDrive: {
+    case SetupOrMoveDialogPage::kMoveConfirmationOneDrive: {
       auto move_confirmation_one_drive_dialog_args =
           mojom::MoveConfirmationOneDriveDialogArgs::New();
       move_confirmation_one_drive_dialog_args->operation_type =
@@ -939,7 +943,7 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
               std::move(move_confirmation_one_drive_dialog_args));
       break;
     }
-    case DialogPage::kMoveConfirmationGoogleDrive: {
+    case SetupOrMoveDialogPage::kMoveConfirmationGoogleDrive: {
       auto move_confirmation_google_drive_dialog_args =
           mojom::MoveConfirmationGoogleDriveDialogArgs::New();
       move_confirmation_google_drive_dialog_args->operation_type =
@@ -949,11 +953,6 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
               std::move(move_confirmation_google_drive_dialog_args));
       break;
     }
-    case DialogPage::kConnectToOneDrive:
-      args->dialog_specific_args =
-          mojom::DialogSpecificArgs::NewConnectToOneDriveDialogArgs(
-              mojom::ConnectToOneDriveDialogArgs::New());
-      break;
   }
   return args;
 }
@@ -1144,7 +1143,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
                               OfficeSetupFileHandler::kMicrosoft365);
     cloud_provider_ = CloudProvider::kOneDrive;
     cloud_open_metrics_->set_cloud_provider(cloud_provider_);
-    InitAndShowDialog(DialogPage::kOneDriveSetup);
+    InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
     // Do nothing.

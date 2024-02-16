@@ -1344,7 +1344,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
                         std::make_unique<CloudOpenMetrics>(
                             CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
-      cloud_open_task->CreateDialogArgs(DialogPage::kOneDriveSetup);
+      cloud_open_task->CreateDialogArgs(SetupOrMoveDialogPage::kOneDriveSetup);
   // Self-deleted on close.
   CloudUploadDialog* dialog =
       new CloudUploadDialog(std::move(args), base::DoNothing(), false);
@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
                         std::make_unique<CloudOpenMetrics>(
                             CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
-      cloud_open_task->CreateDialogArgs(DialogPage::kOneDriveSetup);
+      cloud_open_task->CreateDialogArgs(SetupOrMoveDialogPage::kOneDriveSetup);
   // Self-deleted on close.
   CloudUploadDialog* dialog =
       new CloudUploadDialog(std::move(args), base::DoNothing(), false);

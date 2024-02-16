@@ -71,8 +71,8 @@ constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
 constexpr char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
 
-// Options for which sub-page/flow we want to show.
-enum class DialogPage {
+// Options for which setup or move confirmation sub-page/flow we want to show.
+enum class SetupOrMoveDialogPage {
   // The user can choose between apps for handling office files.
   kFileHandlerDialog,
   // Set up OneDrive (multi-page).
@@ -81,9 +81,6 @@ enum class DialogPage {
   kMoveConfirmationOneDrive,
   // Confirm that the user wants to move the file to Google Drive.
   kMoveConfirmationGoogleDrive,
-
-  // A separate dialog when we're only connecting OneDrive by itself.
-  kConnectToOneDrive,
 };
 
 class CloudUploadDialog;
@@ -204,8 +201,8 @@ class CloudOpenTask : public BrowserListObserver,
   void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
                                 OfficeOneDriveOpenErrors open_result);
 
-  bool InitAndShowDialog(DialogPage dialog_page);
-  mojom::DialogArgsPtr CreateDialogArgs(DialogPage dialog_page);
+  bool InitAndShowSetupOrMoveDialog(SetupOrMoveDialogPage dialog_page);
+  mojom::DialogArgsPtr CreateDialogArgs(SetupOrMoveDialogPage dialog_page);
   void ShowDialog(mojom::DialogArgsPtr args,
                   std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                       resulting_tasks);
@@ -320,9 +317,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   mojom::DialogArgsPtr dialog_args_;
   UploadRequestCallback callback_;
   bool office_move_confirmation_shown_;
-
-  // Only relevant for `mojom::DialogPage::kFileHandlerDialog`.
-  bool is_microsoft_office_or_google_workspace_disabled_by_policy_ = false;
 };
 
 }  // namespace ash::cloud_upload
