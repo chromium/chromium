@@ -114,10 +114,13 @@ class CloudOpenTask : public BrowserListObserver,
       const std::vector<::file_manager::file_tasks::TaskDescriptor>& tasks);
 
   // BrowserListObserver implementation.
-  // This is called when we are waiting for a new Files app window to be
-  // launched, to be used as the modal parent. This is triggered by
+  // Use this to check if a new Files app window has been launched when there
+  // wasn't already one to be used as the modal parent. This is triggered by
   // ShowDialog().
   void OnBrowserAdded(Browser* browser) override;
+  // Use this to check if the Files app window the dialog is modal to has
+  // closed.
+  void OnBrowserClosing(Browser* browser) override;
 
   FRIEND_TEST_ALL_PREFIXES(FileHandlerDialogBrowserTest,
                            OnSetupDialogCompleteOpensFileTasks);
@@ -247,6 +250,9 @@ class CloudOpenTask : public BrowserListObserver,
   bool has_upload_errors_ = false;
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
+  bool need_new_files_app_ = false;
+  raw_ptr<Browser> files_app_browser_;
+  bool files_app_closed_ = false;
 };
 
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS

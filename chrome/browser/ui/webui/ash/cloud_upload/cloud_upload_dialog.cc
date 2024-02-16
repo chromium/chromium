@@ -392,9 +392,13 @@ CloudOpenTask::CloudOpenTask(
     : profile_(profile),
       file_urls_(file_urls),
       cloud_provider_(cloud_provider),
-      cloud_open_metrics_(std::move(cloud_open_metrics)) {}
+      cloud_open_metrics_(std::move(cloud_open_metrics)) {
+  BrowserList::AddObserver(this);
+}
 
-CloudOpenTask::~CloudOpenTask() = default;
+CloudOpenTask::~CloudOpenTask() {
+  BrowserList::RemoveObserver(this);
+}
 
 // Runs setup if it's never been completed. Runs the fixup version of setup if
 // there are any issues, e.g. ODFS is not mounted. Otherwise, attempts to move
@@ -1024,13 +1028,14 @@ void CloudOpenTask::ShowDialog(
                             office_move_confirmation_shown);
 
   // Get Files App window, if it exists.
-  Browser* browser =
+  files_app_browser_ =
       FindSystemWebAppBrowser(profile_, ash::SystemWebAppType::FILE_MANAGER);
   gfx::NativeWindow modal_parent =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
+      files_app_browser_ ? files_app_browser_->window()->GetNativeWindow()
+                         : nullptr;
 
   if (!modal_parent) {
-    BrowserList::AddObserver(this);
+    need_new_files_app_ = true;
     DCHECK(!pending_dialog_);
     pending_dialog_ = dialog;
     // Create a files app window and use it as the modal parent. CloudOpenTask
@@ -1075,6 +1080,9 @@ void CloudOpenTask::SetTaskArgs(
 }
 
 void CloudOpenTask::OnBrowserAdded(Browser* browser) {
+  if (!need_new_files_app_) {
+    return;
+  }
   // TODO(petermarshall): Add a timeout. If Files app never launches for some
   // reason, then we will never show the dialog.
   DCHECK(pending_dialog_);
@@ -1083,11 +1091,20 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
     LOG(WARNING) << "Browser did not match Files app";
     return;
   }
-  BrowserList::RemoveObserver(this);
-
-  pending_dialog_->ShowSystemDialog(browser->window()->GetNativeWindow());
+  need_new_files_app_ = false;
+  files_app_browser_ = browser;
+  pending_dialog_->ShowSystemDialog(
+      files_app_browser_->window()->GetNativeWindow());
   // The dialog is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   pending_dialog_ = nullptr;
+}
+
+void CloudOpenTask::OnBrowserClosing(Browser* browser) {
+  if (browser == files_app_browser_) {
+    // The Files app that the dialog is modal to is closed. This will close the
+    // dialog with an empty user response.
+    files_app_closed_ = true;
+  }
 }
 
 // Receive user's setup dialog response and acts accordingly. `user_response` is
@@ -1138,8 +1155,12 @@ void CloudOpenTask::OnSetupDialogComplete(const std::string& user_response) {
   } else if (!user_response.empty()) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
     LaunchLocalFileTask(user_response);
+  } else if (files_app_closed_) {
+    // Empty user response occurs when the Files app the dialog was modal to is
+    // closed. This is equivalent to the user cancelling.
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
   } else {
-    LOG(ERROR) << "Empty user response";
+    LOG(ERROR) << "Unexpected empty user response";
   }
 }
 
@@ -1187,10 +1208,15 @@ void CloudOpenTask::OnMoveConfirmationComplete(
              user_response == kUserActionCancelOneDrive) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
-  } else if (user_response.empty()) {
-    LOG(ERROR) << "Empty user response";
-  } else {
+  } else if (!user_response.empty()) {
     LOG(ERROR) << "Unhandled response: " << user_response;
+  } else if (files_app_closed_) {
+    // Empty user response when occurs when the Files app the dialog was modal
+    // to is closed. This is equivalent to the user cancelling.
+    cloud_open_metrics_->LogTaskResult(
+        OfficeTaskResult::kCancelledAtConfirmation);
+  } else {
+    LOG(ERROR) << "Unexpected empty user response";
   }
 }
 
