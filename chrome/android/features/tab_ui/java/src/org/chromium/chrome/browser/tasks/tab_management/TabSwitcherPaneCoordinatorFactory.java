@@ -20,13 +20,16 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -150,11 +153,19 @@ public class TabSwitcherPaneCoordinatorFactory {
 
     /** Returns the title of a tab or tab group for display in the tab switcher. */
     @VisibleForTesting
-    String getTitle(@NonNull Context context, @NonNull PseudoTab tab) {
-        int numRelatedTabs = PseudoTab.getRelatedTabs(context, tab, mTabModelSelector).size();
-        if (numRelatedTabs == 1) return tab.getTitle();
+    String getTitle(@NonNull Context context, @NonNull PseudoTab pseudoTab) {
+        assert mTabModelSelector.isTabStateInitialized();
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector
+                                .getTabModelFilterProvider()
+                                .getTabModelFilter(pseudoTab.isIncognito());
+        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
+        assert tab != null;
+        if (!filter.isTabInTabGroup(tab)) return tab.getTitle();
 
-        return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
+        return TabGroupTitleEditor.getDefaultTitle(
+                context, filter.getRelatedTabCountForRootId(tab.getRootId()));
     }
 
     /** Returns a scrim coordinator to use for tab grid dialog on LFF devices. */
