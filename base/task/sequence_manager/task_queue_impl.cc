@@ -77,7 +77,8 @@ void RunTaskSynchronously(const AssociatedThreadId* associated_thread,
                           OnceClosure closure) {
   base::internal::TaskScope sequence_scope(
       associated_thread->GetBoundSequenceToken(),
-      /* is_thread_bound=*/false);
+      /* is_thread_bound=*/false,
+      /* is_running_synchronously=*/true);
   CurrentDefaultHandleOverrideForRunOrPostTask task_runner_override(
       std::move(task_runner));
   std::move(closure).Run();
