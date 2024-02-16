@@ -18,47 +18,51 @@ BigEndianReader BigEndianReader::FromStringPiece(
 }
 
 BigEndianReader::BigEndianReader(const uint8_t* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {
-  // Ensure `len` does not cause `end_` to wrap around.
-  CHECK_GE(end_, ptr_);
-}
+    :  // TODO(crbug.com/40284755): Remove this constructor entirely, callers
+       // should use span constructor.
+      UNSAFE_BUFFERS(buffer_(buf, len)) {}
 
-BigEndianReader::BigEndianReader(base::span<const uint8_t> buf)
-    : ptr_(buf.data()), end_(buf.data() + buf.size()) {}
+BigEndianReader::BigEndianReader(base::span<const uint8_t> buffer)
+    : buffer_(buffer) {}
+
+BigEndianReader::~BigEndianReader() = default;
 
 bool BigEndianReader::Skip(size_t len) {
   if (len > remaining()) {
     return false;
   }
-  ptr_ += len;
+  buffer_ = buffer_.subspan(len);
   return true;
 }
 
 bool BigEndianReader::ReadBytes(void* out, size_t len) {
-  if (len > remaining()) {
-    return false;
+  std::optional<span<const uint8_t>> o = ReadSpan(len);
+  if (o.has_value()) {
+    memcpy(out, o->data(), o->size_bytes());
+    return true;
   }
-  memcpy(out, ptr_, len);
-  ptr_ += len;
-  return true;
+  return false;
 }
 
 bool BigEndianReader::ReadPiece(base::StringPiece* out, size_t len) {
   if (len > remaining()) {
     return false;
   }
-  *out = base::StringPiece(reinterpret_cast<const char*>(ptr_), len);
-  ptr_ += len;
+  auto [view, remain] = buffer_.split_at(len);
+  *out = base::StringPiece(reinterpret_cast<const char*>(view.data()),
+                           view.size());
+  buffer_ = remain;
   return true;
 }
 
-bool BigEndianReader::ReadSpan(base::span<const uint8_t>* out, size_t len) {
-  if (len > remaining()) {
-    return false;
+std::optional<span<const uint8_t>> BigEndianReader::ReadSpan(
+    base::StrictNumeric<size_t> n) {
+  if (remaining() < size_t{n}) {
+    return std::nullopt;
   }
-  *out = base::make_span(ptr_, len);
-  ptr_ += len;
-  return true;
+  auto [consume, remain] = buffer_.split_at(n);
+  buffer_ = remain;
+  return {consume};
 }
 
 bool BigEndianReader::ReadU8(uint8_t* value) {
@@ -98,49 +102,62 @@ bool BigEndianReader::ReadU64(uint64_t* value) {
 }
 
 bool BigEndianReader::ReadU8LengthPrefixed(std::string_view* out) {
+  span<const uint8_t> rollback = buffer_;
   uint8_t len;
   if (!ReadU8(&len)) {
     return false;
   }
   const bool ok = ReadPiece(out, len);
   if (!ok) {
-    ptr_ -= 1u;  // Undo the ReadU8.
+    buffer_ = rollback;  // Undo the ReadU8.
   }
   return ok;
 }
 
 bool BigEndianReader::ReadU16LengthPrefixed(std::string_view* out) {
+  span<const uint8_t> rollback = buffer_;
   uint16_t len;
   if (!ReadU16(&len)) {
     return false;
   }
   const bool ok = ReadPiece(out, len);
   if (!ok) {
-    ptr_ -= 2u;  // Undo the ReadU16.
+    buffer_ = rollback;  // Undo the ReadU8.
   }
   return ok;
 }
 
+BigEndianWriter::BigEndianWriter(span<uint8_t> buffer) : buffer_(buffer) {}
+
 BigEndianWriter::BigEndianWriter(char* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {
-  // Ensure `len` does not cause `end_` to wrap around.
-  CHECK_GE(end_, ptr_);
-}
+    :  // TODO(crbug.com/40284755): Remove this constructor entirely, callers
+       // should use span constructor.
+      UNSAFE_BUFFERS(buffer_(reinterpret_cast<uint8_t*>(buf), len)) {}
+
+BigEndianWriter::~BigEndianWriter() = default;
 
 bool BigEndianWriter::Skip(size_t len) {
   if (len > remaining()) {
     return false;
   }
-  ptr_ += len;
+  buffer_ = buffer_.subspan(len);
   return true;
 }
 
 bool BigEndianWriter::WriteBytes(const void* buf, size_t len) {
-  if (len > remaining()) {
+  return WriteSpan(
+      // TODO(crbug.com/40284755): Remove WriteBytes() entirely, callers
+      // should use WriteSpan()..
+      UNSAFE_BUFFERS((base::span(static_cast<const uint8_t*>(buf), len))));
+}
+
+bool BigEndianWriter::WriteSpan(base::span<const uint8_t> bytes) {
+  if (remaining() < bytes.size()) {
     return false;
   }
-  memcpy(ptr_, buf, len);
-  ptr_ += len;
+  auto [write, remain] = buffer_.split_at(bytes.size());
+  write.copy_from(bytes);
+  buffer_ = remain;
   return true;
 }
 

@@ -59,10 +59,12 @@ bool RtcpParser::Parse(base::BigEndianReader* reader) {
     if (!ParseCommonHeader(reader, &header))
       return false;
 
-    base::span<const uint8_t> tmp;
-    if (!reader->ReadSpan(&tmp, header.length_in_octets - 4))
+    std::optional<base::span<const uint8_t>> tmp =
+        reader->ReadSpan(header.length_in_octets - 4);
+    if (!tmp.has_value()) {
       return false;
-    base::BigEndianReader chunk(tmp);
+    }
+    base::BigEndianReader chunk(*tmp);
 
     switch (header.PT) {
       case kPacketTypeSenderReport:

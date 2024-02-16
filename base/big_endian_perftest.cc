@@ -22,7 +22,7 @@ struct {
   char bytes[kSize];
 } misaligned_bytes;
 
-void DoNotOptimizeSpan(span<const char> range) {
+void DoNotOptimizeSpan(span<const uint8_t> range) {
   // ::benchmark::DoNotOptimize() generates quite large code, so instead of
   // calling it for every byte in the range, calculate `sum` which depends on
   // every byte in the range and then call DoNotOptimise() on that.
@@ -34,33 +34,35 @@ void DoNotOptimizeSpan(span<const char> range) {
 }
 
 template <typename T>
-inline void WriteBigEndianCommon(::benchmark::State& state, char* const start) {
-  size_t offset = 0;
-  T value = 0;
+inline void WriteBigEndianCommon(::benchmark::State& state,
+                                 span<uint8_t, kSize> buffer) {
+  size_t offset = 0u;
+  auto value = T{0};
   for (auto _ : state) {
-    WriteBigEndian(start + offset, value);
+    WriteBigEndian(buffer.subspan(offset).first<sizeof(T)>(), value);
     offset += sizeof(T);
-    static_assert(kSize % sizeof(T) == 0);
+    static_assert(kSize % sizeof(T) == 0u);
     if (offset == kSize) {
       offset = 0;
     }
     ++value;
   }
-  DoNotOptimizeSpan({start, kSize});
+  DoNotOptimizeSpan(buffer);
 }
 
 template <typename T>
 void BM_WriteBigEndianAligned(::benchmark::State& state) {
-  char* const start = reinterpret_cast<char*>(aligned_bytes);
-  CHECK(reinterpret_cast<uintptr_t>(start) % alignof(T) == 0);
-  WriteBigEndianCommon<T>(state, start);
+  span<uint8_t, kSize> buffer = base::as_writable_byte_span(aligned_bytes);
+  CHECK(reinterpret_cast<uintptr_t>(buffer.data()) % alignof(T) == 0u);
+  WriteBigEndianCommon<T>(state, buffer);
 }
 
 template <typename T>
 void BM_WriteBigEndianMisaligned(::benchmark::State& state) {
-  char* const start = misaligned_bytes.bytes;
-  CHECK(reinterpret_cast<uintptr_t>(start) % alignof(T) != 0);
-  WriteBigEndianCommon<T>(state, start);
+  span<uint8_t, kSize> buffer =
+      base::as_writable_byte_span(misaligned_bytes.bytes);
+  CHECK(reinterpret_cast<uintptr_t>(buffer.data()) % alignof(T) != 0u);
+  WriteBigEndianCommon<T>(state, buffer);
 }
 
 template <typename T>

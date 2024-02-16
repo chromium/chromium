@@ -12,8 +12,9 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -59,30 +60,43 @@ inline uint8_t ByteSwapIfLittleEndian(uint8_t val) {
 // potentially unaligned.
 // This would cause SIGBUS on ARMv5 or earlier and ARMv6-M.
 //
-// DEPRECATED: Use base::numerics::*FromBeBytes to convert big-endian byte
+// DEPRECATED: Use base::numerics::*FromBigEndian to convert big-endian byte
 // encoding to primitives.
 template <typename T>
-inline void ReadBigEndian(const uint8_t buf[], T* out) {
+inline void ReadBigEndian(span<const uint8_t, sizeof(T)> buffer, T* out) {
   static_assert(std::is_integral_v<T>, "T has to be an integral type.");
   // Make an unsigned version of the output type to make shift possible
   // without UB.
   std::make_unsigned_t<T> raw;
-  memcpy(&raw, buf, sizeof(T));
+  byte_span_from_ref(raw).copy_from(buffer);
   *out = static_cast<T>(internal::ByteSwapIfLittleEndian(raw));
 }
 
-// Write an integer (signed or unsigned) |val| to |buf| in Big Endian order.
-// Note: this loop is unrolled with -O1 and above.
+// TODO(crbug.com/40284755): Remove this function when there are no callers.
+template <typename T>
+inline void ReadBigEndian(const uint8_t buf[], T* out) {
+  ReadBigEndian(span<const uint8_t, sizeof(T)>(buf, sizeof(T)), out);
+}
+
+// Write an integer (signed or unsigned) `val` to `buffer` in Big Endian order.
+// The `buffer` must be the same size (in bytes) as the integer `val`.
 //
-// DEPRECATED: Use base::numerics::*ToBeBytes to convert primitives to big-
+// DEPRECATED: Use base::numerics::*ToBigEndian to convert primitives to big-
 // endian byte encoding.
 template <typename T>
-inline void WriteBigEndian(char buf[], T val) {
-  static_assert(std::is_integral_v<T>, "T has to be an integral type.");
-  const auto unsigned_val =
-      static_cast<typename std::make_unsigned<T>::type>(val);
+  requires(std::is_integral_v<T>)
+inline void WriteBigEndian(span<uint8_t, sizeof(T)> buffer, T val) {
+  const auto unsigned_val = static_cast<std::make_unsigned_t<T>>(val);
   const auto raw = internal::ByteSwapIfLittleEndian(unsigned_val);
-  memcpy(buf, &raw, sizeof(T));
+  buffer.copy_from(byte_span_from_ref(raw));
+}
+
+// TODO(crbug.com/40284755): Remove this function when there are no callers.
+template <typename T>
+  requires(std::is_integral_v<T>)
+inline void WriteBigEndian(char buf[], T val) {
+  return WriteBigEndian(
+      as_writable_bytes(span<char, sizeof(T)>(buf, sizeof(T))), val);
 }
 
 // Allows reading integers in network order (big endian) while iterating over
@@ -91,40 +105,41 @@ class BASE_EXPORT BigEndianReader {
  public:
   static BigEndianReader FromStringPiece(base::StringPiece string_piece);
 
-  explicit BigEndianReader(base::span<const uint8_t> buf);
+  explicit BigEndianReader(base::span<const uint8_t> buffer);
 
-  // TODO(crbug.com/1490484): Remove this overload.
-  BigEndianReader(const uint8_t* buf, size_t len);
+  // TODO(crbug.com/40284755): Remove this overload.
+  UNSAFE_BUFFER_USAGE BigEndianReader(const uint8_t* buf, size_t len);
+
+  ~BigEndianReader();
 
   // Returns a span over all unread bytes.
-  span<const uint8_t> remaining_bytes() const {
-    // SAFETY: The cast value is non-negative because `ptr_` is never moved past
-    // `end_`.
-    return make_span(ptr_, static_cast<size_t>(end_ - ptr_));
-  }
+  span<const uint8_t> remaining_bytes() const { return buffer_; }
 
-  // TODO(crbug.com/1490484): Remove this method.
-  const uint8_t* ptr() const { return ptr_; }
-  // TODO(crbug.com/1490484): Remove this method.
-  size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }
+  // TODO(crbug.com/40284755): Remove this method.
+  const uint8_t* ptr() const { return buffer_.data(); }
+  // TODO(crbug.com/40284755): Remove this method.
+  size_t remaining() const { return buffer_.size(); }
 
   bool Skip(size_t len);
   bool ReadBytes(void* out, size_t len);
   // Creates a StringPiece in |out| that points to the underlying buffer.
   bool ReadPiece(base::StringPiece* out, size_t len);
-  bool ReadSpan(base::span<const uint8_t>* out, size_t len);
 
-  // Reads `N` bytes and returns them as a span, or returns nullopt if there are
-  // not `N` bytes remaining in the buffer.
+  // Returns a span over `n` bytes from the buffer and moves the internal state
+  // past those bytes, or returns nullopt and if there are not `n` bytes
+  // remaining in the buffer.
+  std::optional<span<const uint8_t>> ReadSpan(base::StrictNumeric<size_t> n);
+
+  // Returns a span over `N` bytes from the buffer and moves the internal state
+  // past those bytes, or returns nullopt and if there are not `N` bytes
+  // remaining in the buffer.
   template <size_t N>
   std::optional<span<const uint8_t, N>> ReadFixedSpan() {
     if (remaining() < N) {
       return std::nullopt;
     }
-    // TODO(danakj): Convert ptr_/end_ into a span.
-    auto s = UNSAFE_BUFFERS(base::span(&*ptr_, &*end_));
-    auto [consume, remain] = s.split_at<N>();
-    ptr_ = remain.data();
+    auto [consume, remain] = buffer_.split_at<N>();
+    buffer_ = remain;
     return {consume};
   }
 
@@ -148,25 +163,40 @@ class BASE_EXPORT BigEndianReader {
   bool ReadU16LengthPrefixed(base::StringPiece* out);
 
  private:
-  const uint8_t* ptr_;
-  const uint8_t* end_;
+  // TODO(danakj): Switch to raw_span in its own CL.
+  span<const uint8_t> buffer_;
 };
 
 // Allows writing integers in network order (big endian) while iterating over
 // an underlying buffer. All the writing functions advance the internal pointer.
 class BASE_EXPORT BigEndianWriter {
  public:
-  BigEndianWriter(char* buf, size_t len);
+  // Constructs a BigEndianWriter that will write into the given buffer.
+  BigEndianWriter(span<uint8_t> buffer);
 
-  char* ptr() const { return ptr_; }
-  size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }
+  // TODO(crbug.com/40284755): Remove this overload.
+  UNSAFE_BUFFER_USAGE BigEndianWriter(char* buf, size_t len);
+
+  ~BigEndianWriter();
+
+  char* ptr() const { return reinterpret_cast<char*>(buffer_.data()); }
+  size_t remaining() const { return buffer_.size(); }
+
+  // Returns a span over all unwritten bytes.
+  span<uint8_t> remaining_bytes() const { return buffer_; }
 
   bool Skip(size_t len);
+  // TODO(crbug.com/40284755): WriteBytes() calls should be replaced with
+  // WriteSpan().
   bool WriteBytes(const void* buf, size_t len);
   bool WriteU8(uint8_t value);
   bool WriteU16(uint16_t value);
   bool WriteU32(uint32_t value);
   bool WriteU64(uint64_t value);
+
+  // Writes the span of bytes to the backing buffer. If there is not enough
+  // room, it writes nothing and returns false.
+  bool WriteSpan(base::span<const uint8_t> bytes);
 
   // Writes `N` bytes to the backing buffer. If there is not enough room, it
   // writes nothing and returns false.
@@ -175,18 +205,14 @@ class BASE_EXPORT BigEndianWriter {
     if (remaining() < N) {
       return false;
     }
-    // TODO(danakj): Convert ptr_/end_ into a span.
-    auto s = UNSAFE_BUFFERS(base::span(&*ptr_, &*end_));
-    auto [write, remain] = s.split_at<N>();
-    base::as_writable_bytes(write).copy_from(bytes);
-    // TODO(danakj): Convert ptr_/end_ into a span.
-    ptr_ = remain.data();
+    auto [write, remain] = buffer_.split_at<N>();
+    write.copy_from(bytes);
+    buffer_ = remain;
     return true;
   }
 
  private:
-  raw_ptr<char, DanglingUntriaged | AllowPtrArithmetic> ptr_;
-  raw_ptr<char, DanglingUntriaged | AllowPtrArithmetic> end_;
+  raw_span<uint8_t, DanglingUntriaged> buffer_;
 };
 
 }  // namespace base

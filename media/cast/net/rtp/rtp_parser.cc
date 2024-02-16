@@ -100,10 +100,12 @@ bool RtpParser::ParsePacket(base::span<const uint8_t> packet,
     uint16_t type_and_size;
     if (!reader.ReadU16(&type_and_size))
       return false;
-    base::span<const uint8_t> tmp;
-    if (!reader.ReadSpan(&tmp, type_and_size & 0x3ff))
+    std::optional<base::span<const uint8_t>> tmp =
+        reader.ReadSpan(type_and_size & size_t{0x3ff});
+    if (!tmp.has_value()) {
       return false;
-    base::BigEndianReader chunk(tmp);
+    }
+    base::BigEndianReader chunk(*tmp);
     switch (type_and_size >> 10) {
       case kCastRtpExtensionAdaptiveLatency:
         if (!chunk.ReadU16(&header->new_playout_delay_ms))

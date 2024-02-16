@@ -68,7 +68,7 @@ TEST(ReadBigEndianTest, TryAll16BitValues) {
        i <= std::numeric_limits<signed_type>::max(); i++) {
     signed_type expected = i;
     signed_type actual = 0;
-    WriteBigEndian(reinterpret_cast<char*>(data), expected);
+    WriteBigEndian(data, expected);
     ReadBigEndian(data, &actual);
     EXPECT_EQ(expected, actual);
   }
