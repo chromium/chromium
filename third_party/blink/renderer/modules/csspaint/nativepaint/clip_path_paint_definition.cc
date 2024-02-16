@@ -257,6 +257,7 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 
 // TODO(crbug.com/1248605): Introduce helper functions commonly used by
 // background-color and clip-path animations.
+// static
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
   return GetAnimationForProperty(element, GetCSSPropertyClipPath(),
@@ -312,14 +313,26 @@ PaintRecord ClipPathPaintDefinition::Paint(
   return paint_recorder.finishRecordingAsPicture();
 }
 
-// Creates a deferred image of size clip_area_size that will be painted via
-// paint worklet. The clip paths will be scaled and translated according to
-// reference_box.
+// TODO(crbug.com/325517328): Reorganize this to simplify or eliminate clip path
+// paint definition
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     float zoom,
     const gfx::RectF& reference_box,
     const gfx::SizeF& clip_area_size,
     const Node& node) {
+  return Paint(zoom, reference_box, clip_area_size, node, worklet_id_);
+}
+
+// Creates a deferred image of size clip_area_size that will be painted via
+// paint worklet. The clip paths will be scaled and translated according to
+// reference_box.
+// static
+scoped_refptr<Image> ClipPathPaintDefinition::Paint(
+    float zoom,
+    const gfx::RectF& reference_box,
+    const gfx::SizeF& clip_area_size,
+    const Node& node,
+    int worklet_id) {
   DCHECK(node.IsElementNode());
   const Element* element = To<Element>(&node);
 
@@ -368,13 +381,14 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       CompositorPaintWorkletInput::NativePropertyType::kClipPath, element_id);
   scoped_refptr<ClipPathPaintWorkletInput> input =
       base::MakeRefCounted<ClipPathPaintWorkletInput>(
-          reference_box, clip_area_size, worklet_id_, zoom, animated_shapes,
+          reference_box, clip_area_size, worklet_id, zoom, animated_shapes,
           offsets, std::move(timing_functions), progress,
           std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
 }
 
+// static
 gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
     const Node& node,
     const gfx::RectF& reference_box,

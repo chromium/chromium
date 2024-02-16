@@ -10,16 +10,51 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 
 namespace blink {
+
+using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
+
+class MockClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
+ public:
+  scoped_refptr<Image> Paint(float zoom,
+                             const gfx::RectF& reference_box,
+                             const gfx::SizeF& clip_area_size,
+                             const Node& node) override {
+    return ClipPathPaintDefinition::Paint(zoom, reference_box, clip_area_size,
+                                          node, 0 /* use a dummy worklet id */);
+  }
+  gfx::RectF ClipAreaRect(const Node& node,
+                          const gfx::RectF& reference_box,
+                          float zoom) const override {
+    return ClipPathPaintDefinition::ClipAreaRect(node, reference_box, zoom);
+  }
+  Animation* GetAnimationIfCompositable(const Element* element) override {
+    return ClipPathPaintDefinition::GetAnimationIfCompositable(element);
+  }
+  void Shutdown() override {}
+};
 
 class ClipPathPaintDefinitionTest : public PageTestBase {
  public:
   ClipPathPaintDefinitionTest() = default;
   ~ClipPathPaintDefinitionTest() override = default;
+
+ protected:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    MockClipPathPaintImageGenerator* generator =
+        MakeGarbageCollected<MockClipPathPaintImageGenerator>();
+    GetFrame().SetClipPathPaintImageGeneratorForTesting(generator);
+    GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
+  }
 };
 
 // Test the case where there is a background-color animation with two simple
@@ -54,16 +89,23 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   model->SetComposite(EffectModel::kCompositeReplace);
 
   Element* element = GetElementById("target");
+  LayoutObject* lo = element->GetLayoutObject();
   NonThrowableExceptionState exception_state;
   DocumentTimeline* timeline =
       MakeGarbageCollected<DocumentTimeline>(&GetDocument());
   Animation* animation = Animation::Create(
       MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
       exception_state);
-  UpdateAllLifecyclePhasesForTest();
   animation->play();
 
+  UpdateAllLifecyclePhasesForTest();
+
+  // Ensure that the paint property was set correctly - composited animation
+  // uses a mask based clip.
+  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
   EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
             animation);

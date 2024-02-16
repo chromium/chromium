@@ -307,6 +307,7 @@ class CORE_EXPORT LocalFrame final
   BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
   BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
+  void SetClipPathPaintImageGeneratorForTesting(ClipPathPaintImageGenerator*);
   LCPCriticalPathPredictor* GetLCPP();
 
   // A local root is the root of a connected subtree that contains only
