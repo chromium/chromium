@@ -133,7 +133,7 @@ bool InsertCommands::ExecuteInsertHTML(LocalFrame& frame,
     }
   } else {
     if (Node* anchor =
-            frame.Selection().GetSelectionInDOMTree().Base().AnchorNode()) {
+            frame.Selection().GetSelectionInDOMTree().Anchor().AnchorNode()) {
       if (IsEditable(*anchor) && !IsRichlyEditable(*anchor)) {
         UseCounter::Count(frame.GetDocument(),
                           WebFeature::kInsertHTMLCommandOnReadWritePlainText);

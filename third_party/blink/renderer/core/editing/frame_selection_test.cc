@@ -1472,7 +1472,7 @@ TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
       Selection().SetSelection(selection, SetSelectionOptions());
       EXPECT_TRUE(extent.IsConnected());
       bool flat_extent_is_connected =
-          ToPositionInFlatTree(selection.Extent()).IsConnected();
+          ToPositionInFlatTree(selection.Focus()).IsConnected();
       EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
                     ? "<div id=\"host\"></div>|y"
                     : "<div id=\"host\"></div>y",

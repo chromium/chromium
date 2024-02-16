@@ -14,10 +14,10 @@ namespace blink {
 SelectionForUndoStep SelectionForUndoStep::From(
     const SelectionInDOMTree& selection) {
   SelectionForUndoStep result;
-  result.base_ = selection.Base();
-  result.extent_ = selection.Extent();
+  result.base_ = selection.Anchor();
+  result.extent_ = selection.Focus();
   result.affinity_ = selection.Affinity();
-  result.is_base_first_ = selection.IsBaseFirst();
+  result.is_base_first_ = selection.IsAnchorFirst();
   result.root_editable_element_ = RootEditableElementOf(result.base_);
   return result;
 }

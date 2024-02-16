@@ -432,8 +432,8 @@ TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
 
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
   Range* range =
-      CreateRange(EphemeralRange(Selection().GetSelectionInDOMTree().Base(),
-                                 Selection().GetSelectionInDOMTree().Extent()));
+      CreateRange(EphemeralRange(Selection().GetSelectionInDOMTree().Anchor(),
+                                 Selection().GetSelectionInDOMTree().Focus()));
   ASSERT_TRUE(range);
   EXPECT_EQ("Line 1\nLine 2", range->GetText());
 
@@ -456,7 +456,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
 
   // Multi-tap events on editable elements should trigger selection, just
   // like multi-click events.
@@ -464,15 +464,15 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
   if (GetDocument()
           .GetFrame()
           ->GetEditor()
           .IsSelectTrailingWhitespaceEnabled()) {
-    EXPECT_EQ(Position(line, 4), Selection().GetSelectionInDOMTree().Extent());
+    EXPECT_EQ(Position(line, 4), Selection().GetSelectionInDOMTree().Focus());
     EXPECT_EQ("One ", Selection().SelectedText().Utf8());
   } else {
-    EXPECT_EQ(Position(line, 3), Selection().GetSelectionInDOMTree().Extent());
+    EXPECT_EQ(Position(line, 3), Selection().GetSelectionInDOMTree().Focus());
     EXPECT_EQ("One", Selection().SelectedText().Utf8());
   }
 
@@ -480,8 +480,8 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
-  EXPECT_EQ(Position(line, 13), Selection().GetSelectionInDOMTree().Extent());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  EXPECT_EQ(Position(line, 13), Selection().GetSelectionInDOMTree().Focus());
   EXPECT_EQ("One Two Three", Selection().SelectedText().Utf8());
 }
 
@@ -497,20 +497,20 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTapDisabledIfNotEditable) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
 
   // As the text is readonly, multi-tap events should not trigger selection.
   TapEventBuilder double_tap_event(gfx::PointF(0, 0), 2);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
 
   TapEventBuilder triple_tap_event(gfx::PointF(0, 0), 3);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
 }
 
 TEST_F(EventHandlerTest, draggedInlinePositionTest) {

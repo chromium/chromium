@@ -306,12 +306,12 @@ TEST_F(InputMethodControllerTest, SetCompositionAfterEmoji) {
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Extent()
+                   .Focus()
                    .ComputeOffsetInContainerNode());
 
   Controller().SetComposition(String("a"), ime_text_spans, 1, 1);
@@ -551,12 +551,12 @@ TEST_F(InputMethodControllerTest, SelectionOnConfirmExistingText) {
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Extent()
+                   .Focus()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -1789,7 +1789,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(3, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 
   // Insert 'test'.
@@ -1800,7 +1800,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(7, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 
   // Focus change finishes composition.
@@ -1812,7 +1812,7 @@ TEST_F(InputMethodControllerTest, SelectionWhenFocusChangeFinishesComposition) {
   EXPECT_EQ(7, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -2924,7 +2924,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(11, GetFrame()
                     .Selection()
                     .GetSelectionInDOMTree()
-                    .Base()
+                    .Anchor()
                     .ComputeOffsetInContainerNode());
 }
 
@@ -2961,7 +2961,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(0, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -2995,7 +2995,7 @@ TEST_F(
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3029,7 +3029,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3063,7 +3063,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3096,7 +3096,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3134,7 +3134,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3168,7 +3168,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(11, GetFrame()
                     .Selection()
                     .GetSelectionInDOMTree()
-                    .Base()
+                    .Anchor()
                     .ComputeOffsetInContainerNode());
 }
 
@@ -3202,7 +3202,7 @@ TEST_F(
   EXPECT_EQ(2, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3236,7 +3236,7 @@ TEST_F(
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3268,7 +3268,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 
@@ -3300,7 +3300,7 @@ TEST_F(InputMethodControllerTest,
   EXPECT_EQ(5, GetFrame()
                    .Selection()
                    .GetSelectionInDOMTree()
-                   .Base()
+                   .Anchor()
                    .ComputeOffsetInContainerNode());
 }
 

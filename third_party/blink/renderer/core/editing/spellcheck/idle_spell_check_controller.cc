@@ -211,7 +211,7 @@ bool IdleSpellCheckController::NeedsHotModeCheckingUnderCurrentSelection()
   // already fully checked the current element.
   DCHECK(needs_invocation_for_changed_selection_);
   const Position& position =
-      GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Extent();
+      GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
   const auto* element = DynamicTo<Element>(HighestEditableRoot(position));
   if (!element || !element->isConnected())
     return false;
@@ -228,7 +228,7 @@ void IdleSpellCheckController::HotModeInvocation(IdleDeadline* deadline) {
 
   if (NeedsHotModeCheckingUnderCurrentSelection()) {
     requester.CheckSpellingAt(
-        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Extent());
+        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus());
   }
 
   const uint64_t watermark = last_processed_undo_step_sequence_;

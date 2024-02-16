@@ -21,16 +21,16 @@ StaticSelection* StaticSelection::FromSelectionInFlatTree(
 }
 
 StaticSelection::StaticSelection(const SelectionInDOMTree& selection)
-    : anchor_node_(selection.Base().ComputeContainerNode()),
-      anchor_offset_(selection.Base().ComputeOffsetInContainerNode()),
-      focus_node_(selection.Extent().ComputeContainerNode()),
-      focus_offset_(selection.Extent().ComputeOffsetInContainerNode()) {}
+    : anchor_node_(selection.Anchor().ComputeContainerNode()),
+      anchor_offset_(selection.Anchor().ComputeOffsetInContainerNode()),
+      focus_node_(selection.Focus().ComputeContainerNode()),
+      focus_offset_(selection.Focus().ComputeOffsetInContainerNode()) {}
 
 StaticSelection::StaticSelection(const SelectionInFlatTree& seleciton)
-    : anchor_node_(seleciton.Base().ComputeContainerNode()),
-      anchor_offset_(seleciton.Base().ComputeOffsetInContainerNode()),
-      focus_node_(seleciton.Extent().ComputeContainerNode()),
-      focus_offset_(seleciton.Extent().ComputeOffsetInContainerNode()) {}
+    : anchor_node_(seleciton.Anchor().ComputeContainerNode()),
+      anchor_offset_(seleciton.Anchor().ComputeOffsetInContainerNode()),
+      focus_node_(seleciton.Focus().ComputeContainerNode()),
+      focus_offset_(seleciton.Focus().ComputeOffsetInContainerNode()) {}
 
 bool StaticSelection::isCollapsed() const {
   return anchor_node_ == focus_node_ && anchor_offset_ == focus_offset_;

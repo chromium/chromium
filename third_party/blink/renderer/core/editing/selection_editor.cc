@@ -148,12 +148,12 @@ void SelectionEditor::DidChangeChildren(const ContainerNode&,
 
 void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
                                           const Position& new_focus) {
-  if (new_anchor == selection_.base_ && new_focus == selection_.extent_) {
+  if (new_anchor == selection_.anchor_ && new_focus == selection_.focus_) {
     DidFinishDOMMutation();
     return;
   }
-  selection_.base_ = new_anchor;
-  selection_.extent_ = new_focus;
+  selection_.anchor_ = new_anchor;
+  selection_.focus_ = new_focus;
   selection_.ResetDirectionCache();
   MarkCacheDirty();
   DidFinishDOMMutation();
@@ -220,8 +220,8 @@ static Position ComputePositionForChildrenRemoval(const Position& position,
 void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (selection_.IsNone())
     return;
-  const Position old_anchor = selection_.base_;
-  const Position old_focus = selection_.extent_;
+  const Position old_anchor = selection_.anchor_;
+  const Position old_focus = selection_.focus_;
   const Position& new_anchor =
       ComputePositionForChildrenRemoval(old_anchor, container);
   const Position& new_focus =
@@ -238,8 +238,8 @@ void SelectionEditor::NodeChildrenWillBeRemoved(ContainerNode& container) {
 void SelectionEditor::NodeWillBeRemoved(Node& node_to_be_removed) {
   if (selection_.IsNone())
     return;
-  const Position old_anchor = selection_.base_;
-  const Position old_focus = selection_.extent_;
+  const Position old_anchor = selection_.anchor_;
+  const Position old_focus = selection_.focus_;
   const Position& new_anchor =
       ComputePositionForNodeRemoval(old_anchor, node_to_be_removed);
   const Position& new_focus =
@@ -307,9 +307,9 @@ void SelectionEditor::DidUpdateCharacterData(CharacterData* node,
     return;
   }
   const Position& new_anchor = UpdatePositionAfterAdoptingTextReplacement(
-      selection_.base_, node, offset, old_length, new_length);
+      selection_.anchor_, node, offset, old_length, new_length);
   const Position& new_focus = UpdatePositionAfterAdoptingTextReplacement(
-      selection_.extent_, node, offset, old_length, new_length);
+      selection_.focus_, node, offset, old_length, new_length);
   DidFinishTextChange(new_anchor, new_focus);
 }
 
@@ -357,9 +357,10 @@ void SelectionEditor::DidMergeTextNodes(
     return;
   }
   const Position& new_anchor = UpdatePostionAfterAdoptingTextNodesMerged(
-      selection_.base_, merged_node, node_to_be_removed_with_index, old_length);
+      selection_.anchor_, merged_node, node_to_be_removed_with_index,
+      old_length);
   const Position& new_focus = UpdatePostionAfterAdoptingTextNodesMerged(
-      selection_.extent_, merged_node, node_to_be_removed_with_index,
+      selection_.focus_, merged_node, node_to_be_removed_with_index,
       old_length);
   DidFinishTextChange(new_anchor, new_focus);
 }
@@ -388,9 +389,9 @@ void SelectionEditor::DidSplitTextNode(const Text& old_node) {
     return;
   }
   const Position& new_anchor =
-      UpdatePostionAfterAdoptingTextNodeSplit(selection_.base_, old_node);
+      UpdatePostionAfterAdoptingTextNodeSplit(selection_.anchor_, old_node);
   const Position& new_focus =
-      UpdatePostionAfterAdoptingTextNodeSplit(selection_.extent_, old_node);
+      UpdatePostionAfterAdoptingTextNodeSplit(selection_.focus_, old_node);
   DidFinishTextChange(new_anchor, new_focus);
 }
 

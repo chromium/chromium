@@ -456,8 +456,8 @@ TEST_F(LayoutSelectionTest, MoveOnSameNode_Start) {
   // "fo^o<span>b|ar</span>"
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .SetBaseAndExtent({selection.Base().AnchorNode(), 2},
-                            selection.Extent())
+          .SetBaseAndExtent({selection.Anchor().AnchorNode(), 2},
+                            selection.Focus())
           .Build());
   Selection().CommitAppearanceIfNeeded();
   // Only "foo" should be invalidated.
@@ -493,8 +493,8 @@ TEST_F(LayoutSelectionTest, MoveOnSameNode_End) {
   // "fo^o<span>ba|r</span>"
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(selection.Base(),
-                            {selection.Extent().AnchorNode(), 2})
+          .SetBaseAndExtent(selection.Anchor(),
+                            {selection.Focus().AnchorNode(), 2})
           .Build());
   Selection().CommitAppearanceIfNeeded();
   // Only "bar" should be invalidated.
@@ -525,8 +525,8 @@ TEST_F(LayoutSelectionTest, MoveOnSameNode_StartAndEnd) {
   // "f^ooba|r"
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(selection.Base(),
-                            {selection.Extent().AnchorNode(), 5})
+          .SetBaseAndExtent(selection.Anchor(),
+                            {selection.Focus().AnchorNode(), 5})
           .Build());
   Selection().CommitAppearanceIfNeeded();
   // "foobar" should be invalidated.
@@ -555,7 +555,7 @@ TEST_F(LayoutSelectionTest, MoveOnSameNode_StartAndEnd_Collapse) {
   // "foo^|bar"
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .Collapse({selection.Base().AnchorNode(), 3})
+          .Collapse({selection.Anchor().AnchorNode(), 3})
           .Build());
   Selection().CommitAppearanceIfNeeded();
   // "foobar" should be invalidated.
@@ -629,8 +629,8 @@ TEST_F(LayoutSelectionTest, SVG) {
 
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(selection.Base(),
-                            {selection.Extent().AnchorNode(), 4})
+          .SetBaseAndExtent(selection.Anchor(),
+                            {selection.Focus().AnchorNode(), 4})
           .Build());
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(
@@ -667,8 +667,8 @@ TEST_F(LayoutSelectionTest, SVGAncestor) {
 
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(selection.Base(),
-                            {selection.Extent().AnchorNode(), 4})
+          .SetBaseAndExtent(selection.Anchor(),
+                            {selection.Focus().AnchorNode(), 4})
           .Build());
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(

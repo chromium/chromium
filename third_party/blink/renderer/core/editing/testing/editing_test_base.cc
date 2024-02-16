@@ -26,7 +26,7 @@ Position EditingTestBase::SetCaretTextToBody(
   const SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
   DCHECK(selection.IsCaret())
       << "|selection_text| should contain a caret marker '|'";
-  return selection.Base();
+  return selection.Anchor();
 }
 
 SelectionInDOMTree EditingTestBase::SetSelectionTextToBody(

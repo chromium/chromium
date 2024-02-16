@@ -170,17 +170,17 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
     const {
   // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.
-  Position base = GetSelectionInDOMTree().Base();
-  Position extent = GetSelectionInDOMTree().Extent();
+  Position anchor = GetSelectionInDOMTree().Anchor();
+  Position focus = GetSelectionInDOMTree().Focus();
   std::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
-  if (base != extent && base.ComputeContainerNode() &&
-      extent.ComputeContainerNode()) {
+  if (anchor != focus && anchor.ComputeContainerNode() &&
+      focus.ComputeContainerNode()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
-        MakeGarbageCollected<Range>(GetDocument(), base, extent),
+        MakeGarbageCollected<Range>(GetDocument(), anchor, focus),
         DisplayLockContext::ForcedPhase::kLayout);
   } else {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
-        base.AnchorNode(), DisplayLockContext::ForcedPhase::kLayout);
+        anchor.AnchorNode(), DisplayLockContext::ForcedPhase::kLayout);
   }
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   return ComputeVisibleSelectionInDOMTree();
@@ -229,9 +229,9 @@ static void AssertUserSelection(const SelectionInDOMTree& selection,
   if (!options.ShouldShowHandle() &&
       options.GetSetSelectionBy() != SetSelectionBy::kUser)
     return;
-  Node* base_editable_root = RootEditableElementOf(selection.Base());
-  Node* extent_editable_root = RootEditableElementOf(selection.Extent());
-  DCHECK_EQ(base_editable_root, extent_editable_root) << selection;
+  Node* anchor_editable_root = RootEditableElementOf(selection.Anchor());
+  Node* focus_editable_root = RootEditableElementOf(selection.Focus());
+  DCHECK_EQ(anchor_editable_root, focus_editable_root) << selection;
 #endif
 }
 
@@ -298,9 +298,9 @@ void FrameSelection::DidSetSelectionDeprecated(
         is_being_modified_ ? BlinkAXEventIntent()
         : new_selection.IsNone()
             ? BlinkAXEventIntent::FromClearedSelection(set_selection_by)
-            : BlinkAXEventIntent::FromNewSelection(options.Granularity(),
-                                                   new_selection.IsBaseFirst(),
-                                                   set_selection_by),
+            : BlinkAXEventIntent::FromNewSelection(
+                  options.Granularity(), new_selection.IsAnchorFirst(),
+                  set_selection_by),
         &current_document);
   }
 
@@ -860,7 +860,7 @@ void FrameSelection::NotifyAccessibilityForSelectionChange() {
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   if (!cache)
     return;
-  Node* anchor = GetSelectionInDOMTree().Extent().ComputeContainerNode();
+  Node* anchor = GetSelectionInDOMTree().Focus().ComputeContainerNode();
   if (anchor) {
     cache->SelectionChanged(anchor);
   } else {
@@ -962,7 +962,7 @@ void FrameSelection::UpdateAppearance() {
 void FrameSelection::NotifyTextControlOfSelectionChange(
     SetSelectionBy set_selection_by) {
   TextControlElement* text_control =
-      EnclosingTextControl(GetSelectionInDOMTree().Base());
+      EnclosingTextControl(GetSelectionInDOMTree().Anchor());
   if (!text_control)
     return;
   text_control->SelectionChanged(set_selection_by == SetSelectionBy::kUser);
@@ -1009,9 +1009,9 @@ static EphemeralRangeInFlatTree ComputeRangeForSerialization(
   const SelectionInFlatTree& selection =
       ConvertToSelectionInFlatTree(selection_in_dom_tree);
   // TODO(crbug.com/1019152): Once we know the root cause of having
-  // seleciton with |base.IsNull() != extent.IsNull()|, we should get rid of
-  // this if-statement.
-  if (selection.Base().IsNull() || selection.Extent().IsNull()) {
+  // seleciton with |Anchor().IsNull() != Focus().IsNull()|, we should get rid
+  // of this if-statement.
+  if (selection.Anchor().IsNull() || selection.Focus().IsNull()) {
     DCHECK(selection.IsNone());
     return EphemeralRangeInFlatTree();
   }

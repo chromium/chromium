@@ -50,7 +50,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
 
   WritingMode writing_mode = WritingMode::kHorizontalTb;
   const Node* node =
-      frame_->Selection().GetSelectionInDOMTree().Extent().AnchorNode();
+      frame_->Selection().GetSelectionInDOMTree().Focus().AnchorNode();
   if (!node) {
     node = frame_->GetDocument()->FocusedElement();
   }

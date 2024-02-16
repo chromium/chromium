@@ -14,8 +14,8 @@ namespace blink {
 
 template <typename Strategy>
 SelectionTemplate<Strategy>::SelectionTemplate(const SelectionTemplate& other)
-    : base_(other.base_),
-      extent_(other.extent_),
+    : anchor_(other.anchor_),
+      focus_(other.focus_),
       affinity_(other.affinity_),
       direction_(other.direction_)
 #if DCHECK_IS_ON()
@@ -38,8 +38,9 @@ bool SelectionTemplate<Strategy>::operator==(
     return other.IsNone();
   if (other.IsNone())
     return false;
-  DCHECK_EQ(base_.GetDocument(), other.GetDocument()) << *this << ' ' << other;
-  return base_ == other.base_ && extent_ == other.extent_ &&
+  DCHECK_EQ(anchor_.GetDocument(), other.GetDocument())
+      << *this << ' ' << other;
+  return anchor_ == other.anchor_ && focus_ == other.focus_ &&
          affinity_ == other.affinity_;
 }
 
@@ -51,45 +52,45 @@ bool SelectionTemplate<Strategy>::operator!=(
 
 template <typename Strategy>
 void SelectionTemplate<Strategy>::Trace(Visitor* visitor) const {
-  visitor->Trace(base_);
-  visitor->Trace(extent_);
+  visitor->Trace(anchor_);
+  visitor->Trace(focus_);
 }
 
 template <typename Strategy>
-const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Base() const {
+const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Anchor() const {
   DCHECK(AssertValid());
-  DCHECK(!base_.IsOrphan()) << base_;
-  return base_;
+  DCHECK(!anchor_.IsOrphan()) << anchor_;
+  return anchor_;
 }
 
 template <typename Strategy>
 Document* SelectionTemplate<Strategy>::GetDocument() const {
   DCHECK(AssertValid());
-  return base_.GetDocument();
+  return anchor_.GetDocument();
 }
 
 template <typename Strategy>
-const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Extent() const {
+const PositionTemplate<Strategy>& SelectionTemplate<Strategy>::Focus() const {
   DCHECK(AssertValid());
-  DCHECK(!extent_.IsOrphan()) << extent_;
-  return extent_;
+  DCHECK(!focus_.IsOrphan()) << focus_;
+  return focus_;
 }
 
 template <typename Strategy>
 bool SelectionTemplate<Strategy>::IsCaret() const {
-  return base_.IsNotNull() && base_ == extent_;
+  return anchor_.IsNotNull() && anchor_ == focus_;
 }
 
 template <typename Strategy>
 bool SelectionTemplate<Strategy>::IsRange() const {
-  return base_ != extent_;
+  return anchor_ != focus_;
 }
 
 template <typename Strategy>
 bool SelectionTemplate<Strategy>::IsValidFor(const Document& document) const {
   if (IsNone())
     return true;
-  return base_.IsValidFor(document) && extent_.IsValidFor(document);
+  return anchor_.IsValidFor(document) && focus_.IsValidFor(document);
 }
 
 template <typename Strategy>
@@ -97,21 +98,24 @@ bool SelectionTemplate<Strategy>::AssertValidFor(
     const Document& document) const {
   if (!AssertValid())
     return false;
-  if (base_.IsNull())
+  if (anchor_.IsNull()) {
     return true;
-  DCHECK_EQ(base_.GetDocument(), document) << *this;
+  }
+  DCHECK_EQ(anchor_.GetDocument(), document) << *this;
   return true;
 }
 
 #if DCHECK_IS_ON()
 template <typename Strategy>
 bool SelectionTemplate<Strategy>::AssertValid() const {
-  if (base_.IsNull())
+  if (anchor_.IsNull()) {
     return true;
-  DCHECK_EQ(base_.GetDocument()->DomTreeVersion(), dom_tree_version_) << *this;
-  DCHECK(!base_.IsOrphan()) << *this;
-  DCHECK(!extent_.IsOrphan()) << *this;
-  DCHECK_EQ(base_.GetDocument(), extent_.GetDocument());
+  }
+  DCHECK_EQ(anchor_.GetDocument()->DomTreeVersion(), dom_tree_version_)
+      << *this;
+  DCHECK(!anchor_.IsOrphan()) << *this;
+  DCHECK(!focus_.IsOrphan()) << *this;
+  DCHECK_EQ(anchor_.GetDocument(), focus_.GetDocument());
   return true;
 }
 #else
@@ -124,31 +128,32 @@ bool SelectionTemplate<Strategy>::AssertValid() const {
 #if DCHECK_IS_ON()
 template <typename Strategy>
 void SelectionTemplate<Strategy>::ShowTreeForThis() const {
-  if (base_.IsNull()) {
-    LOG(INFO) << "\nbase is null";
+  if (anchor_.IsNull()) {
+    LOG(INFO) << "\nanchor is null";
     return;
   }
 
   LOG(INFO) << "\n"
-            << base_.AnchorNode()
-                   ->ToMarkedTreeString(base_.AnchorNode(), "B",
-                                        extent_.AnchorNode(), "E")
+            << anchor_.AnchorNode()
+                   ->ToMarkedTreeString(anchor_.AnchorNode(), "B",
+                                        focus_.AnchorNode(), "E")
                    .Utf8()
-            << "base: " << base_.ToAnchorTypeAndOffsetString().Utf8() << "\n"
-            << "extent: " << extent_.ToAnchorTypeAndOffsetString().Utf8();
+            << "anchor: " << anchor_.ToAnchorTypeAndOffsetString().Utf8()
+            << "\n"
+            << "focus: " << focus_.ToAnchorTypeAndOffsetString().Utf8();
 }
 #endif
 
 template <typename Strategy>
 const PositionTemplate<Strategy>&
 SelectionTemplate<Strategy>::ComputeEndPosition() const {
-  return IsBaseFirst() ? extent_ : base_;
+  return IsAnchorFirst() ? focus_ : anchor_;
 }
 
 template <typename Strategy>
 const PositionTemplate<Strategy>&
 SelectionTemplate<Strategy>::ComputeStartPosition() const {
-  return IsBaseFirst() ? base_ : extent_;
+  return IsAnchorFirst() ? anchor_ : focus_;
 }
 
 template <typename Strategy>
@@ -159,31 +164,32 @@ EphemeralRangeTemplate<Strategy> SelectionTemplate<Strategy>::ComputeRange()
 }
 
 template <typename Strategy>
-bool SelectionTemplate<Strategy>::IsBaseFirst() const {
+bool SelectionTemplate<Strategy>::IsAnchorFirst() const {
   DCHECK(AssertValid());
-  if (base_ == extent_) {
+  if (anchor_ == focus_) {
     DCHECK_EQ(direction_, Direction::kForward);
     return true;
   }
   if (direction_ == Direction::kForward) {
-    DCHECK_LE(base_, extent_);
+    DCHECK_LE(anchor_, focus_);
     return true;
   }
   if (direction_ == Direction::kBackward) {
-    DCHECK_GT(base_, extent_);
+    DCHECK_GT(anchor_, focus_);
     return false;
   }
   // Note: Since same position can be represented in different anchor type,
   // e.g. Position(div, 0) and BeforeNode(first-child), we use |<=| to check
   // forward selection.
   DCHECK_EQ(direction_, Direction::kNotComputed);
-  direction_ = base_ <= extent_ ? Direction::kForward : Direction::kBackward;
+  direction_ = anchor_ <= focus_ ? Direction::kForward : Direction::kBackward;
   return direction_ == Direction::kForward;
 }
 
 template <typename Strategy>
 void SelectionTemplate<Strategy>::ResetDirectionCache() const {
-  direction_ = base_ == extent_ ? Direction::kForward : Direction::kNotComputed;
+  direction_ =
+      anchor_ == focus_ ? Direction::kForward : Direction::kNotComputed;
 }
 
 template <typename Strategy>
@@ -195,12 +201,12 @@ void SelectionTemplate<Strategy>::PrintTo(std::ostream* ostream,
   }
   *ostream << type << '(';
 #if DCHECK_IS_ON()
-  if (dom_tree_version_ != base_.GetDocument()->DomTreeVersion()) {
+  if (dom_tree_version_ != anchor_.GetDocument()->DomTreeVersion()) {
     *ostream << "Dirty: " << dom_tree_version_;
-    *ostream << " != " << base_.GetDocument()->DomTreeVersion() << ' ';
+    *ostream << " != " << anchor_.GetDocument()->DomTreeVersion() << ' ';
   }
 #endif
-  *ostream << "base: " << base_ << ", extent: " << extent_ << ')';
+  *ostream << "anchor: " << anchor_ << ", focus: " << focus_ << ')';
 }
 
 std::ostream& operator<<(std::ostream& ostream,
@@ -230,13 +236,13 @@ SelectionTemplate<Strategy> SelectionTemplate<Strategy>::Builder::Build()
     const {
   DCHECK(selection_.AssertValid());
   if (selection_.direction_ == Direction::kBackward) {
-    DCHECK_LE(selection_.extent_, selection_.base_);
+    DCHECK_LE(selection_.focus_, selection_.anchor_);
     return selection_;
   }
   if (selection_.direction_ == Direction::kForward) {
     if (selection_.IsNone())
       return selection_;
-    DCHECK_LE(selection_.base_, selection_.extent_);
+    DCHECK_LE(selection_.anchor_, selection_.focus_);
     return selection_;
   }
   DCHECK_EQ(selection_.direction_, Direction::kNotComputed);
@@ -249,8 +255,8 @@ typename SelectionTemplate<Strategy>::Builder&
 SelectionTemplate<Strategy>::Builder::Collapse(
     const PositionTemplate<Strategy>& position) {
   DCHECK(position.IsConnected()) << position;
-  selection_.base_ = position;
-  selection_.extent_ = position;
+  selection_.anchor_ = position;
+  selection_.focus_ = position;
 #if DCHECK_IS_ON()
   selection_.dom_tree_version_ = position.GetDocument()->DomTreeVersion();
 #endif
@@ -272,11 +278,12 @@ SelectionTemplate<Strategy>::Builder::Extend(
     const PositionTemplate<Strategy>& position) {
   DCHECK(position.IsConnected()) << position;
   DCHECK_EQ(selection_.GetDocument(), position.GetDocument());
-  DCHECK(selection_.Base().IsConnected()) << selection_.Base();
+  DCHECK(selection_.Anchor().IsConnected()) << selection_.Anchor();
   DCHECK(selection_.AssertValid());
-  if (selection_.extent_.IsEquivalent(position))
+  if (selection_.focus_.IsEquivalent(position)) {
     return *this;
-  selection_.extent_ = position;
+  }
+  selection_.focus_ = position;
   selection_.direction_ = Direction::kNotComputed;
   return *this;
 }
@@ -303,10 +310,10 @@ SelectionTemplate<Strategy>::Builder::SetAsBackwardSelection(
   DCHECK(range.IsNotNull());
   DCHECK(!range.IsCollapsed());
   DCHECK(selection_.IsNone()) << selection_;
-  selection_.base_ = range.EndPosition();
-  selection_.extent_ = range.StartPosition();
+  selection_.anchor_ = range.EndPosition();
+  selection_.focus_ = range.StartPosition();
   selection_.direction_ = Direction::kBackward;
-  DCHECK_GT(selection_.base_, selection_.extent_);
+  DCHECK_GT(selection_.anchor_, selection_.focus_);
 #if DCHECK_IS_ON()
   selection_.dom_tree_version_ = range.GetDocument().DomTreeVersion();
 #endif
@@ -319,10 +326,10 @@ SelectionTemplate<Strategy>::Builder::SetAsForwardSelection(
     const EphemeralRangeTemplate<Strategy>& range) {
   DCHECK(range.IsNotNull());
   DCHECK(selection_.IsNone()) << selection_;
-  selection_.base_ = range.StartPosition();
-  selection_.extent_ = range.EndPosition();
+  selection_.anchor_ = range.StartPosition();
+  selection_.focus_ = range.EndPosition();
   selection_.direction_ = Direction::kForward;
-  DCHECK_LE(selection_.base_, selection_.extent_);
+  DCHECK_LE(selection_.anchor_, selection_.focus_);
 #if DCHECK_IS_ON()
   selection_.dom_tree_version_ = range.GetDocument().DomTreeVersion();
 #endif
@@ -334,8 +341,8 @@ typename SelectionTemplate<Strategy>::Builder&
 SelectionTemplate<Strategy>::Builder::SetBaseAndExtent(
     const EphemeralRangeTemplate<Strategy>& range) {
   if (range.IsNull()) {
-    selection_.base_ = PositionTemplate<Strategy>();
-    selection_.extent_ = PositionTemplate<Strategy>();
+    selection_.anchor_ = PositionTemplate<Strategy>();
+    selection_.focus_ = PositionTemplate<Strategy>();
 #if DCHECK_IS_ON()
     selection_.dom_tree_version_ = 0;
 #endif
@@ -403,22 +410,23 @@ SelectionInDOMTree ConvertToSelectionInDOMTree(
     const SelectionInFlatTree& selection_in_flat_tree) {
   return SelectionInDOMTree::Builder()
       .SetAffinity(selection_in_flat_tree.Affinity())
-      .SetBaseAndExtent(ToPositionInDOMTree(selection_in_flat_tree.Base()),
-                        ToPositionInDOMTree(selection_in_flat_tree.Extent()))
+      .SetBaseAndExtent(ToPositionInDOMTree(selection_in_flat_tree.Anchor()),
+                        ToPositionInDOMTree(selection_in_flat_tree.Focus()))
       .Build();
 }
 
 SelectionInFlatTree ConvertToSelectionInFlatTree(
     const SelectionInDOMTree& selection) {
   SelectionInFlatTree::Builder builder;
-  const PositionInFlatTree& base = ToPositionInFlatTree(selection.Base());
-  const PositionInFlatTree& extent = ToPositionInFlatTree(selection.Extent());
-  if (base.IsConnected() && extent.IsConnected())
-    builder.SetBaseAndExtent(base, extent);
-  else if (base.IsConnected())
-    builder.Collapse(base);
-  else if (extent.IsConnected())
-    builder.Collapse(extent);
+  const PositionInFlatTree& anchor = ToPositionInFlatTree(selection.Anchor());
+  const PositionInFlatTree& focus = ToPositionInFlatTree(selection.Focus());
+  if (anchor.IsConnected() && focus.IsConnected()) {
+    builder.SetBaseAndExtent(anchor, focus);
+  } else if (anchor.IsConnected()) {
+    builder.Collapse(anchor);
+  } else if (focus.IsConnected()) {
+    builder.Collapse(focus);
+  }
   builder.SetAffinity(selection.Affinity());
   return builder.Build();
 }

@@ -590,7 +590,7 @@ void TextControlElement::ComputeSelection(
         InnerEditorElement(), selection.ComputeStartPosition());
   }
   if (flags & kEnd) {
-    if (flags & kStart && (selection.Base() == selection.Extent())) {
+    if (flags & kStart && (selection.Anchor() == selection.Focus())) {
       computed_selection.end = computed_selection.start;
     } else {
       computed_selection.end = IndexForPosition(InnerEditorElement(),
@@ -599,7 +599,7 @@ void TextControlElement::ComputeSelection(
   }
   if (flags & kDirection && frame->Selection().IsDirectional()) {
     computed_selection.direction =
-        (selection.Base() == selection.ComputeStartPosition())
+        (selection.Anchor() == selection.ComputeStartPosition())
             ? kSelectionHasForwardDirection
             : kSelectionHasBackwardDirection;
   }

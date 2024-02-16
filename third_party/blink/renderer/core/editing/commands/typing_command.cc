@@ -119,7 +119,7 @@ PlainTextRange GetSelectionOffsets(const SelectionInDOMTree& selection) {
   if (range.IsNull())
     return PlainTextRange();
   ContainerNode* const editable =
-      RootEditableElementOrTreeScopeRootNodeOf(selection.Base());
+      RootEditableElementOrTreeScopeRootNodeOf(selection.Anchor());
   DCHECK(editable);
   return PlainTextRange::Create(*editable, range);
 }
@@ -808,11 +808,11 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
 // range to match platform conventions.
 static SelectionForUndoStep AdjustSelectionForBackwardDelete(
     const SelectionInDOMTree& selection) {
-  const Position& base = selection.Base();
+  const Position& anchor = selection.Anchor();
   if (selection.IsCaret()) {
     // TODO(yosin): We should make |DeleteSelectionCommand| to work with
     // anonymous placeholder.
-    if (Position after_block = AfterBlockIfBeforeAnonymousPlaceholder(base)) {
+    if (Position after_block = AfterBlockIfBeforeAnonymousPlaceholder(anchor)) {
       // We remove a anonymous placeholder <br> in <div> like <div><br></div>:
       //   <div><img style="display:block"><br></div>
       //   |selection_to_delete| is Before:<br>
@@ -821,17 +821,20 @@ static SelectionForUndoStep AdjustSelectionForBackwardDelete(
       //   |selection_to_delete| is <div>@0, After:<img>
       // See "editing/deleting/delete_after_block_image.html"
       return SelectionForUndoStep::Builder()
-          .SetBaseAndExtentAsBackwardSelection(base, after_block)
+          .SetBaseAndExtentAsBackwardSelection(anchor, after_block)
           .Build();
     }
     return SelectionForUndoStep::From(selection);
   }
-  if (base.ComputeContainerNode() != selection.Extent().ComputeContainerNode())
+  if (anchor.ComputeContainerNode() !=
+      selection.Focus().ComputeContainerNode()) {
     return SelectionForUndoStep::From(selection);
-  if (base.ComputeOffsetInContainerNode() -
-          selection.Extent().ComputeOffsetInContainerNode() <=
-      1)
+  }
+  if (anchor.ComputeOffsetInContainerNode() -
+          selection.Focus().ComputeOffsetInContainerNode() <=
+      1) {
     return SelectionForUndoStep::From(selection);
+  }
   const Position& end = selection.ComputeEndPosition();
   return SelectionForUndoStep::Builder()
       .SetBaseAndExtentAsBackwardSelection(

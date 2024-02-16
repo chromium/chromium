@@ -255,7 +255,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
   const PositionInFlatTree position = ToPositionInFlatTree(
       SetSelectionTextToBody(
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
-          .Base());
+          .Anchor());
   const LayoutObject* const target_layout_object =
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =

@@ -643,7 +643,7 @@ static Position MostBackwardOrForwardCaretPosition(
   const SelectionInDOMTree& shadow_adjusted_selection =
       SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
           selection);
-  const Position& adjusted_candidate = shadow_adjusted_selection.Extent();
+  const Position& adjusted_candidate = shadow_adjusted_selection.Focus();
 
   // The adjusted candidate should be between the candidate and the original
   // position. Otherwise, return the original position.
@@ -657,7 +657,7 @@ static Position MostBackwardOrForwardCaretPosition(
     const SelectionInDOMTree& editing_adjusted_selection =
         SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
             shadow_adjusted_selection);
-    return editing_adjusted_selection.Extent();
+    return editing_adjusted_selection.Focus();
   }
   return adjusted_candidate;
 }

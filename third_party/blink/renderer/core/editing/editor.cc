@@ -120,7 +120,7 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
   if (!IsTextControl(*event->target()->ToNode()))
     return selection;
   auto* text_control_of_selection_start =
-      EnclosingTextControl(selection.Base());
+      EnclosingTextControl(selection.Anchor());
   auto* text_control_of_target = ToTextControl(event->target()->ToNode());
   if (!selection.IsNone() &&
       text_control_of_target == text_control_of_selection_start)

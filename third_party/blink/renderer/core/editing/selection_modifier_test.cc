@@ -402,7 +402,7 @@ TEST_F(SelectionModifierTest, PositionDisconnectedInFlatTree2) {
                       TextGranularity::kParagraph);
       EXPECT_TRUE(focus.IsConnected());
       bool flat_focus_is_connected =
-          ToPositionInFlatTree(selection.Extent()).IsConnected();
+          ToPositionInFlatTree(selection.Focus()).IsConnected();
       EXPECT_EQ(flat_anchor_is_connected || flat_focus_is_connected
                     ? "<div id=\"host\">x</div>^y|"
                     : "<div id=\"host\">x</div>y",
@@ -432,8 +432,8 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
   ShadowRoot* shadow_root = optgroup->GetShadowRoot();
   Element* label =
       shadow_root->getElementById(shadow_element_names::kIdOptGroupLabel);
-  EXPECT_EQ(Position(label, 0), selection.Base());
-  EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
+  EXPECT_EQ(Position(label, 0), selection.Anchor());
+  EXPECT_EQ(Position(shadow_root, 1), selection.Focus());
 }
 
 TEST_F(SelectionModifierTest, EditableVideo) {

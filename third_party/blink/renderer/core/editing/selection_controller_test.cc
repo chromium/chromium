@@ -539,9 +539,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
                             TextGranularity::kParagraph);
   SelectionInFlatTree adjust_selection =
       AdjustSelectionByUserSelect(one, selection);
-  EXPECT_EQ(adjust_selection.Base(), selection.Base());
-  EXPECT_EQ(adjust_selection.Extent(),
-            PositionInFlatTree(one->parentNode(), 2));
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Focus(), PositionInFlatTree(one->parentNode(), 2));
 }
 
 // http://crbug.com/1410448
@@ -564,8 +563,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
                             TextGranularity::kParagraph);
   SelectionInFlatTree adjust_selection =
       AdjustSelectionByUserSelect(one, selection);
-  EXPECT_EQ(adjust_selection.Base(), selection.Base());
-  EXPECT_EQ(adjust_selection.Extent(),
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Focus(),
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 
@@ -588,11 +587,11 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
                             TextGranularity::kParagraph);
   SelectionInFlatTree adjust_selection =
       AdjustSelectionByUserSelect(one, selection);
-  EXPECT_EQ(adjust_selection.Base(), selection.Base());
-  EXPECT_EQ(adjust_selection.Base(),
+  EXPECT_EQ(adjust_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjust_selection.Anchor(),
             PositionInFlatTree::FirstPositionInNode(*one->firstChild()));
-  EXPECT_EQ(adjust_selection.Extent(), selection.Extent());
-  EXPECT_EQ(adjust_selection.Extent(),
+  EXPECT_EQ(adjust_selection.Focus(), selection.Focus());
+  EXPECT_EQ(adjust_selection.Focus(),
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 

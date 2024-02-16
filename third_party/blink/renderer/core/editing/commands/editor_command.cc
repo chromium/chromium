@@ -1150,7 +1150,7 @@ static bool EnabledInEditableText(LocalFrame& frame,
   const SelectionInDOMTree selection =
       frame.GetEditor().SelectionForCommand(event);
   return RootEditableElementOf(
-      CreateVisiblePosition(selection.Base()).DeepEquivalent());
+      CreateVisiblePosition(selection.Anchor()).DeepEquivalent());
 }
 
 static bool EnabledInEditableTextOrCaretBrowsing(LocalFrame& frame,

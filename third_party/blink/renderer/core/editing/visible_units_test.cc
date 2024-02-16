@@ -280,7 +280,7 @@ TEST_F(VisibleUnitsTest,
       "</div>");
   const PositionWithAffinity& result =
       AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          PositionWithAffinity(selection.Extent()), selection.Base());
+          PositionWithAffinity(selection.Focus()), selection.Anchor());
   ASSERT_TRUE(result.IsNotNull());
   EXPECT_EQ(
       "<div contenteditable>"

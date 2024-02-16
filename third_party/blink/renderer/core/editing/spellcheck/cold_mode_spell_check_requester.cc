@@ -72,7 +72,7 @@ SpellCheckRequester& ColdModeSpellCheckRequester::GetSpellCheckRequester()
 
 const Element* ColdModeSpellCheckRequester::CurrentFocusedEditable() const {
   const Position position =
-      window_->GetFrame()->Selection().GetSelectionInDOMTree().Extent();
+      window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();
   if (position.IsNull())
     return nullptr;
 
@@ -239,7 +239,7 @@ void ColdModeSpellCheckRequester::RequestLocalChecking(
   const EphemeralRange& full_range =
       EphemeralRange::RangeOfContents(element_to_check);
   const Position position =
-      window_->GetFrame()->Selection().GetSelectionInDOMTree().Extent();
+      window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();
   DCHECK(position.IsNotNull());
 
   TextIteratorBehavior behavior =

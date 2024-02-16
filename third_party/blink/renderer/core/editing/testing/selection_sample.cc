@@ -191,45 +191,45 @@ class Serializer final {
       builder_.Append(text);
       return;
     }
-    const Node& base_node = *selection_.Base().ComputeContainerNode();
-    const Node& extent_node = *selection_.Extent().ComputeContainerNode();
-    const int base_offset = selection_.Base().ComputeOffsetInContainerNode();
-    const int extent_offset =
-        selection_.Extent().ComputeOffsetInContainerNode();
-    if (base_node == node && extent_node == node) {
-      if (base_offset == extent_offset) {
-        builder_.Append(text.Left(base_offset));
+    const Node& anchor_node = *selection_.Anchor().ComputeContainerNode();
+    const Node& focus_node = *selection_.Focus().ComputeContainerNode();
+    const int anchor_offset =
+        selection_.Anchor().ComputeOffsetInContainerNode();
+    const int focus_offset = selection_.Focus().ComputeOffsetInContainerNode();
+    if (anchor_node == node && focus_node == node) {
+      if (anchor_offset == focus_offset) {
+        builder_.Append(text.Left(anchor_offset));
         builder_.Append('|');
-        builder_.Append(text.Substring(base_offset));
+        builder_.Append(text.Substring(anchor_offset));
         return;
       }
-      if (base_offset < extent_offset) {
-        builder_.Append(text.Left(base_offset));
+      if (anchor_offset < focus_offset) {
+        builder_.Append(text.Left(anchor_offset));
         builder_.Append('^');
         builder_.Append(
-            text.Substring(base_offset, extent_offset - base_offset));
+            text.Substring(anchor_offset, focus_offset - anchor_offset));
         builder_.Append('|');
-        builder_.Append(text.Substring(extent_offset));
+        builder_.Append(text.Substring(focus_offset));
         return;
       }
-      builder_.Append(text.Left(extent_offset));
+      builder_.Append(text.Left(focus_offset));
       builder_.Append('|');
       builder_.Append(
-          text.Substring(extent_offset, base_offset - extent_offset));
+          text.Substring(focus_offset, anchor_offset - focus_offset));
       builder_.Append('^');
-      builder_.Append(text.Substring(base_offset));
+      builder_.Append(text.Substring(anchor_offset));
       return;
     }
-    if (base_node == node) {
-      builder_.Append(text.Left(base_offset));
+    if (anchor_node == node) {
+      builder_.Append(text.Left(anchor_offset));
       builder_.Append('^');
-      builder_.Append(text.Substring(base_offset));
+      builder_.Append(text.Substring(anchor_offset));
       return;
     }
-    if (extent_node == node) {
-      builder_.Append(text.Left(extent_offset));
+    if (focus_node == node) {
+      builder_.Append(text.Left(focus_offset));
       builder_.Append('|');
-      builder_.Append(text.Substring(extent_offset));
+      builder_.Append(text.Substring(focus_offset));
       return;
     }
     builder_.Append(text);
@@ -315,12 +315,13 @@ class Serializer final {
     if (selection_.IsNone())
       return;
     const PositionTemplate<Strategy> position(node, offset);
-    if (selection_.Extent().ToOffsetInAnchor() == position) {
+    if (selection_.Focus().ToOffsetInAnchor() == position) {
       builder_.Append('|');
       return;
     }
-    if (selection_.Base().ToOffsetInAnchor() != position)
+    if (selection_.Anchor().ToOffsetInAnchor() != position) {
       return;
+    }
     builder_.Append('^');
   }
 

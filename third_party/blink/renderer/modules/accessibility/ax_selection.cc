@@ -77,8 +77,8 @@ AXSelection::Builder& AXSelection::Builder::SetSelection(
   if (selection.IsNone())
     return *this;
 
-  selection_.base_ = AXPosition::FromPosition(selection.Base());
-  selection_.extent_ = AXPosition::FromPosition(selection.Extent());
+  selection_.base_ = AXPosition::FromPosition(selection.Anchor());
+  selection_.extent_ = AXPosition::FromPosition(selection.Focus());
   return *this;
 }
 
@@ -183,8 +183,8 @@ AXSelection AXSelection::FromSelection(
     return {};
   DCHECK(selection.AssertValid());
 
-  const Position dom_base = selection.Base();
-  const Position dom_extent = selection.Extent();
+  const Position dom_anchor = selection.Anchor();
+  const Position dom_focus = selection.Focus();
   const TextAffinity extent_affinity = selection.Affinity();
   const TextAffinity base_affinity =
       selection.IsCaret() ? extent_affinity : TextAffinity::kDownstream;
@@ -203,7 +203,7 @@ AXSelection AXSelection::FromSelection(
   if (!selection.IsCaret()) {
     switch (selection_behavior) {
       case AXSelectionBehavior::kShrinkToValidRange:
-        if (selection.IsBaseFirst()) {
+        if (selection.IsAnchorFirst()) {
           base_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
           extent_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
         } else {
@@ -212,7 +212,7 @@ AXSelection AXSelection::FromSelection(
         }
         break;
       case AXSelectionBehavior::kExtendToValidRange:
-        if (selection.IsBaseFirst()) {
+        if (selection.IsAnchorFirst()) {
           base_adjustment = AXPositionAdjustmentBehavior::kMoveLeft;
           extent_adjustment = AXPositionAdjustmentBehavior::kMoveRight;
         } else {
@@ -224,9 +224,9 @@ AXSelection AXSelection::FromSelection(
   }
 
   const auto ax_base =
-      AXPosition::FromPosition(dom_base, base_affinity, base_adjustment);
+      AXPosition::FromPosition(dom_anchor, base_affinity, base_adjustment);
   const auto ax_extent =
-      AXPosition::FromPosition(dom_extent, extent_affinity, extent_adjustment);
+      AXPosition::FromPosition(dom_focus, extent_affinity, extent_adjustment);
 
   if (!ax_base.IsValid() || !ax_extent.IsValid())
     return {};
@@ -319,11 +319,11 @@ const SelectionInDOMTree AXSelection::AsSelection(
       break;
   }
 
-  const auto dom_base = base_.ToPositionWithAffinity(base_adjustment);
-  const auto dom_extent = extent_.ToPositionWithAffinity(extent_adjustment);
+  const auto dom_anchor = base_.ToPositionWithAffinity(base_adjustment);
+  const auto dom_focus = extent_.ToPositionWithAffinity(extent_adjustment);
   SelectionInDOMTree::Builder selection_builder;
-  selection_builder.SetBaseAndExtent(dom_base.GetPosition(),
-                                     dom_extent.GetPosition());
+  selection_builder.SetBaseAndExtent(dom_anchor.GetPosition(),
+                                     dom_focus.GetPosition());
   if (extent_.IsTextPosition())
     selection_builder.SetAffinity(extent_.Affinity());
   return selection_builder.Build();
@@ -384,7 +384,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   const SelectionInDOMTree old_selection = AsSelection(selection_behavior);
   DCHECK(old_selection.AssertValid());
-  Document* document = old_selection.Base().GetDocument();
+  Document* document = old_selection.Anchor().GetDocument();
   if (!document) {
     NOTREACHED() << "Valid DOM selections should have an attached document.";
     return false;
@@ -402,7 +402,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   // See the following section in the Selection API Specification:
   // https://w3c.github.io/selection-api/#selectstart-event
-  if (DispatchSelectStart(old_selection.Base().ComputeContainerNode()) !=
+  if (DispatchSelectStart(old_selection.Anchor().ComputeContainerNode()) !=
       DispatchEventResult::kNotCanceled) {
     return false;
   }

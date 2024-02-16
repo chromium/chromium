@@ -265,10 +265,10 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInText) {
   const AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   const SelectionInDOMTree dom_selection = ax_selection.AsSelection();
-  EXPECT_EQ(text, dom_selection.Base().AnchorNode());
-  EXPECT_EQ(3, dom_selection.Base().OffsetInContainerNode());
-  EXPECT_EQ(text, dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
+  EXPECT_EQ(text, dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(3, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(text, dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(
       "++<GenericContainer>\n"
       "++++<GenericContainer>\n"
@@ -381,10 +381,10 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInTextWithWhiteSpace) {
   const AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   const SelectionInDOMTree dom_selection = ax_selection.AsSelection();
-  EXPECT_EQ(text, dom_selection.Base().AnchorNode());
-  EXPECT_EQ(8, dom_selection.Base().OffsetInContainerNode());
-  EXPECT_EQ(text, dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(10, dom_selection.Extent().OffsetInContainerNode());
+  EXPECT_EQ(text, dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(8, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(text, dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(10, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(
       "++<GenericContainer>\n"
       "++++<GenericContainer>\n"
@@ -424,10 +424,10 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreak) {
   const AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   const SelectionInDOMTree dom_selection = ax_selection.AsSelection();
-  EXPECT_EQ(paragraph, dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
-  EXPECT_EQ(line2, dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(0, dom_selection.Extent().OffsetInContainerNode());
+  EXPECT_EQ(paragraph, dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(line2, dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(0, dom_selection.Focus().OffsetInContainerNode());
 
   // The selection anchor marker '^' should be before the line break and the
   // selection focus marker '|' should be after it.
@@ -474,10 +474,10 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreakInEditableText) {
   const AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   const SelectionInDOMTree dom_selection = ax_selection.AsSelection();
-  EXPECT_EQ(paragraph, dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
-  EXPECT_EQ(line2, dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(0, dom_selection.Extent().OffsetInContainerNode());
+  EXPECT_EQ(paragraph, dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
+  EXPECT_EQ(line2, dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(0, dom_selection.Focus().OffsetInContainerNode());
 
   // The selection anchor marker '^' should be before the line break and the
   // selection focus marker '|' should be after it.
@@ -664,12 +664,12 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAroundListBullet) {
   const SelectionInDOMTree shrunk_selection =
       Selection().GetSelectionInDOMTree();
 
-  EXPECT_EQ(text_1, shrunk_selection.Base().AnchorNode());
-  ASSERT_TRUE(shrunk_selection.Base().IsOffsetInAnchor());
-  EXPECT_EQ(0, shrunk_selection.Base().OffsetInContainerNode());
-  ASSERT_TRUE(shrunk_selection.Extent().IsOffsetInAnchor());
-  EXPECT_EQ(text_2, shrunk_selection.Extent().AnchorNode());
-  EXPECT_EQ(7, shrunk_selection.Extent().OffsetInContainerNode());
+  EXPECT_EQ(text_1, shrunk_selection.Anchor().AnchorNode());
+  ASSERT_TRUE(shrunk_selection.Anchor().IsOffsetInAnchor());
+  EXPECT_EQ(0, shrunk_selection.Anchor().OffsetInContainerNode());
+  ASSERT_TRUE(shrunk_selection.Focus().IsOffsetInAnchor());
+  EXPECT_EQ(text_2, shrunk_selection.Focus().AnchorNode());
+  EXPECT_EQ(7, shrunk_selection.Focus().OffsetInContainerNode());
 
   // The list bullet is not included in the DOM tree. Extending the
   // |AXSelection| should move the anchor to before the first <li>.
@@ -677,13 +677,13 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAroundListBullet) {
   const SelectionInDOMTree extended_selection =
       Selection().GetSelectionInDOMTree();
 
-  ASSERT_TRUE(extended_selection.Base().IsOffsetInAnchor());
-  EXPECT_EQ(item_1->parentNode(), extended_selection.Base().AnchorNode());
+  ASSERT_TRUE(extended_selection.Anchor().IsOffsetInAnchor());
+  EXPECT_EQ(item_1->parentNode(), extended_selection.Anchor().AnchorNode());
   EXPECT_EQ(static_cast<int>(item_1->NodeIndex()),
-            extended_selection.Base().OffsetInContainerNode());
-  ASSERT_TRUE(extended_selection.Extent().IsOffsetInAnchor());
-  EXPECT_EQ(text_2, extended_selection.Extent().AnchorNode());
-  EXPECT_EQ(7, extended_selection.Extent().OffsetInContainerNode());
+            extended_selection.Anchor().OffsetInContainerNode());
+  ASSERT_TRUE(extended_selection.Focus().IsOffsetInAnchor());
+  EXPECT_EQ(text_2, extended_selection.Focus().AnchorNode());
+  EXPECT_EQ(7, extended_selection.Focus().OffsetInContainerNode());
 
   std::string expectations;
   expectations =
@@ -1243,14 +1243,14 @@ TEST_F(AccessibilitySelectionTest, SelectingTheWholeOfTheTextField) {
   EXPECT_TRUE(ax_selection.Select());
 
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
-  EXPECT_EQ(GetDocument().body(), dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("before"),
-            dom_selection.Base().ComputeNodeAfterPosition());
-  EXPECT_EQ(GetDocument().body(), dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
+            dom_selection.Anchor().ComputeNodeAfterPosition());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("after"),
-            dom_selection.Extent().ComputeNodeAfterPosition());
+            dom_selection.Focus().ComputeNodeAfterPosition());
 
   // The selection in the text field should remain unchanged because the field
   // is not focused.
@@ -1439,14 +1439,14 @@ TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextField) {
 
   // The selection in the light DOM should remain unchanged.
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
-  EXPECT_EQ(GetDocument().body(), dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("before"),
-            dom_selection.Base().ComputeNodeAfterPosition());
-  EXPECT_EQ(GetDocument().body(), dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
+            dom_selection.Anchor().ComputeNodeAfterPosition());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("after"),
-            dom_selection.Extent().ComputeNodeAfterPosition());
+            dom_selection.Focus().ComputeNodeAfterPosition());
 
   // The selection in the text field should remain unchanged because the field
   // is not focused.
@@ -1574,14 +1574,14 @@ TEST_F(AccessibilitySelectionTest, SelectTheWholeOfTheTextarea) {
   EXPECT_TRUE(ax_selection.Select());
 
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
-  EXPECT_EQ(GetDocument().body(), dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("before"),
-            dom_selection.Base().ComputeNodeAfterPosition());
-  EXPECT_EQ(GetDocument().body(), dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
+            dom_selection.Anchor().ComputeNodeAfterPosition());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("after"),
-            dom_selection.Extent().ComputeNodeAfterPosition());
+            dom_selection.Focus().ComputeNodeAfterPosition());
 
   // The selection in the textarea field should remain unchanged because the
   // field is not focused.
@@ -1702,14 +1702,14 @@ TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextarea) {
 
   // The selection in the light DOM should remain unchanged.
   const SelectionInDOMTree dom_selection = Selection().GetSelectionInDOMTree();
-  EXPECT_EQ(GetDocument().body(), dom_selection.Base().AnchorNode());
-  EXPECT_EQ(1, dom_selection.Base().OffsetInContainerNode());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Anchor().AnchorNode());
+  EXPECT_EQ(1, dom_selection.Anchor().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("before"),
-            dom_selection.Base().ComputeNodeAfterPosition());
-  EXPECT_EQ(GetDocument().body(), dom_selection.Extent().AnchorNode());
-  EXPECT_EQ(5, dom_selection.Extent().OffsetInContainerNode());
+            dom_selection.Anchor().ComputeNodeAfterPosition());
+  EXPECT_EQ(GetDocument().body(), dom_selection.Focus().AnchorNode());
+  EXPECT_EQ(5, dom_selection.Focus().OffsetInContainerNode());
   EXPECT_EQ(GetElementById("after"),
-            dom_selection.Extent().ComputeNodeAfterPosition());
+            dom_selection.Focus().ComputeNodeAfterPosition());
 
   // The selection in the textarea field should remain unchanged because the
   // field is not focused.
@@ -1822,15 +1822,15 @@ TEST_F(AccessibilitySelectionTest,
 
     const SelectionInDOMTree dom_selection =
         Selection().GetSelectionInDOMTree();
-    EXPECT_EQ(text, dom_selection.Base().AnchorNode());
-    EXPECT_EQ(text, dom_selection.Extent().AnchorNode());
+    EXPECT_EQ(text, dom_selection.Anchor().AnchorNode());
+    EXPECT_EQ(text, dom_selection.Focus().AnchorNode());
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
     EXPECT_EQ(static_cast<int>(i + 9),
-              dom_selection.Base().OffsetInContainerNode());
+              dom_selection.Anchor().OffsetInContainerNode());
     EXPECT_EQ(static_cast<int>(i + 10),
-              dom_selection.Extent().OffsetInContainerNode());
+              dom_selection.Focus().OffsetInContainerNode());
   }
 
   for (unsigned int i = computed_name.length(); i > 0; --i) {
@@ -1851,15 +1851,15 @@ TEST_F(AccessibilitySelectionTest,
 
     const SelectionInDOMTree dom_selection =
         Selection().GetSelectionInDOMTree();
-    EXPECT_EQ(text, dom_selection.Base().AnchorNode());
-    EXPECT_EQ(text, dom_selection.Extent().AnchorNode());
+    EXPECT_EQ(text, dom_selection.Anchor().AnchorNode());
+    EXPECT_EQ(text, dom_selection.Focus().AnchorNode());
     // The discrepancy between DOM and AX text offsets is due to the fact that
     // there is some white space in the DOM that is compressed in the
     // accessibility tree.
     EXPECT_EQ(static_cast<int>(i + 9),
-              dom_selection.Base().OffsetInContainerNode());
+              dom_selection.Anchor().OffsetInContainerNode());
     EXPECT_EQ(static_cast<int>(i + 8),
-              dom_selection.Extent().OffsetInContainerNode());
+              dom_selection.Focus().OffsetInContainerNode());
   }
 }
 

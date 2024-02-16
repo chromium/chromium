@@ -96,14 +96,15 @@ VisibleSelection DOMSelection::GetVisibleSelection() const {
   return Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
 }
 
-bool DOMSelection::IsBaseFirstInSelection() const {
-  return Selection().GetSelectionInDOMTree().IsBaseFirst();
+bool DOMSelection::IsAnchorFirstInSelection() const {
+  return Selection().GetSelectionInDOMTree().IsAnchorFirst();
 }
 
 Node* DOMSelection::anchorNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->startContainer();
+    }
     return range->endContainer();
   }
   return nullptr;
@@ -111,8 +112,9 @@ Node* DOMSelection::anchorNode() const {
 
 unsigned DOMSelection::anchorOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->startOffset();
+    }
     return range->endOffset();
   }
   return 0;
@@ -120,8 +122,9 @@ unsigned DOMSelection::anchorOffset() const {
 
 Node* DOMSelection::focusNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->endContainer();
+    }
     return range->startContainer();
   }
   return nullptr;
@@ -129,8 +132,9 @@ Node* DOMSelection::focusNode() const {
 
 unsigned DOMSelection::focusOffset() const {
   if (Range* range = PrimaryRangeOrNull()) {
-    if (!DomWindow() || IsBaseFirstInSelection())
+    if (!DomWindow() || IsAnchorFirstInSelection()) {
       return range->endOffset();
+    }
     return range->startOffset();
   }
   return 0;

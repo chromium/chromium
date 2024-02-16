@@ -46,11 +46,11 @@ SelectionTemplate<Strategy> ComputeAdjustedSelection(
     const EphemeralRangeTemplate<Strategy>& range) {
   if (range.StartPosition().CompareTo(range.EndPosition()) == 0) {
     return typename SelectionTemplate<Strategy>::Builder()
-        .Collapse(selection.IsBaseFirst() ? range.StartPosition()
-                                          : range.EndPosition())
+        .Collapse(selection.IsAnchorFirst() ? range.StartPosition()
+                                            : range.EndPosition())
         .Build();
   }
-  if (selection.IsBaseFirst()) {
+  if (selection.IsAnchorFirst()) {
     return typename SelectionTemplate<Strategy>::Builder()
         .SetAsForwardSelection(range)
         .Build();
@@ -407,7 +407,7 @@ class ShadowBoundaryAdjuster final {
     const EphemeralRangeTemplate<Strategy> expanded_range =
         selection.ComputeRange();
 
-    if (selection.IsBaseFirst()) {
+    if (selection.IsAnchorFirst()) {
       PositionTemplate<Strategy> adjusted_end =
           AdjustSelectionEndToAvoidCrossingShadowBoundaries(expanded_range);
       if (adjusted_end.IsNull())
@@ -614,14 +614,14 @@ class EditingBoundaryAdjuster final {
   template <typename Strategy>
   static SelectionTemplate<Strategy> AdjustSelection(
       const SelectionTemplate<Strategy>& selection) {
-    const auto adjusted = AdjustExtent(selection);
+    const auto adjusted = AdjustFocus(selection);
     // TODO(editing-dev): This DCHECK now fails on crossing <body> selection.
-    // Test ApplyBlockElementCommandTest.selectionCrossingOverBody has base
-    // outside of <body> and extent inside of <body>, after adjustment, new
-    // extent is still inside of <body>, so RBE is not the same.
+    // Test ApplyBlockElementCommandTest.selectionCrossingOverBody has anchor
+    // outside of <body> and focus inside of <body>, after adjustment, new
+    // focus is still inside of <body>, so RBE is not the same.
     // DCHECK_EQ(
     //     &RootBoundaryElementOf<Strategy>(
-    //         *selection.Base().ComputeContainerNode()),
+    //         *selection.Anchor().ComputeContainerNode()),
     //     &RootBoundaryElementOf<Strategy>(*adjusted.ComputeContainerNode()))
     //     << std::endl
     //     << selection << std::endl
@@ -669,51 +669,57 @@ class EditingBoundaryAdjuster final {
   // templated the DOM tree algorithm including |RootBoundaryElementOf()| for
   // flat tree.
   template <typename Strategy>
-  static PositionTemplate<Strategy> AdjustExtent(
+  static PositionTemplate<Strategy> AdjustFocus(
       const SelectionTemplate<Strategy>& selection) {
     DCHECK(!selection.IsNone()) << selection;
 
-    const Node* const base_node = selection.Base().ComputeContainerNode();
-    const Node* const extent_node = selection.Extent().ComputeContainerNode();
+    const Node* const anchor_node = selection.Anchor().ComputeContainerNode();
+    const Node* const focus_node = selection.Focus().ComputeContainerNode();
 
     // In the same node, no need to adjust.
-    if (base_node == extent_node)
-      return selection.Extent();
-
-    const Node& base_rbe = RootBoundaryElementOf<Strategy>(*base_node);
-    const Node& extent_rbe = RootBoundaryElementOf<Strategy>(*extent_node);
-
-    // In the same RBE, no need to adjust.
-    if (base_rbe == extent_rbe)
-      return selection.Extent();
-
-    // |extent_rbe| is not in |base_rbe| subtree, in this case, the result
-    // should be the first/last position in the |base_rbe| subtree.
-    if (!Strategy::IsDescendantOf(extent_rbe, base_rbe)) {
-      if (selection.IsBaseFirst())
-        return PositionTemplate<Strategy>::LastPositionInNode(base_rbe);
-      return PositionTemplate<Strategy>::FirstPositionInNode(base_rbe);
+    if (anchor_node == focus_node) {
+      return selection.Focus();
     }
 
-    // |extent_rbe| is in |base_rbe| subtree. We want to find the last boundary
-    // the selection crossed from extent. Which is the highest ancestor node of
-    // extent in |base_rbe| subtree that RBE(ancestor) != |base_rbe|.
-    const Node* boundary = &extent_rbe;
-    const Node* previous_ancestor = &extent_rbe;
-    bool previous_editable = IsEditable(extent_rbe);
-    for (const Node& ancestor : Strategy::AncestorsOf(extent_rbe)) {
-      if (IsEditingBoundary<Strategy>(ancestor, *previous_ancestor,
-                                      previous_editable))
-        boundary = previous_ancestor;
+    const Node& anchor_rbe = RootBoundaryElementOf<Strategy>(*anchor_node);
+    const Node& focus_rbe = RootBoundaryElementOf<Strategy>(*focus_node);
 
-      if (ancestor == base_rbe || IsA<HTMLBodyElement>(ancestor))
+    // In the same RBE, no need to adjust.
+    if (anchor_rbe == focus_rbe) {
+      return selection.Focus();
+    }
+
+    // |focus_rbe| is not in |anchor_rbe| subtree, in this case, the result
+    // should be the first/last position in the |anchor_rbe| subtree.
+    if (!Strategy::IsDescendantOf(focus_rbe, anchor_rbe)) {
+      if (selection.IsAnchorFirst()) {
+        return PositionTemplate<Strategy>::LastPositionInNode(anchor_rbe);
+      }
+      return PositionTemplate<Strategy>::FirstPositionInNode(anchor_rbe);
+    }
+
+    // |focus_rbe| is in |anchor_rbe| subtree. We want to find the last boundary
+    // the selection crossed from focus. Which is the highest ancestor node of
+    // focus in |anchor_rbe| subtree that RBE(ancestor) != |anchor_rbe|.
+    const Node* boundary = &focus_rbe;
+    const Node* previous_ancestor = &focus_rbe;
+    bool previous_editable = IsEditable(focus_rbe);
+    for (const Node& ancestor : Strategy::AncestorsOf(focus_rbe)) {
+      if (IsEditingBoundary<Strategy>(ancestor, *previous_ancestor,
+                                      previous_editable)) {
+        boundary = previous_ancestor;
+      }
+
+      if (ancestor == anchor_rbe || IsA<HTMLBodyElement>(ancestor)) {
         break;
+      }
       previous_editable = IsEditable(ancestor);
       previous_ancestor = &ancestor;
     }
 
-    if (selection.IsBaseFirst())
+    if (selection.IsAnchorFirst()) {
       return PositionTemplate<Strategy>::BeforeNode(*boundary);
+    }
     return PositionTemplate<Strategy>::AfterNode(*boundary);
   }
 };
@@ -793,7 +799,7 @@ class SelectionTypeAdjuster final {
     }
     const EphemeralRangeTemplate<Strategy> minimal_range(forward_start_position,
                                                          backward_end_position);
-    if (minimal_range.IsCollapsed() || selection.IsBaseFirst()) {
+    if (minimal_range.IsCollapsed() || selection.IsAnchorFirst()) {
       return typename SelectionTemplate<Strategy>::Builder()
           .SetAsForwardSelection(minimal_range)
           .Build();

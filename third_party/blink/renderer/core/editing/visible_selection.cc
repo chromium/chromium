@@ -49,10 +49,10 @@ VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate()
 template <typename Strategy>
 VisibleSelectionTemplate<Strategy>::VisibleSelectionTemplate(
     const SelectionTemplate<Strategy>& selection)
-    : anchor_(selection.Base()),
-      focus_(selection.Extent()),
+    : anchor_(selection.Anchor()),
+      focus_(selection.Focus()),
       affinity_(selection.Affinity()),
-      anchor_is_first_(selection.IsBaseFirst()) {}
+      anchor_is_first_(selection.IsAnchorFirst()) {}
 
 template <typename Strategy>
 class VisibleSelectionTemplate<Strategy>::Creator {
@@ -70,8 +70,8 @@ class VisibleSelectionTemplate<Strategy>::Creator {
       const SelectionTemplate<Strategy>& passed_selection,
       TextGranularity granularity,
       const WordInclusion& inclusion = WordInclusion::kDefault) {
-    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Base()));
-    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Extent()));
+    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Anchor()));
+    DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Focus()));
 
     const SelectionTemplate<Strategy>& canonicalized_selection =
         CanonicalizeSelection(passed_selection);
@@ -203,7 +203,7 @@ static EphemeralRangeTemplate<Strategy> NormalizeRangeAlgorithm(
   // in the course of running edit commands which modify the DOM.
   // Failing to ensure this can result in equivalentXXXPosition calls returning
   // incorrect results.
-  DCHECK(!NeedsLayoutTreeUpdate(selection.Base())) << selection;
+  DCHECK(!NeedsLayoutTreeUpdate(selection.Anchor())) << selection;
 
   if (selection.IsCaret()) {
     // If the selection is a caret, move the range start upstream. This
@@ -242,31 +242,33 @@ static SelectionTemplate<Strategy> CanonicalizeSelection(
     const SelectionTemplate<Strategy>& selection) {
   if (selection.IsNone())
     return SelectionTemplate<Strategy>();
-  const PositionTemplate<Strategy>& base =
-      CreateVisiblePosition(selection.Base(), selection.Affinity())
+  const PositionTemplate<Strategy>& anchor =
+      CreateVisiblePosition(selection.Anchor(), selection.Affinity())
           .DeepEquivalent();
   if (selection.IsCaret()) {
-    if (base.IsNull())
+    if (anchor.IsNull()) {
       return SelectionTemplate<Strategy>();
-    return
-        typename SelectionTemplate<Strategy>::Builder().Collapse(base).Build();
+    }
+    return typename SelectionTemplate<Strategy>::Builder()
+        .Collapse(anchor)
+        .Build();
   }
-  const PositionTemplate<Strategy>& extent =
-      CreateVisiblePosition(selection.Extent(), selection.Affinity())
+  const PositionTemplate<Strategy>& focus =
+      CreateVisiblePosition(selection.Focus(), selection.Affinity())
           .DeepEquivalent();
-  if (base.IsNotNull() && extent.IsNotNull()) {
+  if (anchor.IsNotNull() && focus.IsNotNull()) {
     return typename SelectionTemplate<Strategy>::Builder()
-        .SetBaseAndExtent(base, extent)
+        .SetBaseAndExtent(anchor, focus)
         .Build();
   }
-  if (base.IsNotNull()) {
+  if (anchor.IsNotNull()) {
+    return typename SelectionTemplate<Strategy>::Builder()
+        .Collapse(anchor)
+        .Build();
+  }
+  if (focus.IsNotNull()) {
     return
-        typename SelectionTemplate<Strategy>::Builder().Collapse(base).Build();
-  }
-  if (extent.IsNotNull()) {
-    return typename SelectionTemplate<Strategy>::Builder()
-        .Collapse(extent)
-        .Build();
+        typename SelectionTemplate<Strategy>::Builder().Collapse(focus).Build();
   }
   return SelectionTemplate<Strategy>();
 }

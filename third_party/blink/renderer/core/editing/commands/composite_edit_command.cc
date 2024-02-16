@@ -2134,7 +2134,7 @@ void CompositeEditCommand::AppliedEditing() {
           .DidUserChangeContentEditableContent(*element);
     }
   }
-  editor.RespondToChangedContents(new_selection.Base());
+  editor.RespondToChangedContents(new_selection.Anchor());
 
   if (auto* rc = GetDocument().GetResourceCoordinator()) {
     rc->SetHadUserEdits();
