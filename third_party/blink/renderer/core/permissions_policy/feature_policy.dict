@@ -36,6 +36,7 @@
 "scripts"
 "serial"
 "speaker"
+"speaker-selection"
 "sync-script"
 "sync-xkr"
 "top-navigation"

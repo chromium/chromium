@@ -139,6 +139,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
     {ContentSettingsType::CAPTURED_SURFACE_CONTROL, "captured-surface-control"},
     {ContentSettingsType::WEB_PRINTING, "web-printing"},
+    {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -580,6 +581,10 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
 
     if (base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
       base_types->push_back(ContentSettingsType::WEB_PRINTING);
+    }
+
+    if (base::FeatureList::IsEnabled(blink::features::kSpeakerSelection)) {
+      base_types->push_back(ContentSettingsType::SPEAKER_SELECTION);
     }
 
     initialized = true;

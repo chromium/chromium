@@ -58,6 +58,7 @@ enum class PermissionType {
   CAPTURED_SURFACE_CONTROL = 34,
   SMART_CARD = 35,
   WEB_PRINTING = 36,
+  SPEAKER_SELECTION = 37,
 
   // Always keep this at the end.
   NUM,

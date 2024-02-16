@@ -90,6 +90,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "CapturedSurfaceControl";
     case PermissionType::WEB_PRINTING:
       return "WebPrinting";
+    case PermissionType::SPEAKER_SELECTION:
+      return "SpeakerSelection";
     case PermissionType::NUM:
       NOTREACHED();
       return std::string();
@@ -141,6 +143,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kDisplayCapture;
     case PermissionType::CAPTURED_SURFACE_CONTROL:
       return mojom::PermissionsPolicyFeature::kCapturedSurfaceControl;
+    case PermissionType::SPEAKER_SELECTION:
+      return mojom::PermissionsPolicyFeature::kSpeakerSelection;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:
@@ -276,7 +280,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::TOP_LEVEL_STORAGE_ACCESS;
     case PermissionName::CAPTURED_SURFACE_CONTROL:
       return PermissionType::CAPTURED_SURFACE_CONTROL;
-
+    case PermissionName::SPEAKER_SELECTION:
+      return PermissionType::SPEAKER_SELECTION;
       NOTREACHED();
       return std::nullopt;
   }

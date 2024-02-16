@@ -243,6 +243,10 @@ enum PermissionsPolicyFeature {
   // Web Authentication (https://w3c.github.io/webauthn/#sctn-permissions-policy)
   kPublicKeyCredentialsCreate = 117,
 
+  // Allow enumerateDevices to return audio output device and setSinkId to
+  // accept given device id.
+  kSpeakerSelection = 118,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

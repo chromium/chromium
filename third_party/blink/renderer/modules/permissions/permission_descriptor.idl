@@ -40,6 +40,7 @@ enum PermissionName {
     "local-fonts",
     "top-level-storage-access",
     "captured-surface-control",
+    "speaker-selection",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

@@ -50,6 +50,8 @@ source_set("permissions") {
     "contexts/payment_handler_permission_context.h",
     "contexts/sensor_permission_context.cc",
     "contexts/sensor_permission_context.h",
+    "contexts/speaker_selection_permission_context.cc",
+    "contexts/speaker_selection_permission_context.h",
     "contexts/wake_lock_permission_context.cc",
     "contexts/wake_lock_permission_context.h",
     "contexts/webxr_permission_context.cc",

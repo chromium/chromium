@@ -3503,6 +3503,10 @@
       name: "SparseObjectPaintProperties",
     },
     {
+      name: "SpeakerSelection",
+      status: "test",
+    },
+    {
       name: "SpeculationRulesDocumentRules",
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",

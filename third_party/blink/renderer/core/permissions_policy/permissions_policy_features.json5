@@ -388,6 +388,11 @@
       depends_on: ["SmartCard"],
     },
     {
+      name: "SpeakerSelection",
+      permissions_policy_name: "speaker-selection",
+      depends_on: ["SpeakerSelection"],
+    },
+    {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access",

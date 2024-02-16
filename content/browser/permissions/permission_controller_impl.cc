@@ -89,6 +89,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:
     case PermissionType::WEB_PRINTING:
+    case PermissionType::SPEAKER_SELECTION:
       return std::nullopt;
   }
 }

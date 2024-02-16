@@ -70,6 +70,7 @@ shared-autofill
 shared-storage
 shared-storage-select-url
 smart-card
+speaker-selection
 storage-access
 sub-apps
 sync-xhr

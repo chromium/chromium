@@ -41,9 +41,11 @@ var PermissionsHelper = (function() {
         return {name: "nfc"};
       case "display-capture":
         return {name: "display-capture"};
-        case "captured-surface-control":
+      case "captured-surface-control":
           return {name: "captured-surface-control"};
-        default:
+      case "speaker-selection":
+        return {name: "speaker-selection"};
+      default:
         throw "Invalid permission name provided";
     }
   }

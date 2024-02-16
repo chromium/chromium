@@ -346,6 +346,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::CAPTURED_SURFACE_CONTROL:
       case PermissionType::SMART_CARD:
       case PermissionType::WEB_PRINTING:
+      case PermissionType::SPEAKER_SELECTION:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -595,6 +596,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::CAPTURED_SURFACE_CONTROL:
       case PermissionType::SMART_CARD:
       case PermissionType::WEB_PRINTING:
+      case PermissionType::SPEAKER_SELECTION:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;

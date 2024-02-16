@@ -34,6 +34,7 @@ enum PermissionName {
   DISPLAY_CAPTURE,
   TOP_LEVEL_STORAGE_ACCESS,
   CAPTURED_SURFACE_CONTROL,
+  SPEAKER_SELECTION,
 };
 
 struct MidiPermissionDescriptor {

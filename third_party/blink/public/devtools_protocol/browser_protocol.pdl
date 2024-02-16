@@ -1270,6 +1270,7 @@ domain Browser
       protectedMediaIdentifier
       sensors
       storageAccess
+      speakerSelection
       topLevelStorageAccess
       videoCapture
       videoCapturePanTiltZoom
@@ -7770,6 +7771,7 @@ domain Page
       shared-storage
       shared-storage-select-url
       smart-card
+      speaker-selection
       storage-access
       sub-apps
       sync-xhr

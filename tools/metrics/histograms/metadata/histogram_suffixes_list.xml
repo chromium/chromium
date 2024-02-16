@@ -2699,6 +2699,7 @@ chromium-metrics-reviews@google.com.
       label="registerProtocolHandler permission"/>
   <suffix name="SecurityKeyAttestation" label="Security Key attestation"/>
   <suffix name="SmartCard" label="Smart card connection permission"/>
+  <suffix name="SpeakerSelection" label="Speaker Selection permission"/>
   <suffix name="StorageAccess" label="Storage Access API permission"/>
   <suffix name="TopLevelStorageAccess"
       label="Top-level Storage Access API permission"/>

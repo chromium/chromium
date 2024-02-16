@@ -30,6 +30,7 @@
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
+#include "components/permissions/contexts/speaker_selection_permission_context.h"
 #include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -145,6 +146,9 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::CAPTURED_SURFACE_CONTROL] =
       std::make_unique<permissions::CapturedSurfaceControlPermissionContext>(
           profile);
+
+  permission_contexts[ContentSettingsType::SPEAKER_SELECTION] =
+      std::make_unique<permissions::SpeakerSelectionPermissionContext>(profile);
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   permission_contexts[ContentSettingsType::WEB_PRINTING] =
