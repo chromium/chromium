@@ -59,10 +59,6 @@ class BLINK_EXPORT WebAXContext {
   // via mojo to the browser process.
   void SerializeLocationChanges(uint32_t reset_token) const;
 
-  // Searches the accessibility tree for plugin's root object and returns it.
-  // Returns an empty WebAXObject if no root object is present.
-  WebAXObject GetPluginRoot();
-
   bool SerializeEntireTree(
       size_t max_node_count,
       base::TimeDelta timeout,
@@ -73,12 +69,13 @@ class BLINK_EXPORT WebAXContext {
   // the last serialization) into |updates|. (Heuristically) skips
   // serializing dirty nodes whose AX id is in |already_serialized_ids|, and
   // adds serialized dirty objects into |already_serialized_ids|.
-  void SerializeDirtyObjectsAndEvents(bool has_plugin_tree_source,
+  void SerializeDirtyObjectsAndEvents(WebPluginContainer* plugin_container,
                                       std::vector<ui::AXTreeUpdate>& updates,
                                       std::vector<ui::AXEvent>& events,
                                       bool& had_end_of_test_event,
                                       bool& had_load_complete_messages,
-                                      bool& need_to_send_location_changes);
+                                      bool& need_to_send_location_changes,
+                                      bool& mark_plugin_subtree_dirty);
 
   // Returns a vector of the images found in |updates|.
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,

@@ -41,8 +41,8 @@
 #include "third_party/blink/public/web/web_disallow_transition_scope.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_input_element.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -59,7 +59,6 @@ using blink::WebAXContext;
 using blink::WebAXObject;
 using blink::WebDocument;
 using blink::WebElement;
-using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebSettings;
 using blink::WebView;
@@ -485,42 +484,6 @@ void RenderAccessibilityImpl::SetPluginTreeSource(
   plugin_tree_source_ = plugin_tree_source;
   plugin_serializer_ =
       std::make_unique<PluginAXTreeSerializer>(plugin_tree_source_);
-
-  OnPluginRootNodeUpdated();
-}
-
-void RenderAccessibilityImpl::OnPluginRootNodeUpdated() {
-  // Search the accessibility tree for plugin's root object and post a
-  // children changed notification on it to force it to update the
-  // plugin accessibility tree.
-  WebAXObject obj = GetPluginRoot();
-  if (obj.IsNull())
-    return;
-
-  MarkWebAXObjectDirty(obj);
-  // Schedule an update immediately whenever the PDF root in PDF accessibility
-  // tree changes. It is needed to ensure that changes (e.g. bounds) in PDF
-  // accessibility tree are serialized.
-  ScheduleImmediateAXUpdate();
-}
-
-void RenderAccessibilityImpl::ShowPluginContextMenu() {
-  // Search the accessibility tree for plugin's root object and invoke
-  // ShowContextMenu() on it to show context menu for plugin.
-  WebAXObject obj = GetPluginRoot();
-  if (obj.IsNull())
-    return;
-
-  const WebDocument& document = GetMainDocument();
-  if (document.IsNull())
-    return;
-
-  std::unique_ptr<ui::AXActionTarget> target =
-      AXActionTargetFactory::CreateFromNodeId(document, plugin_tree_source_,
-                                              obj.AxID());
-  ui::AXActionData action_data;
-  action_data.action = ax::mojom::Action::kShowContextMenu;
-  target->PerformAction(action_data);
 }
 
 WebDocument RenderAccessibilityImpl::GetMainDocument() const {
@@ -555,8 +518,9 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   DCHECK(ax_context_);
   DCHECK(!accessibility_mode_.is_mode_off());
   ax_context_->SerializeDirtyObjectsAndEvents(
-      !!plugin_tree_source_, updates, events, had_end_of_test_event,
-      had_load_complete_messages, need_to_send_location_changes);
+      plugin_tree_source_ ? plugin_tree_source_->GetPluginContainer() : nullptr,
+      updates, events, had_end_of_test_event, had_load_complete_messages,
+      need_to_send_location_changes, mark_plugin_subtree_dirty);
 
   for (auto& update : updates) {
     if (update.node_id_to_clear > 0) {
@@ -789,9 +753,11 @@ void RenderAccessibilityImpl::AddPluginTreeToUpdate(
   if (mark_plugin_subtree_dirty) {
     plugin_serializer_->Reset();
   }
-
+  const auto& obj = blink::WebAXObject::FromWebNode(
+      plugin_tree_source_->GetPluginContainer()->GetElement());
+  int ax_id = obj.AxID();
   for (ui::AXNodeData& node : update->nodes) {
-    if (node.role == ax::mojom::Role::kEmbeddedObject) {
+    if (node.id == ax_id) {
       const ui::AXNode* root = plugin_tree_source_->GetRoot();
       node.child_ids.push_back(root->id());
 
@@ -821,13 +787,6 @@ blink::WebDocument RenderAccessibilityImpl::GetPopupDocument() {
   if (popup)
     return popup->GetDocument();
   return WebDocument();
-}
-
-blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {
-  if (!ax_context_)
-    return WebAXObject();
-  ax_context_->UpdateAXForAllDocuments();
-  return ax_context_->GetPluginRoot();
 }
 
 WebAXObject RenderAccessibilityImpl::ComputeRoot() {

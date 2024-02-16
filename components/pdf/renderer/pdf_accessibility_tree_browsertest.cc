@@ -26,7 +26,6 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -298,7 +297,10 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
       chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher)
-      : PdfAccessibilityTree(render_frame, action_handler, image_fetcher) {}
+      : PdfAccessibilityTree(render_frame,
+                             action_handler,
+                             image_fetcher,
+                             /*plugincontainer=*/nullptr) {}
 
   ~TestPdfAccessibilityTree() override = default;
   TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
@@ -2244,9 +2246,9 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   // Verify selection offsets in tree data.
   ui::AXTreeData tree_data;
   pdf_accessibility_tree_->GetTreeData(&tree_data);
-  EXPECT_EQ(10, tree_data.sel_anchor_object_id);
+  EXPECT_EQ(static_text_nodes1[0]->id(), tree_data.sel_anchor_object_id);
   EXPECT_EQ(0, tree_data.sel_anchor_offset);
-  EXPECT_EQ(10, tree_data.sel_focus_object_id);
+  EXPECT_EQ(static_text_nodes1[0]->id(), tree_data.sel_focus_object_id);
   EXPECT_EQ(0, tree_data.sel_focus_offset);
 
   pdf_anchor_action_target =
@@ -2306,7 +2308,9 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   {
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kShowContextMenu;
-    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
+
+    // This renderer is not actually attached to a real plugin.
+    EXPECT_FALSE(pdf_action_target->PerformAction(action_data));
   }
 }
 

@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
@@ -5134,15 +5135,22 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
   // SerializeDirtyObjectsAndEvents().
   dirty_objects_.push_back(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
+
+  // ensure there is a document lifecycle update scheduled for plugin
+  // containers.
+  if (obj->GetElement() && DynamicTo<HTMLPlugInElement>(obj->GetElement())) {
+    ScheduleImmediateSerialization();
+  }
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
-    bool has_plugin_tree_source,
+    WebPluginContainer* plugin_container,
     std::vector<ui::AXTreeUpdate>& updates,
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
-    bool& need_to_send_location_changes) {
+    bool& need_to_send_location_changes,
+    bool& should_reset_plugin_serializer) {
   HashSet<int32_t> already_serialized_ids;
   int redundant_serialization_count = 0;
 
@@ -5191,8 +5199,14 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
     // If there's a plugin, force the tree data to be generated in every
     // message so the plugin can merge its own tree data changes.
-    if (has_plugin_tree_source)
+    if (plugin_container) {
       update.has_tree_data = true;
+
+      if (!ax_tree_serializer_->IsInClientTree(
+              Get(plugin_container->GetElement()))) {
+        should_reset_plugin_serializer = true;
+      }
+    }
 
     bool success = ax_tree_serializer_->SerializeChanges(obj, &update);
 

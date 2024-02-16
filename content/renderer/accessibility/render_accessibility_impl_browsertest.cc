@@ -602,6 +602,7 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   }
   bool GetActionTargetCalled() { return action_target_called_; }
   void ResetActionTargetCalled() { action_target_called_ = false; }
+  blink::WebPluginContainer* GetPluginContainer() override { return nullptr; }
 
  private:
   std::unique_ptr<ui::AXTree> ax_tree_;

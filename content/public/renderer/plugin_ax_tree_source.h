@@ -11,12 +11,18 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
+namespace blink {
+class WebPluginContainer;
+}
+
 namespace content {
 
 class PluginAXTreeSource : public ui::AXTreeSource<const ui::AXNode*> {
  public:
   virtual std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
       const ui::AXNode& target_node) = 0;
+
+  virtual blink::WebPluginContainer* GetPluginContainer() = 0;
 };
 
 }  // namespace content

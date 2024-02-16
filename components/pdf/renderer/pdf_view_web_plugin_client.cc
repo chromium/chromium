@@ -262,9 +262,10 @@ void PdfViewWebPluginClient::RecordComputedAction(const std::string& action) {
 std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
 PdfViewWebPluginClient::CreateAccessibilityDataHandler(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
-    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher) {
-  return std::make_unique<PdfAccessibilityTree>(render_frame_, action_handler,
-                                                image_fetcher);
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
+    blink::WebPluginContainer* plugin_container) {
+  return std::make_unique<PdfAccessibilityTree>(
+      render_frame_, action_handler, image_fetcher, plugin_container);
 }
 
 }  // namespace pdf
