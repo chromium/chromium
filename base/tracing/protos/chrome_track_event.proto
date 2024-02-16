@@ -1525,16 +1525,29 @@ message EventForwarder {
   // The events getHistorySize().
   optional int32 history_size = 1;
   // The time of the oldest event (getHistoricalEventTimeNanos(0)).
-  optional int64 time_ns = 2;
+  optional int64 oldest_time_ns = 2;
+  // The time of the newest event (getEventTimeNanos(0)).
+  optional int64 latest_time_ns = 5;
   // The X coordinate of the event as reported by MotionEvent.getX().
   optional float x_pixel = 3;
   // The Y coordinate of the event as reported by MotionEvent.getY().
   optional float y_pixel = 4;
+  // Determine if the previous forwarded event changed x coordinate.
+  optional bool has_x_movement = 6;
+  // Determine if the previous forwarded event changed y coordinate.
+  optional bool has_y_movement = 7;
+}
+
+// TouchDispositionGestureFilter is a class on android that detects and forwards
+// along gesture events based on touch acks and other information.
+message TouchDispositionGestureFilter {
+  // The number of gesture's inside of a GestureEventDataPacket.
+  optional int32 gesture_count = 1;
 }
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1059
+  // Next ID: 1061
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1660,5 +1673,8 @@ message ChromeTrackEvent {
     optional WebContentInteraction web_content_interaction = 1058;
 
     optional EventForwarder event_forwarder = 1059;
+
+    optional TouchDispositionGestureFilter touch_disposition_gesture_filter =
+        1060;
   }
 }

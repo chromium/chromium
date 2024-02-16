@@ -164,6 +164,11 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // last_x_pos_ & last_y_pos_ are only used for trace events (see b/315762684
+  // for a relevant investigation). They are useful in debugging but could be
+  // removed easily if needed.
+  float last_x_pos_{-1.0};
+  float last_y_pos_{-1.0};
   const raw_ptr<ViewAndroid> view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
