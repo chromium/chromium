@@ -23,9 +23,9 @@ class QuickSettingsMediaViewContainerTest : public NoSessionAshTestBase {
   ~QuickSettingsMediaViewContainerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
-                                   {});
     NoSessionAshTestBase::SetUp();
+    feature_list_.InitAndEnableFeature(
+        media::kGlobalMediaControlsCrOSUpdatedUI);
 
     MediaTray::SetPinnedToShelf(false);
     GetPrimaryUnifiedSystemTray()->ShowBubble();

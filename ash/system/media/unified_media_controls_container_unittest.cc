@@ -12,6 +12,8 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 
 namespace ash {
 
@@ -22,6 +24,8 @@ class UnifiedMediaControlsContainerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    feature_list_.InitAndDisableFeature(
+        media::kGlobalMediaControlsCrOSUpdatedUI);
 
     // Ensure media tray is not pinned to shelf so that media controls
     // show up in quick settings.
@@ -51,6 +55,9 @@ class UnifiedMediaControlsContainerTest : public AshTestBase {
   }
 
   void ResetDetailedView() { quick_settings_view()->ResetDetailedView(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UnifiedMediaControlsContainerTest, DoNotShowControlsWhenInDetailedView) {

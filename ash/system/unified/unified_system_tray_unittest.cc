@@ -15,6 +15,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/media/quick_settings_media_view_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
@@ -38,6 +39,7 @@
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
@@ -794,10 +796,29 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
   auto* qs_view = tray->bubble()->quick_settings_view();
-  auto media_conroller = std::make_unique<UnifiedMediaControlsController>(
-      tray->bubble()->unified_system_tray_controller());
-  qs_view->AddMediaControlsView(media_conroller->CreateView());
-  qs_view->ShowMediaControls();
+  auto* tray_controller = tray->bubble()->unified_system_tray_controller();
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    auto media_controller =
+        std::make_unique<QuickSettingsMediaViewController>(tray_controller);
+
+    // Outside tests the QuickSettingsMediaViewController is set in
+    // UnifiedSystemTrayController::CreateQuickSettingsView() which is not
+    // called here, but we need to reference QuickSettingsMediaViewController in
+    // QuickSettingsMediaViewContainer::MaybeShowMediaView() when calling
+    // QuickSettingsView::SetShowMediaView(), so we need to manually set the
+    // controller for testing.
+    tray_controller->SetMediaViewControllerForTesting(
+        std::move(media_controller));
+
+    qs_view->AddMediaView(
+        tray_controller->media_view_controller()->CreateView());
+    qs_view->SetShowMediaView(true);
+  } else {
+    auto media_controller =
+        std::make_unique<UnifiedMediaControlsController>(tray_controller);
+    qs_view->AddMediaControlsView(media_controller->CreateView());
+    qs_view->ShowMediaControls();
+  }
 
   auto* bubble_view = tray->bubble()->GetBubbleView();
 

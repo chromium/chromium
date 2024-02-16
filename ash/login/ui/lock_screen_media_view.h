@@ -96,6 +96,9 @@ class ASH_EXPORT LockScreenMediaView
   void SetMediaControllerForTesting(
       mojo::Remote<media_session::mojom::MediaController> media_controller);
 
+  void SetSwitchMediaDelayTimerForTesting(
+      std::unique_ptr<base::OneShotTimer> test_timer);
+
   views::Button* GetDismissButtonForTesting();
 
   global_media_controls::MediaItemUIDetailedView* GetDetailedViewForTesting();

@@ -37,7 +37,6 @@
 #include "ash/system/locale/locale_feature_pod_controller.h"
 #include "ash/system/locale/unified_locale_detailed_view_controller.h"
 #include "ash/system/media/media_tray.h"
-#include "ash/system/media/quick_settings_media_view_controller.h"
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"

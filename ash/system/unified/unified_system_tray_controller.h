@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/media/quick_settings_media_view_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/unified/quick_settings_view.h"
@@ -28,7 +29,6 @@ namespace ash {
 class DetailedViewController;
 class FeaturePodControllerBase;
 class PaginationController;
-class QuickSettingsMediaViewController;
 class UnifiedMediaControlsController;
 class UnifiedBrightnessSliderController;
 class UnifiedVolumeSliderController;
@@ -158,7 +158,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   }
 
   QuickSettingsMediaViewController* media_view_controller() {
-    DCHECK(media_view_controller_);
+    CHECK(media_view_controller_);
     return media_view_controller_.get();
   }
 
@@ -171,6 +171,12 @@ class ASH_EXPORT UnifiedSystemTrayController
   }
 
   bool showing_calendar_view() const { return showing_calendar_view_; }
+
+  void SetMediaViewControllerForTesting(
+      std::unique_ptr<QuickSettingsMediaViewController> test_controller) {
+    CHECK(!media_view_controller_);
+    media_view_controller_ = std::move(test_controller);
+  }
 
  private:
   friend class SystemTrayTestApi;
