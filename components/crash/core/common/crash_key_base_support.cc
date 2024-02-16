@@ -73,7 +73,10 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
   }
 
   void OutputCrashKeysToStream(std::ostream& out) override {
-#if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
+#if defined(OFFICIAL_BUILD)
+    out << "Crash key dumping is inherently thread-unsafe so it's disabled in "
+           "official builds.";
+#elif BUILDFLAG(USE_CRASHPAD_ANNOTATION)
     // TODO(lukasza): If phasing out breakpad takes a long time, then consider
     // a better way to abstract away difference between crashpad and breakpad.
     // For example, maybe the code below should be moved into
@@ -81,6 +84,8 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
     // implementation-agnostic way) via CrashKeyString.  This would allow
     // avoiding using the BUILDFLAG(...) macros here.
 
+    // Note that iterating over this list while other threads are executing is
+    // inherently racy.
     auto* annotations = crashpad::AnnotationList::Get();
     if (!annotations || annotations->begin() == annotations->end())
       return;

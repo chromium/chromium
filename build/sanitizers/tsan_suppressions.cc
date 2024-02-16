@@ -92,6 +92,11 @@ char kTSanDefaultSuppressions[] =
     // single global mutex.
     "deadlock:GlobalSafepoint::EnterGlobalSafepointScope\n"
 
+    // Logging crash keys is inherently unsafe. We suppress this rather than fix
+    // it because OutputCrashKeysToStream is only enabled in non-official builds
+    // and the race is therefore not present in released builds.
+    "race:crash_reporter::*::OutputCrashKeysToStream\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 
