@@ -30,7 +30,7 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
-            currentSwitch.setKey(homeModulesConfigManager.getPreferenceKey(moduleType));
+            currentSwitch.setKey(homeModulesConfigManager.getSettingsPreferenceKey(moduleType));
             currentSwitch.setTitle(getTitleResIdForModuleType(moduleType));
 
             // Set up listeners and update the page.

@@ -69,7 +69,7 @@ public class HomeModulesConfigSettingsUnitTest {
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(0));
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(1));
-        when(mHomeModulesConfigManager.getPreferenceKey(ModuleType.PRICE_CHANGE))
+        when(mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE))
                 .thenReturn(priceChangePreferenceKey);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
 
@@ -103,7 +103,7 @@ public class HomeModulesConfigSettingsUnitTest {
                 .thenReturn(moduleTypeShownInSettingsForTest);
         String priceChangePreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(1));
-        when(mHomeModulesConfigManager.getPreferenceKey(ModuleType.PRICE_CHANGE))
+        when(mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE))
                 .thenReturn(priceChangePreferenceKey);
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
 

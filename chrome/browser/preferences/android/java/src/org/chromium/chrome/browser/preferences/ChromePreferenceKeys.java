@@ -534,6 +534,13 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("Chrome.HomeModules.ModuleType.*");
 
     /**
+     * The number at the end should be consistent with {@link
+     * org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType}
+     */
+    public static final KeyPrefix HOME_MODULES_FRESHNESS_COUNT =
+            new KeyPrefix("Chrome.HomeModules.FreshnessCount.*");
+
+    /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
      */
@@ -923,6 +930,7 @@ public final class ChromePreferenceKeys {
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOME_MODULES_MODULE_TYPE.pattern(),
+                HOME_MODULES_FRESHNESS_COUNT.pattern(),
                 HOMEPAGE_CUSTOM_GURL,
                 HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,

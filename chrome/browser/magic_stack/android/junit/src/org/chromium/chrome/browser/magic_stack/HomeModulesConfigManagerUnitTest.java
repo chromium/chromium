@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -124,6 +125,26 @@ public class HomeModulesConfigManagerUnitTest {
         // Verifies the list contains the module which is configurable and eligible to build.
         when(mModuleConfigCheckerList.get(1).isEligible()).thenReturn(true);
         assertTrue(mHomeModulesConfigManager.hasModuleShownInSettings());
+    }
+
+    @Test
+    public void testFreshnessCount() {
+        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+        String moduleFreshnessCountPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
+                        String.valueOf(moduleType));
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+
+        assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
+        assertEquals(0, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
+
+        int count = 5;
+        mHomeModulesConfigManager.increaseFreshnessCount(moduleType, count);
+        assertEquals(count, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
+
+        mHomeModulesConfigManager.resetFreshnessCount(moduleType);
+        assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
+        assertEquals(0, sharedPreferencesManager.readInt(moduleFreshnessCountPreferenceKey, 0));
     }
 
     private void registerModuleConfigChecker(int size) {

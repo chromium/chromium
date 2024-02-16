@@ -106,7 +106,7 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      */
     boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
-        return mSharedPreferencesManager.readBoolean(getPreferenceKey(moduleType), true);
+        return mSharedPreferencesManager.readBoolean(getSettingsPreferenceKey(moduleType), true);
     }
 
     /**
@@ -116,7 +116,7 @@ public class HomeModulesConfigManager {
      * @param enabled True is the module type is enabled.
      */
     void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
-        mSharedPreferencesManager.writeBoolean(getPreferenceKey(moduleType), enabled);
+        mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
     }
 
@@ -161,10 +161,40 @@ public class HomeModulesConfigManager {
     }
 
     /** Returns the preference key of the module type. */
-    String getPreferenceKey(@ModuleType int moduleType) {
+    String getSettingsPreferenceKey(@ModuleType int moduleType) {
         assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
 
         return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
+    }
+
+    /** Returns the preference key of the module type. */
+    String getFreshnessCountPreferenceKey(@ModuleType int moduleType) {
+        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
+
+        return ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
+                String.valueOf(moduleType));
+    }
+
+    /** Gets the freshness count of a module. */
+    public int getFreshnessCount(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
+        return sharedPreferencesManager.readInt(freshnessScoreKey, 0);
+    }
+
+    /** Called to reset the freshness count when there is new information to show. */
+    public void resetFreshnessCount(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
+        sharedPreferencesManager.writeInt(freshnessScoreKey, 0);
+    }
+
+    /** Called to increase the freshness score for the module. */
+    public void increaseFreshnessCount(@ModuleType int moduleType, int count) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
+        int score = sharedPreferencesManager.readInt(freshnessScoreKey, 0);
+        sharedPreferencesManager.writeInt(freshnessScoreKey, (score + count));
     }
 
     /** Sets a mocked instance for testing. */
