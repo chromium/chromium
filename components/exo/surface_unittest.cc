@@ -1550,6 +1550,198 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
   }
 }
 
+//
+TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
+  auto canonical_form_check = [](const auto& frame) {
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+    auto& quad_list = frame.render_pass_list.back()->quad_list;
+    bool is_canonical_form = true;
+    for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
+      // For this test we assume that a 1x1 quad indicates a AA quad. This
+      // assumption is only valid for this test because of our input rects are
+      // not 1x1.
+      is_canonical_form &= (*it)->rect != gfx::Rect(1, 1);
+    }
+    return is_canonical_form;
+  };
+
+  // This parent is merely the background for our children and plays no role in
+  // this test.
+  gfx::Size buffer_size(256, 256);
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  surface->Attach(buffer.get());
+  surface->SetViewport(gfx::SizeF(13, 13));
+
+  // # Basic occlusion
+
+  // The order of subsurface parent attachment is the inverse order of quad
+  // submission so child B comes first.
+  auto child_buffer_b = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(64, 64)));
+  auto child_surface_b = std::make_unique<Surface>();
+  auto sub_surface_b =
+      std::make_unique<SubSurface>(child_surface_b.get(), surface.get());
+  child_surface_b->Attach(child_buffer_b.get());
+  sub_surface_b->SetPosition(gfx::PointF(40, 10));
+  child_surface_b->SetViewport(gfx::SizeF(20, 10));
+  child_surface_b->Commit();
+
+  auto child_buffer_a = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(64, 64)));
+  auto child_surface_a = std::make_unique<Surface>();
+  auto sub_surface_a =
+      std::make_unique<SubSurface>(child_surface_a.get(), surface.get());
+  child_surface_a->Attach(child_buffer_a.get());
+  sub_surface_a->SetPosition(gfx::PointF(40, 10));
+  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  child_surface_a->SetBlendMode(SkBlendMode::kSrc);
+  child_surface_a->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    bool const is_canonical_form = canonical_form_check(frame);
+    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Non occlusion location
+  sub_surface_a->SetPosition(gfx::PointF(20, 10));
+  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  child_surface_a->Commit();
+
+  sub_surface_b->SetPosition(gfx::PointF(30, 10));
+  child_surface_b->SetViewport(gfx::SizeF(20, 10));
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+
+    auto const kExpectedNumSQSs = 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Non occluding size.
+  sub_surface_a->SetPosition(gfx::PointF(20, 10));
+  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  child_surface_a->Commit();
+
+  sub_surface_b->SetPosition(gfx::PointF(20, 10));
+  child_surface_b->SetViewport(gfx::SizeF(30, 10));
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+
+    auto const kExpectedNumSQSs = 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Different occlusion
+  sub_surface_a->SetPosition(gfx::PointF(30, 20));
+  child_surface_a->SetViewport(gfx::SizeF(30, 15));
+  child_surface_a->Commit();
+
+  sub_surface_b->SetPosition(gfx::PointF(30, 20));
+  child_surface_b->SetViewport(gfx::SizeF(30, 15));
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    bool const is_canonical_form = canonical_form_check(frame);
+    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Rounded occlusion not matching
+  child_surface_a->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 30, 15), 6.0),
+                                     false, false);
+  child_surface_a->Commit();
+
+  child_surface_b->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 30, 15), 1.0),
+                                     false, false);
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    auto const kExpectedNumSQSs = 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Rounded occlusion matching
+  child_surface_a->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 20, 10), 6.0),
+                                     false, false);
+  child_surface_a->Commit();
+
+  child_surface_b->SetRoundedCorners(gfx::RRectF(gfx::RectF(0, 0, 20, 10), 6.0),
+                                     false, false);
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    bool const is_canonical_form = canonical_form_check(frame);
+    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // # Clip rect too small
+  child_surface_a->SetClipRect(gfx::RectF(10, 10));
+  child_surface_a->Commit();
+
+  child_surface_b->Commit();
+
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    auto const kExpectedNumSQSs = 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  //  # Clip rect large enough
+  child_surface_a->SetClipRect(gfx::RectF(100, 100));
+  child_surface_a->Commit();
+  child_surface_b->Commit();
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    bool const is_canonical_form = canonical_form_check(frame);
+    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+}
+
 // This test makes sure that when we associate 1 or more rect with the same sqs
 // we do so only for canonical rects that form a sealed single layer.
 TEST_P(SurfaceTest, LayerSharedQuadState) {

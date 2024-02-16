@@ -1502,6 +1502,39 @@ void Surface::UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint) {
   }
 }
 
+// Some clients (ARC) submit overlapping surfaces that are almost always
+// occluded. However, due how viz does quad overdrawn quad occlusion with
+// rounded corners, this does not always remove all occluded quads. To avoid
+// overdraw and subtle fast rounded corner compositing bugs we remove fully
+// occluded surfaces here before they even become quads to submit to the
+// compositor. See b/307557914
+// TODO( b/325307643 ) : Provide a generalized solution here for the compositor.
+static bool IsOccludedByPreviousSqs(
+    const std::unique_ptr<viz::CompositorRenderPass>& render_pass,
+    const gfx::Transform& quad_to_target_transform,
+    const gfx::Rect& quad_rect,
+    const gfx::MaskFilterInfo& msk) {
+  viz::SharedQuadState* prev_sqs =
+      !render_pass->shared_quad_state_list.empty()
+          ? render_pass->shared_quad_state_list.back()
+          : nullptr;
+  // Limit the cases here to pixel aligned occlusions so all tests are known to
+  // be in the same space.
+  if (prev_sqs && quad_to_target_transform.IsIdentity() &&
+      prev_sqs->quad_to_target_transform.IsIdentity() &&
+      prev_sqs->are_contents_opaque && prev_sqs->opacity == 1.f) {
+    if (prev_sqs->clip_rect && !prev_sqs->clip_rect->Contains(quad_rect)) {
+      return false;
+    }
+    if (prev_sqs->quad_layer_rect.Contains(quad_rect)) {
+      if (msk == prev_sqs->mask_filter_info) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Try to share the |SharedQuadState| (sqs) when a single layer can be
 // reconstructed. This is important for performance reasons in the occlusion
 // code and correctness in the per edge anti-alias code.
@@ -1509,7 +1542,7 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
     viz::DrawQuad::Material quad_type,
     float opacity,
     const std::unique_ptr<viz::CompositorRenderPass>& render_pass,
-    const gfx::Transform quad_to_target_transform,
+    const gfx::Transform& quad_to_target_transform,
     const gfx::Rect& quad_rect,
     const gfx::MaskFilterInfo& msk,
     const std::optional<gfx::Rect>& quad_clip_rect,
@@ -1695,6 +1728,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // Later in 'SurfaceAggregator' this transform will have 2d translation.
       quad_to_target_transform = gfx::Transform();
     }
+  }
+
+  if (IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
+                              msk)) {
+    render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
+    return;
   }
 
   if (current_resource_.id) {
