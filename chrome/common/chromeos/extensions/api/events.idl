@@ -54,8 +54,8 @@ namespace os.events {
     };
 
     enum KeyboardConnectionType {
-        // Includes devices connected over USB that are on fully internal busses, as
-        // well as the keyboards/touchpads for detachables.
+        // Includes devices connected over USB that are on fully internal
+        // busses, as well as the keyboards/touchpads for detachables.
         internal,
         usb,
         bluetooth,
@@ -80,8 +80,8 @@ namespace os.events {
     };
 
     enum KeyboardNumberPadPresence {
-        // Unknown indicates there is no reliable evidence whether a numberpad is
-        // present. This is common for external keyboards.
+        // Unknown indicates there is no reliable evidence whether a numberpad
+        // is present. This is common for external keyboards.
         unknown,
         present,
         not_present
@@ -134,30 +134,33 @@ namespace os.events {
         // visual layout can be determined).
         DOMString? regionCode;
         KeyboardNumberPadPresence? numberPadPresent;
-        // List of ChromeOS specific action keys in the top row. This list excludes
-        // the left-most Escape key, and right-most key (usually Power/Lock).
-        // If a keyboard has F11-F15 keys beyond the rightmost action key, they may
-        // not be included in this list (even as "none").
+        // List of ChromeOS specific action keys in the top row. This list
+        // excludes the left-most Escape key, and right-most key (usually
+        // Power/Lock).
+        // If a keyboard has F11-F15 keys beyond the rightmost action key,
+        // they may not be included in this list (even as "none").
         KeyboardTopRowKey[] topRowKeys;
-        // For CrOS keyboards, the glyph shown on the key at the far right end of the
-        // top row. This data may not be completely reliable.
+        // For CrOS keyboards, the glyph shown on the key at the far right end
+        // of the top row. This data may not be completely reliable.
         KeyboardTopRightKey? topRightKey;
         // Only applicable to CrOS keyboards.
         boolean? hasAssistantKey;
     };
 
-    // Keyboard diagnostics event info. It is fired when users completed a keyboard
-    // diagnostic in the Diagnostics App.
+    // Keyboard diagnostics event info. It is fired when users completed a
+    // keyboard diagnostic in the Diagnostics App.
     dictionary KeyboardDiagnosticEventInfo {
         // The keyboard which has been tested.
         KeyboardInfo? keyboardInfo;
         // Keys which have been tested. It is an array of the evdev key code.
         long[] testedKeys;
-        // Top row keys which have been tested. They are positions of the key on the
-        // top row after escape (0 is leftmost, 1 is next to the right, etc.).
+        // Top row keys which have been tested. They are positions of the key on
+        // the top row after escape (0 is leftmost, 1 is next to the right,
+        // etc.).
         // Generally, 0 is F1, in some fashion.
-        // NOTE: This position may exceed the length of keyboard_info->top_row_keys,
-        // for external keyboards with keys in the F11-F15 range.
+        // NOTE: This position may exceed the length of
+        // keyboard_info->top_row_keys, for external keyboards with keys in the
+        // F11-F15 range.
         long[] testedTopRowKeys;
     };
 
@@ -419,7 +422,8 @@ namespace os.events {
 
         // Informs the extension that a Keyboard diagnostic has been completed
         // in the first party diagnostic tool.
-        static void onKeyboardDiagnosticEvent(KeyboardDiagnosticEventInfo event_info);
+        static void onKeyboardDiagnosticEvent(
+            KeyboardDiagnosticEventInfo event_info);
 
         // Informs the extension that a `Lid` event occured.
         static void onLidEvent(LidEventInfo event_info);

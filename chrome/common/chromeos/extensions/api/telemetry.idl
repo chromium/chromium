@@ -65,7 +65,8 @@ namespace os.telemetry {
     NonRemovableBlockDeviceInfo[] deviceInfos;
   };
 
-  callback NonRemovableBlockDevicesInfoCallback = void (NonRemovableBlockDeviceInfoResponse deviceInfoResponse);
+  callback NonRemovableBlockDevicesInfoCallback = void (
+      NonRemovableBlockDeviceInfoResponse deviceInfoResponse);
 
   enum CpuArchitectureEnum {
     unknown,
@@ -223,8 +224,8 @@ namespace os.telemetry {
     // The network type is available and enabled or enabling, but no network
     // connection has been established.
     not_connected,
-    // The network type is available and enabled, and a network connection is
-    // in progress.
+    // The network type is available and enabled, and a network connection is in
+    // progress.
     connecting,
     // The network is in a portal state.
     portal,
@@ -247,7 +248,8 @@ namespace os.telemetry {
     NetworkInfo[] networks;
   };
 
-  callback InternetConnectivityInfoCallback = void (InternetConnectivityInfo networkInfo);
+  callback InternetConnectivityInfoCallback = void (
+      InternetConnectivityInfo networkInfo);
 
   dictionary OemData {
     // OEM data. This field used to store battery serial number by some OEMs.
@@ -269,14 +271,14 @@ namespace os.telemetry {
   dictionary UsbBusInterfaceInfo {
     // The zero-based number (index) of the interface.
     double? interfaceNumber;
-    // These fields can be used to classify / identify the usb interfaces. See the
-    // usb.ids database for the values. (https://github.com/gentoo/hwids)
+    // These fields can be used to classify / identify the usb interfaces. See
+    // the usb.ids database for the values. (https://github.com/gentoo/hwids)
     double? classId;
     double? subclassId;
     double? protocolId;
-    // The driver used by the device. This is the name of the matched driver which
-    // is registered in the kernel. See "{kernel root}/drivers/" for the list of
-    // the built in drivers.
+    // The driver used by the device. This is the name of the matched driver
+    // which is registered in the kernel. See "{kernel root}/drivers/" for the
+    // list of the built in drivers.
     DOMString? driver;
   };
 
@@ -361,14 +363,14 @@ namespace os.telemetry {
     double? vendorId;
     double? productId;
     // The usb interfaces under the device. A usb device has at least one
-    // interface. Each interface may or may not work independently, based on each
-    // device. This allows a usb device to provide multiple features.
+    // interface. Each interface may or may not work independently, based on
+    // each device. This allows a usb device to provide multiple features.
     // The interfaces are sorted by the `interface_number` field.
     UsbBusInterfaceInfo[] interfaces;
     // The firmware version obtained from fwupd.
     FwupdFirmwareVersionInfo? fwupdFirmwareVersionInfo;
-    // The recognized usb version. It may not be the highest USB version supported
-    // by the hardware.
+    // The recognized usb version. It may not be the highest USB version
+    // supported by the hardware.
     UsbVersion? version;
     // The spec usb speed.
     UsbSpecSpeed? spec_speed;
@@ -401,7 +403,8 @@ namespace os.telemetry {
     double? totalSpace;
   };
 
-  callback StatefulPartitionInfoCallback = void (StatefulPartitionInfo statefulPartitionInfo);
+  callback StatefulPartitionInfoCallback = void (
+      StatefulPartitionInfo statefulPartitionInfo);
 
   enum ThermalSensorSource {
     unknown,
@@ -486,25 +489,31 @@ namespace os.telemetry {
 
     [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
 
-    [supportsPromises] static void getNonRemovableBlockDevicesInfo(NonRemovableBlockDevicesInfoCallback callback);
+    [supportsPromises] static void getNonRemovableBlockDevicesInfo(
+        NonRemovableBlockDevicesInfoCallback callback);
 
     [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
 
-    [supportsPromises] static void getInternetConnectivityInfo(InternetConnectivityInfoCallback callback);
+    [supportsPromises] static void getInternetConnectivityInfo(
+        InternetConnectivityInfoCallback callback);
 
-    [supportsPromises] static void getMarketingInfo(MarketingInfoCallback callback);
+    [supportsPromises] static void getMarketingInfo(
+        MarketingInfoCallback callback);
 
     [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
 
     [supportsPromises] static void getOemData(OemDataCallback callback);
 
-    [supportsPromises] static void getOsVersionInfo(OsVersionInfoCallback callback);
+    [supportsPromises] static void getOsVersionInfo(
+        OsVersionInfoCallback callback);
 
-    [supportsPromises] static void getUsbBusInfo(UsbBusDevicesCallback callback);
+    [supportsPromises] static void getUsbBusInfo(
+        UsbBusDevicesCallback callback);
 
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
-    [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
+    [supportsPromises] static void getStatefulPartitionInfo(
+        StatefulPartitionInfoCallback callback);
 
     [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
 

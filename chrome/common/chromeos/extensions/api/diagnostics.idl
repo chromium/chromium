@@ -170,7 +170,8 @@ namespace os.diagnostics {
     RoutineStatus status;
   };
 
-  callback GetAvailableRoutinesCallback = void (GetAvailableRoutinesResponse response);
+  callback GetAvailableRoutinesCallback = void (
+      GetAvailableRoutinesResponse response);
 
   callback GetRoutineUpdateCallback = void (GetRoutineUpdateResponse response);
 
@@ -207,8 +208,8 @@ namespace os.diagnostics {
     // simply report the error.
     unexpected,
     // Raises this if clients try to run an unsupported feature. Note that
-    // clients should use methods which return `SupportStatus` for
-    // support status check.
+    // clients should use methods which return `SupportStatus` for support
+    // status check.
     unsupported,
     // The corresponding App UI was closed and thus stopped the routine
     // execution.
@@ -368,79 +369,113 @@ namespace os.diagnostics {
   callback CancelRoutineCallback = void ();
 
   interface Functions {
-    [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
+    [supportsPromises] static void getAvailableRoutines(
+        GetAvailableRoutinesCallback callback);
 
-    [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
-                                                    GetRoutineUpdateCallback callback);
+    [supportsPromises] static void getRoutineUpdate(
+        GetRoutineUpdateRequest request,
+        GetRoutineUpdateCallback callback);
 
-    [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
-                                                     RunRoutineCallback callback);
+    [supportsPromises] static void runAcPowerRoutine(
+        RunAcPowerRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runBatteryCapacityRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
-                                                           RunRoutineCallback callback);
+    [supportsPromises] static void runBatteryChargeRoutine(
+        RunBatteryChargeRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,
-                                                              RunRoutineCallback callback);
+    [supportsPromises] static void runBatteryDischargeRoutine(
+        RunBatteryDischargeRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runBatteryHealthRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothDiscoveryRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runBluetoothDiscoveryRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothPairingRoutine(RunBluetoothPairingRoutineRequest request,
-                                                              RunRoutineCallback callback);
+    [supportsPromises] static void runBluetoothPairingRoutine(
+        RunBluetoothPairingRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothPowerRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runBluetoothPowerRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runBluetoothScanningRoutine(RunBluetoothScanningRoutineRequest request,
-                                                               RunRoutineCallback callback);
+    [supportsPromises] static void runBluetoothScanningRoutine(
+        RunBluetoothScanningRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
-                                                      RunRoutineCallback callback);
+    [supportsPromises] static void runCpuCacheRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
-                                                                      RunRoutineCallback callback);
+    [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuPrimeSearchRoutine(RunCpuRoutineRequest request,
-                                                            RunRoutineCallback callback);
+    [supportsPromises] static void runCpuPrimeSearchRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
-                                                       RunRoutineCallback callback);
+    [supportsPromises] static void runCpuStressRoutine(
+        RunCpuRoutineRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
-                                                      RunRoutineCallback callback);
+    [supportsPromises] static void runDiskReadRoutine(
+        RunDiskReadRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runDnsResolutionRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runDnsResolverPresentRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runDnsResolverPresentRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runEmmcLifetimeRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runEmmcLifetimeRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runFingerprintAliveRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runFingerprintAliveRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runGatewayCanBePingedRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runLanConnectivityRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runMemoryRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runNvmeSelfTestRoutine(RunNvmeSelfTestRequest request, RunRoutineCallback callback);
+    [supportsPromises] static void runNvmeSelfTestRoutine(
+        RunNvmeSelfTestRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
-                                                           RunRoutineCallback callback);
+    [supportsPromises] static void runNvmeWearLevelRoutine(
+        RunNvmeWearLevelRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runSensitiveSensorRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runSensitiveSensorRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runSignalStrengthRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runSmartctlCheckRoutine(optional RunSmartctlCheckRequest request, RunRoutineCallback callback);
+    [supportsPromises] static void runSmartctlCheckRoutine(
+        optional RunSmartctlCheckRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runUfsLifetimeRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runUfsLifetimeRoutine(
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
+    [supportsPromises] static void runPowerButtonRoutine(
+        RunPowerButtonRequest request,
+        RunRoutineCallback callback);
 
-    [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runAudioDriverRoutine(
+        RunRoutineCallback callback);
 
     [supportsPromises] static void runFanRoutine(RunRoutineCallback callback);
 
@@ -448,31 +483,44 @@ namespace os.diagnostics {
 
     // Starts execution of a routine. This can only be expected to work after
     // `onRoutineInitialized` was emitted for the routine with `UUID`.
-    [supportsPromises] static void startRoutine(StartRoutineRequest request, StartRoutineCallback callback);
+    [supportsPromises] static void startRoutine(StartRoutineRequest request,
+                                                StartRoutineCallback callback);
 
-    // Stops executing the routine identified by `UUID` and removes all related resources from the system.
-    [supportsPromises] static void cancelRoutine(CancelRoutineRequest request, CancelRoutineCallback callback);
+    // Stops executing the routine identified by `UUID` and removes all related
+    // resources from the system.
+    [supportsPromises] static void cancelRoutine(
+        CancelRoutineRequest request,
+        CancelRoutineCallback callback);
 
-    [supportsPromises] static void createMemoryRoutine(RunMemoryRoutineArguments args,
-                                                       CreateRoutineCallback callback);
+    [supportsPromises] static void createMemoryRoutine(
+        RunMemoryRoutineArguments args,
+        CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunMemoryRoutineArguments` is supported on the platform.
-    [supportsPromises] static void isMemoryRoutineArgumentSupported(RunMemoryRoutineArguments args,
-                                                          RoutineSupportStatusInfoCallback callback);
+    // Checks whether a certain `RunMemoryRoutineArguments` is supported on the
+    // platform.
+    [supportsPromises] static void isMemoryRoutineArgumentSupported(
+        RunMemoryRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
 
-    [supportsPromises] static void createVolumeButtonRoutine(RunVolumeButtonRoutineArguments args,
-                                                             CreateRoutineCallback callback);
+    [supportsPromises] static void createVolumeButtonRoutine(
+        RunVolumeButtonRoutineArguments args,
+        CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported on the platform.
-    [supportsPromises] static void isVolumeButtonRoutineArgumentSupported(RunVolumeButtonRoutineArguments args,
-                                                                          RoutineSupportStatusInfoCallback callback);
+    // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported
+    // on the platform.
+    [supportsPromises] static void isVolumeButtonRoutineArgumentSupported(
+        RunVolumeButtonRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
 
-    [supportsPromises] static void createFanRoutine(RunFanRoutineArguments args,
-                                                       CreateRoutineCallback callback);
+    [supportsPromises] static void createFanRoutine(
+        RunFanRoutineArguments args,
+        CreateRoutineCallback callback);
 
-    // Checks whether a certain `RunFanRoutineArguments` is supported on the platform.
-    [supportsPromises] static void isFanRoutineArgumentSupported(RunFanRoutineArguments args,
-                                                          RoutineSupportStatusInfoCallback callback);
+    // Checks whether a certain `RunFanRoutineArguments` is supported on the
+    // platform.
+    [supportsPromises] static void isFanRoutineArgumentSupported(
+        RunFanRoutineArguments args,
+        RoutineSupportStatusInfoCallback callback);
   };
 
   interface Events {
@@ -495,7 +543,8 @@ namespace os.diagnostics {
     static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
 
     // Informs the extension that a volume button routine finished.
-    static void onVolumeButtonRoutineFinished(VolumeButtonRoutineFinishedInfo finishedInfo);
+    static void onVolumeButtonRoutineFinished(
+        VolumeButtonRoutineFinishedInfo finishedInfo);
 
     // Informs the extension that a fan routine finished.
     static void onFanRoutineFinished(FanRoutineFinishedInfo finishedInfo);
