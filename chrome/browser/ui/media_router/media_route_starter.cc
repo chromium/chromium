@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_message_center/media_notification_util.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -247,9 +248,7 @@ std::u16string MediaRouteStarter::GetPresentationRequestSourceName() const {
              ? base::UTF8ToUTF16(GetExtensionName(
                    frame_origin.GetURL(),
                    extensions::ExtensionRegistry::Get(GetBrowserContext())))
-             : url_formatter::FormatOriginForSecurityDisplay(
-                   frame_origin,
-                   url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+             : media_message_center::GetOriginNameForDisplay(frame_origin);
 }
 
 bool MediaRouteStarter::SinkSupportsCastMode(const MediaSink::Id& sink_id,
