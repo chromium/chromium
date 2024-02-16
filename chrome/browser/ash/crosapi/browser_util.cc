@@ -62,7 +62,7 @@ BASE_FEATURE(kLacrosLaunchAtLoginScreen,
 
 BASE_FEATURE(kLacrosForkZygotesAtLoginScreen,
              "LacrosForkZygotesAtLoginScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
