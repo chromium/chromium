@@ -42,6 +42,10 @@ class CreditCardBenefitBase {
   base::Time start_time() const { return start_time_; }
   base::Time expiry_time() const { return expiry_time_; }
 
+  // Returns whether the current time is within the benefit's `start_time` and
+  // `end_time`, indicating that the benefit is active.
+  bool IsActiveBenefit() const;
+
  protected:
   friend class CreditCardBenefitBaseTestApi;
 

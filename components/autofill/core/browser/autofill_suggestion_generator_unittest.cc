@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -178,10 +179,11 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
       const CreditCard& credit_card,
       FieldType trigger_field_type,
       bool virtual_card_option,
-      bool card_linked_offer_available) const {
+      bool card_linked_offer_available,
+      url::Origin origin = url::Origin()) const {
     return AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         credit_card, trigger_field_type, virtual_card_option,
-        card_linked_offer_available);
+        card_linked_offer_available, origin);
   }
 };
 
@@ -958,6 +960,121 @@ TEST_P(
               std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
                   full_form_filling_label + u"Switzerland")}}))));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/325646493): Cleanup
+// AutofillSuggestionGeneratorTest.AutofillCreditCardBenefitsLabelTest setup and
+// parameters.
+class AutofillCreditCardBenefitsLabelTest
+    : public AutofillSuggestionGeneratorTest,
+      public ::testing::WithParamInterface<
+          base::FunctionRef<CreditCardBenefit()>> {
+ public:
+  void SetUp() override {
+    AutofillSuggestionGeneratorTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableCardBenefits,
+                              features::kAutofillEnableVirtualCardMetadata},
+        /*disabled_features=*/{});
+
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_client()->GetAutofillOptimizationGuide()),
+            AttemptToGetEligibleCreditCardBenefitCategory)
+        .WillByDefault(testing::Return(
+            CreditCardCategoryBenefit::BenefitCategory::kSubscription));
+
+    std::u16string benefit_description;
+    int64_t instrument_id;
+
+    if (absl::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+      CreditCardFlatRateBenefit benefit =
+          absl::get<CreditCardFlatRateBenefit>(GetBenefit());
+      personal_data().AddCreditCardBenefitForTest(benefit);
+      benefit_description = benefit.benefit_description();
+      instrument_id = *benefit.linked_card_instrument_id();
+    } else if (absl::holds_alternative<CreditCardMerchantBenefit>(
+                   GetBenefit())) {
+      CreditCardMerchantBenefit benefit =
+          absl::get<CreditCardMerchantBenefit>(GetBenefit());
+      personal_data().AddCreditCardBenefitForTest(benefit);
+      benefit_description = benefit.benefit_description();
+      instrument_id = *benefit.linked_card_instrument_id();
+    } else if (absl::holds_alternative<CreditCardCategoryBenefit>(
+                   GetBenefit())) {
+      CreditCardCategoryBenefit benefit =
+          absl::get<CreditCardCategoryBenefit>(GetBenefit());
+      personal_data().AddCreditCardBenefitForTest(benefit);
+      benefit_description = benefit.benefit_description();
+      instrument_id = *benefit.linked_card_instrument_id();
+    } else {
+      NOTREACHED_NORETURN();
+    }
+
+    expected_benefit_text_ = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS,
+        benefit_description);
+    card_ = CreateServerCard(
+        /*guid=*/"00000000-0000-0000-0000-000000000001",
+        /*server_id=*/"server_id1",
+        /*instrument_id=*/instrument_id);
+    personal_data().AddServerCreditCard(card_);
+  }
+
+  CreditCardBenefit GetBenefit() const { return GetParam()(); }
+
+  const CreditCard& card() { return card_; }
+
+  const std::u16string& expected_benefit_text() {
+    return expected_benefit_text_;
+  }
+
+ private:
+  std::u16string expected_benefit_text_;
+  CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillSuggestionGeneratorTest,
+    AutofillCreditCardBenefitsLabelTest,
+    ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                      &test::GetActiveCreditCardCategoryBenefit,
+                      &test::GetActiveCreditCardMerchantBenefit));
+
+// Checks that for FPAN suggestions that the benefit description is displayed.
+TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
+  EXPECT_THAT(
+      suggestion_generator()
+          ->CreateCreditCardSuggestion(
+              card(), CREDIT_CARD_NUMBER,
+              /*virtual_card_option=*/false,
+              /*card_linked_offer_available=*/false,
+              /*origin=*/url::Origin::Create(GURL("http://www.example.com")))
+          .labels,
+      testing::ElementsAre(std::vector<Suggestion::Text>{
+          Suggestion::Text(expected_benefit_text())}));
+}
+
+// Checks that for virtual cards suggestion the benefit description is shown
+// with a virtual card label appended.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabel_VirtualCard) {
+  EXPECT_THAT(
+      suggestion_generator()
+          ->CreateCreditCardSuggestion(
+              card(), CREDIT_CARD_NUMBER,
+              /*virtual_card_option=*/true,
+              /*card_linked_offer_available=*/false,
+              /*origin=*/url::Origin::Create(GURL("http://www.example.com")))
+          .labels,
+      testing::ElementsAre(
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(expected_benefit_text())},
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class AutofillChildrenSuggestionGeneratorTest
     : public AutofillSuggestionGeneratorTest {

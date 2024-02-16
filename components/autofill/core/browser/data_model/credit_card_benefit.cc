@@ -29,9 +29,14 @@ CreditCardBenefitBase& CreditCardBenefitBase::operator=(
     CreditCardBenefitBase&&) = default;
 CreditCardBenefitBase::~CreditCardBenefitBase() = default;
 
+bool CreditCardBenefitBase::IsActiveBenefit() const {
+  base::Time current_time = AutofillClock::Now();
+  return current_time >= start_time_ && current_time < expiry_time_;
+}
+
 bool CreditCardBenefitBase::IsValid() const {
   return linked_card_instrument_id_ && !benefit_id_->empty() &&
-         !benefit_description_.empty() && AutofillClock::Now() <= expiry_time_;
+         !benefit_description_.empty() && AutofillClock::Now() < expiry_time_;
 }
 
 CreditCardFlatRateBenefit::CreditCardFlatRateBenefit(

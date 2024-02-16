@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -1115,6 +1116,12 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   return suggestion;
 }
 
+Suggestion::Text GetBenefitTextWithTermsAppended(
+    const std::u16string& benefit_text) {
+  return Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -1537,14 +1544,16 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
       if (ShouldShowVirtualCardOption(&credit_card)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             credit_card, trigger_field_type,
-            /*virtual_card_option=*/true, card_linked_offer_available));
+            /*virtual_card_option=*/true, card_linked_offer_available,
+            trigger_field.origin));
       }
       if (!credit_card.cvc().empty()) {
         with_cvc = true;
       }
       suggestions.push_back(CreateCreditCardSuggestion(
           credit_card, trigger_field_type,
-          /*virtual_card_option=*/false, card_linked_offer_available));
+          /*virtual_card_option=*/false, card_linked_offer_available,
+          trigger_field.origin));
     }
   }
 
@@ -1880,7 +1889,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     FieldType trigger_field_type,
     bool virtual_card_option,
-    bool card_linked_offer_available) const {
+    bool card_linked_offer_available,
+    const url::Origin& origin) const {
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
@@ -1906,7 +1916,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.minor_text = std::move(minor_text);
   if (std::vector<Suggestion::Text> card_labels = GetSuggestionLabelsForCard(
           credit_card,
-          is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
+          is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type, origin);
       !card_labels.empty()) {
     suggestion.labels.push_back(std::move(card_labels));
   }
@@ -1917,7 +1927,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   if (virtual_card_option) {
     // We don't show card linked offers for virtual card options.
     AdjustVirtualCardSuggestionContent(suggestion, credit_card,
-                                       trigger_field_type);
+                                       trigger_field_type, origin);
   } else if (card_linked_offer_available) {
 #if BUILDFLAG(IS_ANDROID)
     // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
@@ -2014,7 +2024,8 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
 std::vector<Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
-    FieldType trigger_field_type) const {
+    FieldType trigger_field_type,
+    const url::Origin& origin) const {
   const std::string& app_locale = personal_data_->app_locale();
 
   // If the focused field is a card number field.
@@ -2023,6 +2034,11 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     return {Suggestion::Text(
         credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))};
 #else
+    std::optional<Suggestion::Text> benefit_label =
+        GetCreditCardBenefitSuggestionLabel(credit_card, origin);
+    if (benefit_label) {
+      return {*benefit_label};
+    }
     return {Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
             ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
@@ -2074,10 +2090,60 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))};
 }
 
+std::optional<Suggestion::Text>
+AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
+    const CreditCard& credit_card,
+    const url::Origin& origin) const {
+  // Benefits are only displayed for app locale set to U.S. English.
+  if (!base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits) ||
+      personal_data_->app_locale() != "en-US") {
+    return std::nullopt;
+  }
+  CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
+      credit_card.instrument_id());
+
+  // 1. Check merchant benefit.
+  std::optional<CreditCardMerchantBenefit> merchant_benefit =
+      personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
+          benefit_instrument_id, origin);
+  if (merchant_benefit && merchant_benefit->IsActiveBenefit()) {
+    return GetBenefitTextWithTermsAppended(
+        merchant_benefit->benefit_description());
+  }
+
+  // 2. Check category benefit.
+  CreditCardCategoryBenefit::BenefitCategory category_benefit_type =
+      autofill_client_->GetAutofillOptimizationGuide()
+          ->AttemptToGetEligibleCreditCardBenefitCategory(
+              credit_card.issuer_id(), origin);
+  if (category_benefit_type !=
+      CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
+    std::optional<CreditCardCategoryBenefit> category_benefit =
+        personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
+            benefit_instrument_id, category_benefit_type);
+    if (category_benefit && category_benefit->IsActiveBenefit()) {
+      return GetBenefitTextWithTermsAppended(
+          category_benefit->benefit_description());
+    }
+  }
+
+  // 3. Check flat rate benefit.
+  std::optional<CreditCardFlatRateBenefit> flat_rate_benefit =
+      personal_data_->GetFlatRateBenefitByInstrumentId(benefit_instrument_id);
+  if (flat_rate_benefit && flat_rate_benefit->IsActiveBenefit()) {
+    return GetBenefitTextWithTermsAppended(
+        flat_rate_benefit->benefit_description());
+  }
+
+  // No eligible benefit to display.
+  return std::nullopt;
+}
+
 void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     Suggestion& suggestion,
     const CreditCard& credit_card,
-    FieldType trigger_field_type) const {
+    FieldType trigger_field_type,
+    const url::Origin& origin) const {
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
         personal_data_->GetServerCardForLocalCard(&credit_card);
@@ -2137,15 +2203,17 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     }
 #else   // Desktop/Android dropdown.
     if (trigger_field_type == CREDIT_CARD_NUMBER) {
-      // If the focused field is a credit card number field, reset all labels
-      // and populate only the virtual card text.
-      suggestion.labels = {{Suggestion::Text(VIRTUAL_CARD_LABEL)}};
-    } else {
-      // For other fields, add the virtual card text after the original label,
-      // so it will be shown on the third line.
-      suggestion.labels.push_back(
-          std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
+      // Reset the labels as we only show benefit and virtual card label to
+      // conserve space.
+      suggestion.labels = {};
+      std::optional<Suggestion::Text> benefit_label =
+          GetCreditCardBenefitSuggestionLabel(credit_card, origin);
+      if (benefit_label) {
+        suggestion.labels.push_back({*benefit_label});
+      }
     }
+    suggestion.labels.push_back(
+        std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 }
