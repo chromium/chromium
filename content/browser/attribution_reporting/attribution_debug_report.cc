@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -520,13 +522,17 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
-    const OsRegistration& registration) {
-  if (!registration.debug_reporting || registration.is_within_fenced_frame) {
+    const OsRegistration& registration,
+    size_t item_index) {
+  CHECK_LT(item_index, registration.registration_items.size());
+  const auto& registration_item = registration.registration_items[item_index];
+  if (!registration_item.debug_reporting ||
+      registration.is_within_fenced_frame) {
     return std::nullopt;
   }
 
-  auto registration_origin = attribution_reporting::SuitableOrigin::Create(
-      registration.registration_url);
+  auto registration_origin =
+      attribution_reporting::SuitableOrigin::Create(registration_item.url);
   if (!registration_origin.has_value()) {
     return std::nullopt;
   }
@@ -544,7 +550,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   base::Value::Dict data_body;
   data_body.Set("context_site",
                 net::SchemefulSite(registration.top_level_origin).Serialize());
-  data_body.Set("registration_url", registration.registration_url.spec());
+  data_body.Set("registration_url", registration_item.url.spec());
 
   base::Value::List report_body;
   report_body.Append(GetReportData(data_type, std::move(data_body)));

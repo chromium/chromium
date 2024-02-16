@@ -6,27 +6,30 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/public/browser/global_routing_id.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-OsRegistration::OsRegistration(GURL registration_url,
-                               bool debug_reporting,
-                               url::Origin top_level_origin,
-                               std::optional<AttributionInputEvent> input_event,
-                               bool is_within_fenced_frame,
-                               GlobalRenderFrameHostId render_frame_id)
-    : registration_url(std::move(registration_url)),
-      debug_reporting(debug_reporting),
+OsRegistration::OsRegistration(
+    std::vector<attribution_reporting::OsRegistrationItem> items,
+    url::Origin top_level_origin,
+    std::optional<AttributionInputEvent> input_event,
+    bool is_within_fenced_frame,
+    GlobalRenderFrameHostId render_frame_id)
+    : registration_items(std::move(items)),
       top_level_origin(std::move(top_level_origin)),
       input_event(std::move(input_event)),
       is_within_fenced_frame(is_within_fenced_frame),
-      render_frame_id(render_frame_id) {}
+      render_frame_id(render_frame_id) {
+  CHECK(!this->registration_items.empty());
+}
 
 OsRegistration::~OsRegistration() = default;
 

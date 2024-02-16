@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
@@ -107,9 +108,10 @@ ScopedApiStateForTesting::~ScopedApiStateForTesting() {
 
 NoOpAttributionOsLevelManager::~NoOpAttributionOsLevelManager() = default;
 
-void NoOpAttributionOsLevelManager::Register(OsRegistration registration,
-                                             bool is_debug_key_allowed,
-                                             RegisterCallback callback) {
+void NoOpAttributionOsLevelManager::Register(
+    OsRegistration registration,
+    const std::vector<bool>& is_debug_key_allowed,
+    RegisterCallback callback) {
   std::move(callback).Run(registration, false);
 }
 

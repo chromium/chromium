@@ -1484,10 +1484,13 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
     base::RunLoop run_loop;
     const auto on_registration = base::BarrierClosure(
         test_case.expected_os_registrations.size(), run_loop.QuitClosure());
-    for (auto item : test_case.expected_os_registrations) {
-      EXPECT_CALL(mock_attribution_manager(),
-                  HandleOsRegistration(AllOf(
-                      Field(&OsRegistration::registration_url, item.url))))
+    // TODO(https://crbug.com/1444525): Update to expect a single call.
+    for (const auto& item : test_case.expected_os_registrations) {
+      EXPECT_CALL(
+          mock_attribution_manager(),
+          HandleOsRegistration(Field(
+              &OsRegistration::registration_items,
+              std::vector<attribution_reporting::OsRegistrationItem>({item}))))
           .Times(1)
           .WillOnce([&on_registration]() { on_registration.Run(); });
     }

@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
@@ -36,7 +38,7 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
       AttributionOsLevelManagerAndroid&&) = delete;
 
   void Register(OsRegistration,
-                bool is_debug_key_allowed,
+                const std::vector<bool>& is_debug_key_allowed,
                 RegisterCallback) override;
 
   void ClearData(base::Time delete_begin,

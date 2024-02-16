@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
@@ -58,7 +59,7 @@ class CONTENT_EXPORT AttributionOsLevelManager {
       base::OnceCallback<void(const OsRegistration&, bool success)>;
 
   virtual void Register(OsRegistration,
-                        bool is_debug_key_allowed,
+                        const std::vector<bool>& is_debug_key_allowed,
                         RegisterCallback) = 0;
 
   // Clears storage data with the OS.
@@ -86,7 +87,7 @@ class CONTENT_EXPORT NoOpAttributionOsLevelManager
   ~NoOpAttributionOsLevelManager() override;
 
   void Register(OsRegistration,
-                bool is_debug_key_allowed,
+                const std::vector<bool>& is_debug_key_allowed,
                 RegisterCallback) override;
 
   void ClearData(base::Time delete_begin,

@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -62,6 +63,7 @@ namespace {
 
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
+using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
 
@@ -459,7 +461,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifyOsRegistration(
-      OsRegistration(GURL("https://a.test"), /*debug_reporting=*/false,
+      OsRegistration({OsRegistrationItem(GURL("https://a.test"),
+                                         /*debug_reporting=*/false)},
                      url::Origin::Create(GURL("https://b.test")),
                      AttributionInputEvent(), /*is_within_fenced_frame=*/false,
                      /*render_frame_id=*/GlobalRenderFrameHostId()),

@@ -34,8 +34,13 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace attribution_reporting {
+struct OsRegistrationItem;
+}  // namespace attribution_reporting
+
 namespace base {
 class FilePath;
+class Time;
 class TimeDelta;
 class UpdateableSequencedTaskRunner;
 }  // namespace base
@@ -43,6 +48,10 @@ class UpdateableSequencedTaskRunner;
 namespace storage {
 class SpecialStoragePolicy;
 }  // namespace storage
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -145,8 +154,11 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void HandleOsRegistration(OsRegistration) override;
 
-  void NotifyOsRegistration(const OsRegistration&,
+  void NotifyOsRegistration(base::Time time,
+                            const attribution_reporting::OsRegistrationItem&,
+                            const url::Origin& top_level_origin,
                             bool is_debug_key_allowed,
+                            attribution_reporting::mojom::RegistrationType,
                             attribution_reporting::mojom::OsRegistrationResult);
 
  private:
@@ -218,6 +230,9 @@ class CONTENT_EXPORT AttributionManagerImpl
                         const AttributionReport&,
                         SendResult);
   void NotifyDebugReportSent(const AttributionDebugReport&, int status);
+  void NotifyTotalOsRegistrationFailure(
+      const OsRegistration&,
+      attribution_reporting::mojom::OsRegistrationResult);
 
   bool IsReportAllowed(const AttributionReport&) const;
 
@@ -229,7 +244,7 @@ class CONTENT_EXPORT AttributionManagerImpl
                                    bool is_debug_cookie_set,
                                    const CreateReportResult& result);
 
-  void MaybeSendVerboseDebugReport(const OsRegistration&);
+  void MaybeSendVerboseDebugReports(const OsRegistration&);
 
   void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();
@@ -239,9 +254,9 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void OnClearDataComplete();
 
-  void ProcessOsEvents();
-  void ProcessNextOsEvent(bool registration_allowed, bool is_debug_key_allowed);
-  void OnOsRegistration(bool is_debug_key_allowed,
+  void PrepareNextOsEvent();
+  void ProcessNextOsEvent(const std::vector<bool>& is_debug_key_allowed);
+  void OnOsRegistration(const std::vector<bool>& is_debug_key_allowed,
                         const OsRegistration&,
                         bool success);
 

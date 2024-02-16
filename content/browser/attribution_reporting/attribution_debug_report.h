@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 
+#include <stddef.h>
+
 #include <optional>
 
 #include "base/time/time.h"
@@ -37,7 +39,8 @@ class CONTENT_EXPORT AttributionDebugReport {
       bool is_debug_cookie_set,
       const CreateReportResult& result);
 
-  static std::optional<AttributionDebugReport> Create(const OsRegistration&);
+  static std::optional<AttributionDebugReport> Create(const OsRegistration&,
+                                                      size_t item_index);
 
   ~AttributionDebugReport();
 

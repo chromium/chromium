@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
@@ -92,8 +93,13 @@ void MockAttributionManager::NotifyOsRegistration(
     bool is_debug_key_allowed,
     attribution_reporting::mojom::OsRegistrationResult result) {
   base::Time now = base::Time::Now();
-  for (auto& observer : observers_) {
-    observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
+  for (const attribution_reporting::OsRegistrationItem& item :
+       registration.registration_items) {
+    for (auto& observer : observers_) {
+      observer.OnOsRegistration(now, item, registration.top_level_origin,
+                                registration.GetType(), is_debug_key_allowed,
+                                result);
+    }
   }
 }
 

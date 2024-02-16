@@ -10,10 +10,19 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace attribution_reporting {
+struct OsRegistrationItem;
+}  // namespace attribution_reporting
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -76,7 +85,9 @@ class AttributionInternalsHandlerImpl
                         const CreateReportResult& result) override;
   void OnOsRegistration(
       base::Time time,
-      const OsRegistration&,
+      const attribution_reporting::OsRegistrationItem&,
+      const url::Origin& top_level_origin,
+      attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) override;
 

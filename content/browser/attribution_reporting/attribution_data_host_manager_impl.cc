@@ -1983,10 +1983,12 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
     std::optional<AttributionInputEvent> input_event) {
   // TODO(https://crbug.com/1444525): Register all urls with a single call.
   for (attribution_reporting::OsRegistrationItem& item : items) {
+    std::vector<attribution_reporting::OsRegistrationItem> registration_items;
+    registration_items.emplace_back(std::move(item));
     attribution_manager_->HandleOsRegistration(OsRegistration(
-        /*registration_url=*/std::move(item.url), item.debug_reporting,
-        /*top_level_origin=*/registration_context.context_origin(),
-        std::move(input_event), registration_context.is_within_fenced_frame(),
+        std::move(registration_items),
+        /*top_level_origin=*/registration_context.context_origin(), input_event,
+        registration_context.is_within_fenced_frame(),
         registration_context.render_frame_id()));
   }
 }

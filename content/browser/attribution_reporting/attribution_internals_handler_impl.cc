@@ -25,6 +25,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -410,18 +411,20 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
 
 void AttributionInternalsHandlerImpl::OnOsRegistration(
     base::Time time,
-    const OsRegistration& registration,
+    const attribution_reporting::OsRegistrationItem& registration,
+    const url::Origin& top_level_origin,
+    attribution_reporting::mojom::RegistrationType type,
     bool is_debug_key_allowed,
     attribution_reporting::mojom::OsRegistrationResult result) {
   auto web_ui_os_registration =
       attribution_internals::mojom::WebUIOsRegistration::New();
   web_ui_os_registration->time =
       time.InMillisecondsFSinceUnixEpochIgnoringNull();
-  web_ui_os_registration->registration_url = registration.registration_url;
-  web_ui_os_registration->top_level_origin = registration.top_level_origin;
+  web_ui_os_registration->registration_url = registration.url;
+  web_ui_os_registration->top_level_origin = top_level_origin;
   web_ui_os_registration->is_debug_key_allowed = is_debug_key_allowed;
   web_ui_os_registration->debug_reporting = registration.debug_reporting;
-  web_ui_os_registration->type = registration.GetType();
+  web_ui_os_registration->type = type;
   web_ui_os_registration->result = result;
 
   observer_->OnOsRegistration(std::move(web_ui_os_registration));

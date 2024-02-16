@@ -14,6 +14,14 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 
+namespace attribution_reporting {
+struct OsRegistrationItem;
+}  // namespace attribution_reporting
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class AttributionDebugReport;
@@ -22,7 +30,6 @@ class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 
-struct OsRegistration;
 struct SendResult;
 
 // Observes events in the Attribution Reporting API. Observers are registered on
@@ -66,7 +73,9 @@ class AttributionObserver : public base::CheckedObserver {
   // success.
   virtual void OnOsRegistration(
       base::Time time,
-      const OsRegistration&,
+      const attribution_reporting::OsRegistrationItem&,
+      const url::Origin& top_level_origin,
+      attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) {}
 };

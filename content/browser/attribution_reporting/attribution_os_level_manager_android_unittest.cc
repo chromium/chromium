@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/os_registration.h"
@@ -53,10 +54,17 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
     const char* desc;
     std::optional<AttributionInputEvent> input_event;
     bool should_use_os_web_source;
+    bool should_use_os_web_trigger;
+    size_t items_count;
   } kTestCases[] = {
-      {"trigger", std::nullopt, false},
-      {"os-source", AttributionInputEvent(), false},
-      {"web-source", AttributionInputEvent(), true},
+      {"os-trigger-single", std::nullopt, false, false, 1},
+      {"os-trigger-multi", std::nullopt, false, false, 3},
+      {"web-trigger-single", std::nullopt, false, true, 1},
+      {"web-trigger-multi", std::nullopt, false, true, 3},
+      {"os-source-single", AttributionInputEvent(), false, false, 1},
+      {"os-source-multi", AttributionInputEvent(), false, false, 3},
+      {"web-source-single", AttributionInputEvent(), true, false, 1},
+      {"web-source-multi", AttributionInputEvent(), true, false, 3},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -66,16 +74,27 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
     EXPECT_CALL(browser_client,
                 ShouldUseOsWebSourceAttributionReporting(testing::_))
         .WillRepeatedly(testing::Return(test_case.should_use_os_web_source));
+    EXPECT_CALL(browser_client,
+                ShouldUseOsWebTriggerAttributionReporting(testing::_))
+        .WillRepeatedly(testing::Return(test_case.should_use_os_web_trigger));
     ScopedContentBrowserClientSetting setting(&browser_client);
 
     base::RunLoop run_loop;
 
+    std::vector<attribution_reporting::OsRegistrationItem> items;
+    items.reserve(test_case.items_count);
+    std::vector<bool> is_debug_key_allowed;
+    is_debug_key_allowed.reserve(test_case.items_count);
+    for (size_t i = 0; i < test_case.items_count; ++i) {
+      items.emplace_back(GURL("https://r.test"), /*debug_reporting=*/false);
+      is_debug_key_allowed.push_back(false);
+    }
     manager_->Register(
-        OsRegistration(GURL("https://r.test"), /*debug_reporting=*/false,
+        OsRegistration(std::move(items),
                        url::Origin::Create(GURL("https://o.test")),
                        test_case.input_event, /*is_within_fenced_frame=*/false,
                        /*render_frame_id=*/GlobalRenderFrameHostId()),
-        /*is_debug_key_allowed=*/false,
+        is_debug_key_allowed,
         base::BindLambdaForTesting([&](const OsRegistration&, bool success) {
           // We don't check `success` here because the measurement API may or
           // may not be available depending on the Android version.
