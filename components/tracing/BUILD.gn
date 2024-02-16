@@ -34,12 +34,17 @@ component("startup_tracing") {
     sources += [
       "common/etw_export_win.cc",
       "common/etw_export_win.h",
+      "common/etw_system_data_source_win.cc",
+      "common/etw_system_data_source_win.h",
     ]
   }
 
   defines = [ "TRACING_IMPLEMENTATION" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/perfetto:libperfetto",
+  ]
 }
 
 component("background_tracing_metrics_provider") {
@@ -96,6 +101,10 @@ source_set("unit_tests") {
   if (!is_android) {
     sources = [ "common/trace_startup_config_unittest.cc" ]
     deps += [ ":startup_tracing" ]
+  }
+
+  if (is_win) {
+    sources += [ "common/etw_system_data_source_win_unittest.cc" ]
   }
 
   sources += [

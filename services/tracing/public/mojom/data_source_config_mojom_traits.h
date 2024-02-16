@@ -46,6 +46,11 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
       const perfetto::DataSourceConfig& src) {
     return src.track_event_config_raw();
   }
+  static const std::string& etw_config_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.etw_config_raw();
+  }
+
   static std::optional<perfetto::protos::gen::InterceptorConfig>
   interceptor_config(const perfetto::DataSourceConfig& src) {
     if (src.has_interceptor_config()) {

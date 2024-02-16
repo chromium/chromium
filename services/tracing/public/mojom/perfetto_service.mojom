@@ -126,6 +126,7 @@ struct DataSourceConfig {
   InterceptorConfig? interceptor_config;
   string legacy_config;
   string track_event_config_raw;
+  string etw_config_raw;
 };
 
 struct DataSourceRegistration {
