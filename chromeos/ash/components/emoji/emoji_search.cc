@@ -192,7 +192,7 @@ EmojiSearch::EmojiSearch() {
   AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
                        emojis_);
   AddDataFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, symbols_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, symbols_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, emoticons_);
 }
 
 EmojiSearch::~EmojiSearch() = default;
