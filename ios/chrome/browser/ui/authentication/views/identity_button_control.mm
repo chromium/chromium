@@ -148,6 +148,7 @@ const CGFloat kArrowDownMargin = 12.;
   switch (self.arrowDirection) {
     case IdentityButtonControlArrowRight:
       image = [UIImage imageNamed:@"identity_picker_view_arrow_right"];
+      image = [image imageFlippedForRightToLeftLayoutDirection];
       tintColor = [UIColor colorNamed:kTextTertiaryColor];
       break;
     case IdentityButtonControlArrowDown:

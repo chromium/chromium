@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_slide_transition_animator.h"
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_navigation_controller.h"
 
 namespace {
@@ -71,15 +72,17 @@ const CGFloat kAnimationDuration = 0.25;
       CGRectMake(0, 0, toViewSize.width, toViewSize.height);
   CGRect navigationFrameAfterAnimation = viewControllerFrame;
 
-  switch (self.animation) {
-    case kAccountPickerScreenSlideAnimationPopping:
-      toViewFrameBeforeAnimation.origin.x = -toView.frame.size.width;
-      fromViewFrameAfterAnimation.origin.x = fromView.frame.size.width;
-      break;
-    case kAccountPickerScreenSlideAnimationPushing:
-      toViewFrameBeforeAnimation.origin.x = toView.frame.size.width;
-      fromViewFrameAfterAnimation.origin.x = -fromView.frame.size.width;
-      break;
+  BOOL fromViewShouldMoveTowardsTheRight =
+      (self.animation == kAccountPickerScreenSlideAnimationPopping &&
+       !base::i18n::IsRTL()) ||
+      (self.animation == kAccountPickerScreenSlideAnimationPushing &&
+       base::i18n::IsRTL());
+  if (fromViewShouldMoveTowardsTheRight) {
+    toViewFrameBeforeAnimation.origin.x = -toView.frame.size.width;
+    fromViewFrameAfterAnimation.origin.x = fromView.frame.size.width;
+  } else {
+    toViewFrameBeforeAnimation.origin.x = toView.frame.size.width;
+    fromViewFrameAfterAnimation.origin.x = -fromView.frame.size.width;
   }
   toView.frame = toViewFrameBeforeAnimation;
   switch (self.navigationController.displayStyle) {
