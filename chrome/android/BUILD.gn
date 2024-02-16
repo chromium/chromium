@@ -717,8 +717,11 @@ if (current_toolchain == default_toolchain) {
     jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
 
     annotation_processor_deps = [
-      "//components/module_installer/android:module_interface_processor",
+      # Dagger must come first so that when enable_chrome_android_internal=true,
+      # the bundled version of Guava is not shadowed by the one in android_deps.
+      # https://crbug.com/325425527
       "//third_party/android_deps:dagger_processor",
+      "//components/module_installer/android:module_interface_processor",
     ]
 
     processor_args_javac = [ "dagger.fastInit=enabled" ]
