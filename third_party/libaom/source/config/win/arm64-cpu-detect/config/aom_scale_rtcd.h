@@ -8,6 +8,8 @@
 #define RTCD_EXTERN extern
 #endif
 
+#include <stdbool.h>
+
 struct yv12_buffer_config;
 
 #ifdef __cplusplus
@@ -158,7 +160,7 @@ void aom_yv12_partial_copy_y_c(const struct yv12_buffer_config* src_ybc,
 int aom_yv12_realloc_with_new_border_c(struct yv12_buffer_config* ybf,
                                        int new_border,
                                        int byte_alignment,
-                                       int num_pyramid_levels,
+                                       bool alloc_pyramid,
                                        int num_planes);
 #define aom_yv12_realloc_with_new_border aom_yv12_realloc_with_new_border_c
 
