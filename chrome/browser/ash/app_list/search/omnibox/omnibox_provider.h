@@ -27,8 +27,10 @@ namespace app_list {
 class OmniboxProvider : public SearchProvider,
                         public AutocompleteController::Observer {
  public:
+  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
   explicit OmniboxProvider(Profile* profile,
-                           AppListControllerDelegate* list_controller);
+                           AppListControllerDelegate* list_controller,
+                           int provider_types);
 
   OmniboxProvider(const OmniboxProvider&) = delete;
   OmniboxProvider& operator=(const OmniboxProvider&) = delete;

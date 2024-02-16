@@ -86,6 +86,15 @@ void OnGifSearchResponse(PickerClientImpl::FetchGifsCallback callback,
   std::move(callback).Run(std::move(picker_results));
 }
 
+int AutocompleteProviderTypes() {
+  return AutocompleteProvider::TYPE_BOOKMARK |
+         AutocompleteProvider::TYPE_HISTORY_QUICK |
+         AutocompleteProvider::TYPE_HISTORY_URL |
+         AutocompleteProvider::TYPE_HISTORY_FUZZY |
+         AutocompleteProvider::TYPE_OPEN_TAB |
+         AutocompleteProvider::TYPE_BOOKMARK;
+}
+
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -239,7 +248,7 @@ void PickerClientImpl::SetProfile(Profile* profile) {
             crosapi::CrosapiManager::Get()));
   } else {
     search_engine_->AddProvider(std::make_unique<app_list::OmniboxProvider>(
-        profile_, &app_list_controller_delegate_));
+        profile_, &app_list_controller_delegate_, AutocompleteProviderTypes()));
   }
 }
 
