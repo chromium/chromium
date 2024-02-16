@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
@@ -63,7 +64,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   WaylandWindowDragController(WaylandConnection* connection,
                               WaylandDataDeviceManager* device_manager,
                               WaylandPointer::Delegate* pointer_delegate,
-                              WaylandTouch::Delegate* touch_delegate);
+                              WaylandTouch::Delegate* touch_delegate,
+                              WaylandKeyboard::Delegate* keyboard_delegate);
   WaylandWindowDragController(const WaylandWindowDragController&) = delete;
   WaylandWindowDragController& operator=(const WaylandWindowDragController&) =
       delete;
@@ -185,6 +187,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandWindowManager> window_manager_;
   const raw_ptr<WaylandPointer::Delegate> pointer_delegate_;
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
+  const raw_ptr<WaylandKeyboard::Delegate> keyboard_delegate_;
 
   State state_ = State::kIdle;
   std::optional<mojom::DragEventSource> drag_source_;

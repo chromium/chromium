@@ -44,6 +44,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -104,16 +105,19 @@ WaylandWindowDragController::WaylandWindowDragController(
     WaylandConnection* connection,
     WaylandDataDeviceManager* device_manager,
     WaylandPointer::Delegate* pointer_delegate,
-    WaylandTouch::Delegate* touch_delegate)
+    WaylandTouch::Delegate* touch_delegate,
+    WaylandKeyboard::Delegate* keyboard_delegate)
     : connection_(connection),
       data_device_manager_(device_manager),
       data_device_(device_manager->GetDevice()),
       window_manager_(connection_->window_manager()),
       pointer_delegate_(pointer_delegate),
-      touch_delegate_(touch_delegate) {
+      touch_delegate_(touch_delegate),
+      keyboard_delegate_(keyboard_delegate) {
   DCHECK(data_device_);
   DCHECK(pointer_delegate_);
   DCHECK(touch_delegate_);
+  DCHECK(keyboard_delegate_);
 }
 
 WaylandWindowDragController::~WaylandWindowDragController() = default;
@@ -572,17 +576,33 @@ void WaylandWindowDragController::HandleDropAndResetState(
   if (!drag_source_.has_value())
     return;
 
-  if (*drag_source_ == DragEventSource::kMouse) {
-    if (pointer_grab_owner_) {
-      pointer_delegate_->OnPointerButtonEvent(
-          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
-          pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate);
-    }
+  // At this point, kCancelled + extended-drag protocol extension available
+  // means that the drag session was indeed cancelled, eg: when the user press
+  // ESC key. Currently, the only way of notifing platform delegate code (upper
+  // layers) about the window drag cancellation is to dispatch an ESC key press
+  // event, so do it now.
+  //
+  // Note: On environments with no ext-drag available, kCancelled is ignored,
+  // because without the extension, detaching a tab into a window would be
+  // mostly impossible, as a regular dnd session would end up with
+  // wl_data_source.dnd_finished event.
+  if (state_ == State::kCancelled && IsExtendedDragAvailable()) {
+    VLOG(1) << "Dispatching cancellation event.";
+    keyboard_delegate_->OnSynthesizedKeyPressEvent(DomCode::ESCAPE, timestamp);
   } else {
-    const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchReleaseEvent(timestamp, touch_pointer_ids[0],
-                                           wl::EventDispatchPolicy::kImmediate);
+    if (*drag_source_ == DragEventSource::kMouse) {
+      if (pointer_grab_owner_) {
+        pointer_delegate_->OnPointerButtonEvent(
+            ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
+            pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate);
+      }
+    } else {
+      const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
+      if (!touch_pointer_ids.empty()) {
+        touch_delegate_->OnTouchReleaseEvent(
+            timestamp, touch_pointer_ids[0],
+            wl::EventDispatchPolicy::kImmediate);
+      }
     }
   }
 

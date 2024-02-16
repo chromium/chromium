@@ -4,9 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
@@ -299,6 +301,14 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   }
   event.SetProperties(properties);
   return DispatchEvent(&event);
+}
+
+void WaylandEventSource::OnSynthesizedKeyPressEvent(DomCode dom_code,
+                                                    base::TimeTicks timestamp) {
+  std::ignore =
+      OnKeyboardKeyEvent(ET_KEY_PRESSED, dom_code, /*repeat=*/false,
+                         /*serial=*/std::nullopt, timestamp,
+                         /*device_id=*/0, WaylandKeyboard::KeyEventKind::kKey);
 }
 
 void WaylandEventSource::OnPointerFocusChanged(

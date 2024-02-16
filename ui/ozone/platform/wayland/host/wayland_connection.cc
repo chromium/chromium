@@ -441,7 +441,8 @@ void WaylandConnection::CreateDataObjectsIfReady() {
 
     DCHECK(!window_drag_controller_);
     window_drag_controller_ = std::make_unique<WaylandWindowDragController>(
-        this, data_device_manager_.get(), event_source(), event_source());
+        this, data_device_manager_.get(), event_source(), event_source(),
+        event_source());
 
     DCHECK(!clipboard_);
     clipboard_ =
