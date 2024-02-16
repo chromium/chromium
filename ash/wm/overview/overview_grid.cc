@@ -121,6 +121,10 @@ constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 // splitscreen toast widget.
 constexpr int kFasterSplitScreenToastSpacingDp = 40;
 
+// Distance between the bottom of the toast and the bottom of the work area
+// which will be the top edge of the shelf if it is shown.
+constexpr int kMinimumDistanceBetweenToastAndWorkAreaDp = 8;
+
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
 
@@ -2983,7 +2987,8 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
     faster_splitview_widget_->Show();
   }
 
-  gfx::Rect centered_bounds(GetGridEffectiveBounds());
+  const gfx::Rect grid_bounds = GetGridEffectiveBounds();
+  gfx::Rect centered_bounds(grid_bounds);
   const gfx::Size preferred_size =
       faster_splitview_widget_->GetContentsView()->GetPreferredSize();
   centered_bounds.ClampToCenteredSize(preferred_size);
@@ -2996,10 +3001,23 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
 
   // Position the widget under the bottom of the last overview item, but
   // centered horizontally.
-  const gfx::RectF last_overview_item_bounds =
-      item_list_.back()->target_bounds();
-  centered_bounds.set_y(last_overview_item_bounds.bottom() +
-                        kFasterSplitScreenToastSpacingDp);
+  const int last_overview_item_bottom =
+      item_list_.back()->target_bounds().bottom();
+
+  // We need to maintain a minimum distance between the bottom of the toast and
+  // the bottom of the grid bounds so that it won't be hidden by other UI
+  // elements such as shelf. Under extreme condition, which should rarely
+  // happen, if the bottom are of the partial overview grids is too small to
+  // accommodate for both `kMinimumDistanceBetweenToastAndWorkAreaDp` and
+  // `kFasterSplitScreenToastSpacingDp`. We will prioritize the minimum
+  // distance, under which condition the toast and settings button may appear
+  // above the overview items.
+  const int toast_y = std::min(
+      last_overview_item_bottom + kFasterSplitScreenToastSpacingDp,
+      grid_bounds.bottom() - kMinimumDistanceBetweenToastAndWorkAreaDp -
+          preferred_size.height());
+
+  centered_bounds.set_y(toast_y);
   faster_splitview_widget_->SetBounds(centered_bounds);
 
   overview_session_->UpdateAccessibilityFocus();
