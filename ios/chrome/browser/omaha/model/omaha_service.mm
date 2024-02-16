@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/backoff_entry.h"
@@ -542,7 +543,9 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
     request_element.AddAttribute("requestid", requestId);
     request_element.AddAttribute("sessionid", sessionId);
     request_element.AddAttribute("hardware_class",
-                                 ios::device_util::GetPlatform());
+                                 ios::provider::IsRaccoonEnabled()
+                                     ? "iPad0,0"
+                                     : ios::device_util::GetPlatform());
 
     {
       // Set up <os platform="ios"... />

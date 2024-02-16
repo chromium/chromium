@@ -23,6 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/web",
     "//net",
     "//third_party/libxml:xml_writer",
