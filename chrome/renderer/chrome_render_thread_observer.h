@@ -10,6 +10,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/privacy_budget/identifiability_study_configurator.mojom.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -37,8 +38,10 @@ class VisitedLinkReader;
 // a RenderView) for Chrome specific messages that the content layer doesn't
 // happen.  If a few messages are related, they should probably have their own
 // observer.
-class ChromeRenderThreadObserver : public content::RenderThreadObserver,
-                                   public chrome::mojom::RendererConfiguration {
+class ChromeRenderThreadObserver
+    : public content::RenderThreadObserver,
+      public chrome::mojom::RendererConfiguration,
+      public chrome::mojom::IdentifiabilityStudyConfigurator {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A helper class to handle Mojo calls that need to be dispatched to the IO
@@ -140,11 +143,20 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
       mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
           receiver);
 
+  // chrome::mojom::IdentifiabilityStudyConfigurator:
+  void ConfigureIdentifiabilityStudy(bool meta_experiment_active) override;
+  void OnIdentifiabilityStudyConfiguratorAssociatedRequest(
+      mojo::PendingAssociatedReceiver<
+          chrome::mojom::IdentifiabilityStudyConfigurator> receiver);
+
   static bool is_incognito_process_;
   mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
 
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_reader_;
+
+  mojo::AssociatedReceiverSet<chrome::mojom::IdentifiabilityStudyConfigurator>
+      identifiability_study_configurator_receivers_;
 
   mojo::AssociatedReceiverSet<chrome::mojom::RendererConfiguration>
       renderer_configuration_receivers_;

@@ -31,7 +31,7 @@
 class PrivacyBudgetSettingsProvider final
     : public blink::IdentifiabilityStudySettingsProvider {
  public:
-  PrivacyBudgetSettingsProvider();
+  explicit PrivacyBudgetSettingsProvider(bool meta_experiment_active);
   PrivacyBudgetSettingsProvider(const PrivacyBudgetSettingsProvider&);
   PrivacyBudgetSettingsProvider(PrivacyBudgetSettingsProvider&&);
   ~PrivacyBudgetSettingsProvider() override;

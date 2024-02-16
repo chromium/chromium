@@ -37,6 +37,10 @@ namespace blink {
 class IdentifiableSurface;
 }  // namespace blink
 
+namespace content {
+class RenderProcessHost;
+}  // namespace content
+
 namespace test_utils {
 class InspectableIdentifiabilityStudyState;
 }  // namespace test_utils
@@ -110,6 +114,10 @@ class IdentifiabilityStudyState {
 
   // Initializes from fields persisted in `pref_service_`.
   void InitFromPrefs();
+
+  // Initializes a new renderer process.
+  static void InitializeRenderer(
+      content::RenderProcessHost* render_process_host);
 
   // The largest offset that we can select. At worst `seen_surfaces_` must keep
   // track of this many (+1) surfaces. This value is approximately based on the
