@@ -243,6 +243,8 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
 
 void EmbeddedPermissionPrompt::Dismiss() {
   delegate_->Dismiss();
+  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
+      delegate()->Requests(), permissions::DismissedReason::DISMISSED_X_BUTTON);
   delegate_->FinalizeCurrentRequests();
 }
 
@@ -275,8 +277,11 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
 }
 
 void EmbeddedPermissionPrompt::DismissScrim() {
+  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
+      delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
   CloseView();
-  Dismiss();
+  delegate_->Dismiss();
+  delegate_->FinalizeCurrentRequests();
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>

@@ -274,6 +274,17 @@ enum class AdaptiveTriggers {
   THREE_CONSECUTIVE_DENIES = 0x01,
 };
 
+enum class DismissedReason {
+  // The prompt was dismissed through the [x] button.
+  DISMISSED_X_BUTTON = 0,
+
+  // The prompt was dismissed through the user clicking on the scrim (area
+  // around the prompt).
+  DISMISSED_SCRIM = 1,
+
+  kMaxValue = DISMISSED_SCRIM
+};
+
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "OneTimePermissionEvent" in tools/metrics/histograms/enums.xml.
@@ -553,6 +564,11 @@ class PermissionUmaUtil {
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(
       const std::optional<base::Version>& version);
+
+  static void RecordElementAnchoredBubbleDismiss(
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
+      DismissedReason reason);
 
   // Record UMAs related to the Android "Missing permissions" infobar.
   static void RecordMissingPermissionInfobarShouldShow(

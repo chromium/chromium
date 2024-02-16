@@ -857,6 +857,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.Dismissed.Reason"
+    enum="DismissedReason" expires_after="2025-02-16">
+  <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Tracks how a {PermissionType} prompt was dismissed by the user. Tracked when
+    the user dimisses an ElementAnchoredBubble prompt.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AR"/>
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"
     enum="PermissionAction" expires_after="2024-06-30">
   <owner>elklm@chromium.org</owner>

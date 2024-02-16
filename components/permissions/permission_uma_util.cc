@@ -1691,6 +1691,24 @@ void PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
 }
 
 // static
+void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    DismissedReason reason) {
+  CHECK(!requests.empty());
+
+  RequestTypeForUma type =
+      GetUmaValueForRequestType(requests[0]->request_type());
+  if (requests.size() > 1) {
+    type = RequestTypeForUma::MULTIPLE;
+  }
+
+  base::UmaHistogramEnumeration("Permissions.Prompt." +
+                                    GetPermissionRequestString(type) +
+                                    ".ElementAnchoredBubble.DismissedReason",
+                                reason);
+}
+
+// static
 void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
     ContentSettingsType content_settings_type,
     PermissionAction action,

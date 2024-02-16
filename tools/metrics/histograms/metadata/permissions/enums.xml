@@ -60,6 +60,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unsolicited notification prompts"/>
 </enum>
 
+<enum name="DismissedReason">
+  <int value="0" label="DISMISSED_X_BUTTON"/>
+  <int value="1" label="DISMISSED_SCRIM"/>
+</enum>
+
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>
