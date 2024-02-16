@@ -32,7 +32,10 @@ class HostIndexedContentSettings {
       const ContentSettingsForOneType& settings);
 
   HostIndexedContentSettings();
-  explicit HostIndexedContentSettings(std::string source);
+
+  // Creates an index with additional metadata about the content settings
+  // provider that the settings came from.
+  explicit HostIndexedContentSettings(std::string source, bool off_the_record);
 
   HostIndexedContentSettings(const HostIndexedContentSettings& other) = delete;
   HostIndexedContentSettings& operator=(const HostIndexedContentSettings&) =
@@ -99,6 +102,8 @@ class HostIndexedContentSettings {
 
   // Returns the source of the entries within this index.
   const std::optional<std::string>& source() const { return source_; }
+  // Returns whether the index contains off the record entries.
+  const std::optional<bool>& off_the_record() const { return off_the_record_; }
 
   // Finds the RuleEntry with highest precedence that matches both the primary
   // and secondary urls or returns nullptr if no match is found. The pointer is
@@ -127,6 +132,7 @@ class HostIndexedContentSettings {
   HostToContentSettings secondary_host_indexed_;
   Rules wildcard_settings_;
   std::optional<std::string> source_;
+  std::optional<bool> off_the_record_;
   mutable int iterating_ = 0;
 };
 

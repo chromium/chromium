@@ -247,8 +247,9 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
 
 HostIndexedContentSettings::HostIndexedContentSettings() = default;
 
-HostIndexedContentSettings::HostIndexedContentSettings(std::string source)
-    : source_(std::move(source)) {}
+HostIndexedContentSettings::HostIndexedContentSettings(std::string source,
+                                                       bool off_the_record)
+    : source_(std::move(source)), off_the_record_(off_the_record) {}
 
 HostIndexedContentSettings::HostIndexedContentSettings(
     HostIndexedContentSettings&& other) = default;
@@ -265,8 +266,9 @@ std::vector<HostIndexedContentSettings> HostIndexedContentSettings::Create(
   for (const auto& entry : settings) {
     // Indices need to be split by content settings provider to ensure
     // accurate precedence of settings.
-    if (indices.empty() || entry.source != indices.back().source_) {
-      indices.emplace_back(entry.source);
+    if (indices.empty() || entry.source != indices.back().source_ ||
+        entry.incognito != indices.back().off_the_record()) {
+      indices.emplace_back(entry.source, entry.incognito);
     }
     indices.back().SetValue(entry.primary_pattern, entry.secondary_pattern,
                             entry.setting_value.Clone(), entry.metadata);
