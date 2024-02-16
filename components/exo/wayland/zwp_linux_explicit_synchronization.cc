@@ -138,8 +138,10 @@ void linux_surface_synchronization_set_acquire_fence(wl_client* client,
   }
 
   gfx::GpuFenceHandle handle;
-  handle.Adopt(std::move(fence_fd));
-
+  if (fence_info->status != 1) {
+    // Not signalled yet.
+    handle.Adopt(std::move(fence_fd));
+  }
   surface->SetAcquireFence(std::make_unique<gfx::GpuFence>(std::move(handle)));
 }
 
