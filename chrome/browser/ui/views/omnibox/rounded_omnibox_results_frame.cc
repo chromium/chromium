@@ -59,14 +59,28 @@ views::Widget* GetImmersiveFullscreenWidgetForEvent(
     return nullptr;
   }
 
-  // If the event is located in the location bar send the event to the overlay
-  // widget to handle text selection.
-  gfx::Point event_location = this_event->location();
-  views::View::ConvertPointToScreen(this_view, &event_location);
-  views::View::ConvertPointFromScreen(browser_view->GetLocationBarView(),
-                                      &event_location);
-  if (browser_view->GetLocationBarView()->HitTestPoint(event_location)) {
-    return browser_view->overlay_widget();
+  {
+    // If the event is located in the location bar send the event to the overlay
+    // widget to handle text selection.
+    gfx::Point event_location = this_event->location();
+    views::View::ConvertPointToScreen(this_view, &event_location);
+    views::View::ConvertPointFromScreen(browser_view->GetLocationBarView(),
+                                        &event_location);
+    if (browser_view->GetLocationBarView()->HitTestPoint(event_location)) {
+      return browser_view->overlay_widget();
+    }
+  }
+
+  {
+    // If the event is located in the content view send the event to the browser
+    // widget.
+    gfx::Point event_location = this_event->location();
+    views::View::ConvertPointToScreen(this_view, &event_location);
+    views::View::ConvertPointFromScreen(browser_view->contents_container(),
+                                        &event_location);
+    if (browser_view->contents_container()->HitTestPoint(event_location)) {
+      return browser_view->GetWidget();
+    }
   }
 
   // In immersive fullscreen with tabs enabled the floating results shadow
