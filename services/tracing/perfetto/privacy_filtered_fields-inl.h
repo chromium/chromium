@@ -474,8 +474,13 @@ constexpr MessageInfo kWebContentInteraction = {kWebContentInteractionIndices,
                                                 nullptr};
 
 // Proto Message: EventForwarder
-constexpr int kEventForwarderIndices[] = {1, 2, -1};
+constexpr int kEventForwarderIndices[] = {1, 2, 5, 6, 7, -1};
 constexpr MessageInfo kEventForwarder = {kEventForwarderIndices, nullptr};
+
+// Proto Message: TouchDispositionGestureFilter
+constexpr int kTouchDispositionGestureFilterIndices[] = {1, -1};
+constexpr MessageInfo kTouchDispositionGestureFilter = {
+    kTouchDispositionGestureFilterIndices, nullptr};
 
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
@@ -486,7 +491,7 @@ constexpr int kTrackEventIndices[] = {
     1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021,
     1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
     1039, 1040, 1041, 1042, 1046, 1047, 1048, 1049, 1050, 1051, 1052,
-    1053, 1054, 1055, 1056, 1057, 1058, 1059, -1};
+    1053, 1054, 1055, 1056, 1057, 1058, 1059, 1060, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -571,7 +576,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kPageLoad,
     &kStartUp,
     &kWebContentInteraction,
-    &kEventForwarder};
+    &kEventForwarder,
+    &kTouchDispositionGestureFilter};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
