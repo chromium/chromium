@@ -336,6 +336,20 @@ interface WebTestControlHost {
   // Set Accept Languages via RendererPreferences on the WebContents.
   SetAcceptLanguages(string accept_languages);
 
+  // Enumeration of possible values for automated operation modes in APIs
+  enum AutoResponseMode {
+    kNone = 0,
+    kAutoAccept = 1,
+    kAutoReject = 2,
+  };
+
+  // This method implements the Set RPH Registration Mode WebDriver extension
+  // command.
+  // https://html.spec.whatwg.org/#set-rph-registration-mode
+  // Emulates the ChromeDrivers's SetRPHRegistrationMode method, implemented
+  // via CDP
+  SetRegisterProtocolHandlerMode(AutoResponseMode mode);
+
   // Enable Auto Resize mode. This will cause a layout of the content and
   // the new size will be determined by the renderer after it dispatches
   // the resize event.

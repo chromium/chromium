@@ -177,6 +177,8 @@ static_library("web_test_browser") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
+    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",

@@ -532,6 +532,10 @@
       return {'x': window.screenX, 'y': window.screenY, 'width': window.outerWidth, 'height': window.outerHeight};
   }
 
+  window.test_driver_internal.set_rph_registration_mode = async function (mode, context) {
+      window.testRunner.setRphRegistrationMode(mode);
+  };
+
   window.test_driver_internal.get_fedcm_dialog_type = async function() {
     return internals.getFedCmDialogType();
   }

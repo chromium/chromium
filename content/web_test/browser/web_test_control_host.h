@@ -267,6 +267,10 @@ class WebTestControlHost : public WebContentsObserver,
   void SetLCPPNavigationHint(
       blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint)
       override;
+  // Sets the Protocol Handler Registry in automation mode to avoid the
+  // permission prompt in tests.
+  void SetRegisterProtocolHandlerMode(
+      mojom::WebTestControlHost::AutoResponseMode mode) override;
 
   void DiscardMainWindow();
   void FlushInputAndStartTest(WeakDocumentPtr rfh);

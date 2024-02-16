@@ -37,6 +37,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -1827,6 +1829,30 @@ void WebTestControlHost::DisableAutoResize(const gfx::Size& new_size) {
 void WebTestControlHost::SetLCPPNavigationHint(
     blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
   lcpp_hint_ = *hint.get();
+}
+
+void WebTestControlHost::SetRegisterProtocolHandlerMode(
+    mojom::WebTestControlHost::AutoResponseMode mode) {
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      custom_handlers::SimpleProtocolHandlerRegistryFactory::
+          GetForBrowserContext(web_contents()->GetBrowserContext(), true);
+  CHECK(registry);
+
+  switch (mode) {
+    case WebTestControlHost::AutoResponseMode::kNone:
+      registry->SetRphRegistrationMode(
+          custom_handlers::RphRegistrationMode::kNone);
+      return;
+    case WebTestControlHost::AutoResponseMode::kAutoAccept:
+      registry->SetRphRegistrationMode(
+          custom_handlers::RphRegistrationMode::kAutoAccept);
+      return;
+    case WebTestControlHost::AutoResponseMode::kAutoReject:
+      registry->SetRphRegistrationMode(
+          custom_handlers::RphRegistrationMode::kAutoReject);
+      return;
+  }
+  NOTREACHED_NORETURN();
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

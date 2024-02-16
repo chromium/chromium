@@ -370,6 +370,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                                    v8::Local<v8::Function> callback);
   void SetWillSendRequestClearHeader(const std::string& header);
   void SetWillSendRequestClearReferrer();
+  void SetRphRegistrationMode(gin::Arguments* args);
   void SimulateBrowserWindowFocus(bool value);
   void NavigateSecondaryWindow(const std::string& url);
   void InspectSecondaryWindow();
@@ -773,6 +774,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("setPrintingForFrame",
                  &TestRunnerBindings::SetPrintingForFrame)
       .SetMethod("setPrintingSize", &TestRunnerBindings::SetPrintingSize)
+      .SetMethod("setRphRegistrationMode",
+                 &TestRunnerBindings::SetRphRegistrationMode)
       .SetMethod("setScrollbarPolicy", &TestRunnerBindings::NotImplemented)
       .SetMethod("setShouldGeneratePixelResults",
                  &TestRunnerBindings::SetShouldGeneratePixelResults)
@@ -2406,6 +2409,36 @@ void TestRunnerBindings::GoToOffset(int offset) {
     return;
   }
   frame_->GetWebTestControlHostRemote()->GoToOffset(offset);
+}
+
+void TestRunnerBindings::SetRphRegistrationMode(gin::Arguments* args) {
+  if (!frame_) {
+    return;
+  }
+
+  if (args->Length() != 1) {
+    args->ThrowTypeError("setRphRegistrationMode expects 1 argument");
+    return;
+  }
+
+  std::string arg;
+  if (!args->GetNext(&arg)) {
+    args->ThrowError();
+    return;
+  }
+
+  auto mode = mojom::WebTestControlHost::AutoResponseMode::kNone;
+  if (arg == "autoAccept") {
+    mode = mojom::WebTestControlHost::AutoResponseMode::kAutoAccept;
+  } else if (arg == "autoReject") {
+    mode = mojom::WebTestControlHost::AutoResponseMode::kAutoReject;
+  } else if (arg != "none") {
+    args->ThrowTypeError(
+        "setRphRegistrationMode called with an invalid 'mode' argument");
+    return;
+  }
+
+  frame_->GetWebTestControlHostRemote()->SetRegisterProtocolHandlerMode(mode);
 }
 
 void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}

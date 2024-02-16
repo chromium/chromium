@@ -1153,10 +1153,6 @@
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
         },
 
-        set_rph_registration_mode: function(mode, context=null) {
-            return Promise.reject(new Error("unimplemented"));
-        },
-
         async cancel_fedcm_dialog(context=null) {
             throw new Error("cancel_fedcm_dialog() is not implemented by testdriver-vendor.js");
         },
