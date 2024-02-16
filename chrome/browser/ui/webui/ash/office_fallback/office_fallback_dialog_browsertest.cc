@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,10 +30,11 @@ content::WebContents* GetWebContentsFromOfficeFallbackDialog() {
   return web_contents;
 }
 
-// Launch the Office Fallback dialog by calling OfficeFallbackDialog::Show()
-// with the arguments provided. Wait for the dialog to open and then grab the
-// web contents.
-content::WebContents* LaunchOfficeFallbackDialogAndGetWebContents(
+// Launch the Office Fallback dialog at chrome://office-fallback by calling
+// OfficeFallbackDialog::Show() with the arguments provided. Wait until the
+// "office-fallback" DOM element exists at chrome://office-fallback and return
+// the web contents.
+content::WebContents* LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
     const std::vector<storage::FileSystemURL>& file_urls,
     FallbackReason fallback_reason,
     const std::string& action_id,
@@ -43,17 +45,24 @@ content::WebContents* LaunchOfficeFallbackDialogAndGetWebContents(
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch Office Fallback dialog.
-  base::RunLoop run_loop;
   EXPECT_TRUE(OfficeFallbackDialog::Show(file_urls, fallback_reason, action_id,
                                          std::move(callback)));
 
-  // Wait for Office Fallback dialog to open at chrome://office-fallback.
+  // Wait for chrome://office-fallback to open.
   navigation_observer_dialog.Wait();
   EXPECT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  // Get the web contents of the dialog to be able to query
-  // `OfficeFallbackElement`.
-  return GetWebContentsFromOfficeFallbackDialog();
+  // Get the web contents of the dialog to be able to check that it is exists.
+  content::WebContents* web_contents = GetWebContentsFromOfficeFallbackDialog();
+
+  // Wait until the DOM element actually exists at office-fallback.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(web_contents,
+                           "!!document.querySelector('office-fallback')")
+        .ExtractBool();
+  }));
+
+  return web_contents;
 }
 
 class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
@@ -91,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenOffline) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kOffline,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
@@ -113,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenDriveAuthenticationNotReady) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kDriveAuthenticationNotReady,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
@@ -135,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenDisableDrivePreferenceSet) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kDisableDrivePreferenceSet,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
@@ -156,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenDriveDisabledForAccountType) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kDriveDisabledForAccountType,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
@@ -177,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenNoDriveService) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kNoDriveService,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
@@ -195,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickCancel) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kOffline,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::BindLambdaForTesting(
@@ -222,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickCancel) {
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickTryAgain) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kOffline,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::BindLambdaForTesting(
@@ -249,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickTryAgain) {
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickQuickOffice) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
-      LaunchOfficeFallbackDialogAndGetWebContents(
+      LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kOffline,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::BindLambdaForTesting(
