@@ -2020,6 +2020,20 @@ action("api_static_checks") {
   ]
 }
 
+action("gn2bp_check") {
+  script = "//components/cronet/gn2bp/validate_gn2bp.py"
+  sources = [
+    "$_gn_path",
+    "//components/cronet/gn2bp/gen_android_bp.py",
+    "//tools/mb/mb.py",
+  ]
+  outputs = [ "$target_gen_dir/$target_name.stamp" ]
+  args = [
+    "--stamp",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
 action("dependencies_checks") {
   script = "//components/cronet/tools/check_cronet_dependencies.py"
   inputs = [ "//components/cronet/android/dependencies.txt" ]
@@ -2114,6 +2128,11 @@ group("cronet_package_android") {
     ":generate_javadoc",
     ":generate_licenses",
   ]
+}
+
+# Everything added here will be executed in the CI.
+group("cronet_package_ci") {
+  deps = [ ":gn2bp_check" ]
 }
 
 group("cronet_android_mainline") {

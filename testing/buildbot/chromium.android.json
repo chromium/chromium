@@ -25058,6 +25058,7 @@
   "android-cronet-arm64-dbg": {
     "additional_compile_targets": [
       "cronet_package",
+      "cronet_package_ci",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
       "cronet_smoketests_missing_native_library_instrumentation_apk",
@@ -25093,6 +25094,7 @@
   "android-cronet-arm64-rel": {
     "additional_compile_targets": [
       "cronet_package",
+      "cronet_package_ci",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
       "cronet_smoketests_missing_native_library_instrumentation_apk",
@@ -27058,6 +27060,7 @@
   "android-cronet-x64-rel": {
     "additional_compile_targets": [
       "cronet_package",
+      "cronet_package_ci",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
       "cronet_smoketests_apk",
@@ -30289,6 +30292,7 @@
   "android-cronet-x86-rel": {
     "additional_compile_targets": [
       "cronet_package",
+      "cronet_package_ci",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
       "cronet_smoketests_apk",

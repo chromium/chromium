@@ -204,6 +204,11 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "cronet_package_ci",
+    label = "//components/cronet:cronet_package_ci",
+)
+
+targets.compile_target(
     name = "cronet_perf_test_apk",
     label = "//components/cronet/android:cronet_perf_test_apk",
 )

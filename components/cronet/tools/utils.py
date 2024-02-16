@@ -196,7 +196,7 @@ def _map_config_to_android_builder(is_release, target_cpu):
 
 def _should_remove_arg(arg, keys):
   """An arg is removed if its key appear in the list of |keys|"""
-  return any(arg.startswith(f"{key}=") for key in keys)
+  return arg.split("=")[0].strip() in keys
 
 
 def filter_gn_args(gn_args, keys_to_remove):
