@@ -83,8 +83,10 @@ void AddToHomescreenMediator::StartForAppBanner(
 void AddToHomescreenMediator::StartForAppMenu(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents,
-    int app_menu_type) {
+    int app_menu_type,
+    bool universal_install) {
   app_menu_type_ = app_menu_type;
+  universal_install_ = universal_install;
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   data_fetcher_ = std::make_unique<AddToHomescreenDataFetcher>(
@@ -169,6 +171,14 @@ void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
       env, url_formatter::FormatUrlForSecurityDisplay(
                url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
+  if (universal_install_ &&
+      app_menu_type_ ==
+          AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN) {
+    // The user triggered this flow via the Universal Install dialog and
+    // explicitly requested Add a shortcut (not Install). Therefore we must ask
+    // the Java install dialog to treat this as a shortcut and not a webapp.
+    app_type = AppType::SHORTCUT;
+  }
   Java_AddToHomescreenMediator_setWebAppInfo(env, java_ref_, j_user_title,
                                              j_url, static_cast<int>(app_type));
 }
@@ -197,24 +207,30 @@ void AddToHomescreenMediator::OnDataAvailable(
 
   bool is_webapk = params_->app_type == AppType::WEBAPK ||
                    params_->app_type == AppType::WEBAPK_DIY;
-  auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
+  if (!universal_install_) {
+    // Log what was shown in the App menu and what action was taken here.
+    auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
 
-  switch (app_menu_type_) {
-    case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
-      entry = is_webapk ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
-                        : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
-      break;
+    switch (app_menu_type_) {
+      case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
+        entry = is_webapk
+                    ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
+                    : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
+        break;
+      }
+      case AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
+        entry = is_webapk ? AppTypeToMenuEntry::kInstallShownForWebApp
+                          : AppTypeToMenuEntry::kInstallShownForShortcut;
+        break;
+      }
+      default:
+        NOTREACHED();
     }
-    case AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
-      entry = is_webapk ? AppTypeToMenuEntry::kInstallShownForWebApp
-                        : AppTypeToMenuEntry::kInstallShownForShortcut;
-      break;
-    }
-    default:
-      NOTREACHED();
+
+    UMA_HISTOGRAM_ENUMERATION(
+        "Webapp.AddToHomescreenMediator.AppTypeToMenuEntry", entry,
+        AppTypeToMenuEntry::kAppTypeFinalEntry);
   }
-  UMA_HISTOGRAM_ENUMERATION("Webapp.AddToHomescreenMediator.AppTypeToMenuEntry",
-                            entry, AppTypeToMenuEntry::kAppTypeFinalEntry);
 
   if (is_webapk) {
     webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(

@@ -30,6 +30,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AddToHomescreenDialogView;
+import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppType;
@@ -67,14 +68,19 @@ public class AddToHomescreenInstallTest {
     private static class TestAddToHomescreenCoordinator extends AddToHomescreenCoordinator {
         private String mTitle;
 
+        // The type of of dialog expected to show (at the time of submission).
+        private @AppType int mExpectedDialogType;
+
         TestAddToHomescreenCoordinator(
                 WebContents webContents,
                 Context context,
                 WindowAndroid windowAndroid,
                 ModalDialogManager modalDialogManager,
-                String title) {
+                String title,
+                @AppType int expectedDialogType) {
             super(webContents, context, windowAndroid, modalDialogManager);
             mTitle = title;
+            mExpectedDialogType = expectedDialogType;
         }
 
         @Override
@@ -95,6 +101,11 @@ public class AddToHomescreenInstallTest {
 
                 @Override
                 protected void setCanSubmit(boolean canSubmit) {
+                    Assert.assertEquals(
+                            mExpectedDialogType,
+                            getPropertyModelForTesting().get(AddToHomescreenProperties.TYPE));
+
+                    // Submit the dialog.
                     new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle, AppType.WEBAPK));
                 }
             };
@@ -118,8 +129,9 @@ public class AddToHomescreenInstallTest {
         new TabLoadObserver(mTab, expectedPageTitle, null).fullyLoadUrl(url);
     }
 
-    private void addToHomescreen(Tab tab, String title, boolean expectAdded) {
-        // Add the shortcut.
+    private void installApp(
+            Tab tab, String title, boolean expectAdded, @AppType int expectedDialogType) {
+        // Install the webapp.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean started =
@@ -128,12 +140,15 @@ public class AddToHomescreenInstallTest {
                                             mActivity,
                                             mActivity.getWindowAndroid(),
                                             mActivity.getModalDialogManager(),
-                                            title)
-                                    .showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+                                            title,
+                                            expectedDialogType)
+                                    .showForAppMenu(
+                                            AppMenuVerbiage.APP_MENU_OPTION_INSTALL,
+                                            /* universalInstall= */ false);
                     Assert.assertEquals(expectAdded, started);
                 });
 
-        // Make sure that the shortcut was added.
+        // Make sure that the webapp was installed.
         if (expectAdded) {
             mInstallHistogramsWatcher.pollInstrumentationThreadUntilSatisfied();
         }
@@ -150,7 +165,7 @@ public class AddToHomescreenInstallTest {
         loadUrl(
                 mTestServerRule.getServer().getURL(MANIFEST_TEST_PAGE_PATH),
                 MANIFEST_TEST_PAGE_TITLE);
-        addToHomescreen(mTab, "", true);
+        installApp(mTab, "", /* expectAdded= */ true, /* expectedDialogType= */ AppType.WEBAPK);
 
         histogram.assertExpected();
     }

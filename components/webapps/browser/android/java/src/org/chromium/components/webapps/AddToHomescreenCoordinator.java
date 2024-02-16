@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class AddToHomescreenCoordinator {
     private Context mActivityContext;
     private ModalDialogManager mModalDialogManager;
+    private PropertyModel mModel;
     private WindowAndroid mWindowAndroid;
     // May be null during tests.
     private WebContents mWebContents;
@@ -54,20 +55,21 @@ public class AddToHomescreenCoordinator {
             WindowAndroid windowAndroid,
             ModalDialogManager modalDialogManager,
             WebContents webContents,
-            int menuItemType) {
+            int menuItemType,
+            boolean universalInstall) {
         new AddToHomescreenCoordinator(
                         webContents, activityContext, windowAndroid, modalDialogManager)
-                .showForAppMenu(menuItemType);
+                .showForAppMenu(menuItemType, universalInstall);
     }
 
     @VisibleForTesting
-    public boolean showForAppMenu(int type) {
+    public boolean showForAppMenu(int type, boolean universalInstall) {
         // Don't start if there is no visible URL to add.
         if (mWebContents == null || mWebContents.getVisibleUrl().isEmpty()) {
             return false;
         }
 
-        buildMediatorAndShowDialog().startForAppMenu(mWebContents, type);
+        buildMediatorAndShowDialog().startForAppMenu(mWebContents, type, universalInstall);
         return true;
     }
 
@@ -104,11 +106,11 @@ public class AddToHomescreenCoordinator {
      * @return The instance of {@link AddToHomescreenMediator} that was constructed.
      */
     private AddToHomescreenMediator buildMediatorAndShowDialog() {
-        PropertyModel model = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
+        mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(model, mWindowAndroid);
+                new AddToHomescreenMediator(mModel, mWindowAndroid);
         PropertyModelChangeProcessor.create(
-                model,
+                mModel,
                 initView(
                         AppBannerManager.getHomescreenLanguageOption(mWebContents),
                         addToHomescreenMediator),
@@ -134,5 +136,9 @@ public class AddToHomescreenCoordinator {
 
     protected Context getContextForTests() {
         return mActivityContext;
+    }
+
+    public PropertyModel getPropertyModelForTesting() {
+        return mModel;
     }
 }

@@ -169,7 +169,8 @@ public class AddToHomescreenIPHController {
                 mWindowAndroid,
                 mModalDialogManager,
                 tab.getWebContents(),
-                AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
+                AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN,
+                /* universalInstall= */ false);
         mTracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
         RecordUserAction.record("Android.AddToHomescreenIPH.Message.Clicked");
     }

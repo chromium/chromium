@@ -3080,11 +3080,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this,
                         currentTab.getWebContents(),
                         () -> {
-                            doAddToHomescreenOrInstallWebApp(
+                            doInstallThroughUniversalInstall(
                                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
                         },
                         () -> {
-                            doAddToHomescreenOrInstallWebApp(
+                            doInstallThroughUniversalInstall(
                                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
                         },
                         () -> {
@@ -3105,20 +3105,38 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Returns whether the Add to Home screen or Install Web App action was successfully started.
      */
+    private boolean doInstallThroughUniversalInstall(Tab currentTab, int menuItemType) {
+        return doAddToHomescreenOrInstallWebAppImpl(
+                currentTab, menuItemType, /* universalInstall= */ true);
+    }
+
+    /**
+     * Returns whether the Add to Home screen or Install Web App action was successfully started.
+     */
     private boolean doAddToHomescreenOrInstallWebApp(Tab currentTab, int menuItemType) {
-        PwaBottomSheetController controller =
-                PwaBottomSheetControllerProvider.from(getWindowAndroid());
-        if (controller != null
-                && controller.requestOrExpandBottomSheetInstaller(
-                        currentTab.getWebContents(), InstallTrigger.MENU)) {
-            return true;
+        return doAddToHomescreenOrInstallWebAppImpl(
+                currentTab, menuItemType, /* universalInstall= */ false);
+    }
+
+    private boolean doAddToHomescreenOrInstallWebAppImpl(
+            Tab currentTab, int menuItemType, boolean universalInstall) {
+        if (menuItemType == AppMenuVerbiage.APP_MENU_OPTION_INSTALL) {
+            PwaBottomSheetController controller =
+                    PwaBottomSheetControllerProvider.from(getWindowAndroid());
+            if (controller != null
+                    && controller.requestOrExpandBottomSheetInstaller(
+                            currentTab.getWebContents(), InstallTrigger.MENU)) {
+                return true;
+            }
         }
+
         AddToHomescreenCoordinator.showForAppMenu(
                 this,
                 getWindowAndroid(),
                 getModalDialogManager(),
                 currentTab.getWebContents(),
-                menuItemType);
+                menuItemType,
+                universalInstall);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
             Tracker tracker = TrackerFactory.getTrackerForProfile(currentTab.getProfile());
             tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
