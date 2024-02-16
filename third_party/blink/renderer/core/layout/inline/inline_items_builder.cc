@@ -529,13 +529,17 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   TextOffsetMap offset_map;
   String transformed =
       layout_text->TransformAndSecureText(original, offset_map);
-  CHECK_EQ(layout_text->TransformedText().length(), transformed.length());
+  if (layout_text->TransformedText().length() != transformed.length()) {
+    NOTREACHED() << "Mismatch; class=" << layout_text->GetName()
+                 << " stored=" << layout_text->TransformedText()
+                 << " live=" << transformed;
+  }
   const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
   CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
-  AppendText(TransformedString(layout_text->TransformedText(),
-                               {length_map.data(), length_map.size()}),
-             *layout_text);
+  AppendText(
+      TransformedString(transformed, {length_map.data(), length_map.size()}),
+      *layout_text);
 }
 
 template <typename MappingBuilder>
