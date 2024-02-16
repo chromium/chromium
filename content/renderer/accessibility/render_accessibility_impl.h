@@ -101,6 +101,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   ui::AXMode GetAXMode() const override;
   ui::AXTreeID GetTreeIDForPluginHost() const override;
   void SetPluginTreeSource(PluginAXTreeSource* source) override;
+  void MarkPluginDescendantDirty(ui::AXNodeID node_id) override;
   void RecordInaccessiblePdfUkm() override;
 
   // RenderFrameObserver implementation.

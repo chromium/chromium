@@ -481,9 +481,20 @@ ui::AXTreeID RenderAccessibilityImpl::GetTreeIDForPluginHost() const {
 
 void RenderAccessibilityImpl::SetPluginTreeSource(
     PluginAXTreeSource* plugin_tree_source) {
+  if (plugin_tree_source_.get() == plugin_tree_source) {
+    return;
+  }
+
   plugin_tree_source_ = plugin_tree_source;
   plugin_serializer_ =
-      std::make_unique<PluginAXTreeSerializer>(plugin_tree_source_);
+      plugin_tree_source
+          ? std::make_unique<PluginAXTreeSerializer>(plugin_tree_source_)
+          : nullptr;
+}
+
+void RenderAccessibilityImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
+  CHECK(plugin_tree_source_ && plugin_serializer_);
+  plugin_serializer_->MarkSubtreeDirty(node_id);
 }
 
 WebDocument RenderAccessibilityImpl::GetMainDocument() const {
@@ -759,14 +770,13 @@ void RenderAccessibilityImpl::AddPluginTreeToUpdate(
   for (ui::AXNodeData& node : update->nodes) {
     if (node.id == ax_id) {
       const ui::AXNode* root = plugin_tree_source_->GetRoot();
+      if (!root) {
+        // The tree may not yet be ready.
+        return;
+      }
       node.child_ids.push_back(root->id());
 
       ui::AXTreeUpdate plugin_update;
-
-      // TODO(crbug.com/324124958): meant as a short-term workaround for
-      // instability.
-      plugin_serializer_->Reset();
-
       plugin_serializer_->SerializeChanges(root, &plugin_update);
 
       size_t old_count = update->nodes.size();

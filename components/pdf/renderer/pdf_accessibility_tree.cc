@@ -1970,20 +1970,18 @@ void PdfAccessibilityTree::UnserializeNodes() {
   update.nodes.push_back(*doc_node_);
   update.nodes.push_back(*status_node_);
   update.nodes.push_back(*status_node_text_);
-  for (const auto& node : nodes_)
+  for (const auto& node : nodes_) {
+    render_accessibility->MarkPluginDescendantDirty(node->id);
     update.nodes.push_back(std::move(*node));
+  }
 
   if (!tree_.Unserialize(update))
     LOG(FATAL) << tree_.error();
 
   UpdateAXTreeDataFromSelection();
 
-  // TODO(accessibility): this call *re-creates* the serializer in
-  // RenderAccessibilityImpl. In order to use the serializer there as intended,
-  // we should supply a list of dirty objects to invalidate on the serializer
-  // instead of re-creating the entire serializer.
-  render_accessibility->SetPluginTreeSource(this);
   MarkPluginContainerDirty();
+
   nodes_.clear();
 
   if (!sent_metrics_once_) {
@@ -2155,6 +2153,10 @@ void PdfAccessibilityTree::SetStatusMessage(int message_id) {
   VLOG(2) << "Setting the status node with message: " << message;
   status_node_->SetNameChecked(message);
   status_node_text_->SetNameChecked(message);
+
+  content::RenderAccessibility* render_accessibility = GetRenderAccessibility();
+  CHECK(render_accessibility);
+  render_accessibility->MarkPluginDescendantDirty(banner_node_->id);
 }
 
 void PdfAccessibilityTree::ResetStatusNodeAttributes() {
@@ -2321,6 +2323,11 @@ PdfAccessibilityTree::AnnotationInfo::~AnnotationInfo() = default;
 //
 
 bool PdfAccessibilityTree::GetTreeData(ui::AXTreeData* tree_data) const {
+  // This tree may not yet be fully constructed.
+  if (!tree_.root()) {
+    return false;
+  }
+
   tree_data->tree_id = tree_data_.tree_id;
   tree_data->focus_id = tree_data_.focus_id;
   tree_data->sel_is_backward = tree_data_.sel_is_backward;
@@ -2392,9 +2399,6 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
     return;
   }
 
-  CHECK(render_accessibility);
-  render_accessibility->SetPluginTreeSource(this);
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (!mode.has_mode(ui::AXMode::kPDFOcr)) {
     if (ocr_service_) {
@@ -2440,6 +2444,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   CHECK(doc_node_);
   CHECK_GT(ocr_requests.size(), 0u);
   CHECK_EQ(ocr_requests.size(), tree_updates.size());
+  render_accessibility->MarkPluginDescendantDirty(doc_node_->id);
   for (uint32_t i = 0; i < ocr_requests.size(); ++i) {
     const PdfOcrRequest& ocr_request = ocr_requests[i];
     ui::AXTreeUpdate& tree_update = tree_updates[i];
@@ -2665,6 +2670,9 @@ void PdfAccessibilityTree::MaybeHandleAccessibilityChange(
     bool always_load_or_reload_accessibility) {
   content::RenderAccessibility* render_accessibility = GetRenderAccessibility();
   if (render_accessibility) {
+    // This call ensures RenderAccessibility always knows about us after it gets
+    // created for any reason e.g. mode changes, startup, etc.
+    render_accessibility->SetPluginTreeSource(this);
     if (always_load_or_reload_accessibility) {
       action_handler_->LoadOrReloadAccessibility();
     } else {
