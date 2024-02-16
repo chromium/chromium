@@ -123,14 +123,14 @@ void FileUploadJob::Manager::Register(
     Priority priority,
     Record record_copy,
     ::ash::reporting::LogUploadEvent log_upload_event,
-    std::unique_ptr<Delegate> delegate,
+    Delegate::SmartPtr delegate,
     base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](Manager* self, Priority priority, Record record_copy,
              ::ash::reporting::LogUploadEvent log_upload_event,
-             std::unique_ptr<Delegate> delegate,
+             Delegate::SmartPtr delegate,
              base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
             // Retry count must allow the job to run.
             if (log_upload_event.upload_settings().retry_count() < 1) {
@@ -372,13 +372,10 @@ void FileUploadJob::EventHelper::PostRetry() const {
 
 FileUploadJob::FileUploadJob(const UploadSettings& settings,
                              const UploadTracker& tracker,
-                             std::unique_ptr<Delegate> delegate)
+                             Delegate::SmartPtr delegate)
     : delegate_(std::move(delegate)), settings_(settings), tracker_(tracker) {}
 
-FileUploadJob::~FileUploadJob() {
-  FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->DeleteSoon(
-      FROM_HERE, std::move(delegate_));
-}
+FileUploadJob::~FileUploadJob() = default;
 
 base::ScopedClosureRunner FileUploadJob::CompletionCb(
     base::OnceClosure done_cb) {

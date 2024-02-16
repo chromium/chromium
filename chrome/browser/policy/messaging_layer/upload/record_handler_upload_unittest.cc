@@ -192,10 +192,12 @@ class RecordHandlerUploadTest : public ::testing::Test {
     handler_ = std::make_unique<RecordHandlerImpl>(
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindRepeating(
-            [](RecordHandlerUploadTest* self)
-                -> std::unique_ptr<FileUploadJob::Delegate> {
-              return std::make_unique<MockFileUploadDelegate::Forwarder>(
-                  &self->mock_delegate_);
+            [](RecordHandlerUploadTest* self) {
+              return FileUploadJob::Delegate::SmartPtr(
+                  new MockFileUploadDelegate::Forwarder(&self->mock_delegate_),
+                  base::OnTaskRunnerDeleter(
+                      FileUploadJob::Manager::GetInstance()
+                          ->sequenced_task_runner()));
             },
             base::Unretained(this)));
 

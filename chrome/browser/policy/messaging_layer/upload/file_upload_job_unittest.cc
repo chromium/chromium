@@ -161,13 +161,19 @@ class FileUploadJobTest : public ::testing::Test {
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
+  FileUploadJob::Delegate::SmartPtr CreateForwarderDelegate() {
+    return FileUploadJob::Delegate::SmartPtr(
+        new MockFileUploadDelegate::Forwarder(&mock_delegate_),
+        base::OnTaskRunnerDeleter(
+            FileUploadJob::Manager::GetInstance()->sequenced_task_runner()));
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   FileUploadJob::TestEnvironment manager_test_env_;
 
   StrictMock<MockFileUploadDelegate> mock_delegate_;
-  std::unique_ptr<MockFileUploadDelegate> delegate_;
 
   scoped_refptr<ResourceManager> memory_resource_;
 };
@@ -179,9 +185,9 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -239,9 +245,9 @@ TEST_F(FileUploadJobTest, NoMoreRetries) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -265,9 +271,9 @@ TEST_F(FileUploadJobTest, FailToInitiate) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -300,9 +306,9 @@ TEST_F(FileUploadJobTest, FailToInitiateWithMoreRetries) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -334,9 +340,9 @@ TEST_F(FileUploadJobTest, AlreadyInitiated) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -359,9 +365,9 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -418,9 +424,9 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -476,9 +482,9 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -539,9 +545,9 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -599,9 +605,9 @@ TEST_F(FileUploadJobTest, IncompleteUpload) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -654,9 +660,9 @@ TEST_F(FileUploadJobTest, ExcessiveUpload) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -704,9 +710,9 @@ TEST_F(FileUploadJobTest, BackingUpload) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -763,9 +769,9 @@ TEST_F(FileUploadJobTest, SuccessfulResumption) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -813,9 +819,9 @@ TEST_F(FileUploadJobTest, FailToResumeStep) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -844,9 +850,9 @@ TEST_F(FileUploadJobTest, FailToResumeFinalize) {
   Record record_copy;
   ASSERT_TRUE(log_upload_event.SerializeToString(record_copy.mutable_data()));
   record_copy.set_destination(Destination::LOG_UPLOAD);
-  auto job = std::make_unique<FileUploadJob>(
-      log_upload_event.upload_settings(), log_upload_event.upload_tracker(),
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_));
+  auto job = std::make_unique<FileUploadJob>(log_upload_event.upload_settings(),
+                                             log_upload_event.upload_tracker(),
+                                             CreateForwarderDelegate());
   job->SetEventHelperForTest(std::make_unique<FileUploadJob::EventHelper>(
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
@@ -902,8 +908,7 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
           &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
       FileUploadJob::Manager::GetInstance()->Register(
           Priority::IMMEDIATE, std::move(record_copy),
-          /*log_upload_event=*/log_upload_event,
-          std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_),
+          /*log_upload_event=*/log_upload_event, CreateForwarderDelegate(),
           base::BindOnce(
               [](base::ScopedClosureRunner done,
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
@@ -987,8 +992,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
           &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
       FileUploadJob::Manager::GetInstance()->Register(
           Priority::IMMEDIATE, std::move(record_copy),
-          /*log_upload_event=*/log_upload_event,
-          std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_),
+          /*log_upload_event=*/log_upload_event, CreateForwarderDelegate(),
           base::BindOnce(
               [](base::ScopedClosureRunner done,
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
@@ -1069,8 +1073,7 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
           &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
       FileUploadJob::Manager::GetInstance()->Register(
           Priority::IMMEDIATE, std::move(record_copy),
-          /*log_upload_event=*/log_upload_event,
-          std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_),
+          /*log_upload_event=*/log_upload_event, CreateForwarderDelegate(),
           base::BindOnce(
               [](base::ScopedClosureRunner done,
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
@@ -1138,8 +1141,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
         &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
     FileUploadJob::Manager::GetInstance()->Register(
         Priority::IMMEDIATE, std::move(record_copy),
-        /*log_upload_event=*/log_upload_event,
-        std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_),
+        /*log_upload_event=*/log_upload_event, CreateForwarderDelegate(),
         base::BindOnce(
             [](base::ScopedClosureRunner done,
                base::WeakPtr<FileUploadJob>* job_weak_ptr,
@@ -1235,8 +1237,7 @@ TEST_F(FileUploadJobTest, FailureRegisteringJobWithNoRetries) {
       &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
   FileUploadJob::Manager::GetInstance()->Register(
       Priority::IMMEDIATE, std::move(record_copy),
-      /*log_upload_event=*/log_upload_event,
-      std::make_unique<MockFileUploadDelegate::Forwarder>(&mock_delegate_),
+      /*log_upload_event=*/log_upload_event, CreateForwarderDelegate(),
       base::BindOnce(
           [](base::ScopedClosureRunner done,
              StatusOr<FileUploadJob*> job_or_error) {

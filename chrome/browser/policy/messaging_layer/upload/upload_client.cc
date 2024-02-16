@@ -25,12 +25,16 @@ namespace reporting {
 
 namespace {
 
-std::unique_ptr<FileUploadJob::Delegate> CreateFileUploadDelegate() {
+FileUploadJob::Delegate::SmartPtr CreateFileUploadDelegate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<FileUploadDelegate>();
+  return FileUploadJob::Delegate::SmartPtr(
+      new FileUploadDelegate(),
+      base::OnTaskRunnerDeleter(::content::GetUIThreadTaskRunner({})));
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   // No file uploads for all other configurations.
-  return nullptr;
+  return FileUploadJob::Delegate::SmartPtr(
+      nullptr, base::OnTaskRunnerDeleter(
+                   base::SequencedTaskRunner::GetCurrentDefault()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 }  // namespace

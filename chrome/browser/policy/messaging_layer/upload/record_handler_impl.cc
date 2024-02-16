@@ -126,7 +126,7 @@ void ProcessFileUpload(
     Priority priority,
     Record record_copy,
     const ScopedReservation& scoped_reservation,
-    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+    base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
         delegate_factory,
     base::OnceCallback<void(Status)> done_cb) {
   // Here we need to determine which events we got. It would be better to
@@ -377,7 +377,7 @@ class RecordHandlerImpl::ReportUploader
       int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
-      base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+      base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
           delegate_factory,
       CompletionCallback upload_complete_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -415,7 +415,7 @@ class RecordHandlerImpl::ReportUploader
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // File upload delegate factory.
-  const base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+  const base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
       delegate_factory_;
 
   // Encryption key delivery callback.
@@ -437,7 +437,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+    base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
         delegate_factory,
     CompletionCallback completion_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -785,7 +785,7 @@ void RecordHandlerImpl::ReportUploader::Complete(
 
 RecordHandlerImpl::RecordHandlerImpl(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-    base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+    base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
         delegate_factory)
     : sequenced_task_runner_(sequenced_task_runner),
       delegate_factory_(delegate_factory) {}

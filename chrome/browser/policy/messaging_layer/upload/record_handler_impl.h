@@ -30,7 +30,7 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
  public:
   RecordHandlerImpl(
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-      base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+      base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
           delegate_factory);
   ~RecordHandlerImpl() override;
 
@@ -60,7 +60,7 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   // Factory is only used for LOG_UPLOAD events.
-  const base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+  const base::RepeatingCallback<FileUploadJob::Delegate::SmartPtr()>
       delegate_factory_;
 };
 

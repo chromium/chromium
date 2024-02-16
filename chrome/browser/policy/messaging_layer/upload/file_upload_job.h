@@ -46,6 +46,8 @@ class FileUploadJob {
   // `session_token` and `access_parameters`.
   class Delegate {
    public:
+    using SmartPtr = std::unique_ptr<Delegate, base::OnTaskRunnerDeleter>;
+
     virtual ~Delegate();
 
     // Asynchronously initializes upload.
@@ -113,7 +115,7 @@ class FileUploadJob {
     void Register(Priority priority,
                   Record record_copy,
                   ::ash::reporting::LogUploadEvent log_upload_event,
-                  std::unique_ptr<Delegate> delegate,
+                  Delegate::SmartPtr delegate,
                   base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb);
 
     // Accessor.
@@ -186,7 +188,7 @@ class FileUploadJob {
   // event. When upload is going to be started, `tracker` is empty yet.
   FileUploadJob(const UploadSettings& settings,
                 const UploadTracker& tracker,
-                std::unique_ptr<Delegate> delegate);
+                Delegate::SmartPtr delegate);
   FileUploadJob(const FileUploadJob& other) = delete;
   FileUploadJob& operator=(const FileUploadJob& other) = delete;
   ~FileUploadJob();
@@ -250,7 +252,7 @@ class FileUploadJob {
   SEQUENCE_CHECKER(job_sequence_checker_);
 
   // Delegate that performs actual actions.
-  std::unique_ptr<Delegate> delegate_;
+  const Delegate::SmartPtr delegate_;
 
   // Job parameters matching the event.
   const UploadSettings settings_;

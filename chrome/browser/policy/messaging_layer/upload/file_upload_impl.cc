@@ -830,14 +830,13 @@ FileUploadDelegate::FileUploadDelegate() {
 }
 
 FileUploadDelegate::~FileUploadDelegate() {
-  // Offset weak pointer factory invalidation to UI task runner.
-  ::content::GetUIThreadTaskRunner({})->DeleteSoon(
-      FROM_HERE, std::move(weak_ptr_factory_));
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void FileUploadDelegate::InitializeOnce() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_loader_factory_) {
     return;  // Already initialized.
   }
