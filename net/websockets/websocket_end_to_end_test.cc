@@ -468,7 +468,8 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
   const TestProxyDelegateWithProxyInfo::ResolvedProxyInfo& info =
       proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
-  EXPECT_TRUE(info.proxy_info.is_http());
+  EXPECT_EQ(info.proxy_info.ToDebugString(),
+            base::StrCat({"PROXY ", proxy_server.host_port_pair().ToString()}));
 }
 
 std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
@@ -542,7 +543,6 @@ TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
   EXPECT_TRUE(ConnectAndWait(ws_url));
   const auto& info = proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
-  EXPECT_TRUE(info.proxy_info.is_http());
   EXPECT_EQ(info.proxy_info.ToDebugString(),
             base::StrCat({"PROXY ", proxy_server.host_port_pair().ToString()}));
 }

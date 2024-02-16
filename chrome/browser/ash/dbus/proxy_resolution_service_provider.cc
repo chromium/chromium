@@ -88,7 +88,10 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
       result = kProxyInfoOnFailure;
     } else {
       result = proxy_info->ToPacString();
-      if (proxy_info->is_http()) {
+      if (!proxy_info->is_empty() && !proxy_info->is_direct() &&
+          proxy_info->proxy_chain()
+              .GetProxyServer(/*chain_index=*/0)
+              .is_http()) {
         AppendSystemProxyIfActive(&result);
       }
     }
