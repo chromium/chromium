@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -52,8 +51,7 @@ class CORE_EXPORT FilterEffectBuilder final {
                       Color current_color,
                       mojom::blink::ColorScheme color_scheme,
                       const cc::PaintFlags* fill_flags = nullptr,
-                      const cc::PaintFlags* stroke_flags = nullptr,
-                      SkTileMode blur_tile_mode = SkTileMode::kDecal);
+                      const cc::PaintFlags* stroke_flags = nullptr);
 
   Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
                                FilterEffect* previous_effect,
@@ -76,7 +74,6 @@ class CORE_EXPORT FilterEffectBuilder final {
   const mojom::blink::ColorScheme color_scheme_;
   const cc::PaintFlags* fill_flags_;
   const cc::PaintFlags* stroke_flags_;
-  const SkTileMode blur_tile_mode_;
 };
 
 }  // namespace blink
