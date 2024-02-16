@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -49,6 +50,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -383,8 +386,20 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
     private void createSigninView(LayoutInflater inflater, ViewGroup container) {
         mSigninView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
+
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
+            // Buttons are temporary to satisfy view calculations. Will be replaced by target
+            // ones with recreateButtons call originating at
+            // SyncConsentFragmentBase.updateProfileData once
+            // IdentityManager provides the data on how to display them
+            mSigninView.getAcceptButton().setVisibility(View.GONE);
+            mSigninView.getRefuseButton().setVisibility(View.GONE);
+        }
+
         mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
+
         mSigninView.getButtonBar().setVisibility(View.GONE);
         mSigninView.getMoreButton().setVisibility(View.VISIBLE);
         mSigninView
@@ -414,7 +429,6 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private WindowAndroid getWindowAndroid() {
         return getDelegate().getWindowAndroid();
     }
-
     private Profile getProfile() {
         return getDelegate().getProfile();
     }
@@ -501,17 +515,30 @@ public abstract class SyncConsentFragmentBase extends Fragment
             mSigninView
                     .getAccountPickerView()
                     .setVisibility(hideAccountPicker ? View.GONE : View.VISIBLE);
-            mConsentTextTracker.setText(
-                    mSigninView.getAcceptButton(), R.string.signin_accept_button);
-            mSigninView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
+
+            // The following calls register lambdas that will be executed on the current and every
+            // recreated accept button.
+            mSigninView.setAcceptConsentTextUpdater(this::setSigninAcceptConsent);
+            mSigninView.setAcceptOnClickListener(this::onAcceptButtonClicked);
         } else {
             mSigninView.getAccountPickerView().setVisibility(View.GONE);
-            mConsentTextTracker.setText(mSigninView.getAcceptButton(), R.string.signin_add_account);
-            mSigninView.getAcceptButton().setOnClickListener(this::onAddAccountButtonClicked);
+
+            // The following calls register lambdas that will be executed on the current and every
+            // recreated accept button.
+            mSigninView.setAcceptConsentTextUpdater(this::setSigninAddAccountConsent);
+            mSigninView.setAcceptOnClickListener(this::onAddAccountButtonClicked);
         }
 
         // Show "Settings" link in description only if there are accounts on the device.
         updateSigninDetailsDescription(hasAccounts);
+    }
+
+    private void setSigninAcceptConsent(TextView textView) {
+        mConsentTextTracker.setText(textView, R.string.signin_accept_button);
+    }
+
+    private void setSigninAddAccountConsent(TextView textView) {
+        mConsentTextTracker.setText(textView, R.string.signin_add_account);
     }
 
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
@@ -590,6 +617,27 @@ public abstract class SyncConsentFragmentBase extends Fragment
             // If the email address cannot be shown, the primary TextView either displays the
             // full name or the default account string. The secondary TextView is hidden.
             mSigninView.getAccountTextSecondary().setVisibility(View.GONE);
+        }
+
+        CoreAccountInfo account =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(), accountEmail);
+        if (account == null) {
+            return;
+        }
+
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
+            // Shows buttons hidden by createSigninView.
+            // MinorModeHelper.resolveMinorMode will either
+            // show the buttons immediately or after a short timeout during which the button
+            // configuration is retrieved.
+            MinorModeHelper.resolveMinorMode(
+                    identityManager, account, mSigninView::recreateButtons);
+        } else {
+            MinorModeHelper.trackLatency(identityManager, account);
         }
     }
 
@@ -785,14 +833,17 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountEmail = primaryAccount.getEmail();
-
-            AccountCapabilitiesLatencyTracker.trackAccountCapabilitiesFetchLatency(
-                    identityManager, primaryAccount);
         }
+
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
         if (mSelectedAccountEmail != null) {
             updateProfileData(mSelectedAccountEmail);
+        } else {
+            if (SigninFeatureMap.isEnabled(
+                    SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
+                mSigninView.recreateButtons(ScreenMode.UNRESTRICTED);
+            }
         }
 
         updateAccounts(

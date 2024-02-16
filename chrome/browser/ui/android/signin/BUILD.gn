@@ -50,7 +50,6 @@ android_library("java") {
     "//ui/android:ui_utils_java",
   ]
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/signin/AccountCapabilitiesLatencyTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmImportSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachine.java",
@@ -58,6 +57,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoUtil.java",
     "java/src/org/chromium/chrome/browser/ui/signin/GoogleActivityController.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/MinorModeHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/PersonalizedSigninPromoView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninAccountPickerCoordinator.java",
