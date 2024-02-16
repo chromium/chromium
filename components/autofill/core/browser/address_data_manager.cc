@@ -101,14 +101,7 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     has_initial_load_finished_ = true;
     LogStoredDataMetrics();
   }
-  // TODO(b/322170538): Notify observers: `PDM::Refresh()` is the only
-  // mechanism to read from the database. Since the DB sequence is a sequenced
-  // task runner, and since address data is queried before payments data,
-  // `PDM::OnWebDataServiceRequestDone()` is always called after this
-  // function. This makes sure that observers are notified.
-  // By notifying observers here too, more events are triggered (once when
-  // address data has finished reloading and once when credit card data has
-  // finished reloading). This breaks just about every test.
+  notify_pdm_observers_.Run();
 }
 
 std::vector<AutofillProfile*> AddressDataManager::GetProfiles(

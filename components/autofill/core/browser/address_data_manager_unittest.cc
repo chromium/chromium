@@ -753,8 +753,9 @@ TEST_F(AddressDataManagerTest,
   base::Time newer_use_data = AutofillClock::Now();
   updated_more_recently_used_profile.set_use_date(newer_use_data);
   PersonalDataProfileTaskWaiter update_waiter(*personal_data_);
-  // Expect an update and a deletion.
-  EXPECT_CALL(update_waiter.mock_observer(), OnPersonalDataChanged()).Times(2);
+  // Expect an update and a deletion. This only triggers a single notification
+  // once both operations have finished.
+  EXPECT_CALL(update_waiter.mock_observer(), OnPersonalDataChanged());
   personal_data_->UpdateProfile(updated_more_recently_used_profile);
   std::move(update_waiter).Wait();
 

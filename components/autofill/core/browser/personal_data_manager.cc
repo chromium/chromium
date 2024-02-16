@@ -648,7 +648,9 @@ void PersonalDataManager::OnSyncPaymentsIntegrationEnabledChanged(
     // Re-mask all server cards when the user turns off wallet card
     // integration.
     ResetFullServerCards();
-    NotifyPersonalDataObserver();
+    for (PersonalDataManagerObserver& observer : observers_) {
+      observer.OnPersonalDataChanged();
+    }
   }
 }
 
@@ -2384,17 +2386,16 @@ void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
-  bool pending_changes =
-      IsAwaitingPendingAddressChanges() || HasPendingPaymentQueries();
+  if (IsAwaitingPendingAddressChanges() || HasPendingPaymentQueries()) {
+    return;
+  }
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();
   }
-  if (!pending_changes) {
-    // Call `OnPersonalDataFinishedProfileTasks()` in a separate loop as
-    // the observers might have removed themselves in OnPersonalDataChanged
-    for (PersonalDataManagerObserver& observer : observers_) {
-      observer.OnPersonalDataFinishedProfileTasks();
-    }
+  // Call `OnPersonalDataFinishedProfileTasks()` in a separate loop as
+  // the observers might have removed themselves in OnPersonalDataChanged
+  for (PersonalDataManagerObserver& observer : observers_) {
+    observer.OnPersonalDataFinishedProfileTasks();
   }
 }
 
