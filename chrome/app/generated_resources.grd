@@ -16615,23 +16615,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> freed up
         </message>
       </if>
-      <message name="IDS_MEMORY_SAVER_DIALOG_TITLE_V2" desc="Title text for a dialog with information about Memory Saver mode.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_TITLE" desc="Title text for a dialog with information about Memory Saver mode.">
         Memory Saver
       </message>
-      <message name="IDS_MEMORY_SAVER_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory from inactive tabs and that this is a setting the user can control.">
-        While this tab was inactive, Memory Saver freed up memory for other tasks. You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>Settings</ex></ph>.
-      </message>
-      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITHOUT_LINK" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
-        While this tab was inactive, Memory Saver freed up memory for other tasks.
-      </message>
-      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT" desc="The link text for the body text for the Memory Saver dialog.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON" desc="Label for a button on a dialog that opens the chrome://settings/performance page when clicked.">
         Settings
-      </message>
-      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS_AND_LINK" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode and that this is a setting the user can control.">
-        While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks. You can change this anytime in <ph name="SETTINGS_LINK">$2<ex>Settings</ex></ph>.
-      </message>
-      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode.">
-        While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks.
       </message>
       <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
         <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory saved

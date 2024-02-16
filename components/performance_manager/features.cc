@@ -69,37 +69,6 @@ BASE_FEATURE(kMemoryUsageInHovercards,
 BASE_FEATURE(kDiscardExceptionsImprovements,
              "DiscardExceptionsImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kMemorySavingsReportingImprovements,
-             "MemorySavingsReportingImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// These variables were renamed to "MemorySaver" but the experiment name remains
-// as "HighEfficiency" because it is already running (crbug.com/1493843).
-const base::FeatureParam<base::TimeDelta> kExpandedMemorySaverChipFrequency{
-    &kMemorySavingsReportingImprovements,
-    "expanded_high_efficiency_chip_frequency", base::Days(1)};
-
-const base::FeatureParam<int> kExpandedMemorySaverChipThresholdBytes{
-    &kMemorySavingsReportingImprovements,
-    "expanded_high_efficiency_chip_threshold_bytes", 197 * 1024 * 1024};
-
-const base::FeatureParam<base::TimeDelta>
-    kExpandedMemorySaverChipDiscardedDuration{
-        &kMemorySavingsReportingImprovements,
-        "expanded_high_efficiency_chip_discarded_duration", base::Hours(3)};
-
-const base::FeatureParam<int> kMemorySaverChartPmf25PercentileBytes{
-    &kMemorySavingsReportingImprovements,
-    "high_efficiency_chart_pmf_25_percentile_bytes", 62 * 1024 * 1024};
-const base::FeatureParam<int> kMemorySaverChartPmf50PercentileBytes{
-    &kMemorySavingsReportingImprovements,
-    "high_efficiency_chart_pmf_50_percentile_bytes", 112 * 1024 * 1024};
-const base::FeatureParam<int> kMemorySaverChartPmf75PercentileBytes{
-    &kMemorySavingsReportingImprovements,
-    "high_efficiency_chart_pmf_75_percentile_bytes", 197 * 1024 * 1024};
-const base::FeatureParam<int> kMemorySaverChartPmf99PercentileBytes{
-    &kMemorySavingsReportingImprovements,
-    "high_efficiency_chart_pmf_99_percentile_bytes", 800 * 1024 * 1024};
 
 const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,

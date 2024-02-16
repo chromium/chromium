@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
+
 #include <tuple>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,26 +31,25 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 constexpr int kMemorySavingsKilobytes = 100 * 1024;
-constexpr int kSmallMemorySavingsKilobytes = 10;
 }  // namespace
 
 class MemorySaverBubbleViewTest
-    : public MemorySaverUnitTestMixin<TestWithBrowserView> {
+    : public MemorySaverUnitTestMixin<TestWithBrowserView>,
+      public testing::WithParamInterface<std::tuple<int, int>> {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
 
     MemorySaverUnitTestMixin::SetUp();
 
@@ -63,7 +60,7 @@ class MemorySaverBubbleViewTest
   }
 
   template <class T>
-  T* GetDialogLabel(ui::ElementIdentifier identifier) {
+  T* GetMatchingView(ui::ElementIdentifier identifier) {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForWidget(
             GetPageActionIconView()->GetBubble()->anchor_widget());
@@ -124,93 +121,23 @@ TEST_F(MemorySaverBubbleViewTest, ShouldRenderDomainInDialogSubtitle) {
   EXPECT_EQ(bubble_delegate->GetSubtitle(), u"foo.com");
 }
 
-// A link should be rendered within the dialog.
-TEST_F(MemorySaverBubbleViewTest, ShouldRenderLinkInDialog) {
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-  EXPECT_TRUE(
-      label->GetText().find(u"You can change this anytime in Settings") !=
-      std::string::npos);
-}
-
-// The memory savings should be rendered within the dialog.
-TEST_F(MemorySaverBubbleViewTest, ShouldRenderMemorySavingsInDialog) {
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
-                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
-}
-
-//  When the memory savings are lower than 10Mb then they shouldn't be rendered
-//  in the dialog.
-TEST_F(MemorySaverBubbleViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
-  // Add a new tab with small memory savings.
-  AddNewTab(kSmallMemorySavingsKilobytes,
+TEST_F(MemorySaverBubbleViewTest,
+       ShowDialogWithoutExcludeSiteButtonInGuestMode) {
+  AddNewTab(kMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-  // Mark the new tab as discarded.
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-  EXPECT_TRUE(
-      label->GetText().find(u"Memory Saver freed up memory for other tasks") !=
-      std::string::npos);
-}
-
-TEST_F(MemorySaverBubbleViewTest, ShowDialogWithSavingsInGuestMode) {
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
-  EXPECT_TRUE(testprofile);
-  testprofile->SetGuestSession(true);
-
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-
-  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
-            std::string::npos);
-  EXPECT_NE(
-      label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
-      std::string::npos);
-}
-
-TEST_F(MemorySaverBubbleViewTest, ShowDialogWithoutSavingsInGuestMode) {
-  // Add a new tab with small memory savings.
-  AddNewTab(kSmallMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
+  TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
 
   SetTabDiscardState(0, true);
   ClickPageActionChip();
 
-  // Since there is no placeholders in the bubble text in guest mode and without
-  // savings, the text is created with views::Label instead of
-  // views::StyledLabel
-  views::Label* label = GetDialogLabel<views::Label>(
-      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
-
-  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
-            std::string::npos);
-
-  EXPECT_NE(
-      label->GetText().find(u"Memory Saver freed up memory for other tasks"),
-      std::string::npos);
+  // Exclude site button shouldn't be shown since guest users can't exclude
+  // sites from being discarded
+  views::Button* const cancel_button = GetMatchingView<views::Button>(
+      MemorySaverBubbleView::kMemorySaverDialogCancelButton);
+  EXPECT_EQ(cancel_button, nullptr);
 }
 
 TEST_F(MemorySaverBubbleViewTest,
@@ -237,33 +164,13 @@ TEST_F(MemorySaverBubbleViewTest,
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
-class MemorySaverBubbleViewMemorySavingsImprovementsTest
-    : public MemorySaverBubbleViewTest,
-      public testing::WithParamInterface<std::tuple<int, int>> {
- public:
-  MemorySaverBubbleViewMemorySavingsImprovementsTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
-    TestWithBrowserView::SetUp();
-
-    AddNewTab(kMemorySavingsKilobytes,
-              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // The memory savings should be rendered within the resource view.
-TEST_F(MemorySaverBubbleViewMemorySavingsImprovementsTest,
-       ShouldRenderMemorySavingsInResourceView) {
+TEST_F(MemorySaverBubbleViewTest, ShouldRenderMemorySavingsInResourceView) {
   SetTabDiscardState(0, true);
 
   ClickPageActionChip();
 
-  views::Label* label = GetDialogLabel<views::Label>(
+  views::Label* label = GetMatchingView<views::Label>(
       MemorySaverResourceView::kMemorySaverResourceViewMemorySavingsElementId);
   EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
                   kMemorySavingsKilobytes * 1024)) != std::string::npos);
@@ -271,33 +178,32 @@ TEST_F(MemorySaverBubbleViewMemorySavingsImprovementsTest,
 
 // The memory savings should not be rendered within the text above the resource
 // view.
-TEST_F(MemorySaverBubbleViewMemorySavingsImprovementsTest,
+TEST_F(MemorySaverBubbleViewTest,
        ShouldNotRenderMemorySavingsInDialogBodyText) {
   SetTabDiscardState(0, true);
 
   ClickPageActionChip();
 
-  views::Label* label = GetDialogLabel<views::Label>(
+  views::Label* label = GetMatchingView<views::Label>(
       MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
   EXPECT_EQ(
       label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
       std::string::npos);
 
   EXPECT_NE(label->GetText().find(
-                l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_V2)),
+                l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY)),
             std::string::npos);
 }
 
 // The correct label should be rendered for different memory savings amounts.
-TEST_P(MemorySaverBubbleViewMemorySavingsImprovementsTest,
-       ShowsCorrectLabelsForDifferentSavings) {
+TEST_P(MemorySaverBubbleViewTest, ShowsCorrectLabelsForDifferentSavings) {
   AddNewTab(std::get<0>(GetParam()),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   SetTabDiscardState(0, true);
 
   ClickPageActionChip();
 
-  views::Label* label = GetDialogLabel<views::Label>(
+  views::Label* label = GetMatchingView<views::Label>(
       MemorySaverResourceView::kMemorySaverResourceViewMemoryLabelElementId);
   EXPECT_EQ(label->GetText(),
             l10n_util::GetStringUTF16(std::get<1>(GetParam())));
@@ -305,7 +211,7 @@ TEST_P(MemorySaverBubbleViewMemorySavingsImprovementsTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    MemorySaverBubbleViewMemorySavingsImprovementsTest,
+    MemorySaverBubbleViewTest,
     ::testing::Values(
         std::tuple{50 * 1024, IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
         std::tuple{100 * 1024, IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},

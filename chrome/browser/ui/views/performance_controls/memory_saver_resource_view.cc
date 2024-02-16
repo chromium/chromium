@@ -38,6 +38,11 @@ constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
 
+constexpr int kMemorySaverChartPmf25PercentileBytes = 62 * 1024 * 1024;
+constexpr int kMemorySaverChartPmf50PercentileBytes = 112 * 1024 * 1024;
+constexpr int kMemorySaverChartPmf75PercentileBytes = 197 * 1024 * 1024;
+constexpr int kMemorySaverChartPmf99PercentileBytes = 800 * 1024 * 1024;
+
 // Enum to represent memory savings quartiles.
 enum MemorySavingsQuartile {
   kLow = 0,
@@ -62,21 +67,13 @@ constexpr int kQuartilesLabels[] = {
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
 int GetMemorySavingsQuartile(const int memory_savings_bytes) {
-  if (memory_savings_bytes <
-      performance_manager::features::kMemorySaverChartPmf25PercentileBytes
-          .Get()) {
+  if (memory_savings_bytes < kMemorySaverChartPmf25PercentileBytes) {
     return MemorySavingsQuartile::kLow;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf50PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf50PercentileBytes) {
     return MemorySavingsQuartile::kMedium;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf75PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf75PercentileBytes) {
     return MemorySavingsQuartile::kHigh;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf99PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf99PercentileBytes) {
     return MemorySavingsQuartile::kVeryHigh;
   } else {
     return MemorySavingsQuartile::kHuge;

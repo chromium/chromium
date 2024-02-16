@@ -2792,17 +2792,11 @@ extern const char kLinkPreviewDescription[];
 extern const char kMemorySaverMultistateModeAvailableName[];
 extern const char kMemorySaverMultistateModeAvailableDescription[];
 
-extern const char kMemorySaverDiscardedTabTreatmentName[];
-extern const char kMemorySaverDiscardedTabTreatmentDescription[];
-
 extern const char kMemorySaverMemoryUsageInHovercardsName[];
 extern const char kMemorySaverMemoryUsageInHovercardsDescription[];
 
 extern const char kMemorySaverDiscardExceptionsImprovementsName[];
 extern const char kMemorySaverDiscardExceptionsImprovementsDescription[];
-
-extern const char kMemorySaverSavingsReportingImprovementsName[];
-extern const char kMemorySaverSavingsReportingImprovementsDescription[];
 
 extern const char kModalMemorySaverName[];
 extern const char kModalMemorySaverDescription[];

@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)),
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON)),
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       Check(base::BindLambdaForTesting(
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)),
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON)),
       PressButton(kMemorySaverChipElementId),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Second tab's cancel button should allow users to exclude the site
@@ -522,7 +522,34 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)));
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON)));
+}
+
+// The memory saver chip dialog renders a gauge style visualization that
+// must be rendered correctly.
+IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
+                       RenderVisualizationInDialog) {
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
+      Do(base::BindLambdaForTesting([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        auto* pre_discard_resource_usage =
+            performance_manager::user_tuning::UserPerformanceTuningManager::
+                PreDiscardResourceUsage::FromWebContents(web_contents);
+        pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
+            135 * 1024);
+      })),
+      PressButton(kMemorySaverChipElementId),
+      WaitForShow(
+          MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
+      Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
+                 "MemorySaverResourceView", "5280502"));
 }
 
 class MemorySaverFaviconTreatmentTest
@@ -562,55 +589,4 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
                })),
       WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
       Screenshot(kFirstTabFavicon, "FadeSmallFaviconOnDiscard", "4786929"));
-}
-
-// Tests the new memory savings reporting improvements on the memory saver
-// dialog.
-class MemorySaverMemorySavingsReportingImprovementsTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest> {
- public:
-  MemorySaverMemorySavingsReportingImprovementsTest() = default;
-  ~MemorySaverMemorySavingsReportingImprovementsTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
-
-    MemorySaverInteractiveTestMixin<InteractiveBrowserTest>::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    MemorySaverInteractiveTestMixin::SetUpOnMainThread();
-    SetMemorySaverModeEnabled(true);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// The memory saver chip dialog renders a gauge style visualization that
-// must be rendered correctly.
-IN_PROC_BROWSER_TEST_F(MemorySaverMemorySavingsReportingImprovementsTest,
-                       RenderVisualizationInDialog) {
-  RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kSkipPixelTestsReason),
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      Do(base::BindLambdaForTesting([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetWebContentsAt(0);
-        auto* pre_discard_resource_usage =
-            performance_manager::user_tuning::UserPerformanceTuningManager::
-                PreDiscardResourceUsage::FromWebContents(web_contents);
-        pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
-            135 * 1024);
-      })),
-      PressButton(kMemorySaverChipElementId),
-      WaitForShow(
-          MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
-      Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
-                 "MemorySaverResourceView", "4546555"));
 }

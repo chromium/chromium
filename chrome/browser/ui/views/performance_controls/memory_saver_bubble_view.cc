@@ -69,7 +69,7 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
   int button_string_id;
   base::OnceClosure callback;
   if (is_site_excluded) {
-    button_string_id = IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT;
+    button_string_id = IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON;
     callback = base::BindOnce(&MemorySaverBubbleDelegate::OnSettingsClicked,
                               base::Unretained(bubble_delegate));
   } else {
@@ -97,16 +97,11 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
 
-  const bool show_memory_savings_chart = base::FeatureList::IsEnabled(
-      performance_manager::features::kMemorySavingsReportingImprovements);
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
   dialog_model_builder
-      .SetTitle(
-          show_memory_savings_chart
-              ? l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE_V2)
-              : l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE))
+      .SetTitle(l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE))
       .SetDialogDestroyingCallback(
           base::BindOnce(&MemorySaverBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
@@ -123,48 +118,16 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
 
   Profile* const profile = browser->profile();
   const bool is_guest = profile->IsGuestSession();
-  const bool is_forced_incognito =
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-      policy::IncognitoModeAvailability::kForced;
 
-  if (show_memory_savings_chart) {
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
-      dialog_model_builder.AddCustomField(
-          std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<MemorySaverResourceView>(memory_savings),
-              views::BubbleDialogModelHost::FieldType::kText),
-          kMemorySaverDialogResourceViewElementId);
-    }
-
-    AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY_V2);
-  } else if (is_guest || is_forced_incognito) {
-    // Show bubble without Performance Settings Page Link since guest users or
-    // forced incognito users are not allowed to navigate to the performance
-    // settings page
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
-      AddBubbleBodyText(&dialog_model_builder,
-                        IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS,
-                        {memory_savings_text});
-    } else {
-      AddBubbleBodyText(&dialog_model_builder,
-                        IDS_MEMORY_SAVER_DIALOG_BODY_WITHOUT_LINK);
-    }
-  } else {
-    ui::DialogModelLabel::TextReplacement settings_link =
-        ui::DialogModelLabel::CreateLink(
-            IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT,
-            base::BindRepeating(&MemorySaverBubbleDelegate::OnSettingsClicked,
-                                base::Unretained(bubble_delegate)));
-
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
-      AddBubbleBodyText(&dialog_model_builder,
-                        IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
-                        {memory_savings_text, settings_link});
-    } else {
-      AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY,
-                        {settings_link});
-    }
+  if (memory_savings > kMemoryUsageThresholdInBytes) {
+    dialog_model_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<MemorySaverResourceView>(memory_savings),
+            views::BubbleDialogModelHost::FieldType::kText),
+        kMemorySaverDialogResourceViewElementId);
   }
+
+  AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY);
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements) &&

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/common/pref_names.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/url_constants.h"
@@ -63,32 +62,24 @@ MemorySaverChipTabHelper::MemorySaverChipTabHelper(
 }
 
 bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::kMemorySavingsReportingImprovements)) {
-    return false;
-  }
-
   bool const savings_over_threshold =
-      static_cast<int>(
-          memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents())) >
-      performance_manager::features::kExpandedMemorySaverChipThresholdBytes
-          .Get();
+      memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents()) >
+      kExpandedMemorySaverChipThresholdBytes;
 
   base::Time const last_expanded_timestamp =
       pref_service_->GetTime(prefs::kLastMemorySaverChipExpandedTimestamp);
   bool const expanded_chip_not_shown_recently =
       (base::Time::Now() - last_expanded_timestamp) >
-      performance_manager::features::kExpandedMemorySaverChipFrequency.Get();
+      kExpandedMemorySaverChipFrequency;
 
-  auto* pre_discard_resource_usage =
+  auto* const pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(&GetWebContents());
   bool const tab_discard_time_over_threshold =
       pre_discard_resource_usage &&
       (base::LiveTicks::Now() -
        pre_discard_resource_usage->discard_liveticks()) >
-          performance_manager::features::
-              kExpandedMemorySaverChipDiscardedDuration.Get();
+          kExpandedMemorySaverChipDiscardedDuration;
 
   if (savings_over_threshold && expanded_chip_not_shown_recently &&
       tab_discard_time_over_threshold) {

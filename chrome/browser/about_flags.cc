@@ -3176,37 +3176,6 @@ const FeatureEntry::FeatureVariation kMemoryUsageInHovercardsVariations[] = {
      std::size(kMemoryUsageInHovercardsUpdateTriggerVariations), nullptr},
 };
 
-const FeatureEntry::FeatureParam kMemorySavingsReportingFrequent[] = {
-    // 100 * 1024 * 1024
-    {"expanded_high_efficiency_chip_threshold_bytes", "104857600"},
-    {"expanded_high_efficiency_chip_frequency", "2h"},
-    {"expanded_high_efficiency_chip_discarded_duration", "1h"}};
-
-const FeatureEntry::FeatureParam kMemorySavingsReportingInfrequent[] = {
-    // 200 * 1024 * 1024
-    {"expanded_high_efficiency_chip_threshold_bytes", "209715200"},
-    {"expanded_high_efficiency_chip_frequency", "1d"},
-    {"expanded_high_efficiency_chip_discarded_duration", "6h"}};
-
-const FeatureEntry::FeatureParam kMemorySavingsReportingVeryFrequent[] = {
-    // 100 * 1024 * 1024
-    {"expanded_high_efficiency_chip_threshold_bytes", "104857600"},
-    {"expanded_high_efficiency_chip_frequency", "5m"},
-    {"expanded_high_efficiency_chip_discarded_duration", "5m"}};
-
-const FeatureEntry::FeatureVariation
-    kMemorySaverMemorySavingsReportingVariations[] = {
-        {"With Frequent Memory Savings Reporting",
-         kMemorySavingsReportingFrequent,
-         std::size(kMemorySavingsReportingFrequent), nullptr},
-        {"With Infrequent Memory Savings Reporting",
-         kMemorySavingsReportingInfrequent,
-         std::size(kMemorySavingsReportingInfrequent), nullptr},
-        {"With Very Frequent Memory Savings Reporting",
-         kMemorySavingsReportingVeryFrequent,
-         std::size(kMemorySavingsReportingVeryFrequent), nullptr},
-};
-
 const FeatureEntry::FeatureParam kModalMemorySaverConservative[] = {
     {"modal_memory_saver_mode", "1"}};
 const FeatureEntry::FeatureParam kModalMemorySaverMedium[] = {
@@ -9831,15 +9800,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          performance_manager::features::kDiscardExceptionsImprovements)},
-
-    {"memory-saver-savings-reporting-improvements",
-     flag_descriptions::kMemorySaverSavingsReportingImprovementsName,
-     flag_descriptions::kMemorySaverSavingsReportingImprovementsDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kMemorySavingsReportingImprovements,
-         kMemorySaverMemorySavingsReportingVariations,
-         "MemorySavingsReportingImprovements")},
 
     {"modal-memory-saver", flag_descriptions::kModalMemorySaverName,
      flag_descriptions::kModalMemorySaverDescription, kOsDesktop,

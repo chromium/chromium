@@ -4826,12 +4826,6 @@ const char kMemorySaverMultistateModeAvailableDescription[] =
     "heuristic mode, enabled with a fixed timer, and discarded. Configure this "
     "through the settings page.";
 
-const char kMemorySaverDiscardedTabTreatmentName[] =
-    "Enable discarded tab treatment for Memory Saver Mode.";
-const char kMemorySaverDiscardedTabTreatmentDescription[] =
-    "When enabled, discarded tabs will have a modified favicon to indicate "
-    "that state.";
-
 const char kMemorySaverMemoryUsageInHovercardsName[] =
     "Show memory usage in hovercards.";
 const char kMemorySaverMemoryUsageInHovercardsDescription[] =
@@ -4844,12 +4838,6 @@ const char kMemorySaverDiscardExceptionsImprovementsDescription[] =
     "When enabled, tab discard exceptions can be created from the Memory Saver "
     "page action chip dialog and they can be created from currently open tabs "
     "via the settings page.";
-
-const char kMemorySaverSavingsReportingImprovementsName[] =
-    "Enable improvements to how memory savings are reported.";
-const char kMemorySaverSavingsReportingImprovementsDescription[] =
-    "When enabled, the Memory Saver page action chip and dialog will be used "
-    "to highlight memory savings.";
 
 const char kModalMemorySaverName[] = "Multi mode memory saver.";
 const char kModalMemorySaverDescription[] =

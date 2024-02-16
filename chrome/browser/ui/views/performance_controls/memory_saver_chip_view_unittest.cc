@@ -42,8 +42,10 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 
+namespace {
 constexpr int kMemorySavingsKilobytes = 100 * 1024;
 constexpr int kHighMemorySavingsKilobytes = 300 * 1024;
+}  // namespace
 
 class MemorySaverChipViewTest
     : public MemorySaverUnitTestMixin<TestWithBrowserView> {
@@ -53,8 +55,6 @@ class MemorySaverChipViewTest
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
     MemorySaverUnitTestMixin::SetUp();
 
     AddNewTab(kMemorySavingsKilobytes,
@@ -140,21 +140,6 @@ TEST_F(MemorySaverChipViewTest, ShouldNotShowForRegularPage) {
   EXPECT_FALSE(view->GetVisible());
 }
 
-// When kMemorySavingsReportingImprovements is disabled, the chip should not
-// expand.
-TEST_F(MemorySaverChipViewTest, ShouldNotExpandWhenFeatureIsDisabled) {
-  SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  task_environment()->AdvanceClock(base::Hours(8));
-  SetTabDiscardState(0, true);
-
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_TRUE(view->GetVisible());
-  EXPECT_FALSE(view->ShouldShowLabel());
-}
-
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(MemorySaverChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
@@ -203,30 +188,9 @@ TEST_F(MemorySaverChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
-class MemorySaverChipViewMemorySavingsImprovementsTest
-    : public MemorySaverChipViewTest {
- public:
-  MemorySaverChipViewMemorySavingsImprovementsTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
-    TestWithBrowserView::SetUp();
-
-    AddNewTab(kMemorySavingsKilobytes,
-              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-    SetMemorySaverModeEnabled(true);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// When the savings are above the FeatureParam threshold then the chip is
+// When the savings are above the threshold then the chip is
 // eligible to expand.
-TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
-       ShouldExpandChipWhenConditionsAreMet) {
+TEST_F(MemorySaverChipViewTest, ShouldExpandChipWhenConditionsAreMet) {
   SetChipExpandedCount(MemorySaverChipView::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
@@ -239,10 +203,9 @@ TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
   EXPECT_TRUE(view->ShouldShowLabel());
 }
 
-// When the savings are below the FeatureParam threshold then the chip won't
+// When the savings are below the threshold then the chip won't
 // expand.
-TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
-       ShouldNotExpandForSavingsBelowThreshold) {
+TEST_F(MemorySaverChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
 
   task_environment()->AdvanceClock(base::Hours(8));
@@ -255,8 +218,7 @@ TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
 
 // When the savings chip has been expanded recently then it does not show in
 // the expanded mode.
-TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
-       ShouldNotExpandWhenChipHasExpandedRecently) {
+TEST_F(MemorySaverChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
   SetChipExpandedTimeToNow();
   AddNewTab(kHighMemorySavingsKilobytes,
@@ -272,8 +234,7 @@ TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
 
 // When the tab has been expanded recently then the chip does not show in the
 // expanded mode.
-TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
-       ShouldNotExpandWhenTabWasDiscardedRecently) {
+TEST_F(MemorySaverChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
@@ -286,8 +247,7 @@ TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
 }
 
 // When the celebratory expanded chip is shown, UMA metrics should be logged.
-TEST_F(MemorySaverChipViewMemorySavingsImprovementsTest,
-       ShouldLogMetricsForCelebratoryExpandedChip) {
+TEST_F(MemorySaverChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
   SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);

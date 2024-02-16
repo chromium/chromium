@@ -58,6 +58,15 @@ class MemorySaverChipTabHelper
   friend class content::WebContentsUserData<MemorySaverChipTabHelper>;
   explicit MemorySaverChipTabHelper(content::WebContents* contents);
 
+  // Threshold was selected based on the 75th percentile of tab memory usage
+  static constexpr uint64_t kExpandedMemorySaverChipThresholdBytes =
+      197 * 1024 * 1024;
+
+  static constexpr base::TimeDelta kExpandedMemorySaverChipFrequency =
+      base::Days(1);
+  static constexpr base::TimeDelta kExpandedMemorySaverChipDiscardedDuration =
+      base::Hours(3);
+
   // Checks whether a promotional expanded chip should be shown to highlight
   // memory savings and, if so, update prefs to reflect that it is shown.
   bool ComputeShouldHighlightMemorySavings();

@@ -1977,17 +1977,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <!-- Memory Saver Chip strings -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_MEMORY_SAVER_DIALOG_TITLE" desc="In Title Case: Title text for a dialog describing that the Memory Saver setting is enabled">
-            Memory Saver Made Chrome Faster
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEMORY_SAVER_DIALOG_TITLE" desc="Title text for a dialog describing that the Memory Saver setting is enabled">
-            Memory Saver made Chrome faster
-          </message>
-        </if>
-        <message name="IDS_MEMORY_SAVER_DIALOG_BODY_V2" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
           While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.
         </message>
       </if>
