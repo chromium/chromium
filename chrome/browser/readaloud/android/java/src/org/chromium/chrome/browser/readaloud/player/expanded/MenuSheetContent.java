@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ScrollView;
@@ -28,6 +30,7 @@ class MenuSheetContent implements BottomSheetContent {
     private final ScrollView mScrollView;
     private boolean mOpeningSubmenu;
     protected final Menu mMenu;
+    private final Context mContext;
 
     /**
      * Constructor.
@@ -48,6 +51,7 @@ class MenuSheetContent implements BottomSheetContent {
                 (Menu) LayoutInflater.from(context).inflate(R.layout.readaloud_menu, null));
         ((TextView) mMenu.findViewById(R.id.readaloud_menu_title))
                 .setText(context.getResources().getString(titleStringId));
+
     }
 
     @VisibleForTesting
@@ -57,6 +61,7 @@ class MenuSheetContent implements BottomSheetContent {
             BottomSheetController bottomSheetController,
             int titleStringId,
             Menu menu) {
+        mContext = context;
         mParent = parent;
         mBottomSheetController = bottomSheetController;
         mMenu = menu;
@@ -70,6 +75,8 @@ class MenuSheetContent implements BottomSheetContent {
 
         // Apply dynamic background color.
         Colors.setBottomSheetContentBackground(mMenu);
+        Resources res = context.getResources();
+        onOrientationChange(res.getConfiguration().orientation);
     }
 
     // TODO(b/306426853) Replace this with a BottomSheetObserver.
@@ -205,5 +212,21 @@ class MenuSheetContent implements BottomSheetContent {
     public boolean canSuppressInAnyState() {
         // Always immediately hide if a higher-priority sheet content wants to show.
         return true;
+    }
+
+    public void onOrientationChange(int orientation) {
+        MaxHeightScrollView scrollView = getContentView().findViewById(R.id.items_scroll_view);
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            scrollView.setMaxHeight(
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.scroll_view_height_portrait));
+
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            scrollView.setMaxHeight(
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.scroll_view_height_landscape));
+        }
+        mScrollView.invalidate();
     }
 }

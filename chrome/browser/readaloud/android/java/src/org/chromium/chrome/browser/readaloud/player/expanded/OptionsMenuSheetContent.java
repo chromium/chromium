@@ -112,6 +112,14 @@ class OptionsMenuSheetContent extends MenuSheetContent {
         return mVoiceSheet;
     }
 
+    // MenuSheetContent
+    @Override
+    public void onOrientationChange(int orientation) {
+        if (mVoiceSheet != null) {
+            mVoiceSheet.onOrientationChange(orientation);
+        }
+    }
+
     // BottomSheetContent
     @Override
     public int getSheetContentDescriptionStringId() {

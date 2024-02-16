@@ -43,4 +43,9 @@ public class MaxHeightScrollView extends ScrollView {
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxHeight, MeasureSpec.AT_MOST);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
+
+    /** Set new value of the maxHeight. The caller needs to call invalidate() afterwards. */
+    public void setMaxHeight(int maxHeight) {
+        mMaxHeight = maxHeight;
+    }
 }

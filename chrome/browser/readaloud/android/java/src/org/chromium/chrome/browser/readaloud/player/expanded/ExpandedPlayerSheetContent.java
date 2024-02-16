@@ -369,6 +369,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     /** Customize portraint and landscape mode sheets. Landscape mode layout is more compressed. */
     public void onOrientationChange(int orientation) {
+        if (mOptionsMenu != null) {
+            mOptionsMenu.onOrientationChange(orientation);
+        }
+        if (mSpeedMenu != null) {
+            mSpeedMenu.onOrientationChange(orientation);
+        }
         TextView chromeNowPlaying = mContentView.findViewById(R.id.chrome_now_playing_text);
         ViewGroup.MarginLayoutParams chromeNowPlayingParams =
                 (ViewGroup.MarginLayoutParams) chromeNowPlaying.getLayoutParams();
