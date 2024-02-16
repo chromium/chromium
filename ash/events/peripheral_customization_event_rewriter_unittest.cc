@@ -16,6 +16,7 @@
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -28,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -512,16 +514,21 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         InputDeviceSettingsController::ScopedResetterForTest>();
     controller_ = std::make_unique<
         testing::NiceMock<TestInputDeviceSettingsController>>();
+    keyboard_settings_ = mojom::KeyboardSettings::New();
     mouse_settings_ = mojom::MouseSettings::New();
     graphics_tablet_settings_ = mojom::GraphicsTabletSettings::New();
     ON_CALL(*controller_, GetMouseSettings(testing::_))
         .WillByDefault(testing::Return(nullptr));
     ON_CALL(*controller_, GetGraphicsTabletSettings(testing::_))
         .WillByDefault(testing::Return(nullptr));
+    ON_CALL(*controller_, GetKeyboardSettings(testing::_))
+        .WillByDefault(testing::Return(nullptr));
     ON_CALL(*controller_, GetMouseSettings(kMouseDeviceId))
         .WillByDefault(testing::Return(mouse_settings_.get()));
     ON_CALL(*controller_, GetGraphicsTabletSettings(kGraphicsTabletDeviceId))
         .WillByDefault(testing::Return(graphics_tablet_settings_.get()));
+    ON_CALL(*controller_, GetKeyboardSettings(testing::_))
+        .WillByDefault(testing::Return(keyboard_settings_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
     metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
@@ -714,6 +721,7 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
   std::unique_ptr<testing::NiceMock<TestInputDeviceSettingsController>>
       controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  mojom::KeyboardSettingsPtr keyboard_settings_;
   mojom::MouseSettingsPtr mouse_settings_;
   mojom::GraphicsTabletSettingsPtr graphics_tablet_settings_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
@@ -845,6 +853,65 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           /*key_display=*/""))));
 
   EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyDigit0::Typed()));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       ModifierReleasedDuringSequence) {
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
+          static_cast<int>(ui::DomKey::FromCharacter('a')), ui::EF_CONTROL_DOWN,
+          /*key_display=*/""))));
+
+  // Press digit 0 -> Ctrl + A.
+  EXPECT_EQ((std::vector<TestEventVariant>{KeyLControl::Pressed(),
+                                           KeyA::Pressed(ui::EF_CONTROL_DOWN)}),
+            (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Pressed()})));
+
+  // Press and release Ctrl on a different keyboard.
+  EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyLControl::Typed(), ui::EF_NONE,
+                                              kRandomKeyboardDeviceId));
+
+  // Expect that when digit 0 is released it emits A without the Ctrl modifier
+  // flag.
+  EXPECT_EQ(
+      (std::vector<TestEventVariant>{KeyA::Released()}),
+      (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Released()})));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       RemappedModifierReleasedDuringSequence) {
+  keyboard_settings_->modifier_remappings[ui::mojom::ModifierKey::kAlt] =
+      ui::mojom::ModifierKey::kControl;
+
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
+          static_cast<int>(ui::DomKey::FromCharacter('a')), ui::EF_CONTROL_DOWN,
+          /*key_display=*/""))));
+
+  // Press digit 0 -> Ctrl + A.
+  EXPECT_EQ((std::vector<TestEventVariant>{KeyLControl::Pressed(),
+                                           KeyA::Pressed(ui::EF_CONTROL_DOWN)}),
+            (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Pressed()})));
+
+  // Press and release Alt -> Ctrl on a different keyboard. Note that this still
+  // appears as alt to this rewriter. This is a little weird, but nothing that
+  // will break anything. We do not technically support modifier remappigns
+  // across multiple keyboards (this case is already broken in
+  // EventRewriterAsh). This change just makes it so we dont break anyone else.
+  EXPECT_EQ(
+      (std::vector<TestEventVariant>{KeyLAlt::Pressed(ui::EF_CONTROL_DOWN),
+                                     KeyLAlt::Released()}),
+      (RunRewriter(KeyLAlt::Typed(), ui::EF_NONE, kRandomKeyboardDeviceId)));
+
+  // Expect that when digit 0 is released it emits A without the Ctrl modifier
+  // flag.
+  EXPECT_EQ(
+      (std::vector<TestEventVariant>{KeyA::Released()}),
+      (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Released()})));
 }
 
 TEST_F(PeripheralCustomizationEventRewriterTest,

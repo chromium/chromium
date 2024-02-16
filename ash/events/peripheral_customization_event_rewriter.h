@@ -144,6 +144,7 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       mojom::ButtonPtr button,
       const ui::Event& original_event,
       const std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
+  void UpdatePressedButtonMapFlags(const ui::KeyEvent& key_event);
 
   // Removes the set of remapped modifiers from the event that should be
   // discarded.
