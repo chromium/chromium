@@ -3425,7 +3425,10 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
 }
 
 bool IsFasterSplitScreenSetupEnabled() {
-  return base::FeatureList::IsEnabled(kFasterSplitScreenSetup);
+  // There is a settings button in faster split screen setup session that is
+  // associated with the new settings page only.
+  return base::FeatureList::IsEnabled(kFasterSplitScreenSetup) &&
+         base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
 }
 
 bool IsFederatedServiceEnabled() {

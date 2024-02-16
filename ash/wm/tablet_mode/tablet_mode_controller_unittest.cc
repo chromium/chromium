@@ -41,6 +41,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -112,7 +113,12 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 
 class TabletModeControllerTest : public AshTestBase {
  public:
-  TabletModeControllerTest() = default;
+  TabletModeControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
 
   TabletModeControllerTest(const TabletModeControllerTest&) = delete;
   TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
@@ -241,6 +247,8 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<TabletModeControllerTestApi> test_api_;
 
   base::SimpleTestTickClock test_tick_clock_;

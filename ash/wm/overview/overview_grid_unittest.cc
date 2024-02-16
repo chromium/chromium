@@ -17,6 +17,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -28,7 +29,12 @@ namespace ash {
 
 class OverviewGridTest : public AshTestBase {
  public:
-  OverviewGridTest() = default;
+  OverviewGridTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
 
   OverviewGridTest(const OverviewGridTest&) = delete;
   OverviewGridTest& operator=(const OverviewGridTest&) = delete;
@@ -94,6 +100,8 @@ class OverviewGridTest : public AshTestBase {
 
  private:
   std::unique_ptr<OverviewGrid> grid_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that with only one window, we always animate.

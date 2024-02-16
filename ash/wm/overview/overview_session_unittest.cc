@@ -6698,7 +6698,12 @@ TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
 // Test the split view and overview functionalities in tablet mode.
 class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
-  SplitViewOverviewSessionTest() = default;
+  SplitViewOverviewSessionTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
 
   SplitViewOverviewSessionTest(const SplitViewOverviewSessionTest&) = delete;
   SplitViewOverviewSessionTest& operator=(const SplitViewOverviewSessionTest&) =
@@ -6897,6 +6902,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
     void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
     void OnWindowDestroyed(aura::Window* window) override { delete this; }
   };
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dragging an overview item to the edge of the screen snaps the

@@ -279,8 +279,12 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
 
 class FasterSplitScreenTest : public OverviewTestBase {
  public:
-  FasterSplitScreenTest()
-      : scoped_feature_list_(features::kFasterSplitScreenSetup) {}
+  FasterSplitScreenTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
   FasterSplitScreenTest(const FasterSplitScreenTest&) = delete;
   FasterSplitScreenTest& operator=(const FasterSplitScreenTest&) = delete;
   ~FasterSplitScreenTest() override = default;

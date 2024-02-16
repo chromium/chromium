@@ -29,6 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -66,7 +67,12 @@ class WindowRestoreControllerTest : public AshTestBase,
     std::unique_ptr<app_restore::WindowInfo> info;
   };
 
-  WindowRestoreControllerTest() = default;
+  WindowRestoreControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
   WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
@@ -328,6 +334,8 @@ class WindowRestoreControllerTest : public AshTestBase,
     out_dst->display_id = src.display_id;
     out_dst->arc_extra_info = src.arc_extra_info;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // A map which is a fake representation of the window restore file.
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;

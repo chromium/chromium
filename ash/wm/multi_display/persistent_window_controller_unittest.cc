@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/multi_display/persistent_window_controller.h"
-#include "base/memory/raw_ptr.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -15,7 +14,9 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -24,7 +25,23 @@ using session_manager::SessionState;
 
 namespace ash {
 
-using PersistentWindowControllerTest = AshTestBase;
+class PersistentWindowControllerTest : public AshTestBase {
+ public:
+  PersistentWindowControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
+  PersistentWindowControllerTest(const PersistentWindowControllerTest&) =
+      delete;
+  PersistentWindowControllerTest& operator=(
+      const PersistentWindowControllerTest&) = delete;
+  ~PersistentWindowControllerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {

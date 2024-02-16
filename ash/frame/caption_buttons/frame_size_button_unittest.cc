@@ -125,7 +125,12 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
-  FrameSizeButtonTest() = default;
+  FrameSizeButtonTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
 
   FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
@@ -193,6 +198,8 @@ class FrameSizeButtonTest : public AshTestBase {
   TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // Not owned.
   raw_ptr<WindowState, DanglingUntriaged> window_state_;
   raw_ptr<views::Widget, DanglingUntriaged> widget_;

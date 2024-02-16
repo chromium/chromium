@@ -35,6 +35,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -62,7 +63,12 @@ constexpr gfx::Rect kInitialBounds(0, 0, 100, 100);
 class TestClientControlledStateDelegate
     : public ClientControlledState::Delegate {
  public:
-  TestClientControlledStateDelegate() = default;
+  TestClientControlledStateDelegate() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
 
   TestClientControlledStateDelegate(const TestClientControlledStateDelegate&) =
       delete;
@@ -111,6 +117,7 @@ class TestClientControlledStateDelegate
   void mark_as_deleted() { deleted_ = true; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   WindowStateType old_state_ = WindowStateType::kDefault;
   WindowStateType new_state_ = WindowStateType::kDefault;
   int64_t display_id_ = display::kInvalidDisplayId;

@@ -476,7 +476,9 @@ class DesksTest : public AshTestBase,
 
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kFeatureManagement16Desks, GetParam().use_16_desks},
-         {features::kPerDeskShelf, GetParam().per_desk_shelf}});
+         {features::kPerDeskShelf, GetParam().per_desk_shelf},
+         {features::kFasterSplitScreenSetup, true},
+         {features::kOsSettingsRevampWayfinding, true}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);

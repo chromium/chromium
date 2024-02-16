@@ -191,9 +191,13 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
 class SplitViewControllerTest : public AshTestBase {
  public:
-  SplitViewControllerTest()
-      : faster_split_screen_enabled_(
-            features::IsFasterSplitScreenSetupEnabled()) {}
+  SplitViewControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+    faster_split_screen_enabled_ = features::IsFasterSplitScreenSetupEnabled();
+  }
   SplitViewControllerTest(const SplitViewControllerTest&) = delete;
   SplitViewControllerTest& operator=(const SplitViewControllerTest&) = delete;
   ~SplitViewControllerTest() override = default;
@@ -346,8 +350,13 @@ class SplitViewControllerTest : public AshTestBase {
     histograms_.ExpectTotalCount(histogram + std::string(".SplitView"),
                                  counts[1]);
   }
+
   std::vector<std::string> trace_names_;
+
   base::HistogramTester histograms_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   bool faster_split_screen_enabled_ = false;
 };
 
@@ -3926,9 +3935,6 @@ class SplitViewKeyboardTest : public SplitViewControllerTest {
   keyboard::KeyboardUIController* keyboard_controller() {
     return keyboard::KeyboardUIController::Get();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that when the input field in the bottom window is blocked by the

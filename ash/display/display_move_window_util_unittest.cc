@@ -19,6 +19,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -66,7 +67,22 @@ void PerformMoveWindowAccel() {
 
 }  // namespace
 
-using DisplayMoveWindowUtilTest = AshTestBase;
+class DisplayMoveWindowUtilTest : public AshTestBase {
+ public:
+  DisplayMoveWindowUtilTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
+  DisplayMoveWindowUtilTest(const DisplayMoveWindowUtilTest&) = delete;
+  DisplayMoveWindowUtilTest& operator=(const DisplayMoveWindowUtilTest&) =
+      delete;
+  ~DisplayMoveWindowUtilTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(DisplayMoveWindowUtilTest, SingleDisplay) {
   aura::Window* window =
