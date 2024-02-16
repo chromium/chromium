@@ -127,11 +127,13 @@ void ThreadIdNameManager::RemoveName(PlatformThreadHandle::Handle handle,
   AutoLock locked(lock_);
   auto handle_to_name_iter = thread_handle_to_interned_name_.find(handle);
 
-  DCHECK(handle_to_name_iter != thread_handle_to_interned_name_.end());
+  CHECK(handle_to_name_iter != thread_handle_to_interned_name_.end(),
+        base::NotFatalUntil::M125);
   thread_handle_to_interned_name_.erase(handle_to_name_iter);
 
   auto id_to_handle_iter = thread_id_to_handle_.find(id);
-  DCHECK((id_to_handle_iter!= thread_id_to_handle_.end()));
+  CHECK(id_to_handle_iter != thread_id_to_handle_.end(),
+        base::NotFatalUntil::M125);
   // The given |id| may have been re-used by the system. Make sure the
   // mapping points to the provided |handle| before removal.
   if (id_to_handle_iter->second != handle)

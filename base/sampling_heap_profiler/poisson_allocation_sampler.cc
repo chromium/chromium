@@ -425,7 +425,7 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   auto it = ranges::find(observers_, observer);
-  DCHECK(it != observers_.end());
+  CHECK(it != observers_.end(), base::NotFatalUntil::M125);
   observers_.erase(it);
 
   // Stop the profiler if there are no more observers. Setting/resetting

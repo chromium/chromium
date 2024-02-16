@@ -1139,7 +1139,7 @@ bool VerifyPathControlledByUser(const FilePath& base,
     // |base| must be a subpath of |path|, so all components should match.
     // If these CHECKs fail, look at the test that base is a parent of
     // path at the top of this function.
-    DCHECK(ip != path_components.end());
+    CHECK(ip != path_components.end(), base::NotFatalUntil::M125);
     DCHECK(*ip == *ib);
   }
 

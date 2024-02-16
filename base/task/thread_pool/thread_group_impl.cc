@@ -362,7 +362,7 @@ void ThreadGroupImpl::WaitableEventWorkerDelegate::CleanupLockRequired(
 
   // Remove the worker from |workers_|.
   auto worker_iter = ranges::find(outer()->workers_, worker);
-  DCHECK(worker_iter != outer()->workers_.end());
+  CHECK(worker_iter != outer()->workers_.end(), base::NotFatalUntil::M125);
   outer()->workers_.erase(worker_iter);
 }
 

@@ -381,7 +381,7 @@ void StatisticsRecorder::RemoveHistogramSampleObserver(
   EnsureGlobalRecorderWhileLocked();
 
   auto iter = top_->observers_.find(hash);
-  DCHECK(iter != top_->observers_.end());
+  CHECK(iter != top_->observers_.end(), base::NotFatalUntil::M125);
 
   auto result = iter->second->RemoveObserver(observer);
   if (result ==

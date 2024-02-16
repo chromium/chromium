@@ -60,7 +60,11 @@ void SharedMemoryTracker::IncrementMemoryUsage(
 void SharedMemoryTracker::DecrementMemoryUsage(
     const SharedMemoryMapping& mapping) {
   AutoLock hold(usages_lock_);
-  DCHECK(usages_.find(mapping.raw_memory_ptr()) != usages_.end());
+  const auto it = usages_.find(mapping.raw_memory_ptr());
+  // TODO(pbos): When removing this NotFatalUntil, use erase(it) below. We can't
+  // do that now because if this CHECK is actually failing there'd be a memory
+  // bug.
+  CHECK(it != usages_.end(), base::NotFatalUntil::M125);
   usages_.erase(mapping.raw_memory_ptr());
 }
 

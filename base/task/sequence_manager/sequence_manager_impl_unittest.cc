@@ -4595,7 +4595,8 @@ class PostTaskWhenDeleted {
   }
 
   ~PostTaskWhenDeleted() {
-    DCHECK(tasks_alive_->find(full_name()) != tasks_alive_->end());
+    CHECK(tasks_alive_->find(full_name()) != tasks_alive_->end(),
+          base::NotFatalUntil::M125);
     tasks_alive_->erase(full_name());
     tasks_deleted_->push_back(full_name());
 
