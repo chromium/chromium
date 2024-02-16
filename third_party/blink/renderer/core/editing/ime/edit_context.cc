@@ -271,16 +271,8 @@ void EditContext::updateText(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateText", "start, end",
                std::to_string(start) + ", " + std::to_string(end), "new_text",
                new_text);
-
-  // Following this spec:
-  // https://html.spec.whatwg.org/C/#dom-textarea/input-setrangetext
   if (start > end) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        "The provided start value (" + String::Number(start) +
-            ") is larger than the provided end value (" + String::Number(end) +
-            ").");
-    return;
+    std::swap(start, end);
   }
   end = std::min(end, text_.length());
   start = std::min(start, end);
