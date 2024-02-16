@@ -343,6 +343,12 @@ group("gn_all") {
         "//chrome/credential_provider",
         "//chrome/credential_provider/test:gcp_unittests",
       ]
+
+      if (enable_platform_experience) {
+        deps += [
+          "//chrome/browser/platform_experience/win:platform_experience_helper",
+        ]
+      }
     }
 
     if (is_mac) {

@@ -5,6 +5,9 @@
 import("//build/config/chrome_build.gni")
 
 declare_args() {
+  # By default, only branded builds allow for platform experience.
+  enable_platform_experience = is_chrome_branded
+
   # By default, only branded builds integrate with automatic updates.
   enable_updater = is_chrome_branded
 
