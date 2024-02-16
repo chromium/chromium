@@ -278,12 +278,18 @@ chromium-metrics-reviews@google.com.
   <int value="1204" label="Change Device Language"/>
   <int value="1205" label="Offer Translation"/>
   <int value="1206" label="Add Input Method"/>
-  <int value="1207" label="Spell Check"/>
+  <int value="1207" label="Spell Check: On/Off"/>
   <int value="1208" label="Show Predictive Writing"/>
   <int value="1209" label="Show PK Auto-correction"/>
   <int value="1210" label="Show VK Auto-correction"/>
   <int value="1211" label="Show Diacritics"/>
   <int value="1212" label="Show Orca"/>
+  <int value="1213" label="Remove Input Method"/>
+  <int value="1214" label="Set Current Input Method"/>
+  <int value="1215" label="Add Spell Check Language"/>
+  <int value="1216" label="Remove Spell Check Language"/>
+  <int value="1217" label="Add Spell Check Word"/>
+  <int value="1218" label="Remove Spell Check Word"/>
   <int value="1300" label="Google Drive Connection"/>
   <int value="1301" label="Remove Google Drive access"/>
   <int value="1302" label="Google Drive File Sync"/>

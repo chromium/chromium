@@ -263,8 +263,9 @@ suite('<os-settings-input-page>', () => {
     test('Deep link to spell check', async () => {
       await createInputPage();
 
+      const setting = settingMojom.Setting.kSpellCheckOnOff;
       const params = new URLSearchParams();
-      params.append('settingId', settingMojom.Setting.kSpellCheck.toString());
+      params.append('settingId', setting.toString());
       Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
       flush();
 
@@ -277,7 +278,7 @@ suite('<os-settings-input-page>', () => {
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Spell check toggle should be focused for settingId=1207.');
+          `Spell check toggle should be focused for settingId=${setting}.`);
     });
 
     test('Spellcheck row is focused after returning from subpage', async () => {

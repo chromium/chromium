@@ -240,7 +240,7 @@ enum Setting {
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,
-  kSpellCheck = 1207,
+  kSpellCheckOnOff = 1207,
   // Note: Value 1208 was for deprecated kShowPredictiveWriting.
   // Do not reuse.
   // TODO(crbug/1058552): Add [Deprecated] attribute once implemented.
@@ -248,6 +248,12 @@ enum Setting {
   kShowVKAutoCorrection = 1210,
   kShowDiacritic = 1211,
   kShowOrca = 1212,
+  kRemoveInputMethod = 1213,
+  kSetCurrentInputMethod = 1214,
+  kAddSpellCheckLanguage = 1215,
+  kRemoveSpellCheckLanguage = 1216,
+  kAddSpellCheckWord = 1217,
+  kRemoveSpellCheckWord = 1218,
 
   // Files section.
   kGoogleDriveConnection = 1300,

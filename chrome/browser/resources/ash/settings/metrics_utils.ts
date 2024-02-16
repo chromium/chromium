@@ -41,6 +41,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  // Language and input settings
+  'browser.enable_spellchecking': {
+    setting: Setting.kSpellCheckOnOff,
+    type: PrefType.BOOLEAN,
+  },
+
   // Multitasking settings
   'ash.snap_window_suggestions.enabled': {
     setting: Setting.kSnapWindowSuggestions,

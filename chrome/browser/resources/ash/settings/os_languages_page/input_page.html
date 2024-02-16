@@ -246,7 +246,7 @@
         sub-label="$i18n{spellAndGrammarCheckDescription}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
-        deep-link-focus-id$="[[Setting.kSpellCheck]]"
+        deep-link-focus-id$="[[Setting.kSpellCheckOnOff]]"
         aria-describedby="spellAndGrammarCheckDescription">
     </settings-toggle-button>
   </template>
@@ -259,7 +259,7 @@
         label="$i18n{spellCheckTitle}"
         pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
         on-settings-boolean-control-change="onSpellcheckToggleChange_"
-        deep-link-focus-id$="[[Setting.kSpellCheck]]">
+        deep-link-focus-id$="[[Setting.kSpellCheckOnOff]]">
     </settings-toggle-button>
   </template>
   <iron-collapse opened="[[prefs.browser.enable_spellchecking.value]]"

@@ -66,7 +66,7 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kSpellCheck}},
+       {.setting = mojom::Setting::kSpellCheckOnOff}},
   });
   return *tags;
 }
@@ -538,10 +538,14 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputSubpageSettings[] = {
       mojom::Setting::kAddInputMethod,
+      mojom::Setting::kRemoveInputMethod,
+      mojom::Setting::kSetCurrentInputMethod,
       mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kShowInputOptionsInShelf,
       mojom::Setting::kShowOrca,
-      mojom::Setting::kSpellCheck,
+      mojom::Setting::kSpellCheckOnOff,
+      mojom::Setting::kAddSpellCheckLanguage,
+      mojom::Setting::kRemoveSpellCheckLanguage,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputSubpageSettings,
                             generator);
@@ -553,6 +557,12 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kLanguage,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kEditDictionarySubpagePath);
+  static constexpr mojom::Setting kEditDictionarySubpageSettings[] = {
+      mojom::Setting::kAddSpellCheckWord,
+      mojom::Setting::kRemoveSpellCheckWord,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kEditDictionary,
+                            kEditDictionarySubpageSettings, generator);
 
   // Japanese Manage User Dictionary subpage
   generator->RegisterNestedSubpage(

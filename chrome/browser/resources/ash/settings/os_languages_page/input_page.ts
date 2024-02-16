@@ -23,9 +23,9 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -168,7 +168,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     Setting.kShowEmojiSuggestions,
     Setting.kShowInputOptionsInShelf,
     Setting.kShowOrca,
-    Setting.kSpellCheck,
+    Setting.kSpellCheckOnOff,
   ]);
   // From RouteOriginMixin.
   override route = routes.OS_LANGUAGES_INPUT;
@@ -242,7 +242,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.SWITCH_INPUT_METHOD);
-    recordSettingChange();
+    recordSettingChange(Setting.kSetCurrentInputMethod);
   }
 
   /**
@@ -258,6 +258,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
 
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
+    recordSettingChange(Setting.kSetCurrentInputMethod);
   }
 
   /**
@@ -395,7 +396,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onRemoveInputMethodClick_(
       e: DomRepeatEvent<chrome.languageSettingsPrivate.InputMethod>): void {
     this.languageHelper.removeInputMethod(e.model.item.id);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveInputMethod);
   }
 
   private getRemoveSpellcheckLanguageTooltip_(lang: SpellCheckLanguageState):
@@ -407,7 +408,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private onRemoveSpellcheckLanguageClick_(
       e: DomRepeatEvent<LanguageState|SpellCheckLanguageState>): void {
     this.languageHelper.toggleSpellCheck(e.model.item.language.code, false);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveSpellCheckLanguage);
   }
 
   /**
