@@ -312,6 +312,10 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
 
     ASSERT_NO_FATAL_FAILURE(std::move(action).Run());
 
+    // Wait until the main browser set to be the last active one.
+    ui_test_utils::BrowserSetLastActiveWaiter last_active_waiter(browser());
+    last_active_waiter.Wait();
+
     EXPECT_EQ(num_browsers, chrome::GetBrowserCount(profile()));
     EXPECT_EQ(browser(), chrome::FindLastActive());
     EXPECT_EQ(++num_tabs, browser()->tab_strip_model()->count());
@@ -398,6 +402,10 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
   SetupAppWithURL(app_url);
   // Wait for the URL to load so that we can click on the page.
   url_observer.Wait();
+
+  // Wait until app_browser_ becomes the last active one.
+  ui_test_utils::BrowserSetLastActiveWaiter last_active_waiter(app_browser_);
+  last_active_waiter.Wait();
 
   const GURL url = embedded_test_server()->GetURL(
       "app.com", "/click_modifier/new_window.html");

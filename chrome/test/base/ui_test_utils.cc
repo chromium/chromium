@@ -561,6 +561,41 @@ void ToggleFullscreenModeAndWait(Browser* browser) {
   waiter.Wait();
 }
 
+BrowserSetLastActiveWaiter::BrowserSetLastActiveWaiter(
+    Browser* browser,
+    bool wait_for_set_last_active_observed)
+    : browser_(browser),
+      wait_for_set_last_active_observed_(wait_for_set_last_active_observed) {
+  BrowserList::AddObserver(this);
+  if (chrome::FindLastActive() == browser_ &&
+      !wait_for_set_last_active_observed_) {
+    satisfied_ = true;
+  }
+}
+
+BrowserSetLastActiveWaiter::~BrowserSetLastActiveWaiter() {
+  BrowserList::RemoveObserver(this);
+}
+
+// Runs a loop until |browser_| becomes the last active browser.
+void BrowserSetLastActiveWaiter::Wait() {
+  if (satisfied_) {
+    return;
+  }
+
+  run_loop_.Run();
+}
+
+// BrowserListObserver:
+void BrowserSetLastActiveWaiter::OnBrowserSetLastActive(Browser* browser) {
+  if (browser == browser_) {
+    satisfied_ = true;
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+}
+
 void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {

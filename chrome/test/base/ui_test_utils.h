@@ -257,6 +257,48 @@ class FullscreenWaiter : public FullscreenObserver {
   bool satisfied_;
 };
 
+// This waiter waits for the specified |browser| becoming the last active
+// browser in BrowserList. In Lacros, BrowserList::SetLastActive is triggered by
+// OnWidgetActivationChanged when wayland notify the UI change asynchronously.
+// Many testing code needs to wait until the expected browser to be set as
+// the last active browser, and some testing code needs to wait until
+// BrowserList::OnSetLastActive() is observed.
+class BrowserSetLastActiveWaiter : public BrowserListObserver {
+ public:
+  // By default, the waiting will be satisfied if the expected |browser| is the
+  // last active browser in BrowserList. In most cases, the testing code
+  // depending on chrome::FindLastActive() should be good.
+  // In some cases, for example, when there is only one browser in the
+  // BrowserList, |browser| can be returned as the last active browser even if
+  // the asynchronous Wayland UI event has not arrived yet (i.e.
+  // BrowserList::SetLastActive() is not triggered and the code observing
+  // BrowserList::OnSetLastActive() will not be called). If the test case
+  // depends on the code observing BrowserList::OnSetLastActive() being executed
+  // first, we can configure the waiter to be satisfied upon
+  // OnBrowserSetLastActive is observed by passing
+  // |wait_for_set_last_active_observed| being true.
+  explicit BrowserSetLastActiveWaiter(
+      Browser* browser,
+      bool wait_for_set_last_active_observed = false);
+  BrowserSetLastActiveWaiter(const BrowserSetLastActiveWaiter&) = delete;
+  BrowserSetLastActiveWaiter& operator=(const BrowserSetLastActiveWaiter&) =
+      delete;
+
+  ~BrowserSetLastActiveWaiter() override;
+
+  // Runs a loop until |browser_| becomes the last active browser.
+  void Wait();
+
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
+
+ private:
+  const raw_ptr<Browser> browser_;  // not_owned
+  bool satisfied_ = false;
+  bool wait_for_set_last_active_observed_ = false;
+  base::RunLoop run_loop_;
+};
+
 // Toggles browser fullscreen mode, then wait for its completion.
 void ToggleFullscreenModeAndWait(Browser* browser);
 
