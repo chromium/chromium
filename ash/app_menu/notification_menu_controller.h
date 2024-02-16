@@ -72,7 +72,7 @@ class APP_MENU_EXPORT NotificationMenuController
 
   // The view which shows all active notifications for |app_id_|. Owned by the
   // views hierarchy.
-  raw_ptr<NotificationMenuView> notification_menu_view_ = nullptr;
+  raw_ptr<NotificationMenuView, DanglingUntriaged> notification_menu_view_ = nullptr;
 
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
