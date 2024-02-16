@@ -2,18 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface Column<T> {
-  compare?(a: T, b: T): number;
-
-  render(td: HTMLElement, row: T): void;
-
-  renderHeader(th: HTMLElement): void;
-}
-
 export abstract class TableModel<T> {
   readonly rowsChangedListeners: Set<() => void> = new Set();
-
-  constructor(public readonly cols: Array<Column<T>>, public sortIdx: number) {}
 
   abstract getRows(): T[];
 
@@ -21,7 +11,7 @@ export abstract class TableModel<T> {
     return this.getRows().length;
   }
 
-  notifyRowsChanged(): void {
+  protected notifyRowsChanged(): void {
     this.rowsChangedListeners.forEach(f => f());
   }
 }
@@ -29,11 +19,8 @@ export abstract class TableModel<T> {
 export class ArrayTableModel<T> extends TableModel<T> {
   private rows_: T[] = [];
 
-  constructor(
-      cols: Array<Column<T>>,
-      sortIdx: number,
-  ) {
-    super(cols, sortIdx);
+  constructor() {
+    super();
   }
 
   override getRows(): T[] {
