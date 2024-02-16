@@ -5,8 +5,17 @@
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_forward.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
+
+// Access the private view that backs the toolbar.
+// TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in AppKit.
+@interface NSToolbar (ToolbarView)
+// The current usage of this property is readonly. Mark it as such here so we
+// don't invite other usages without a thoughtful change.
+@property(readonly) NSView* _toolbarView;
+@end
 
 namespace remote_cocoa {
 
@@ -183,7 +192,33 @@ void ImmersiveModeTabbedControllerCocoa::RevealUnlocked() {
 }
 
 void ImmersiveModeTabbedControllerCocoa::TitlebarReveal() {
-  browser_window().toolbar.visible = YES;
+  NSToolbar* toolbar = browser_window().toolbar;
+  if (toolbar.visible) {
+    return;
+  }
+  toolbar.visible = YES;
+
+  // The tab controller and toolbar views are siblings. When the toolbar view
+  // is removed then re-added it becomes z-order on top of the tab controller
+  // view. This becomes an issue when the window is not active but we want to
+  // handle the first click. The toolbar view returns NO for
+  // -acceptsFirstMouse:. Prefer to send the toolbar view to the back of the
+  // siblings list. If we are unable to get a handle on the toolbar view remove
+  // and re-add the tab controller so its view is z-order above the toolbar
+  // view. See http://crbug/40283902 for details.
+  // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in AppKit.
+  if ([toolbar respondsToSelector:@selector(_toolbarView)]) {
+    NSView* toolbar_view = toolbar._toolbarView;
+    [toolbar_view.superview addSubview:toolbar_view
+                            positioned:NSWindowBelow
+                            relativeTo:nil];
+  } else {
+    // We want to know if the toolbar no longer responds to _toolbarView but
+    // since we have a backup workaround DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
+    RemoveController();
+    AddController();
+  }
 }
 
 void ImmersiveModeTabbedControllerCocoa::TitlebarHide() {
