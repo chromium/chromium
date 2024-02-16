@@ -550,6 +550,7 @@ chromium-metrics-reviews@google.com.
   <int value="15"
       label="Desk switch by clicking on a mini view in the desk button desk
              bar"/>
+  <int value="16" label="Desk switch due to session restore"/>
 </enum>
 
 <enum name="DockedAction">

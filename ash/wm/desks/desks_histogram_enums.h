@@ -59,7 +59,8 @@ enum class DesksSwitchSource {
   kDeskButtonSwitchButton = 13,
   kDeskButtonDeskRemoved = 14,
   kDeskButtonMiniViewButton = 15,
-  kMaxValue = kDeskButtonMiniViewButton,
+  kDeskRestored = 16,
+  kMaxValue = kDeskRestored,
 };
 
 // Please keep in sync with the matching enum in

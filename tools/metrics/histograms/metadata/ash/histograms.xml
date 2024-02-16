@@ -2406,6 +2406,10 @@ chromium-metrics-reviews@google.com.
     Emitted when the active desk is changed to specify the source of this
     action, i.e. whether due to new-desk shortcut, desk removed, window
     activated, switch-desk shortcut, or a press on the desk mini_view.
+
+    Note: the bucket for user switching was previousy emitted to at session
+    startup which meant that it was artificially inflated. As of M123, these
+    events now end up in the session restore bucket.
   </summary>
 </histogram>
 
