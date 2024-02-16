@@ -86,13 +86,16 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
                     // Handles the drag and dropping of two single tabs to create a group.
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId) {
-                        int newRootIdTabCount = filter.getRelatedTabCountForRootId(newRootId);
-                        // If the items being merged are groups, do not show the modal dialog and
-                        // early exit.
-                        if (filter.hasOtherRelatedTabs(movedTab) || newRootIdTabCount > 1) {
-                            return;
-                        }
+                        // Moving tab is already in a group.
+                        if (filter.isTabInTabGroup(movedTab)) return;
+
+                        // Target root ID already has a group.
+                        Tab groupTab = filter.getGroupLastShownTab(newRootId);
+                        assert groupTab != null : "Merging tab to empty group.";
+                        if (filter.isTabInTabGroup(groupTab)) return;
+
                         // Pass in the tab count of the two tab items to be merged.
+                        int newRootIdTabCount = filter.getRelatedTabCountForRootId(newRootId);
                         showDialog(newRootIdTabCount + 1, filter.isIncognito());
                     }
                 };

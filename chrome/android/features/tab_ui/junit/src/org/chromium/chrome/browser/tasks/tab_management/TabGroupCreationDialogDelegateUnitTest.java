@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -50,6 +55,7 @@ public class TabGroupCreationDialogDelegateUnitTest {
     @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
+    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mObserverCaptor;
 
     private Activity mActivity;
     private TabGroupCreationDialogDelegate mTabGroupCreationDialogDelegate;
@@ -62,8 +68,14 @@ public class TabGroupCreationDialogDelegateUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mTabModelSelectorSupplier.set(mTabModelSelector);
         mTabGroupCreationDialogDelegate =
-                new TabGroupCreationDialogDelegate(
-                        mActivity, mModalDialogManager, mTabModelSelectorSupplier);
+                spy(
+                        new TabGroupCreationDialogDelegate(
+                                mActivity, mModalDialogManager, mTabModelSelectorSupplier));
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getTabModelFilter(false))
+                .thenReturn(mRegularTabGroupModelFilter);
+        when(mTabModelFilterProvider.getTabModelFilter(true))
+                .thenReturn(mIncognitoTabGroupModelFilter);
     }
 
     @After
@@ -73,17 +85,62 @@ public class TabGroupCreationDialogDelegateUnitTest {
 
     @Test
     public void testCreationDialogDelegate_addObservers() {
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getTabModelFilter(false))
-                .thenReturn(mRegularTabGroupModelFilter);
-        when(mTabModelFilterProvider.getTabModelFilter(true))
-                .thenReturn(mIncognitoTabGroupModelFilter);
         mTabGroupCreationDialogDelegate.addObservers();
 
-        verify(mRegularTabGroupModelFilter, times(1))
+        verify(mRegularTabGroupModelFilter)
                 .addTabGroupObserver(any(TabGroupModelFilterObserver.class));
-        verify(mIncognitoTabGroupModelFilter, times(1))
+        verify(mIncognitoTabGroupModelFilter)
                 .addTabGroupObserver(any(TabGroupModelFilterObserver.class));
+    }
+
+    @Test
+    public void testShowOnDidCreateGroup() {
+        mTabGroupCreationDialogDelegate.addObservers();
+        verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
+        TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
+
+        int rootId = 1;
+        int tabCount = 5;
+        when(mRegularTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabCount);
+        observer.didCreateNewGroup(rootId);
+
+        verify(mTabGroupCreationDialogDelegate).showDialog(tabCount, false);
+    }
+
+    @Test
+    public void testShowOnWillMergeTabToGroup() {
+        mTabGroupCreationDialogDelegate.addObservers();
+        verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
+        TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
+
+        int newRootId = 2;
+        int newRootIdTabCount = 10;
+        when(mRegularTabGroupModelFilter.getRelatedTabCountForRootId(newRootId))
+                .thenReturn(newRootIdTabCount);
+
+        Tab tab1 = mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
+        when(mRegularTabGroupModelFilter.getGroupLastShownTab(newRootId)).thenReturn(tab2);
+
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab2)).thenReturn(true);
+        observer.willMergeTabToGroup(tab1, newRootId);
+        verify(mTabGroupCreationDialogDelegate, never()).showDialog(anyInt(), anyBoolean());
+
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(false);
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab2)).thenReturn(true);
+        observer.willMergeTabToGroup(tab1, newRootId);
+        verify(mTabGroupCreationDialogDelegate, never()).showDialog(anyInt(), anyBoolean());
+
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab2)).thenReturn(false);
+        observer.willMergeTabToGroup(tab1, newRootId);
+        verify(mTabGroupCreationDialogDelegate, never()).showDialog(anyInt(), anyBoolean());
+
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(false);
+        when(mRegularTabGroupModelFilter.isTabInTabGroup(tab2)).thenReturn(false);
+        observer.willMergeTabToGroup(tab1, newRootId);
+        verify(mTabGroupCreationDialogDelegate).showDialog(newRootIdTabCount + 1, false);
     }
 
     @Test
