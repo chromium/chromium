@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -205,6 +206,20 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             onToolbarAlphaChange);
         }
         return Pair.create(new TabSwitcherPaneAdapter(pane), pane);
+    }
+
+    @Override
+    public Pane createTabGroupsPane(
+            @NonNull Context context,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull DoubleConsumer onToolbarAlphaChange) {
+        LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
+                LazyOneshotSupplier.fromSupplier(
+                        () ->
+                                tabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getTabModelFilter(false));
+        return new TabGroupsPane(context, tabModelFilterSupplier, onToolbarAlphaChange);
     }
 
     @Override

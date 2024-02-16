@@ -203,6 +203,19 @@ public interface TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange);
 
     /**
+     * *
+     *
+     * @param context Used to inflate UI.
+     * @param tabModelSelector Used to pull tab data from.
+     * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @return The pane implementation that displays and allows interactions with tab groups.
+     */
+    Pane createTabGroupsPane(
+            @NonNull Context context,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull DoubleConsumer onToolbarAlphaChange);
+
+    /**
      * Create a {@link TabGroupCreationDialog} when creating a new tab group.
      *
      * @param activity The {@link Activity} that hosts this dialog.

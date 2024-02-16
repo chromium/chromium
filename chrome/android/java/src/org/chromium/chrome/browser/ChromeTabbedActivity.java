@@ -212,6 +212,7 @@ import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -916,22 +917,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         var builder = mHubProvider.getPaneListBuilder();
         builder.registerPane(
                 PaneId.TAB_SWITCHER,
-                LazyOneshotSupplier.fromSupplier(
-                        () -> {
-                            return createTabSwitcherPane(false);
-                        }));
+                LazyOneshotSupplier.fromSupplier(() -> createTabSwitcherPane(false)));
         builder.registerPane(
                 PaneId.INCOGNITO_TAB_SWITCHER,
-                LazyOneshotSupplier.fromSupplier(
-                        () -> {
-                            return createTabSwitcherPane(true);
-                        }));
+                LazyOneshotSupplier.fromSupplier(() -> createTabSwitcherPane(true)));
+        if (TabUiFeatureUtilities.isTabGroupPaneEnabled()) {
+            builder.registerPane(
+                    PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
+        }
         mHubProvider
                 .getHubManagerSupplier()
-                .onAvailable(
-                        manager -> {
-                            mHubManagerSupplier.set(manager);
-                        });
+                .onAvailable(manager -> mHubManagerSupplier.set(manager));
     }
 
     private @Nullable BooleanSupplier getOverviewIncognitoSupplier() {
@@ -974,6 +970,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mTabSwitcherSupplier.set(result.first);
         }
         return result.second;
+    }
+
+    private Pane createTabGroupsPane() {
+        return TabManagementDelegateProvider.getDelegate()
+                .createTabGroupsPane(this, getTabModelSelector(), adaptOnToolbarAlphaChange());
     }
 
     private void createGridTabSwitcher(

@@ -11,6 +11,9 @@ public class DefaultPaneOrderController implements PaneOrderController {
     @Override
     public ImmutableSet<Integer> getPaneOrder() {
         return ImmutableSet.of(
-                PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER, PaneId.BOOKMARKS);
+                PaneId.TAB_SWITCHER,
+                PaneId.INCOGNITO_TAB_SWITCHER,
+                PaneId.TAB_GROUPS,
+                PaneId.BOOKMARKS);
     }
 }

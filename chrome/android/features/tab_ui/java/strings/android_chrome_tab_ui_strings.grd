@@ -631,6 +631,11 @@
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_NOT_SELECTED_DESCRIPTION" desc="Accessibility string describing that no icon is shown to indicate that this color item is the currently selected one.">
         <ph name="COLOR_NAME">%1$s<ex>Blue</ex></ph> Not selected
       </message>
+
+      <!-- Tab Group Pane Strings -->
+      <message name="IDS_ACCESSIBILITY_TAB_GROUPS" desc="Content description for the button to show tab groups UI.">
+        Tab groups
+      </message>
     </messages>
   </release>
 </grit>
