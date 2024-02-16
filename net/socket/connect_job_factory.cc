@@ -392,14 +392,15 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         delegate, /*net_log=*/nullptr);
   }
 
-  const ProxyServer& first_proxy_server = proxy_chain.First();
-  if (first_proxy_server.is_http_like()) {
+  const ProxyServer& last_proxy_server = proxy_chain.Last();
+  if (http_proxy_params) {
+    DCHECK(last_proxy_server.is_http_like());
     return http_proxy_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
         std::move(http_proxy_params), delegate, /*net_log=*/nullptr);
   }
 
-  DCHECK(first_proxy_server.is_socks());
+  DCHECK(last_proxy_server.is_socks());
   return socks_connect_job_factory_->Create(
       request_priority, socket_tag, common_connect_job_params,
       std::move(socks_params), delegate, /*net_log=*/nullptr);
