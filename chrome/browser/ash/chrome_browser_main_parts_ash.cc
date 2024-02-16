@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/rapid_key_sequence_recorder.h"
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
@@ -1349,6 +1350,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     Shell::Get()->shortcut_input_handler()->Initialize();
   }
   Shell::Get()->modifier_key_combo_recorder()->Initialize();
+  Shell::Get()->rapid_key_sequence_recorder()->Initialize();
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {

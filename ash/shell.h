@@ -218,6 +218,7 @@ class PrivacyHubController;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
+class RapidKeySequenceRecorder;
 class RasterScaleController;
 class RgbKeyboardManager;
 class ResizeShadowController;
@@ -736,6 +737,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   ModifierKeyComboRecorder* modifier_key_combo_recorder() {
     return modifier_key_combo_recorder_.get();
   }
+  RapidKeySequenceRecorder* rapid_key_sequence_recorder() {
+    return rapid_key_sequence_recorder_.get();
+  }
   ShutdownControllerImpl* shutdown_controller() {
     return shutdown_controller_.get();
   }
@@ -969,6 +973,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<InputDeviceSettingsControllerImpl>
       input_device_settings_controller_;
   std::unique_ptr<ModifierKeyComboRecorder> modifier_key_combo_recorder_;
+  std::unique_ptr<RapidKeySequenceRecorder> rapid_key_sequence_recorder_;
   std::unique_ptr<InputDeviceSettingsDispatcher>
       input_device_settings_dispatcher_;
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;

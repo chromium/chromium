@@ -1708,6 +1708,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.DoubleTap{ShiftLocation}ShiftDuration"
+    units="ms" expires_after="2024-08-04">
+  <owner>dpad@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration between two consecutive {ShiftLocation}Shift keypresses
+    (within a 500ms window).
+  </summary>
+  <token key="ShiftLocation">
+    <variant name="Left"/>
+    <variant name="Right"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.EventRewriter.KeyRewriteLatency"
     units="microseconds" expires_after="2024-07-28">
   <owner>wangdanny@chromium.org</owner>
