@@ -31014,6 +31014,8 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Choice Screen feature suppressed or disabled"/>
   <int value="10" label="Is suppressed by another already triggered dialog"/>
   <int value="11" label="Browser window is too small to fit the dialog"/>
+  <int value="12" label="Has a distribution custom search engine as default"/>
+  <int value="13" label="Has a removed prepopulated search engine as default"/>
 </enum>
 
 <enum name="SearchEngineChoiceScreenEvents">
