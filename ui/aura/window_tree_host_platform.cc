@@ -333,11 +333,7 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
     const bool visible_before = compositor()->IsVisible();
     OnOcclusionStateChanged(latest.occlusion_state);
-    if (!compositor()->IsVisible()) {
-      // If the compositor is not visible, then there's no need to wait for a
-      // frame.
-      needs_frame = false;
-    } else if (!visible_before && compositor()->IsVisible()) {
+    if (!visible_before && compositor()->IsVisible()) {
       // If the compositor has become visible, make sure to wait for a frame.
       needs_frame = true;
     }
@@ -345,7 +341,8 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
 
   // Only set the sequence ID if this change will produce a frame.
   // If it won't, we may wait indefinitely for a frame that will never come.
-  if (!needs_frame) {
+  // If the compositor is not visible, we will not get a frame, so don't wait.
+  if (!needs_frame || !compositor()->IsVisible()) {
     return -1;
   }
 
