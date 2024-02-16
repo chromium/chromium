@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace base {
@@ -99,13 +100,18 @@ void BM_ReadBigEndianMisaligned(::benchmark::State& state) {
   BENCHMARK(function<int32_t>)->MinWarmUpTime(1.0);  \
   BENCHMARK(function<uint32_t>)->MinWarmUpTime(1.0); \
   BENCHMARK(function<int64_t>)->MinWarmUpTime(1.0);  \
-  BENCHMARK(function<uint64_t>)->MinWarmUpTime(1.0); \
-  typedef int force_semicolon
+  BENCHMARK(function<uint64_t>)->MinWarmUpTime(1.0);
 
-BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianAligned);
-BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianMisaligned);
-BENCHMARK_FOR_INT_TYPES(BM_ReadBigEndianAligned);
-BENCHMARK_FOR_INT_TYPES(BM_ReadBigEndianMisaligned);
+// Register the benchmarks as a GTest test. This allows using legacy
+// --gtest_filter and --gtest_list_tests.
+// TODO(https://crbug.com/40251982): Clean this up after transitioning to
+// --benchmark_filter and --benchmark_list_tests.
+TEST(BigEndianPerfTest, All) {
+  BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianAligned);
+  BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianMisaligned);
+  BENCHMARK_FOR_INT_TYPES(BM_ReadBigEndianAligned);
+  BENCHMARK_FOR_INT_TYPES(BM_ReadBigEndianMisaligned);
+}
 
 #undef BENCHMARK_FOR_INT_TYPES
 
