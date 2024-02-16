@@ -32962,11 +32962,6 @@ would be helpful to identify which type is being sent.
   <int value="2" label="No third-party site data accesses"/>
 </enum>
 
-<enum name="ThrottlingResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Rejected"/>
-</enum>
-
 <enum name="TimeZoneRequestEvent">
   <int value="0" label="Request start"/>
   <int value="1" label="Response success"/>
