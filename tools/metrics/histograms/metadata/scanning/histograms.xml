@@ -32,6 +32,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scanning.DiscoverySession.MaxInterval" units="ms"
+    expires_after="2024-09-01">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Records the maximum interval between events during a discovery session.
+    Intended to be used for tuning session monitor timeouts.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.DiscoverySession.NumScanners" units="scanners"
+    expires_after="2024-09-01">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    At the end of a discovery session, records the total number of scanners
+    found during that session.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.DiscoverySession.Result"
+    enum="ScannerOperationResult" expires_after="2024-09-01">
+  <owner>bmgordon@chromium.org</owner>
+  <owner>project-bolton@google.com</owner>
+  <summary>
+    Records the lorgnette operation result at the end of a discovery session.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
     units="KB" expires_after="2024-01-04">
   <owner>gavinwill@chromium.org</owner>

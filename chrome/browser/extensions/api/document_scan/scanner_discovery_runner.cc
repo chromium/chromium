@@ -124,9 +124,6 @@ void ScannerDiscoveryRunner::SendGetScannerListRequest() {
       extension_->id(), std::move(filter_),
       base::BindOnce(&ScannerDiscoveryRunner::OnScannerListReceived,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(b/312757530): Clean up the pending call if the DocumentScan service
-  // goes away without running our callback.
 }
 
 void ScannerDiscoveryRunner::OnScannerListReceived(

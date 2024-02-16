@@ -20,9 +20,12 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/dbus/common/pipe_reader.h"
@@ -37,6 +40,9 @@ namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
+
+constexpr base::TimeDelta kDiscoveryMonitorInterval = base::Seconds(1);
+constexpr base::TimeDelta kDiscoveryMaxInactivity = base::Seconds(20);
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -307,8 +313,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(
             &LorgnetteManagerClientImpl::OnStartScannerDiscoveryResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(signal_callback),
-            std::move(response_callback)));
+            weak_ptr_factory_.GetWeakPtr(), std::move(request),
+            std::move(signal_callback), std::move(response_callback)));
   }
 
   void StopScannerDiscovery(
@@ -447,6 +453,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         signal_callback;
     std::string session_id;
     lorgnette::ListScannersResponse response;
+    base::TimeTicks last_event;
+    base::TimeDelta max_event_interval;
   };
 
   // Helper function to send a GetNextImage request to lorgnette for the scan
@@ -840,6 +848,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   void OnStartScannerDiscoveryResponse(
+      const lorgnette::StartScannerDiscoveryRequest& request,
       base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
           signal_callback,
       chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
@@ -869,9 +878,48 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DiscoverySessionState session;
     session.session_id = response.session_id();
     session.signal_callback = std::move(signal_callback);
+    session.last_event = base::TimeTicks::Now();
+    session.max_event_interval = base::Milliseconds(0);
     discovery_sessions_[response.session_id()] = std::move(session);
+    PRINTER_LOG(DEBUG) << "Client " << request.client_id()
+                       << " started discovery session: "
+                       << response.session_id();
 
+    if (discovery_sessions_.size() == 1) {
+      // Passing "this" is safe because discovery_monitor_ will be destroyed
+      // before this object.
+      discovery_monitor_.Start(
+          FROM_HERE, kDiscoveryMonitorInterval, this,
+          &LorgnetteManagerClientImpl::CheckDiscoverySessions);
+    }
     std::move(response_callback).Run(std::move(response));
+  }
+
+  void CheckDiscoverySessions() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::TimeTicks now = base::TimeTicks::Now();
+    std::vector<std::string> expired_sessions;
+    // Find all of the sessions that should expire due to inactivity.  Delete
+    // them in a separate loop because the SESSION_ENDING handler may delete the
+    // session from discovery_sessions_.
+    for (auto& [id, session] : discovery_sessions_) {
+      base::TimeDelta inactive_duration = now - session.last_event;
+      if (inactive_duration > kDiscoveryMaxInactivity) {
+        expired_sessions.emplace_back(id);
+        session.response.set_result(lorgnette::OPERATION_RESULT_CANCELLED);
+      }
+    }
+    for (const std::string& id : expired_sessions) {
+      DiscoverySessionState& session = discovery_sessions_.at(id);
+      PRINTER_LOG(EVENT) << "Terminating idle discovery session " << id;
+      lorgnette::ScannerListChangedSignal signal;
+      signal.set_session_id(id);
+      signal.set_event_type(
+          lorgnette::ScannerListChangedSignal::SESSION_ENDING);
+      if (session.signal_callback) {
+        session.signal_callback->Run(std::move(signal));
+      }
+    }
   }
 
   void OnListScannersDiscoverySession(
@@ -994,25 +1042,45 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(base::Contains(discovery_sessions_, signal.session_id()));
     DiscoverySessionState& session = discovery_sessions_[signal.session_id()];
+    base::TimeDelta event_interval =
+        base::TimeTicks::Now() - session.last_event;
+    if (event_interval > session.max_event_interval) {
+      session.max_event_interval = event_interval;
+    }
 
     switch (signal.event_type()) {
       case lorgnette::ScannerListChangedSignal::SCANNER_ADDED:
         PRINTER_LOG(EVENT) << "Discovered SANE scanner: "
                            << signal.scanner().name();
+        session.last_event = base::TimeTicks::Now();
         *session.response.add_scanners() = std::move(signal.scanner());
         break;
       case lorgnette::ScannerListChangedSignal::SCANNER_REMOVED:
         // TODO(b/303855027): Once this is implemented in the backend, this
         // needs to be updated to actually remove devices.
+        session.last_event = base::TimeTicks::Now();
         break;
       case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
+        PRINTER_LOG(EVENT) << "Enumeration completed for discovery session: "
+                           << session.session_id;
         session.response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+        session.last_event = base::TimeTicks::Now();
         lorgnette::StopScannerDiscoveryRequest request;
         request.set_session_id(session.session_id);
         StopScannerDiscovery(request, base::DoNothing());
         break;
       }
       case lorgnette::ScannerListChangedSignal::SESSION_ENDING:
+        PRINTER_LOG(EVENT) << "Session ending for discovery session: "
+                           << session.session_id;
+        base::UmaHistogramCounts100("Scanning.DiscoverySession.NumScanners",
+                                    session.response.scanners_size());
+        base::UmaHistogramEnumeration(
+            "Scanning.DiscoverySession.Result", session.response.result(),
+            static_cast<lorgnette::OperationResult>(
+                lorgnette::OperationResult_ARRAYSIZE));
+        base::UmaHistogramMediumTimes("Scanning.DiscoverySession.MaxInterval",
+                                      session.max_event_interval);
         DCHECK(session.session_end_callback);
         std::move(*session.session_end_callback)
             .Run(std::move(session.response));
@@ -1020,6 +1088,10 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         break;
       default:
         NOTREACHED();
+    }
+
+    if (discovery_sessions_.size() == 0) {
+      discovery_monitor_.Stop();
     }
   }
 
@@ -1044,6 +1116,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // Ensures that all callbacks are handled on the same sequence, so that it is
   // safe to access scan_job_state_ and discovery_sessions_ without a lock.
   SEQUENCE_CHECKER(sequence_checker_);
+  // Triggers a recurring check for hung discovery sessions when discovery is
+  // active.
+  base::RepeatingTimer discovery_monitor_;
 
   base::WeakPtrFactory<LorgnetteManagerClientImpl> weak_ptr_factory_{this};
 };

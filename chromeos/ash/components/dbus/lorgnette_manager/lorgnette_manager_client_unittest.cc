@@ -693,6 +693,9 @@ class LorgnetteManagerClientTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+ protected:
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
  private:
   // Responsible for responding to a kListScannersMethod call.
   void OnCallListScanners(dbus::MethodCall* method_call,
@@ -894,7 +897,8 @@ class LorgnetteManagerClientTest : public testing::Test {
   }
 
   // A message loop to emulate asynchronous behavior.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Mock D-Bus objects for the client to interact with.
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
@@ -1009,6 +1013,70 @@ TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
       "session", lorgnette::ScannerListChangedSignal::ENUM_COMPLETE, {});
 
   // Tell client the session is ending so ListScanners can return its response.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::SESSION_ENDING, {});
+
+  run_loop.Run();
+}
+
+TEST_F(LorgnetteManagerClientTest, AsyncDiscoveryTimeout) {
+  auto feature = base::test::ScopedFeatureList(
+      ash::features::kAsynchronousScannerDiscovery);
+
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::StartScannerDiscoveryResponse kExpectedResponse =
+      CreateStartScannerDiscoveryResponse("session");
+  lorgnette::ListScannersResponse expectedResponse =
+      CreateListScannersResponse();
+  *expectedResponse.add_scanners() = expectedResponse.scanners(0);
+  expectedResponse.set_result(lorgnette::OPERATION_RESULT_CANCELLED);
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetStartScannerDiscoveryExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->ListScanners(
+      kClientId,
+      /*local_only=*/false,
+      base::BindLambdaForTesting(
+          [&](std::optional<lorgnette::ListScannersResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(expectedResponse));
+          }));
+
+  run_loop.RunUntilIdle();
+
+  // Discover first scanner.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::SCANNER_ADDED,
+      expectedResponse.scanners(0));
+
+  // Monitor runs after delay, but doesn't terminate session because not enough
+  // time has passed.
+  task_environment()->FastForwardBy(base::Seconds(2));
+
+  // Discover second scanner.  Session is still active.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::SCANNER_ADDED,
+      expectedResponse.scanners(1));
+
+  // Session is idle too long and times out.
+  task_environment()->FastForwardBy(base::Seconds(30));
+
+  // Discover another scanner.  This will not be picked up because the session
+  // has ended.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::SCANNER_ADDED,
+      expectedResponse.scanners(0));
+
+  // Tell client all scanners have been found.  This will be ignored because
+  // the session has ended.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::ENUM_COMPLETE, {});
+
+  // Tell client the session is ending.  This will be ignored because the
+  // session has ended.  The response was already returned earlier.
   EmitScannerListChangedSignal(
       "session", lorgnette::ScannerListChangedSignal::SESSION_ENDING, {});
 
