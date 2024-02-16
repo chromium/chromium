@@ -197,6 +197,9 @@ class AuthenticatorRequestDialogModel
 
     // Called when the user clicks “Manage Devices” to manage their phones.
     virtual void OnManageDevicesClicked() {}
+
+    // Called when the UI should update the state of the buttons.
+    virtual void OnButtonsStateChanged() {}
   };
 
   // A Mechanism is a user-visible method of authenticating. It might be a
@@ -451,6 +454,10 @@ class AuthenticatorRequestDialogModel
   // Called by the AuthenticatorRequestSheetModel subclasses when their state
   // changes, which will trigger notifying observers of OnSheetModelChanged.
   void OnSheetModelDidChange();
+
+  // Called by the AuthenticatorRequestSheetModel subclasses when the state of
+  // their buttons changes.
+  void OnButtonsStateChange();
 
   // The |observer| must either outlive the object, or unregister itself on its
   // destruction.

@@ -32,6 +32,9 @@
 
 namespace {
 
+// Number of digits for the GPM Pin.
+constexpr int kPinDigitCount = 6;
+
 // A placeholder sheet to show in place of unimplemented sheets.
 class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
  public:
@@ -332,7 +335,8 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       break;
     case Step::kGPMCreatePin:
       sheet_view = std::make_unique<AuthenticatorGpmCreatePinSheetView>(
-          std::make_unique<AuthenticatorGPMCreatePinSheetModel>(dialog_model));
+          std::make_unique<AuthenticatorGPMCreatePinSheetModel>(
+              dialog_model, kPinDigitCount));
       break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:

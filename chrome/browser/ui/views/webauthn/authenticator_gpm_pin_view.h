@@ -17,20 +17,26 @@ class AuthenticatorGPMPinView : public views::View,
   METADATA_HEADER(AuthenticatorGPMPinView, views::View)
 
  public:
-  AuthenticatorGPMPinView();
+  class Delegate {
+   public:
+    virtual void OnPinChanged(std::u16string pin) = 0;
+  };
+
+  explicit AuthenticatorGPMPinView(Delegate* delegate, int pin_digits_count);
 
   AuthenticatorGPMPinView(const AuthenticatorGPMPinView&) = delete;
   AuthenticatorGPMPinView& operator=(const AuthenticatorGPMPinView&) = delete;
   ~AuthenticatorGPMPinView() override;
 
-  // views::TextfieldController:
-  bool HandleKeyEvent(views::Textfield* sender,
-                      const ui::KeyEvent& key_event) override;
-
  private:
   // views::View:
   void RequestFocus() override;
 
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
+
+  const raw_ptr<Delegate> delegate_;
   // Child view displaying textfield for the pin entry.
   raw_ptr<PinTextfield> pin_textfield_;
 };

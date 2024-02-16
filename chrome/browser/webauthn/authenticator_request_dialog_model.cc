@@ -1021,6 +1021,12 @@ void AuthenticatorRequestDialogModel::OnSheetModelDidChange() {
   }
 }
 
+void AuthenticatorRequestDialogModel::OnButtonsStateChange() {
+  for (auto& observer : observers_) {
+    observer.OnButtonsStateChanged();
+  }
+}
+
 void AuthenticatorRequestDialogModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

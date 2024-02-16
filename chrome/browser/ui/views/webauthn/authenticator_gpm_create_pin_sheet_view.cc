@@ -13,9 +13,19 @@ AuthenticatorGpmCreatePinSheetView::AuthenticatorGpmCreatePinSheetView(
 AuthenticatorGpmCreatePinSheetView::~AuthenticatorGpmCreatePinSheetView() =
     default;
 
+AuthenticatorGPMCreatePinSheetModel*
+AuthenticatorGpmCreatePinSheetView::gpm_pin_sheet_model() {
+  return static_cast<AuthenticatorGPMCreatePinSheetModel*>(model());
+}
+
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorGpmCreatePinSheetView::AutoFocus>
 AuthenticatorGpmCreatePinSheetView::BuildStepSpecificContent() {
-  return std::make_pair(std::make_unique<AuthenticatorGPMPinView>(),
+  return std::make_pair(std::make_unique<AuthenticatorGPMPinView>(
+                            this, gpm_pin_sheet_model()->pin_digits_count()),
                         AutoFocus::kYes);
+}
+
+void AuthenticatorGpmCreatePinSheetView::OnPinChanged(std::u16string pin) {
+  gpm_pin_sheet_model()->SetPin(std::move(pin));
 }

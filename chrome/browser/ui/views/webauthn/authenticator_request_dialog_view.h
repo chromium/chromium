@@ -81,6 +81,7 @@ class AuthenticatorRequestDialogView
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
+  void OnButtonsStateChanged() override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;

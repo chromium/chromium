@@ -682,8 +682,14 @@ class AuthenticatorPriorityMechanismSheetModel
 class AuthenticatorGPMCreatePinSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorGPMCreatePinSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogModel* dialog_model,
+      int pin_digits_count);
   ~AuthenticatorGPMCreatePinSheetModel() override;
+
+  int pin_digits_count() const;
+
+  // Sets currently typed pin in the sheet.
+  void SetPin(std::u16string pin);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -693,6 +699,9 @@ class AuthenticatorGPMCreatePinSheetModel : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+
+  std::u16string pin_;
+  const int pin_digits_count_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

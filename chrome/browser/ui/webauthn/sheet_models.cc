@@ -1583,15 +1583,29 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
 // AuthenticatorGPMCreatePinSheetModel -------------------------------------
 
 AuthenticatorGPMCreatePinSheetModel::AuthenticatorGPMCreatePinSheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
+    AuthenticatorRequestDialogModel* dialog_model,
+    int pin_digits_count)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kHidden) {
+                                  OtherMechanismButtonVisibility::kHidden),
+      pin_digits_count_(pin_digits_count) {
   // TODO(rgod): Add correct illustration.
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
 
 AuthenticatorGPMCreatePinSheetModel::~AuthenticatorGPMCreatePinSheetModel() =
     default;
+
+int AuthenticatorGPMCreatePinSheetModel::pin_digits_count() const {
+  return pin_digits_count_;
+}
+
+void AuthenticatorGPMCreatePinSheetModel::SetPin(std::u16string pin) {
+  bool accept_button_enabled = IsAcceptButtonEnabled();
+  pin_ = std::move(pin);
+  if (accept_button_enabled != IsAcceptButtonEnabled()) {
+    dialog_model()->OnButtonsStateChange();
+  }
+}
 
 std::u16string AuthenticatorGPMCreatePinSheetModel::GetStepTitle() const {
   return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
@@ -1607,7 +1621,7 @@ bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonEnabled() const {
-  return false;
+  return static_cast<int>(pin_.length()) == pin_digits_count_;
 }
 
 std::u16string AuthenticatorGPMCreatePinSheetModel::GetAcceptButtonLabel()

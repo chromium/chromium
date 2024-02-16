@@ -247,6 +247,10 @@ void AuthenticatorRequestDialogView::OnSheetModelChanged() {
   UpdateUIForCurrentSheet();
 }
 
+void AuthenticatorRequestDialogView::OnButtonsStateChanged() {
+  DialogModelChanged();
+}
+
 void AuthenticatorRequestDialogView::OnVisibilityChanged(
     content::Visibility visibility) {
   const bool web_contents_was_hidden = web_contents_hidden_;

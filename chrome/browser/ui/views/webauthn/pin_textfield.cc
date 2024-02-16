@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
 
+#include "base/strings/strcat.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -45,22 +46,32 @@ PinTextfield::PinTextfield(int pin_digits_amount)
 
 PinTextfield::~PinTextfield() = default;
 
-void PinTextfield::AppendDigit(std::u16string digit) {
+bool PinTextfield::AppendDigit(std::u16string digit) {
   if (digits_typed_count_ >= pin_digits_count_) {
-    return;
+    return false;
   }
 
   render_texts_[digits_typed_count_++]->SetText(std::move(digit));
   SchedulePaint();
+  return true;
 }
 
-void PinTextfield::RemoveDigit() {
+bool PinTextfield::RemoveDigit() {
   if (digits_typed_count_ <= 0) {
-    return;
+    return false;
   }
 
   render_texts_[--digits_typed_count_]->SetText(u"");
   SchedulePaint();
+  return true;
+}
+
+std::u16string PinTextfield::GetPin() {
+  std::u16string pin;
+  for (int i = 0; i < digits_typed_count_; i++) {
+    base::StrAppend(&pin, {render_texts_[i]->text()});
+  }
+  return pin;
 }
 
 void PinTextfield::OnPaint(gfx::Canvas* canvas) {

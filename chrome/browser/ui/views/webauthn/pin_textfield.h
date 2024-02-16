@@ -23,11 +23,15 @@ class PinTextfield : public views::Textfield {
   ~PinTextfield() override;
 
   // Appends a digit to the next free pin cell. Does nothing if all pin digits
-  // are already typed.
-  void AppendDigit(std::u16string digit);
+  // are already typed. Returns true if a digit was appended.
+  bool AppendDigit(std::u16string digit);
 
   // Removes a digit from the last cell. Does nothing if no digits are typed.
-  void RemoveDigit();
+  // Returns true if a digit was removed.
+  bool RemoveDigit();
+
+  // Returns currently typed pin.
+  std::u16string GetPin();
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
