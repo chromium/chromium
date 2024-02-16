@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
@@ -57,8 +58,9 @@ class FacilitatedPaymentsManager {
   friend class FacilitatedPaymentsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TestRegisterPixAllowlist);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerMetricsTest,
-                           TestProcessPixCodeDetectionResult);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerMetricsTest,
+      TestProcessPixCodeDetectionResult_VerifyResultAndLatencyUkmLogged);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -78,6 +80,10 @@ class FacilitatedPaymentsManager {
   void ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult result) const;
 
+  void StartPixCodeDetectionLatencyTimer();
+
+  int64_t GetPixCodeDetectionLatencyInMillis() const;
+
   raw_ref<FacilitatedPaymentsDriver> driver_;
 
   // The optimization guide decider to help determine whether the current main
@@ -88,6 +94,9 @@ class FacilitatedPaymentsManager {
   const ukm::SourceId ukm_source_id_;
 
   base::OneShotTimer pix_code_detection_triggering_timer_;
+
+  // Measures the time taken to scan the document for the PIX code.
+  base::TimeTicks pix_code_detection_latency_measuring_timestamp_;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

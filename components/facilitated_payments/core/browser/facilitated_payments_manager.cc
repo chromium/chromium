@@ -87,6 +87,7 @@ FacilitatedPaymentsManager::GetAllowlistCheckResult(const GURL& url) const {
 }
 
 void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
+  StartPixCodeDetectionLatencyTimer();
   driver_->TriggerPixCodeDetection(
       base::BindOnce(&FacilitatedPaymentsManager::ProcessPixCodeDetectionResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -96,7 +97,18 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     mojom::PixCodeDetectionResult result) const {
   ukm::builders::FacilitatedPayments_PixCodeDetectionResult(ukm_source_id_)
       .SetResult(static_cast<uint8_t>(result))
+      .SetLatencyInMillis(GetPixCodeDetectionLatencyInMillis())
       .Record(ukm::UkmRecorder::Get());
+}
+
+void FacilitatedPaymentsManager::StartPixCodeDetectionLatencyTimer() {
+  pix_code_detection_latency_measuring_timestamp_ = base::TimeTicks::Now();
+}
+
+int64_t FacilitatedPaymentsManager::GetPixCodeDetectionLatencyInMillis() const {
+  return (base::TimeTicks::Now() -
+          pix_code_detection_latency_measuring_timestamp_)
+      .InMilliseconds();
 }
 
 }  // namespace payments::facilitated

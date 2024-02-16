@@ -343,15 +343,25 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test that UKM metrics are recorded.
 TEST_P(FacilitatedPaymentsManagerMetricsTest,
-       TestProcessPixCodeDetectionResult) {
+       TestProcessPixCodeDetectionResult_VerifyResultAndLatencyUkmLogged) {
+  // Start the latency measuring timer, and advance 200ms to the future.
+  manager_->StartPixCodeDetectionLatencyTimer();
+  FastForwardBy(base::Milliseconds(200));
   manager_->ProcessPixCodeDetectionResult(GetParam());
 
+  // Verify that the result passed are logged.
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName});
+      {ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kResultName,
+       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::
+           kLatencyInMillisName});
   EXPECT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
             static_cast<uint8_t>(GetParam()));
+  // Verify that the simulated latency is logged and is within a small time
+  // margin accounting for computation.
+  EXPECT_GE(ukm_entries[0].metrics.at("LatencyInMillis"), 200);
+  EXPECT_NEAR(ukm_entries[0].metrics.at("LatencyInMillis"), 200, 5);
 }
 
 }  // namespace payments::facilitated
