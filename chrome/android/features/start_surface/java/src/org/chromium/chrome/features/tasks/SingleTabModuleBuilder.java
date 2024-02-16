@@ -108,4 +108,9 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
     public boolean isEligible() {
         return true;
     }
+
+    @Override
+    public boolean isConfigurable() {
+        return false;
+    }
 }
