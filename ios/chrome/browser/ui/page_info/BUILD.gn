@@ -4,6 +4,9 @@
 
 source_set("page_info") {
   sources = [
+    "page_info_about_this_site_consumer.h",
+    "page_info_about_this_site_info.h",
+    "page_info_about_this_site_info.mm",
     "page_info_helper.h",
     "page_info_helper.mm",
     "page_info_presentation_commands.h",
@@ -64,6 +67,8 @@ source_set("constants") {
 
 source_set("coordinator") {
   sources = [
+    "page_info_about_this_site_mediator.h",
+    "page_info_about_this_site_mediator.mm",
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
     "page_info_permissions_mediator.h",
@@ -78,12 +83,16 @@ source_set("coordinator") {
     ":page_info",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/page_info/core",
+    "//components/page_info/core:proto",
     "//components/security_state/core",
     "//components/ssl_errors",
     "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/page_info:model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -136,7 +145,9 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
+    ":eg_test_support+eg2",
     ":features",
+    "//components/optimization_guide/core:features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
@@ -157,4 +168,32 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "page_info_app_interface.h",
+    "page_info_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "page_info_app_interface.h",
+    "page_info_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_info/core:proto",
+    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/common:uikit",
+  ]
 }

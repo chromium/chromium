@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/page_info/core",
   "+ios/chrome/browser/ui/permissions",
   "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
 ]

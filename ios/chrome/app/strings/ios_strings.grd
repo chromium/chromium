@@ -2870,6 +2870,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_CONNECTION_SECURITY" desc="Title of the navigation controller to display when the page's security is presented.">
         Connection Security
       </message>
+      <message name="IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE" desc="Title of the button opening the About This Page (in page info)">
+        About This Page
+      </message>
       <message name="IDS_IOS_PAGE_INFO_COOKIES_BLOCKED_LABEL" desc="Title of the item that displays the number of blocked Cookies in the site information screen.">
         Blocked Cookies
       </message>

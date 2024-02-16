@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
+#import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/page_info/page_info_helper.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
@@ -42,12 +43,14 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSecurityContent,
   SectionIdentifierPermissions,
+  SectionIdentifierAboutThisSite,
 };
 
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierSecurityHeader,
   ItemIdentifierPermissionsCamera,
   ItemIdentifierPermissionsMicrophone,
+  ItemIdentifierAboutThisSiteHeader
 };
 
 }  // namespace
@@ -66,6 +69,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 @implementation PageInfoViewController {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  PageInfoAboutThisSiteInfo* _aboutThisSiteInfo;
 }
 
 #pragma mark - UIViewController
@@ -145,6 +149,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   for (NSNumber* permission in self.permissionsInfo.allKeys) {
     [self updateSnapshot:snapshot forPermission:permission];
   }
+
+  if (IsRevampPageInfoIosEnabled()) {
+    [self updateSnapshotForAboutThisSite:snapshot];
+  }
+
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
@@ -159,6 +168,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     case ItemIdentifierSecurityHeader:
       if (IsRevampPageInfoIosEnabled()) {
         [self.pageInfoPresentationHandler showSecurityPage];
+      }
+      break;
+    case ItemIdentifierAboutThisSiteHeader:
+      if (IsRevampPageInfoIosEnabled()) {
+        // TODO(crbug.com/1512580): Open the AboutThisSite diner url in a new
+        // tap.
       }
       break;
     default:
@@ -179,6 +194,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent:
+    case SectionIdentifierAboutThisSite:
       return nil;
     case SectionIdentifierPermissions: {
       TableViewTextHeaderFooterView* header =
@@ -222,6 +238,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       footer.attributedString = [self permissionFooterAttributedString];
       return footer;
     }
+    default:
+      return nil;
   }
 }
 
@@ -319,6 +337,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                 forControlEvents:UIControlEventValueChanged];
       return cell;
     }
+    case ItemIdentifierAboutThisSiteHeader: {
+      TableViewDetailIconCell* cell =
+          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
+      cell.textLabel.text =
+          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
+      cell.detailText = _aboutThisSiteInfo.summary;
+      cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+      // TODO(crbug.com/1512580): Add AboutThisSite icon and an external arrow
+      // icon on the RHS.
+      return cell;
+    }
   }
 }
 
@@ -338,6 +367,25 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       }
               range:NSMakeRange(0, descriptionAttributedString.length)];
   return descriptionAttributedString;
+}
+
+// Updates `snapshot` to reflect the changes to AboutThisSite info.
+- (void)updateSnapshotForAboutThisSite:
+    (NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>*)snapshot {
+  if (!_aboutThisSiteInfo || !self.pageInfoSecurityDescription.secure) {
+    return;
+  }
+
+  NSInteger sectionIndex =
+      [snapshot indexOfSectionIdentifier:@(SectionIdentifierPermissions)];
+  SectionIdentifier afterSectionWithIdentifier =
+      (sectionIndex == NSNotFound) ? SectionIdentifierSecurityContent
+                                   : SectionIdentifierPermissions;
+  [snapshot insertSectionsWithIdentifiers:@[ @(SectionIdentifierAboutThisSite) ]
+               afterSectionWithIdentifier:@(afterSectionWithIdentifier)];
+
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierAboutThisSiteHeader) ]
+             intoSectionWithIdentifier:@(SectionIdentifierAboutThisSite)];
 }
 
 // Updates `snapshot` to reflect the changes done to `permissions`.
@@ -414,6 +462,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     [snapshot
         deleteSectionsWithIdentifiers:@[ @(SectionIdentifierPermissions) ]];
   }
+}
+
+#pragma mark - PageInfoAboutThisSiteConsumer
+
+- (void)setAboutThisSiteSection:(PageInfoAboutThisSiteInfo*)info {
+  _aboutThisSiteInfo = info;
 }
 
 #pragma mark - PermissionsConsumer

@@ -7,9 +7,11 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
+#import "ios/chrome/browser/ui/page_info/page_info_app_interface.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -42,6 +44,16 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       kPageInfoMicrophoneSwitchAccessibilityIdentifier, isOn);
 }
 
+void AddAboutThisSiteHint(GURL url) {
+  [PageInfoAppInterface
+      addAboutThisSiteHintForURL:
+          [NSString stringWithCString:url.spec().c_str()
+                             encoding:[NSString defaultCStringEncoding]]
+                     description:
+                         @"A domain used in illustrative examples in documents"
+                aboutThisSiteURL:@"https://diner.com"];
+}
+
 }  // namespace
 
 @interface PageInfoTestCase : ChromeTestCase
@@ -58,6 +70,9 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
   } else {
     config.features_enabled.push_back(kRevampPageInfoIos);
   }
+  config.additional_args.push_back(
+      std::string("-") +
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   return config;
 }
 
@@ -351,6 +366,49 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       selectElementWithMatcher:
           grey_accessibilityID(kPageInfoSecurityViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Most of the tests for AboutThisSite section are in chrome-internal
+// (chrome/test/external_url/external_url_ssl_app_interface.mm).
+// It seems that https pages in egtests always have an invalid certificate,
+// NET::ERR_CERT_AUTHORITY_INVALID, which makes the page unsecure. The
+// AboutThisSite section should only be available for secure pages. Tests in
+// chrome-internal can use real pages and so we are able to test Page Info with
+// secure pages.
+
+// Tests that the AboutThisSite section does not appear even if optimization
+// guide returns a hint but the connection is HTTP. The AboutThisSite section
+// should only appear for secure pages.
+- (void)testAboutThisSiteSectionWithHttp {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL url = self.testServer->GetURL("/");
+
+  AddAboutThisSiteHint(url);
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that AboutThisSite section is not displayed.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE))]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the AboutThisSite section does not appear even if the connection
+// is HTTPs and optimization guide returns a hint but the certificate is not
+// valid. The AboutThisSite section should only appear for secure pages.
+- (void)testAboutThisSiteSectionWithHttpsInvalidCert {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  GREYAssertTrue(https_server.Start(), @"Test server failed to start.");
+  GURL url = https_server.GetURL("/");
+
+  AddAboutThisSiteHint(url);
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGreyUI openPageInfo];
+
+  // Check that AboutThisSite section is not displayed.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE))]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that we don't crash when showing the page info twice (prevent

@@ -155,6 +155,14 @@ OptimizationGuideService::GetPredictionManager() {
   return prediction_manager_.get();
 }
 
+void OptimizationGuideService::AddHintForTesting(
+    const GURL& url,
+    optimization_guide::proto::OptimizationType optimization_type,
+    const std::optional<optimization_guide::OptimizationMetadata>& metadata) {
+  hints_manager_->AddHintForTesting(url, optimization_type,  // IN-TEST
+                                    metadata);
+}
+
 void OptimizationGuideService::OnNavigationStartOrRedirect(
     OptimizationGuideNavigationData* navigation_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -104,6 +104,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE);
   dataHolder.securityStatus = l10n_util::GetNSString(
       IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_NOT_SECURE);
+  dataHolder.secure = NO;
 
   // Summary and details.
   if (!status.certificate) {
@@ -184,7 +185,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
 
     if (IsRevampPageInfoIosEnabled()) {
       dataHolder.message = BuildMessage(@[
-        l10n_util::GetNSString(IDS_PAGE_INFO_NOT_SECURE_DETAILS),
+        l10n_util::GetNSString(IDS_PAGE_INFO_MIXED_CONTENT_DETAILS),
         certificateDetails
       ]);
     } else {
@@ -205,11 +206,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE);
   dataHolder.securityStatus = l10n_util::GetNSString(
       IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_SECURE);
-  // TODO(crbug.com/1512580): When removing the lock icon from the Page Info
-  // entry point in iOS, the green lock icon on the security section was also
-  // removed. This is not consistent with either Clank or Desktop. The Page Info
-  // revamp mocks still have the green lock icon. We will check if we should or
-  // not reintroduce it.
+  dataHolder.secure = YES;
   dataHolder.iconImage =
       IsRevampPageInfoIosEnabled()
           ? DefaultSymbolTemplateWithPointSize(kSecureSymbol, kSymbolSize)
