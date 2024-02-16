@@ -58,6 +58,14 @@ ParseWebGPUPowerPreference(const base::CommandLine* command_line);
 bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 
 }  // namespace gles2
+
+#if BUILDFLAG(IS_MAC)
+// Set the texture target to use with MacOS native GpuMemoryBuffers based on the
+// current GL implementation.
+GPU_GLES2_EXPORT void
+SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SERVICE_UTILS_H_

@@ -304,18 +304,8 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
 
-  // On MacOS, the default texture target for native GpuMemoryBuffers is
-  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
-  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
-  // it's necessary to use GL_TEXTURE_2D instead.
-  // TODO(crbug.com/1056312): The proper behavior is to check the config
-  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
 #if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
-    gpu::SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
-  }
+  gpu::SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
 #endif  // BUILDFLAG(IS_MAC)
 
   // TODO(rivr): Investigate why creating a GPUInfo and GpuFeatureInfo from

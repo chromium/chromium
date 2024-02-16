@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -60,6 +61,10 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
                                   gfx::BufferFormat::RGBA_8888));
 
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kGL));
+
+#if BUILDFLAG(IS_MAC)
+    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
@@ -404,12 +409,12 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, GL_Dawn_Skia_UnclearTexture) {
       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   auto factory_ref = CreateSharedImage(size, usage);
 
-  GLenum expected_target = GL_TEXTURE_RECTANGLE;
   {
     // Create a GLTextureImageRepresentation.
     auto gl_representation =
         shared_image_representation_factory_.ProduceGLTexturePassthrough(
             factory_ref->mailbox());
+    GLenum expected_target = GetPlatformSpecificTextureTarget();
     EXPECT_TRUE(gl_representation);
     EXPECT_EQ(expected_target,
               gl_representation->GetTexturePassthrough()->target());
@@ -690,6 +695,10 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
 
     auto gr_context_type = get_gr_context_type();
     ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
+
+#if BUILDFLAG(IS_MAC)
+    SetMacOSSpecificTextureTargetFromCurrentGLImplementation();
+#endif  // BUILDFLAG(IS_MAC)
 
     auto format = get_format();
     // Dawn does not support BGRA_1010102.
