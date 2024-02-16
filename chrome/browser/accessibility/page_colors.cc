@@ -45,7 +45,7 @@ void PageColors::Init() {
   profile_prefs_->SetBoolean(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
                              true);
 #endif  // BUILDFLAG(IS_WIN)
-  OnPageColorsChanged();
+  OnPreferredContrastChanged();
 }
 
 void PageColors::OnPageColorsChanged() {
