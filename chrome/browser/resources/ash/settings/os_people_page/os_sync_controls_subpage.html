@@ -12,17 +12,8 @@
 
   #tooltipIcon {
     --cr-tooltip-icon-fill-color: var(--cros-color-secondary);
-    margin-inline-end: 20px;
-  }
-
-  #tooltipIcon::part(tooltip) {
-    --paper-tooltip-background: var(--cros-bg-color) ;
-    --paper-tooltip-text-color: var(--cros-text-color-secondary);
     --paper-tooltip-delay-in: 0;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px var(--cros-shadow-color-key),
-                0 4px 8px var(--cros-separator-color);
-    font: var(--cros-body-2-font);
+    margin-inline-end: 20px;
   }
 
   #tooltipIcon[label-disabled]::part(tooltip) {

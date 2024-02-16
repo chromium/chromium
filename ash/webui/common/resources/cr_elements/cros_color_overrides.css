@@ -454,3 +454,17 @@
     cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
 }
+
+/* Tooltip */
+:host-context(body.jelly-enabled) paper-tooltip,
+:host-context(body.jelly-enabled) cr-tooltip-icon {
+  --paper-tooltip-background: var(--cros-sys-on_surface);
+  --paper-tooltip-border-radius: 4px;
+  --paper-tooltip-padding: 5px 8px;
+  --paper-tooltip-text-color: var(--cros-sys-inverse_on_surface);
+}
+
+:host-context(body.jelly-enabled) paper-tooltip::part(tooltip),
+:host-context(body.jelly-enabled) cr-tooltip-icon::part(tooltip) {
+  font: var(--cros-annotation-1-font);
+}
