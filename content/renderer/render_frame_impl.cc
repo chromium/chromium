@@ -2875,6 +2875,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
+  TRACE_EVENT0("navigation", "RenderFrameImpl::CommitNavigationWithParams");
+  base::ElapsedTimer timer;
   if (common_params->url.IsAboutSrcdoc()) {
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
                                             "text/html", "UTF-8",
@@ -2986,6 +2988,14 @@ void RenderFrameImpl::CommitNavigationWithParams(
   // The commit can result in this frame being removed.
   if (!weak_self)
     return;
+
+  if (load_type == WebFrameLoadType::kStandard &&
+      common_params->url.SchemeIsHTTPOrHTTPS()) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Navigation.CommitNavigationWithParams.Time.IsStandardLoadType."
+        "IsHTTPOrHTTPS",
+        timer.Elapsed());
+  }
 
   ResetMembersUsedForDurationOfCommit();
 }

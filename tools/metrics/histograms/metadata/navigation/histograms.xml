@@ -594,6 +594,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Navigation.CommitNavigationWithParams.Time.IsStandardLoadType.IsHTTPOrHTTPS"
+    units="microseconds" expires_after="2024-05-15">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent processing RenderFrameImpl::CommitNavigationWithParams() in the
+    renderer process. This is recorded on each WebFrameLoadType::kStandard
+    navigation for http or https URLs.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.CompositorCreationTo{Stage}" units="ms"
     expires_after="2024-07-14">
   <owner>rakina@chromium.org</owner>
@@ -778,6 +792,8 @@ chromium-metrics-reviews@google.com.
     called for http or https URLs. Calling GetFrameHostForNavigation() is not
     required for the same document navigations or back/forward cache
     navigations.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
