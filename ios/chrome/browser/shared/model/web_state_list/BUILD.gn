@@ -51,6 +51,7 @@ source_set("unit_tests") {
   deps = [
     ":web_state_list",
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/test/fakes",

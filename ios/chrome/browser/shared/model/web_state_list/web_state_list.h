@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -22,6 +23,10 @@ class RemovingIndexes;
 class TabGroup;
 class WebStateListDelegate;
 class WebStateListObserver;
+
+namespace tab_groups {
+class TabGroupVisualData;
+}  // namespace tab_groups
 
 namespace web {
 class WebState;
@@ -167,8 +172,8 @@ class WebStateList {
     constexpr bool operator!=(const Range& other) const = default;
 
    private:
-    const int start_;
-    const int count_;
+    int start_;
+    int count_;
   };
 
   explicit WebStateList(WebStateListDelegate* delegate);
@@ -290,6 +295,21 @@ class WebStateList {
   // be valid and belong to this WebStateList.
   Range GetWebStates(const TabGroup* group) const;
 
+  // Creates a new tab group and moves the set of WebStates at `indices` to
+  // it.
+  // -   This unpins pinned WebState.
+  // -   This ungroups grouped WebState.
+  // -   This reorders the WebStates so they are contiguous and do not split an
+  //     existing group in half.
+  // Returns the new group.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  const TabGroup* CreateGroup(
+      const std::set<int>& indices,
+      const tab_groups::TabGroupVisualData& visual_data);
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -365,6 +385,23 @@ class WebStateList {
   //
   // Assumes that the WebStateList is locked.
   int SetWebStatePinnedAtImpl(int index, bool pinned);
+
+  // Creates a new tab group and moves the set of WebStates at `indices` to
+  // it.
+  // -   This unpins pinned WebState.
+  // -   This ungroups grouped WebState.
+  // -   This reorders the WebStates so they are contiguous and do not split an
+  //     existing group in half.
+  // Returns the new group.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  //
+  // Assumes that the WebStateList is locked.
+  const TabGroup* CreateGroupImpl(
+      const std::set<int>& indices,
+      const tab_groups::TabGroupVisualData& visual_data);
 
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.

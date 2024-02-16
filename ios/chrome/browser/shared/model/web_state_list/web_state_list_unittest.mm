@@ -8,7 +8,9 @@
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "base/supports_user_data.h"
+#import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -18,6 +20,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
+
+using tab_groups::TabGroupVisualData;
 
 namespace {
 const char kURL0[] = "https://chromium.org/0";
@@ -1522,4 +1526,126 @@ TEST_F(WebStateListTest, ReplaceWebStateAt_NoGroup) {
 
   EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL1);
   EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+}
+
+TEST_F(WebStateListTest, CreateGroup_OneTab) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+  TabGroupVisualData visual_data =
+      TabGroupVisualData(u"Group A", tab_groups::TabGroupColorId::kGrey);
+
+  const TabGroup* group = web_state_list_.CreateGroup({0}, visual_data);
+
+  EXPECT_EQ(1, web_state_list_.count());
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(0));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group));
+}
+
+TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+  AppendNewWebState(kURL3);
+  AppendNewWebState(kURL4);
+  TabGroupVisualData visual_data =
+      TabGroupVisualData(u"Group A", tab_groups::TabGroupColorId::kGrey);
+
+  const TabGroup* group = web_state_list_.CreateGroup({0, 2, 4}, visual_data);
+
+  EXPECT_EQ(5, web_state_list_.count());
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL0);
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(0));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL2);
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(1));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL4);
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(2));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(3));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(4)->GetVisibleURL().spec(), kURL3);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(4));
+
+  EXPECT_EQ(WebStateList::Range(0, 3), web_state_list_.GetWebStates(group));
+}
+
+TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+  web_state_list_.SetWebStatePinnedAt(0, true);
+  AppendNewWebState(kURL1);
+  web_state_list_.SetWebStatePinnedAt(1, true);
+  AppendNewWebState(kURL2);
+  web_state_list_.SetWebStatePinnedAt(2, true);
+  AppendNewWebState(kURL3);
+  AppendNewWebState(kURL4);
+  TabGroupVisualData visual_data =
+      TabGroupVisualData(u"Group A", tab_groups::TabGroupColorId::kGrey);
+
+  const TabGroup* group = web_state_list_.CreateGroup({1, 3}, visual_data);
+
+  EXPECT_EQ(5, web_state_list_.count());
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL0);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(0));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(0));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL2);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(1));
+  EXPECT_TRUE(web_state_list_.IsWebStatePinnedAt(1));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(2));
+  EXPECT_FALSE(web_state_list_.IsWebStatePinnedAt(2));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL3);
+  EXPECT_EQ(group, web_state_list_.GetGroupOfWebStateAt(3));
+  EXPECT_FALSE(web_state_list_.IsWebStatePinnedAt(3));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(4)->GetVisibleURL().spec(), kURL4);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(4));
+  EXPECT_FALSE(web_state_list_.IsWebStatePinnedAt(4));
+
+  EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group));
+}
+
+TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
+  EXPECT_TRUE(web_state_list_.empty());
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+  AppendNewWebState(kURL3);
+  AppendNewWebState(kURL4);
+  TabGroupVisualData visual_data_a =
+      TabGroupVisualData(u"Group A", tab_groups::TabGroupColorId::kGrey);
+  const TabGroup* group_a =
+      web_state_list_.CreateGroup({0, 1, 2}, visual_data_a);
+
+  TabGroupVisualData visual_data_b =
+      TabGroupVisualData(u"Group B", tab_groups::TabGroupColorId::kBlue);
+  const TabGroup* group_b = web_state_list_.CreateGroup({1, 3}, visual_data_b);
+
+  EXPECT_EQ(5, web_state_list_.count());
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec(), kURL0);
+  EXPECT_EQ(group_a, web_state_list_.GetGroupOfWebStateAt(0));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec(), kURL2);
+  EXPECT_EQ(group_a, web_state_list_.GetGroupOfWebStateAt(1));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec(), kURL1);
+  EXPECT_EQ(group_b, web_state_list_.GetGroupOfWebStateAt(2));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(3)->GetVisibleURL().spec(), kURL3);
+  EXPECT_EQ(group_b, web_state_list_.GetGroupOfWebStateAt(3));
+
+  EXPECT_EQ(web_state_list_.GetWebStateAt(4)->GetVisibleURL().spec(), kURL4);
+  EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(4));
+
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_a));
+  EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group_b));
 }
