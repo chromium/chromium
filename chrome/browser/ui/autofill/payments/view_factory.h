@@ -19,6 +19,8 @@ class AutofillProgressDialogController;
 class AutofillProgressDialogView;
 class CardUnmaskAuthenticationSelectionDialogController;
 class CardUnmaskAuthenticationSelectionDialog;
+class CardUnmaskOtpInputDialogController;
+class CardUnmaskOtpInputDialogView;
 
 // Factory function for creating and showing the autofill progress dialog
 // view.
@@ -31,10 +33,6 @@ base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
     content::WebContents* web_contents);
 
 // Factory function for creating and showing the view.
-// Note: On Desktop the view's ownership is transferred to the widget, which
-// deletes it on dismissal, so no lifecycle management is needed. However, on
-// Android this is not the case, the view's implementation must delete itself
-// when dismissed.
 base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
     AutofillErrorDialogController* controller,
     content::WebContents* web_contents);
@@ -44,6 +42,13 @@ CardUnmaskAuthenticationSelectionDialog*
 CreateAndShowCardUnmaskAuthenticationSelectionDialog(
     content::WebContents* web_contents,
     CardUnmaskAuthenticationSelectionDialogController* controller);
+
+// Factory function for creating and showing the card unmask otp input dialog
+// view. This dialog is shown when user needs to input the OTP text received
+// to unmask the credit card.
+base::WeakPtr<CardUnmaskOtpInputDialogView> CreateAndShowOtpInputDialog(
+    base::WeakPtr<CardUnmaskOtpInputDialogController> controller,
+    content::WebContents* web_contents);
 
 }  // namespace autofill
 

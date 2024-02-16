@@ -43,7 +43,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
@@ -83,6 +82,7 @@
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -581,20 +581,22 @@ void ChromeAutofillClient::ShowAutofillSettings(
 void ChromeAutofillClient::ShowCardUnmaskOtpInputDialog(
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
-  CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents());
-  CardUnmaskOtpInputDialogControllerImpl* controller =
-      CardUnmaskOtpInputDialogControllerImpl::FromWebContents(web_contents());
-  DCHECK(controller);
-  controller->ShowDialog(challenge_option, delegate);
+  if (!card_unmask_otp_input_dialog_controller_) {
+    card_unmask_otp_input_dialog_controller_ =
+        std::make_unique<CardUnmaskOtpInputDialogControllerImpl>();
+  }
+  card_unmask_otp_input_dialog_controller_->ShowDialog(
+      challenge_option, delegate,
+      base::BindOnce(&CreateAndShowOtpInputDialog,
+                     card_unmask_otp_input_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())));
 }
 
 void ChromeAutofillClient::OnUnmaskOtpVerificationResult(
     OtpUnmaskResult unmask_result) {
-  CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents());
-  CardUnmaskOtpInputDialogControllerImpl* controller =
-      CardUnmaskOtpInputDialogControllerImpl::FromWebContents(web_contents());
-  DCHECK(controller);
-  controller->OnOtpVerificationResult(unmask_result);
+  CHECK(card_unmask_otp_input_dialog_controller_);
+  card_unmask_otp_input_dialog_controller_->OnOtpVerificationResult(
+      unmask_result);
 }
 
 void ChromeAutofillClient::ShowUnmaskPrompt(

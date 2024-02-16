@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
 namespace autofill {
@@ -70,6 +71,8 @@ class CardUnmaskOtpInputDialogController {
 
   // The label shown when the OTP verification is completed.
   virtual std::u16string GetConfirmationMessage() const = 0;
+
+  virtual base::WeakPtr<CardUnmaskOtpInputDialogController> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill

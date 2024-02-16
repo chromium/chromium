@@ -6401,7 +6401,6 @@ test("unit_tests") {
     "../browser/ui/autofill/autofill_popup_controller_impl_unittest.cc",
     "../browser/ui/autofill/chrome_autofill_client_unittest.cc",
     "../browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl_unittest.cc",
-    "../browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl_unittest.cc",
     "../browser/ui/autofill/payments/chrome_payments_autofill_client_unittest.cc",
     "../browser/ui/blocked_content/popup_opener_tab_helper_unittest.cc",
     "../browser/ui/chrome_select_file_policy_unittest.cc",

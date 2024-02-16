@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 
 #include <string>
 
-#include "build/build_config.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
+#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+CardUnmaskOtpInputDialogControllerImpl::
+    CardUnmaskOtpInputDialogControllerImpl() = default;
 
 CardUnmaskOtpInputDialogControllerImpl::
     ~CardUnmaskOtpInputDialogControllerImpl() {
@@ -23,33 +26,38 @@ CardUnmaskOtpInputDialogControllerImpl::
   // controller is not reset. This resets the reference via
   // CardUnmaskOtpInputDialogView::Dismiss() to avoid
   // a crash.
-  if (dialog_view_)
+  if (dialog_view_) {
     dialog_view_->Dismiss(/*show_confirmation_before_closing=*/false,
                           /*user_closed_dialog=*/true);
+  }
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
     const CardUnmaskChallengeOption& challenge_option,
-    base::WeakPtr<OtpUnmaskDelegate> delegate) {
-  if (dialog_view_)
+    base::WeakPtr<OtpUnmaskDelegate> delegate,
+    base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
+        create_and_show_view_callback) {
+  if (dialog_view_) {
     return;
+  }
 
   otp_length_ = challenge_option.challenge_input_length;
   challenge_type_ = challenge_option.type;
   delegate_ = delegate;
-  dialog_view_ =
-      CardUnmaskOtpInputDialogView::CreateAndShow(this, &GetWebContents());
+  dialog_view_ = std::move(create_and_show_view_callback).Run();
 
-  DCHECK(dialog_view_);
-  autofill_metrics::LogOtpInputDialogShown(challenge_type_);
+  if (dialog_view_) {
+    autofill_metrics::LogOtpInputDialogShown(challenge_type_);
+  }
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
     OtpUnmaskResult result) {
   // This can be invoked when the dialog is not visible. In this case we do
   // nothing.
-  if (!dialog_view_)
+  if (!dialog_view_) {
     return;
+  }
 
   switch (result) {
     case OtpUnmaskResult::kSuccess:
@@ -79,8 +87,9 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
 void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
     bool user_closed_dialog,
     bool server_request_succeeded) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnUnmaskPromptClosed(user_closed_dialog);
+  }
 
   if (user_closed_dialog) {
     autofill_metrics::LogOtpInputDialogResult(
@@ -111,13 +120,15 @@ void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
 void CardUnmaskOtpInputDialogControllerImpl::OnOkButtonClicked(
     const std::u16string& otp) {
   ok_button_clicked_ = true;
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnUnmaskPromptAccepted(otp);
+  }
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::OnNewCodeLinkClicked() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnNewOtpRequested();
+  }
 
   autofill_metrics::LogOtpInputDialogNewOtpRequested(challenge_type_);
 }
@@ -179,15 +190,16 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
       IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_SUCCESS);
 }
 
-CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<CardUnmaskOtpInputDialogControllerImpl>(
-          *web_contents) {}
+base::WeakPtr<CardUnmaskOtpInputDialogController>
+CardUnmaskOtpInputDialogControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     OtpUnmaskResult otp_unmask_result) {
-  if (!dialog_view_)
+  if (!dialog_view_) {
     return;
+  }
 
   switch (otp_unmask_result) {
     case OtpUnmaskResult::kOtpExpired:
@@ -204,7 +216,5 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
       NOTREACHED();
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CardUnmaskOtpInputDialogControllerImpl);
 
 }  // namespace autofill

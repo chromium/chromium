@@ -56,6 +56,7 @@ class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
+class CardUnmaskOtpInputDialogControllerImpl;
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -358,6 +359,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+      card_unmask_otp_input_dialog_controller_;
 };
 
 }  // namespace autofill

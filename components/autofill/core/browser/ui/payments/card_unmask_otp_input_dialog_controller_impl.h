@@ -2,29 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
 
-#include <string>
-
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
+
+#include "base/functional/callback.h"
+#include "build/build_config.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
 namespace autofill {
 
 enum class OtpUnmaskResult;
+class OtpUnmaskDelegate;
+class CardUnmaskOtpInputDialogView;
 
 class CardUnmaskOtpInputDialogControllerImpl
-    : public CardUnmaskOtpInputDialogController,
-      public content::WebContentsUserData<
-          CardUnmaskOtpInputDialogControllerImpl> {
+    : public CardUnmaskOtpInputDialogController {
  public:
+  CardUnmaskOtpInputDialogControllerImpl();
   CardUnmaskOtpInputDialogControllerImpl(
       const CardUnmaskOtpInputDialogControllerImpl&) = delete;
   CardUnmaskOtpInputDialogControllerImpl& operator=(
@@ -32,8 +28,11 @@ class CardUnmaskOtpInputDialogControllerImpl
   ~CardUnmaskOtpInputDialogControllerImpl() override;
 
   // Show the dialog for users to type in OTPs.
-  void ShowDialog(const CardUnmaskChallengeOption& challenge_option,
-                  base::WeakPtr<OtpUnmaskDelegate> delegate);
+  void ShowDialog(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate,
+      base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
+          create_and_show_view_callback);
 
   // Invoked when the OTP verification is completed.
   void OnOtpVerificationResult(OtpUnmaskResult result);
@@ -54,26 +53,21 @@ class CardUnmaskOtpInputDialogControllerImpl
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetProgressLabel() const override;
   std::u16string GetConfirmationMessage() const override;
+  base::WeakPtr<CardUnmaskOtpInputDialogController> GetWeakPtr() override;
 
 #if defined(UNIT_TEST)
-  CardUnmaskOtpInputDialogView* GetDialogViewForTesting() {
+  base::WeakPtr<CardUnmaskOtpInputDialogView> GetDialogViewForTesting() {
     return dialog_view_;
   }
 #endif
 
  protected:
-  explicit CardUnmaskOtpInputDialogControllerImpl(
-      content::WebContents* web_contents);
-
-  raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
+  base::WeakPtr<CardUnmaskOtpInputDialogView> dialog_view_;
 
   // The challenge type of the OTP input dialog.
   CardUnmaskChallengeOptionType challenge_type_;
 
  private:
-  friend class content::WebContentsUserData<
-      CardUnmaskOtpInputDialogControllerImpl>;
-
   // Sets the view's state to the invalid state for the corresponding
   // |otp_unmask_result|.
   void ShowInvalidState(OtpUnmaskResult otp_unmask_result);
@@ -92,9 +86,10 @@ class CardUnmaskOtpInputDialogControllerImpl
   // logging.
   bool ok_button_clicked_ = false;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<CardUnmaskOtpInputDialogControllerImpl>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_IMPL_H_
