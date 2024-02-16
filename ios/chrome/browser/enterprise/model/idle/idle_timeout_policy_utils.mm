@@ -33,13 +33,6 @@ ActionSet GetActionSet(PrefService* prefs,
       case ActionType::kClearAutofill:
         action_set.clear = true;
         break;
-
-      // TODO(b/301676922): Remove this once the ActionType enum has been
-      // cleaned up
-      case ActionType::kReloadPages:
-      case ActionType::kShowBubble:
-      case ActionType::kShowDialog:
-        break;
     }
   }
   return action_set;

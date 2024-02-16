@@ -18,7 +18,9 @@ namespace enterprise_idle {
 // Actions run in order, based on their numerical value. Lower values run first.
 // Keep this enum sorted by priority.
 enum class ActionType {
+#if !BUILDFLAG(IS_IOS)
   kShowDialog = 0,  // Not an IdleTimeoutAction value. Added as a side-effect.
+#endif              // !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kCloseBrowsers = 1,
   kShowProfilePicker = 2,
@@ -37,9 +39,9 @@ enum class ActionType {
   kSignOut,
 #else
   kClearSiteSettings,
-#endif  // BUILDFLAG(IS_IOS)
   kReloadPages,
   kShowBubble,  // Not an IdleTimeoutAction value. Added as a side-effect.
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 // Returns the idle timeout action type for an action string.

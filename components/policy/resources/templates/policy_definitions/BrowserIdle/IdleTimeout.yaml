@@ -16,9 +16,9 @@ features:
   per_profile: true
 supported_on:
 - chrome.*:116-
+- ios:123-
 future_on:
 - android
-- ios
 owners:
 - nicolaso@chromium.org
 - cbe-magic@google.com

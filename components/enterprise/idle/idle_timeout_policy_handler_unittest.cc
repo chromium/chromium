@@ -293,15 +293,16 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
   list.Append("clear_download_history");
   list.Append("clear_hosted_app_data");
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+  list.Append("clear_site_settings");
+  list.Append("reload_pages");
+#endif
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
   list.Append("clear_cached_images_and_files");
   list.Append("clear_password_signin");
   list.Append("clear_autofill");
-#if !BUILDFLAG(IS_IOS)
-  list.Append("clear_site_settings");
-#endif
-  list.Append("reload_pages");
+
   SetPolicyValue(policy::key::kIdleTimeoutActions,
                  base::Value(std::move(list)));
 
@@ -327,15 +328,15 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
                   static_cast<int>(ActionType::kClearDownloadHistory),
                   static_cast<int>(ActionType::kClearHostedAppData),
 #endif  // !BUILDFLAG(IS_ANDROID) !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+                  static_cast<int>(ActionType::kClearSiteSettings),
+                  static_cast<int>(ActionType::kReloadPages),
+#endif  // !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kClearBrowsingHistory),
                   static_cast<int>(ActionType::kClearCookiesAndOtherSiteData),
                   static_cast<int>(ActionType::kClearCachedImagesAndFiles),
                   static_cast<int>(ActionType::kClearPasswordSignin),
-                  static_cast<int>(ActionType::kClearAutofill),
-#if !BUILDFLAG(IS_IOS)
-                  static_cast<int>(ActionType::kClearSiteSettings),
-#endif  // !BUILDFLAG(IS_IOS)
-                  static_cast<int>(ActionType::kReloadPages)));
+                  static_cast<int>(ActionType::kClearAutofill)));
 }
 
 // When browser sign in is disabled by policy, the clear actions should
@@ -391,15 +392,16 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   list.Append("clear_download_history");
   list.Append("clear_hosted_app_data");
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+  list.Append("clear_site_settings");
+  list.Append("reload_pages");
+#endif  // !BUILDFLAG(IS_IOS)
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
   list.Append("clear_cached_images_and_files");
   list.Append("clear_password_signin");
   list.Append("clear_autofill");
-#if !BUILDFLAG(IS_IOS)
-  list.Append("clear_site_settings");
-#endif  // !BUILDFLAG(IS_IOS)
-  list.Append("reload_pages");
+
   SetPolicyValue(policy::key::kIdleTimeoutActions,
                  base::Value(std::move(list)));
 
@@ -427,15 +429,15 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
                   static_cast<int>(ActionType::kClearDownloadHistory),
                   static_cast<int>(ActionType::kClearHostedAppData),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
+                  static_cast<int>(ActionType::kClearSiteSettings),
+                  static_cast<int>(ActionType::kReloadPages),
+#endif  // !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kClearBrowsingHistory),
                   static_cast<int>(ActionType::kClearCookiesAndOtherSiteData),
                   static_cast<int>(ActionType::kClearCachedImagesAndFiles),
                   static_cast<int>(ActionType::kClearPasswordSignin),
-                  static_cast<int>(ActionType::kClearAutofill),
-#if !BUILDFLAG(IS_IOS)
-                  static_cast<int>(ActionType::kClearSiteSettings),
-#endif  // !BUILDFLAG(IS_IOS)
-                  static_cast<int>(ActionType::kReloadPages)));
+                  static_cast<int>(ActionType::kClearAutofill)));
 
   bool enabled;
   ASSERT_TRUE(

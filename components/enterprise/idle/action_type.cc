@@ -42,8 +42,8 @@ const char kSignOut[] = "sign_out";
 const char kCloseTabs[] = "close_tabs";
 #else
 const char kClearSiteSettingsActionName[] = "clear_site_settings";
-#endif  // BUILDFLAG(IS_IOS)
 const char kReloadPagesActionName[] = "reload_pages";
+#endif  // BUILDFLAG(IS_IOS)
 }  // namespace
 
 std::optional<ActionType> NameToActionType(const std::string& name) {
@@ -87,10 +87,10 @@ std::optional<ActionType> NameToActionType(const std::string& name) {
   if (name == kClearSiteSettingsActionName) {
     return ActionType::kClearSiteSettings;
   }
-#endif  // BUILDFLAG(IS_IOS)
   if (name == kReloadPagesActionName) {
     return ActionType::kReloadPages;
   }
+#endif  // BUILDFLAG(IS_IOS)
   return std::nullopt;
 }
 
