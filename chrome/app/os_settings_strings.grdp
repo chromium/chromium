@@ -2973,6 +2973,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL" desc="The name of the rename button for the pencil icon.">
     Rename
   </message>
+  <message name="IDS_SETTINGS_RENAMING_DIALOG_INPUT_DESCRIPTION" desc="Description of renaming dialog input.">
+     Must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">

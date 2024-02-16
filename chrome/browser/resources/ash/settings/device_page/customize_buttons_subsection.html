@@ -51,7 +51,9 @@
         on-keydown="onKeyDownInRenamingDialog_"
         invalid="[[buttonNameInvalid_]]"
         value="{{selectedButtonName_}}"
-        aria-label="$i18n{buttonRenamingDialogTitle}">
+        aria-description=
+            "[[i18n('buttonRemappingRenamingDialogInputDescription',
+                maxInputLength)]]">
       </cr-input>
       <div id="inputSuffix">
         <span id="duplicateNameError" hidden="[[!duplicateButtonName_]]">

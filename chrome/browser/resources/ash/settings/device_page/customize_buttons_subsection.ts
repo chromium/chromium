@@ -27,6 +27,8 @@ import {DragAndDropManager, OnDropCallback} from './drag_and_drop_manager.js';
 import {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
 import {KeyCombinationInputDialogElement} from './key_combination_input_dialog.js';
 
+const MAX_INPUT_LENGTH = 32;
+
 export interface CustomizeButtonsSubsectionElement {
   $: {
     keyCombinationInputDialog: KeyCombinationInputDialogElement,
@@ -100,6 +102,13 @@ export class CustomizeButtonsSubsectionElement extends
       hasLauncherButton: {
         type: Boolean,
       },
+
+      /** Used to reference the maxInputLength constant in HTML. */
+      maxInputLength: {
+        type: Number,
+        value: MAX_INPUT_LENGTH,
+        readOnly: true,
+      },
     };
   }
 
@@ -113,6 +122,7 @@ export class CustomizeButtonsSubsectionElement extends
   private buttonNameInvalid_: boolean;
   private isSaveButtonDisabled_: boolean;
   private duplicateButtonName_: boolean;
+  private readonly maxInputLength: number;
 
   override connectedCallback(): void {
     super.connectedCallback();
