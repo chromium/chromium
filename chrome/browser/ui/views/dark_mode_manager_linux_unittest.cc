@@ -24,10 +24,7 @@ class MockLinuxUi : public FakeLinuxUi {
 
 class MockNativeTheme : public NativeTheme {
  public:
-  MockNativeTheme()
-      : NativeTheme(/*should_only_use_dark_colors=*/false,
-                    /*system_theme=*/ui::SystemTheme::kDefault,
-                    /*theme_to_update=*/nullptr) {}
+  MockNativeTheme() : NativeTheme(false) {}
   ~MockNativeTheme() override = default;
 
   void SetUseDarkColors(bool use_dark_colors) {
