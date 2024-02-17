@@ -2,21 +2,6 @@
   "name": "software rendering list",
   "entries": [
     {
-      "id": 1,
-      "description": "ATI Radeon X1900 is not compatible with WebGL on the Mac",
-      "webkit_bugs": [47028],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x7249"],
-      "multi_gpu_category": "any",
-      "features": [
-        "accelerated_webgl",
-        "gpu_tile_rasterization"
-      ]
-    },
-    {
       "id": 3,
       "description": "GL driver is software rendered. GPU acceleration is disabled",
       "cr_bugs": [59302, 315217, 1155974],
@@ -47,21 +32,6 @@
       "device_id": ["0x0324"],
       "features": [
         "all"
-      ]
-    },
-    {
-      "id": 10,
-      "description": "NVIDIA GeForce 7300 GT on Mac does not support WebGL",
-      "cr_bugs": [73794],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0393"],
-      "multi_gpu_category": "any",
-      "features": [
-        "accelerated_webgl",
-        "gpu_tile_rasterization"
       ]
     },
     {
@@ -948,21 +918,6 @@
       ]
     },
     {
-      "id": 126,
-      "description": "Disallow use of OpenGL on Mac with core profile < 4.1",
-      "cr_bugs": [295792, 875891],
-      "os": {
-        "type": "macosx"
-      },
-      "gl_version": {
-        "op": "<",
-        "value": "4.1"
-      },
-      "features": [
-        "all"
-      ]
-    },
-    {
       "id":129,
       "description": "Intel drivers are buggy on Linux 2.x",
       "cr_bugs": [662909],
@@ -974,20 +929,6 @@
         }
       },
       "vendor_id": "0x8086",
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 130,
-      "description": "Older NVIDIA GPUs on macOS render incorrectly",
-      "cr_bugs": [676829, 676975],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0407", "0x0647", "0x0863"],
-      "multi_gpu_category": "any",
       "features": [
         "all"
       ]
@@ -1223,33 +1164,6 @@
       "features": [
         "accelerated_webgl",
         "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 159,
-      "cr_bugs": [902247],
-      "description": "Disallow OpenGL use on Mac with old NVIDIA GPUs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0861", "0x0866", "0x0867", "0x0869", "0x08a0", "0x08a2",
-                    "0x08a4", "0x0a29"],
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 160,
-      "cr_bugs": [902247],
-      "description": "Disallow OpenGL use on Mac with old AMD GPUs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x944a", "0x9488", "0x94c8", "0x9583"],
-      "features": [
-        "all"
       ]
     },
     {
