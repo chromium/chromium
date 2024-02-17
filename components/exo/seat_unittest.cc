@@ -657,15 +657,15 @@ TEST_F(SeatTest, PressedKeys) {
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   seat.DidProcessEvent(&press_a);
-  base::flat_map<ui::DomCode, KeyState> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)] = KeyState{press_a.code(), false};
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press B, then A & B should be in the map.
   seat.WillProcessEvent(&press_b);
   seat.OnKeyEvent(press_b.AsKeyEvent());
   seat.DidProcessEvent(&press_b);
-  pressed_keys[ui::CodeFromNative(&press_b)] = KeyState{press_b.code(), false};
+  pressed_keys[ui::CodeFromNative(&press_b)].emplace(press_b.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release A, with the normal order where DidProcessEvent is after OnKeyEvent,
@@ -701,6 +701,77 @@ TEST_F(SeatTest, DragDropAbort) {
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, 0);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should not be added to pressed_keys map.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(ui::CodeFromNative(&press_a));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B,
+                       ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B,
+                         ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>> pressed_keys;
+  auto& key_state_set = pressed_keys[ui::CodeFromNative(&press_a)];
+  key_state_set.emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should be added to pressed_keys map
+  // since it is explicitly allowlisted.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  key_state_set.emplace(press_b.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(ui::CodeFromNative(&press_a));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
 }
 
 }  // namespace

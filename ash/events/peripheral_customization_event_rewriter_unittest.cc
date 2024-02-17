@@ -127,7 +127,7 @@ std::string ConvertToString(const TestMouseEvent& mouse_event) {
 
 std::string ConvertToString(const TestKeyEvent& key_event) {
   std::string flags_name =
-      base::JoinString(ui::EventFlagsNames(key_event.flags), "|");
+      base::JoinString(ui::KeyEventFlagsNames(key_event.flags), "|");
   return base::StringPrintf(
       "KeyboardEvent type=%d code=%s(0x%06X) flags=%s(0x%X) vk=0x%02X "
       "key=%s(0x%08X)",
@@ -714,6 +714,14 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     return result;
   }
 
+  void ApplyCustomizationFlag(std::vector<TestEventVariant>& test_events) {
+    for (auto& test_event : test_events) {
+      if (auto* test_key_event = std::get_if<TestKeyEvent>(&test_event)) {
+        test_key_event->flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
+      }
+    }
+  }
+
  protected:
   std::unique_ptr<PeripheralCustomizationEventRewriter> rewriter_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
@@ -852,7 +860,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           static_cast<int>(ui::DomKey::CONTROL), ui::EF_CONTROL_DOWN,
           /*key_display=*/""))));
 
-  EXPECT_EQ(KeyLControl::Typed(), RunRewriter(KeyDigit0::Typed()));
+  EXPECT_EQ(KeyLControl::Typed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
+            RunRewriter(KeyDigit0::Typed()));
 }
 
 TEST_F(PeripheralCustomizationEventRewriterTest,
@@ -865,8 +874,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           /*key_display=*/""))));
 
   // Press digit 0 -> Ctrl + A.
-  EXPECT_EQ((std::vector<TestEventVariant>{KeyLControl::Pressed(),
-                                           KeyA::Pressed(ui::EF_CONTROL_DOWN)}),
+  EXPECT_EQ((std::vector<TestEventVariant>{
+                KeyLControl::Pressed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
+                KeyA::Pressed(ui::EF_CONTROL_DOWN |
+                              ui::EF_IS_CUSTOMIZED_FROM_BUTTON)}),
             (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Pressed()})));
 
   // Press and release Ctrl on a different keyboard.
@@ -876,7 +887,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   // Expect that when digit 0 is released it emits A without the Ctrl modifier
   // flag.
   EXPECT_EQ(
-      (std::vector<TestEventVariant>{KeyA::Released()}),
+      (std::vector<TestEventVariant>{
+          KeyA::Released(ui::EF_IS_CUSTOMIZED_FROM_BUTTON)}),
       (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Released()})));
 }
 
@@ -893,8 +905,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           /*key_display=*/""))));
 
   // Press digit 0 -> Ctrl + A.
-  EXPECT_EQ((std::vector<TestEventVariant>{KeyLControl::Pressed(),
-                                           KeyA::Pressed(ui::EF_CONTROL_DOWN)}),
+  EXPECT_EQ((std::vector<TestEventVariant>{
+                KeyLControl::Pressed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
+                KeyA::Pressed(ui::EF_CONTROL_DOWN |
+                              ui::EF_IS_CUSTOMIZED_FROM_BUTTON)}),
             (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Pressed()})));
 
   // Press and release Alt -> Ctrl on a different keyboard. Note that this still
@@ -910,7 +924,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   // Expect that when digit 0 is released it emits A without the Ctrl modifier
   // flag.
   EXPECT_EQ(
-      (std::vector<TestEventVariant>{KeyA::Released()}),
+      (std::vector<TestEventVariant>{
+          KeyA::Released(ui::EF_IS_CUSTOMIZED_FROM_BUTTON)}),
       (RunRewriter(std::vector<TestEventVariant>{KeyDigit0::Released()})));
 }
 
@@ -945,7 +960,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           ui::VKEY_OEM_MINUS, static_cast<int>(ui::DomCode::MINUS),
           static_cast<int>(ui::DomKey::Constant<'-'>::Character), ui::EF_NONE,
           /*key_display=*/""))));
-  EXPECT_EQ(KeyMinus::Typed(), RunRewriter(KeyDigit0::Typed()));
+  EXPECT_EQ(KeyMinus::Typed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
+            RunRewriter(KeyDigit0::Typed()));
 
   // Switch to German (DE) layout table and expect the remapped button to have a
   // different VKEY and DomKey.
@@ -953,7 +969,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   ash::AcceleratorKeycodeLookupCache::Get()->Clear();
 
   EXPECT_EQ((TestKey<ui::DomCode::MINUS, ui::DomKey::Constant<u'ß'>::Character,
-                     ui::VKEY_OEM_4>::Typed()),
+                     ui::VKEY_OEM_4>::Typed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON)),
             RunRewriter(KeyDigit0::Typed()));
 }
 
@@ -967,7 +983,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           static_cast<int>(ui::DomKey::Constant<'a'>::Character), ui::EF_NONE,
           /*key_display=*/""))));
 
-  EXPECT_EQ(KeyA::Typed(ui::EF_SHIFT_DOWN),
+  EXPECT_EQ(KeyA::Typed(ui::EF_SHIFT_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
             RunRewriter(KeyDigit0::Typed(ui::EF_SHIFT_DOWN)));
 }
 
@@ -982,7 +998,7 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           static_cast<int>(ui::DomKey::Constant<'a'>::Character), ui::EF_NONE,
           /*key_display=*/""))));
 
-  EXPECT_EQ(KeyA::Typed(ui::EF_SHIFT_DOWN),
+  EXPECT_EQ(KeyA::Typed(ui::EF_SHIFT_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
             RunRewriter(ButtonForward::Typed(ui::EF_SHIFT_DOWN)));
 }
 
@@ -997,7 +1013,8 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
           static_cast<int>(ui::DomKey::SHIFT), ui::EF_SHIFT_DOWN,
           /*key_display=*/""))));
 
-  EXPECT_EQ(std::vector<TestEventVariant>{KeyLShift::Pressed()},
+  EXPECT_EQ(std::vector<TestEventVariant>{KeyLShift::Pressed(
+                ui::EF_IS_CUSTOMIZED_FROM_BUTTON)},
             RunRewriter({ButtonForward::Pressed()}));
   EXPECT_EQ(KeyA::Typed(ui::EF_SHIFT_DOWN),
             RunRewriter(KeyA::Typed(), ui::EF_NONE, kRandomKeyboardDeviceId));
@@ -1582,6 +1599,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ButtonRewritingTest, GraphicsPenRewriteEvent) {
   auto [tuple, data] = GetParam();
   auto& [button, key_event] = tuple;
+  if (data.incoming_events != data.rewritten_events) {
+    ApplyCustomizationFlag(data.rewritten_events);
+  }
 
   graphics_tablet_settings_->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
@@ -1596,6 +1616,9 @@ TEST_P(ButtonRewritingTest, GraphicsPenRewriteEvent) {
 TEST_P(ButtonRewritingTest, GraphicsTabletRewriteEvent) {
   auto [tuple, data] = GetParam();
   auto& [button, key_event] = tuple;
+  if (data.incoming_events != data.rewritten_events) {
+    ApplyCustomizationFlag(data.rewritten_events);
+  }
 
   graphics_tablet_settings_->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New(
@@ -1610,6 +1633,9 @@ TEST_P(ButtonRewritingTest, GraphicsTabletRewriteEvent) {
 TEST_P(ButtonRewritingTest, MouseRewriteEvent) {
   auto [tuple, data] = GetParam();
   auto& [button, key_event] = tuple;
+  if (data.incoming_events != data.rewritten_events) {
+    ApplyCustomizationFlag(data.rewritten_events);
+  }
 
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", button.Clone(),
@@ -1647,9 +1673,10 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
           /*key_display=*/""))));
 
   auto modifier_pressed_event = data;
+  modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
   modifier_released_event.type = ui::ET_KEY_RELEASED;
-  modifier_released_event.flags = ui::EF_NONE;
+  modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.
   EXPECT_EQ((std::vector<TestEventVariant>{modifier_pressed_event}),
@@ -1680,9 +1707,10 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
                                        : ui::EF_COMMAND_DOWN;
 
   auto modifier_pressed_event = data;
+  modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
   modifier_released_event.type = ui::ET_KEY_RELEASED;
-  modifier_released_event.flags = ui::EF_NONE;
+  modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.
   EXPECT_EQ((std::vector<TestEventVariant>{modifier_pressed_event}),
@@ -1715,9 +1743,10 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
           /*key_display=*/""))));
 
   auto modifier_pressed_event = data;
+  modifier_pressed_event.flags |= ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
   auto modifier_released_event = data;
   modifier_released_event.type = ui::ET_KEY_RELEASED;
-  modifier_released_event.flags = ui::EF_NONE;
+  modifier_released_event.flags = ui::EF_IS_CUSTOMIZED_FROM_BUTTON;
 
   // Press down remapped button that maps to a modifier.
   EXPECT_EQ((std::vector<TestEventVariant>{modifier_pressed_event}),
@@ -1788,7 +1817,8 @@ TEST_F(StaticShortcutActionRewritingTest, StaticShortcutDisableMouseRewriting) {
 }
 
 TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseRewriting) {
-  const auto& [static_shortcut_action, expected_key_events] = GetParam();
+  auto [static_shortcut_action, expected_key_events] = GetParam();
+  ApplyCustomizationFlag(expected_key_events);
 
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
@@ -1799,7 +1829,8 @@ TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseRewriting) {
 }
 
 TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseWheelRewriting) {
-  const auto& [static_shortcut_action, expected_key_events] = GetParam();
+  auto [static_shortcut_action, expected_key_events] = GetParam();
+  ApplyCustomizationFlag(expected_key_events);
 
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "",
@@ -1818,7 +1849,9 @@ TEST_P(StaticShortcutActionRewritingTest, StaticShortcutMouseWheelRewriting) {
 
 TEST_P(StaticShortcutActionRewritingTest,
        StaticShortcutGraphicsTabletRewriting) {
-  const auto& [static_shortcut_action, expected_key_events] = GetParam();
+  auto [static_shortcut_action, expected_key_events] = GetParam();
+  ApplyCustomizationFlag(expected_key_events);
+
   graphics_tablet_settings_->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New(
           "",

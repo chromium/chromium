@@ -89,7 +89,8 @@ class Seat : public aura::client::FocusChangeObserver,
   virtual Surface* GetFocusedSurface();
 
   // Returns currently pressed keys.
-  const base::flat_map<ui::DomCode, KeyState>& pressed_keys() const {
+  const base::flat_map<ui::DomCode, base::flat_set<KeyState>>& pressed_keys()
+      const {
     return pressed_keys_;
   }
 
@@ -214,9 +215,9 @@ class Seat : public aura::client::FocusChangeObserver,
       priority_observer_list_;
 
   // The platform code is the key in this map as it represents the physical
-  // key that was pressed. The value is a potentially rewritten code that the
-  // physical key press generated.
-  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
+  // key that was pressed. The value is a set of potentially rewritten key codes
+  // that the physical key press generated.
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>> pressed_keys_;
   ui::DomCode physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
 
   // Data source being used as a clipboard content.

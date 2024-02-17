@@ -228,7 +228,9 @@ std::vector<std::unique_ptr<ui::Event>> RewriteModifiers(
         pressed ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
     auto rewritten_modifier_event = std::make_unique<ui::KeyEvent>(
         pressed_or_released_type, iter->key_code, iter->dom_code,
-        modifiers_pressed | modifiers_already_pressed, event.time_stamp());
+        modifiers_pressed | modifiers_already_pressed |
+            ui::EF_IS_CUSTOMIZED_FROM_BUTTON,
+        event.time_stamp());
     rewritten_modifier_event->set_source_device_id(event.source_device_id());
     rewritten_events.push_back(std::move(rewritten_modifier_event));
   }
@@ -322,7 +324,8 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
 
   auto rewritten_event = std::make_unique<ui::KeyEvent>(
       event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
-      applied_modifier_key_flag | other_modifiers_to_apply | event.flags(),
+      applied_modifier_key_flag | other_modifiers_to_apply | event.flags() |
+          ui::EF_IS_CUSTOMIZED_FROM_BUTTON,
       static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
   rewritten_event->set_source_device_id(event.source_device_id());
 

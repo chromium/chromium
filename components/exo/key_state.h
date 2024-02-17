@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_KEY_STATE_H_
 #define COMPONENTS_EXO_KEY_STATE_H_
 
+#include <tuple>
+
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -22,6 +24,11 @@ struct KeyState {
 
 inline bool operator==(const KeyState& lhs, const KeyState& rhs) {
   return lhs.code == rhs.code && lhs.consumed_by_ime == rhs.consumed_by_ime;
+}
+
+inline bool operator<(const KeyState& lhs, const KeyState& rhs) {
+  return std::tie(lhs.code, lhs.consumed_by_ime) <
+         std::tie(rhs.code, rhs.consumed_by_ime);
 }
 
 }  // namespace exo

@@ -10,6 +10,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -87,8 +88,8 @@ class Keyboard : public ui::EventHandler,
  private:
   // Returns a set of keys with keys that should not be handled by the surface
   // filtered out from pressed_keys_.
-  base::flat_map<ui::DomCode, KeyState> GetPressedKeysForSurface(
-      Surface* surface);
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>>
+  GetPressedKeysForSurface(Surface* surface);
 
   // Change keyboard focus to |surface|.
   void SetFocus(Surface* surface);
@@ -132,7 +133,7 @@ class Keyboard : public ui::EventHandler,
   // Set of currently pressed keys. First value is a platform code and second
   // value is the code that was delivered to client. See Seat.h for more
   // details.
-  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
+  base::flat_map<ui::DomCode, base::flat_set<KeyState>> pressed_keys_;
 
   // Key state changes that are expected to be acknowledged.
   using KeyStateChange = std::pair<ui::KeyEvent, base::TimeTicks>;
