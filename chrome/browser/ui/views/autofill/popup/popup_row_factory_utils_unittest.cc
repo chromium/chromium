@@ -28,6 +28,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
 using ::testing::IsNull;
@@ -58,7 +59,7 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
     PopupRowView* view = widget_->SetContentsView(
         CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
                            selection_delegate(), 0));
-    CHECK_EQ(view->GetClassMetaData()->type_name(), "PopupRowWithButtonView");
+    CHECK(views::IsViewClass<PopupRowWithButtonView>(view));
     view_ = static_cast<PopupRowWithButtonView*>(view);
     widget_->Show();
   }

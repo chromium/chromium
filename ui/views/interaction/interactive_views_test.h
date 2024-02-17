@@ -663,22 +663,21 @@ ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameChildViewByType(ElementSpecifier parent,
                                              base::StringPiece name,
                                              size_t index) {
-  return std::move(
-      NameChildView(parent, name,
-                    base::BindRepeating(
-                        [](size_t& index, const View* view) {
-                          if (IsViewClass<V>(view)) {
-                            if (index == 0) {
-                              return true;
-                            }
-                            --index;
-                          }
-                          return false;
-                        },
-                        base::OwnedRef(index)))
-          .SetDescription(base::StringPrintf(
-              "NameChildViewByType<%s>( \"%s\" %zu )",
-              V::MetaData()->type_name().c_str(), name.data(), index)));
+  return std::move(NameChildView(parent, name,
+                                 base::BindRepeating(
+                                     [](size_t& index, const View* view) {
+                                       if (IsViewClass<V>(view)) {
+                                         if (index == 0) {
+                                           return true;
+                                         }
+                                         --index;
+                                       }
+                                       return false;
+                                     },
+                                     base::OwnedRef(index)))
+                       .SetDescription(base::StringPrintf(
+                           "NameChildViewByType<%s>( \"%s\" %zu )",
+                           V::MetaData()->type_name(), name.data(), index)));
 }
 
 // static
@@ -688,22 +687,21 @@ ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameDescendantViewByType(ElementSpecifier ancestor,
                                                   base::StringPiece name,
                                                   size_t index) {
-  return std::move(
-      NameDescendantView(ancestor, name,
-                         base::BindRepeating(
-                             [](size_t& index, const View* view) {
-                               if (IsViewClass<V>(view)) {
-                                 if (index == 0) {
-                                   return true;
-                                 }
-                                 --index;
-                               }
-                               return false;
-                             },
-                             base::OwnedRef(index)))
-          .SetDescription(base::StringPrintf(
-              "NameDescendantViewByType<%s>( \"%s\" %zu )",
-              V::MetaData()->type_name().c_str(), name.data(), index)));
+  return std::move(NameDescendantView(ancestor, name,
+                                      base::BindRepeating(
+                                          [](size_t& index, const View* view) {
+                                            if (IsViewClass<V>(view)) {
+                                              if (index == 0) {
+                                                return true;
+                                              }
+                                              --index;
+                                            }
+                                            return false;
+                                          },
+                                          base::OwnedRef(index)))
+                       .SetDescription(base::StringPrintf(
+                           "NameDescendantViewByType<%s>( \"%s\" %zu )",
+                           V::MetaData()->type_name(), name.data(), index)));
 }
 
 // static
