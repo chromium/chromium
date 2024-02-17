@@ -97,8 +97,11 @@ using ::testing::Eq;
 using ::testing::Ge;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
+using ::testing::IsTrue;
 using ::testing::Le;
 using ::testing::Pair;
+using ::testing::Property;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArgs;
 
@@ -1007,7 +1010,7 @@ class HoldingSpaceWallpaperNudgeControllerEligibilityTest
       : HoldingSpaceWallpaperNudgeControllerTestBase(
             /*auto_open_enabled=*/true,
             /*counterfactual_enabled=*/false,
-            /*drop_to_pin_enabled=*/false,
+            /*drop_to_pin_enabled=*/true,
             /*force_eligibility_enabled=*/ForceUserEligibility(),
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -1163,12 +1166,27 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id, &holding_space_client, &holding_space_model);
 
-  // Configure the client to crack file system URLs.
-  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
-      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
-        return base::FilePath(base::StrCat(
-            {"//path/to/", std::string(&file_system_url.spec().back())}));
-      }));
+  if (expect_eligibility) {
+    // Configure the client to pin files to holding space when so instructed.
+    EXPECT_CALL(holding_space_client, PinFiles)
+        .WillRepeatedly(WithArgs<0>(
+            Invoke([&](const std::vector<base::FilePath>& unpinned_file_paths) {
+              holding_space_model.AddItems(CreateHoldingSpaceItems(
+                  HoldingSpaceItem::Type::kPinnedFile, unpinned_file_paths));
+            })));
+
+    // Configure the client to crack file system URLs.
+    EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
+        .WillRepeatedly(Invoke([](const GURL& file_system_url) {
+          return base::FilePath(base::StrCat(
+              {"//path/to/", std::string(&file_system_url.spec().back())}));
+        }));
+  }
+
+  // Mark the holding space feature as available since there is no holding
+  // space keyed service which would otherwise be responsible for doing so.
+  holding_space_prefs::MarkTimeOfFirstAvailability(
+      GetLastActiveUserPrefService());
 
   const int64_t display_id = GetPrimaryDisplay().id();
 
@@ -1196,35 +1214,43 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
   PressLeftButton();
   MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
 
-  // Expect the holding space tray to have a help bubble and a ping depending on
-  // expected eligibility.
+  // Expect the holding space tray to have a help bubble and a ping, and the
+  // wallpaper to have a highlight depending on expected eligibility.
   EXPECT_EQ(HasHelpBubble(tray), expect_eligibility);
   EXPECT_EQ(HasPing(tray), expect_eligibility);
+  EXPECT_EQ(HasWallpaperHighlight(display_id), expect_eligibility);
 
-  // Verify that nudge suppression related metrics were recorded.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Ash.HoldingSpaceWallpaperNudge.SuppressedReason"),
-              Conditional(expect_eligibility, IsEmpty(),
-                          BucketsAre(Bucket(
-                              /*sample=*/SuppressedReason::kUserNotEligible,
-                              /*count=*/1))));
+  // Drop data on the wallpaper and verify that it results in files being added
+  // to holding space if and only if the user is eligible.
+  ReleaseLeftButton();
+  FlushMessageLoop();
+  EXPECT_NE(holding_space_model.items().empty(), expect_eligibility);
 
-  // Reset the UI state, using zero-scaled animations to save time.
+  // Holding space should be auto-opened depending on expected eligibility.
+  EXPECT_THAT(
+      tray->GetBubbleWidget(),
+      Conditional(expect_eligibility,
+                  Property(&views::Widget::IsVisible, IsTrue()), IsNull()));
+
+  // Remove all items from holding space, if any exist, so that any drag-and-
+  // dropped files that were added can be re-pinned in the next session.
+  holding_space_model.RemoveAll();
+  FlushMessageLoop();
+
+  // Reset state for the next session, using scaled animations to save time.
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  ReleaseLeftButton();
   task_environment()->AdvanceClock(
       user_education::kDefaultTimeoutWithoutButtons);
   WaitForPingFinish(tray);
   WaitForHelpBubbleClose();
   FlushMessageLoop();
 
-  // Set checks to user "new-ness" to be false to confirm eligibility persists
-  // across sessions.
+  // Set checks for user "new-ness" to be `false` to confirm eligibility
+  // persists across sessions. Note that forced eligibility is not persisted.
   MarkUserFirstSessionComplete();
 
-  // Reset the session and log in again to confirm that eligibility for the
-  // nudge persists across sessions.
+  // Reset the session and log in again.
   session->Reset();
   session->AddUserSession(account_id.GetUserEmail(), GetUserType(),
                           /*provide_pref_service=*/true,
@@ -1262,10 +1288,28 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
   PressLeftButton();
   MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
 
-  // Expect the holding space tray to have a help bubble and a ping depending on
-  // expected eligibility.
+  //  Expect the holding space tray to have a help bubble and a ping, and the
+  //  wallpaper to have a highlight depending on expected eligibility.
   EXPECT_EQ(HasHelpBubble(tray), expect_eligibility);
   EXPECT_EQ(HasPing(tray), expect_eligibility);
+  EXPECT_EQ(HasWallpaperHighlight(display_id), expect_eligibility);
+
+  // Drop data on the wallpaper and verify that it results in files being added
+  // to holding space if and only if the user is eligible.
+  ReleaseLeftButton();
+  FlushMessageLoop();
+  EXPECT_NE(holding_space_model.items().empty(), expect_eligibility);
+
+  // Holding space should be auto-opened depending on expected eligibility.
+  EXPECT_THAT(
+      tray->GetBubbleWidget(),
+      Conditional(expect_eligibility,
+                  Property(&views::Widget::IsVisible, IsTrue()), IsNull()));
+
+  // TODO(http://b/325676397): Remove after fixing destruction order issues.
+  // Close holding space, if it was showing.
+  tray->CloseBubble();
+  FlushMessageLoop();
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
@@ -1359,6 +1403,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
   const bool drop_to_pin_behavior_expected =
       drop_to_pin_enabled().value_or(false);
 
+  size_t nudge_shown_count = 0u;
+
   for (size_t day = 0; day < 3; ++day) {
     base::HistogramTester histogram_tester;
 
@@ -1376,6 +1422,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     // Expect the holding space tray to have a help bubble and a ping.
     EXPECT_TRUE(HasHelpBubble(tray));
     EXPECT_TRUE(HasPing(tray));
+    ++nudge_shown_count;
 
     // The shelf and holding space tray should show if the nudge is showing.
     EXPECT_TRUE(shelf->IsVisible());
@@ -1386,7 +1433,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
 
     // Verify that no nudge suppression related metrics were recorded.
     histogram_tester.ExpectTotalCount(
-        "Ash.HoldingSpaceWallpaperNudge.SuppressionReason", /*count=*/0);
+        "Ash.HoldingSpaceWallpaperNudge.SuppressedReason", /*count=*/0);
 
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
@@ -1422,9 +1469,12 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     EXPECT_EQ(HasWallpaperHighlight(display_id), drop_to_pin_behavior_expected);
 
     // Verify that nudge suppression related metrics were recorded.
-    histogram_tester.ExpectUniqueSample(
-        "Ash.HoldingSpaceWallpaperNudge.SuppressionReason",
-        /*sample=*/SuppressedReason::kTimePeriod, /*count=*/0);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Ash.HoldingSpaceWallpaperNudge.SuppressedReason"),
+        Conditional(nudge_shown_count >= 3,
+                    BucketsAre(Bucket(SuppressedReason::kCountLimitReached, 1)),
+                    BucketsAre(Bucket(SuppressedReason::kTimePeriod, 1))));
 
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
@@ -1455,8 +1505,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
 
   // Verify that nudge suppression related metrics were recorded.
   histogram_tester.ExpectUniqueSample(
-      "Ash.HoldingSpaceWallpaperNudge.SuppressionReason",
-      /*sample=*/SuppressedReason::kCountLimitReached, /*count=*/0);
+      "Ash.HoldingSpaceWallpaperNudge.SuppressedReason",
+      /*sample=*/SuppressedReason::kCountLimitReached, /*count=*/1);
 
   // Clean up holding space controller.
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(

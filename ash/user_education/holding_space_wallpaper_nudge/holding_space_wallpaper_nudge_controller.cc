@@ -370,6 +370,17 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   }
 
   bool CanDrop(const ui::OSExchangeData& data) override {
+    // Ineligible users should not see any behavioral changes introduced by
+    // the holding space wallpaper nudge experiment. Returning `false` here
+    // prevents any downstream events from being received.
+    if (!features::IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() &&
+        holding_space_wallpaper_nudge_prefs::GetUserEligibility(
+            Shell::Get()
+                ->session_controller()
+                ->GetLastActiveUserPrefService()) != true) {
+      return false;
+    }
+
     // If this `data` can be pinned to holding space, return true to make sure
     // we can track the drag to show the nudge appropriately, even if
     // drop-to-pin is not enabled.
