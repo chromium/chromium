@@ -11,6 +11,7 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -106,6 +107,9 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       await this.initializeTablet();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
+    getAnnouncerInstance().announce(
+        this.i18n('customizeTabletButtonsNudgeHeader') + ' ' +
+        this.getDescription_());
   }
 
   /**
