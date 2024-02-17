@@ -130,7 +130,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       "https://fonts.gstatic.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src 'self' chrome-untrusted://resources;");
+      "img-src 'self' data: chrome-untrusted://resources;");
   raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
 
   // If the ThemeSource isn't added here, since Read Anything is

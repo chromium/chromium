@@ -17,6 +17,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -24,10 +25,9 @@ namespace {
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kContentRoles[]{
-    ax::mojom::Role::kHeading,
-    ax::mojom::Role::kParagraph,
-    ax::mojom::Role::kNote,
-};
+    ax::mojom::Role::kHeading, ax::mojom::Role::kParagraph,
+    ax::mojom::Role::kNote, ax::mojom::Role::kImage,
+    ax::mojom::Role::kFigcaption};
 
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kRolesToSkip[]{
@@ -38,7 +38,6 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kContentInfo,
     ax::mojom::Role::kFooter,
     ax::mojom::Role::kFooterAsNonLandmark,
-    ax::mojom::Role::kImage,
     ax::mojom::Role::kLabelText,
     ax::mojom::Role::kNavigation,
 };
@@ -89,7 +88,15 @@ void GetContentRootNodes(const ui::AXNode* root,
 // |content_node_ids|, whose pointer is passed through the recursion.
 void AddContentNodesToVector(const ui::AXNode* node,
                              std::vector<ui::AXNodeID>* content_node_ids) {
-  if (base::Contains(kContentRoles, node->GetRole())) {
+  const auto& role = node->GetRole();
+  if (base::Contains(kContentRoles, role)) {
+    // TODO(1464340): Remove when flag is no longer necessary. Skip these roles
+    // if the flag is not enabled.
+    if (!features::IsReadAnythingImagesViaAlgorithmEnabled() &&
+        (role == ax::mojom::Role::kFigcaption ||
+         role == ax::mojom::Role::kImage)) {
+      return;
+    }
     content_node_ids->emplace_back(node->id());
     return;
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/read_anything_app_controller.h"
 
+#include <climits>
 #include <memory>
 #include <queue>
 #include <string>
@@ -14,6 +15,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "components/language/core/common/locale_util.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
@@ -39,6 +42,8 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/mojom/ax_event.mojom.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
@@ -438,6 +443,12 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     Distill();
   }
 
+  if (model_.image_to_update_node_id() != ui::kInvalidAXNodeID) {
+    ExecuteJavaScript("chrome.readingMode.updateImage(" +
+                      base::ToString(model_.image_to_update_node_id()) + ");");
+    model_.reset_image_to_update_node_id();
+  }
+
   // TODO(accessibility): it isn't clear this handles the pending updates path
   // correctly within the model.
   if (model_.requires_post_process_selection()) {
@@ -700,6 +711,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
+      .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
@@ -768,7 +780,11 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("movePositionToNextGranularity",
                  &ReadAnythingAppController::MovePositionToNextGranularity)
       .SetMethod("movePositionToPreviousGranularity",
-                 &ReadAnythingAppController::MovePositionToPreviousGranularity);
+                 &ReadAnythingAppController::MovePositionToPreviousGranularity)
+      .SetMethod("requestImageDataUrl",
+                 &ReadAnythingAppController::RequestImageDataUrl)
+      .SetMethod("getImageDataUrl",
+                 &ReadAnythingAppController::GetImageDataUrl);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1006,6 +1022,11 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   return "";
 }
 
+std::string ReadAnythingAppController::GetAltText(
+    ui::AXNodeID ax_node_id) const {
+  return model_.GetAltText(ax_node_id);
+}
+
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
@@ -1045,6 +1066,19 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
   return model_.GetSupportedFonts();
+}
+
+void ReadAnythingAppController::RequestImageDataUrl(
+    ui::AXNodeID node_id) const {
+  auto target_tree_id = model_.GetActiveTreeId();
+  CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
+
+  page_handler_->OnImageDataRequested(target_tree_id, node_id);
+}
+
+std::string ReadAnythingAppController::GetImageDataUrl(
+    ui::AXNodeID node_id) const {
+  return model_.GetImageDataUrl(node_id);
 }
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {

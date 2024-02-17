@@ -140,6 +140,10 @@ interface UntrustedPageHandler {
   // clicked; target_node_id is the AXNodeID of the link node.
   OnLinkClicked(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
 
+  // Asks the browser provide the image data for the target node.
+  // The data will be received in a tree update via AccessibilityEventReceived.
+  OnImageDataRequested(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+
   // Informs the browser controller that a selection was made in the WebUI. The
   // browser controller responds by making a matching selection in the target
   // tree, which is in the main frame of the currently active web contents.

@@ -251,6 +251,11 @@ AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithAlgorithm);
 AX_BASE_EXPORT bool IsReadAnythingWithAlgorithmEnabled();
 
+// Enable images to be distilled via algorithm. Should be disabled by
+// default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);
+AX_BASE_EXPORT bool IsReadAnythingImagesViaAlgorithmEnabled();
+
 // Write some ScreenAI library debug data in /tmp.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();

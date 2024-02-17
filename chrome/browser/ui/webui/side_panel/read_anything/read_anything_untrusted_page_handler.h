@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/ax_action_data.h"
 
 namespace content {
 class ScopedAccessibilityMode;
@@ -116,6 +117,8 @@ class ReadAnythingUntrustedPageHandler
       read_anything::mojom::HighlightGranularity granularity) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
+  void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
+                            ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
@@ -172,6 +175,9 @@ class ReadAnythingUntrustedPageHandler
   // WebContents.
   void ObserveWebContentsSidePanelController(
       content::WebContents* web_contents);
+
+  void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
+                                 const ui::AXActionData& data);
 
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<ReadAnythingTabHelper> tab_helper_;

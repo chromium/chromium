@@ -4776,6 +4776,12 @@ const char kReadAnythingWithAlgorithmDescription[] =
     "Have Reading Mode use a local rules based algorithm for web page "
     "distillation.";
 
+const char kReadAnythingImagesViaAlgorithmName[] =
+    "Reading Mode with images added via algorithm";
+const char kReadAnythingImagesViaAlgorithmDescription[] =
+    "Have Reading Mode use a local rules based algorithm to include images "
+    "from webpages.";
+
 const char kReadAnythingWebUIToolbarName[] = "Reading Mode WebUI Toolbar";
 const char kReadAnythingWebUIToolbarDescription[] =
     "Enables the Reading Mode toolbar implemented with WebUI instead of with "

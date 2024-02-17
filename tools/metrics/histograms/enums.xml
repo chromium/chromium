@@ -19000,6 +19000,7 @@ from previous Chrome versions.
   <int value="-777126951" label="FontSrcLocalMatching:enabled"/>
   <int value="-776686417" label="SiteExplorationUi:disabled"/>
   <int value="-775952696" label="FeedStamp:enabled"/>
+  <int value="-775361878" label="ReadAnythingImagesViaAlgorithm:disabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
   <int value="-774513654" label="ShareSheetCustomActionsPolish:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
@@ -24172,6 +24173,7 @@ from previous Chrome versions.
   <int value="1612974229" label="allow-insecure-localhost"/>
   <int value="1613179749" label="WebAuthenticationCableDisco:disabled"/>
   <int value="1613738524" label="ForceAppLanguagePrompt:enabled"/>
+  <int value="1613762235" label="ReadAnythingImagesViaAlgorithm:enabled"/>
   <int value="1614309501" label="DataSaverLiteModeRebranding:enabled"/>
   <int value="1614596813" label="CloseButtonsInactiveTabs:disabled"/>
   <int value="1615515373" label="ScreenAI:disabled"/>

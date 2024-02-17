@@ -65,7 +65,8 @@
     ],
   };
   chrome.readingMode.setContentForTesting(axTree, [2, 4]);
-  const expected = '<div><a>This link does not have a url.</a><img></div>';
+  const expected =
+      '<div><a>This link does not have a url.</a><img src="" alt=""></div>';
   assertContainerInnerHTML(expected);
 
   return result;

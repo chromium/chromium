@@ -112,6 +112,12 @@ if (chrome.readingMode) {
     readAnythingApp.updateLinks();
   };
 
+  chrome.readingMode.updateImage = (nodeId) => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateImage(nodeId);
+  };
+
   chrome.readingMode.updateSelection = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
@@ -156,6 +162,12 @@ export interface ReadAnythingElement {
   };
 }
 
+interface PendingImageRequest {
+  resolver: (dataUrl: string) => void;
+  cancel: () => void;
+  nodeId: number;
+}
+
 export class ReadAnythingElement extends ReadAnythingElementBase {
   static get is() {
     return 'read-anything-app';
@@ -184,6 +196,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
   private domNodeToAxNodeIdMap_: TwoWayMap<Node, number> = new TwoWayMap();
+  private imageNodeIdsToFetch_: Set<number> = new Set();
+  private pendingImageRequest_?: PendingImageRequest;
 
   private scrollingOnSelection_: boolean;
   private hasContent_: boolean;
@@ -338,6 +352,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       element.setAttribute('dir', direction);
     }
 
+    if (element.nodeName === 'IMG') {
+      const dataUrl = chrome.readingMode.getImageDataUrl(nodeId);
+      if (!dataUrl) {
+        this.imageNodeIdsToFetch_.add(nodeId);
+      }
+      element.setAttribute('src', dataUrl);
+      const altText = chrome.readingMode.getAltText(nodeId);
+      element.setAttribute('alt', altText);
+    }
+
     if (url && element.nodeName === 'A') {
       element.setAttribute('href', url);
       element.onclick = () => {
@@ -471,8 +495,48 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    this.loadImages_();
+
     this.hasContent_ = true;
     container.appendChild(node);
+  }
+
+  updateImage(nodeId: number) {
+    const dataurl = chrome.readingMode.getImageDataUrl(nodeId);
+    if (this.pendingImageRequest_ &&
+        this.pendingImageRequest_.nodeId === nodeId) {
+      this.pendingImageRequest_.resolver(dataurl);
+    }
+  }
+
+  private async loadImages_() {
+    // Content was updated while a request was still pending.
+    if (this.pendingImageRequest_) {
+      this.pendingImageRequest_.cancel();
+    }
+
+    for (const nodeId of this.imageNodeIdsToFetch_) {
+      // Create a promise that will be resolved on image updated.
+      try {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          this.pendingImageRequest_ = {
+            resolver: resolve,
+            cancel: reject,
+            nodeId: nodeId,
+          };
+          chrome.readingMode.requestImageDataUrl(nodeId);
+        });
+        const node = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+        if (node instanceof HTMLImageElement) {
+          node.src = dataUrl;
+        }
+      } catch {
+        // This catch will be called if cancel is called on the image request.
+        this.pendingImageRequest_ = undefined;
+        break;
+      }
+    }
+    this.imageNodeIdsToFetch_.clear();
   }
 
   updateSelection() {

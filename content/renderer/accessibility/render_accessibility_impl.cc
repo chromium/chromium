@@ -750,7 +750,9 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
   }
 
   MarkWebAXObjectDirty(obj);
-  HandleAXEvent(ui::AXEvent(obj.AxID(), ax::mojom::Event::kImageFrameUpdated));
+  HandleAXEvent(ui::AXEvent(obj.AxID(), ax::mojom::Event::kImageFrameUpdated,
+                            ax::mojom::EventFrom::kAction,
+                            ax::mojom::Action::kGetImageData));
 }
 
 void RenderAccessibilityImpl::OnDestruct() {

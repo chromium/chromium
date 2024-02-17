@@ -81,6 +81,10 @@ class ReadAnythingAppModel {
   void set_requires_post_process_selection(bool value) {
     requires_post_process_selection_ = value;
   }
+  ui::AXNodeID image_to_update_node_id() { return image_to_update_node_id_; }
+  void reset_image_to_update_node_id() {
+    image_to_update_node_id_ = ui::kInvalidAXNodeID;
+  }
   bool selection_from_action() { return selection_from_action_; }
   void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
@@ -222,6 +226,8 @@ class ReadAnythingAppModel {
   void ToggleLinksEnabled();
 
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
+  std::string GetAltText(ui::AXNodeID ax_node_id) const;
+  std::string GetImageDataUrl(ui::AXNodeID ax_node_id) const;
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
@@ -447,6 +453,7 @@ class ReadAnythingAppModel {
   int32_t end_offset_ = -1;
   bool requires_distillation_ = false;
   bool requires_post_process_selection_ = false;
+  ui::AXNodeID image_to_update_node_id_ = ui::kInvalidAXNodeID;
   bool selection_from_action_ = false;
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;

@@ -17,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "url/gurl.h"
 
@@ -78,6 +79,10 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void,
               OnHighlightGranularityChanged,
               (read_anything::mojom::HighlightGranularity color),
+              (override));
+  MOCK_METHOD(void,
+              OnImageDataRequested,
+              (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
@@ -333,6 +338,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetHtmlTag(ax_node_id);
   }
 
+  std::string GetAltText(ui::AXNodeID ax_node_id) {
+    return controller_->GetAltText(ax_node_id);
+  }
+
+  std::string GetImageDataUrl(ui::AXNodeID ax_node_id) {
+    return controller_->GetImageDataUrl(ax_node_id);
+  }
+
   std::string GetTextContent(ui::AXNodeID ax_node_id) {
     return controller_->GetTextContent(ax_node_id);
   }
@@ -359,6 +372,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnLinkClicked(ui::AXNodeID ax_node_id) {
     controller_->OnLinkClicked(ax_node_id);
+  }
+
+  void RequestImageDataUrl(ui::AXNodeID node_id) {
+    controller_->RequestImageDataUrl(node_id);
   }
 
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
@@ -761,6 +778,80 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
   OnAXTreeDistilled({});
   EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
   EXPECT_EQ("br", GetHtmlTag(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetAltText) {
+  std::string img = "img";
+  std::string sample_alt_text = "sample_alt_text";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData img_node;
+  img_node.id = 2;
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kImageAnnotation,
+                              sample_alt_text);
+
+  update.nodes = {img_node};
+
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(img, GetHtmlTag(2));
+  EXPECT_EQ(sample_alt_text, GetAltText(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetAltText_Unset) {
+  std::string img = "img";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData img_node;
+  img_node.id = 2;
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
+
+  update.nodes = {img_node};
+
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(img, GetHtmlTag(2));
+  EXPECT_EQ("", GetAltText(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl) {
+  std::string img = "img";
+  std::string img_data =
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAADElEQVQImWNgoBMAAABpAAFE"
+      "I8ARAAAAAElFTkSuQmCC";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData img_node;
+  img_node.id = 2;
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kImageDataUrl,
+                              img_data);
+
+  update.nodes = {img_node};
+
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(img, GetHtmlTag(2));
+  EXPECT_EQ(img_data, GetImageDataUrl(2));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl_Unset) {
+  std::string img = "img";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData img_node;
+  img_node.id = 2;
+  img_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, img);
+
+  update.nodes = {img_node};
+
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(img, GetHtmlTag(2));
+  EXPECT_EQ("", GetImageDataUrl(2));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
@@ -1674,6 +1765,15 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
   ui::AXNodeID ax_node_id = 2;
   EXPECT_CALL(page_handler_, OnLinkClicked(tree_id_, ax_node_id)).Times(1);
   OnLinkClicked(ax_node_id);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
+  ui::AXNodeID ax_node_id = 2;
+  EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, ax_node_id))
+      .Times(1);
+  RequestImageDataUrl(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }

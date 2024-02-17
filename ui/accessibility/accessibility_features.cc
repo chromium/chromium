@@ -326,6 +326,15 @@ bool IsReadAnythingWithAlgorithmEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithAlgorithm);
 }
 
+BASE_FEATURE(kReadAnythingImagesViaAlgorithm,
+             "ReadAnythingImagesViaAlgorithm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingImagesViaAlgorithmEnabled() {
+  return base::FeatureList::IsEnabled(
+             ::features::kReadAnythingImagesViaAlgorithm) &&
+         IsReadAnythingWithAlgorithmEnabled();
+}
+
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode,

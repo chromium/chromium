@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_thread.h"
@@ -15,6 +16,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
@@ -777,6 +779,10 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kHitTestResult:
       case ax::mojom::Event::kHover:
       case ax::mojom::Event::kImageFrameUpdated:
+        if (event.event_from_action == ax::mojom::Action::kGetImageData) {
+          image_to_update_node_id_ = event.id;
+        }
+        break;
       case ax::mojom::Event::kLayoutComplete:
       case ax::mojom::Event::kLiveRegionCreated:
       case ax::mojom::Event::kLiveRegionChanged:
@@ -1027,6 +1033,24 @@ std::string ReadAnythingAppModel::GetHtmlTag(ui::AXNodeID ax_node_id) const {
   }
 
   return html_tag;
+}
+
+std::string ReadAnythingAppModel::GetAltText(ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  CHECK(ax_node);
+  std::string alt_text =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
+  return alt_text;
+}
+
+std::string ReadAnythingAppModel::GetImageDataUrl(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  CHECK(ax_node);
+
+  std::string url =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
+  return url;
 }
 
 std::string ReadAnythingAppModel::GetAriaLevel(ui::AXNode* ax_node) const {

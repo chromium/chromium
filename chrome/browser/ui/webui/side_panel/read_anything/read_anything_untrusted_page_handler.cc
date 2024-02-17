@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
@@ -31,8 +32,10 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 using read_anything::mojom::ReadAnythingTheme;
@@ -337,13 +340,34 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = target_node_id;
+
+  PerformActionInTargetTree(target_tree_id, action_data);
+}
+
+void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
+    const ui::AXTreeID& target_tree_id,
+    ui::AXNodeID target_node_id) {
+  ui::AXActionData action_data;
+  action_data.target_tree_id = target_tree_id;
+  action_data.action = ax::mojom::Action::kGetImageData;
+  action_data.target_node_id = target_node_id;
+  // The rect size is the max size of the image;
+  action_data.target_rect = gfx::Rect(gfx::Size(INT_MAX, INT_MAX));
+
+  PerformActionInTargetTree(target_tree_id, action_data);
+}
+
+void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
+    const ui::AXTreeID& target_tree_id,
+    const ui::AXActionData& data) {
+  CHECK_EQ(target_tree_id, data.target_tree_id);
   ui::AXActionHandlerBase* handler =
       ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
           target_tree_id);
   if (!handler) {
     return;
   }
-  handler->PerformAction(action_data);
+  handler->PerformAction(data);
 }
 
 void ReadAnythingUntrustedPageHandler::OnSelectionChange(
