@@ -114,7 +114,7 @@ void WaylandSubsurface::CreateSubsurface() {
   // Subsurfaces don't need to trap input events. Its display rect is fully
   // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
   // dispatch all of the input to platform window.
-  constexpr std::vector<gfx::Rect> kEmptyRegionPx;
+  const std::vector<gfx::Rect> kEmptyRegionPx{{}};
   wayland_surface()->set_input_region(kEmptyRegionPx);
 
   if (connection_->surface_augmenter()) {

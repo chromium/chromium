@@ -167,7 +167,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
       icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
       // Icon surface do not need input.
-      constexpr std::vector<gfx::Rect> kEmptyRegionPx;
+      const std::vector<gfx::Rect> kEmptyRegionPx{{}};
       icon_surface_->set_input_region(kEmptyRegionPx);
       icon_surface_->ApplyPendingState();
 
