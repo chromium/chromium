@@ -205,14 +205,12 @@ bool SystemToastStyle::ToggleA11yFocus() {
       base::Unretained(this)));
 
   is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
-  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-      is_dismiss_button_highlighted_
-          ? dismiss_button_->GetWidget()->GetNativeWindow()
-          : nullptr);
-
-  if (is_dismiss_button_highlighted_)
+  if (is_dismiss_button_highlighted_) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        dismiss_button_->GetWidget()->GetNativeWindow());
     dismiss_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
                                               true);
+  }
 
   focus_ring->SetVisible(is_dismiss_button_highlighted_);
   focus_ring->SchedulePaint();
