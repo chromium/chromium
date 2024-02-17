@@ -137,6 +137,15 @@ TEST_F(PdfNavigationThrottleTest, WillStartRequestNoStreamInfo) {
             navigation_throttle->WillStartRequest().action());
 }
 
+TEST_F(PdfNavigationThrottleTest,
+       WillStartRequestShouldAllowPdfFrameNavigationFalse) {
+  stream_delegate_->clear_stream_info();
+  stream_delegate_->set_should_allow_pdf_frame_navigation(false);
+  auto navigation_throttle = CreateNavigationThrottle(stream_url());
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            navigation_throttle->WillStartRequest().action());
+}
+
 TEST_F(PdfNavigationThrottleTest, WillStartRequestOtherUrl) {
   auto navigation_throttle =
       CreateNavigationThrottle(GURL("https://example.test"));
