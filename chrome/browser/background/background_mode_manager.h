@@ -154,6 +154,9 @@ class BackgroundModeManager : public BrowserListObserver,
                            DeleteBackgroundProfile);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ForceInstalledExtensionsKeepAlive);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackgroundModeManagerTest,
+      ForceInstalledExtensionsKeepAliveReleasedOnAppTerminating);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerWithExtensionsTest,
                            BackgroundMenuGeneration);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerWithExtensionsTest,

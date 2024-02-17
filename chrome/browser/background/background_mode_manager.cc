@@ -470,6 +470,7 @@ size_t BackgroundModeManager::NumberOfBackgroundModeData() {
 void BackgroundModeManager::OnAppTerminating() {
   // Make sure we aren't still keeping the app alive (only happens if we
   // don't receive an EXTENSIONS_READY notification for some reason).
+  ReleaseForceInstalledExtensionsKeepAlive();
   ReleaseStartupKeepAlive();
   // Performing an explicit shutdown, so exit background mode (does nothing
   // if we aren't in background mode currently).

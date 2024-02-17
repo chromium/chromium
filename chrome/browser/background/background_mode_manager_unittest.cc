@@ -1083,3 +1083,37 @@ TEST_F(BackgroundModeManagerTest, ForceInstalledExtensionsKeepAlive) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
 }
+
+TEST_F(BackgroundModeManagerTest,
+       ForceInstalledExtensionsKeepAliveReleasedOnAppTerminating) {
+  const auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kNoStartupWindow);
+  TestBackgroundModeManager manager(
+      command_line, profile_manager_->profile_attributes_storage());
+
+  manager.RegisterProfile(profile_);
+  EXPECT_TRUE(keep_alive_registry->IsKeepingAlive());
+  EXPECT_TRUE(keep_alive_registry->WouldRestartWithout({
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
+  }));
+
+  static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile_))
+      ->CreateExtensionService(&command_line, base::FilePath(), false);
+  static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile_))
+      ->SetReady();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(keep_alive_registry->IsKeepingAlive());
+  EXPECT_TRUE(keep_alive_registry->WouldRestartWithout({
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
+  }));
+
+  manager.OnAppTerminating();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
+}
