@@ -399046,115 +399046,103 @@
      []
     ],
     "arg_min_max.https.any-expected.txt": [
-     "3196e101c77a8041dc7907d378b68325024e45a7",
+     "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
      []
     ],
     "arg_min_max.https.any.worker-expected.txt": [
-     "d9011d135bf5b3b4aa4596039a92b9179841ee60",
+     "4aff9eaedf2f7e9403866c4d47e0c3a3bceb8e9d",
      []
     ],
     "batch_normalization.https.any-expected.txt": [
-     "9205742c7b250a3c104e37b31cba93b3403c079f",
+     "0070a9c43de29a2e0722afc3c0751df54e6b5296",
      []
     ],
     "batch_normalization.https.any.worker-expected.txt": [
-     "65a021e4b59ca8841f87aace6aa0f8129a2b84fa",
+     "0070a9c43de29a2e0722afc3c0751df54e6b5296",
      []
     ],
     "cast.https.any-expected.txt": [
-     "d47e14f40f3451980d2f8e5b048c4b16e128f51e",
+     "9b4696afb657b1e3f51ba2eac4109b9341cae542",
      []
     ],
     "cast.https.any.worker-expected.txt": [
-     "073fd9089ecc875a64672a4ce51b396eb8353e3e",
-     []
-    ],
-    "clamp.https.any.worker-expected.txt": [
-     "bb81193fdcee180e750d8d48ba1dc0617ee21282",
-     []
-    ],
-    "concat.https.any.worker-expected.txt": [
-     "bbb4ae01a20d8c3bb5bf4d27af5ee9d9e822cbac",
+     "9b4696afb657b1e3f51ba2eac4109b9341cae542",
      []
     ],
     "conv2d.https.any-expected.txt": [
-     "bd77963c7da5bb4bbab43b2c168fbb4581d91b8f",
+     "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
      []
     ],
     "conv2d.https.any.worker-expected.txt": [
-     "5ce78b6dba9fcfb4ff9a0f6285d5518e6a126e2f",
+     "f2ab788fee7af0fa4affb55e9da84b7aa8df2597",
      []
     ],
     "conv_transpose2d.https.any-expected.txt": [
-     "82f2928d5533271d07f5ba4852012ab1c7f021eb",
+     "a25167826cd77476a78d98450e1165a26ace77ad",
      []
     ],
     "conv_transpose2d.https.any.worker-expected.txt": [
-     "5cd436e004a4522d6b0e90135b95c69120becb04",
+     "a25167826cd77476a78d98450e1165a26ace77ad",
      []
     ],
     "elementwise_binary.https.any-expected.txt": [
-     "5aa71e18ff79de25ae1f8a80d74d31a9c2c8e743",
+     "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
      []
     ],
     "elementwise_binary.https.any.worker-expected.txt": [
-     "60390153798b0a005062c7d1ea84a3174db60b84",
+     "8d8ca860775b4d5283204dc5b5bc8d851a147f26",
      []
     ],
     "elementwise_logical.https.any-expected.txt": [
-     "a2a567045923ef3e7486ec5c23c522cd217f6bd6",
+     "257892f56f4b7a5332f3eb6df01ee3872b8f7748",
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
-     "edae99c274dbbdbf14cbaf9fd3513c0aab5536a0",
+     "65caf10349d8ed5289723fd375eaebf8c26c8e73",
      []
     ],
     "elementwise_unary.https.any.worker-expected.txt": [
-     "0d8f819ce640680163051734e7647e146f93a4f6",
+     "65caf10349d8ed5289723fd375eaebf8c26c8e73",
      []
     ],
     "elu.https.any-expected.txt": [
-     "2918a9b61d87983a38a1581d31c3102b5b110538",
+     "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
      []
     ],
     "elu.https.any.worker-expected.txt": [
-     "f8c9c8ebbe6ed49fb0e82e455cb7edd10565e3a5",
+     "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
      []
     ],
     "expand.https.any-expected.txt": [
-     "284010309eb57939b95dfaad7f19ce972b6e5354",
+     "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
      []
     ],
     "expand.https.any.worker-expected.txt": [
-     "2b9f72139b51015a86c227da9b210c41d5d93389",
+     "8f2c06a76d63c9ff281d7e2fd01b5fd30811918a",
      []
     ],
     "gather.https.any-expected.txt": [
-     "b0903dfd201a9e1b9c89744d4680cc596881b19d",
+     "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
      []
     ],
     "gather.https.any.worker-expected.txt": [
-     "facc8fcbad77949907da086218d39d7b4865d760",
+     "c2c963cb7b83e31d0e5767e0103713b2dafb87f3",
      []
     ],
     "gemm.https.any-expected.txt": [
-     "22d4d17309acf04b74a2fd7616c3e0cb58d4c350",
+     "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
      []
     ],
     "gemm.https.any.worker-expected.txt": [
-     "9ca8ed5e817ef721ddcefc0c3f851f989a045283",
+     "3bc8a4d835fa3cd726ebb51333b95c7ab878ae96",
      []
     ],
     "hard_sigmoid.https.any-expected.txt": [
-     "e3c0045c5b6b1bf54521c2e64a2ea231b6d9962b",
+     "512251a4980693a848fdc96a2a91a1014017dff8",
      []
     ],
     "hard_sigmoid.https.any.worker-expected.txt": [
-     "1a068069a8b9734f2ba6483d3e0b1aeb3d7b9e51",
-     []
-    ],
-    "hard_swish.https.any.worker-expected.txt": [
-     "d597d21799d150f8744328cddd40f23614ebf2d2",
+     "512251a4980693a848fdc96a2a91a1014017dff8",
      []
     ],
     "idlharness.https.any-expected.txt": [
@@ -399162,83 +399150,71 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "0453f884514542dbccf0bc6a70bcab68699224c6",
+     "bb5fd6afa730e67c607bd381f58f0b5cf9827d0b",
      []
     ],
     "instance_normalization.https.any-expected.txt": [
-     "7033d60bd6bf4bbc9a304d70905abf2af6313dfd",
+     "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
      []
     ],
     "instance_normalization.https.any.worker-expected.txt": [
-     "3f7caaf073597c39ab7c034ee6195e9891dd5829",
+     "a21bb3c22b15814c0fd81c093d5abadbf97caed7",
      []
     ],
     "layer_normalization.https.any-expected.txt": [
-     "5211ac852db11cb38f0bcc9f4abca8138bbcd6fd",
+     "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
      []
     ],
     "layer_normalization.https.any.worker-expected.txt": [
-     "5aeed5a4a87031fdbb29c1390f6e92b2fd88085b",
-     []
-    ],
-    "leaky_relu.https.any.worker-expected.txt": [
-     "a2839773d17095a27c3f7628957bbc93de3b4760",
+     "5ac33602acdc73862d9b9d2b9cf86066c81ef641",
      []
     ],
     "linear.https.any-expected.txt": [
-     "b550703531b86ae95204f746595c833fb4cdf953",
+     "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
      []
     ],
     "linear.https.any.worker-expected.txt": [
-     "3fdafd15cacd1e2d9760653ae789b4db9c22d182",
+     "95c04e19f5b365acde0bdb2119d2feff03b7f2c1",
      []
     ],
     "matmul.https.any-expected.txt": [
-     "6bcfc2b93fa0ebf1abff65e5e3193cfb63cdd9e3",
+     "37ab231f355b9966ed525721a6f5f76dee909398",
      []
     ],
     "matmul.https.any.worker-expected.txt": [
-     "2edc8e4ea47d31b3aece16112b177496d23dfd09",
+     "37ab231f355b9966ed525721a6f5f76dee909398",
      []
     ],
     "pad.https.any-expected.txt": [
-     "36cc9ebbdfbfbfbdf70ef472b2d8dbbd64911a14",
+     "3a61439d50dd7980dc465d81e04977e665e559ba",
      []
     ],
     "pad.https.any.worker-expected.txt": [
-     "fbbf32ab694e7131b10fa350720ef5e74a0f4741",
+     "3a61439d50dd7980dc465d81e04977e665e559ba",
      []
     ],
     "pooling.https.any-expected.txt": [
-     "b2074d6673c4bc62c74e2f2a988b3613c4ebcc87",
+     "2a9fb8993385380aef74b3f217b46171aaab45b3",
      []
     ],
     "pooling.https.any.worker-expected.txt": [
-     "8db7404a087e2b2b402dd39f7162c152d64354b9",
+     "2a9fb8993385380aef74b3f217b46171aaab45b3",
      []
     ],
     "prelu.https.any-expected.txt": [
-     "430c6bb5a35ce1c4a6ff92ca8d864db29d0d93ae",
+     "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
      []
     ],
     "prelu.https.any.worker-expected.txt": [
-     "be91345abfd0b0cb068ff212b8ebbf90946748f4",
+     "3c022185f74d7e6dcde8aa7074af95fb4a260af0",
      []
     ],
     "reduction.https.any-expected.txt": [
-     "2a387737b79f0a65a8fc7c8afaa32beff8e6bc65",
+     "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
      []
     ],
     "reduction.https.any.worker-expected.txt": [
-     "820a48cdcafd83f1eea2d58eca16690030cc503d",
-     []
-    ],
-    "relu.https.any.worker-expected.txt": [
-     "7d8cdfd011fb5d10d2dd3bd349be84e58bed69ef",
-     []
-    ],
-    "reshape.https.any.worker-expected.txt": [
-     "4dcf9ce108d11945451e02547cb3391edd371193",
+     "b910943e96a179e3099dd12b8f7d4b7c785d88ed",
      []
     ],
     "resources": {
@@ -399525,64 +399501,40 @@
       ]
      },
      "utils.js": [
-      "f91d6622d3c8e2124d1b9dae6afa3d9a5fafaf9f",
+      "b653c16469b2545d53a7d5947eec94f5bfd47cf4",
       []
      ]
     },
-    "sigmoid.https.any.worker-expected.txt": [
-     "af1baad71d4ff879205df983a4b846e42d39cd5f",
-     []
-    ],
-    "slice.https.any.worker-expected.txt": [
-     "67411f81a9d3793e89d75cdb311a1af253924850",
-     []
-    ],
-    "softmax.https.any.worker-expected.txt": [
-     "645447f50ef341de412f717412aa5fb8fa387e1c",
-     []
-    ],
     "softplus.https.any-expected.txt": [
-     "55df29598d597ba2d784a0cce347d35601199286",
+     "4334c31880022c9b62c331dd959f3afc22a9c79e",
      []
     ],
     "softplus.https.any.worker-expected.txt": [
-     "3ee46e73319be609c59adbf1e524d4de56e22932",
+     "4334c31880022c9b62c331dd959f3afc22a9c79e",
      []
     ],
     "softsign.https.any-expected.txt": [
-     "ce2a49a3d924f7951cba3aa1b44b029f55fe121c",
+     "36f99abe023229e7485caf5b69ed7ec314110b91",
      []
     ],
     "softsign.https.any.worker-expected.txt": [
-     "740c6f29c1844ffde694a4bab0e9f9b596a455d0",
-     []
-    ],
-    "split.https.any.worker-expected.txt": [
-     "fe9de70f68f53cdd19741fd6840f3aef7f03d367",
+     "36f99abe023229e7485caf5b69ed7ec314110b91",
      []
     ],
     "squeeze.https.any-expected.txt": [
-     "aff3ed0a7384d881e9fe87bfc5662a88af3ebfe1",
+     "e1a2e675c721944ac46c12517a6cceb968824d43",
      []
     ],
     "squeeze.https.any.worker-expected.txt": [
-     "54ad6642c7f2e8e98274026a1c82aecc9fd66f7c",
-     []
-    ],
-    "tanh.https.any.worker-expected.txt": [
-     "0f6f7b7545fe168ff3bf704553fa2b08d3a157a7",
-     []
-    ],
-    "transpose.https.any.worker-expected.txt": [
-     "8902fc2d12f88edbf52c395fa2d5771b7f2ab30f",
+     "e1a2e675c721944ac46c12517a6cceb968824d43",
      []
     ],
     "where.https.any-expected.txt": [
-     "31982c3fccc39f1cc44f422bd1cc5fd16c6b6805",
+     "2d02412c0be6254be345bb9f292eff49adc42b99",
      []
     ],
     "where.https.any.worker-expected.txt": [
-     "64e872279b343b0b60b141d88a921411a5009479",
+     "2d02412c0be6254be345bb9f292eff49adc42b99",
      []
     ]
    },
@@ -449993,7 +449945,7 @@
       ]
      ],
      "negative-overflow-002.html": [
-      "171095d2b553a6c907c4c2f1d1c72d54ec41633f",
+      "7c8d6337b9012b2a7edf32ceb9888da4616f366b",
       [
        null,
        {}
@@ -630372,7 +630324,7 @@
       ]
      ],
      "declarative-shadow-dom-repeats.html": [
-      "4f1b4c748e8b79fa90a58b73c6ab5965041e538e",
+      "9cee41f2f3160e19c279693bd27d1794b46bc5be",
       [
        null,
        {}
@@ -670523,7 +670475,7 @@
      ]
     ],
     "idlharness.https.any.js": [
-     "65e21d5a1dc5c7ce7cb4558144a5d838b899d3ce",
+     "93e88294ef1ed0347db722a9c1305aac47fc4129",
      [
       "webnn/idlharness.https.any.html",
       {
