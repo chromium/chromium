@@ -1747,6 +1747,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent"
+    enum="KeyboardTopRowActionKeys" expires_after="2024-07-21">
+  <owner>dpad@google.com</owner>
+  <owner>cambickel@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the specific keys present on a user's internal keyboard, if their
+    device's keyboard has a custom top-row layout.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType"
     enum="KeyboardTopRowLayoutWithExtraSublayout" expires_after="2024-07-21">
   <owner>dpad@google.com</owner>

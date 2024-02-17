@@ -989,6 +989,37 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="PWA selected and preferred"/>
 </enum>
 
+<enum name="KeyboardTopRowActionKeys">
+  <summary>
+    List of possible keyboard top-row action keys. This is defined in
+    ui/events/ash/keyboard_capability.h (enum TopRowActionKey).
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Back"/>
+  <int value="3" label="Forward"/>
+  <int value="4" label="Refresh"/>
+  <int value="5" label="Fullscreen"/>
+  <int value="6" label="Overview"/>
+  <int value="7" label="Screenshot"/>
+  <int value="8" label="ScreenBrightnessDown"/>
+  <int value="9" label="ScreenBrightnessUp"/>
+  <int value="10" label="MicrophoneMute"/>
+  <int value="11" label="VolumeMute"/>
+  <int value="12" label="VolumeDown"/>
+  <int value="13" label="VolumeUp"/>
+  <int value="14" label="KeyboardBacklightToggle"/>
+  <int value="15" label="KeyboardBacklightDown"/>
+  <int value="16" label="KeyboardBacklightUp"/>
+  <int value="17" label="NextTrack"/>
+  <int value="18" label="PreviousTrack"/>
+  <int value="19" label="PlayPause"/>
+  <int value="20" label="AllApplications"/>
+  <int value="21" label="EmojiPicker"/>
+  <int value="22" label="Dictation"/>
+  <int value="23" label="PrivacyScreenToggle"/>
+</enum>
+
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">
   <summary>
     List of possible top-row layouts for keyboards, including an additional

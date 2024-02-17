@@ -24,6 +24,8 @@
 namespace ui {
 
 // TODO(dpad): Handle display mirror top row keys.
+// This enum should mirror the enum `KeyboardTopRowLayout` in
+// tools/metrics/histograms/enums.xml and values should not be changed.
 enum class TopRowActionKey {
   kNone = 0,
   kMinValue = kNone,

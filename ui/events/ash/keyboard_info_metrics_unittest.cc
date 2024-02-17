@@ -181,6 +181,9 @@ TEST_P(NonInternalTopRowLayoutTest,
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
       0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      0);
 }
 
 class NonCustomLayoutTopRowKeysTest
@@ -224,6 +227,9 @@ TEST_P(NonCustomLayoutTopRowKeysTest,
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
       0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      0);
 }
 
 TEST_F(KeyboardInfoMetricsTest, CustomLayout_NumberOfTopRowKeys) {
@@ -264,6 +270,61 @@ TEST_F(KeyboardInfoMetricsTest, CustomLayout_NoKeys) {
   histogram_tester_->ExpectUniqueSample(
       "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
       0, 1);
+}
+
+TEST_F(KeyboardInfoMetricsTest, CustomLayout_SpecificTopRowKeys) {
+  KeyboardInfo internal_keyboard_info;
+  internal_keyboard_info.top_row_layout =
+      KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
+  internal_keyboard_info.top_row_action_keys = {
+      ui::TopRowActionKey::kBack,
+      ui::TopRowActionKey::kForward,
+      ui::TopRowActionKey::kRefresh,
+      ui::TopRowActionKey::kFullscreen,
+      ui::TopRowActionKey::kAllApplications,
+      ui::TopRowActionKey::kScreenBrightnessDown,
+      ui::TopRowActionKey::kScreenBrightnessUp,
+      ui::TopRowActionKey::kVolumeMute,
+      ui::TopRowActionKey::kVolumeDown,
+      ui::TopRowActionKey::kVolumeUp,
+  };
+  ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
+                                /*has_assistant_key=*/false);
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      10);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kBack, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kForward, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kRefresh, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kFullscreen, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kAllApplications, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kScreenBrightnessDown, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kScreenBrightnessUp, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeMute, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeDown, 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent",
+      ui::TopRowActionKey::kVolumeUp, 1);
 }
 
 }  // namespace ash
