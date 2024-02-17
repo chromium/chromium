@@ -2270,16 +2270,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.LibraryAccessResultOnVerify"
-    enum="WinGetLastError" expires_after="2024-06-30">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the error result of trying to load chrome_screen_ai.dll after the
-    component is verified. This is only recorded on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
@@ -2287,16 +2277,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records a Screen AI library load result on Windows. The result is recorded
     after initialization of Screen AI service and loading chrome_screen_ai.dll.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.LibraryVerificationResult"
-    enum="LibraryVerificationResult" expires_after="2024-06-30">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the result of ScreenAI component verification in start up or after
-    component update.
   </summary>
 </histogram>
 
