@@ -46,6 +46,10 @@
 #include "content/browser/media/session/media_session_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+#include "content/public/common/content_features.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
 
 using blink::mojom::MediaSessionPlaybackState;
@@ -1044,6 +1048,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   // used to differentiate webapp sessions for different handling.
   auto* web_contents_delegate = web_contents()->GetDelegate();
   info->ignore_for_active_session =
+      base::FeatureList::IsEnabled(features::kWebAppSystemMediaControlsWin) &&
       web_contents_delegate &&
       web_contents_delegate->ShouldUseInstancedSystemMediaControls();
 #else
