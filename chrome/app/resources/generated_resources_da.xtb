@@ -4134,7 +4134,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4115002065223188701">Netværket er uden for rækkevidde</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Åbn igen</translation>
-<translation id="4117714603282104018">Feedback ved berøring på touchplade</translation>
+<translation id="4117714603282104018">Haptisk feedback på touchplade</translation>
 <translation id="4118579674665737931">Genstart enheden, og prøv igen.</translation>
 <translation id="412022815379960229">Begynd at se dine minder fra Google Fotos, når du er logget ind.</translation>
 <translation id="4120388883569225797">Denne sikkerhedsnøgle kan ikke nulstilles</translation>
@@ -9159,7 +9159,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogboks for forbindelse</translation>
 <translation id="8070572887926783747">Lokationstilladelse for <ph name="APP_NAME" /></translation>
-<translation id="8070662218171013510">Feedback ved berøring</translation>
+<translation id="8070662218171013510">Haptisk feedback</translation>
 <translation id="8071432093239591881">Udskriv i billedformat</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle former for data, som en app har gemt (baseret på udviklerens indstillinger), f.eks. kontakter, beskeder og billeder.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Sikkerhedskopierede data tæller ikke med i din kvote for Drev-lagerplads.<ph name="END_PARAGRAPH2" />

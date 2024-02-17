@@ -4173,7 +4173,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4148957013307229264">Đang cài đặt...</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4150417452770391330">Kết nối máy ảnh</translation>
-<translation id="4150569944729499860">Ngữ cảnh trên màn hình</translation>
+<translation id="4150569944729499860">Bối cảnh trên màn hình</translation>
 <translation id="4151449637210235443">Hãy cho chúng tôi biết lối chơi gần đây của bạn</translation>
 <translation id="4151503145138736576">Không có bộ nhớ ngoại tuyến nào để dọn dẹp</translation>
 <translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
@@ -7247,7 +7247,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6602956230557165253">Sử dụng các phím mũi tên trái và phải để điều hướng.</translation>
 <translation id="6603185457265641428">Chọn có đồng bộ hoá nhật ký hay không</translation>
 <translation id="6605847144724004692">Chưa có người dùng nào xếp hạng.</translation>
-<translation id="6606671997164410857">Có vẻ như bạn đã thiết lập Trợ lý Google trên một thiết bị khác. Hãy khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình cho thiết bị này.</translation>
+<translation id="6606671997164410857">Có vẻ như bạn đã thiết lập Trợ lý Google trên một thiết bị khác. Hãy khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Bối cảnh trên màn hình cho thiết bị này.</translation>
 <translation id="6607831829715835317">Côn&amp;g cụ khác</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> vốn đang được <ph name="DOMAIN" /> quản lý. Để sử dụng các quyền kiểm soát của cha mẹ bằng một Tài khoản Google khác, hãy đăng xuất sau khi thiết lập rồi chọn "Thêm người" trên màn hình đăng nhập.</translation>
 <translation id="6608166463665411119">Đặt lại eSIM</translation>
@@ -8704,7 +8704,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="773511996612364297">Dấu nhấn trọng âm</translation>
 <translation id="7737115349420013392">Đang ghép nối với "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7737203573077018777">Đã nhận được hướng dẫn <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /></translation>
-<translation id="7737846262459425222">Bạn có thể thay đổi tính năng này bất kỳ lúc nào trong phần Cài đặt &gt; Trợ lý Google &gt; Ngữ cảnh trên màn hình.</translation>
+<translation id="7737846262459425222">Bạn có thể thay đổi tính năng này bất kỳ lúc nào trong phần Cài đặt &gt; Trợ lý Google &gt; Bối cảnh trên màn hình.</translation>
 <translation id="7737948071472253612">Không được phép sử dụng máy ảnh của bạn</translation>
 <translation id="77381465218432215">Hiển thị dấu phụ và ký tự đặc biệt</translation>
 <translation id="7740996059027112821">Chuẩn</translation>
@@ -8812,7 +8812,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7805906048382884326">Đóng mẹo</translation>
 <translation id="7806722269368320106">Một ứng dụng, đang cài đặt</translation>
 <translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
-<translation id="7807117920154132308">Có vẻ như <ph name="SUPERVISED_USER_NAME" /> đã thiết lập Trợ lý Google trên một thiết bị khác. <ph name="SUPERVISED_USER_NAME" /> có thể khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình cho thiết bị này.</translation>
+<translation id="7807117920154132308">Có vẻ như <ph name="SUPERVISED_USER_NAME" /> đã thiết lập Trợ lý Google trên một thiết bị khác. <ph name="SUPERVISED_USER_NAME" /> có thể khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Bối cảnh trên màn hình cho thiết bị này.</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7810367892333449285">Nội dung bạn nhập phải có định dạng <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ địa chỉ<ph name="LPA_2" />$<ph name="LPA_3" />mã nhận dạng để so khớp (không bắt buộc)<ph name="LPA_4" /></translation>

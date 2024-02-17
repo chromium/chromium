@@ -4161,7 +4161,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4150201353443180367">Affichage</translation>
 <translation id="4150417452770391330">Connecter une caméra</translation>
-<translation id="4150569944729499860">Contexte à l'écran</translation>
+<translation id="4150569944729499860">Contexte de l'écran</translation>
 <translation id="4151449637210235443">Parlez-nous de votre expérience de jeu récente</translation>
 <translation id="4151503145138736576">Pas de stockage hors ligne à nettoyer</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
@@ -6000,7 +6000,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5620540760831960151">Cette liste est soumise aux politiques <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
           , <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" />
            et <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
-<translation id="5620568081365989559">DevTools demande l'accès complet à <ph name="FOLDER_PATH" />. Assurez-vous de ne pas divulguer d'information confidentielle.</translation>
+<translation id="5620568081365989559">DevTools demande l'accès complet à <ph name="FOLDER_PATH" />. Assurez-vous de ne pas divulguer d'informations confidentielles.</translation>
 <translation id="5620612546311710611">statistiques d'utilisation</translation>
 <translation id="5621272825308610394">Aucun nom à afficher</translation>
 <translation id="5621350029086078628">Il s'agit d'une fonctionnalité d'IA expérimentale.</translation>
