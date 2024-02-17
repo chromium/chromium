@@ -106,15 +106,21 @@ chromium-metrics-reviews@google.com.
     Session.TotalDurationMax1Day for the same histogram with a higher maximum
     value. (The one's maximum is 1 hour.)
 
-    Windows/Mac/Linux: A session ends (i) when the user puts another app in the
-    foreground, unless audio is playing. (The Chrome windows can still be shown.
-    What matters is that a different app has focus.) (ii) when Chrome quits.
-    (iii) when the screensaver turns on (again, unless audio is playing). (iv)
-    when the user is inactive for five minutes (again, unless audio is playing).
-    In this case (starting in M-55), that five minutes is not included in the
-    sesson length. (v) when audio stops playing, if the user has been inactive
-    for five minutes or Chrome is not in the foreground. Also, until M69, there
-    was a bug that caused double-counting of some sessions.
+    Windows/Mac/Linux: Sessions only include time a browser window is visible.
+    Time when Chrome is visible but not with a regular browsing window will not
+    count. For example, neither the &quot;profile picker&quot;, which is
+    sometimes shown at startup, nor the first-run experience flow will count as
+    active time in Chrome when calculating Session.TotalDuration.
+
+    Windows/Mac/Linux: An active session ends (i) when the user puts another app
+    in the foreground, unless audio is playing. (The Chrome windows can still be
+    shown. What matters is that a different app has focus.) (ii) when Chrome
+    quits. (iii) when the screensaver turns on (again, unless audio is playing).
+    (iv) when the user is inactive for five minutes (again, unless audio is
+    playing). In this case (starting in M-55), that five minutes is not included
+    in the sesson length. (v) when audio stops playing, if the user has been
+    inactive for five minutes or Chrome is not in the foreground. Also, until
+    M69, there was a bug that caused double-counting of some sessions.
 
     ChromeOS: not implemented. The ChromeOS histogram Platform.DailyUseTime is
     somewhat similar.
