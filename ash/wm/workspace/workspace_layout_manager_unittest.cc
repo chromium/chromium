@@ -1073,6 +1073,36 @@ TEST_F(WorkspaceLayoutManagerTest,
   EXPECT_EQ(old_bounds, pip_window->GetBoundsInScreen());
 }
 
+// Tests no crash after keyboard bounds change. Regression test for
+// https://b/325673844.
+TEST_F(WorkspaceLayoutManagerTest,
+       NoCrashAfterKeyboardDisplacingBoundsChanged) {
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  WindowState* window_state = WindowState::Get(window1.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+
+  // Show the virtual keyboard.
+  SetVirtualKeyboardEnabled(true);
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(true);
+  EXPECT_TRUE(window_state->IsSnapped());
+
+  // Hide the virtual keyboard.
+  keyboard_controller->HideKeyboardByUser();
+  EXPECT_TRUE(window_state->IsSnapped());
+
+  // Test that click on the caption button does not crash.
+  const gfx::Rect window_bounds(window1->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->ClickLeftButton();
+
+  // TODO(sophiewen): Test the snapped window bounds.
+}
+
 // Following "Solo" tests were originally written for BaseLayoutManager.
 using WorkspaceLayoutManagerSoloTest = AshTestBase;
 
