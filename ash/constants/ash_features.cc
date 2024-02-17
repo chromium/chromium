@@ -2094,7 +2094,7 @@ BASE_FEATURE(kOsSettingsAppBadgingToggle,
 // Settings page when the user toggles off the DNS button.
 BASE_FEATURE(kOsSettingsDeprecateDnsDialog,
              "OsSettingsDeprecateDnsDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the metrics toggle in settings user sync options page should be
 // deprecated.
