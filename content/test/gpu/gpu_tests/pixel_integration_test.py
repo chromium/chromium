@@ -50,6 +50,12 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           # Flakily fails to capture a screenshot when run in parallel on Mac.
           'Pixel_VideoStreamFrom*',
       }
+    if sys.platform == 'win32':
+      serial_globs |= {
+          # Serialized for the same reasons as in trace_integration_test.
+          'Pixel_DirectComposition_Underlay*',
+          'Pixel_DirectComposition_Video*',
+      }
     return serial_globs
 
   def _GetSerialTests(self) -> Set[str]:
