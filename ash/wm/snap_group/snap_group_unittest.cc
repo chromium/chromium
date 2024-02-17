@@ -532,6 +532,44 @@ TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
   EXPECT_EQ(expected_grid_bounds, w3->GetBoundsInScreen());
 }
 
+// Verify the window focus behavior both when activing a window or skipping
+// pairing in partial overview.
+// 1. When activating a window in partial overview, the chosen window will be
+// the activated one upon exit;
+// 2. When skipping pairing in partial overview, the snapped window will still
+// be the activated one if it was activated before entering
+// `SplitViewOverviewSession`.
+TEST_F(FasterSplitScreenTest, SnappedWindowFocusTest) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(200, 100)));
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(100, 100)));
+  ASSERT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  auto* event_generator = GetEventGenerator();
+  for (const bool skip_pairing : {true, false}) {
+    SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kSecondarySnapped,
+                      chromeos::kDefaultSnapRatio);
+    VerifySplitViewOverviewSession(w1.get());
+
+    auto* w2_overview_item = GetOverviewItemForWindow(w2.get());
+    EXPECT_TRUE(w2_overview_item);
+
+    const auto w2_overview_item_bounds = w2_overview_item->target_bounds();
+    const gfx::Point click_point =
+        skip_pairing
+            ? gfx::ToRoundedPoint(w2_overview_item_bounds.bottom_right()) +
+                  gfx::Vector2d(20, 20)
+            : gfx::ToRoundedPoint(w2_overview_item_bounds.CenterPoint());
+
+    event_generator->MoveMouseTo(click_point);
+    event_generator->ClickLeftButton();
+
+    EXPECT_EQ(wm::IsActiveWindow(w1.get()), skip_pairing);
+    EXPECT_FALSE(IsInOverviewSession());
+    MaximizeToClearTheSession(w1.get());
+  }
+}
+
 TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
