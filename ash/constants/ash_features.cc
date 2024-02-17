@@ -978,7 +978,15 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables extended updates opt-in functionality.
+// TODO(b/322418004): Change to enabled by default once functionality is
+// fully implemented.
+BASE_FEATURE(kExtendedUpdatesOptInFeature,
+             "ExtendedUpdatesOptInFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Requires user opt-in to receive extended updates support.
+// This is only enabled for applicable devices.
 BASE_FEATURE(kExtendedUpdatesRequireOptIn,
              "ExtendedUpdatesRequireOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3355,7 +3363,9 @@ bool IsExperimentalRgbKeyboardPatternsEnabled() {
 }
 
 bool IsExtendedUpdatesRequireOptInEnabled() {
-  return base::FeatureList::IsEnabled(kExtendedUpdatesRequireOptIn);
+  // Boolean order matters due to how finch experiments are recorded.
+  return base::FeatureList::IsEnabled(kExtendedUpdatesRequireOptIn) &&
+         base::FeatureList::IsEnabled(kExtendedUpdatesOptInFeature);
 }
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
