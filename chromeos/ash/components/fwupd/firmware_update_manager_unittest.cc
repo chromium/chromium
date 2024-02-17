@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -366,7 +367,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return response;
   }
 
-  std::unique_ptr<dbus::Response> CreateTwoDeviceResponse() {
+  std::unique_ptr<dbus::Response> CreateNumberOfDeviceResponses(
+      int number_of_responses) {
     auto response = dbus::Response::CreateEmpty();
 
     dbus::MessageWriter response_writer(response.get());
@@ -377,43 +379,30 @@ class FirmwareUpdateManagerTest : public testing::Test {
     // The response is an array of arrays of dictionaries. Each dictionary is
     // one device description.
     response_writer.OpenArray("a{sv}", &response_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
 
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kNameKey);
-    dict_writer.AppendVariantOfString(std::string(kFakeDeviceNameForTesting) +
-                                      "1");
-    device_array_writer.CloseContainer(&dict_writer);
+    for (int i = 0; i < number_of_responses; ++i) {
+      response_array_writer.OpenArray("{sv}", &device_array_writer);
+      device_array_writer.OpenDictEntry(&dict_writer);
+      dict_writer.AppendString(kNameKey);
+      dict_writer.AppendVariantOfString(
+          base::StrCat({kFakeDeviceNameForTesting, base::NumberToString(i)}));
+      device_array_writer.CloseContainer(&dict_writer);
 
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kIdKey);
-    dict_writer.AppendVariantOfString(std::string(kFakeDeviceIdForTesting) +
-                                      "1");
-    device_array_writer.CloseContainer(&dict_writer);
+      device_array_writer.OpenDictEntry(&dict_writer);
+      dict_writer.AppendString(kIdKey);
+      dict_writer.AppendVariantOfString(
+          base::StrCat({kFakeDeviceIdForTesting, base::NumberToString(i)}));
+      device_array_writer.CloseContainer(&dict_writer);
+      response_array_writer.CloseContainer(&device_array_writer);
+    }
 
-    // Prepare the next device entry.
-    response_array_writer.CloseContainer(&device_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kNameKey);
-    dict_writer.AppendVariantOfString(std::string(kFakeDeviceNameForTesting) +
-                                      "2");
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kIdKey);
-    dict_writer.AppendVariantOfString(std::string(kFakeDeviceIdForTesting) +
-                                      "2");
-    device_array_writer.CloseContainer(&dict_writer);
-
-    response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
     return response;
   }
 
-  std::unique_ptr<dbus::Response> CreateOneUpdateResponse() {
+  std::unique_ptr<dbus::Response> CreateOneUpdateResponseWithPriority(
+      uint32_t update_priority) {
     auto response = dbus::Response::CreateEmpty();
 
     dbus::MessageWriter response_writer(response.get());
@@ -438,7 +427,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kPriorityKey);
-    dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
+    dict_writer.AppendVariantOfUint32(update_priority);
     device_array_writer.CloseContainer(&dict_writer);
 
     device_array_writer.OpenDictEntry(&dict_writer);
@@ -455,6 +444,15 @@ class FirmwareUpdateManagerTest : public testing::Test {
     response_writer.CloseContainer(&response_array_writer);
 
     return response;
+  }
+
+  std::unique_ptr<dbus::Response> CreateOneUpdateResponse() {
+    return CreateOneUpdateResponseWithPriority(kFakeUpdatePriorityForTesting);
+  }
+
+  std::unique_ptr<dbus::Response> CreateOneCriticalUpdateResponse() {
+    return CreateOneUpdateResponseWithPriority(
+        kFakeCriticalUpdatePriorityForTesting);
   }
 
   std::unique_ptr<dbus::Response> CreateOneUpdateResponseWithChecksum(
@@ -494,50 +492,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kChecksumKey);
     dict_writer.AppendVariantOfString(checksum);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    response_array_writer.CloseContainer(&device_array_writer);
-    response_writer.CloseContainer(&response_array_writer);
-
-    return response;
-  }
-
-  std::unique_ptr<dbus::Response> CreateOneCriticalUpdateResponse() {
-    auto response = dbus::Response::CreateEmpty();
-
-    dbus::MessageWriter response_writer(response.get());
-    dbus::MessageWriter response_array_writer(nullptr);
-    dbus::MessageWriter device_array_writer(nullptr);
-    dbus::MessageWriter dict_writer(nullptr);
-
-    // The response is an array of arrays of dictionaries. Each dictionary is
-    // one device description.
-    response_writer.OpenArray("a{sv}", &response_array_writer);
-    response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kDescriptionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kVersionKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kPriorityKey);
-    dict_writer.AppendVariantOfUint32(kFakeCriticalUpdatePriorityForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kUriKey);
-    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
-    device_array_writer.CloseContainer(&dict_writer);
-
-    device_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kChecksumKey);
-    dict_writer.AppendVariantOfString(kEmptyFileSha256ForTesting);
     device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);
@@ -742,7 +696,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
-  dbus_responses_.push_back(CreateTwoDeviceResponse());
+  dbus_responses_.push_back(CreateNumberOfDeviceResponses(2));
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   FakeUpdateObserver update_observer;
@@ -757,8 +711,8 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 
   // The second device was the one with the update.
-  EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "2", updates[0]->device_id);
-  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting) + "2"),
+  EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "1", updates[0]->device_id);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting) + "1"),
             updates[0]->device_name);
   EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
   EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
@@ -772,7 +726,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
-  dbus_responses_.push_back(CreateTwoDeviceResponse());
+  dbus_responses_.push_back(CreateNumberOfDeviceResponses(2));
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   FakeUpdateObserver update_observer;
@@ -1077,22 +1031,36 @@ TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  dbus_responses_.push_back(CreateNumberOfDeviceResponses(3));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(3));
+
+  // Create a duplicate of the above responses since we're calling
+  // RequestDevices during this test.
+  dbus_responses_.push_back(CreateNumberOfDeviceResponses(3));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
+  dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(3));
+
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnStartup.CriticalUpdateCount", 0, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnStartup.NonCriticalUpdateCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnStartup.CriticalUpdateCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnStartup.NonCriticalUpdateCount", 2, 1);
+
+  // Before requesting devices, "OnRefresh" metrics should be empty.
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.NonCriticalUpdateCount", 0);
 
   RequestDevices();
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 0, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnRefresh.NonCriticalUpdateCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.NonCriticalUpdateCount", 2, 1);
 }
 
 TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
