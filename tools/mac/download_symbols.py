@@ -12,17 +12,20 @@ This can also be used as a Python module.
 
 import argparse
 import csv
+import json
 import os.path
 import platform
+import re
 import shutil
 import subprocess
 import sys
 import urllib.request as request
 
-_OMAHAPROXY_HISTORY = 'https://omahaproxy.appspot.com/history?os=mac&format=json'
+_VERSION_HISTORY = 'https://versionhistory.googleapis.com/v1/chrome/platforms/{platform}/channels/all/versions'
+
+_CHANNEL_REGEX = '.*channels\/(\w+)\/versions.*'
 
 _DSYM_URL_TEMPLATE = 'https://dl.google.com/chrome/mac/{channel}/dsym/googlechrome-{version}-{arch}-dsym.tar.bz2'
-
 
 def download_chrome_symbols(version, channel, arch, dest_dir):
     """Downloads and extracts the official Google Chrome dSYM files to a
@@ -72,13 +75,19 @@ def get_symbol_directory(version, channel, arch, dest_dir):
 def _identify_channel(version, arch):
     """Attempts to guess the release channel given a Chrome version and CPU
     architecture."""
-    # First try querying OmahaProxy for the release.
-    with request.urlopen(_OMAHAPROXY_HISTORY) as release_history:
-        history = csv.DictReader(
-            release_history.read().decode('utf8').split('\n'))
-        for row in history:
-            if row['version'] == version:
-                return row['channel']
+    # First try querying versionhistory for all versions across channels.
+    # https://developer.chrome.com/docs/web-platform/versionhistory/guide
+    # Query the correct platform in case a release was skipped on one arch.
+    # TODO(kbr): "early stable" releases might be breaking this algorithm.
+    platform = 'mac' if arch == 'x86_64' else 'mac_arm64'
+    formatted_platform = _VERSION_HISTORY.format(platform=platform)
+    with request.urlopen(formatted_platform) as history_resp:
+        history = json.loads(history_resp.read().decode('utf-8'))
+        for entry in history['versions']:
+            if entry['version'] == version:
+                match = re.match(_CHANNEL_REGEX, entry['name'])
+                if match:
+                    return match[1]
 
     # Fall back to sending HEAD HTTP requests to each of the possible symbol
     # locations.
