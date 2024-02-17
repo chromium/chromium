@@ -13066,6 +13066,21 @@
             ]
         }
     ],
+    "OngoingProcesses": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OngoingProcesses"
+                    ]
+                }
+            ]
+        }
+    ],
     "OpaqueResponseBlockingV02": [
         {
             "platforms": [
