@@ -233,6 +233,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LensUploadDialog) {
           "runMochaSuite('NewTabPageAppTest LensUploadDialog')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
+}
+
 class NewTabPageModulesHistoryClustersModuleTest
     : public NewTabPageBrowserTest {
  protected:

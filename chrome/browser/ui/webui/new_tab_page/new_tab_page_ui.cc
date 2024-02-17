@@ -325,6 +325,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
       {"uploadFromDevice", IDS_NTP_CUSTOMIZE_UPLOAD_FROM_DEVICE_LABEL},
 
+      // Wallpaper search.
+      {"customizeThisPageWallpaperSearch",
+       IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_WALLPAPER_SEARCH_LABEL},
+      {"wallpaperSearchButton", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
+
       // Voice search.
       {"audioError", IDS_NEW_TAB_VOICE_AUDIO_ERROR},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -623,6 +628,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       IsCartModuleEnabled() &&
           base::FeatureList::IsEnabled(
               ntp_features::kNtpChromeCartInHistoryClusterModule));
+
+  source->AddBoolean(
+      "wallpaperSearchButtonEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton));
 
   webui::SetupChromeRefresh2023(source);
 

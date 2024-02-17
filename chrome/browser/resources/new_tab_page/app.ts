@@ -317,6 +317,11 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         value: document.documentElement.scrollTop <= 0,
       },
+
+      wallpaperSearchButtonEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
+      },
     };
   }
 
@@ -357,6 +362,7 @@ export class AppElement extends AppElementBase {
   private promoAndModulesLoaded_: boolean;
   private lazyRender_: boolean;
   private scrolledToTop_: boolean;
+  private wallpaperSearchButtonEnabled_: boolean;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

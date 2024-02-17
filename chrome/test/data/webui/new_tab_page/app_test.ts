@@ -1124,4 +1124,25 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
     });
   });
+
+  suite('WallpaperSearch', () => {
+    test('wallpaper search button is not shown if it is disabled', () => {
+      loadTimeData.overrideValues({wallpaperSearchButtonEnabled: false});
+      assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+      assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+    });
+
+    suite('Button', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+        });
+      });
+
+      test('wallpaper search button shows if it is enabled', () => {
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
+    });
+  });
 });

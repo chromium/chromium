@@ -67,6 +67,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
 
+  mixer[kColorNewTabPageWallpaperSearchButtonBackground] = {
+      ui::kColorSysSecondary};
+  mixer[kColorNewTabPageWallpaperSearchButtonForeground] = {
+      ui::kColorSysOnSecondary};
   if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
     // Steady state theme colors.
