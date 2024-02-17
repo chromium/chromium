@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -215,28 +216,43 @@ PinnedNotificationView::PinnedNotificationView(
             .SetText(pill_button_title)
             .SetTooltipText(pill_button_title)
             .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
-            .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+            .SetCallback(base::BindRepeating(
+                [](const std::string notification_id, int button_index) {
+                  message_center::MessageCenter::Get()
+                      ->ClickOnNotificationButton(notification_id,
+                                                  button_index);
+                },
+                notification.id(), 0))
             .Build());
   } else if (has_icon_button) {
-    message_center::ButtonInfo primary_button, secondary_button;
+    int primary_index;
+    message_center::ButtonInfo primary_button;
 
     // Check if there is a secondary icon button in the `buttons` list. Any
     // additional provided buttons will be ignored.
     if (notification.buttons().size() > 1 &&
         !notification.buttons()[1].vector_icon->is_empty()) {
-      primary_button = notification.buttons()[1];
-      secondary_button = notification.buttons()[0];
+      primary_index = 1;
+      primary_button = notification.buttons()[primary_index];
 
       buttons_container->AddChildView(
           IconButton::Builder()
               .SetViewId(VIEW_ID_PINNED_NOTIFICATION_SECONDARY_ICON_BUTTON)
               .SetType(IconButton::Type::kSmall)
               .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
-              .SetVectorIcon(secondary_button.vector_icon)
-              .SetAccessibleName(secondary_button.accessible_name)
+              .SetVectorIcon(notification.buttons()[0].vector_icon)
+              .SetAccessibleName(notification.buttons()[0].accessible_name)
+              .SetCallback(base::BindRepeating(
+                  [](const std::string notification_id, int button_index) {
+                    message_center::MessageCenter::Get()
+                        ->ClickOnNotificationButton(notification_id,
+                                                    button_index);
+                  },
+                  notification.id(), 0))
               .Build());
     } else {
-      primary_button = notification.buttons()[0];
+      primary_index = 0;
+      primary_button = notification.buttons()[primary_index];
     }
 
     buttons_container->AddChildView(
@@ -246,6 +262,13 @@ PinnedNotificationView::PinnedNotificationView(
             .SetBackgroundColor(cros_tokens::kCrosSysHighlightShape)
             .SetVectorIcon(primary_button.vector_icon)
             .SetAccessibleName(primary_button.accessible_name)
+            .SetCallback(base::BindRepeating(
+                [](const std::string notification_id, int button_index) {
+                  message_center::MessageCenter::Get()
+                      ->ClickOnNotificationButton(notification_id,
+                                                  button_index);
+                },
+                notification.id(), primary_index))
             .Build());
   }
 }
