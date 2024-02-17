@@ -10,8 +10,7 @@ namespace ui {
 
 class TestNativeThemeMac : public NativeThemeMac {
  public:
-  TestNativeThemeMac()
-      : NativeThemeMac(/*should_only_use_dark_colors=*/false) {}
+  TestNativeThemeMac() : NativeThemeMac(false, false) {}
   TestNativeThemeMac& operator=(const TestNativeThemeMac&) = delete;
 
   ~TestNativeThemeMac() override = default;
