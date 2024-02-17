@@ -629,10 +629,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           base::FeatureList::IsEnabled(
               ntp_features::kNtpChromeCartInHistoryClusterModule));
 
-  source->AddBoolean(
-      "wallpaperSearchButtonEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton));
-
   webui::SetupChromeRefresh2023(source);
 
   RealboxHandler::SetupWebUIDataSource(source, profile);
@@ -680,9 +676,12 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   source->AddBoolean(
       "modulesVisibleManagedByPolicy",
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
-
   source->AddBoolean("customizeChromeEnabled",
                      customize_chrome::IsSidePanelEnabled());
+  source->AddBoolean(
+      "wallpaperSearchButtonEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
+          customize_chrome::IsWallpaperSearchEnabledForProfile(profile_));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
