@@ -272,8 +272,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       }
       return keyDisplay.toLowerCase();
     }
-    // TODO(dpad, b/286930911): Reset to localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   getKeyState(): string {
@@ -293,8 +292,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       }
       return keyDisplay.toLowerCase();
     }
-    // TODO(dpad, b/286930911): Reset to localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   getConfirmKeyState(): string {

@@ -80,6 +80,7 @@ suite('ShortcutInput', function() {
     // ash_common browser tests.
     if (!loadTimeData.isInitialized()) {
       loadTimeData.data = {
+        'inputKeyPlaceholder': 'key',
         'iconLabelOpenLauncher': 'launcher',
         'iconLabelOpenSearch': 'search',
         'iconLabelPrintScreen': 'take screenshot',

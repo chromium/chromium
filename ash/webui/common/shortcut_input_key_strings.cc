@@ -89,6 +89,7 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_VIEW_ALL_APPS},
       {"iconLabelZoomToggle",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
+      {"inputKeyPlaceholder", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
