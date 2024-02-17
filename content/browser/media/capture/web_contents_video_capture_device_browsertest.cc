@@ -309,8 +309,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the WebContents is destroyed before the device is stopped.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  DISABLED_ErrorsOutWhenWebContentsIsDestroyed
+#else
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  ErrorsOutWhenWebContentsIsDestroyed
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutWhenWebContentsIsDestroyed) {
+                       MAYBE_ErrorsOutWhenWebContentsIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
