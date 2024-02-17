@@ -67,25 +67,22 @@ TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
 }
 
 // Returns the list of URLs that are open in `tab_strip_model`.
-std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
-  DCHECK(tab_strip_model);
-
+std::vector<GURL> GetURLsIfApplicable(TabStripModel& tab_strip_model) {
   std::vector<GURL> urls;
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+  for (int i = 0; i < tab_strip_model.count(); ++i) {
+    urls.push_back(tab_strip_model.GetWebContentsAt(i)->GetLastCommittedURL());
   }
   return urls;
 }
 
 // Return true if `app_id` is available to launch from saved desk.
-bool IsAppAvailable(const std::string& app_id,
-                    apps::AppServiceProxy* app_service_proxy) {
-  DCHECK(app_service_proxy);
+bool IsAppAvailable(apps::AppServiceProxy& app_service_proxy,
+                    const std::string& app_id) {
   bool installed = false;
   Profile* app_profile = ProfileManager::GetActiveUserProfile();
   DCHECK(app_profile);
 
-  app_service_proxy->AppRegistryCache().ForOneApp(
+  app_service_proxy.AppRegistryCache().ForOneApp(
       app_id, [&](const apps::AppUpdate& app) {
         installed = apps_util::IsInstalled(app.Readiness());
       });
@@ -103,15 +100,15 @@ bool IsAppAvailable(const std::string& app_id,
 // field to an app ID and running said ID through `IsAppAvailable`.  If the
 // app is unavailable we append the app_title to `out_app_names`.
 void GetUnavailableBrowserAppNames(
+    apps::AppServiceProxy& app_service_proxy,
     const app_restore::RestoreData::LaunchList& launch_list,
-    apps::AppServiceProxy* app_service_proxy,
     std::vector<std::u16string>& out_app_names) {
   for (const auto& [id, restore_data] : launch_list) {
     if (restore_data->browser_extra_info.app_type_browser.value_or(false) &&
         restore_data->browser_extra_info.app_name.has_value()) {
       std::string app_id = app_restore::GetAppIdFromAppName(
           restore_data->browser_extra_info.app_name.value());
-      if (!IsAppAvailable(app_id, app_service_proxy)) {
+      if (!IsAppAvailable(app_service_proxy, app_id)) {
         out_app_names.push_back(
             restore_data->window_info.app_title.value_or(u""));
       }
@@ -142,10 +139,10 @@ std::vector<std::u16string> GetUnavailableAppNames(
     // to catch uninstalled PWAs.
     if (app_id == app_constants::kChromeAppId ||
         app_id == app_constants::kLacrosAppId) {
-      GetUnavailableBrowserAppNames(launch_list, app_service_proxy, app_names);
+      GetUnavailableBrowserAppNames(*app_service_proxy, launch_list, app_names);
     }
 
-    if (!IsAppAvailable(app_id, app_service_proxy)) {
+    if (!IsAppAvailable(*app_service_proxy, app_id)) {
       // `launch_list` is a list of windows associated with `app_id`, so we only
       // need the title of the first window.
       auto it = launch_list.begin();
@@ -323,10 +320,9 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     }
   }
 
-  auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
-  if (tab_strip_model) {
+  if (auto* tab_strip_model = GetTabstripModelForWindowIfAny(window)) {
     app_launch_info->browser_extra_info.urls =
-        GetURLsIfApplicable(tab_strip_model);
+        GetURLsIfApplicable(*tab_strip_model);
     app_launch_info->browser_extra_info.active_tab_index =
         tab_strip_model->active_index();
     int index_of_first_non_pinned_tab =
@@ -351,8 +347,8 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
     DCHECK(lacros_window_id);
-    const_cast<ChromeSavedDeskDelegate*>(this)->GetLacrosChromeInfo(
-        std::move(callback), *lacros_window_id, std::move(app_launch_info));
+    GetLacrosChromeInfo(std::move(callback), *lacros_window_id,
+                        std::move(app_launch_info));
     return;
   }
 
@@ -450,9 +446,9 @@ bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
 
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(app_profile);
-  DCHECK(app_service_proxy);
+  CHECK(app_service_proxy);
 
-  return ::IsAppAvailable(app_id, app_service_proxy);
+  return ::IsAppAvailable(*app_service_proxy, app_id);
 }
 
 void ChromeSavedDeskDelegate::LaunchAppsFromSavedDesk(
@@ -527,7 +523,7 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
 void ChromeSavedDeskDelegate::GetLacrosChromeInfo(
     GetAppLaunchDataCallback callback,
     const std::string& window_unique_id,
-    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetLacrosChromeInfo");
   crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
   if (!browser_manager || !browser_manager->IsRunning()) {
