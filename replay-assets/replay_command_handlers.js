@@ -1833,7 +1833,9 @@ function createRrpPropertyDescriptor(cdpProp) {
     rv.set = registerCdpObject(set);
   }
 
-  rv.isSymbol = !!symbol;
+  if (symbol) {
+    rv.isSymbol = true;
+  }
 
   return rv;
 }
