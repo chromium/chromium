@@ -23,15 +23,42 @@ import org.chromium.build.annotations.MockedInTests;
 public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerViewItemDecoration {
     private final @Px int mMinElementSpace;
     private final @Px int mItemWidth;
+    private final @Px int mMinItemExposure;
+    private final @Px int mMaxItemExposure;
     private @Px int mContainerWidth;
     private boolean mIsPortraitOrientation;
 
+    /**
+     * @param leadInSpace the space before the first item in the carousel
+     * @param minElementSpace the minimum spacing between two adjacent elements; the space may be
+     *     greater than this
+     * @param itemWidth the width of a single element
+     * @param minItemExposureFraction the minimum exposure of the last visible element; range: [0.f;
+     *     1.f]; value of 0.3 means at least 30% of the last element will be exposed
+     * @param maxItemExposureFraction the maximum exposure of the last visible element; range: [0.f;
+     *     1.f]; value of 0.7 means at most 70% of the last element will be exposed
+     */
     public DynamicSpacingRecyclerViewItemDecoration(
-            @Px int leadInSpace, @Px int minElementSpace, @Px int itemWidth) {
+            @Px int leadInSpace,
+            @Px int minElementSpace,
+            @Px int itemWidth,
+            float minItemExposureFraction,
+            float maxItemExposureFraction) {
         super(leadInSpace, minElementSpace);
         mMinElementSpace = minElementSpace;
         mItemWidth = itemWidth;
+
+        assert minItemExposureFraction >= 0 && minItemExposureFraction <= 1.f;
+        assert maxItemExposureFraction >= 0 && maxItemExposureFraction <= 1.f;
+        assert minItemExposureFraction <= maxItemExposureFraction;
+        mMinItemExposure = (int) (itemWidth * minItemExposureFraction);
+        mMaxItemExposure = (int) (itemWidth * maxItemExposureFraction);
         mContainerWidth = 0;
+    }
+
+    public DynamicSpacingRecyclerViewItemDecoration(
+            @Px int leadInSpace, @Px int minElementSpace, @Px int itemWidth) {
+        this(leadInSpace, minElementSpace, itemWidth, 0.5f, 0.5f);
     }
 
     @Override
@@ -70,12 +97,16 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
             int itemAndSpaceWidth = mItemWidth + mMinElementSpace;
             int numberOfFullyVisibleItems = adjustedCarouselWidth / itemAndSpaceWidth;
 
-            // We know the number of items that will be fully visible on screen.
-            // Another item may be partially exposed.
-            // Now we check how much of that item is visible; if it's less than 50% exposed, we
-            // reduce number of fully exposed items to show, and increase padding.
-            if ((adjustedCarouselWidth - numberOfFullyVisibleItems * itemAndSpaceWidth)
-                    < 0.5 * mItemWidth) {
+            // Calculate fractional item exposure, and adjust it so that the last view is partially
+            // exposed within caller-supplied bounds.
+            int remainingAreaSize =
+                    (adjustedCarouselWidth - numberOfFullyVisibleItems * itemAndSpaceWidth);
+            int lastVisibleItemExposure = remainingAreaSize;
+
+            if (lastVisibleItemExposure > mMaxItemExposure) {
+                lastVisibleItemExposure = mMaxItemExposure;
+            } else if (lastVisibleItemExposure < mMinItemExposure) {
+                lastVisibleItemExposure = mMaxItemExposure;
                 numberOfFullyVisibleItems--;
             }
 
@@ -86,9 +117,10 @@ public class DynamicSpacingRecyclerViewItemDecoration extends SpacingRecyclerVie
             }
 
             int totalPaddingAreaSize =
-                    adjustedCarouselWidth - (int) ((numberOfFullyVisibleItems + 0.5) * mItemWidth);
+                    adjustedCarouselWidth
+                            - (numberOfFullyVisibleItems * mItemWidth)
+                            - lastVisibleItemExposure;
             int itemSpacing = totalPaddingAreaSize / numberOfFullyVisibleItems;
-            // Divided by 2 - spacing is applied evenly on left and right hand side of an item.
             return itemSpacing;
         } else {
             return mMinElementSpace;

@@ -30,6 +30,8 @@ import java.util.List;
 
 /** SuggestionProcessor for Query Tiles. */
 public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
+    private static final float LAST_ELEMENT_MIN_EXPOSURE_FRACTION = 0.3f;
+    private static final float LAST_ELEMENT_MAX_EXPOSURE_FRACTION = 0.7f;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
@@ -98,7 +100,11 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
                 .with(
                         BaseCarouselSuggestionViewProperties.ITEM_DECORATION,
                         new DynamicSpacingRecyclerViewItemDecoration(
-                                mInitialSpacing, mElementSpacing, mCarouselItemViewWidth))
+                                mInitialSpacing,
+                                mElementSpacing,
+                                mCarouselItemViewWidth,
+                                LAST_ELEMENT_MIN_EXPOSURE_FRACTION,
+                                LAST_ELEMENT_MAX_EXPOSURE_FRACTION))
                 .build();
     }
 

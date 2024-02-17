@@ -215,4 +215,63 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
         // MIN_ELEMENT_SPACE.
         verifyItemSpacing(MIN_ELEMENT_SPACE);
     }
+
+    @Test
+    public void computeElementSpacingPx_minFractionalExposure() {
+        // Ignore lead-in and element spacing completely to simplify computations.
+        // Each element is 100px wide, with minimum exposure fraction of 0.1
+        final int itemWidth = 100;
+        final float minExposureFrac = 0.1f;
+        final float maxExposureFrac = 0.9f;
+        final int containerWidth = /* 2.1 * itemWidth=*/ 210;
+        mDecoration =
+                new DynamicSpacingRecyclerViewItemDecoration(
+                        0, 0, itemWidth, minExposureFrac, maxExposureFrac);
+
+        // This should fit EXACTLY 2.1 items with zero spacing.
+        resizeContainer(containerWidth);
+        mDecoration.getItemOffsets(mOffsets, mFirstView, mRecyclerView, null);
+        assertEquals(0, mOffsets.right);
+        assertEquals(0, mOffsets.left);
+    }
+
+    @Test
+    public void computeElementSpacingPx_maxFractionalExposure() {
+        // Ignore lead-in and element spacing completely to simplify computations.
+        // Each element is 100px wide, with minimum exposure fraction of 0.1
+        final int itemWidth = 100;
+        final float minExposureFrac = 0.1f;
+        final float maxExposureFrac = 0.9f;
+        final int containerWidth = /* 2.1 * itemWidth - 1=*/ 209;
+        mDecoration =
+                new DynamicSpacingRecyclerViewItemDecoration(
+                        0, 0, itemWidth, minExposureFrac, maxExposureFrac);
+
+        // This should fit EXACTLY 1.9 items.
+        resizeContainer(containerWidth);
+        mDecoration.getItemOffsets(mOffsets, mFirstView, mRecyclerView, null);
+
+        // The expected space to separate elements is:
+        int itemSpacing = containerWidth - (int) ((1 + maxExposureFrac) * itemWidth);
+        assertEquals(itemSpacing / 2, mOffsets.right);
+        assertEquals(/* lead-in */ 0, mOffsets.left);
+    }
+
+    @Test
+    public void computeElementSpacingPx_mediumFractionalExposure() {
+        // Ignore lead-in and element spacing completely to simplify computations.
+        // Each element is 100px wide, with minimum exposure fraction of 0.1
+        final int itemWidth = 100;
+        final float minExposureFrac = 0.1f;
+        final float maxExposureFrac = 0.9f;
+        final int containerWidth = /* 2.5 * itemWidth =*/ 250;
+        mDecoration =
+                new DynamicSpacingRecyclerViewItemDecoration(
+                        0, 0, itemWidth, minExposureFrac, maxExposureFrac);
+
+        resizeContainer(containerWidth);
+        mDecoration.getItemOffsets(mOffsets, mFirstView, mRecyclerView, null);
+        assertEquals(0, mOffsets.right);
+        assertEquals(0, mOffsets.left);
+    }
 }
