@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
+class ImageButton;
 class UniqueWidgetPtr;
 }  // namespace views
 
@@ -27,6 +29,9 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   ~MahiMenuView() override;
 
+  // chromeos::editor_menu::PreTargetHandlerView:
+  void RequestFocus() override;
+
   // Creates a menu widget that contains a `MahiMenuView`, configured with the
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
@@ -38,6 +43,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
  private:
   // Button callback.
   void OnSummaryButtonPressed();
+
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };

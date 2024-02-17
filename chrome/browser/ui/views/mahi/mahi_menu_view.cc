@@ -100,9 +100,10 @@ MahiMenuView::MahiMenuView() {
 
   header_row->AddChildView(std::move(header_left_container));
 
-  header_row->AddChildView(views::ImageButton::CreateIconButton(
-      views::Button::PressedCallback(), vector_icons::kSettingsOutlineIcon,
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
+  settings_button_ =
+      header_row->AddChildView(views::ImageButton::CreateIconButton(
+          views::Button::PressedCallback(), vector_icons::kSettingsOutlineIcon,
+          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
 
   AddChildView(std::move(header_row));
 
@@ -141,6 +142,13 @@ MahiMenuView::MahiMenuView() {
 }
 
 MahiMenuView::~MahiMenuView() = default;
+
+void MahiMenuView::RequestFocus() {
+  views::View::RequestFocus();
+
+  // TODO(b/319735347): Add browsertest for this behavior.
+  settings_button_->RequestFocus();
+}
 
 // static
 views::UniqueWidgetPtr MahiMenuView::CreateWidget(
