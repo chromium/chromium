@@ -13,10 +13,7 @@ namespace {
 
 class TestNativeTheme : public NativeTheme {
  public:
-  TestNativeTheme()
-      : NativeTheme(/*should_only_use_dark_colors=*/false,
-                    /*system_theme=*/ui::SystemTheme::kDefault,
-                    /*theme_to_update=*/nullptr) {}
+  TestNativeTheme() : NativeTheme(false) {}
   TestNativeTheme(const TestNativeTheme&) = delete;
   TestNativeTheme& operator=(const TestNativeTheme&) = delete;
   ~TestNativeTheme() override = default;

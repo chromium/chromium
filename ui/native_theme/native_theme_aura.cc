@@ -76,7 +76,7 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
       /*use_overlay_scrollbars=*/false,
       /*should_only_use_dark_colors=*/false,
       /*system_theme=*/ui::SystemTheme::kDefault,
-      /*theme_to_update=*/NativeTheme::GetInstanceForWeb());
+      /*configure_web_instance=*/true);
   return s_native_theme.get();
 }
 
@@ -95,10 +95,8 @@ NativeTheme* NativeTheme::GetInstanceForDarkUI() {
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
                                  bool should_only_use_dark_colors,
                                  ui::SystemTheme system_theme,
-                                 NativeTheme* theme_to_update)
-    : NativeThemeBase(should_only_use_dark_colors,
-                      system_theme,
-                      theme_to_update),
+                                 bool configure_web_instance)
+    : NativeThemeBase(should_only_use_dark_colors, system_theme),
       use_overlay_scrollbars_(use_overlay_scrollbars) {
 // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -115,6 +113,10 @@ NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
   static_assert(kHovered == 1, "states unexpectedly changed");
   static_assert(kNormal == 2, "states unexpectedly changed");
   static_assert(kPressed == 3, "states unexpectedly changed");
+
+  if (configure_web_instance) {
+    ConfigureWebInstance();
+  }
 }
 
 NativeThemeAura::~NativeThemeAura() {}
@@ -136,6 +138,15 @@ SkColor4f NativeThemeAura::FocusRingColorForBaseColor(
 #else
   return base_color;
 #endif  // BUILDFLAG(IS_APPLE)
+}
+
+void NativeThemeAura::ConfigureWebInstance() {
+  // Add the web native theme as an observer to stay in sync with color scheme
+  // changes.
+  color_scheme_observer_ =
+      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
+          NativeTheme::GetInstanceForWeb());
+  AddObserver(color_scheme_observer_.get());
 }
 
 void NativeThemeAura::PaintMenuPopupBackground(
