@@ -14,15 +14,17 @@
   <body>
     <template shadowrootmode="closed">
       <style>
-        embed {
+        iframe {
           position: absolute;
           left: 0;
           top: 0;
           height: 100%;
           width: 100%;
+          border-style: none;
         }
       </style>
-      <embed name="$4" src="about:blank" type="$5" internalid="$6">
+      <iframe name="$4" src="about:blank" type="$5" internalid="$6"
+          allow="fullscreen *">
     </template>
   </body>
 </html>

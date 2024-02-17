@@ -272,11 +272,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachment) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
