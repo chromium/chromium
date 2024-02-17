@@ -246,9 +246,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   // Creates an XNNPACK Runtime object from the Subgraph object. The Runtime
   // object is a combination of an execution plan for Subgraph Nodes and a
   // memory manager for Subgraph Values and will be used for the accelerated
-  // executions. This method can run either in a background thread for
-  // asynchronous graph building or in the caller's thread for synchronous graph
-  // building.
+  // executions. This method should run in a background thread.
   //
   // The `num_threads` indicates how many work items will be scheduled to
   // base::ThreadPool that run XNNPACK operators in parallel. The value `0`
@@ -261,6 +259,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
       uint32_t num_threads,
       String& error_message) {
     ScopedMLTrace scoped_trace("XnnRuntimeWrapper::Create");
+    CHECK(!IsMainThread());
     CHECK(xnn_context);
     CHECK(subgraph);
 
@@ -1911,23 +1910,13 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
 }  // namespace
 
 // static
-void MLGraphXnnpack::ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
-                                           MLContext* context,
-                                           const MLNamedOperands& named_outputs,
-                                           ScriptPromiseResolver* resolver) {
-  scoped_trace.AddStep("MLGraphXnnpack::ValidateAndBuildAsync");
+void MLGraphXnnpack::ValidateAndBuild(ScopedMLTrace scoped_trace,
+                                      MLContext* context,
+                                      const MLNamedOperands& named_outputs,
+                                      ScriptPromiseResolver* resolver) {
+  scoped_trace.AddStep("MLGraphXnnpack::ValidateAndBuild");
   auto* graph = MakeGarbageCollected<MLGraphXnnpack>(context);
-  graph->BuildAsync(std::move(scoped_trace), named_outputs, resolver);
-}
-
-// static
-MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
-    ScriptState* script_state,
-    MLContext* context,
-    const MLNamedOperands& named_outputs,
-    ExceptionState& exception_state) {
-  return MakeGarbageCollected<MLGraphXnnpack>(context)->BuildSync(
-      script_state, named_outputs, exception_state);
+  graph->Build(std::move(scoped_trace), named_outputs, resolver);
 }
 
 MLGraphXnnpack::MLGraphXnnpack(MLContext* context)
@@ -1958,10 +1947,9 @@ const Vector<xnn_external_value>& MLGraphXnnpack::GetXnnExternalValuesTesting()
   return xnn_runtime_wrapper_->GetXnnExternalValuesTesting();
 }
 
-void MLGraphXnnpack::BuildAsyncImpl(ScopedMLTrace scoped_trace,
-                                    const MLNamedOperands& named_outputs,
-                                    ScriptPromiseResolver* resolver) {
-  CHECK(IsMainThread());
+void MLGraphXnnpack::BuildImpl(ScopedMLTrace scoped_trace,
+                               const MLNamedOperands& named_outputs,
+                               ScriptPromiseResolver* resolver) {
   CHECK(!xnn_runtime_wrapper_);
   PostCrossThreadTask(
       *xnnpack_task_runner_, FROM_HERE,
@@ -2001,7 +1989,6 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     MLNamedOperands* named_outputs,
     ScriptPromiseResolver* resolver,
     String error_message) {
-  CHECK(IsMainThread());
   if (!xnn_context) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message));
@@ -2060,7 +2047,6 @@ void MLGraphXnnpack::OnDidCreateXnnRuntime(
     scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
     ScriptPromiseResolver* resolver,
     String error_message) {
-  CHECK(IsMainThread());
   if (!xnn_runtime_wrapper) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError, error_message));
@@ -2070,45 +2056,11 @@ void MLGraphXnnpack::OnDidCreateXnnRuntime(
   resolver->Resolve(this);
 }
 
-MLGraph* MLGraphXnnpack::BuildSyncImpl(ScriptState* script_state,
-                                       const MLNamedOperands& named_outputs,
-                                       ExceptionState& exception_state) {
-  CHECK(!xnn_runtime_wrapper_);
-  String error_message;
-  auto xnn_context = SharedXnnpackContext::GetInstance(error_message);
-  if (!xnn_context) {
-    exception_state.ThrowDOMException(
-        XnnStatusToDOMExceptionCode(xnn_status_uninitialized), error_message);
-    return nullptr;
-  }
-  Vector<DataBuffer> static_data_buffers;
-  XnnSubgraphPtr subgraph(nullptr, &xnn_delete_subgraph);
-  xnn_status status = CreateXnnSubgraph(named_outputs, subgraph,
-                                        static_data_buffers, error_message);
-  if (status != xnn_status_success) {
-    exception_state.ThrowDOMException(XnnStatusToDOMExceptionCode(status),
-                                      error_message);
-    return nullptr;
-  }
-  xnn_runtime_wrapper_ =
-      XnnRuntimeWrapper::Create(std::move(subgraph), std::move(xnn_context),
-                                std::move(static_data_buffers),
-                                ml_context_->GetNumThreads(), error_message);
-  if (!xnn_runtime_wrapper_) {
-    exception_state.ThrowDOMException(
-        XnnStatusToDOMExceptionCode(xnn_status_invalid_parameter),
-        error_message);
-    return nullptr;
-  }
-
-  return this;
-}
-
-void MLGraphXnnpack::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
-                                      const MLNamedArrayBufferViews& inputs,
-                                      const MLNamedArrayBufferViews& outputs,
-                                      ScriptPromiseResolver* resolver,
-                                      ExceptionState& exception_state) {
+void MLGraphXnnpack::ComputeImpl(ScopedMLTrace scoped_trace,
+                                 const MLNamedArrayBufferViews& inputs,
+                                 const MLNamedArrayBufferViews& outputs,
+                                 ScriptPromiseResolver* resolver,
+                                 ExceptionState& exception_state) {
   scoped_trace.AddStep("MLGraphXnnpack::TransferNamedArrayBufferViews");
   // `MLNamedArrayBufferViews` objects should be accessed on the thread owning
   // the heap before transferring.
@@ -2201,27 +2153,6 @@ void MLGraphXnnpack::OnDidCompute(ScopedMLTrace scoped_trace,
   result->setInputs(*CreateNamedArrayBufferViews(std::move(inputs_info)));
   result->setOutputs(*CreateNamedArrayBufferViews(std::move(outputs_info)));
   resolver->Resolve(result);
-}
-
-void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
-                                     const MLNamedArrayBufferViews& outputs,
-                                     ExceptionState& exception_state) {
-  auto external_values_and_input_buffers =
-      CreateExternalValues(inputs, outputs);
-  if (!external_values_and_input_buffers) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "Failed to create input buffers.");
-    return;
-  }
-  auto [external_values, input_buffers] =
-      std::move(external_values_and_input_buffers.value());
-  String error_message;
-  xnn_status status =
-      xnn_runtime_wrapper_->Invoke(std::move(external_values), error_message);
-  if (status != xnn_status_success) {
-    exception_state.ThrowDOMException(XnnStatusToDOMExceptionCode(status),
-                                      error_message);
-  }
 }
 
 xnn_status MLGraphXnnpack::CreateXnnSubgraph(

@@ -1,53 +1,53 @@
 This is a testharness.js-based test.
-[FAIL] convTranspose2d float32 4D input and filter(non-constant) tensors default options / async
+[FAIL] convTranspose2d float32 4D input and filter(non-constant) tensors default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D both input and filter constant tensors default options / async
+[FAIL] convTranspose2d float32 4D both input and filter constant tensors default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors default options / async
+[FAIL] convTranspose2d float32 4D input and filter tensors default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.groups / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2] / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2]
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.padding / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.padding
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.strides / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.strides
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.dilations / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.outputPadding / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.outputPadding
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.outputSizes / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.outputSizes
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=explicit options.padding / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=explicit options.padding
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper ignored options.padding / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper ignored options.padding
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower ignored options.padding / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower ignored options.padding
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout iohw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout iohw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi
   promise_test: Unhandled rejection with value: object "NotSupportedError: The filter layout hwoi is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.bias / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.bias
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / async
+[FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.activation=relu / async
+[FAIL] convTranspose2d float32 4D input and filter tensors options.activation=relu
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 Harness: the test ran to completion.
 

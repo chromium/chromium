@@ -6022,7 +6022,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
 }
 
 const TestVariety kGraphMojoTestVariety[] = {
-    {BackendType::kWebNNService, ExecutionMode::kAsync},
+    {BackendType::kWebNNService},
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

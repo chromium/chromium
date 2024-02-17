@@ -34,7 +34,6 @@ class MLConvTranspose2dOptions;
 class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
-class MLGraph;
 class MLHardSigmoidOptions;
 class MLInstanceNormalizationOptions;
 class MLLayerNormalizationOptions;
@@ -349,22 +348,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       const MLNamedOperands& outputs,
                       ExceptionState& exception_state);
 
-  MLGraph* buildSync(ScriptState* script_state,
-                     const MLNamedOperands& named_outputs,
-                     ExceptionState& exception_state);
-
   // The test cases can override the graph building behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
-    virtual void BuildGraphAsyncImpl(MLContext* context,
-                                     const MLNamedOperands& named_outputs,
-                                     ScriptPromiseResolver* resolver) = 0;
-
-    virtual MLGraph* BuildGraphSyncImpl(ScriptState* script_state,
-                                        MLContext* context,
-                                        const MLNamedOperands& named_outputs,
-                                        ExceptionState& exception_state) = 0;
+    virtual void BuildGraphImpl(MLContext* context,
+                                const MLNamedOperands& named_outputs,
+                                ScriptPromiseResolver* resolver) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);

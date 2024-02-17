@@ -319,12 +319,6 @@ dictionary MLSplitOptions {
   [
     CallWith=ScriptState,
     RaisesException,
-    Exposed=Window
+    Exposed=(Window, DedicatedWorker)
   ] Promise<MLGraph> build(MLNamedOperands outputs);
-
-  [
-    CallWith=ScriptState,
-    RaisesException,
-    Exposed=DedicatedWorker
-  ] MLGraph buildSync(MLNamedOperands outputs);
 };

@@ -1,138 +1,138 @@
 This is a testharness.js-based test.
 Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] equal float32 0D scalar / async
+[FAIL] equal float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 1D constant tensors / async
+[FAIL] equal float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 1D tensors / async
+[FAIL] equal float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 2D tensors / async
+[FAIL] equal float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 3D tensors / async
+[FAIL] equal float32 3D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 4D tensors / async
+[FAIL] equal float32 4D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 5D tensors / async
+[FAIL] equal float32 5D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 broadcast 0D to 4D / async
+[FAIL] equal float32 broadcast 0D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 broadcast 1D to 4D / async
+[FAIL] equal float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 broadcast 2D to 4D / async
+[FAIL] equal float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 broadcast 3D to 4D / async
+[FAIL] equal float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] equal float32 broadcast 4D to 4D / async
+[FAIL] equal float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 0D scalar / async
+[FAIL] greater float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 1D constant tensors / async
+[FAIL] greater float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 1D tensors / async
+[FAIL] greater float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 2D tensors / async
+[FAIL] greater float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 3D tensors / async
+[FAIL] greater float32 3D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 4D tensors / async
+[FAIL] greater float32 4D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 5D tensors / async
+[FAIL] greater float32 5D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 broadcast 0D to 4D / async
+[FAIL] greater float32 broadcast 0D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 broadcast 1D to 4D / async
+[FAIL] greater float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 broadcast 2D to 4D / async
+[FAIL] greater float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 broadcast 3D to 4D / async
+[FAIL] greater float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greater float32 broadcast 4D to 4D / async
+[FAIL] greater float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 0D scalar / async
+[FAIL] greaterOrEqual float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 1D constant tensors / async
+[FAIL] greaterOrEqual float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 1D tensors / async
+[FAIL] greaterOrEqual float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 2D tensors / async
+[FAIL] greaterOrEqual float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 3D tensors / async
+[FAIL] greaterOrEqual float32 3D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 4D tensors / async
+[FAIL] greaterOrEqual float32 4D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 5D tensors / async
+[FAIL] greaterOrEqual float32 5D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 broadcast 0D to 4D / async
+[FAIL] greaterOrEqual float32 broadcast 0D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 broadcast 1D to 4D / async
+[FAIL] greaterOrEqual float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 broadcast 2D to 4D / async
+[FAIL] greaterOrEqual float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 broadcast 3D to 4D / async
+[FAIL] greaterOrEqual float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] greaterOrEqual float32 broadcast 4D to 4D / async
+[FAIL] greaterOrEqual float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 0D scalar / async
+[FAIL] lesser float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 1D constant tensors / async
+[FAIL] lesser float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 1D tensors / async
+[FAIL] lesser float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 2D tensors / async
+[FAIL] lesser float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 3D tensors / async
+[FAIL] lesser float32 3D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 4D tensors / async
+[FAIL] lesser float32 4D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 5D tensors / async
+[FAIL] lesser float32 5D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 broadcast 0D to 4D / async
+[FAIL] lesser float32 broadcast 0D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 broadcast 1D to 4D / async
+[FAIL] lesser float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 broadcast 2D to 4D / async
+[FAIL] lesser float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 broadcast 3D to 4D / async
+[FAIL] lesser float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesser float32 broadcast 4D to 4D / async
+[FAIL] lesser float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 0D scalar / async
+[FAIL] lesserOrEqual float32 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 1D constant tensors / async
+[FAIL] lesserOrEqual float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 1D tensors / async
+[FAIL] lesserOrEqual float32 1D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 2D tensors / async
+[FAIL] lesserOrEqual float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 3D tensors / async
+[FAIL] lesserOrEqual float32 3D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 4D tensors / async
+[FAIL] lesserOrEqual float32 4D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 5D tensors / async
+[FAIL] lesserOrEqual float32 5D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 broadcast 0D to 4D / async
+[FAIL] lesserOrEqual float32 broadcast 0D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 broadcast 1D to 4D / async
+[FAIL] lesserOrEqual float32 broadcast 1D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 broadcast 2D to 4D / async
+[FAIL] lesserOrEqual float32 broadcast 2D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 broadcast 3D to 4D / async
+[FAIL] lesserOrEqual float32 broadcast 3D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] lesserOrEqual float32 broadcast 4D to 4D / async
+[FAIL] lesserOrEqual float32 broadcast 4D to 4D
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 0D scalar / async
+[FAIL] logicalNot uint8 0D scalar
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 1D constant tensor / async
+[FAIL] logicalNot uint8 1D constant tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 1D tensor / async
+[FAIL] logicalNot uint8 1D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 2D tensor / async
+[FAIL] logicalNot uint8 2D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 3D tensor / async
+[FAIL] logicalNot uint8 3D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 4D tensor / async
+[FAIL] logicalNot uint8 4D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
-[FAIL] logicalNot uint8 5D tensor / async
+[FAIL] logicalNot uint8 5D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (uint8) is not supported."
 Harness: the test ran to completion.
 

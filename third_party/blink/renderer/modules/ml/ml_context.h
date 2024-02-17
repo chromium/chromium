@@ -29,10 +29,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MLContext* ValidateAndCreateSync(MLContextOptions* options, ML* ml);
+  // Resolves `resolver` with a newly created MLContext. The caller must call
+  // `Promise()` on `resolver` before calling this method.
+  static void ValidateAndCreate(ScriptPromiseResolver* resolver,
+                                MLContextOptions* options,
+                                ML* ml);
 
-  // The constructor shouldn't be called directly. The callers should use
-  // CreateAsync() or CreateSync() method instead.
+  // The constructor shouldn't be called directly. The callers should use the
+  // ValidateAndCreate() method instead.
   MLContext(const V8MLDevicePreference device_preference,
             const V8MLDeviceType device_type,
             const V8MLPowerPreference power_preference,
@@ -66,39 +70,18 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                         const MLNamedArrayBufferViews& outputs,
                         ExceptionState& exception_state);
 
-  void computeSync(MLGraph* graph,
-                   const MLNamedArrayBufferViews& inputs,
-                   const MLNamedArrayBufferViews& outputs,
-                   ExceptionState& exception_state);
-
  protected:
-  // Create and initialize a MLContext object. Resolve the promise with
-  // this concrete object if the underlying context gets created
-  // successfully.
-  void CreateAsync(ScopedMLTrace scoped_trace,
-                   ScriptPromiseResolver* resolver,
-                   MLContextOptions* options);
+  // Create and initialize a MLContext object. Resolve the promise with this
+  // concrete object if the underlying context gets created successfully.
+  void Create(ScopedMLTrace scoped_trace,
+              ScriptPromiseResolver* resolver,
+              MLContextOptions* options);
 
   // An MLContext backend should implement this method to create and initialize
   // a platform specific context asynchronously.
-  virtual void CreateAsyncImpl(ScopedMLTrace scoped_trace,
-                               ScriptPromiseResolver* resolver,
-                               MLContextOptions* options);
-
-  // CreateSync() has the similar function as CreateAsync(). The difference is
-  // if there are no validation error, it calls CreateSyncImpl() implemented
-  // by a MLContext backend that initializes the context synchronously in the
-  // caller's thread. This method is called by ML to implement
-  // MLContext.createContextSync() method.
-  MLContext* CreateSync(ScriptState* script_state,
-                        MLContextOptions* options,
-                        ExceptionState& exception_state);
-
-  // An MLContext backend should implement this method to initialize the
-  // platform context synchronously in the caller's thread.
-  virtual MLContext* CreateSyncImpl(ScriptState* script_state,
-                                    MLContextOptions* options,
-                                    ExceptionState& exception_state);
+  virtual void CreateImpl(ScopedMLTrace scoped_trace,
+                          ScriptPromiseResolver* resolver,
+                          MLContextOptions* options);
 
  private:
   V8MLDevicePreference device_preference_;

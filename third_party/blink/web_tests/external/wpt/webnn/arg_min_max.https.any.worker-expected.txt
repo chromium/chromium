@@ -1,172 +1,87 @@
 This is a testharness.js-based test.
-Found 84 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] argMin float32 1D constant tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 1D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 2D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 3D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 5D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[2] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.keepDimensions=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.keepDimensions=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.keepDimensions=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 4D tensor all options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 0D scalar options.axes=[] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 1D constant tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 1D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 2D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 3D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 5D tensor default options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[2] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.keepDimensions=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.keepDimensions=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.keepDimensions=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 4D tensor all options / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 0D scalar options.axes=[] / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMax float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true / sync
-  Failed to execute 'buildSync' on 'MLGraphBuilder': The operand data type (int64) is not supported.
-[FAIL] argMin float32 1D constant tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 1D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 2D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 3D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 5D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[2] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.keepDimensions=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.keepDimensions=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.keepDimensions=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 4D tensor all options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 0D scalar options.axes=[] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 1D constant tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 1D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 2D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 3D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 5D tensor default options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[2] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.keepDimensions=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.keepDimensions=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.keepDimensions=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 4D tensor all options / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 0D scalar options.axes=[] / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-[FAIL] argMax float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true / async
-  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] argMin float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 0D scalar options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 0D scalar options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
+[FAIL] argMax float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operand data type (int64) is not supported."
 Harness: the test ran to completion.
 
