@@ -407,6 +407,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilitySelection) {
+  // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(
       LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
@@ -455,6 +460,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
 // Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                        DISABLED_PdfAccessibilityContextMenuAction) {
+  // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =

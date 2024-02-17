@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="enable_pdf">
+    <include name="IDR_PDF_EMBEDDER_HTML" file="../pdf/resources/pdf_embedder.html" type="BINDATA" />
+  </if>
+</grit-part>

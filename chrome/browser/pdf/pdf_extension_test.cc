@@ -138,6 +138,10 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 #endif
 
+// Javascript evaluation used to check if inner PDF frames can be accessed.
+constexpr char kNestedWindowFramesUndefinedCheck[] =
+    "window.frames[0][0] === undefined";
+
 struct PDFExtensionLoadTestPassToString {
   std::string operator()(
       const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
@@ -3750,20 +3754,6 @@ class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
   }
 };
 
-// Test that full page PDF can send and receive postMessage() messages from its
-// embedder.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageFullPage) {
-  // Load a direct PDF URL full page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  // `EnsurePDFHasLoaded()` uses postMessage() to check that the PDF has loaded,
-  // so calling it is sufficient to check that a postMessage() connection has
-  // been established.
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      GetActiveWebContents()->GetPrimaryMainFrame()));
-}
-
 // Test that an embed-embedded PDF can send and receive postMessage() messages
 // to and from its embedder.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
@@ -3897,6 +3887,49 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
       web_contents->GetPrimaryMainFrame());
   ASSERT_TRUE(stream);
   EXPECT_EQ(other_pdf_url, stream->original_url());
+}
+
+// Test that the inner frames in a full page PDF can't be accessed.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesFullPage) {
+  // Load a direct PDF URL full page.
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  // Fail to access the inner frames using window.frames and the Document
+  // interface.
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  "window.frames[0] === undefined"));
+  EXPECT_EQ(true,
+            content::EvalJs(
+                GetActiveWebContents(),
+                "document.getElementsByTagName('embed')[0] === undefined"));
+}
+
+// Test that the inner frames in an embed-embedded PDF can't be accessed.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesEmbed) {
+  // Load the HTML containing an embed embedding a PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                  ->WaitUntilPdfLoadedInFirstChild());
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents, kNestedWindowFramesUndefinedCheck));
+}
+
+// Test that the inner frames in an iframe-embedded PDF can't be accessed.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
+  // Load the HTML containing an iframe embedding a PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                  ->WaitUntilPdfLoadedInFirstChild());
+
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents, kNestedWindowFramesUndefinedCheck));
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer

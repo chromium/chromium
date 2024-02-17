@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/supervised_user/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -48,6 +49,7 @@ grit("components_resources") {
   ]
 
   defines = [
+    "enable_pdf=$enable_pdf",
     "enable_printing=$enable_printing",
     "enable_print_preview=$enable_print_preview",
     "enable_supervised_users=$enable_supervised_users",

@@ -19,6 +19,7 @@ dev_ui_components_resources.grd.
       <part file="management_resources.grdp" />
       <part file="neterror_resources.grdp" />
       <part file="ntp_tiles_resources.grdp" />
+      <part file="pdf_resources.grdp" />
       <part file="printing_resources.grdp" />
       <part file="plus_address_resources.grdp" />
       <part file="safe_browsing_resources.grdp" />

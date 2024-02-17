@@ -31,12 +31,11 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
-
-constexpr uint32_t kFullPageMimeHandlerDataPipeSize = 512U;
 
 void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   response_head->headers->RemoveHeader("Content-Security-Policy");
@@ -157,7 +156,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 #if BUILDFLAG(ENABLE_PDF)
   const bool is_for_oopif_pdf =
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      response_head->mime_type == "application/pdf";
+      response_head->mime_type == pdf::kPDFMimeType;
 #else
   constexpr bool is_for_oopif_pdf = false;
 #endif
@@ -181,11 +180,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  CHECK_EQ(mojo::CreateDataPipe(kFullPageMimeHandlerDataPipeSize,
-                                producer_handle, consumer_handle),
+  uint32_t len = payload.size();
+  CHECK_EQ(mojo::CreateDataPipe(len, producer_handle, consumer_handle),
            MOJO_RESULT_OK);
 
-  uint32_t len = static_cast<uint32_t>(payload.size());
   CHECK_EQ(MOJO_RESULT_OK,
            producer_handle->WriteData(payload.c_str(), &len,
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));

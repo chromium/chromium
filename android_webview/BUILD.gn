@@ -1135,6 +1135,7 @@ grit("generate_components_resources") {
   use_brotli = true
 
   defines = [
+    "enable_pdf=$enable_pdf",
     "enable_printing=$enable_printing",
     "safe_browsing_mode=$safe_browsing_mode",
     "enable_supervised_users=$enable_supervised_users",
