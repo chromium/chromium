@@ -136,10 +136,15 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
   const OperandPtr& operand = id_to_operand_map.at(input_id);
   RETURN_IF_ERROR(
       PopulateFeatureDescription(input_id, *operand, feature_description));
+  // WebNN allows 0d scalar operands to have empty dimensions.
+  // At the input and output nodes, these can be treated as a 1D tensor to
+  // satisfy CoreML's requirement of having at least 1 dimension.
   CHECK(id_to_layer_input_info_map_
-            .try_emplace(input_id,
-                         OperandInfo(feature_description->name(),
-                                     operand->dimensions, operand->data_type))
+            .try_emplace(input_id, OperandInfo(feature_description->name(),
+                                               operand->dimensions.empty()
+                                                   ? std::vector<uint32_t>({1})
+                                                   : operand->dimensions,
+                                               operand->data_type))
             .second);
   CHECK(input_name_to_id_map_.try_emplace(operand->name.value(), input_id)
             .second);
@@ -258,8 +263,16 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
     case webnn::mojom::Operand_DataType::kUint8:
       return base::unexpected("Unsupported input datatype.");
   }
-  for (int dimension : operand.dimensions) {
-    array_feature_type->add_shape(dimension);
+  // FeatureDescriptions are about input and output features, WebNN allows
+  // scalar operands to have empty dimensions. At the input and output layers
+  // these can be treated as a 1D tensor to satisfy CoreML's requirement of
+  // having atleast 1 dimension.
+  if (operand.dimensions.empty()) {
+    array_feature_type->add_shape(1);
+  } else {
+    for (int dimension : operand.dimensions) {
+      array_feature_type->add_shape(dimension);
+    }
   }
   feature_description->mutable_name()->assign(
       GetCoreMLNameFromOperand(operand_id, operand));
@@ -269,12 +282,17 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
 void GraphBuilder::AddInputToNeuralNetworkLayer(
     uint64_t input_id,
     CoreML::Specification::NeuralNetworkLayer* neural_network_layer) {
-  const OperandInfo* lhs = GetOperandInfo(input_id);
-  neural_network_layer->add_input(lhs->coreml_name);
+  const OperandInfo* operand = GetOperandInfo(input_id);
+  neural_network_layer->add_input(operand->coreml_name);
   auto* tensor = neural_network_layer->add_inputtensor();
-  tensor->set_rank(lhs->dimensions.size());
-  for (int dimension : lhs->dimensions) {
-    tensor->add_dimvalue(dimension);
+  if (operand->dimensions.empty()) {
+    tensor->set_rank(1);
+    tensor->add_dimvalue(1);
+  } else {
+    tensor->set_rank(operand->dimensions.size());
+    for (int dimension : operand->dimensions) {
+      tensor->add_dimvalue(dimension);
+    }
   }
 }
 
@@ -291,9 +309,14 @@ void GraphBuilder::AddOutputToNeuralNetworkLayer(
           .second);
   neural_network_layer->add_output(coreml_name);
   auto* tensor = neural_network_layer->add_outputtensor();
-  tensor->set_rank(operand->dimensions.size());
-  for (int dimension : operand->dimensions) {
-    tensor->add_dimvalue(dimension);
+  if (operand->dimensions.empty()) {
+    tensor->set_rank(1);
+    tensor->add_dimvalue(1);
+  } else {
+    tensor->set_rank(operand->dimensions.size());
+    for (int dimension : operand->dimensions) {
+      tensor->add_dimvalue(dimension);
+    }
   }
 }
 

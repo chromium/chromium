@@ -1530,9 +1530,6 @@ struct ElementWiseBinaryTester {
 // binary.
 TEST_F(WebNNGraphImplBackendTest,
        BuildAndComputeSingleOperatorElementWiseBinary) {
-  // TODO(https://crbug.com/1522285): Re-enable the test on Mac, after adding
-  // support for 0-D scalars.
-#if !BUILDFLAG(IS_MAC)
   // Test building and computing a graph with single operator add for 0-D
   // scalars.
   {
@@ -1549,7 +1546,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {7}}}
         .Test();
   }
-#endif
   // Test building and computing a graph with single operator add.
   {
     ElementWiseBinaryTester<float>{
