@@ -38,8 +38,8 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
 }
 
 void FontFallbackMap::Remove(const FontDescription& font_description) {
-    if (recordreplay::AreEventsDisallowed("FontFallbackMap::Remove")) {
-    // Leak fallback_list_for_description_ contents.
+    if (recordreplay::IsRecordingOrReplaying("FontFallbackMap::Remove")) {
+    // [RUN-3109] Leak FontFallbackList.
     return;
   }
   AutoLockForParallelTextShaping guard(lock_);
