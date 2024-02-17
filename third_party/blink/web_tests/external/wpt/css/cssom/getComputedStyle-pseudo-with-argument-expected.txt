@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] This pseudo-element should not parse: ::before(test)
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight(
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight()
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight(1)
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight($)
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight (name)
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::highlight(name)a
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should not parse: ::view-transition-group(*)
+  assert_equals: expected 0 but got 394
+[FAIL] This pseudo-element should parse: ::highlight(\nname
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] This pseudo-element should parse: ::highlight(name	
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] This pseudo-element should parse: ::highlight( name 
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+[FAIL] This pseudo-element should parse: ::highlight( n\\61me )
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+
