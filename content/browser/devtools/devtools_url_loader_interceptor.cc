@@ -263,6 +263,25 @@ struct ResponseMetadata {
   network::URLLoaderCompletionStatus status;
 };
 
+void RemoveUnsafeRequestHeadersOnRedirect(net::HttpRequestHeaders& headers) {
+  // Mimic the behavior of URLLoader::OnReceivedRedirect. It has already
+  // been called for the request and we just need to reflect the changes
+  // on our side. It is ok to remove more headers than the network stack
+  // did as RequestReceivedExtraInfo event will contain all the actual
+  // headers.
+  headers.RemoveHeader(net::HttpRequestHeaders::kCookie);
+  const net::HttpRequestHeaders::HeaderVector request_headers =
+      headers.GetHeaderVector();
+  for (const auto& header : request_headers) {
+    if (StartsWith(header.key, "sec-ch-",
+                   base::CompareCase::INSENSITIVE_ASCII) ||
+        StartsWith(header.key, "sec-fetch-",
+                   base::CompareCase::INSENSITIVE_ASCII)) {
+      headers.RemoveHeader(header.key);
+    }
+  }
+}
+
 class HeadersOverride {
  public:
   static std::unique_ptr<HeadersOverride> SaveAndOverride(
@@ -290,38 +309,9 @@ class HeadersOverride {
     instance->request_.referrer_policy = instance->original_referrer_policy_;
   }
 
-  static void RevertForFollowRedirect(
-      std::unique_ptr<HeadersOverride> instance,
-      std::vector<std::string>& removed_headers,
-      net::HttpRequestHeaders& modified_headers) {
-    ComputeModifications(instance->request_.headers,
-                         instance->original_headers_, removed_headers,
-                         modified_headers);
-    Revert(std::move(instance));
+  void RemoveUnsafeOriginalHeadersOnRedirect() {
+    RemoveUnsafeRequestHeadersOnRedirect(original_headers_);
   }
-
-  // If the higher-level URLLoader performs any header modifications when
-  // calling `FollowRedirect()`, apply those to "original" headers, so these get
-  // applied during Revert.
-  void ApplyModifications(const std::vector<std::string>& removed_headers,
-                          const net::HttpRequestHeaders& modified_headers) {
-    for (const auto& entry : removed_headers)
-      original_headers_.RemoveHeader(entry);
-    original_headers_.MergeFrom(modified_headers);
-  }
-
-  void ModificationsForRedirect(std::vector<std::string>& removed_headers,
-                                net::HttpRequestHeaders& modified_headers) {
-    ComputeModifications(original_headers_, request_.headers, removed_headers,
-                         modified_headers);
-  }
-
- private:
-  explicit HeadersOverride(network::ResourceRequest& request)
-      : request_(request),
-        original_headers_(std::move(request.headers)),
-        original_referrer_(request.referrer),
-        original_referrer_policy_(request.referrer_policy) {}
 
   // Compute `remove_headers` and `modified_headers` that are needed
   // to turn `a` into `b`.
@@ -346,6 +336,13 @@ class HeadersOverride {
     for (const auto& entry : old_headers)
       removed_headers.push_back(entry.first);
   }
+
+ private:
+  explicit HeadersOverride(network::ResourceRequest& request)
+      : request_(request),
+        original_headers_(std::move(request.headers)),
+        original_referrer_(request.referrer),
+        original_referrer_policy_(request.referrer_policy) {}
 
   network::ResourceRequest& request_;
   net::HttpRequestHeaders original_headers_;
@@ -406,6 +403,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   }
 
   Response InnerContinueRequest(std::unique_ptr<Modifications> modifications);
+  void ProcessFollowRedirect(
+      const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void ProcessAuthResponse(
       const DevToolsURLLoaderInterceptor::AuthChallengeResponse&
           auth_challenge_response);
@@ -538,6 +537,10 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // In case headers are overridden, keep the original and restore them
   // upon a redirect, so that overrides don't stick across redirects.
   std::unique_ptr<HeadersOverride> headers_override_;
+  // Header overrides are reverted before the redirect, so that
+  // request paused event contains original headers. Previous headers
+  // are used on resume to compute the difference for the network stack.
+  std::unique_ptr<net::HttpRequestHeaders> headers_before_redirect_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -1044,23 +1047,15 @@ Response InterceptionJob::InnerContinueRequest(
   if (state_ == State::kFollowRedirect) {
     if (!modifications->modified_url.has_value()) {
       // TODO(caseq): report error if other modifications are present.
-      state_ = State::kRequestSent;
-      std::vector<std::string> removed_headers;
-      net::HttpRequestHeaders modified_headers;
-      if (!modifications->modified_headers) {
-        if (headers_override_) {
-          HeadersOverride::RevertForFollowRedirect(
-              std::move(headers_override_), removed_headers, modified_headers);
-        }
-      } else {
+
+      // At this point we already reverted headers to the original state.
+      if (modifications->modified_headers) {
         headers_override_ = HeadersOverride::SaveAndOverride(
             create_loader_params_->request,
             std::move(*modifications->modified_headers));
-        headers_override_->ModificationsForRedirect(removed_headers,
-                                                    modified_headers);
       }
-      loader_->FollowRedirect(removed_headers, modified_headers, {},
-                              std::nullopt);
+
+      ProcessFollowRedirect({});
       return Response::Success();
     }
     CancelRequest();
@@ -1116,8 +1111,23 @@ Response InterceptionJob::InnerContinueRequest(
 
   DCHECK_EQ(State::kNotStarted, state_);
   ApplyModificationsToRequest(std::move(modifications));
+  headers_before_redirect_.reset();
   StartRequest();
   return Response::Success();
+}
+
+void InterceptionJob::ProcessFollowRedirect(
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+  std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  CHECK(headers_before_redirect_);
+  HeadersOverride::ComputeModifications(*headers_before_redirect_,
+                                        create_loader_params_->request.headers,
+                                        removed_headers, modified_headers);
+  headers_before_redirect_.reset();
+  loader_->FollowRedirect(removed_headers, modified_headers,
+                          modified_cors_exempt_headers, std::nullopt);
+  state_ = State::kRequestSent;
 }
 
 void InterceptionJob::ApplyModificationsToRequest(
@@ -1512,7 +1522,18 @@ void InterceptionJob::FollowRedirect(
     tainted_origin_ = true;
   }
 
+  // Save previous headers and revert to the original ones before applying
+  // any client changes.
+  headers_before_redirect_ = std::make_unique<net::HttpRequestHeaders>(
+      create_loader_params_->request.headers);
+  if (headers_override_) {
+    // Always revert to the first request in the chain.
+    HeadersOverride::Revert(std::move(headers_override_));
+  }
+
   bool clear_body = false;
+  // Reflect changes to the request that the network service will make on
+  // FollowRedirect.
   net::RedirectUtil::UpdateHttpRequest(request->url, request->method, info,
                                        removed_headers, modified_headers,
                                        &request->headers, &clear_body);
@@ -1538,9 +1559,6 @@ void InterceptionJob::FollowRedirect(
 
   url_chain_.push_back(create_loader_params_->request.url);
 
-  if (headers_override_)
-    headers_override_->ApplyModifications(removed_headers, modified_headers);
-
   if (interceptor_) {
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
@@ -1551,26 +1569,12 @@ void InterceptionJob::FollowRedirect(
       return;
   }
   if (state_ == State::kRedirectReceived) {
-    state_ = State::kRequestSent;
-    if (!headers_override_) {
-      loader_->FollowRedirect(removed_headers, modified_headers,
-                              modified_cors_exempt_headers,
-                              std::nullopt /* new_url */);
-      return;
-    }
-    // Re-compute removed and modified headers while taking original
-    // restored header values into account;
-    std::vector<std::string> removals;
-    net::HttpRequestHeaders modifications;
-    HeadersOverride::RevertForFollowRedirect(std::move(headers_override_),
-                                             removals, modifications);
-    loader_->FollowRedirect(removals, modifications,
-                            modified_cors_exempt_headers,
-                            std::nullopt /* new_url */);
+    ProcessFollowRedirect(modified_cors_exempt_headers);
     return;
   }
 
   DCHECK_EQ(State::kNotStarted, state_);
+  headers_before_redirect_.reset();
   StartRequest();
 }
 
@@ -1635,6 +1639,13 @@ void InterceptionJob::OnReceiveRedirect(
   response_metadata_ = std::make_unique<ResponseMetadata>(head.Clone());
   response_metadata_->redirect_info =
       std::make_unique<net::RedirectInfo>(redirect_info);
+
+  // Delete some headers to sync the request with what the network
+  // service already did.
+  RemoveUnsafeRequestHeadersOnRedirect(create_loader_params_->request.headers);
+  if (headers_override_) {
+    headers_override_->RemoveUnsafeOriginalHeadersOnRedirect();
+  }
 
   if (!stages_.Has(InterceptionStage::kResponse)) {
     client_->OnReceiveRedirect(redirect_info, std::move(head));

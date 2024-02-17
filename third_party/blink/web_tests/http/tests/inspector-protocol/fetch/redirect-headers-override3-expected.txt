@@ -1,5 +1,10 @@
 Tests overridden headers don't stick across redirects
-Redirected request headers:{
+Redirected request 1 headers: {
+    Accept : */*
+    Referer : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    User-Agent : <string>
+}
+Redirected request 2 headers: {
     Accept : */*
     Referer : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
     User-Agent : <string>
