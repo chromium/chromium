@@ -145,7 +145,7 @@ void RichAnswersDefinitionView::AddPhoneticsAudioButtonTo(
           phonetics_audio_button_closure_image_model,
           cros_tokens::kCrosSysHoverOnSubtle,
           l10n_util::GetStringUTF16(
-              IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT)));
+              IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT)));
   button_view->SetMinimumImageSize(
       gfx::Size(kRichAnswersIconSizeDip, kRichAnswersIconSizeDip));
 }
@@ -215,7 +215,7 @@ void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
   QuickAnswersTextLabel* similar_label =
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           l10n_util::GetStringUTF8(
-              IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT),
+              IDS_RICH_ANSWERS_VIEW_DEFINITION_SYNONYMS_LABEL_TEXT),
           GetFontList(TypographyToken::kCrosBody2), label_width,
           /*is_multi_line=*/true, cros_tokens::kHighlightColorGreen));
   std::string synonyms_text =

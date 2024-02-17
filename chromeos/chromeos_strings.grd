@@ -225,35 +225,8 @@
       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT" desc="The result text format string used for Quick Answers unit conversion result card. The first placeholder contains the value of result unit and the second placeholder contains the display name of the result unit.">
         <ph name="VALUE">$1<ex>220.462</ex></ph> <ph name="DISPLAY_NAME">$2<ex>pounds</ex></ph>
       </message>
-      <message name="IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
-      Similar:
-       </message>
-       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_LABEL_TEXT" desc="The text that precedes a formula description in a Quick Answers unit conversion result card.">
-      Formula
-       </message>
-       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
-      For an approximate result, divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
-       </message>
-       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
-      Divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
-       </message>
-       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
-      For an approximate result, multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
-       </message>
-       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
-      Multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
-       </message>
       <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
         pounds
-      </message>
-      <message name="IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
-        Quick answers settings
-      </message>
-      <message name="IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
-        Listen
-      </message>
-      <message name="IDS_QUICK_ANSWERS_COPY_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the copy-button in Quick-Answers related views.">
-        Copy text
       </message>
       <message name="IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the dogfood feedback button in Quick-Answers related views.">
         Send feedback
@@ -308,7 +281,7 @@
       </message>
       <!-- TODO(b/259440976): Remove navigation directions once the QA Rich Card feature launches. -->
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
-        Info related to your selection. Use Left or Right arrow keys to access controls.
+        Info related to your selection
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC" desc="A11y retry label description for the Quick Answers view.">
         Cannot connect to the internet. Click to try again.
@@ -327,11 +300,41 @@
       </message>
 
       <!-- Rich Answers -->
+      <message name="IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the settings-button in Quick-Answers related views.">
+        Open Quick Answers settings
+      </message>
       <message name="IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Rich Answers view.">
-        Additional info related to your selection
+        More info related to your selection
       </message>
       <message name="IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT" desc="Display text for the Google Search link label on the Rich Answers view.">
         Open in Google Search
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the phonetics-button in Quick-Answers related views.">
+        Listen to pronunciation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_TRANSLATION_READ_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the read-button in a Quick Answers translation result card.">
+        Listen to translation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_TRANSLATION_COPY_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the copy-button in a Quick Answers translation result card.">
+        Copy translation
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
+        Similar:
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_FORMULA_LABEL_TEXT" desc="The text that precedes a formula description in a Quick Answers unit conversion result card.">
+        Formula
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        For an approximate result, divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving division, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        Divide the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for approximate formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        For an approximate result, multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>1.094</ex></ph>
+      </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT" desc="The formula description text format string used for exact formulas involving multiplication, shown on the Quick Answers unit conversion result card. The first placeholder contains the unit conversion category and the second placeholder contains the conversion rate.">
+        Multiply the <ph name="CATEGORY_TEXT">$1<ex>length</ex></ph> value by <ph name="CONVERSION_RATE">$2<ex>3</ex></ph>
       </message>
 
       <!-- Editor Menu -->

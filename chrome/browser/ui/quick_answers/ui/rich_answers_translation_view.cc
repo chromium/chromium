@@ -149,7 +149,7 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
   container_view->AddChildView(CreateImageButtonView(
       read_closure, read_image_model, cros_tokens::kCrosSysHoverOnSubtle,
       l10n_util::GetStringUTF16(
-          IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT)));
+          IDS_RICH_ANSWERS_VIEW_TRANSLATION_READ_BUTTON_A11Y_NAME_TEXT)));
 
   // Copy button.
   base::RepeatingClosure copy_closure = base::BindRepeating(
@@ -160,7 +160,8 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
       copy_closure, copy_image_model, cros_tokens::kCrosSysHoverOnSubtle,
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_COPY_BUTTON_TOOLTIP_TEXT)));
+      l10n_util::GetStringUTF16(
+          IDS_RICH_ANSWERS_VIEW_TRANSLATION_COPY_BUTTON_A11Y_NAME_TEXT)));
 }
 
 void RichAnswersTranslationView::OnReadButtonPressed(

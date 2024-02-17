@@ -105,7 +105,7 @@ void RichAnswersUnitConversionView::MaybeAddFormulaInformation() {
 
   content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       l10n_util::GetStringUTF8(
-          IDS_QUICK_ANSWERS_UNIT_CONVERSION_FORMULA_LABEL_TEXT),
+          IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_FORMULA_LABEL_TEXT),
       GetFontList(TypographyToken::kCrosBody2Italic), kContentTextWidth,
       /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
 

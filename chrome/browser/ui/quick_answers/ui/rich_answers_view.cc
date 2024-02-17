@@ -277,7 +277,7 @@ views::View* RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
                                      cros_tokens::kColorPrimary,
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+      IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT));
 
   return settings_button_;
 }

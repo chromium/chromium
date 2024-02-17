@@ -532,7 +532,7 @@ void QuickAnswersView::AddFrameButtons() {
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+      IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT));
   settings_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsButtonBorderDip));
 }
@@ -578,7 +578,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(
           GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent),
           kPhoneticsAudioButtonSizeDip));
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
+      IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT));
   phonetics_audio_button_->SetBorder(
       views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
 }
