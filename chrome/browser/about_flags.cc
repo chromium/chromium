@@ -2949,14 +2949,28 @@ const FeatureEntry::FeatureVariation kCaptureModeEducationVariations[] = {
      std::size(kCaptureModeEducationQuickSettingsNudge), nullptr}};
 
 const FeatureEntry::FeatureParam
-    kHoldingSpaceWallpaperNudgeDropToPinDisabled[] = {{"drop-to-pin", "false"}};
-const FeatureEntry::FeatureParam kHoldingSpaceWallpaperNudgeDropToPinEnabled[] =
-    {{"drop-to-pin", "true"}};
+    kHoldingSpaceWallpaperNudgeWithDropToPinDisabled[] = {
+        {"drop-to-pin", "false"}};
+const FeatureEntry::FeatureParam
+    kHoldingSpaceWallpaperNudgeWithDropToPinAndAutoOpenEnabled[] = {
+        {"auto-open", "true"},
+        {"drop-to-pin", "true"}};
+const FeatureEntry::FeatureParam
+    kHoldingSpaceWallpaperNudgeWithDropToPinButWithoutAutoOpenEnabled[] = {
+        {"auto-open", "false"},
+        {"drop-to-pin", "true"}};
 const FeatureEntry::FeatureVariation kHoldingSpaceWallpaperNudgeVariations[] = {
-    {"with drop-to-pin", kHoldingSpaceWallpaperNudgeDropToPinEnabled,
-     std::size(kHoldingSpaceWallpaperNudgeDropToPinEnabled), nullptr},
-    {"without drop-to-pin", kHoldingSpaceWallpaperNudgeDropToPinDisabled,
-     std::size(kHoldingSpaceWallpaperNudgeDropToPinDisabled), nullptr},
+    {"with drop-to-pin and auto-open",
+     kHoldingSpaceWallpaperNudgeWithDropToPinAndAutoOpenEnabled,
+     std::size(kHoldingSpaceWallpaperNudgeWithDropToPinAndAutoOpenEnabled),
+     nullptr},
+    {"with drop-to-pin but without auto-open",
+     kHoldingSpaceWallpaperNudgeWithDropToPinButWithoutAutoOpenEnabled,
+     std::size(
+         kHoldingSpaceWallpaperNudgeWithDropToPinButWithoutAutoOpenEnabled),
+     nullptr},
+    {"without drop-to-pin", kHoldingSpaceWallpaperNudgeWithDropToPinDisabled,
+     std::size(kHoldingSpaceWallpaperNudgeWithDropToPinDisabled), nullptr},
 };
 
 const FeatureEntry::FeatureParam

@@ -488,11 +488,6 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     CHECK(wallpaper_highlight_);
     wallpaper_highlight_.reset();
 
-    // Immediately close the help bubble so that it does not block the holding
-    // space. If it has already closed, e.g. due to timeout, the internal
-    // callback will have already been canceled and no-op.
-    scoped_help_bubble_closer_.RunAndReset();
-
     // No-op if no holding space `client` is registered since we will be unable
     // to handle the dropped `data`.
     HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
@@ -513,10 +508,24 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     client->PinFiles(unpinned_file_paths,
                      holding_space_metrics::EventSource::kWallpaper);
 
-    // Open the holding space tray so that the user can see the newly pinned
-    // files and understands the relationship between the action they took on
-    // the wallpaper and its effect in holding space.
-    GetHoldingSpaceTrayNearestPoint(location_in_screen)->ShowBubble();
+    if (features::IsHoldingSpaceWallpaperNudgeAutoOpenEnabled()) {
+      // Open the holding space tray so that the user can see the newly pinned
+      // files and understands the relationship between the action they took on
+      // the wallpaper and its effect in holding space.
+      GetHoldingSpaceTrayNearestPoint(location_in_screen)->ShowBubble();
+    } else {
+      // Since the holding space tray is not being auto-opened, prevent auto-
+      // hiding of the shelf for a second so that the user can see the newly
+      // pinned file in the holding space tray and understands the relationship
+      // between the action they took on the wallpaper and its effect in holding
+      // space.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::DoNothingWithBoundArgs(
+              std::make_unique<Shelf::ScopedDisableAutoHide>(
+                  GetShelfNearestPoint(location_in_screen))),
+          base::Seconds(1));
+    }
 
     return ui::mojom::DragOperation::kCopy;
   }

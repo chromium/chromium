@@ -298,6 +298,7 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     : public UserEducationAshTestBase {
  public:
   HoldingSpaceWallpaperNudgeControllerTestBase(
+      std::optional<bool> auto_open_enabled,
       std::optional<bool> counterfactual_enabled,
       std::optional<bool> drop_to_pin_enabled,
       bool force_eligibility_enabled,
@@ -309,6 +310,10 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     base::FieldTrialParams params;
+
+    if (auto_open_enabled.has_value()) {
+      params.emplace("auto-open", auto_open_enabled.value() ? "true" : "false");
+    }
 
     if (counterfactual_enabled.has_value()) {
       params.emplace("is-counterfactual",
@@ -466,6 +471,7 @@ class HoldingSpaceWallpaperNudgeControllerTest
  public:
   HoldingSpaceWallpaperNudgeControllerTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
+            /*auto_open_enabled=*/true,
             /*counterfactual_enabled=*/false,
             /*drop_to_pin_enabled=*/false,
             /*force_eligibility_enabled=*/false,
@@ -586,28 +592,36 @@ TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
 class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
     : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public testing::WithParamInterface<
-          std::tuple</*drop_to_pin_enabled=*/std::optional<bool>,
+          std::tuple</*auto_open_enabled=*/std::optional<bool>,
+                     /*drop_to_pin_enabled=*/std::optional<bool>,
                      /*drag_files_app_data=*/bool,
                      /*complete_drop=*/bool>> {
  public:
   HoldingSpaceWallpaperNudgeControllerDragAndDropTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
+            auto_open_enabled(),
             /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
             /*force_eligibility_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 
-  // Whether the drop-to-pin feature param is enabled.
-  std::optional<bool> drop_to_pin_enabled() const {
+  // Whether the auto-open feature param is enabled given test parameterization.
+  std::optional<bool> auto_open_enabled() const {
     return std::get<0>(GetParam());
   }
 
+  // Whether the drop-to-pin feature param is enabled given test
+  // parameterization.
+  std::optional<bool> drop_to_pin_enabled() const {
+    return std::get<1>(GetParam());
+  }
+
   // Whether to drag Files app data given test parameterization.
-  bool drag_files_app_data() const { return std::get<1>(GetParam()); }
+  bool drag_files_app_data() const { return std::get<2>(GetParam()); }
 
   // Whether to complete the drop (as opposed to cancelling it) given test
   // parameterization.
-  bool complete_drop() const { return std::get<2>(GetParam()); }
+  bool complete_drop() const { return std::get<3>(GetParam()); }
 
  private:
   // HoldingSpaceWallpaperNudgeControllerTestBase:
@@ -626,6 +640,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceWallpaperNudgeControllerDragAndDropTest,
     testing::Combine(
+        /*auto_open_enabled=*/testing::Values(std::nullopt, false, true),
         /*drop_to_pin_enabled=*/testing::Values(std::nullopt, false, true),
         /*drag_files_app_data=*/testing::Bool(),
         /*complete_drop=*/testing::Bool()));
@@ -779,13 +794,14 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   }
 
   const bool complete_drop_of_files_app_data =
-      drag_files_app_data() && drop_to_pin_enabled().value_or(false) &&
-      complete_drop();
+      drag_files_app_data() && complete_drop();
+  const bool accept_drop_of_files_app_data =
+      complete_drop_of_files_app_data && drop_to_pin_enabled().value_or(false);
 
-  // If test parameterization dictates that Files app data will be dropped,
+  // If test parameterization dictates that Files app data will be accepted,
   // expect the holding space client to be instructed to pin files to the
   // holding space model.
-  if (complete_drop_of_files_app_data) {
+  if (accept_drop_of_files_app_data) {
     EXPECT_CALL(holding_space_client,
                 PinFiles(ElementsAre(Eq(base::FilePath("//path/to/a")),
                                      Eq(base::FilePath("//path/to/b"))),
@@ -802,33 +818,28 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   ReleaseLeftButton();
   FlushMessageLoop();
 
-  // Expect the holding space tray on the primary display to have a ping if and
-  // only if Files app data was dragged. If Files app data was dragged and the
-  // drop-to-pin action was not taken, then expect the help bubble on the
-  // primary display to still exist. The help bubble should have been closed
-  // immediately if the drop-to-pin action was taken. The holding space tray on
-  // the secondary display should have neither.
-  const bool help_bubble_should_be_fast_closed =
-      complete_drop() && drop_to_pin_enabled().value_or(false);
-  EXPECT_EQ(HasHelpBubble(primary_tray),
-            drag_files_app_data() && !help_bubble_should_be_fast_closed);
+  // Expect the holding space tray on the primary display to have a ping and a
+  // help bubble if and only if Files app data was dragged. The holding space
+  // tray on the secondary display should have neither a help bubble nor a ping.
+  EXPECT_EQ(HasHelpBubble(primary_tray), drag_files_app_data());
   EXPECT_EQ(HasPing(primary_tray), drag_files_app_data());
   EXPECT_FALSE(HasHelpBubble(secondary_tray));
   EXPECT_FALSE(HasPing(secondary_tray));
 
   // Expect the primary shelf to be visible if and only if the holding space
-  // tray on the primary display has a help bubble. The secondary shelf and both
-  // holding space trays should be visible if and only if either:
+  // tray on the primary display has a help bubble. The secondary shelf should
+  // be visible if and only if Files app data was accepted. Both holding space
+  // trays should be visible if and only if either:
   // (a) the holding space tray on the primary display has a help bubble, or
-  // (b) Files app data was dropped.
+  // (b) Files app data was accepted.
   EXPECT_EQ(primary_shelf->IsVisible(), HasHelpBubble(primary_tray));
-  EXPECT_EQ(secondary_shelf->IsVisible(), complete_drop_of_files_app_data);
+  EXPECT_EQ(secondary_shelf->IsVisible(), accept_drop_of_files_app_data);
   EXPECT_THAT(primary_tray->GetVisible(),
               AnyOf(Eq(HasHelpBubble(primary_tray)),
-                    Eq(complete_drop_of_files_app_data)));
+                    Eq(accept_drop_of_files_app_data)));
   EXPECT_THAT(secondary_tray->GetVisible(),
               AnyOf(Eq(HasHelpBubble(primary_tray)),
-                    Eq(complete_drop_of_files_app_data)));
+                    Eq(accept_drop_of_files_app_data)));
 
   // Expect no wallpaper to be highlighted.
   EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
@@ -849,21 +860,24 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   EXPECT_FALSE(HasHelpBubble(secondary_tray));
   EXPECT_FALSE(HasPing(secondary_tray));
 
+  const bool holding_space_should_be_auto_opened =
+      accept_drop_of_files_app_data && auto_open_enabled().value_or(true);
+
   // Expect the primary shelf to no longer be visible, but the secondary shelf
-  // and both holding space trays should be visible if and only if Files app
-  // data was dropped.
+  // should be visible only if holding space was auto-opened. Both holding space
+  // trays should be visible if and only if Files app data was accepted.
   EXPECT_FALSE(primary_shelf->IsVisible());
-  EXPECT_EQ(secondary_shelf->IsVisible(), complete_drop_of_files_app_data);
-  EXPECT_EQ(primary_tray->GetVisible(), complete_drop_of_files_app_data);
-  EXPECT_EQ(secondary_tray->GetVisible(), complete_drop_of_files_app_data);
+  EXPECT_EQ(secondary_shelf->IsVisible(), holding_space_should_be_auto_opened);
+  EXPECT_EQ(primary_tray->GetVisible(), accept_drop_of_files_app_data);
+  EXPECT_EQ(secondary_tray->GetVisible(), accept_drop_of_files_app_data);
 
   // Expect no wallpaper to be highlighted.
   EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
   EXPECT_FALSE(HasWallpaperHighlight(secondary_display_id));
 
-  // If Files app data was dropped, the holding space bubble should be visible
-  // on the secondary display.
-  if (complete_drop_of_files_app_data) {
+  // If holding space was auto-opened, the holding space bubble should be
+  // visible on the secondary display.
+  if (holding_space_should_be_auto_opened) {
     EXPECT_TRUE(secondary_tray->GetBubbleWidget()->IsVisible());
     secondary_tray->GetBubbleWidget()->CloseNow();
   }
@@ -888,6 +902,7 @@ class HoldingSpaceWallpaperNudgeControllerEligibilityTest
  public:
   HoldingSpaceWallpaperNudgeControllerEligibilityTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
+            /*auto_open_enabled=*/true,
             /*counterfactual_enabled=*/false,
             /*drop_to_pin_enabled=*/false,
             /*force_eligibility_enabled=*/ForceUserEligibility(),
@@ -1167,6 +1182,7 @@ class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
  public:
   HoldingSpaceWallpaperNudgeControllerRateLimitingTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
+            /*auto_open_enabled=*/true,
             /*counterfactual_enabled=*/false,
             drop_to_pin_enabled(),
             /*force_eligibility_enabled=*/false,
@@ -1426,6 +1442,7 @@ class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
  public:
   HoldingSpaceWallpaperNudgeControllerCounterfactualTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
+            /*auto_open_enabled=*/true,
             counterfactual_enabled(),
             drop_to_pin_enabled(),
             /*force_eligibility_enabled=*/false,

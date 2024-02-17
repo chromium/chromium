@@ -3789,8 +3789,20 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithDropToPin",
+                    "name": "EnabledWithDropToPinAndAutoOpen",
                     "params": {
+                        "auto-open": "true",
+                        "drop-to-pin": "true",
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "HoldingSpaceWallpaperNudge"
+                    ]
+                },
+                {
+                    "name": "EnabledWithDropToPinButWithoutAutoOpen",
+                    "params": {
+                        "auto-open": "false",
                         "drop-to-pin": "true",
                         "is-counterfactual": "false"
                     },
