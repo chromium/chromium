@@ -22,6 +22,8 @@ source_set("ash") {
     "keyboard_capability.h",
     "keyboard_device_id_event_rewriter.cc",
     "keyboard_device_id_event_rewriter.h",
+    "keyboard_info_metrics.cc",
+    "keyboard_info_metrics.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
     "keyboard_modifier_event_rewriter.cc",
@@ -51,11 +53,15 @@ source_set("ash") {
 }
 
 source_set("unit_tests") {
-  sources = [ "keyboard_device_id_event_rewriter_unittest.cc" ]
+  sources = [
+    "keyboard_device_id_event_rewriter_unittest.cc",
+    "keyboard_info_metrics_unittest.cc",
+  ]
 
   deps = [
     ":ash",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//ui/events",
     "//ui/events/devices",

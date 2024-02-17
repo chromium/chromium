@@ -32,6 +32,7 @@
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -787,6 +788,12 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
     keyboard_info_map_.erase(keyboard.id);
     return nullptr;
   }
+
+  // This metrics recording will happen once per keyboard per connection, since
+  // GetKeyboardInfo is cached and isn't recomputed unless the keyboard
+  // disconnects and reconnects.
+  RecordKeyboardInfoMetrics(keyboard_info,
+                            /*has_assistant_key=*/HasAssistantKey(keyboard));
 
   return &keyboard_info;
 }
