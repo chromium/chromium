@@ -775,8 +775,6 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
       base::Overloaded{
           [&](StorableSource& source) {
             if (registration_allowed) {
-                LOG(INFO) << "manager STORING SOURCE" ;
-                LOG(INFO) << source.registration().ToJson() ;
               StoreSource(std::move(source), is_debug_cookie_set);
             } else {
               OnSourceStored(source,

@@ -113,6 +113,7 @@ inline constexpr const char kSetReportTimeSql[] =
 #define ATTRIBUTION_SOURCE_COLUMNS_SQL(prefix) \
   prefix "source_id,"                          \
   prefix "source_event_id,"                    \
+  prefix "source_epoch,"                       \
   prefix "source_origin,"                      \
   prefix "reporting_origin,"                   \
   prefix "source_time,"                        \
