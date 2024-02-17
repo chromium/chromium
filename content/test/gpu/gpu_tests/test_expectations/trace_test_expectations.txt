@@ -204,7 +204,6 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
-crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ Failure ]
 
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 crbug.com/1453832 [ debug-x64 no-clang-coverage nvidia target-cpu-64 win ] OverlayModeTraceTest_DirectComposition_Underlay_Fullsize [ RetryOnFailure ]
