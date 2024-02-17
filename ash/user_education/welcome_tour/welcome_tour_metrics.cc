@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -63,13 +65,20 @@ void RecordInteraction(Interaction interaction) {
     const auto relevant_time = prevented_time.has_value()
                                    ? prevented_time.value()
                                    : completed_time.value();
-    const auto delta = base::Time::Now() - relevant_time;
+    const auto time_delta = base::Time::Now() - relevant_time;
 
+    // Record high fidelity `time_delta`.
     base::UmaHistogramCustomTimes(
         base::StrCat({"Ash.WelcomeTour.", completion_string,
                       ".Interaction.FirstTime.", ToString(interaction)}),
-        delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
+        time_delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
         /*buckets=*/100);
+
+    // Record high readability time bucket.
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Ash.WelcomeTour.", completion_string,
+                      ".Interaction.FirstTimeBucket.", ToString(interaction)}),
+        user_education_util::GetTimeBucket(time_delta));
   }
 }
 

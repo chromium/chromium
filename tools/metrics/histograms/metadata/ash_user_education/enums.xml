@@ -57,6 +57,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kUserNotEligible"/>
 </enum>
 
+<enum name="TimeBucket">
+  <int value="0" label="kOneMinute"/>
+  <int value="1" label="kTenMinutes"/>
+  <int value="2" label="kOneHour"/>
+  <int value="3" label="kOneDay"/>
+  <int value="4" label="kOneWeek"/>
+  <int value="5" label="kTwoWeeks"/>
+  <int value="6" label="kOverTwoWeeks"/>
+</enum>
+
 <enum name="WelcomeTourAbortedReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kAccelerator"/>

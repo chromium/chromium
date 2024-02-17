@@ -73,17 +73,24 @@ void RecordInteraction(Interaction interaction) {
   base::UmaHistogramEnumeration(
       "Ash.HoldingSpaceWallpaperNudge.Interaction.Count", interaction);
 
-  // TODO(http://b/311411775): Add `TimeBucket` metrics.
   if (holding_space_wallpaper_nudge_prefs::MarkTimeOfFirstInteraction(
           prefs, interaction)) {
     const auto now = base::Time::Now();
     const auto time_delta = now - first_session_time.value();
 
+    // Record high fidelity `time_delta`.
     base::UmaHistogramCustomTimes(
         base::StrCat({"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.",
                       ToString(interaction)}),
         time_delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
         /*buckets=*/100);
+
+    // Record high readability time bucket.
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTimeBucket.",
+             ToString(interaction)}),
+        user_education_util::GetTimeBucket(time_delta));
   }
 }
 

@@ -65,6 +65,14 @@ class WelcomeTourInteractionMetricsTest
         {"Ash.WelcomeTour.", completion_string, ".Interaction.Count"});
   }
 
+  std::string GetInteractionFirstTimeBucketMetricName(
+      Interaction interaction,
+      const std::string& completion_string) const {
+    return base::StrCat({"Ash.WelcomeTour.", completion_string,
+                         ".Interaction.FirstTimeBucket.",
+                         ToString(interaction)});
+  }
+
   std::string GetInteractionFirstTimeMetricName(
       Interaction interaction,
       const std::string& completion_string) const {
@@ -113,9 +121,14 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   for (auto interaction : kAllInteractionsSet) {
     RecordInteraction(interaction);
     histogram_tester.ExpectTotalCount(
+        GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
+    histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
     histogram_tester.ExpectBucketCount(
         GetInteractionCountMetricName("Completed"), interaction, 0);
+    histogram_tester.ExpectTotalCount(
+        GetInteractionFirstTimeBucketMetricName(interaction, "Counterfactual"),
+        0);
     histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
     histogram_tester.ExpectBucketCount(
@@ -136,14 +149,21 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
     if (InteractionsShouldBeRecorded()) {
       const auto completion = GetCompletionString();
       histogram_tester.ExpectTotalCount(
+          GetInteractionFirstTimeBucketMetricName(interaction, completion), 1);
+      histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, completion), 1);
       histogram_tester.ExpectBucketCount(
           GetInteractionCountMetricName(completion), interaction, 1);
     } else {
       histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
+      histogram_tester.ExpectTotalCount(
+          GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
       histogram_tester.ExpectBucketCount(
           GetInteractionCountMetricName("Completed"), interaction, 0);
+      histogram_tester.ExpectTotalCount(GetInteractionFirstTimeBucketMetricName(
+                                            interaction, "Counterfactual"),
+                                        0);
       histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
       histogram_tester.ExpectBucketCount(
@@ -159,14 +179,21 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
     if (InteractionsShouldBeRecorded()) {
       const auto completion = GetCompletionString();
       histogram_tester.ExpectTotalCount(
+          GetInteractionFirstTimeBucketMetricName(interaction, completion), 1);
+      histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, completion), 1);
       histogram_tester.ExpectBucketCount(
           GetInteractionCountMetricName(completion), interaction, 2);
     } else {
       histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
+      histogram_tester.ExpectTotalCount(
+          GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
       histogram_tester.ExpectBucketCount(
           GetInteractionCountMetricName("Completed"), interaction, 0);
+      histogram_tester.ExpectTotalCount(GetInteractionFirstTimeBucketMetricName(
+                                            interaction, "Counterfactual"),
+                                        0);
       histogram_tester.ExpectTotalCount(
           GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
       histogram_tester.ExpectBucketCount(

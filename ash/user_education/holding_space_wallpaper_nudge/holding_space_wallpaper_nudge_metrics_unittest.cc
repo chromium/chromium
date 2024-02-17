@@ -20,6 +20,12 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
+std::string GetInteractionFirstTimeBucketMetricName(Interaction interaction) {
+  return base::StrCat(
+      {"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTimeBucket.",
+       ToString(interaction)});
+}
+
 std::string GetInteractionFirstTimeMetricName(Interaction interaction) {
   return base::StrCat({"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.",
                        ToString(interaction)});
@@ -132,6 +138,8 @@ TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
 
     // FirstTime metrics.
     histogram_tester.ExpectTotalCount(
+        GetInteractionFirstTimeBucketMetricName(interaction), 0u);
+    histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeMetricName(interaction), 0u);
 
     // Count metrics.
@@ -151,6 +159,8 @@ TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
 
     // FirstTime metrics.
     histogram_tester.ExpectTotalCount(
+        GetInteractionFirstTimeBucketMetricName(interaction), 1u);
+    histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeMetricName(interaction), 1u);
 
     // Count metrics.
@@ -165,6 +175,8 @@ TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
     ++total_count_metrics_emitted;
 
     // FirstTime metrics.
+    histogram_tester.ExpectTotalCount(
+        GetInteractionFirstTimeBucketMetricName(interaction), 1u);
     histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeMetricName(interaction), 1u);
 

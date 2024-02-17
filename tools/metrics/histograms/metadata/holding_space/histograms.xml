@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
   <owner>alexandrahill@google.com</owner>
   <summary>
     Records the smoothness of the holding space bubble resize animation. Note
-    that smoothness is expected be between 0 and 100 (inclusively) with 100
+    that smoothness is expected to be between 0 and 100 (inclusively) with 100
     representing ideal smoothness of &gt;= 60 frames per second. This histogram
     is emitted when the resize animation ends.
   </summary>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
   <owner>alexandrahill@google.com</owner>
   <summary>
     Records the smoothness of the holding space pod resize animation. Note that
-    smoothness is expected be be between 0 and 100 (inclusively) with 100
+    smoothness is expected to be between 0 and 100 (inclusively) with 100
     representing ideal smoothness of &gt;= 60 frames per second. This histogram
     is emitted when the resize animation ends.
   </summary>
