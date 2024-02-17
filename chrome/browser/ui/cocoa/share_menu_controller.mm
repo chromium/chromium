@@ -169,17 +169,17 @@ bool CanShare() {
 
   gfx::Rect rectInWidget =
       browserView->ConvertRectToWidget(contentsView->bounds());
-  ui::GrabWindowSnapshotAsync(
-      _windowForShare, rectInWidget,
-      base::BindOnce(
-          [](ShareMenuController* controller, base::OnceClosure closure,
-             gfx::Image image) {
-            if (!image.IsEmpty()) {
-              controller->_snapshotForShare = image.ToNSImage();
-            }
-            std::move(closure).Run();
-          },
-          self, std::move(closure)));
+  ui::GrabWindowSnapshot(_windowForShare, rectInWidget,
+                         base::BindOnce(
+                             [](ShareMenuController* controller,
+                                base::OnceClosure closure, gfx::Image image) {
+                               if (!image.IsEmpty()) {
+                                 controller->_snapshotForShare =
+                                     image.ToNSImage();
+                               }
+                               std::move(closure).Run();
+                             },
+                             self, std::move(closure)));
 }
 
 - (void)clearTransitionData {

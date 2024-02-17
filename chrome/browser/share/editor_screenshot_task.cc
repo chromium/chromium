@@ -50,7 +50,7 @@ void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   gfx::Rect window_bounds(window_width, window_height);
-  ui::GrabWindowSnapshotAsyncPNG(
+  ui::GrabWindowSnapshotAsPNG(
       window_android, window_bounds,
       base::BindOnce(&JNI_EditorScreenshotTask_SnapshotCallback, env,
                      ScopedJavaGlobalRef<jobject>(env, jcallback)));

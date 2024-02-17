@@ -32,8 +32,8 @@ void LensStaticPageController::OpenStaticPage() {
   ui::GrabSnapshotImageCallback load_url_callback =
       base::BindOnce(&LensStaticPageController::LoadChromeLens,
                      weak_ptr_factory_.GetWeakPtr());
-  ui::GrabViewSnapshotAsync(active_web_contents->GetNativeView(),
-                            fullscreen_size, std::move(load_url_callback));
+  ui::GrabViewSnapshot(active_web_contents->GetNativeView(), fullscreen_size,
+                       std::move(load_url_callback));
 }
 
 void LensStaticPageController::LoadChromeLens(gfx::Image image) {

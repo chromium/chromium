@@ -208,7 +208,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
     }
   }
   const gfx::Rect bounds(window->bounds().width(), window->bounds().height());
-  ui::GrabWindowSnapshotAsyncJPEG(
+  ui::GrabWindowSnapshotAsJPEG(
       std::move(window), std::move(bounds),
       base::BindOnce(&ScreenshotDataCollector::OnScreenshotTaken,
                      weak_ptr_factory_.GetWeakPtr()));

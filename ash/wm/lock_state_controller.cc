@@ -718,7 +718,7 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
   }
   // TODO(b/321117233): Cancel the operation to take the screenshot and proceed
   // with the shutdown immediately if it takes too long.
-  ui::GrabWindowSnapshotAsync(
+  ui::GrabWindowSnapshot(
       active_desk, /*source_rect=*/gfx::Rect(active_desk->bounds().size()),
       base::BindOnce(&LockStateController::OnPineImageTaken,
                      weak_ptr_factory_.GetWeakPtr(), with_pre_animation,

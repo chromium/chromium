@@ -160,19 +160,19 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
 
 }  // namespace
 
-void GrabWindowSnapshotAsync(gfx::NativeWindow native_window,
-                             const gfx::Rect& source_rect,
-                             GrabSnapshotImageCallback callback) {
+void GrabWindowSnapshot(gfx::NativeWindow native_window,
+                        const gfx::Rect& source_rect,
+                        GrabSnapshotImageCallback callback) {
   // Make sure to grab the "window frame" view so we get current tab +
   // tabstrip.
   NSView* view = native_window.GetNativeNSWindow().contentView.superview;
 
-  GrabViewSnapshotAsync(view, source_rect, std::move(callback));
+  GrabViewSnapshot(view, source_rect, std::move(callback));
 }
 
-void GrabViewSnapshotAsync(gfx::NativeView view,
-                           const gfx::Rect& source_rect,
-                           GrabSnapshotImageCallback callback) {
+void GrabViewSnapshot(gfx::NativeView view,
+                      const gfx::Rect& source_rect,
+                      GrabSnapshotImageCallback callback) {
   if (@available(macOS 14.4, *)) {
     if (base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots)) {
       GrabViewSnapshotScreenCaptureKitImpl(view, source_rect,

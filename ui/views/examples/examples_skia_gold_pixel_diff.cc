@@ -40,9 +40,9 @@ ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   gfx::Rect widget_bounds = widget->GetRootView()->bounds();
 #if defined(USE_AURA)
-  ui::GrabWindowSnapshotAsyncAura(
+  ui::GrabWindowSnapshotAura(
 #else
-  ui::GrabWindowSnapshotAsync(
+  ui::GrabWindowSnapshot(
 #endif
       widget->GetNativeWindow(), widget_bounds,
       base::BindOnce(

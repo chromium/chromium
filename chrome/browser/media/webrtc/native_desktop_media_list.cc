@@ -1049,7 +1049,7 @@ void NativeDesktopMediaList::CaptureAuraWindowThumbnail(
       gfx::Rect(thumbnail_size_), window_rect.size());
 
   pending_aura_capture_requests_++;
-  ui::GrabWindowSnapshotAndScaleAsyncAura(
+  ui::GrabWindowSnapshotAndScaleAura(
       window, window_rect, scaled_rect.size(),
       base::BindOnce(&NativeDesktopMediaList::OnAuraThumbnailCaptured,
                      weak_factory_.GetWeakPtr(), id));

@@ -174,8 +174,8 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   ui::GrabSnapshotImageCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
                      result_code, bounds);
-  ui::GrabViewSnapshotAsync(web_contents_->GetNativeView(), region,
-                            std::move(screenshot_callback));
+  ui::GrabViewSnapshot(web_contents_->GetNativeView(), region,
+                       std::move(screenshot_callback));
 }
 
 void ScreenshotFlow::CancelCapture() {

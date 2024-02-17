@@ -173,7 +173,7 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
 
   base::RunLoop run_loop;
   gfx::Image image;
-  ui::GrabWindowSnapshotAsyncAura(
+  ui::GrabWindowSnapshotAura(
       Shell::Get()->GetPrimaryRootWindow(),
       Shell::Get()->GetPrimaryRootWindow()->bounds(),
       base::BindOnce(&SnapshotCallback, &run_loop, &image));

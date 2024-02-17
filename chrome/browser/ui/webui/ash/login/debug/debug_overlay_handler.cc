@@ -135,10 +135,9 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
     }
 
     filename.append(".png");
-    ui::GrabWindowSnapshotAsyncPNG(
-        root_window, rect,
-        base::BindOnce(&RunStoreScreenshotOnTaskRunner, screenshot_dir_,
-                       filename));
+    ui::GrabWindowSnapshotAsPNG(root_window, rect,
+                                base::BindOnce(&RunStoreScreenshotOnTaskRunner,
+                                               screenshot_dir_, filename));
   }
 }
 

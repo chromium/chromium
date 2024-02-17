@@ -100,7 +100,7 @@ class SnapshotCapturerBase : public mojom::SnapshotCapturer {
     gfx::Rect bounds = window->bounds();
     bounds.set_x(0);
     bounds.set_y(0);
-    ui::GrabWindowSnapshotAsync(
+    ui::GrabWindowSnapshot(
         window, bounds,
         base::BindOnce(
             [](TakeSnapshotCallback callback, gfx::Image image) {

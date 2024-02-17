@@ -115,8 +115,8 @@ class AccessibilityHighlightControllerTest : public AshTestBase {
         run_loop->Quit();
       };
       base::RunLoop run_loop;
-      ui::GrabWindowSnapshotAsync(
-          window, bounds, base::BindOnce(on_got_snapshot, &run_loop, image));
+      ui::GrabWindowSnapshot(window, bounds,
+                             base::BindOnce(on_got_snapshot, &run_loop, image));
       run_loop.Run();
       if (image->Size() != bounds.size()) {
         LOG(INFO) << "Bitmap not correct size, trying to capture again";

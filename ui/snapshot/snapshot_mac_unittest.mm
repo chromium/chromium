@@ -51,7 +51,7 @@ TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   // Take the snapshot.
   base::test::TestFuture<gfx::Image> future;
   gfx::Rect bounds = gfx::Rect(0, 0, window_size, window_size);
-  ui::GrabWindowSnapshotAsync(window, bounds, future.GetCallback());
+  ui::GrabWindowSnapshot(window, bounds, future.GetCallback());
 
   gfx::Image image = future.Take();
   ASSERT_TRUE(!image.IsEmpty());

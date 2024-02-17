@@ -151,7 +151,7 @@ class SnapshotAuraTest : public testing::Test {
         test_window(), root_window(), &source_rect);
 
     scoped_refptr<SnapshotHolder> holder(new SnapshotHolder);
-    ui::GrabWindowSnapshotAsync(
+    ui::GrabWindowSnapshot(
         root_window(), source_rect,
         base::BindOnce(&SnapshotHolder::SnapshotCallback, holder));
 

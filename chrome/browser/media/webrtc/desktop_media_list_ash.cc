@@ -148,7 +148,7 @@ void DesktopMediaListAsh::CaptureThumbnail(content::DesktopMediaID id,
       gfx::Rect(thumbnail_size_), window_rect.size());
 
   ++pending_window_capture_requests_;
-  ui::GrabWindowSnapshotAndScaleAsync(
+  ui::GrabWindowSnapshotAndScale(
       window, window_rect, scaled_rect.size(),
       base::BindOnce(&DesktopMediaListAsh::OnThumbnailCaptured,
                      weak_factory_.GetWeakPtr(), id));

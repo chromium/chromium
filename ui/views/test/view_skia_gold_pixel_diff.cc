@@ -110,9 +110,9 @@ bool ViewSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
     gfx::Image* image) const {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 #if defined(USE_AURA)
-  ui::GrabWindowSnapshotAsyncAura(
+  ui::GrabWindowSnapshotAura(
 #else
-  ui::GrabWindowSnapshotAsync(
+  ui::GrabWindowSnapshot(
 #endif
       window, snapshot_bounds,
       base::BindOnce(&SnapshotCallback, &run_loop, image));

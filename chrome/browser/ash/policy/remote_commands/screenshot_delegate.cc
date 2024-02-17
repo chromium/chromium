@@ -43,7 +43,7 @@ void ScreenshotDelegate::TakeSnapshot(
     gfx::NativeWindow window,
     const gfx::Rect& source_rect,
     OnScreenshotTakenCallback upload_callback) {
-  ui::GrabWindowSnapshotAsyncPNG(
+  ui::GrabWindowSnapshotAsPNG(
       window, source_rect,
       base::BindOnce(&ScreenshotDelegate::OnScreenshotTaken,
                      weak_ptr_factory_.GetWeakPtr(),

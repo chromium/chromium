@@ -50,7 +50,7 @@ void DesktopCapturerAsh::CaptureFrame() {
   }
 
   const gfx::Rect bounds(window->bounds().size());
-  ui::GrabWindowSnapshotAsync(
+  ui::GrabWindowSnapshot(
       window, bounds,
       base::BindOnce(&DesktopCapturerAsh::OnGrabWindowSnapsot,
                      weak_ptr_factory_.GetWeakPtr()));

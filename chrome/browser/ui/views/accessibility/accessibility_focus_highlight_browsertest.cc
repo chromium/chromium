@@ -94,7 +94,7 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     // Keep trying until we get a successful capture.
     while (true) {
       base::test::TestFuture<gfx::Image> future;
-      ui::GrabViewSnapshotAsync(native_view, bounds, future.GetCallback());
+      ui::GrabViewSnapshot(native_view, bounds, future.GetCallback());
       gfx::Image result_image = future.Take();
 
       if (result_image.Size().IsEmpty()) {

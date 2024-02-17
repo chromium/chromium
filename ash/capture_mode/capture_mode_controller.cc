@@ -1471,7 +1471,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
     cursor_manager->LockCursor();
   }
 
-  ui::GrabWindowSnapshotAsyncPNG(
+  ui::GrabWindowSnapshotAsPNG(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
                      weak_ptr_factory_.GetWeakPtr(), path,

@@ -77,7 +77,7 @@ void AXScreenAIAnnotator::AnnotateScreenshot(
     return;
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  ui::GrabViewSnapshotAsync(
+  ui::GrabViewSnapshot(
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
