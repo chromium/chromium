@@ -231,6 +231,8 @@ void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
 
+void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added);
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

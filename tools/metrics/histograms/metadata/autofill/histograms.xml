@@ -1559,6 +1559,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CreditCardUpload.RanLocalSaveFallback" enum="Boolean"
+    expires_after="2024-08-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Records if a new card is locally added during a local card save fallback on
+    credit card upload failures. This is true when the card being saved is a new
+    addition to the local cards and false when the card is identified as an
+    existing local card and so isn't added to the local cards. The value is
+    recorded immediately after running the local card save fallback.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CvcAuth.{CardType}.Attempt" enum="BooleanAttempted"
     expires_after="2024-07-01">
   <owner>vinnypersky@google.com</owner>

@@ -83,6 +83,12 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardSaveManagerWithLocalSaveFallbackTest,
+      Metrics_OnDidUploadCard_FallbackToLocalSave_CardAdded);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerWithLocalSaveFallbackTest,
+      Metrics_OnDidUploadCard_FallbackToLocalSave_CardExists);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerWithLocalSaveFallbackTest,
       OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardSaveManagerWithLocalSaveFallbackTest,

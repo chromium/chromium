@@ -210,6 +210,11 @@ void LogSaveCardRequestExpirationDateReasonMetric(
                             reason);
 }
 
+void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added) {
+  base::UmaHistogramBoolean("Autofill.CreditCardUpload.RanLocalSaveFallback",
+                            new_local_card_added);
+}
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,

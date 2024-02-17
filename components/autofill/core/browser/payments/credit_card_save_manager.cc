@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -503,7 +504,9 @@ void CreditCardSaveManager::OnDidUploadCard(
         !upload_request_.card
              .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
              .empty()) {
-      personal_data_manager_->SaveCardLocallyIfNew(upload_request_.card);
+      autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
+          /*new_local_card_added=*/personal_data_manager_->SaveCardLocallyIfNew(
+              upload_request_.card));
     }
 
     // If the upload failed and the bubble was actually shown (NOT just the

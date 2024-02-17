@@ -5856,4 +5856,40 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
       payments::PaymentsNetworkInterface::UploadCardResponseDetails());
 }
 
+// Tests that the `RanLocalSaveFallback` metric records that a new local card
+// was saved when a new local card is added during the local card save fallback
+// for a server upload failure.
+TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+       Metrics_OnDidUploadCard_FallbackToLocalSave_CardAdded) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(personal_data(), SaveCardLocallyIfNew).WillByDefault(Return(true));
+
+  credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.RanLocalSaveFallback", true, 1);
+}
+
+// Tests that the `RanLocalSaveFallback` metric records that a new local card
+// was not saved when the local card already exists during the local card save
+// fallback for a server upload failure.
+TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
+       Metrics_OnDidUploadCard_FallbackToLocalSave_CardExists) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(personal_data(), SaveCardLocallyIfNew).WillByDefault(Return(false));
+
+  credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.RanLocalSaveFallback", false, 1);
+}
+
 }  // namespace autofill
