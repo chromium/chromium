@@ -45,9 +45,7 @@
     visibility: visible;
   }
 
-  .thumbnail-item-container paper-spinner-lite {
-    width: 60px;
-    height: 60px;
+  sea-pen-image-loading {
     left: 50%;
     position: absolute;
     top: 50%;
@@ -164,7 +162,7 @@
               is="dom-if"
               if="[[isThumbnailLoading_(item, pendingSelected_)]]"
               restamp>
-            <paper-spinner-lite active></paper-spinner-lite>
+            <sea-pen-image-loading></sea-pen-image-loading>
           </template>
           <div class="feedback-icon-container">
             <sea-pen-feedback

@@ -5,10 +5,10 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImagesElement, setSelectedRecentSeaPenImageAction, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImageLoadingElement, SeaPenImagesElement, setSelectedRecentSeaPenImageAction, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
-import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -30,10 +30,10 @@ suite('SeaPenImagesElementTest', function() {
                               `wallpaper-grid-item:not([hidden])`));
   }
 
-  function getThumbnailLoadingSpinners(): PaperSpinnerLiteElement[] {
+  function getThumbnailLoadingElements(): SeaPenImageLoadingElement[] {
     return Array.from(seaPenImagesElement!.shadowRoot!.querySelectorAll<
-                      PaperSpinnerLiteElement>(
-        `div:not([hidden]).thumbnail-item-container paper-spinner-lite`));
+                      SeaPenImageLoadingElement>(
+        `div:not([hidden]).thumbnail-item-container sea-pen-image-loading`));
   }
 
   setup(() => {
@@ -121,8 +121,11 @@ suite('SeaPenImagesElementTest', function() {
         thumbnails.map(thumbnail => thumbnail.selected),
         'index 1 thumbnail shows as selected');
 
-    let spinners = getThumbnailLoadingSpinners();
-    assertEquals(0, spinners!.length, 'should be 0 loading spinners');
+    let thumbnailSelectedLoadingElement: SeaPenImageLoadingElement[] =
+        getThumbnailLoadingElements();
+    assertEquals(
+        0, thumbnailSelectedLoadingElement!.length,
+        'should be 0 loading elements');
 
     // Simulate the request starting with a user click on a thumbnail.
     const selectSeaPenThumbnailResolver =
@@ -143,17 +146,32 @@ suite('SeaPenImagesElementTest', function() {
         thumbnails.map(thumbnail => thumbnail.selected),
         'index 0 thumbnail shows as selected after click');
 
-    spinners = getThumbnailLoadingSpinners();
-    assertEquals(1, spinners!.length, 'should be 1 spinner');
+    thumbnailSelectedLoadingElement = getThumbnailLoadingElements();
+    assertEquals(
+        1, thumbnailSelectedLoadingElement!.length,
+        'should be 1 loading element');
+    const spinner: PaperSpinnerLiteElement|null =
+        thumbnailSelectedLoadingElement[0]!.shadowRoot!.querySelector(
+            'paper-spinner-lite:not([hidden])');
+    assertTrue(!!spinner, 'there should be a spinner in the loading element');
+    const loadingText =
+        thumbnailSelectedLoadingElement[0]!.shadowRoot!.querySelector(
+            'p:not([hidden])');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenCreatingHighResImage'),
+        loadingText!.textContent, 'the loading text should be correct');
     assertEquals(
         (personalizationStore.data.wallpaper.seaPen.pendingSelected as
          SeaPenThumbnail)
             .image,
-        spinners[0]!.parentElement?.querySelector('wallpaper-grid-item')?.src,
+        thumbnailSelectedLoadingElement[0]!.parentElement
+            ?.querySelector('wallpaper-grid-item')
+            ?.src,
         'sibling wallpaper-grid-item has expected src');
     assertEquals(
         true,
-        spinners[0]!.parentElement?.querySelector('wallpaper-grid-item')
+        thumbnailSelectedLoadingElement[0]!.parentElement
+            ?.querySelector('wallpaper-grid-item')
             ?.selected,
         'sibling wallpaper-grid-item is selected');
 
@@ -176,8 +194,9 @@ suite('SeaPenImagesElementTest', function() {
         [true, false, false, false],
         thumbnails.map(thumbnail => thumbnail.selected),
         'index 0 thumbnail still selected after resolve');
-    spinners = getThumbnailLoadingSpinners();
-    assertEquals(0, spinners!.length, 'no more spinners');
+    thumbnailSelectedLoadingElement = getThumbnailLoadingElements();
+    assertEquals(
+        0, thumbnailSelectedLoadingElement!.length, 'no more loading element');
   });
 
   test('display feedback buttons', async () => {

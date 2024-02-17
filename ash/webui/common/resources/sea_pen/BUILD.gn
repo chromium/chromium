@@ -31,6 +31,7 @@ build_webui("build_ts") {
 
   web_component_files = [
     "sea_pen_feedback_element.ts",
+    "sea_pen_image_loading_element.ts",
     "sea_pen_images_element.ts",
     "sea_pen_input_query_element.ts",
     "sea_pen_recent_wallpapers_element.ts",
