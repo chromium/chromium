@@ -7,8 +7,23 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace manual_fill {
+enum class ManualFillDataType;
+}
+
 // The coordinator responsible for presenting the expanded manual fill view.
 @interface ExpandedManualFillCoordinator : ChromeCoordinator
+
+// Designated initializer. `dataType` represents the type of manual filling
+// options to show in the expanded manual fill view.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               forDataType:
+                                   (manual_fill::ManualFillDataType)dataType
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Returns the coordinator's view controller.
 - (UIViewController*)viewController;

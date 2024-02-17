@@ -24,6 +24,13 @@ extern NSString* const kExpandedManualFillHeaderTopViewID;
 // view.
 extern NSString* const kExpandedManualFillChromeLogoID;
 
+// Possible data types when manually filling a form.
+enum class ManualFillDataType {
+  kPassword = 0,
+  kPaymentMethod,
+  kAddress,
+};
+
 }  // namespace manual_fill
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CONSTANTS_H_

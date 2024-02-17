@@ -19,12 +19,16 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using autofill::FillingProduct;
+using manual_fill::ManualFillDataType;
 
 @interface FormInputAccessoryViewController () <
     FormSuggestionViewDelegate,
@@ -185,9 +189,12 @@
 - (void)manualFillButtonPressed:(UIButton*)button {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
+  ManualFillDataType dataType =
+      [self manualFillDataTypeFromFillingProduct:_mainFillingProduct];
   [_formInputAccessoryViewControllerDelegate
       formInputAccessoryViewController:self
-              didPressManualFillButton:button];
+              didPressManualFillButton:button
+                           forDataType:dataType];
   [self showManualFillView:YES];
 }
 
@@ -354,31 +361,33 @@
       self.lastAnnouncedFieldId != _currentFieldId) {
     std::u16string mainFillingProductString;
     switch (_mainFillingProduct) {
-      case autofill::FillingProduct::kAddress:
-      case autofill::FillingProduct::kPlusAddresses:
+      case FillingProduct::kAddress:
+      case FillingProduct::kPlusAddresses:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::FillingProduct::kPassword:
+      case FillingProduct::kPassword:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::FillingProduct::kCreditCard:
-      case autofill::FillingProduct::kIban:
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kIban:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::FillingProduct::kAutocomplete:
+      case FillingProduct::kAutocomplete:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
-      case autofill::FillingProduct::kMerchantPromoCode:
-      case autofill::FillingProduct::kCompose:
-      case autofill::FillingProduct::kNone:
+      case FillingProduct::kMerchantPromoCode:
+      case FillingProduct::kCompose:
+        // These cases are currently not available on iOS.
+        NOTREACHED_NORETURN();
+      case FillingProduct::kNone:
         return;
     }
 
@@ -423,6 +432,29 @@
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     [self.manualFillAccessoryViewController setViewHidden:!visible];
     self.formInputAccessoryView.manualFillButton.hidden = visible;
+  }
+}
+
+// Returns a ManualFillDataType based on the provided FillingProduct.
+- (ManualFillDataType)manualFillDataTypeFromFillingProduct:
+    (FillingProduct)fillingProduct {
+  switch (fillingProduct) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+      return ManualFillDataType::kAddress;
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+      return ManualFillDataType::kPaymentMethod;
+    case FillingProduct::kPassword:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kNone:
+      // `kPassword` acts as the default value when the FillingProduct
+      // doesn't point towards a specific data type.
+      return ManualFillDataType::kPassword;
+    case FillingProduct::kCompose:
+    case FillingProduct::kMerchantPromoCode:
+      // These cases are currently not available on iOS.
+      NOTREACHED_NORETURN();
   }
 }
 

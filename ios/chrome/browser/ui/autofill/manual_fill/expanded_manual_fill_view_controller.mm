@@ -13,6 +13,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using manual_fill::ManualFillDataType;
+
 namespace {
 
 // Size of the Chrome logo.
@@ -44,7 +46,27 @@ constexpr CGFloat kSegmentedControlLeadingSpacingWideLayout = 18;
 // the wide layout only.
 constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
 
+// Helper method to get the right segment index depending on the `data_type`.
+int GetSegmentIndexForDataType(ManualFillDataType data_type) {
+  switch (data_type) {
+    case ManualFillDataType::kPassword:
+      return 0;
+    case ManualFillDataType::kPaymentMethod:
+      return 1;
+    case ManualFillDataType::kAddress:
+      return 2;
+  }
+}
+
 }  // namespace
+
+@interface ExpandedManualFillViewController ()
+
+// Control allowing switching between the different data types. Not an ivar so
+// that it can be used in tests.
+@property(nonatomic, strong) UISegmentedControl* segmentedControl;
+
+@end
 
 @implementation ExpandedManualFillViewController {
   // Header view presented at the top of this view controller's view. Contains
@@ -69,8 +91,17 @@ constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
   // Button to close the view.
   ExtendedTouchTargetButton* _closeButton;
 
-  // Control allowing switching between the different data types.
-  UISegmentedControl* _segmentedControl;
+  // Initial data type to present in the view. Reflects the type of the form the
+  // user wants to fill.
+  ManualFillDataType _initialDataType;
+}
+
+- (instancetype)initForDataType:(ManualFillDataType)dataType {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _initialDataType = dataType;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -86,7 +117,8 @@ constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
   _headerTopView = [self createHeaderTopView];
   _chromeLogo = [self createChromeLogo];
   _closeButton = [self createCloseButton];
-  _segmentedControl = [self createSegmentedControl];
+  _segmentedControl =
+      [self createSegmentedControlAndSelectDataType:_initialDataType];
   _headerViewHeightConstraint = [_headerView.heightAnchor
       constraintEqualToConstant:kHeaderViewHeightWideLayout];
 
@@ -204,8 +236,10 @@ constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
   return closeButton;
 }
 
-// Creates and configures the segmented control.
-- (UISegmentedControl*)createSegmentedControl {
+// Creates and configures the segmented control. `dataType` indicates which
+// segment to select.
+- (UISegmentedControl*)createSegmentedControlAndSelectDataType:
+    (ManualFillDataType)dataType {
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kDataTypeIconSize
                           weight:UIImageSymbolWeightRegular
@@ -229,8 +263,7 @@ constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
   UISegmentedControl* segmentedControl = [[UISegmentedControl alloc]
       initWithItems:@[ passwordIcon, cardIcon, addressIcon ]];
   segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
-  //  TODO(b/40942168): Pre-select relevant data type with
-  //  `segmentedControl.selectedSegmentIndex =`.
+  segmentedControl.selectedSegmentIndex = GetSegmentIndexForDataType(dataType);
   [segmentedControl addTarget:self
                        action:@selector(onSegmentSelected:)
              forControlEvents:UIControlEventValueChanged];

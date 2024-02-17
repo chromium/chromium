@@ -9,6 +9,10 @@
 
 @class FormInputAccessoryViewController;
 
+namespace manual_fill {
+enum class ManualFillDataType;
+}
+
 // Protocol to handle user interactions in a FormInputAccessoryViewController.
 @protocol FormInputAccessoryViewControllerDelegate
 
@@ -35,7 +39,9 @@
 // Invoked after the user taps the `manual fill` button.
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                didPressManualFillButton:(UIButton*)manualFillButton;
+                didPressManualFillButton:(UIButton*)manualFillButton
+                             forDataType:
+                                 (manual_fill::ManualFillDataType)dataType;
 
 // Invoked after the user taps the form input accessory view.
 - (void)formInputAccessoryViewController:

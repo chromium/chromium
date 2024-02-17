@@ -322,11 +322,12 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
-- (void)startManualFill {
+- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType {
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
-                             browser:self.browser];
+                             browser:self.browser
+                         forDataType:dataType];
   [expandedManualFillCoordinator start];
 
   self.formInputViewController = expandedManualFillCoordinator.viewController;
@@ -403,11 +404,13 @@ const CGFloat kIPHVerticalOffset = -5;
 
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                didPressManualFillButton:(UIButton*)manualFillButton {
+                didPressManualFillButton:(UIButton*)manualFillButton
+                             forDataType:
+                                 (manual_fill::ManualFillDataType)dataType {
   CHECK(IsKeyboardAccessoryUpgradeEnabled());
 
   [self stopChildren];
-  [self startManualFill];
+  [self startManualFillForDataType:dataType];
   [self updateKeyboardAccessoryForManualFilling];
 }
 
