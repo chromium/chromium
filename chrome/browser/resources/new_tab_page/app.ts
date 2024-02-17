@@ -65,6 +65,7 @@ export enum NtpElement {
   CUSTOMIZE = 8,  // Obsolete
   CUSTOMIZE_BUTTON = 9,
   CUSTOMIZE_DIALOG = 10,
+  WALLPAPER_SEARCH_BUTTON = 11,
 }
 
 /**
@@ -76,6 +77,7 @@ export enum NtpCustomizeChromeEntryPoint {
   CUSTOMIZE_BUTTON = 0,
   MODULE = 1,
   URL = 2,
+  WALLPAPER_SEARCH_BUTTON = 3,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -150,6 +152,11 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         value: () =>
             WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
+      },
+
+      showWallpaperSearch_: {
+        type: Boolean,
+        value: false,
       },
 
       showCustomizeDialog_: {
@@ -335,6 +342,7 @@ export class AppElement extends AppElementBase {
   private oneGoogleBarLoaded_: boolean;
   private theme_: Theme;
   private showCustomize_: boolean;
+  private showWallpaperSearch_: boolean;
   private showCustomizeDialog_: boolean;
   private selectedCustomizeDialogPage_: string|null;
   private showVoiceSearchOverlay_: boolean;
@@ -426,6 +434,9 @@ export class AppElement extends AppElementBase {
         this.callbackRouter_.setCustomizeChromeSidePanelVisibility.addListener(
             (visible: boolean) => {
               this.showCustomize_ = visible;
+              if (!visible) {
+                this.showWallpaperSearch_ = false;
+              }
             });
     this.showWebstoreToastListenerId_ =
         this.callbackRouter_.showWebstoreToast.addListener(() => {
@@ -581,6 +592,26 @@ export class AppElement extends AppElementBase {
     } else {
       this.showCustomize_ = true;
       recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
+    }
+  }
+
+  private onWallpaperSearchClick_() {
+    // Close the side panel if Wallpaper Search is open.
+    if (this.showCustomize_ && this.showWallpaperSearch_) {
+      this.selectedCustomizeDialogPage_ = null;
+      this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
+      return;
+    }
+
+    // Open Wallpaper Search if the side panel is closed. Otherwise, navigate
+    // the side panel to Wallpaper Search.
+    this.selectedCustomizeDialogPage_ = CustomizeDialogPage.WALLPAPER_SEARCH;
+    this.showWallpaperSearch_ = true;
+    this.setCustomizeChromeSidePanelVisible_(this.showWallpaperSearch_);
+    if (!this.showCustomize_) {
+      this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
+      recordCustomizeChromeOpen(
+          NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON);
     }
   }
 
@@ -812,6 +843,9 @@ export class AppElement extends AppElementBase {
       case CustomizeDialogPage.MODULES:
         section = CustomizeChromeSection.kModules;
         break;
+      case CustomizeDialogPage.WALLPAPER_SEARCH:
+        section = CustomizeChromeSection.kWallpaperSearch;
+        break;
     }
     this.pageHandler_.setCustomizeChromeSidePanelVisible(visible, section);
   }
@@ -887,6 +921,9 @@ export class AppElement extends AppElementBase {
           return;
         case $$(this, 'ntp-customize-dialog'):
           recordClick(NtpElement.CUSTOMIZE_DIALOG);
+          return;
+        case $$(this, '#wallpaperSearchButton'):
+          recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
           return;
       }
     }

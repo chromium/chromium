@@ -280,6 +280,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Customize Chrome button clicked."/>
   <int value="1" label="Customize module clicked."/>
   <int value="2" label="NTP URL has customize chrome parameters."/>
+  <int value="3" label="Wallpaper search button clicked."/>
 </enum>
 
 <enum name="NTPCustomizeChromeSidePanelAction">
@@ -342,6 +343,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Obsolete: Customize Dialog / Button"/>
   <int value="9" label="Customize Chrome Button"/>
   <int value="10" label="Customize Chrome Dialog"/>
+  <int value="11" label="Wallpaper Search Button"/>
 </enum>
 
 <enum name="NTPHistoryClustersDismissReason">

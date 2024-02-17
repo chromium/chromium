@@ -90,6 +90,7 @@ enum CustomizeChromeSection {
   kAppearance,
   kShortcuts,
   kModules,
+  kWallpaperSearch,
 };
 
 enum ChromeWebStoreCollection {

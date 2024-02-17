@@ -119,6 +119,10 @@ export class AppElement extends AppElementBase {
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.scrollToSection.addListener(
                 (section: CustomizeChromeSection) => {
+                  if (section === CustomizeChromeSection.kWallpaperSearch) {
+                    this.onWallpaperSearchSelect_();
+                    return;
+                  }
                   const selector = SECTION_TO_SELECTOR[section];
                   const element = this.shadowRoot!.querySelector(selector);
                   if (!element) {

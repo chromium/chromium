@@ -46,7 +46,8 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
                               optimization_guide::features::
                                   kOptimizationGuideModelExecution,
                               features::kChromeRefresh2023,
-                              features::kChromeWebuiRefresh2023},
+                              features::kChromeWebuiRefresh2023,
+                              ntp_features::kNtpWallpaperSearchButton},
         /*disabled_features=*/{});
     InteractiveBrowserTest::SetUp();
   }
@@ -142,16 +143,12 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
 
   InteractiveTestApi::MultiStep OpenWallpaperSearchAt(
       const ui::ElementIdentifier& contents_id) {
-    const DeepQuery kEditThemeButton = {
-        "customize-chrome-app", "#appearanceElement", "#editThemeButton"};
-    const DeepQuery kWallpaperSearchTile = {
-        "customize-chrome-app", "#categoriesPage", "#wallpaperSearchTile"};
-    return Steps(
-        // 1. Open the theme categories page.
-        ScrollIntoView(contents_id, kEditThemeButton),
-        ClickElement(contents_id, kEditThemeButton),
-        // 2. Open Wallpaper Search.
-        ClickElement(contents_id, kWallpaperSearchTile));
+    const DeepQuery kWallpaperSearchButton = {"ntp-app",
+                                              "#wallpaperSearchButton"};
+    return Steps(ClickElement(kNewTabPageElementId, kWallpaperSearchButton),
+                 WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
+                 InstrumentNonTabWebView(
+                     contents_id, kCustomizeChromeSidePanelWebViewElementId));
   }
 
   InteractiveTestApi::StepBuilder MockWallpaperSearchSuccess() {
@@ -212,6 +209,30 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
+                       CustomizeButtonsWorkTogether) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedCustomizeChromeElementId);
+
+  const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+                                            "#wallpaperSearchButton"};
+
+  RunTestSequence(
+      // 1. Open Wallpaper Search with the Wallpaper Search button.
+      Steps(OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
+      // 2. Close side panel with the Customize Chrome button.
+      Steps(ClickElement(kNewTabPageElementId, kCustomizeChromeButton),
+            WaitForHide(kCustomizeChromeSidePanelWebViewElementId)),
+      // 3. Reopen the side panel with the Customize Chrome button.
+      OpenCustomizeChromeAt(kReopenedCustomizeChromeElementId),
+      // 4. Open the wallpaper search page by clicking the Wallpaper Search
+      // button.
+      ClickElement(kNewTabPageElementId, kWallpaperSearchButton),
+      // 5. Close side panel with the Wallpaper Search button.
+      Steps(ClickElement(kNewTabPageElementId, kWallpaperSearchButton),
+            WaitForHide(kCustomizeChromeSidePanelWebViewElementId)));
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
                        SearchesAndSetsNewAndHistoricalResults) {
   // Intercept Wallpaper Search descriptor fetches, and respond with data.
   std::unique_ptr<content::URLLoaderInterceptor> descriptors_fetch_interceptor =
@@ -232,6 +253,10 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
                                   "#wallpaperSearchPage", "#historyCard"};
   const DeepQuery kPastResult = {"customize-chrome-app", "#wallpaperSearchPage",
                                  "#historyCard", ".result"};
+  const DeepQuery kEditThemeButton = {"customize-chrome-app",
+                                      "#appearanceElement", "#editThemeButton"};
+  const DeepQuery kWallpaperSearchTile = {
+      "customize-chrome-app", "#categoriesPage", "#wallpaperSearchTile"};
 
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kNtpHasBackgroundEvent);
   StateChange ntp_has_background;
@@ -250,9 +275,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       "(el) => !el.hasAttribute('show-background-image')";
 
   RunTestSequence(
-      // 1. Open Wallpaper Search.
-      Steps(OpenNewTabPage(), OpenCustomizeChromeAt(kCustomizeChromeElementId),
-            OpenWallpaperSearchAt(kCustomizeChromeElementId)),
+      // 1. Open Wallpaper Search via NTP wallpaper search button.
+      Steps(OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
       // 2. Click the submit button.
       //    A random search should trigger, since no descriptors were selected.
       Steps(ClickElement(kCustomizeChromeElementId, kSubmitButton),
@@ -275,8 +299,11 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
             ClickElement(kReopenedCustomizeChromeElementId,
                          kSetClassicChromeButton),
             WaitForStateChange(kNewTabPageElementId, ntp_background_reset)),
-      // 9. Open wallpaper search.
-      OpenWallpaperSearchAt(kReopenedCustomizeChromeElementId),
+      // 9. Open wallpaper search via themes page.
+      Steps(ScrollIntoView(kReopenedCustomizeChromeElementId, kEditThemeButton),
+            ClickElement(kReopenedCustomizeChromeElementId, kEditThemeButton),
+            ClickElement(kReopenedCustomizeChromeElementId,
+                         kWallpaperSearchTile)),
       // 10. Click the past result.
       Steps(CheckJsResultAt(
                 kReopenedCustomizeChromeElementId, kHistoryCard,
@@ -308,8 +335,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
                                  "#feedbackButtons", "#thumbsDown"};
   RunTestSequence(
       // 1. Open Wallpaper Search.
-      Steps(OpenNewTabPage(), OpenCustomizeChromeAt(kCustomizeChromeElementId),
-            OpenWallpaperSearchAt(kCustomizeChromeElementId)),
+      Steps(OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
       // 2. Show feedback buttons.
       ExecuteJsAt(kCustomizeChromeElementId, kFeedbackButtons,
                   "(el) => el.hidden = false"),

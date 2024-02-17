@@ -119,6 +119,10 @@ void CustomizeChromePageHandler::ScrollToSection(
     case CustomizeChromeSection::kModules:
       mojo_section = side_panel::mojom::CustomizeChromeSection::kModules;
       break;
+    case CustomizeChromeSection::kWallpaperSearch:
+      mojo_section =
+          side_panel::mojom::CustomizeChromeSection::kWallpaperSearch;
+      break;
   }
   page_->ScrollToSection(mojo_section);
 }
