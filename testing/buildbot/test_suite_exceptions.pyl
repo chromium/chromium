@@ -5104,12 +5104,6 @@
       'Dawn Android arm Release (Pixel 4)': {
         'ci_only': True,
       },
-      'Dawn Android arm64 DEPS Release (Pixel 6)': {
-        'ci_only': True,
-      },
-      'Dawn Android arm64 Release (Pixel 6)': {
-        'ci_only': True,
-      },
       'Dawn Win10 x64 ASAN Release (Intel)': {
         # ASAN builds taking a bit longer so needs extra shards to not timeout.
         'swarming': {
@@ -5171,12 +5165,6 @@
         'ci_only': True,
       },
       'Dawn Android arm Release (Pixel 4)': {
-        'ci_only': True,
-      },
-      'Dawn Android arm64 DEPS Release (Pixel 6)': {
-        'ci_only': True,
-      },
-      'Dawn Android arm64 Release (Pixel 6)': {
         'ci_only': True,
       },
       # ci_only for bots where capacity is constrained.

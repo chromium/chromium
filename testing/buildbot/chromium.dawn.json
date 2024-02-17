@@ -566,7 +566,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -606,7 +605,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -790,7 +788,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -830,7 +827,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=1"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
