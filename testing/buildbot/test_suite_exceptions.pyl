@@ -5065,6 +5065,7 @@
       'Dawn Android arm64 Release (Pixel 6)',
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       'linux-code-coverage',
       'mac-code-coverage',
@@ -5154,6 +5155,7 @@
     'remove_from': [
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       # Don't need validation layers on code coverage bots
       'linux-code-coverage',
@@ -5180,6 +5182,7 @@
     # Remove from bots where capacity is constrained.
     'remove_from': [
       'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Experimental Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       'Dawn Win10 x86 DEPS Release (Intel)',
       'Dawn Win10 x86 Release (Intel)',
