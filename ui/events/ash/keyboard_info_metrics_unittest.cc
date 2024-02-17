@@ -148,7 +148,8 @@ class NonInternalTopRowLayoutTest
     : public KeyboardInfoMetricsTest,
       public testing::WithParamInterface<DeviceType> {};
 
-// Test that non kDeviceInternalKeyboards do not emit the top row layout metric.
+// Test that non-kDeviceInternalKeyboards do not emit metrics related to the
+// internal keyboard top-row layout.
 INSTANTIATE_TEST_SUITE_P(
     All,
     NonInternalTopRowLayoutTest,
@@ -170,13 +171,99 @@ TEST_P(NonInternalTopRowLayoutTest,
 
   KeyboardInfo external_keyboard_info;
   external_keyboard_info.top_row_layout =
-      KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
+      KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   external_keyboard_info.device_type = device_type;
   ui::RecordKeyboardInfoMetrics(external_keyboard_info,
                                 /*has_assistant_key=*/false);
 
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType", 0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
+      0);
+}
+
+class NonCustomLayoutTopRowKeysTest
+    : public KeyboardInfoMetricsTest,
+      public testing::WithParamInterface<KeyboardTopRowLayout> {};
+
+// Test that kDeviceInternalKeyboards do not emit metrics related to the top-row
+// keys if the keyboard layout is not Custom.
+INSTANTIATE_TEST_SUITE_P(All,
+                         NonCustomLayoutTopRowKeysTest,
+                         testing::ValuesIn(std::vector<KeyboardTopRowLayout>{
+                             KeyboardTopRowLayout::kKbdTopRowLayout1,
+                             KeyboardTopRowLayout::kKbdTopRowLayout2,
+                             KeyboardTopRowLayout::kKbdTopRowLayoutWilco,
+                             KeyboardTopRowLayout::kKbdTopRowLayoutDrallion,
+                         }));
+
+TEST_P(NonCustomLayoutTopRowKeysTest,
+       NonCustomLayoutDoesNotEmitTopRowKeysMetrics) {
+  KeyboardTopRowLayout keyboard_top_row_layout = GetParam();
+
+  KeyboardInfo internal_keyboard_info;
+  internal_keyboard_info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  internal_keyboard_info.top_row_layout = keyboard_top_row_layout;
+  internal_keyboard_info.top_row_action_keys = {
+      ui::TopRowActionKey::kBack,
+      ui::TopRowActionKey::kForward,
+      ui::TopRowActionKey::kRefresh,
+      ui::TopRowActionKey::kFullscreen,
+      ui::TopRowActionKey::kAllApplications,
+      ui::TopRowActionKey::kScreenBrightnessDown,
+      ui::TopRowActionKey::kScreenBrightnessUp,
+      ui::TopRowActionKey::kVolumeMute,
+      ui::TopRowActionKey::kVolumeDown,
+      ui::TopRowActionKey::kVolumeUp,
+  };
+  ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
+                                /*has_assistant_key=*/false);
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
+      0);
+}
+
+TEST_F(KeyboardInfoMetricsTest, CustomLayout_NumberOfTopRowKeys) {
+  KeyboardInfo internal_keyboard_info;
+  internal_keyboard_info.top_row_layout =
+      KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
+  internal_keyboard_info.top_row_action_keys = {
+      ui::TopRowActionKey::kBack,
+      ui::TopRowActionKey::kForward,
+      ui::TopRowActionKey::kRefresh,
+      ui::TopRowActionKey::kFullscreen,
+      ui::TopRowActionKey::kAllApplications,
+      ui::TopRowActionKey::kScreenBrightnessDown,
+      ui::TopRowActionKey::kScreenBrightnessUp,
+      ui::TopRowActionKey::kVolumeMute,
+      ui::TopRowActionKey::kVolumeDown,
+      ui::TopRowActionKey::kVolumeUp,
+  };
+  ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
+                                /*has_assistant_key=*/false);
+
+  histogram_tester_->ExpectUniqueSample(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
+      10, 1);
+}
+
+TEST_F(KeyboardInfoMetricsTest, CustomLayout_NoKeys) {
+  KeyboardInfo internal_keyboard_info;
+  internal_keyboard_info.top_row_layout =
+      KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  internal_keyboard_info.device_type = DeviceType::kDeviceInternalKeyboard;
+  // This shouldn't happen, but the metric should still technically emit.
+  internal_keyboard_info.top_row_action_keys = {};
+  ui::RecordKeyboardInfoMetrics(internal_keyboard_info,
+                                /*has_assistant_key=*/false);
+
+  histogram_tester_->ExpectUniqueSample(
+      "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys",
+      0, 1);
 }
 
 }  // namespace ash

@@ -48,6 +48,14 @@ void RecordKeyboardInfoMetrics(
       "ChromeOS.Inputs.InternalKeyboard.TopRowLayoutType",
       ConvertTopRowLayoutToMetricEnum(keyboard_info.top_row_layout,
                                       has_assistant_key));
+
+  if (keyboard_info.top_row_layout ==
+      KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
+    base::UmaHistogramCounts100(
+        "ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout."
+        "NumberOfTopRowKeys",
+        keyboard_info.top_row_action_keys.size());
+  }
 }
 
 }  // namespace ui
