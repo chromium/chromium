@@ -24,7 +24,6 @@ class FlexLayoutView;
 
 namespace ash {
 
-class NotificationActionsView;
 class TimestampView;
 
 class ASH_EXPORT ConversationNotificationView
@@ -77,7 +76,6 @@ class ASH_EXPORT ConversationNotificationView
   // Whether this notification is expanded or not.
   bool expanded_ = true;
 
-  raw_ptr<NotificationActionsView> actions_view_ = nullptr;
   raw_ptr<views::View> conversations_container_ = nullptr;
   raw_ptr<views::View> collapsed_preview_container_ = nullptr;
   raw_ptr<message_center::NotificationControlButtonsView>

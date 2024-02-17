@@ -14,7 +14,6 @@
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/conversation_item_view.h"
-#include "ash/system/notification_center/views/notification_actions_view.h"
 #include "ash/system/notification_center/views/timestamp_view.h"
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
@@ -45,7 +44,7 @@ constexpr auto kExpandButtonContainerInteriorMargin =
     gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr auto kTextContainerInteriorMargin = gfx::Insets::TLBR(12, 12, 0, 0);
 constexpr auto kTitleRowDefaultMargin = gfx::Insets::TLBR(0, 0, 0, 6);
-constexpr auto kActionsViewMargin = gfx::Insets::TLBR(0, 10, 12, 0);
+
 }  // namespace
 
 namespace ash {
@@ -64,8 +63,7 @@ ConversationNotificationView::ConversationNotificationView(
 
   AddChildView(CreateMainContainer(notification));
   conversations_container_ = AddChildView(std::move(conversations_container));
-  actions_view_ = AddChildView(std::make_unique<NotificationActionsView>());
-  actions_view_->SetProperty(views::kMarginsKey, kActionsViewMargin);
+
   UpdateWithNotification(notification);
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
@@ -96,8 +94,6 @@ void ConversationNotificationView::OnThemeChanged() {
 void ConversationNotificationView::UpdateWithNotification(
     const Notification& notification) {
   UpdateControlButtonsVisibilityWithNotification(notification);
-
-  actions_view_->UpdateWithNotification(notification);
 
   if (notification.items().empty()) {
     return;
@@ -235,18 +231,13 @@ ConversationNotificationView::CreateTextContainer(
   collapsed_preview_container->SetVisible(!expanded_);
 
   auto collapsed_preview_title = std::make_unique<views::Label>();
-  if (!notification.items().empty()) {
-    collapsed_preview_title->SetText(notification.items().rbegin()->title());
-  }
+  collapsed_preview_title->SetText(notification.items().rbegin()->title());
   notification_style_utils::ConfigureLabelStyle(
       collapsed_preview_title.get(), kNotificationTitleLabelSize, true,
       gfx::Font::Weight::MEDIUM);
 
   auto collapsed_preview_message = std::make_unique<views::Label>();
-  if (!notification.items().empty()) {
-    collapsed_preview_message->SetText(
-        notification.items().rbegin()->message());
-  }
+  collapsed_preview_message->SetText(notification.items().rbegin()->message());
 
   collapsed_preview_container->AddChildView(std::move(collapsed_preview_title));
   collapsed_preview_container->AddChildView(
