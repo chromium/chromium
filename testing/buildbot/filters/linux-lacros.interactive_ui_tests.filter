@@ -55,10 +55,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/3
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingTab/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragSingleTabGroupIntoGroup/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragSingleTabIntoGroup/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragLeft/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragRight/*
 # The following tests are flaky.
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
