@@ -25046,9 +25046,50 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MultitaskMenu_Exit_Fullscreen">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when the user pressed the exit fullscreen option in the multitask
+    menu.
+  </description>
+</action>
+
+<action name="MultitaskMenu_Float">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when the user pressed the float option in the multitask menu.
+  </description>
+</action>
+
+<action name="MultitaskMenu_Fullscreen">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when the user pressed the fullscreen option in the multitask menu.
+  </description>
+</action>
+
+<action name="MultitaskMenu_HalfSplit_Primary">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when a window is half split to primary direction.
+  </description>
+</action>
+
+<action name="MultitaskMenu_HalfSplit_Secondary">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when a window is half split to secondary direction.
+  </description>
+</action>
+
 <action name="MultitaskMenu_PartialSplit_OneThird">
   <owner>sophiewen@chromium.org</owner>
-  <owner>shidi@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
   <description>
     Recorded when a window is partial split to one third.
   </description>
@@ -25056,9 +25097,17 @@ should be able to be added at any place in this file.
 
 <action name="MultitaskMenu_PartialSplit_TwoThirds">
   <owner>sophiewen@chromium.org</owner>
-  <owner>shidi@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
   <description>
     Recorded when a window is partial split to two thirds.
+  </description>
+</action>
+
+<action name="MultitaskMenu_UnFloat">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm-corexp@chromium.org</owner>
+  <description>
+    Recorded when the user pressed the unfloat option in the multitask menu.
   </description>
 </action>
 
