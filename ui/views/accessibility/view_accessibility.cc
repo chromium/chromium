@@ -413,6 +413,22 @@ void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
   data_.relative_bounds.bounds = bounds;
 }
 
+void ViewAccessibility::SetPosInSet(int pos_in_set) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
+}
+
+void ViewAccessibility::SetSetSize(int set_size) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
+}
+
+void ViewAccessibility::ClearPosInSet() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
+}
+
+void ViewAccessibility::ClearSetSize() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
+}
+
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   if (is_enabled == GetIsEnabled()) {
     return;

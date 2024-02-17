@@ -116,6 +116,12 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetBounds(const gfx::RectF& bounds);
 
+  // Note that `pos_in_set` starts from 1 not 0.
+  void SetPosInSet(int pos_in_set);
+  void SetSetSize(int set_size);
+  void ClearPosInSet();
+  void ClearSetSize();
+
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
   // it is not advisable to mark a View as enabled in the accessibility tree,
@@ -239,7 +245,13 @@ class VIEWS_EXPORT ViewAccessibility {
   // |set_size| respectively.
   //
   // Note that |pos_in_set| is one-based, i.e. it starts from 1 not 0.
+  //
+  // Deprecated. Use ViewAccessibility::SetPosInSet and
+  // ViewAccessibility::SetSetSize instead. See https://crbug.com/324485311.
   void OverridePosInSet(int pos_in_set, int set_size);
+
+  // Deprecated. Use ViewAccessibility::ClearPosInSet and
+  // ViewAccessibility::ClearSetSize instead. See https://crbug.com/324485311.
   void ClearPosInSetOverride();
 
   // Overrides the `ax::mojom::BoolAttribute::kSelected` attribute.
