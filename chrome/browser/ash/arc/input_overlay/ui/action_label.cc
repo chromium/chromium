@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 
-#include <string.h>
 #include <set>
 
 #include "ash/style/style_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
