@@ -124,6 +124,13 @@ class VIEWS_EXPORT ViewAccessibility {
   void SetIsEnabled(bool is_enabled);
   bool GetIsEnabled() const;
 
+  void SetDescription(const std::string& description,
+                      const ax::mojom::DescriptionFrom description_from =
+                          ax::mojom::DescriptionFrom::kAriaDescription);
+  void SetDescription(const std::u16string& description,
+                      const ax::mojom::DescriptionFrom description_from =
+                          ax::mojom::DescriptionFrom::kAriaDescription);
+
   void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.
@@ -168,9 +175,14 @@ class VIEWS_EXPORT ViewAccessibility {
   // description should instead be kAttributeExplicitlyEmpty. If a View never
   // had an accessible description, there is no need to override it with an
   // empty string.
+  //
+  // Deprecated. Use ViewAccessibility::SetDescription instead.
+  // See https://crbug.com/324485311.
   void OverrideDescription(const std::string& description,
                            const ax::mojom::DescriptionFrom description_from =
                                ax::mojom::DescriptionFrom::kAriaDescription);
+  // Deprecated. Use ViewAccessibility::SetDescription instead.
+  // See https://crbug.com/324485311.
   void OverrideDescription(const std::u16string& description,
                            const ax::mojom::DescriptionFrom description_from =
                                ax::mojom::DescriptionFrom::kAriaDescription);
