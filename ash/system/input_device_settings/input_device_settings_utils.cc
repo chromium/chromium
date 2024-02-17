@@ -24,7 +24,11 @@
 #include "components/user_manager/known_user.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
+#include "ui/events/types/event_type.h"
 
 namespace ash {
 
@@ -51,11 +55,15 @@ bool ExistingSettingsHasValue(std::string_view setting_key,
 }
 
 bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
+  return GetKeyInputTypeFromKeyEvent(ui::KeyEvent(
+             ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, ui::EF_NONE)) ==
+         AcceleratorKeyInputType::kAlpha;
 }
 
 bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+  return GetKeyInputTypeFromKeyEvent(ui::KeyEvent(
+             ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, ui::EF_NONE)) ==
+         AcceleratorKeyInputType::kDigit;
 }
 
 // Verify if the customization restriction blocks the button remapping.
@@ -64,9 +72,9 @@ bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
 // 2. Customization restriction is kDisableKeyEventRewrites and button is not
 // a keyboard key.
 // 3. Customization restriction is kAllowAlphabetKeyEventRewrites and button
-// is a mouse button or alphabet keyboard key.
+// is a mouse button or alphabet/punctuation keyboard key.
 // 4. Customization restriction is kAllowAlphabetOrNumberKeyEventRewrites and
-// button is a mouse button or alphabet or number keyboard key.
+// button is a mouse button or alphabet, punctuation, or number keyboard key.
 // In other cases, block button remapping.
 bool RestrictionBlocksRemapping(
     const mojom::ButtonRemapping& remapping,

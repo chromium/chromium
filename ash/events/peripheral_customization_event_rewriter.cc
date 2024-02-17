@@ -628,14 +628,16 @@ int GetRemappedModifiersFromGraphicsTabletSettings(
   return modifiers;
 }
 
-// Verify if the keyboard code is an alphabet letter.
-bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
+// Verify if the keyboard code is an alpha key or punctuation.
+bool IsAlphaKeyEvent(const ui::KeyEvent& key_event) {
+  return GetKeyInputTypeFromKeyEvent(key_event) ==
+         AcceleratorKeyInputType::kAlpha;
 }
 
 // Verify if the keyboard code is a number.
-bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
-  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+bool IsNumberKeyEvent(const ui::KeyEvent& key_event) {
+  return GetKeyInputTypeFromKeyEvent(key_event) ==
+         AcceleratorKeyInputType::kDigit;
 }
 
 void RecordMouseInvalidKeyPressed(InputDeviceSettingsController* controller,
@@ -840,19 +842,18 @@ bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
   // 1. If restriction is kAllowCustomizations, mice are allowed to observe
   // key events.
   // 2. If restriction is kAllowAlphabetKeyEventRewrites, mice are allowed to
-  // observe only alphabet letters key event.
+  // observe only alphabet or punctuation events.
   // 3. If restriction is kAllowAlphabetOrNumberKeyEventRewrites, mice are
-  // allowed to observe alphabet letters or number key event.
+  // allowed to observe alphabet, punctuation, or number key event.
   // 4. Mice are not allowed to observe key event in other cases.
   switch (customization_restriction) {
     case mojom::CustomizationRestriction::kAllowCustomizations:
       return true;
     case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
-      return IsAlphaKeyboardCode(key_event.key_code());
+      return IsAlphaKeyEvent(key_event);
     case mojom::CustomizationRestriction::
         kAllowAlphabetOrNumberKeyEventRewrites:
-      return IsAlphaKeyboardCode(key_event.key_code()) ||
-             IsNumberKeyboardCode(key_event.key_code());
+      return IsAlphaKeyEvent(key_event) || IsNumberKeyEvent(key_event);
     case mojom::CustomizationRestriction::kAllowTabEventRewrites:
       return key_event.key_code() == ui::VKEY_TAB;
     case mojom::CustomizationRestriction::kDisallowCustomizations:
