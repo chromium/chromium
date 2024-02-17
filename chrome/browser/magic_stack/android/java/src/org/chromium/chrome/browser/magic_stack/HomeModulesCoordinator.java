@@ -344,6 +344,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     public void destroy() {
+        hide();
         if (mUiConfig != null) {
             mUiConfig.removeObserver(mDisplayStyleObserver);
             mUiConfig = null;

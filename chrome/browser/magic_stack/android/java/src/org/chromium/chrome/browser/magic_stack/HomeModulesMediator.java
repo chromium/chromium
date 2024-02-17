@@ -339,6 +339,8 @@ public class HomeModulesMediator {
      * stack.
      */
     void hide() {
+        if (!mIsShown) return;
+
         mIsFetchingModules = false;
         mIsShown = false;
         for (int i = 0; i < mModel.size(); i++) {
