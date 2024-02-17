@@ -318,6 +318,72 @@ The exception is the core of the Transit Layer, for example `PageStation`, which
 is not owned by specific teams, and will be owned by Clank Build/Code Health.
 
 
+## Additional Features
+
+
+### Batching {#batching}
+
+It is recommended to batch PublicTransit tests to reduce runtime and save
+CQ/CI resources.
+
+##### How to batch a Public Transit test
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Add the `BatchedPublicTransitRule<>` specifying the home station. The *home
+   station* is where each test starts and ends.
+3. Get the first station in each test case from a batched entry point, e.g.
+   `ChromeTabbedActivityPublicTransitEntrPoints#startOnBlankPageBatched()`.
+4. Each test should return to the home station. If a test does not end in the
+   home station, it will fail (if it already hasn't) with a descriptive message.
+   The following tests will also fail right at the start.
+
+### Debugging Helpers
+
+##### ViewPrinter
+
+`ViewPrinter` is useful to print a View hierarchy to write ViewElements and
+debug failures. The output with default options looks like this:
+
+```
+@id/control_container | ToolbarControlContainer
+├── @id/toolbar_container | ToolbarViewResourceFrameLayout
+│   ╰── @id/toolbar | ToolbarPhone
+│       ├── @id/home_button | HomeButton
+│       ├── @id/location_bar | LocationBarPhone
+│       │   ├── @id/location_bar_status | StatusView
+│       │   │   ╰── @id/location_bar_status_icon_view | StatusIconView
+│       │   │       ╰── @id/location_bar_status_icon_frame | FrameLayout
+│       │   │           ╰── @id/loc_bar_status_icon | ChromeImageView
+│       │   ╰── "about:blank" | @id/url_bar | UrlBarApi26
+│       ╰── @id/toolbar_buttons | LinearLayout
+│           ├── @id/tab_switcher_button | ToggleTabStackButton
+│           ╰── @id/menu_button_wrapper | MenuButton
+│               ╰── @id/menu_button | ChromeImageButton
+╰── @id/tab_switcher_toolbar | StartSurfaceToolbarView
+    ├── @id/new_tab_view | LinearLayout
+    │   ├── AppCompatImageView
+    │   ╰── "New tab" | MaterialTextView
+    ╰── @id/menu_anchor | FrameLayout
+        ╰── @id/menu_button_wrapper | MenuButton
+            ╰── @id/menu_button | ChromeImageButton
+
+```
+
+##### PublicTransitConfig
+
+`PublicTransitConfig` configures the test to run differently for local
+debugging:
+
+* `setTransitionPauseForDebugging()` causes the test to run more slowly, pausing
+  for some time after each transition and displaying a Toast with which Station
+  is active. 1500ms is a good default.
+* `setOnExceptionCallback()` runs a function when a TravelException is created.
+  Useful to print debug information before the test fails and the app is closed.
+* `setFreezeOnException()` freezes the test when a TravelException is created.
+  useful to see what the screen looks like before the test fails and the app is
+  closed.
+
+
 ## Specific Cases
 
 
