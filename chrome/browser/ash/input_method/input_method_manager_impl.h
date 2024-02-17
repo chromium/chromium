@@ -243,6 +243,9 @@ class InputMethodManagerImpl : public InputMethodManager,
   void CandidateWindowOpened() override;
   void CandidateWindowClosed() override;
 
+  // Notifies all observers that the input method has been changed.
+  void NotifyInputMethodChanged(bool show_message, bool success);
+
   // AssistiveWindowControllerDelegate overrides:
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) const override;

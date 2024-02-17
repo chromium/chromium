@@ -69,7 +69,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
                                  const base::TimeDelta& interval) = 0;
   virtual void GetAutoRepeatRate(base::TimeDelta* delay,
                                  base::TimeDelta* interval) = 0;
-  virtual void SetCurrentLayoutByName(const std::string& layout_name) = 0;
+  // Callback is invoked when the keyboard layout is available and initialized.
+  virtual void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) = 0;
   virtual void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
   virtual std::vector<uint64_t> GetKeyboardKeyBits(int id) = 0;

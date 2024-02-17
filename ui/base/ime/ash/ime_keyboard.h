@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
@@ -42,8 +43,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
   virtual void RemoveObserver(Observer* observer);
 
   // Sets the current keyboard layout to |layout_name|. This function does not
-  // change the current mapping of the modifier keys. Returns true on success.
-  virtual bool SetCurrentKeyboardLayoutByName(const std::string& layout_name);
+  // change the current mapping of the modifier keys. Callback is supplied
+  // boolean with true on success and false on failure. Callback can potentially
+  // be ran immediately with no delay.
+  virtual void SetCurrentKeyboardLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback);
 
   // Gets the current keyboard layout name.
   const std::string& GetCurrentKeyboardLayoutName() const {
@@ -75,6 +80,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
   // interval in ms.  Returns true on success. Do not call the function from
   // non-UI threads.
   virtual bool SetAutoRepeatRate(const AutoRepeatRate& rate) = 0;
+
+ protected:
+  bool SetCurrentKeyboardLayoutByNameImpl(const std::string& layout_name);
 
  private:
   bool caps_lock_is_enabled_ = false;

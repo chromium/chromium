@@ -1113,17 +1113,26 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
   }
 
   // Change the keyboard layout to a preferred layout for the input method.
-  if (!keyboard_->SetCurrentKeyboardLayoutByName(
-          state_->GetCurrentInputMethod().keyboard_layout())) {
+  keyboard_->SetCurrentKeyboardLayoutByName(
+      state_->GetCurrentInputMethod().keyboard_layout(),
+      base::BindOnce(&InputMethodManagerImpl::NotifyInputMethodChanged,
+                     base::Unretained(this), show_message));
+
+  // Update the current input method in IME menu.
+  NotifyImeMenuListChanged();
+}
+
+void InputMethodManagerImpl::NotifyInputMethodChanged(bool show_message,
+                                                      bool success) {
+  if (!success) {
     LOG(ERROR) << "Failed to change keyboard layout to "
                << state_->GetCurrentInputMethod().keyboard_layout();
   }
 
   // Update input method indicators (e.g. "US", "DV") in Chrome windows.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.InputMethodChanged(this, state_->GetProfile(), show_message);
-  // Update the current input method in IME menu.
-  NotifyImeMenuListChanged();
+  }
 }
 
 void InputMethodManagerImpl::ActivateInputMethodMenuItem(

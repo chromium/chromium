@@ -250,7 +250,7 @@ InputMethodPrivateSetXkbLayoutFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* manager = ash::input_method::InputMethodManager::Get();
   ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
-  keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name);
+  keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name, base::DoNothing());
   return RespondNow(NoArguments());
 }
 

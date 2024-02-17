@@ -81,6 +81,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void InputMethodChanged(InputMethodManager* manager,
                                     Profile* profile,
                                     bool show_message) = 0;
+
     // Called when the availability of any of the extra input methods (emoji,
     // handwriting, voice) has changed. The overall state is toggle-able
     // independently of the individual options.

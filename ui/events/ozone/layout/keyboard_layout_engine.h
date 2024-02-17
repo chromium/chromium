@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -35,7 +36,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
   // Sets the current layout; returns true on success.
   // Drop-in replacement for ImeKeyboard::SetCurrentKeyboardLayoutByName();
   // the argument string is defined by that interface (crbug.com/362698).
-  virtual bool SetCurrentLayoutByName(const std::string& layout_name) = 0;
+  // Calls the callback once the layout is initialized after being set.
+  virtual void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Sets the current layout given a memory location and the buffer size in
   // bytes, that represent keyboard mapping description; returns true on

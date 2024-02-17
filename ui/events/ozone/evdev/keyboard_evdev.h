@@ -72,7 +72,8 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
   void GetAutoRepeatRate(base::TimeDelta* delay, base::TimeDelta* interval);
 
   // Handle keyboard layout changes.
-  bool SetCurrentLayoutByName(const std::string& layout_name);
+  void SetCurrentLayoutByName(const std::string& layout_name,
+                              base::OnceCallback<void(bool)> callback);
 
  private:
   void UpdateModifier(int modifier_flag, bool down);

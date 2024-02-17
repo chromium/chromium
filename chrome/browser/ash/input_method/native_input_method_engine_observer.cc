@@ -11,6 +11,8 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -595,7 +597,8 @@ void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
                                const mojom::InputMethodSettingsPtr& settings) {
   if (settings && settings->is_pinyin_settings()) {
     keyboard->SetCurrentKeyboardLayoutByName(
-        MojomLayoutToXkbLayout(settings->get_pinyin_settings()->layout));
+        MojomLayoutToXkbLayout(settings->get_pinyin_settings()->layout),
+        base::DoNothing());
   }
 }
 

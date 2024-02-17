@@ -27,7 +27,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   ~ImeKeyboardImpl() override;
 
   // ImeKeyboard:
-  bool SetCurrentKeyboardLayoutByName(const std::string& layout_name) override;
+  void SetCurrentKeyboardLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) override;
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
   void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;
