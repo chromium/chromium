@@ -323,8 +323,7 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
   }
 
   SetAccessibleName(GenerateAccessibilityLabel(label));
-  GetViewAccessibility().OverrideDescription(
-      GenerateAccessibilityDescription());
+  GetViewAccessibility().SetDescription(GenerateAccessibilityDescription());
 }
 
 void NetworkListNetworkItemView::NetworkIconChanged() {

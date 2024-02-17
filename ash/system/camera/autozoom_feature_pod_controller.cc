@@ -46,7 +46,7 @@ std::unique_ptr<FeatureTile> AutozoomFeaturePodController::CreateTile(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUTOZOOM_BUTTON_LABEL));
   auto description = l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_AUTOZOOM_TOGGLE_ACCESSIBILITY_DESCRIPTION);
-  tile_->GetViewAccessibility().OverrideDescription(description);
+  tile_->GetViewAccessibility().SetDescription(description);
   // `UpdateButton` will update visibility.
   tile_->SetVisible(false);
   UpdateButton(Shell::Get()->autozoom_controller()->GetState());

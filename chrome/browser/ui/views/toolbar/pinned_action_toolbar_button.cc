@@ -37,7 +37,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(container);
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Normally, the notify action is determined by whether a view is draggable

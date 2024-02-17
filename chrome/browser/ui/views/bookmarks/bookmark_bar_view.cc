@@ -1514,7 +1514,7 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         base::BindRepeating(&BookmarkBarView::OnButtonPressed,
                             base::Unretained(this), node),
         node->url(), node->GetTitle(), browser());
-    button->GetViewAccessibility().OverrideDescription(url_formatter::FormatUrl(
+    button->GetViewAccessibility().SetDescription(url_formatter::FormatUrl(
         node->url(), url_formatter::kFormatUrlOmitDefaults,
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else {

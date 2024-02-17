@@ -56,7 +56,7 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
       id_(id) {
   SetTooltipText(name);
   SetAccessibleName(accessible_name);
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   SetVectorIcon(icon);

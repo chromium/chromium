@@ -174,7 +174,7 @@ ChromeLabsItemView::ChromeLabsItemView(
 
 #if !BUILDFLAG(IS_MAC)
   if (!lab.visible_description.empty())
-    GetViewAccessibility().OverrideDescription(lab.visible_description);
+    GetViewAccessibility().SetDescription(lab.visible_description);
 #endif
 
   AddChildView(

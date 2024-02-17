@@ -169,7 +169,7 @@ void SearchResultImageView::OnMetadataChanged() {
   UpdateAccessibleName();
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   if (!result() || result()->icon().icon.IsEmpty()) {

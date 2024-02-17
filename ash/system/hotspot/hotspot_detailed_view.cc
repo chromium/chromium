@@ -236,7 +236,7 @@ void HotspotDetailedView::UpdateSubText(const HotspotInfoPtr& hotspot_info) {
   if (!sub_text.empty()) {
     entry_row_->SetSubText(sub_text);
     entry_row_->sub_text_label()->SetVisible(true);
-    entry_row_->GetViewAccessibility().OverrideDescription(sub_text);
+    entry_row_->GetViewAccessibility().SetDescription(sub_text);
     if (hotspot_info->state != HotspotState::kEnabled) {
       // If hotspot is not enabled, no need to set primary color for the status
       // sublabel text.
@@ -257,7 +257,7 @@ void HotspotDetailedView::UpdateSubText(const HotspotInfoPtr& hotspot_info) {
   // If no subtext is set, previous subtext should be hidden.
   if (entry_row_->sub_text_label()) {
     entry_row_->sub_text_label()->SetVisible(false);
-    entry_row_->GetViewAccessibility().OverrideDescription(
+    entry_row_->GetViewAccessibility().SetDescription(
         std::u16string(),
         ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   }

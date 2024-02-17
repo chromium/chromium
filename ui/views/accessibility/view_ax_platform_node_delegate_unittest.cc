@@ -487,21 +487,21 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
             ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   // Setting the description to the empty string without explicitly setting
-  // the source to reflect that should trigger a DCHECK in OverrideDescription.
+  // the source to reflect that should trigger a DCHECK in SetDescription.
   EXPECT_DCHECK_DEATH_WITH(
-      button_accessibility()->OverrideDescription(""),
+      button_accessibility()->SetDescription(""),
       "Check failed: description.empty\\(\\) == description_from == "
       "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
 
   // Setting the description to a non-empty string with a DescriptionFrom of
-  // kAttributeExplicitlyEmpty should trigger a DCHECK in OverrideDescription.
+  // kAttributeExplicitlyEmpty should trigger a DCHECK in SetDescription.
   EXPECT_DCHECK_DEATH_WITH(
-      button_accessibility()->OverrideDescription(
+      button_accessibility()->SetDescription(
           "foo", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty),
       "Check failed: description.empty\\(\\) == description_from == "
       "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
 
-  button_accessibility()->OverrideDescription(
+  button_accessibility()->SetDescription(
       "", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   EXPECT_EQ(button_accessibility()->GetDescription(), "");
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
@@ -514,7 +514,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kAttribute);
 
-  button_accessibility()->OverrideDescription("Button's description");
+  button_accessibility()->SetDescription("Button's description");
   EXPECT_EQ(button_accessibility()->GetDescription(), "Button's description");
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
             ax::mojom::DescriptionFrom::kAriaDescription);
@@ -532,8 +532,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   EXPECT_EQ(label_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kContents);
 
-  label_accessibility()->OverrideDescription(
-      "Label's description", ax::mojom::DescriptionFrom::kTitle);
+  label_accessibility()->SetDescription("Label's description",
+                                        ax::mojom::DescriptionFrom::kTitle);
   EXPECT_EQ(label_accessibility()->GetDescription(), "Label's description");
   EXPECT_EQ(label_accessibility()->GetDescriptionFrom(),
             ax::mojom::DescriptionFrom::kTitle);

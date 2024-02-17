@@ -152,7 +152,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   // still exposed to assistive technologies which may then present both.
   // To avoid that redundant presentation, set the description explicitly
   // to the empty string. See crrev.com/c/3218112.
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Background.

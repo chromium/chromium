@@ -50,7 +50,7 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
       GetWidget()->non_client_view()->frame_view());
   bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
   if (!message_text_.empty()) {
-    GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+    GetWidget()->GetRootView()->GetViewAccessibility().SetDescription(
         message_text_);
   }
   // On some platforms, the platform accessibility API automatically

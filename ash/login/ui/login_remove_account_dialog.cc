@@ -313,7 +313,7 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
 
     // Change the node's description to force assistive technologies, like
     // ChromeVox, to report the updated description.
-    remove_user_button_->GetViewAccessibility().OverrideDescription(
+    remove_user_button_->GetViewAccessibility().SetDescription(
         warning_message_);
     if (on_remove_user_warning_shown_) {
       std::move(on_remove_user_warning_shown_).Run();

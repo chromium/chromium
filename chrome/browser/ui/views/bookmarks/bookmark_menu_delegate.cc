@@ -658,7 +658,7 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkNode* parent,
       child_menu_item =
           menu->AppendMenuItem(id, MaybeEscapeLabel(node->GetTitle()),
                                GetFaviconForNode(GetBookmarkModel(), node));
-      child_menu_item->GetViewAccessibility().OverrideDescription(
+      child_menu_item->GetViewAccessibility().SetDescription(
           url_formatter::FormatUrl(
               node->url(), url_formatter::kFormatUrlOmitDefaults,
               base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));

@@ -130,7 +130,7 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
     if (allow_refocus_alert) {
       // Since this will show as inactive, add a description for how to get to
       // it.
-      GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
+      GetWidget()->GetRootView()->GetViewAccessibility().SetDescription(
           l10n_util::GetStringUTF8(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
     }
     GetWidget()->ShowInactive();

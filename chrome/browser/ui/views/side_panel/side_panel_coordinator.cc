@@ -937,9 +937,9 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   header_pin_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // By default, the button's accessible description is set to the button's
   // tooltip text. For the pin button, we only want the accessible name to be
-  // read on accessibility mode since it includes the tooltip text. Thus we
-  // override the accessible description.
-  header_pin_button_->GetViewAccessibility().OverrideDescription(
+  // read on accessibility mode since it includes the tooltip text. Thus we set
+  // the accessible description.
+  header_pin_button_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   // The icon is later set as visible for side panels that support it.
   header_pin_button_->SetVisible(false);

@@ -526,7 +526,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
       item_view_to_delete->GetViewAccessibility();
 
   // Polish the a11y announcement for deletion operation.
-  view_accessibility.OverrideDescription(
+  view_accessibility.SetDescription(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_ITEM_DELETION));
 
   // Enable a11y announcement for the view to be deleted.

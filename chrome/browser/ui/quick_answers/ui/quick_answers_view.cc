@@ -446,7 +446,7 @@ void QuickAnswersView::ShowRetryView() {
   retry_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
       l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
-  retry_label_->GetViewAccessibility().OverrideDescription(
+  retry_label_->GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
 }
 
