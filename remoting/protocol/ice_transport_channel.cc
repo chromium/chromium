@@ -30,15 +30,15 @@ const int kIceUfragLength = 16;
 // Utility function to map a cricket::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const std::string& candidate_type) {
-  if (candidate_type == "local") {
+    const cricket::Candidate& c) {
+  if (c.is_local()) {
     return TransportRoute::DIRECT;
-  } else if (candidate_type == "stun" || candidate_type == "prflx") {
+  } else if (c.is_stun() || c.is_prflx()) {
     return TransportRoute::STUN;
-  } else if (candidate_type == "relay") {
+  } else if (c.is_relay()) {
     return TransportRoute::RELAY;
   } else {
-    LOG(FATAL) << "Unknown candidate type: " << candidate_type;
+    LOG(FATAL) << "Unknown candidate type: " << c.type_name();
   }
 }
 
@@ -237,8 +237,8 @@ void IceTransportChannel::NotifyRouteChanged() {
                     TransportRoute::STUN < TransportRoute::RELAY,
                 "Route type enum values are ordered by 'indirectness'");
   route.type = std::max(
-      CandidateTypeToTransportRouteType(connection->local_candidate().type()),
-      CandidateTypeToTransportRouteType(connection->remote_candidate().type()));
+      CandidateTypeToTransportRouteType(connection->local_candidate()),
+      CandidateTypeToTransportRouteType(connection->remote_candidate()));
 
   if (!webrtc::SocketAddressToIPEndPoint(
           connection->remote_candidate().address(), &route.remote_address)) {
