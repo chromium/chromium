@@ -5248,30 +5248,16 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     return nullptr;
   }
 
-  // If there's already a declarative shadow root, verify that the parameters
-  // are all the same.
+  // If there's already a declarative shadow root, verify that the existing
+  // mode is the same as the requested mode.
   if (RuntimeEnabledFeatures::ShadowRootAttachmentNewBehaviorEnabled()) {
     if (auto* existing_shadow = GetShadowRoot()) {
       CHECK(existing_shadow->IsDeclarativeShadowRoot());
-      bool parameters_mismatch = false;
-      parameters_mismatch |= existing_shadow->GetType() != type;
-      parameters_mismatch |=
-          existing_shadow->delegatesFocus() !=
-          (focus_delegation == FocusDelegation::kDelegateFocus);
-      parameters_mismatch |=
-          existing_shadow->GetSlotAssignmentMode() != slot_assignment;
-      // TODO(crbug.com/1523816): Not sure how to check `registry` match here.
-      parameters_mismatch |=
-          RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
-          existing_shadow->serializable() != serializable;
-      parameters_mismatch |=
-          RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
-          existing_shadow->clonable() != clonable;
-      if (parameters_mismatch) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                          "Parameters used for attachShadow() "
-                                          "don't match existing declarative "
-                                          "shadow root");
+      if (existing_shadow->GetType() != type) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "The requested mode does not match the existing declarative shadow "
+            "root's mode");
         return nullptr;
       }
     }
