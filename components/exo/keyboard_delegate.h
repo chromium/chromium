@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_KEYBOARD_DELEGATE_H_
 #define COMPONENTS_EXO_KEYBOARD_DELEGATE_H_
 
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
@@ -31,7 +32,7 @@ class KeyboardDelegate {
   // Called when keyboard focus enters a new valid target surface.
   virtual void OnKeyboardEnter(
       Surface* surface,
-      const base::flat_map<ui::DomCode, base::flat_set<KeyState>>&
+      const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
           pressed_keys) = 0;
 
   // Called when keyboard focus leaves a valid target surface.

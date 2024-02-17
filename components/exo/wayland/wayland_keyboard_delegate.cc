@@ -42,7 +42,8 @@ bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
 
 void WaylandKeyboardDelegate::OnKeyboardEnter(
     Surface* surface,
-    const base::flat_map<ui::DomCode, base::flat_set<KeyState>>& pressed_keys) {
+    const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
+        pressed_keys) {
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   wl_array keys;

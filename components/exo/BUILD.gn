@@ -173,6 +173,7 @@ static_library("exo") {
     "//ui/display/manager",
     "//ui/events/devices:devices",
     "//ui/events/ozone",
+    "//ui/events/ozone/evdev:mouse_button_property",
     "//ui/events/ozone/layout",
     "//ui/gfx",
     "//ui/gfx/geometry",

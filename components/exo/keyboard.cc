@@ -41,6 +41,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -326,9 +328,11 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   // TODO(yhanada): This is a quick fix for https://crbug.com/859071. Remove
   // ARC-/Lacros-specific code path once we can find a way to manage
   // press/release events pair for synthetic events.
-  ui::DomCode physical_code =
+  PhysicalCode physical_code =
       seat_->physical_code_for_currently_processing_event();
-  if (physical_code == ui::DomCode::NONE && focused_on_ime_supported_surface_) {
+  const auto* physical_dom_code = std::get_if<ui::DomCode>(&physical_code);
+  if (physical_dom_code && *physical_dom_code == ui::DomCode::NONE &&
+      focused_on_ime_supported_surface_) {
     // This key event is a synthetic event.
     // Consider DomCode field of the event as a physical code
     // for synthetic events when focus surface belongs to an ARC application.
@@ -341,8 +345,9 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       const bool should_handle =
           (it == pressed_keys_.end()) ||
           (event->flags() & ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
-      if (should_handle && !event->handled() &&
-          physical_code != ui::DomCode::NONE) {
+      const bool is_physical_code_none =
+          physical_dom_code && *physical_dom_code == ui::DomCode::NONE;
+      if (should_handle && !event->handled() && !is_physical_code_none) {
         if (bool auto_repeat_enabled = IsAutoRepeatEnabled(*event);
             auto_repeat_enabled != auto_repeat_enabled_) {
           auto_repeat_enabled_ = auto_repeat_enabled;
@@ -505,11 +510,11 @@ void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
 ////////////////////////////////////////////////////////////////////////////////
 // Keyboard, private:
 
-base::flat_map<ui::DomCode, base::flat_set<KeyState>>
+base::flat_map<PhysicalCode, base::flat_set<KeyState>>
 Keyboard::GetPressedKeysForSurface(Surface* surface) {
   // Remove system keys from being sent as pressed keys unless the window
   // can consume them.
-  base::flat_map<ui::DomCode, base::flat_set<KeyState>> filtered_keys =
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> filtered_keys =
       pressed_keys_;
   aura::Window* top_level = surface->window()->GetToplevelWindow();
   if (top_level && !ash::WindowState::Get(top_level)->CanConsumeSystemKeys()) {

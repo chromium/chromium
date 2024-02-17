@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <ui-controls-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
+#include <variant>
 
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
@@ -27,6 +28,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -90,7 +92,11 @@ void ResetInputs(UiControlsState* state) {
   auto* window = ash::Shell::GetPrimaryRootWindow();
   auto pressed_keys = state->seat_->pressed_keys();
   for (auto key : pressed_keys) {
-    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(key.first);
+    const ui::DomCode* physical_key = std::get_if<ui::DomCode>(&key.first);
+    if (!physical_key) {
+      continue;
+    }
+    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(*physical_key);
     ui_controls::SendKeyEvents(window, key_code, ui_controls::kKeyRelease);
   }
 

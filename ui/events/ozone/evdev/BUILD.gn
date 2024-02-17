@@ -221,7 +221,10 @@ source_set("mouse_button_property") {
     "//ui/events",
   ]
 
-  visibility += [ "//ash/*" ]
+  visibility += [
+    "//ash/*",
+    "//components/exo",
+  ]
 }
 
 source_set("keyboard_mouse_combo_metrics") {

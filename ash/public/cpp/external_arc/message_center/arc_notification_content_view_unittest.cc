@@ -31,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "components/exo/buffer.h"
+#include "components/exo/key_state.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_modifiers.h"
@@ -71,12 +72,12 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
               CanAcceptKeyboardEventsForSurface,
               (exo::Surface*),
               (const, override));
-  MOCK_METHOD(
-      void,
-      OnKeyboardEnter,
-      (exo::Surface*,
-       (const base::flat_map<ui::DomCode, base::flat_set<exo::KeyState>>&)),
-      (override));
+  MOCK_METHOD(void,
+              OnKeyboardEnter,
+              (exo::Surface*,
+               (const base::flat_map<exo::PhysicalCode,
+                                     base::flat_set<exo::KeyState>>&)),
+              (override));
   MOCK_METHOD(void, OnKeyboardLeave, (exo::Surface*), (override));
   MOCK_METHOD(uint32_t,
               OnKeyboardKey,
