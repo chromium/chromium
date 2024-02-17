@@ -138,6 +138,7 @@
 <translation id="1726477445370128854">Chrome က သင်ဝင်ကြည့်နိုင်မည်ဟု ထင်သည့် စာမျက်နှာများကို ကြိုဖွင့်သည့်အခါ ပိုမိုမြန်ဆန်စွာ ကြည့်ရှုပြီး ရှာဖွေနိုင်ပါသည်</translation>
 <translation id="1728803206919861584">‘ရုပ်ဖျက်မုဒ်’ အပြင်ဘက်တွင် လျှို့ဝှက်ကီးကို သိမ်းမလား။</translation>
 <translation id="1749561566933687563">သင့် စာညှပ်များကို စင့်ခ် လုပ်ပါ</translation>
+<translation id="1750238553597293878">သင့် Google Account တွင် စကားဝှက်များ ဆက်သုံးပါ</translation>
 <translation id="1750259112639922169">တဘ်အုပ်စု - တဘ် <ph name="TAB_COUNT" /> ခု</translation>
 <translation id="17513872634828108">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="1755203724116202818">ကြော်ငြာတစ်ခု၏ စွမ်းဆောင်ရည်ကို တိုင်းတာရန် ဝဘ်ဆိုက်တစ်ခုအား သင်ဝင်ကြည့်ပြီးနောက် ဝယ်ယူခြင်း ရှိ၊ မရှိကဲ့သို့သော ကန့်သတ်ဒေတာအမျိုးအစားများကို ဝဘ်ဆိုက်များအကြား မျှဝေသည်။</translation>
@@ -807,6 +808,7 @@
 <translation id="5361107212971249203">စာတို</translation>
 <translation id="5368227114232678694">ဤစက်တွင် သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်စနစ်ကို သုံးကြည့်ပါ</translation>
 <translation id="5375577065097716013">Google Lens ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
+<translation id="5395376160638294582">သင့် Google Account တွင် Chrome ဒေတာများ အမြဲသုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="539881862970320163">လုံခြုံမှုမြင့်သည့် စကားဝှက်ကို အကြံပြုထားသည်။ ကီးဘုတ် ဖျောက်ထားသည်။</translation>
 <translation id="5401851137404501592">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> သို့ <ph name="ONE_TIME_CODE" /> ပို့မလား။</translation>
@@ -1024,6 +1026,7 @@
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ သိုလှောင်ခန်း မလုံလောက်မှုကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{ဒေါင်းလုဒ် # ခု လုပ်ပြီးပါပြီ}}</translation>
 <translation id="6508722015517270189">Chrome ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
+<translation id="6518133107902771759">စိစစ်ရန်</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6532866250404780454">Chrome တွင် သင်ဖွင့်ကြည့်ထားသည့် ဝဘ်ဆိုက်များကို ပြသမည် မဟုတ်ပါ။ ဝဘ်ဆိုက်တိုင်မာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="6534565668554028783">Google ၏ တုံ့ပြန်ချိန် အလွန်ကြာပါသည်</translation>
@@ -1068,6 +1071,7 @@
 <translation id="6662119761881114773">ဤစက်တွင် သိမ်းထားသော စကားဝှက်များကို Chrome ချန်နယ်များတွင် ယခု မသုံးနိုင်ပါ။ Chrome 121 နောက်ပိုင်းတွင် Chrome နှင့် <ph name="CHROME_CHANNEL" /> အတွက် သင့်စက်တွင် သိမ်းထားသော စကားဝှက်များကို ပေါင်းစည်းမည်ဖြစ်ပြီး အက်ပ်နှစ်ခုလုံးတွင် သုံးနိုင်မည်။</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
+<translation id="6672697278890207089">သင့်စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ထည့်ရန်</translation>
 <translation id="6674571176963658787">စင့်ခ်လုပ်ခြင်းစတင်ရန် သင်၏စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6676840375528380067">ဤစက်မှ သင်၏ Chrome ဒေတာများကို ဖျက်လိုပါသလား။</translation>
@@ -1119,6 +1123,7 @@
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6900532703269623216">အရည်အသွေးမြှင့်တင်ထားသည့် ကာကွယ်မှု</translation>
 <translation id="6903907808598579934">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
+<translation id="6906448540340261898">သင့် Google Account တွင် စကားဝှက်များ အမြဲသုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="6908998565271542516">မြင်ကွင်းအပြည့်ဖွင့်သော ဝဘ်ဆိုက်တစ်ခုကို ခွင့်ပြု၊ မပြု ရွေးချယ်မှု</translation>
 <translation id="6909589135458168665">စာမျက်နှာများကို ကြိုဖွင့်ခြင်း</translation>
 <translation id="6910211073230771657">ဖျက်ပြီး</translation>
@@ -1383,6 +1388,7 @@
 <translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>
 <translation id="8135406045838672858">ဒေါင်းလုဒ်လုပ်ထားသော PDF များကို <ph name="APP_NAME" /> ဖြင့် အလိုအလျောက်ဖွင့်သည်</translation>
 <translation id="8137562778192957619">ဤစကားဝှက်ကို မှတ်ထားရန် မလိုပါ။ ၎င်းကို Google Password Manager တွင် သိမ်းပါမည်။</translation>
+<translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ဖိုင် ကျန်ပါသည်</translation>
 <translation id="8190358571722158785">၁ ရက် ကျန်သည်</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1437,6 +1443,7 @@
 <translation id="8445448999790540984">စကားဝှက်များကို တင်ပို့၍မရပါ</translation>
 <translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
 <translation id="8453310803815879010">Dino ဂိမ်း စတင်ရန်</translation>
+<translation id="84594714173170813">သင့် Google Account တွင် Chrome ဒေတာများ ဆက်သုံးပါ</translation>
 <translation id="8460448946170646641">အဓိကကျသော ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ထိန်းချုပ်မှုများကို ကြည့်ရှုရန်</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ကို အင်တာနက် ချိတ်ဆက်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>

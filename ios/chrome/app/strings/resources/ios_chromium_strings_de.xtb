@@ -310,7 +310,6 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9110075932708282655">Standardmäßig Chromium verwenden</translation>
-<translation id="9137114218472648150">Deine Version von Chromium ist veraltet. Aktualisiere Chromium auf die neueste Version, um dich bestmöglich zu schützen.</translation>
 <translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Automatisch Chromium verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst</translation>
 <translation id="981812233959540767">Chromium Dino spielen</translation>

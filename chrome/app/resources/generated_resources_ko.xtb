@@ -183,7 +183,6 @@
 <translation id="1139923033416533844">메모리 사용량</translation>
 <translation id="1140351953533677694">블루투스 및 직렬 기기에 액세스</translation>
 <translation id="114036956334641753">오디오 및 자막</translation>
-<translation id="1141949282671776404">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 <ph name="MEMORY_VALUE" />의 메모리를 확보했습니다.</translation>
 <translation id="1142002900084379065">최근 사진</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1143142264369994168">인증서 서명자</translation>
@@ -1495,7 +1494,6 @@
     <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 절차를 진행하는 동안 시스템이 재부팅됩니다.</translation>
 <translation id="2095774564753225041">지원되는 파일 형식</translation>
 <translation id="2096716221239095980">모든 데이터 삭제</translation>
-<translation id="2097616539631531348">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다.</translation>
 <translation id="2097950021134740304">구독 정보 삭제 취소</translation>
 <translation id="2098805196501063469">나머지 비밀번호 확인</translation>
 <translation id="2099686503067610784">서버 인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
@@ -4457,7 +4455,6 @@
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="4380648069038809855">전체 화면으로 전환됨</translation>
 <translation id="4381902252848068865">사이트에서 데이터를 저장하도록 허용하지 않음</translation>
-<translation id="4383048856908088702">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 <ph name="MEMORY_VALUE" />의 메모리를 확보했습니다. 언제든지 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="4384312707950789900">기본 네트워크에 추가</translation>
 <translation id="4384652540891215547">확장 프로그램 활성화</translation>
 <translation id="4384886290276344300">키보드 설정 변경</translation>
@@ -8563,7 +8560,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7636346903338549690">서드 파티 쿠키 사용이 허용된 사이트</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7637253234491814483">키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치합니다. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
-<translation id="7637272932128132922">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다. 언제든지 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="7637593984496473097">디스크 공간이 충분하지 않음</translation>
 <translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="7640256527901510478">기기 IMEI는 <ph name="IMEI_NUMBER" />이며 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>

@@ -1117,7 +1117,6 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645899968535965230">QR コード: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">アクセスした URL が Google に送信され、次にアクセスするサイトの予測が行われます</translation>
-<translation id="6647480763136463714">前回の実行:　<ph name="TIME" /></translation>
 <translation id="6656103420185847513">フォルダの編集</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6668619169535738264">ブックマークを編集</translation>
@@ -1601,7 +1600,6 @@
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9162941801309769488">荷物の追跡解除</translation>
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>
-<translation id="9165886811579296457">安全チェックでは、修正の必要なセキュリティの問題は見つかりませんでした。</translation>
 <translation id="9172603439892261948">ブックマークや履歴などを同期できます。</translation>
 <translation id="9177438225260810839">開いているタブを検索</translation>
 <translation id="9187853111759024059">アクティブでない 99 個以上のタブを閉じますか？</translation>

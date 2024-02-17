@@ -159,7 +159,6 @@
 <translation id="3360895254066713204">Помічник Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome перезапуститься зараз}=1{Chrome перезапуститься через 1 секунду}one{Chrome перезапуститься через # секунду}few{Chrome перезапуститься через # секунди}many{Chrome перезапуститься через # секунд}other{Chrome перезапуститься через # секунди}}</translation>
 <translation id="3396977131400919238">Під час установлення сталася помилка операційної системи. Завантажте Google Chrome ще раз.</translation>
-<translation id="3426646014273736870">Функція заощадження пам’яті пришвидшує роботу Chrome</translation>
 <translation id="3428747202529429621">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис</translation>
 <translation id="3434246496373299699">Chrome зможе перевірити ваші паролі, коли ви ввійдете у свій обліковий запис Google</translation>
 <translation id="3450887623636316740">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Chrome перевірить його, якщо ви введете пароль. Інформація про файл надсилається в Безпечний перегляд Google, але вміст файлу й пароль залишаються на вашому пристрої.</translation>
@@ -311,7 +310,6 @@
 <translation id="608006075545470555">Додати робочий профіль у цей веб-переглядач</translation>
 <translation id="6113794647360055231">Chrome став ще кращим</translation>
 <translation id="6145313976051292476">Відкривати файли PDF у Chrome</translation>
-<translation id="6155960517327665396">Функція заощадження пам’яті пришвидшує роботу Chrome</translation>
 <translation id="6157638032135951407">Ваша організація видаляє дані Chrome, якщо вони не використовуються протягом <ph name="TIMEOUT_DURATION" />. Це може включати історію, дані автозаповнення й завантаження.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>

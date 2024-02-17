@@ -181,7 +181,6 @@
 <translation id="1139923033416533844">記憶體用量</translation>
 <translation id="1140351953533677694">存取你的藍牙和序列裝置</translation>
 <translation id="114036956334641753">音訊和字幕</translation>
-<translation id="1141949282671776404">當這個分頁處於閒置狀態時，記憶體節省模式會釋出 <ph name="MEMORY_VALUE" /> 的記憶體給其他工作。</translation>
 <translation id="1142002900084379065">最近的相片</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
@@ -1482,7 +1481,6 @@
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
 <translation id="2095774564753225041">支援的檔案類型</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
-<translation id="2097616539631531348">當這個分頁處於閒置狀態時，記憶體節省模式會釋出記憶體給其他工作。</translation>
 <translation id="2097950021134740304">取消清除訂閱</translation>
 <translation id="2098805196501063469">檢查其餘密碼</translation>
 <translation id="2099686503067610784">要刪除伺服器憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
@@ -4441,7 +4439,6 @@
 <translation id="4380055775103003110">如果這個問題持續發生，可以試著在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4380648069038809855">已開啟全螢幕模式</translation>
 <translation id="4381902252848068865">禁止網站儲存資料</translation>
-<translation id="4383048856908088702">當這個分頁處於閒置狀態時，記憶體節省模式會釋出 <ph name="MEMORY_VALUE" /> 的記憶體給其他工作。你隨時可以前往「<ph name="SETTINGS_LINK" />」變更這項設定。</translation>
 <translation id="4384312707950789900">加入慣用網路</translation>
 <translation id="4384652540891215547">啟用擴充功能</translation>
 <translation id="4384886290276344300">變更鍵盤設定</translation>
@@ -8543,7 +8540,6 @@
 <translation id="7636346903338549690">允許使用第三方 Cookie 的網站</translation>
 <translation id="7636919061354591437">安裝到這部裝置</translation>
 <translation id="7637253234491814483">請輕觸鍵盤右上角 (即電源按鈕旁) 的指紋感應器，你的指紋資料會安全地儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
-<translation id="7637272932128132922">當這個分頁處於閒置狀態時，記憶體節省模式會釋出記憶體給其他工作。你隨時可以前往「<ph name="SETTINGS_LINK" />」變更這項設定。</translation>
 <translation id="7637593984496473097">磁碟空間不足</translation>
 <translation id="7639914187072011620">無法從伺服器擷取 SAML 重新導向網址</translation>
 <translation id="7640256527901510478">裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>

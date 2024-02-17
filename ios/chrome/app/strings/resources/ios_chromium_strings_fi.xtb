@@ -311,7 +311,6 @@ Datasi salattiin tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käyt
 <translation id="9059693977935746710">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9110075932708282655">Käytä oletuksena Chromiumia</translation>
-<translation id="9137114218472648150">Chromium on vanhentunut. Päivitä se uusimpaan versioon tietoturvan takaamiseksi.</translation>
 <translation id="921174536258924340">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Käytä Chromiumia automaattisesti, kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="981812233959540767">Pelaa Chromiumin Dino-peliä</translation>

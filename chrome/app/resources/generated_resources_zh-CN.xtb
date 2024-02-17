@@ -181,7 +181,6 @@
 <translation id="1139923033416533844">内存使用情况</translation>
 <translation id="1140351953533677694">访问您的蓝牙和串行设备</translation>
 <translation id="114036956334641753">音频和字幕</translation>
-<translation id="1141949282671776404">当此标签页处于闲置状态时，省内存模式释放了 <ph name="MEMORY_VALUE" /> 的内存以用于执行其他任务。</translation>
 <translation id="1142002900084379065">近期照片</translation>
 <translation id="1142713751288681188">纸张类型</translation>
 <translation id="1143142264369994168">证书签名人</translation>
@@ -1473,7 +1472,6 @@
       <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：在此过程中，系统将会重新启动。</translation>
 <translation id="2095774564753225041">支持的文件类型</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
-<translation id="2097616539631531348">当此标签页处于闲置状态时，省内存模式释放了一些内存以用于执行其他任务。</translation>
 <translation id="2097950021134740304">取消清除订阅</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099686503067610784">要删除服务器证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
@@ -4421,7 +4419,6 @@
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="4380648069038809855">已进入全屏模式</translation>
 <translation id="4381902252848068865">不允许网站保存数据</translation>
-<translation id="4383048856908088702">当此标签页处于闲置状态时，省内存模式释放了 <ph name="MEMORY_VALUE" /> 的内存以用于执行其他任务。您随时可在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="4384312707950789900">添加到首选网络列表</translation>
 <translation id="4384652540891215547">激活该扩展程序</translation>
 <translation id="4384886290276344300">更改键盘设置</translation>
@@ -8508,7 +8505,6 @@
 <translation id="7636346903338549690">经允许可使用第三方 Cookie 的网站</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
 <translation id="7637253234491814483">轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您的指纹数据会安全存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
-<translation id="7637272932128132922">当此标签页处于闲置状态时，省内存模式会释放一些内存以用于执行其他任务。您随时可在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="7637593984496473097">磁盘空间不足</translation>
 <translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
 <translation id="7640256527901510478">您的设备 IMEI 为 <ph name="IMEI_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>

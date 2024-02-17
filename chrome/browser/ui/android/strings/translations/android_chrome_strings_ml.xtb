@@ -138,6 +138,7 @@
 <translation id="1726477445370128854">നിങ്ങൾ സന്ദർശിക്കുമെന്ന് കരുതുന്ന പേജുകൾ Chrome മുൻകൂട്ടി ലോഡ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് അതിവേഗം ബ്രൗസ് ചെയ്യാനും തിരയാനുമാകും.</translation>
 <translation id="1728803206919861584">അദൃശ്യ മോഡിന് പുറത്ത് പാസ്‌കീ സംരക്ഷിക്കണോ?</translation>
 <translation id="1749561566933687563">നിങ്ങളുടെ ബുക്ക്മാർക്കുകൾ സമന്വയിപ്പിക്കുക</translation>
+<translation id="1750238553597293878">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="1750259112639922169">ടാബ് ഗ്രൂപ്പ് - <ph name="TAB_COUNT" /> ടാബുകൾ</translation>
 <translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1755203724116202818">സൈറ്റുകളുടെ പരസ്യങ്ങളുടെ പ്രകടനം അളക്കുന്നതിന്, സൈറ്റ് സന്ദർശിച്ചതിന് ശേഷം നിങ്ങൾ ഒരു വാങ്ങൽ നടത്തിയോ ഇല്ലയോ എന്നത് പോലുള്ള പരിമിതമായ തരം ഡാറ്റ മാത്രമേ ആപ്പുകൾ തമ്മിൽ പങ്കിടുന്നുള്ളൂ.</translation>
@@ -807,6 +808,7 @@
 <translation id="5361107212971249203">ടെക്‌സ്റ്റ്</translation>
 <translation id="5368227114232678694">ഈ ഉപകരണത്തിൽ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ, അദൃശ്യ മോഡ് പരീക്ഷിക്കൂ</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
+<translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
 <translation id="5401851137404501592">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
@@ -1025,6 +1027,7 @@
 <translation id="6482749332252372425">സ്‌റ്റോറേജ് ഇടമില്ലാത്തതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി}}</translation>
 <translation id="6508722015517270189">Chrome റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
+<translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6532866250404780454">നിങ്ങൾ Chrome-ൽ സന്ദർശിക്കുന്ന സൈറ്റുകൾ കാണിക്കില്ല. എല്ലാ സൈറ്റ് ടൈമറുകളും ഇല്ലാതാക്കപ്പെടും.</translation>
 <translation id="6534565668554028783">Google പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുത്തു</translation>
@@ -1069,6 +1072,7 @@
 <translation id="6662119761881114773">ഇപ്പോൾ ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ Chrome ചാനലുകളിൽ ഉടനീളം ഉപയോഗിക്കാനാകില്ല. Chrome 121-ന് ശേഷമുള്ള പതിപ്പുകളിൽ, Chrome-നും <ph name="CHROME_CHANNEL" /> എന്നതിനും സംരക്ഷിച്ചിരിക്കുന്ന പാസ്‌വേഡുകൾ ലയിപ്പിക്കും, അവ രണ്ട് ആപ്പുകളിലും ഉപയോഗിക്കാം.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
+<translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676840375528380067">ഉപകരണത്തില്‍ നിന്ന് Chrome ഡാറ്റ മായ്ക്കണോ?</translation>
@@ -1120,6 +1124,7 @@
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6900532703269623216">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ</translation>
 <translation id="6903907808598579934">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
+<translation id="6906448540340261898">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="6908998565271542516">മുഴുവൻ ഉയരത്തിൽ തുറന്നിരിക്കുന്ന വെബ്സൈറ്റ് അംഗീകരിക്കാനോ നിരസിക്കാനോ ഉള്ള ഓപ്ഷൻ</translation>
 <translation id="6909589135458168665">പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യുക</translation>
 <translation id="6910211073230771657">ഇല്ലാതാക്കി</translation>
@@ -1384,6 +1389,7 @@
 <translation id="813082847718468539">സൈറ്റ് വിവരങ്ങള്‍ കാണുക</translation>
 <translation id="8135406045838672858"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഡൗൺലോഡ് ചെയ്ത PDF-കൾ സ്വയമേവ തുറക്കുന്നു</translation>
 <translation id="8137562778192957619">നിങ്ങൾ ഈ പാസ്‌വേഡ് ഓർമ്മിക്കേണ്ടതില്ല. Google Password Manager-ൽ ഇത് സംരക്ഷിക്കും.</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ഫയലുകൾ ശേഷിക്കുന്നു</translation>
 <translation id="8190358571722158785">ഒരു ദിവസം ശേഷിക്കുന്നു</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1438,6 +1444,7 @@
 <translation id="8445448999790540984">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="8446884382197647889">കൂടുതലറിയുക</translation>
 <translation id="8453310803815879010">ദിനോസർ ഗെയിം ആരംഭിക്കുക</translation>
+<translation id="84594714173170813">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="8460448946170646641">പ്രധാന സ്വകാര്യതാ, സുരക്ഷാ നിയന്ത്രണങ്ങൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="8473863474539038330">വിലാസങ്ങളും മറ്റും</translation>

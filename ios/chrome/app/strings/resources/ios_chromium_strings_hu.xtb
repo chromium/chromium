@@ -312,7 +312,6 @@ Adatai az összetett jelszavával lettek titkosítva a következő időpontban: 
 <translation id="9059693977935746710">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9110075932708282655">A Chromium alapértelmezett használata</translation>
-<translation id="9137114218472648150">Az Ön által használt Chromium elavult. A biztonság megőrzése érdekében frissítse a legújabb verzióra.</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Beállíthatja, hogy a rendszer automatikusan a Chromiumot használja, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint.</translation>
 <translation id="981812233959540767">A Chromium dinós játékának elindítása</translation>

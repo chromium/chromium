@@ -1117,7 +1117,6 @@
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
-<translation id="6647480763136463714">Востаннє запущено <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Редагувати папку</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6668619169535738264">Змінити закладку</translation>
@@ -1601,7 +1600,6 @@
 <translation id="9162432979321511934">Увімкніть автозаповнення паролів</translation>
 <translation id="9162941801309769488">Відправлення більше не відстежується</translation>
 <translation id="9165320910061267720">Щоб отримувати сповіщення про зниження цін, увімкніть їх у налаштуваннях iOS.</translation>
-<translation id="9165886811579296457">Перевірка не виявила проблем із безпекою.</translation>
 <translation id="9172603439892261948">Синхронізуйте свої закладки, історію тощо.</translation>
 <translation id="9177438225260810839">Шукати у відкритих вкладках</translation>
 <translation id="9187853111759024059">Закрити понад 99 неактивних вкладок?</translation>

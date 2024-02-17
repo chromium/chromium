@@ -3591,7 +3591,7 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
       Mỗi mục nhập trong danh sách chứa một từ điển. Từ điển này phải bao gồm ID tiện ích trong trường 'extension-id' và URL cập nhật trong trường 'update-url'.</translation>
 <translation id="3869180930654347954">Tắt First-Party Sets cho mọi người dùng trong phạm vi tác động</translation>
 <translation id="3869566220234507038">Luôn tải trình duyệt <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào ngữ cảnh trên màn hình trong quá trình tương tác</translation>
+<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào bối cảnh trên màn hình trong quá trình tương tác</translation>
 <translation id="3870059789954671543">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím trên màn hình đăng nhập.
 
           Khi bật tính năng này, hệ thống sẽ tự động làm nổi bật đối tượng được lấy tiêu điểm bằng bàn phím.
@@ -3727,6 +3727,7 @@ Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ trong 
 <translation id="398884292557092447">Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
 
       Nếu bạn đặt chính sách này thành False, thì tính năng tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin thẻ tín dụng hay lưu thông tin thẻ tín dụng bổ sung mà người dùng có thể gửi trong khi duyệt web.</translation>
+<translation id="3989635538409502728">Đăng xuất</translation>
 <translation id="3989829840000169163">Chặn các điểm tiện ích cũ của trình duyệt</translation>
 <translation id="3990391739475801018">Chế độ tiết kiệm pin sẽ tắt.</translation>
 <translation id="3990834929384096140">Không thực thi tính năng loại bỏ tiếng vọng âm thanh của hệ thống</translation>
@@ -6748,25 +6749,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
       Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì người dùng sẽ không thể đổi mật khẩu SAML tại chrome://password-change và sẽ không có thông báo nào khi mật khẩu SAML sắp hết hạn.</translation>
 <translation id="6457477291648119596">Loại 42</translation>
 <translation id="6458361632497500815">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì mọi người dùng đều có thể sử dụng <ph name="PRODUCT_CROSTINI_NAME" /> miễn là cả 3 chính sách gồm <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> và <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> được đặt thành Bật. Nếu bạn đặt chính sách này thành Tắt, người dùng chưa liên kết sẽ không thể sử dụng <ph name="PRODUCT_CROSTINI_NAME" />. Khi bạn đổi chính sách này thành Tắt, chính sách sẽ được áp dụng cho các vùng chứa <ph name="PRODUCT_CROSTINI_NAME" /> mới đang khởi động, chứ không phải các vùng chứa đã chạy.</translation>
-<translation id="6458848208090676955">Danh sách thao tác sẽ diễn ra khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định.
-
-      Nếu bạn không đặt chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" />, chính sách này sẽ không có hiệu lực.
-
-      Khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định, trình duyệt sẽ thực hiện các thao tác được định cấu hình trong chính sách này.
-
-      Nếu bạn để trống hoặc không đặt chính sách này, thì chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> sẽ không có hiệu lực.
-
-      Các thao tác được hỗ trợ là:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": đóng tất cả cửa sổ trình duyệt và PWA của hồ sơ này. Không được hỗ trợ trên Android.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": hiện cửa sổ Bộ chọn hồ sơ. Không được hỗ trợ trên Android.
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": xoá dữ liệu duyệt web tương ứng. Hãy xem chính sách <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> để biết thêm chi tiết.
-
-      "<ph name="RELOAD_PAGES_ACTION" />": tải lại tất cả trang web. Đối với một số trang, người dùng có thể được nhắc xác nhận trước.
-
-      Việc đặt "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" và "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" sẽ tắt tính năng đồng bộ hoá cho các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> hoặc <ph name="BROWSER_SIGNIN_POLICY_NAME" /> không tắt.</translation>
 <translation id="6462604655173570082">Nếu bạn không đặt hoặc đặt chính sách thành Bật, thì hệ thống sẽ cho phép người dùng thấy và dùng nút <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong hộp tìm kiếm trên trang Thẻ mới. Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thấy nút <ph name="GOOGLE_LENS_PRODUCT_NAME" /> trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="6464074037294098618">Bật tính năng Tự động điền cho địa chỉ</translation>
 <translation id="6464564464230511695">Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, thì <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sẽ được phép hoạt động trên mọi trang web.
@@ -6797,16 +6779,6 @@ LƯU Ý: Các thiết bị dành cho người dùng thông thường và doanh n
 <translation id="6477685422297715670">Đèn nền bàn phím màu xanh lục</translation>
 <translation id="6478258366184919502">Nguồn gốc thông tin đăng nhập và màn hình</translation>
 <translation id="6478261301433199402">Việc đặt chính sách này sẽ chỉ định hình ảnh <ph name="PLUGIN_VM_NAME" /> cho một người dùng. Hãy chỉ định chính sách này làm một chuỗi định dạng JSON, trong đó <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> cho biết vị trí tải xuống hình ảnh đó và chỉ định <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> làm một hàm băm SHA-256 dùng để xác minh tính toàn vẹn của tệp tải xuống.</translation>
-<translation id="6478975565604106426">Các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sắp bị loại bỏ. Việc các trình xử lý này có kích hoạt hay không phụ thuộc vào <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />. Hiện tại, chính sách cho phép các trình xử lý này kích hoạt theo mặc định. Trong tương lai, các trình xử lý này sẽ dần chuyển sang trạng thái không được phép theo mặc định và phải được các trang web cho phép rõ ràng bằng cách sử dụng tiêu đề <ph name="PERMISSIONS_POLICY_NAME" />. Bạn có thể sử dụng chính sách doanh nghiệp này để từ chối việc loại bỏ dần này bằng cách buộc duy trì giá trị mặc định ở trạng thái cho phép.
- 
-Các trang có thể dựa vào trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> để lưu dữ liệu hoặc báo hiệu việc kết thúc phiên của người dùng với máy chủ. Cách này không được khuyến nghị do không đáng tin cậy và sẽ ảnh hưởng đến hiệu suất do việc không cho phép sử dụng <ph name="PRODUCT_NAME" />. Dù có một số lựa chọn thay thế được đề xuất, nhưng sự kiện <ph name="UNLOAD_EVENT_NAME" /> đã được sử dụng trong một thời gian dài. Một số ứng dụng có thể vẫn hoạt động dựa vào các trình xử lý sự kiện đó.
-
-Nếu bạn đặt chính sách này thành false (sai) hoặc không đặt, thì các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ dần bị loại bỏ tương ứng với tiến độ triển khai việc loại bỏ và các trang web không đặt tiêu đề <ph name="PERMISSIONS_POLICY_NAME" /> sẽ ngừng kích hoạt các sự kiện "unload".
-
-Nếu bạn đặt chính sách này thành true (đúng), thì trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ tiếp tục hoạt động theo mặc định.
-
-LƯU Ý: Chính sách này có giá trị mặc định "true" được ghi không chính xác trong M117. Sự kiện "unload" đã và sẽ không thay đổi trong M117, vì vậy chính sách này không có hiệu lực trong phiên bản đó.
-</translation>
 <translation id="6481245670325946423">Cho phép sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="648158446793103284">Nếu bạn thiết lập chính sách này, thì người dùng có thể chọn một trong nhiều phương thức nhập cho phiên <ph name="PRODUCT_OS_NAME" /> mà bạn chỉ định.
 

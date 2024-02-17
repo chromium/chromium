@@ -288,6 +288,7 @@
 <translation id="2473876017985765807">तपाईंले <ph name="WEBSITE" /> को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2476359652512522418">चयन गरिएको छैन</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
+<translation id="2480445180439820402">हिस्ट्री</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2484459871750294497">यो सुविधा अन गर्न के गर्नु पर्छ?</translation>
 <translation id="2496626742194544812">पहिलो ट्याबमा जानुहोस्</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">सेभ गर्नुहोस्</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="3976922811715736829">हालसालै बन्द गरिएका ट्याबहरू</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
 <translation id="3994422733891749358">आफूले प्राप्त गर्न चाहेका सूचनाहरू छनौट गर्नुहोस्</translation>
 <translation id="3995521777587992544">पृष्ठ लोडसम्बन्धी प्रगति पट्टी, <ph name="EMAIL" /> लोड गरियो।</translation>
@@ -633,6 +635,7 @@
 <translation id="4279431713294750185">तपाईं किनारा स्वाइप गरेर अगाडि जान सक्नुहुन्छ।</translation>
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
 <translation id="4286718549648564014">ठेगाना तपाईंको खाता <ph name="USER_EMAIL" /> मा सारियो</translation>
+<translation id="428768789042547925">नयाँ के छ</translation>
 <translation id="4293080268407233932">खोज्नुहोस्</translation>
 <translation id="4302248187517737842">युजरनेम चाहिँदैन ••••••••</translation>
 <translation id="4302415908542657649">पासवर्ड सेयर गरिँदै छ</translation>
@@ -687,6 +690,7 @@
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4588014171431912783">तपाईंको पछिल्लो ब्याकअपका आधारमा तपाईंले तय गर्नुभएका सिंकसम्बन्धी सेटिङ रिस्टोर गरिने छ। <ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">किबोर्ड</translation>
+<translation id="4596899661486753028">रिडिङ लिस्ट</translation>
 <translation id="4601095002996233687">डाउनलोड गरिएका फाइल शङ्कास्पद देखिएमा विस्तृत रूपमा स्क्यान गर्ने सुविधा।</translation>
 <translation id="4606247758155004938">तपाईंको सङ्गठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ।</translation>
 <translation id="4607887340472970274">मूल्य ट्र्याकिङ</translation>
@@ -1117,7 +1121,6 @@
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
-<translation id="6647480763136463714">अन्तिम पटक रन गरिएको समय: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">फोल्डर सम्पादन गर्नुहोस्</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6668619169535738264">पुस्तक चिन्ह सम्पादन गर्नुहोस्</translation>
@@ -1152,6 +1155,7 @@
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
 <translation id="6822587385560699678">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="ACCOUNT" /> मा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
+<translation id="6824350924364057989">सेटिङ</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6842136130964845393">तपाईं आफूले सेभ गरेका पासवर्डहरू जुनसुकै बेला हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6851516051005285358">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>
@@ -1190,6 +1194,7 @@
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
 <translation id="7006788746334555276">सामग्री सेटिङहरू</translation>
 <translation id="7016070607649558507">तपाईंको एउटा पासवर्ड कमजोर छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
+<translation id="7022197654033719543">साइटसम्बन्धी जानकारी</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="704692552158601232">डिफल्ट ब्राउजर एप</translation>
 <translation id="7062545763355031412">स्वीकार गरी खाताहरू स्विच गर्नुहोस्</translation>
@@ -1288,6 +1293,7 @@
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ट्याब समूह</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
+<translation id="7609559547731036746">बुकमार्कहरू</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7640669552036055091">Android मा हालसालै खोलिएका ट्याबहरू</translation>
 <translation id="7646263789464975852">मेनु → सेटिङ → सुरक्षितपनाको जाँच</translation>
@@ -1325,8 +1331,10 @@
 <translation id="7781069478569868053">नयाँ ट्याब पृष्ठ</translation>
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{१ दिनपछि}other{{COUNT} दिनपछि}}</translation>
+<translation id="7788868432173225918">विस्तारित भ्यू हटाउनुहोस्</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7792549458069452436">एप इन्स्टल गर्नुहोस्</translation>
+<translation id="7800723706644914607">पासवर्ड म्यानेजर</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
 <translation id="7812377703891978671">तपाईं <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> चयन गरी आफ्नो सबै ब्राउजिङ हिस्ट्री हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="78146569776629510">डाउनलोड गरिएका सामग्रीहरू</translation>
@@ -1399,6 +1407,7 @@
 <translation id="81313319706244542">२. पासवर्डहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="8132598642024322408">अहिले <ph name="PRICE" /> पर्छ, पहिले <ph name="PREVIOUS_PRICE" /> पर्थ्यो।</translation>
 <translation id="813370552429173916">प्रत्येक खाता वा एपमा भरपर्दो पासवर्ड प्रयोग गर्नुहोस्। कुनै व्यक्तिले तपाईंले पहिला नै प्रयोग गरेको पासवर्ड पत्ता लगाएका खण्डमा सो व्यक्तिले उक्त पासवर्ड प्रयोग गरी तपाईंका अन्य खाताहरू प्रयोग गर्न सक्छ। उक्त वेबसाइट खोल्न र अहिले नै ती पासवर्ड बदल्न क्लिक गर्नुहोस्।</translation>
+<translation id="814463369662540460">मूल्य ट्रयाक गर्नुहोस्</translation>
 <translation id="8156478151976189188">पासवर्ड सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाताहरू</translation>
 <translation id="8159358225423560600">अहिले भर्खरै</translation>
@@ -1505,6 +1514,7 @@
 <translation id="8703536910991780768">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
 <translation id="8706253136355675497">तापक्रम</translation>
 <translation id="8709409604518538305">ट्याबहरू बन्द गरिए</translation>
+<translation id="8709773186849937451">डाउनलोड गरिएका सामग्री</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
@@ -1601,7 +1611,6 @@
 <translation id="9162432979321511934">पासवर्ड अटोफिल गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="9162941801309769488">प्याकेज अनट्र्याक गरिएको छ</translation>
 <translation id="9165320910061267720">तपाईं मूल्य घट्दा अलर्टहरू प्राप्त गर्न चाहनुहुन्छ भने तपाईंले iOS का सेटिङमा गई सूचना पठाउने सुविधा अन गर्नु पर्ने हुन्छ।</translation>
-<translation id="9165886811579296457">सुरक्षा जाँच गर्दा तपाईंले निवारण गर्नु पर्ने सुरक्षासम्बन्धी कुनै पनि समस्या भेटिएन।</translation>
 <translation id="9172603439892261948">आफ्ना बुकमार्क र हिस्ट्रीलगायतका अन्य कुरा सिंक गर्नुहोस्।</translation>
 <translation id="9177438225260810839">खुला ट्याबहरूमा खोज्नुहोस्</translation>
 <translation id="9187853111759024059">९९ भन्दा बढी निष्क्रिय ट्याब बन्द गर्ने हो?</translation>
