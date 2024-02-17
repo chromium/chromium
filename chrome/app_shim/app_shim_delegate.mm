@@ -86,4 +86,9 @@
   _appShimController->ApplicationWillTerminate();
 }
 
+- (void)enableAccessibilitySupport:
+    (chrome::mojom::AppShimScreenReaderSupportMode)mode {
+  _appShimController->host()->EnableAccessibilitySupport(mode);
+}
+
 @end

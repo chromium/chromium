@@ -56,6 +56,11 @@ enum AppShimLoginItemRestoreState {
   kHidden,
 };
 
+enum AppShimScreenReaderSupportMode {
+  kPartial,
+  kComplete
+};
+
 // An entry in the profiles NSMenu.
 struct ProfileMenuItem {
   // The name to display.
@@ -146,6 +151,9 @@ interface AppShimHost {
   // Sent when the app should be opened with an override url (e.g.
   // user clicks on an item in the application dock menu).
   OpenAppWithOverrideUrl(url.mojom.Url override_url);
+
+  // Sent when the user activates some mode of Assistive Technology.
+  EnableAccessibilitySupport(AppShimScreenReaderSupportMode mode);
 
   // Sent when the app is about to terminate. Used to persist what profiles
   // where open when the app was terminated.

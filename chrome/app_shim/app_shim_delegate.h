@@ -7,6 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "chrome/common/mac/app_shim.mojom.h"
+
 class AppShimController;
 
 // An application delegate to catch user interactions and send the appropriate
@@ -14,6 +16,8 @@ class AppShimController;
 @interface AppShimDelegate
     : NSObject <NSApplicationDelegate, NSUserInterfaceValidations>
 - (instancetype)initWithController:(AppShimController*)controller;
+- (void)enableAccessibilitySupport:
+    (chrome::mojom::AppShimScreenReaderSupportMode)mode;
 @end
 
 #endif  // CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_

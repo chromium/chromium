@@ -216,6 +216,8 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   void OpenAppSettings() override {}
   void UrlsOpened(const std::vector<GURL>& urls) override {}
   void OpenAppWithOverrideUrl(const GURL& override_url) override {}
+  void EnableAccessibilitySupport(
+      chrome::mojom::AppShimScreenReaderSupportMode mode) override {}
   void ApplicationWillTerminate() override {}
 
   std::unique_ptr<base::RunLoop> runner_;

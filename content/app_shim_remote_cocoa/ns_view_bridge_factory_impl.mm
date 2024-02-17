@@ -82,8 +82,12 @@ class RenderWidgetHostNSViewBridgeOwner
     return nil;
   }
   id GetFocusedBrowserAccessibilityElement() override {
-    // See above.
-    return nil;
+    // Some ATs (e.g. Text To Speech) need to access the focused
+    // element in the app shim process. We make these apps work by
+    // returning the `accessibilityFocusedUIElement` of the BridgedContentView,
+    // which is an NSAccessibilityRemoteUIElement in app shim process.
+    NSView* bridgedContentView = [[bridge_->GetNSView() superview] superview];
+    return [bridgedContentView accessibilityFocusedUIElement];
   }
   void SetAccessibilityWindow(NSWindow* window) override {
     host_->SetRemoteAccessibilityWindowToken(

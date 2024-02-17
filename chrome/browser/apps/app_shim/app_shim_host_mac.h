@@ -153,6 +153,8 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void OpenAppSettings() override;
   void UrlsOpened(const std::vector<GURL>& urls) override;
   void OpenAppWithOverrideUrl(const GURL& override_url) override;
+  void EnableAccessibilitySupport(
+      chrome::mojom::AppShimScreenReaderSupportMode mode) override;
   void ApplicationWillTerminate() override;
 
   // Weak, owns |this|.
