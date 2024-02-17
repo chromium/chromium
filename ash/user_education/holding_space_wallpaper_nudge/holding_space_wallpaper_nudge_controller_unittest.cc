@@ -339,8 +339,14 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
+  // Moves the mouse to the center of the specified `view`.
+  void MoveMouseTo(const views::View* view) {
+    GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint(),
+                                     /*count=*/10);
+  }
+
   // Moves the mouse to the center of the specified `widget`.
-  void MoveMouseTo(views::Widget* widget) {
+  void MoveMouseTo(const views::Widget* widget) {
     GetEventGenerator()->MoveMouseTo(
         widget->GetWindowBoundsInScreen().CenterPoint(), /*count=*/10);
   }
@@ -489,6 +495,103 @@ class HoldingSpaceWallpaperNudgeControllerTest
             testing::ReturnRefOfCopy(std::make_optional<bool>(true)));
   }
 };
+
+TEST_F(HoldingSpaceWallpaperNudgeControllerTest,
+       HideBubbleAndTrayOnHoldingSpaceEmptied) {
+  // The holding space tray is always visible in the shelf when the
+  // predictability feature is enabled. Force disable it so that we verify that
+  // holding space visibility is updated by the
+  // `HoldingSpaceWallpaperNudgeController`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kHoldingSpacePredictability);
+
+  // Set animation durations to zero.
+  SetAnimationDurationMultiplier(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Log in a regular user.
+  const AccountId& account_id = AccountId::FromUserEmail("user@test");
+  SimulateNewUserFirstLogin(account_id.GetUserEmail());
+
+  // Register a model and client for holding space.
+  HoldingSpaceModel holding_space_model;
+  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, &holding_space_client, &holding_space_model);
+
+  // Configure the client to pin files to holding space when so instructed.
+  EXPECT_CALL(holding_space_client, PinFiles)
+      .WillOnce(WithArgs<0>(
+          Invoke([&](const std::vector<base::FilePath>& unpinned_file_paths) {
+            holding_space_model.AddItems(CreateHoldingSpaceItems(
+                HoldingSpaceItem::Type::kPinnedFile, unpinned_file_paths));
+          })));
+
+  // Configure the client to crack file system URLs.
+  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
+      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
+        return base::FilePath(base::StrCat(
+            {"//path/to/", std::string(&file_system_url.spec().back())}));
+      }));
+
+  // Mark the holding space feature as available since there is no holding
+  // space keyed service which would otherwise be responsible for doing so.
+  holding_space_prefs::MarkTimeOfFirstAvailability(
+      GetLastActiveUserPrefService());
+
+  // Create and show a `widget` from which data can be drag-and-dropped.
+  const int64_t display_id = GetPrimaryDisplay().id();
+  auto widget = CreateTestWidgetForDisplayId(display_id);
+  widget->SetContentsView(std::make_unique<DraggableView>(
+      base::BindLambdaForTesting([&](ui::OSExchangeData* data) {
+        data->SetString(u"Payload");
+        SetFilesAppData(data, u"file-system:a\nfile-system:b");
+      })));
+  widget->CenterWindow(gfx::Size(100, 100));
+  widget->Show();
+
+  // Cache the `shelf` and holding space `tray`.
+  auto* const shelf = GetShelfForDisplayId(display_id);
+  auto* const tray = GetHoldingSpaceTrayForShelf(shelf);
+
+  // Drag data from the `widget` to the wallpaper to show the nudge. Expect a
+  // help bubble to be anchored to the holding space `tray`.
+  MoveMouseTo(widget.get());
+  PressLeftButton();
+  MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+  FlushMessageLoop();
+  EXPECT_TRUE(HasHelpBubble(tray));
+
+  // Drop the data on the holding space `tray`. Expect the help bubble to still
+  // be anchored to the `tray`.
+  MoveMouseTo(tray);
+  ReleaseLeftButton();
+  FlushMessageLoop();
+  EXPECT_TRUE(HasHelpBubble(tray));
+
+  // Open holding space. Expect the holding space `tray` and bubble to be
+  // visible, but do not expect a help bubble since it would overlap with
+  // holding space.
+  tray->ShowBubble();
+  EXPECT_TRUE(tray->GetVisible());
+  EXPECT_TRUE(tray->GetBubbleWidget()->IsVisible());
+  EXPECT_FALSE(HasHelpBubble(tray));
+
+  // Dropping the data on the `tray` will have resulted in files being pinned to
+  // holding space. Simulate the user un-pinning those files.
+  EXPECT_FALSE(holding_space_model.items().empty());
+  holding_space_model.RemoveAll();
+  FlushMessageLoop();
+
+  // Verify that the holding space `tray` and bubble are no longer visible.
+  EXPECT_FALSE(tray->GetVisible());
+  EXPECT_FALSE(tray->GetBubbleWidget());
+
+  // Clean up holding space controller.
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, /*client=*/nullptr, /*model=*/nullptr);
+}
 
 TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
   // The holding space tray is always visible in the shelf when the

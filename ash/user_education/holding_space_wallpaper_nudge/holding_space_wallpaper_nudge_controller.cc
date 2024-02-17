@@ -688,8 +688,16 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   void OnHoldingSpaceTrayBubbleVisibilityChanged(const HoldingSpaceTray* tray,
                                                  bool visible) override {
     if (visible && help_bubble_anchor_) {
+      // Only force show holding space in the shelf if the model is empty.
+      // Otherwise, if the model becomes empty while visible to the user, the
+      // tray and bubble will not be hidden. This would occur if, for example,
+      // the user pins their first file to holding space via drag-and-drop but
+      // then immediately unpins it when holding space is presented.
       force_holding_space_show_in_shelf_for_tray_bubble_ =
-          std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
+          HoldingSpaceController::Get()->model()->items().empty()
+              ? std::make_unique<
+                    HoldingSpaceController::ScopedForceShowInShelf>()
+              : nullptr;
 
       // If the tray that emitted this event is the one that the currently open
       // help bubble is anchored to, close the help bubble to avoid overlap
