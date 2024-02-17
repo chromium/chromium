@@ -1084,6 +1084,11 @@ suite('NewTabPageAppTest', () => {
         test('wallpaper search button shows if it is enabled', () => {
           assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
           assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+          assertStyle(
+              $$(app, '#customizeButton .customize-text')!, 'display', 'none');
+          assertNotStyle(
+              $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+              'none');
         });
 
         ([
@@ -1102,6 +1107,11 @@ suite('NewTabPageAppTest', () => {
             });
 
         test('clicking wallpaper search button opens side panel', () => {
+          // Arrange.
+          assertNotStyle(
+              $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+              'none');
+
           // Act.
           $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
 
@@ -1117,6 +1127,9 @@ suite('NewTabPageAppTest', () => {
           assertEquals(
               1,
               handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+          assertStyle(
+              $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+              'none');
         });
 
         test('clicking wallpaper search button hides side panel', async () => {
@@ -1147,7 +1160,7 @@ suite('NewTabPageAppTest', () => {
         test(
             'clicking customize and wallpaper search buttons ' +
                 'works together',
-            async () => {
+            () => {
               // Act.
               $$<HTMLElement>(app, '#customizeButton')!.click();
 

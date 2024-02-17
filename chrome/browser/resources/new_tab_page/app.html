@@ -180,14 +180,17 @@
     left: 16px;
   }
 
-  :host([show-background-image_]) #customizeButtonContainer {
+  :host([show-background-image_]) #customizeButtonContainer,
+  :host([show-background-image_]) #wallpaperSearchButtonContainer {
     background-color: var(--ntp-protected-icon-background-color);
   }
 
-  :host([show-background-image_]) #customizeButtonContainer:hover {
+  :host([show-background-image_]) #customizeButtonContainer,
+  :host([show-background-image_]) #wallpaperSearchButtonContainer{
     background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
+  /* TODO(b/325664489): Update wallpaper search button's hover color. */
   .customize-button {
     --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
     border: none;
@@ -207,13 +210,18 @@
     --text-color: var(--color-new-tab-page-button-foreground);
   }
 
-  :host([show-background-image_]) #customizeButton {
+  :host([show-background-image_]) #customizeButton,
+  :host([wallpaper-search-button-enabled_]) #customizeButton,
+  :host([show-wallpaper-search_]) .customize-button {
     box-shadow: none;
     padding: 0;
   }
 
   :host-context([chrome-refresh-2023]):host([show-background-image_])
-      #customizeButton {
+      #customizeButton,
+  :host-context([chrome-refresh-2023]):host([wallpaper-search-button-enabled_])
+      #customizeButton,
+  :host([show-wallpaper-search_]) .customize-button {
     padding-inline-start: 8px;
   }
 
@@ -249,12 +257,20 @@
   }
 
   @media (forced-colors: none) {
-    :host([show-background-image_]) #customizeIcon {
+    :host([show-background-image_]) .customize-icon,
+    :host([wallpaper-search-button-enabled_]) #customizeIcon,
+    :host([show-wallpaper-search_]) .customize-icon {
       background-color: white;
+    }
+
+    :host([show-background-image_]) #wallpaperSearchButton {
+      --text-color: white;
     }
   }
 
-  :host([show-background-image_]) #customizeIcon {
+  :host([show-background-image_]) #customizeIcon,
+  :host([wallpaper-search-button-enabled_]) #customizeIcon,
+  :host([show-wallpaper-search_]) .customize-icon {
     margin: 0;
   }
 
@@ -512,7 +528,7 @@
                 aria-pressed="[[showWallpaperSearch_]]">
               <div id="wallpaperSearchIcon"
                   class="customize-icon" slot="prefix-icon"></div>
-              <div class="customize-text">
+              <div class="customize-text" hidden$="[[showWallpaperSearch_]]">
                 $i18n{wallpaperSearchButton}
               </div>
             </cr-button>
@@ -525,7 +541,8 @@
               aria-pressed="[[showCustomize_]]">
             <div id="customizeIcon"
                 class="customize-icon" slot="prefix-icon"></div>
-            <div class="customize-text" hidden$="[[showBackgroundImage_]]">
+            <div id="customizeText" class="customize-text"
+                hidden$="[[!showCustomizeChromeText_]]">
               $i18n{customizeButton}
             </div>
           </cr-button>

@@ -154,9 +154,17 @@ export class AppElement extends AppElementBase {
             WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
       },
 
+      showCustomizeChromeText_: {
+        type: Boolean,
+        computed:
+            `computeShowCustomizeChromeText_(wallpaperSearchButtonEnabled_,
+            showBackgroundImage_)`,
+      },
+
       showWallpaperSearch_: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
 
       showCustomizeDialog_: {
@@ -328,6 +336,7 @@ export class AppElement extends AppElementBase {
       wallpaperSearchButtonEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('wallpaperSearchButtonEnabled'),
+        reflectToAttribute: true,
       },
     };
   }
@@ -342,6 +351,7 @@ export class AppElement extends AppElementBase {
   private oneGoogleBarLoaded_: boolean;
   private theme_: Theme;
   private showCustomize_: boolean;
+  private showCustomizeChromeText_: boolean;
   private showWallpaperSearch_: boolean;
   private showCustomizeDialog_: boolean;
   private selectedCustomizeDialogPage_: string|null;
@@ -529,6 +539,13 @@ export class AppElement extends AppElementBase {
 
   private computeShowCustomizeDialog_(): boolean {
     return !this.customizeChromeEnabled_ && this.showCustomize_;
+  }
+
+  private computeShowCustomizeChromeText_(): boolean {
+    if (this.wallpaperSearchButtonEnabled_) {
+      return false;
+    }
+    return !this.showBackgroundImage_;
   }
 
   private computeBackgroundImageAttribution1_(): string {
